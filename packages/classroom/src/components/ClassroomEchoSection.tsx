@@ -164,7 +164,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                         padding: Theme.spacing.sm
                     }}>
                         <Input variant="underlined" sx={{ borderBottomWidth: 0 }}>
-                            <InputField >
+                            <InputField />
                                 placeholder="What's on your mind?"
                                 value={newEcho}
                                 onChangeText={setNewEcho}
@@ -214,7 +214,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                         <Inbox size={48} color={colors.tertiary} /
                         ><Text sx={{ marginTop: Theme.spacing.sm, color: colors.textTertiary }}>No echoes sent yet.</Text
                     ></Box
-                ) : (
+                >) : (
                     echoes.map(echo => (
                         <Box key={echo.id} sx={{ 
                             padding: Theme.spacing.md, 
@@ -278,7 +278,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                     <Inbox size={48} color={colors.tertiary} /
                     ><Text sx={{ marginTop: Theme.spacing.sm, color: colors.textTertiary }}>No student echoes yet.</Text
                 ></Box
-            ) : (
+            >) : (
                 echoes.map(echo => {
                     const isReplyingThis = replyingTo === echo.id;
                     return (
@@ -328,7 +328,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                         <VStack space="sm" sx={{ marginTop: 8 }}>
                                             <Box sx={{ backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, padding: 8 }}>
                                                 <Input variant="underlined" sx={{ borderBottomWidth: 0 }}>
-                                                    <InputField >
+                                                    <InputField />
                                                         placeholder="Write your response..."
                                                         value={replyText}
                                                         onChangeText={setReplyText}
@@ -342,7 +342,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                                 <Button size="xs" variant="outline" action="secondary" onPress={() => setReplyingTo(null)}
                                                     <ButtonText>Cancel</ButtonText
                                                 ></Button
-                                                <Button size="xs" action="primary" onPress={() => handleReply(echo.id)} isDisabled={!replyText.trim() || isReplying}
+                                                ><Button size="xs" action="primary" onPress={() => handleReply(echo.id)} isDisabled={!replyText.trim() || isReplying}
                                                     {isReplying ? <Spinner size="small" color="#fff" /> : <ButtonText>Send</ButtonText>}
                                                 </Button>
                                             </HStack>
@@ -361,7 +361,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
         <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
             <Spinner color={Theme.colors.sanctuarySaffron} /
         ></Box
-    );
+    >);
 
     return isTeacher ? renderTeacherView() : renderStudentView();
 }

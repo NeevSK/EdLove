@@ -120,12 +120,12 @@ export default function InstitutionalCalendarSection({
               paddingHorizontal: 10,
               paddingVertical: 4,
             }}
-                      <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ Add</Text          ></Box        </TouchableOpacity      </HStack
+                      <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ Add</Text          ></Box        ></TouchableOpacity      ></HStack
       {loading && <SkeletonCard height={60} />}
 
       {!loading && events.length === 0 && (
         <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No upcoming events>
-        </Text      )}>
+        </Text      >)}>
 
       {!loading &&
         events.map((event) => (
@@ -140,7 +140,7 @@ export default function InstitutionalCalendarSection({
                 paddingVertical: 2,
               }}
                           <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>{TYPE_LABELS[event.type] ?? event.type}</Text            ></Box            ><Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}              {event.title}
-            </Text            <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(event.start_date)}</Text          ></HStack        ))}
+            </Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(event.start_date)}</Text          ></HStack        ))}
 
       {showForm && (
         <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}          <TextInput placeholder="Event title" placeholderTextColor={colors.textSecondary} value={title} onChangeText={setTitle} style={inputStyle} /
@@ -153,7 +153,7 @@ export default function InstitutionalCalendarSection({
                       backgroundColor: selectedType === type ? typeBadgeColor(type) : colors.border,
                     }}
                                       <Text sx={{ fontSize: 12, fontWeight: '600', color: selectedType === type ? '#fff' : colors.textSecondary }}                      {TYPE_LABELS[type]}>
-                    </Text                  </Box                </TouchableOpacity              ))}>
+                    </Text                  ></Box                </TouchableOpacity              ))}>
             </HStack          ></RNScrollView
           <TextInput>
             placeholder="Start date (YYYY-MM-DD)"

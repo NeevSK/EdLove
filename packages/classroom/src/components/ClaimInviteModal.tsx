@@ -103,6 +103,6 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                                 disabled={loading || inviteCode.length < 6}
                                 sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50 }}
                                                             {loading ? <Spinner >{...({ color: text.inverse } as any)} /> : <ButtonText>Claim Record</ButtonText>}
-                            </Button                        </VStack                    )}
+                            </Button                        ></VStack                    )}
                 </ModalBody            </ModalContent        </Modal    );
 }

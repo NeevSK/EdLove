@@ -117,9 +117,9 @@ export default function TeacherFeedbackModal({
                 }}
                 onPress={() => setPriority(p)}
                               <ButtonText {...({ color: priority === p ? text.inverse : text.secondary } as any)}                  {p.toUpperCase()}>
-                </ButtonText              ></Button            ))}>
-          </HStack        </VStack
-        <VStack sx={{ gap: Theme.spacing.xs }}          <Text>
+                </ButtonText              ></Button            >))}>
+          </HStack        ></VStack
+        ><VStack sx={{ gap: Theme.spacing.xs }}          <Text>
             sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.content')}

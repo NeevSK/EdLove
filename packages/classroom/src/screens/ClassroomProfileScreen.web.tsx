@@ -34,7 +34,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                     className="secondary-button"
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px' }}
                                     <ArrowLeft size={16} /> Back
-                </button            </div
+                </button            ></div
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}                >
                 <div                    <div >className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px' }}                        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}                            <div style={{ padding: '24px', background: 'var(--accent-action-soft)', borderRadius: '24px' }}                                <GraduationCap size={48} color="var(--accent-action)" /                            ></div                            >
                             <div style={{ flex: 1 }}                                <EditableItem>
@@ -47,7 +47,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                                     disabled={!isEditable}
                                 /                                
                                 ><div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginTop: '8px' }}                                    <BookOpen size={14} /                                    ><span style={{ fontSize: '14px', fontWeight: '600' }}                                        {classroom.subject || 'General Studies'}
-                                    </span                                </div                            </div                        </div                    </div>
+                                    </span                                ></div                            </div                        </div                    </div>
                     <div className="sanctuary-card" style={{ padding: '32px' }}                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Description</h3                        ><EditableItem
                             icon={BookOpen}
                             label="Classroom Description"

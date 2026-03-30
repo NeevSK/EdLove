@@ -199,7 +199,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                         <View style={styles.loaderContainer}>
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
                         ></View
-                    ) : (
+                    >) : (
                         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                             {/* Analysis Visualization */}>
                             <View style={styles.chartSection}>
@@ -276,7 +276,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         <Sparkles size={16} color={Theme.colors.sanctuarySaffron} /
                                         ><Text style={styles.sectionTitle}>Nurturing Dimensions</Text
                                     ></View
-                                    <TouchableOpacity >
+                                    ><TouchableOpacity >
                                         onPress={handleGetAIInsights}
                                         disabled={loadingAI}
                                         style={styles.aiScoutButton}>
@@ -284,7 +284,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         {loadingAI ? <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} /> : <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />}
                                         <Text style={styles.aiScoutText}>AI Scout</Text
                                     ></TouchableOpacity
-                                </View>
+                                ></View>
                                 <View style={styles.statsGrid}>
                                     {[>
                                         { label: 'Cognitive', value: analysis.cognitive_flow, key: 'cognitive_flow' },
@@ -311,7 +311,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                     <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
                                                         <SliderFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} /
                                                     ></SliderTrack
-                                                    <SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} />
+                                                    ><SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} />
                                                 </Slider>
                                             </VStack>
                                         </View>

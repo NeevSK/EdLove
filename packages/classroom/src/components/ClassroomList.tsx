@@ -259,7 +259,7 @@ export default function ClassroomList({
         const studentCount = (classroom as any).student_count || 0;
 
         return (
-            <ClassroomCard>
+            <ClassroomCard/>
                 classroom={classroom}
                 onPress={handleClassroomPress}
                 onClassroomPress={onClassroomPress}
@@ -305,7 +305,7 @@ export default function ClassroomList({
             <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
                 {classrooms.length === 0 ? (
                     emptyContent || (>
-                        <PositiveInvitation>
+                        <PositiveInvitation/>
                             context="classroom"
                             onAction={() => {
                                 hapticLight();
@@ -318,7 +318,7 @@ export default function ClassroomList({
                     >)
                 ) : (
                     classrooms.map((classroom) => (
-                        <ClassroomCard>
+                        <ClassroomCard/>
                             key={classroom.id}
                             classroom={classroom}
                             onPress={handleClassroomPress}
@@ -408,7 +408,7 @@ export default function ClassroomList({
                 </
             )}
 
-            <CreateClassroomModal>
+            <CreateClassroomModal/>
                 isOpen={isCreateModalOpen}
                 initialData={pendingInitialData}
                 onClose={() => {
@@ -494,7 +494,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                         alignItems: 'center',
                         backgroundColor: colors.tertiary
                     }}>
-                        <BookOpen>
+                        <BookOpen/>
                             size={24}
                             color={Theme.colors.sanctuarySaffron}
                         />

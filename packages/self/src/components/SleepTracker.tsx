@@ -164,8 +164,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
 
     if (!isMorning && !hasLoggedToday) {
         return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg, alignItems: 'center' }}
-                <Text color={Theme.colors.mistGray} size="md" textAlign="center"
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg, alignItems: 'center' }}>
+                <Text color={Theme.colors.mistGray} size="md" textAlign="center">
                     Sleep tracking is available in the morning (5am - 11am)>
                 </Text>
                 <Text style={{ fontSize: 48 }}>\uD83C\uDF19</Text
@@ -176,19 +176,19 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
     // Loading state removed as we show UI optimistically or empty state
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
             {/* Header */}>
-            <VStack space="xs"
+            <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
                     {t('sleepTracker.title')}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm"
+                <Text color={Theme.colors.mistGray} size="sm">
                     Understanding your rest helps you care for yourself>
                 </Text>
             </VStack>
 
             {/* Sleep visualization */}
-            <Box
+            <Box>
                 sx={{
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -197,10 +197,10 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
                     position: 'relative',
-                }}>
+                }}
             
                 {/* Animated stars */}
-                <Animated.View
+                <Animated.View>
                     style={[
                         starsStyle,>
                         {
@@ -214,26 +214,26 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                 ></Animated.View>
 
                 {/* Moon/Sun based on quality */}
-                <Animated.View style={moonStyle}
+                <Animated.View style={moonStyle}>
                     <Text style={{ fontSize: 96 }}>
                         {currentQuality?.emoji}
                     </Text>
                 </Animated.View>
 
-                <Text
+                <Text>
                     color={currentQuality?.color}
                     size="2xl"
                     sx={{
                         fontWeight: typography.fontWeight.semibold,
                         marginTop: Theme.spacing.md,
-                    }}>
+                    }}
                 
                     {currentQuality?.label}
                 </Text>
-                <Text
+                <Text>
                     color={Theme.colors.mistGray}
                     size="sm"
-                    sx={{ fontStyle: 'italic' }}>
+                    sx={{ fontStyle: 'italic' }}
                 
                     {currentQuality?.description}
                 </Text>
@@ -242,8 +242,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
             {/* Slider */}
             {!hasLoggedToday && (
                 <
-                    <Box sx={{ paddingHorizontal: Theme.spacing.md }}
-                        <Slider
+                    <Box sx={{ paddingHorizontal: Theme.spacing.md }}>
+                        <Slider>
                             value={sleepQuality}
                             onChange={(value: number) => {
                                 hapticLight();
@@ -255,82 +255,82 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                             size="lg"
                             orientation="horizontal"
                         
-                            <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}
-                                <SliderFilledTrack
+                            <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}>
+                                <SliderFilledTrack>
                                     sx={{
                                         backgroundColor: currentQuality?.color,
-                                    }}>
+                                    }}
                                 /
                             ></SliderTrack>
-                            <SliderThumb
+                            <SliderThumb>
                                 sx={{
                                     backgroundColor: currentQuality?.color,
                                     borderWidth: 4,
                                     borderColor: Theme.colors.sacredWhite,
                                     width: 36,
                                     height: 36,
-                                }}>
+                                }}
                             /
                         ></Slider>
 
                         {/* Labels */}
-                        <HStack
+                        <HStack>
                             justifyContent="space-between"
-                            sx={{ marginTop: Theme.spacing.md }}>
+                            sx={{ marginTop: Theme.spacing.md }}
                         
-                            <Text color={Theme.colors.dimGray} size="xs"
+                            <Text color={Theme.colors.dimGray} size="xs">
                                 {t('sleepTracker.restless')}>
                             </Text>
-                            <Text color={Theme.colors.dimGray} size="xs"
+                            <Text color={Theme.colors.dimGray} size="xs">
                                 {t('sleepTracker.excellent')}>
                             </Text>
                         </HStack>
                     </Box>
 
                     {/* Save button */}
-                    <Button
+                    <Button>
                         size="lg"
                         onPress={saveSleepLog}
                         isDisabled={isSaving || disabled}
                         sx={{
                             borderRadius: Theme.corners.full,
                             backgroundColor: currentQuality?.color,
-                        }}>
+                        }}
                     
-                        <ButtonText
-                            {isSaving ? t('common.loading') : t('sleepTracker.logButton')}>
+                        <ButtonText>
+                            {isSaving ? t('common.loading') : t('sleepTracker.logButton')}
                         </ButtonText>
                     </Button>
                 </
             )}
 
             {hasLoggedToday && (
-                <Box
+                <Box>
                     sx={{
                         padding: Theme.spacing.md,
                         backgroundColor: Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         alignItems: 'center',
-                    }}>
+                    }}
                 
                     <Text color={Theme.colors.sageGreen} size="md"
                         \u2713 {t('sleepTracker.alreadyLogged')}>
                     </Text>
-                    <Text color={Theme.colors.mistGray} size="xs" sx={{ marginTop: Theme.spacing.xs }}
+                    <Text color={Theme.colors.mistGray} size="xs" sx={{ marginTop: Theme.spacing.xs }}>
                         You can update tomorrow morning>
                     </Text>
                 </Box>
             )}
 
             {/* Info */}
-            <Box
+            <Box>
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
-                }}>
+                }}
             
-                <Text
+                <Text>
                     color={Theme.colors.mistGray}
                     size="xs"
                     textAlign="center"

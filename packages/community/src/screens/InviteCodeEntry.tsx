@@ -93,7 +93,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                         </Text                    </VStack
                     {/* Code Input */}
                     <VStack sx={{ gap: 8 }}                        <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}                            {t('invite.inviteCode') || 'Invite Code'}>
-                        </Text                        <Input
+                        </Text                        ><Input
                             variant="outline"
                             size="lg"
                             sx={{
@@ -110,8 +110,8 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                                 sx={{ color: Theme.colors.sacredWhite }}
                                 placeholderTextColor={Theme.colors.dimGray}
                                 onSubmitEditing={handleValidateCode}
-                            /                        ></Input                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}                            {t('invite.codeFormat') || 'Format: GURU-XXXXXX-TEACH'}>
-                        </Text                    </VStack
+                            /                        ></Input                        ><Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}                            {t('invite.codeFormat') || 'Format: GURU-XXXXXX-TEACH'}>
+                        </Text                    ></VStack
                     {/* Validate Button */}
                     <Button>
                         size="lg"
@@ -137,7 +137,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                         }}
                                             <HStack sx={{ gap: 12, alignItems: 'flex-start' }}                            <HelpCircle color={Theme.colors.sanctuarySaffron} size={20} /                            ><VStack sx={{ gap: 4, flex: 1 }}                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14, fontWeight: '700' }}                                    {t('invite.whereToFind') || 'Where to find your code?'}
                                 </Text                                ><Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}                                    {t('invite.whereDesc') || 'Ask your principal or administrator for an invite code'}>
-                                </Text                            ></VStack                        </HStack                    </Box
+                                </Text                            ></VStack                        ></HStack                    </Box
                     {/* Skip / Create School */}
                     <VStack sx={{ gap: 8, marginTop: 16 }}                        <Pressable accessibilityRole="button">
                             onPress={() => {
@@ -145,5 +145,5 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                                 onSkip();
                             }}
                                                     <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 14, textAlign: 'center', fontWeight: '700' }}                                {t('invite.createSchool') || "I'm a Principal - Create my school \u2192"}>
-                            </Text                        </Pressable                    </VStack                </VStack            </Box        </ScreenWrapper    );>
+                            </Text                        ></Pressable                    ></VStack                </VStack            </Box        </ScreenWrapper    );>
 }

@@ -108,12 +108,12 @@ export default function PrincipalObservationsSection({
               paddingHorizontal: 10,
               paddingVertical: 4,
             }}
-                      <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ New</Text          ></Box        </TouchableOpacity      </HStack
+                      <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ New</Text          ></Box        ></TouchableOpacity      </HStack
       {loading && <SkeletonCard height={60} />}
 
       {!loading && observations.length === 0 && (
         <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No observations yet. Start your first classroom walkthrough note.>
-        </Text      )}>
+        </Text      >)}>
 
       {!loading && observations.map((obs) => (
         <VStack>
@@ -128,7 +128,7 @@ export default function PrincipalObservationsSection({
               }}
                           <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}                {obs.type}>
               </Text            ></Box            ><Text sx={{ fontSize: 11, color: colors.textSecondary, marginLeft: 'auto' }}              {formatShortDate(obs.created_at)}>
-            </Text          ></HStack          <Text sx={{ fontSize: 13, color: colors.text }} numberOfLines={2}            {obs.content}
+            </Text          ></HStack          ><Text sx={{ fontSize: 13, color: colors.text }} numberOfLines={2}            {obs.content}
           </Text        </VStack      ))}
 
       {showForm && (
@@ -157,7 +157,7 @@ export default function PrincipalObservationsSection({
                       textTransform: 'capitalize',
                     }}
                                       {type}
-                  </Text                ></Box              </TouchableOpacity            ))}
+                  </Text                ></Box              ></TouchableOpacity            ))}
           </HStack>
           <TouchableOpacity onPress={handleSave} activeOpacity={0.8} disabled={saving}            <Box>
               sx={{
@@ -168,6 +168,6 @@ export default function PrincipalObservationsSection({
                 opacity: saving ? 0.6 : 1,
               }}
                           <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}                {saving ? 'Saving...' : 'Save'}>
-              </Text            ></Box          </TouchableOpacity        </VStack      )}>
+              </Text            ></Box          ></TouchableOpacity        </VStack      )}>
     </Box  >);
 }

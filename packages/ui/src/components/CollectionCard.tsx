@@ -180,14 +180,14 @@ export function CollectionCard<T = any>({
     ];
 
     const cardContent = (
-        <View style={styles.container}
+        <View style={styles.container}>
             {thumbnailUrl ? (>
-                <ImageBackground
+                <ImageBackground>
                     source={{ uri: thumbnailUrl }}
                     style={styles.image}
                     resizeMode="cover">
                 
-                    <CardOverlay
+                    <CardOverlay>
                         styles={styles}
                         gradientColors={gradientColors}
                         title={title}
@@ -199,7 +199,7 @@ export function CollectionCard<T = any>({
                     /
                 ></ImageBackground>
             ) : (
-                <View style={styles.fallbackCenter}
+                <View style={styles.fallbackCenter}>
                     <BookOpen color={Theme.colors.sanctuarySaffron} size={44} />
                     ><CardOverlay
                         styles={styles}
@@ -270,14 +270,14 @@ function CardOverlay({
         ];
 
     return (
-        <View style={overlayStyle}
+        <View style={overlayStyle}>
             {/* Top Row */}>
-            <View style={styles.topRow}
+            <View style={styles.topRow}>
                 <View style={styles.subjectBadge}>
                     <Text style={styles.subjectText}>{subjectTag}</Text
                 ></View>
                 {verified && (
-                    <View style={styles.verifiedBadge}
+                    <View style={styles.verifiedBadge}>
                         <BadgeCheck color={Theme.colors.sageGreen} size={11} />
                         ><Text style={styles.verifiedText}>Verified</Text
                     ></View>
@@ -285,7 +285,7 @@ function CardOverlay({
             </View>
 
             {/* Bottom Gradient with title, creator, count */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}
+            <LinearGradient colors={gradientColors} style={styles.gradient}>
                 <Text style={styles.title} numberOfLines={2}>{title}</Text
                 ><Text style={styles.creator} numberOfLines={1}>{creator}</Text
                 ><View style={styles.bottomRow}
@@ -294,7 +294,7 @@ function CardOverlay({
                         ><Text style={styles.countText}>{resourceCount} Items</Text
                     ></View>
                     {onPullToDesk && (
-                        <Pressable onPress={onPullToDesk} style={styles.deskButton} hitSlop={8}
+                        <Pressable onPress={onPullToDesk} style={styles.deskButton} hitSlop={8}>
                             <Bookmark color={Theme.colors.sanctuarySaffron} size={14} />
                         ></Pressable>
                     )}

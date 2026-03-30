@@ -59,7 +59,7 @@ export function WorkspaceCanvasHero({
     const styles = createStyles(colors);
 
     return (
-        <View style={styles.hero}            <View style={styles.heroGlow} /            <View style={styles.heroHeader}                <View style={styles.heroCopy}                    <Text style={styles.kicker}>CAPABILITY CANVAS</Text                    <Text style={styles.title}>{title}</Text                    <Text style={styles.subtitle}>{subtitle}</Text                </View                <View style={styles.metrics}                    <View style={styles.metricPill}                        <LayoutGrid size={14} color={Theme.colors.inkTruth} /                        <Text style={styles.metricText}>{visibleCount} surfaces</Text                    </View                    <View style={styles.metricPillMuted}                        <Pin size={14} color={colors.textSecondary} /                        <Text style={styles.metricTextMuted}>{pinnedCount} pinned</Text                    </View                    <View style={styles.rendererPill}                        <Text style={styles.rendererText}                            {renderer.platform.toUpperCase()}  {String.fromCharCode(8226)}  {renderer.mode.toUpperCase()}
+        <View style={styles.hero}            <View style={styles.heroGlow} /            ><View style={styles.heroHeader}                <View style={styles.heroCopy}                    <Text style={styles.kicker}>CAPABILITY CANVAS</Text                    ><Text style={styles.title}>{title}</Text                    ><Text style={styles.subtitle}>{subtitle}</Text                ></View                <View style={styles.metrics}                    <View style={styles.metricPill}                        <LayoutGrid size={14} color={Theme.colors.inkTruth} /                        <Text style={styles.metricText}>{visibleCount} surfaces</Text                    ></View                    <View style={styles.metricPillMuted}                        <Pin size={14} color={colors.textSecondary} /                        <Text style={styles.metricTextMuted}>{pinnedCount} pinned</Text                    ></View                    <View style={styles.rendererPill}                        <Text style={styles.rendererText}                            {renderer.platform.toUpperCase()}  {String.fromCharCode(8226)}  {renderer.mode.toUpperCase()}
                         </Text                    </View                </View            </View        </View    );
 }
 
@@ -72,7 +72,7 @@ export function WorkspaceCanvasEmptyState({
     const styles = createStyles(colors);
 
     return (
-        <View style={styles.emptyState}            <Text style={styles.emptyTitle}>Canvas ready for adoption</Text            <Text style={styles.emptyText}>{emptyMessage}</Text        </View    );
+        <View style={styles.emptyState}            <Text style={styles.emptyTitle}>Canvas ready for adoption</Text            ><Text style={styles.emptyText}>{emptyMessage}</Text        ></View    );
 }
 
 function createStyles(colors: ReturnType<typeof useThemedColors>) {

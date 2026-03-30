@@ -124,7 +124,7 @@ export default function CommunityScreen() {
 
     const renderFeedFilterChips = () => (
         <Animated.View entering={FadeInDown.delay(300).springify()}>
-            <HorizontalChipRow>
+            <HorizontalChipRow/>
                 chips={feedFilterChips}
                 selectedValue={activeFeedFilter}
                 onSelect={(value) => {
@@ -138,7 +138,7 @@ export default function CommunityScreen() {
     const renderCommunityHearth = () => {
         return (
             <Box mt="$4">
-                <CommunityHearth>
+                <CommunityHearth/>
                     manifestos={manifestos}
                     userId={userId || 'guest'}
                     onPressSpotlight={(postId) => {
@@ -151,7 +151,7 @@ export default function CommunityScreen() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true}/>
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title')} />
                 {/* Sub-Tabs via Chips - ALWAYS VISIBLE for navigation awareness */}
@@ -179,7 +179,7 @@ export default function CommunityScreen() {
                                 <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
                                     {renderCommunityHearth()}
                                     <Box px="$4">
-                                        <PositiveInvitation>
+                                        <PositiveInvitation/>
                                             type="guest"
                                             title={t('community.guestTitle')}
                                             description={t('community.guestDesc')}
@@ -196,7 +196,7 @@ export default function CommunityScreen() {
                             estimatedItemSize={Theme.listSizes.communityCard}
                             renderItem={({ item, index }) => (
                                 <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
-                                    <PostCard>
+                                    <PostCard/>
                                         post={item}
                                         onPress={() => { }}
                                         onLike={() => {
@@ -278,7 +278,7 @@ export default function CommunityScreen() {
                         subject="CommunityGroups"
                         fallback={>
                             <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
-                                <PositiveInvitation>
+                                <PositiveInvitation/>
                                     type="guest"
                                     title={t('community.groups.guestTitle')}
                                     description={t('community.groups.guestDesc')}
@@ -287,7 +287,7 @@ export default function CommunityScreen() {
                             ></VStack>
                         }
                     
-                        <GroupsScreen>
+                        <GroupsScreen/>
                             userId={userId ?? undefined}
                             schoolId={schoolId || undefined}
                             onCreatePost={handleOpenCreatePost}
@@ -305,7 +305,7 @@ export default function CommunityScreen() {
                         subject="DirectMessages"
                         fallback={>
                             <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
-                                <PositiveInvitation>
+                                <PositiveInvitation/>
                                     type="guest"
                                     title={t('community.dms.guestTitle')}
                                     description={t('community.dms.guestDesc')}
@@ -318,7 +318,7 @@ export default function CommunityScreen() {
                     ></FeatureGuard>
                 )}
 
-                <CreatePostModal>
+                <CreatePostModal/>
                     isOpen={showCreateModal && !isPastView}
                     onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
                     groupId={createPostGroupId}

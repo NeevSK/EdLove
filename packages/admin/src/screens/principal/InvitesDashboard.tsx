@@ -56,7 +56,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                         onChange={e => setInviteRole(e.target.value as 'teacher' | 'principal')}
                         disabled={isPastView}
                         style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}
-                                            <option value="teacher">Teacher</option                        ><option value="principal">Principal</option                    ></select                    <button
+                                            <option value="teacher">Teacher</option                        ><option value="principal">Principal</option                    ></select                    ><button
                         onClick={handleGenerateCode}
                         disabled={generating || isPastView}
                         className="premium-button"

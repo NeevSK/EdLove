@@ -18,7 +18,7 @@ import { ArrowLeft } from 'lucide-react-native';
 function StackFallback() {
     return (
         <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}            Loading collection...>
-        </div    );>
+        </div    >);>
 }
 
 export default function CollectionDetailScreenWeb() {
@@ -89,7 +89,7 @@ export default function CollectionDetailScreenWeb() {
                     note={collection.is_virtual ? t('library.dynamicCollection') : t('library.curatedCollection')}
                     actions={(>
                         <button className="secondary-button" onClick={() => navigation.goBack()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                            <ArrowLeft size={16} /                            >{t('library.backToLibrary')}
-                        </button                    )}
+                        </button                    >)}
                 /
                 ><div style={{ marginBottom: 40, background: 'rgba(255,255,255,0.3)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)' }}                    <Text style={{ fontSize: 18, color: theme.text.primary, lineHeight: 28, marginBottom: 12, fontWeight: '500' }}                        {collection.description || t('library.noDescription')}
                     </Text                    <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}                        <div style={{ padding: '6px 12px', borderRadius: '100px', background: 'var(--action-soft)', color: 'var(--action)', fontSize: '12px', fontWeight: '800' }}                            {t('library.resourcesCount', { count: collection.resources.length })}>
@@ -118,5 +118,5 @@ export default function CollectionDetailScreenWeb() {
                         /                    >))}
                     {collection.resources.length === 0 && (
                         <div style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center' }}                            <Text style={{ color: theme.text.muted }}>{t('library.emptyCollection')}</Text                        ></div                    >)}
-                </div            ></div        </div    );
+                </div            ></div        ></div    );
 }

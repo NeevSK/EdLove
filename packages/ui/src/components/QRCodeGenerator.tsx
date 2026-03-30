@@ -64,9 +64,9 @@ export default function QRCodeGenerator({
 
     if (!matrix || matrix.size === 0) {
         return (
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
                 <Text>Invalid QR data</Text
-            </View
+            ></View>
         );
     }
 
@@ -103,7 +103,7 @@ export default function QRCodeGenerator({
 
         // 3. Render data modules as Dots (Circles)
         return (
-            <Circle
+            <Circle>
                 key={`dot-${row}-${col}`}
                 cx={col * cellSize + cellSize / 2}
                 cy={row * cellSize + cellSize / 2}
@@ -119,9 +119,9 @@ export default function QRCodeGenerator({
         const innerOffset = 2 * cellSize;
 
         return (
-            <G x={x} y={y}
+            <G x={x} y={y}>
                 {/* Outer Ring */}
-                <Rect
+                <Rect>
                     x={cellSize * 0.5}
                     y={cellSize * 0.5}
                     width={eyeSize - cellSize}
@@ -132,7 +132,7 @@ export default function QRCodeGenerator({
                     strokeWidth={cellSize}
                 /
                 {/* Inner Dot */}
-                <Rect
+                <Rect>
                     x={innerOffset + cellSize * 0.5}
                     y={innerOffset + cellSize * 0.5}
                     width={innerSize - cellSize}
@@ -140,25 +140,25 @@ export default function QRCodeGenerator({
                     rx={cellSize * 0.75}
                     fill={color}
                 /
-            </G
+            </G>
         );
     };
 
     return (
-        <View style={styles.outerContainer}
+        <View style={styles.outerContainer}>
             {showFrame && (
-                <View style={[styles.frameLabel, { backgroundColor: color }]}
+                <View style={[styles.frameLabel, { backgroundColor: color }]}>
                     <Text style={styles.frameLabelText}>{frameText.toUpperCase()}</Text
-                </View
+                ></View>
             )}
             
-            <View style={[
+            <View style={[>
                 styles.qrWrapper, 
                 { borderRadius, padding, backgroundColor, borderColor: showFrame ? color : 'transparent' }
             ]}
-                <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
+                <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
                     {/* Background fill */}
-                    <Rect x="0" y="0" width={size} height={size} fill={backgroundColor} /
+                    <Rect x="0" y="0" width={size} height={size} fill={backgroundColor} />
                     
                     {/* Render Eyes first */}
                     {renderEye(0, 0)}
@@ -174,22 +174,22 @@ export default function QRCodeGenerator({
 
                     {/* Central Lotus Emoji */}
                     {showLotus && (
-                        <SvgText
+                        <SvgText>
                             x={size / 2}
                             y={size / 2 + (cellSize * 1.5)} // Adjust for vertical alignment
                             fontSize={cellSize * (centerClearance - 1.5)}
                             textAnchor="middle"
                         
                             \uD83E\uDEB7
-                        </SvgText
+                        </SvgText>
                     )}
-                </Svg
-            </View
+                </Svg>
+            </View>
 
             {label && (
                 <Text style={[styles.label, { color }]}>{label}</Text
-            )}
-        </View
+            >)}
+        </View>
     );
 }
 

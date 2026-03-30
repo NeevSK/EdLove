@@ -73,25 +73,25 @@ export default function GuestConversionPrompt({
     const IconComponent = config.icon;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}
+        <Modal isOpen={isOpen} onClose={onClose}>
             <ModalBackdrop />
             ><ModalContent
                 sx={{
                     backgroundColor: colors.primary,
                     borderRadius: Theme.corners.comfortable,
-                    maxWidth: 400>
+                    maxWidth: 400
                 }}
             
-                <ModalHeader
+                <ModalHeader>
                     <ModalCloseButton>
                         ><CloseIcon color={colors.textSecondary} /
                     ></ModalCloseButton>
                 </ModalHeader>
 
-                <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}
+                <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
                     <VStack space="lg" alignItems="center">
                         {/* Icon */}
-                        <Box
+                        <Box>
                             sx={{
                                 width: 80,
                                 height: 80,
@@ -103,14 +103,14 @@ export default function GuestConversionPrompt({
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 0.24,
                                 shadowRadius: 8,
-                                elevation: 4>
+                                elevation: 4
                             }}
                         
                             <IconComponent size={40} color={Theme.colors.sanctuarySaffron} /
                         ></Box>
 
                         {/* Title */}
-                        <Heading
+                        <Heading>
                             size="xl"
                             color={Theme.colors.sanctuarySaffron}
                             textAlign="center">
@@ -119,7 +119,7 @@ export default function GuestConversionPrompt({
                         </Heading>
 
                         {/* Description */}
-                        <Text
+                        <Text>
                             size="md"
                             color={colors.textSecondary}
                             textAlign="center">
@@ -129,13 +129,13 @@ export default function GuestConversionPrompt({
 
                         {/* Local Data Count */}
                         {itemCount !== undefined && itemCount > 0 && (
-                            <Box
+                            <Box>
                                 sx={{
                                     p: "$3",
                                     backgroundColor: colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 4,
-                                    borderLeftColor: Theme.colors.sageGreen>
+                                    borderLeftColor: Theme.colors.sageGreen
                                 }}
                             
                                 <Text size="sm" color={colors.text} textAlign="center"
@@ -145,16 +145,16 @@ export default function GuestConversionPrompt({
                         )}
 
                         {/* Benefit */}
-                        <Box
+                        <Box>
                             sx={{
                                 p: "$4",
                                 backgroundColor: `${Theme.colors.amberGlow}1A`, // 10% Opacity
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
-                                borderColor: Theme.colors.amberGlow>
+                                borderColor: Theme.colors.amberGlow
                             }}
                         
-                            <Text
+                            <Text>
                                 size="sm"
                                 color={Theme.colors.amberGlow}
                                 textAlign="center"
@@ -165,26 +165,26 @@ export default function GuestConversionPrompt({
                         </Box>
 
                         {/* Actions */}
-                        <VStack space="sm" sx={{ width: '100%' }}
-                            <Button
+                        <VStack space="sm" sx={{ width: '100%' }}>
+                            <Button>
                                 size="lg"
                                 onPress={onCreateAccount}
                                 sx={{
                                     backgroundColor: Theme.colors.sanctuarySaffron,
-                                    borderRadius: Theme.corners.comfortable>
+                                    borderRadius: Theme.corners.comfortable
                                 }}
                             
-                                <ButtonText color={Theme.colors.sacredWhite}
+                                <ButtonText color={Theme.colors.sacredWhite}>
                                     {t('guest.createAccount')}>
                                 </ButtonText>
                             </Button>
 
-                            <Button
+                            <Button>
                                 size="md"
                                 variant="link"
                                 onPress={onClose}>
                             
-                                <ButtonText color={colors.textSecondary}
+                                <ButtonText color={colors.textSecondary}>
                                     {t('guest.continueBrowsing')}>
                                 </ButtonText>
                             </Button>

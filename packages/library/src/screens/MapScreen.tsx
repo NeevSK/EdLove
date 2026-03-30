@@ -195,7 +195,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'astro' && data && layout) {
             return (
-                <AstroView >
+                <AstroView />
                     data={data as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -208,7 +208,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'jyoti' && data) {
             return (
-                <JyotiView >
+                <JyotiView />
                     data={data as any} 
                     layout={layout!} 
                     width={width}
@@ -219,7 +219,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'terra' && data) {
             return (
-                <TerraView >
+                <TerraView />
                     data={data as any} 
                     layout={layout!} 
                     width={width}
@@ -230,7 +230,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'dharma' && data) {
             return (
-                <DharmaView >
+                <DharmaView />
                     data={data as any} 
                     layout={layout!} 
                     width={width}

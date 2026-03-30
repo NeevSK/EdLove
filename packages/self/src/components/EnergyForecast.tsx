@@ -83,7 +83,7 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
 
   if (dataLoading && userId) {
     return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
         <SkeletonCard height={80} />
         ><SkeletonCard height={80} /
         ><SkeletonCard height={80} />
@@ -93,7 +93,7 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
 
   if (!userId) {
     return (
-      <PositiveInvitation
+      <PositiveInvitation>
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
@@ -101,10 +101,10 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
   }
 
   return (
-    <VStack space="lg" sx={{ flex: 1 }}
+    <VStack space="lg" sx={{ flex: 1 }}>
       <VStack space="xs">
-        <HStack space="sm" alignItems="center"
-          <Battery
+        <HStack space="sm" alignItems="center">
+          <Battery>
             color={(selectedLevel !== null && selectedLevel >= 1 && selectedLevel <= 5) ? energyLevels[selectedLevel - 1]?.color : colors.action}
             size={24}
           /
@@ -112,28 +112,28 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
             {t('self.energyForecast')}>
           </Heading>
         </HStack>
-        <Text color={colors.textSecondary} size="sm"
+        <Text color={colors.textSecondary} size="sm">
           {t('self.energyForecastDesc')}>
         </Text>
       </VStack>
 
       {/* Emoji Energy Picker  always visible, current selection highlighted */}
-      <Box sx={{ paddingHorizontal: Theme.spacing.sm }}
+      <Box sx={{ paddingHorizontal: Theme.spacing.sm }}>
         <Text color={colors.textSecondary} size="sm" textAlign="center" mb="$3">
           {t('self.capacityToday')}
         </Text>
-        <HStack justifyContent="space-between" alignItems="center"
+        <HStack justifyContent="space-between" alignItems="center">
           {energyLevels.map((energy) => {
             const isActive = selectedLevel === energy.level;
             return (
-              <Pressable
+              <Pressable>
                 key={energy.level}
                 onPress={() => handleSelectEnergy(energy.level as any)}
                 disabled={isLoading || disabled}
                 sx={{ alignItems: 'center' }}
               
-                <VStack alignItems="center" space="xs"
-                  <Box
+                <VStack alignItems="center" space="xs">
+                  <Box>
                     sx={{
                       width: 54,
                       height: 54,
@@ -142,16 +142,16 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
                       justifyContent: 'center',
                       backgroundColor: isActive ? energy.color + '33' : colors.secondary,
                       borderWidth: 2,
-                      borderColor: isActive ? energy.color : colors.border,>
+                      borderColor: isActive ? energy.color : colors.border,
                     }}
                   
                     <Text sx={{ fontSize: 26 }}>{energy.emoji}</Text
                   ></Box>
-                  <Text
+                  <Text>
                     sx={{
                       fontSize: Theme.typography.fontSize.xs,
                       color: isActive ? energy.color : colors.textTertiary,
-                      fontWeight: isActive ? '700' : '400',>
+                      fontWeight: isActive ? '700' : '400',
                     }}
                   
                     {energy.label}
@@ -165,15 +165,15 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
 
       {/* Last updated timestamp */}
       {todayForecast && (
-        <Box
+        <Box>
           p="$3"
           sx={{
             backgroundColor: colors.tertiary,
-            borderRadius: Theme.corners.comfortable>
+            borderRadius: Theme.corners.comfortable
           }}
         
-          <Text color={colors.textSecondary} size="sm" textAlign="center"
-            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}>
+          <Text color={colors.textSecondary} size="sm" textAlign="center">
+            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </Text>
         </Box>
       )}

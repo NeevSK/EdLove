@@ -112,42 +112,42 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
     if (visibleLinks.length === 0 && !isOwnProfile) return null;
 
     return (
-        <View style={styles.container}
+        <View style={styles.container}>
             <View style={styles.header}>
                 <Text variant="h3" style={styles.title}>{t('socialSanctuary.title')}</Text
                 >{isOwnProfile && (
-                    <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}
+                    <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}>
                         <Share2 size={20} color={Theme.colors.ink} />
                     ></TouchableOpacity>
                 )}
             </View>
 
-            <View style={styles.linksContainer}
+            <View style={styles.linksContainer}>
                 {visibleLinks.map((link) => {
                     const PlatformIcon = PLATFORM_ICONS[link.platform] || ExternalLink;
                     const PrivacyIcon = PRIVACY_ICONS[link.privacy_level];
 
                     return (
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             key={link.id}
                             onPress={() => handlePress(link)}
                             onLongPress={() => handleOpenOptions(link)}
                             activeOpacity={0.7}
-                                                    <GlassCard style={styles.linkCard}
+                                                    <GlassCard style={styles.linkCard}>
                                 <View style={styles.linkContent}>
-                                    <View style={[styles.platformIcon, { backgroundColor: colors.primary + '20' }]}
+                                    <View style={[styles.platformIcon, { backgroundColor: colors.primary + '20' }]}>
                                         <PlatformIcon size={24} color={colors.primary} />
                                     ></View>
-                                    <View style={styles.linkTextContainer}
+                                    <View style={styles.linkTextContainer}>
                                         <Text variant="p2" weight="bold" style={styles.platformName}>
                                             {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
                                         </Text>
-                                        <Text variant="p3" numberOfLines={1} style={styles.linkUrl}
+                                        <Text variant="p3" numberOfLines={1} style={styles.linkUrl}>
                                             {link.url}>
                                         </Text>
                                     </View>
                                     {isOwnProfile && (
-                                        <View style={styles.privacyIndicator}
+                                        <View style={styles.privacyIndicator}>
                                             <PrivacyIcon size={16} color={colors.textTertiary} />
                                         ></View>
                                     )}
@@ -159,7 +159,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                 })}
 
                 {isOwnProfile && visibleLinks.length === 0 && (
-                    <SanctuaryCard variant="glass" style={{ padding: 20, alignItems: 'center' }}
+                    <SanctuaryCard variant="glass" style={{ padding: 20, alignItems: 'center' }}>
                         <Text variant="p3" style={styles.emptyText}>
                             {t('socialSanctuary.empty')}
                         </Text>

@@ -50,7 +50,7 @@ export default function AddCollectionModal({ isOpen, onClose, onAdd }: AddCollec
     ];
 
     const footer = (
-        <HStack sx={{ gap: 12 }}            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary"                {t('common.cancel') || 'Cancel'}
+        <HStack sx={{ gap: 12 }}            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary"                {t('common.cancel') || 'Cancel'}>
             </SanctuaryButton            <SanctuaryButton
                 onPress={handleAdd}
                 isDisabled={!name}>
@@ -58,20 +58,20 @@ export default function AddCollectionModal({ isOpen, onClose, onAdd }: AddCollec
             </SanctuaryButton        </HStack    );
 
     return (
-        <SanctuaryModal
+        <SanctuaryModal>
             isOpen={isOpen}
             onClose={onClose}
             title={t('library.createCollection.title') || 'New Collection'}
             subtitle={t('library.createCollection.subtitle') || 'Organize resources into a shared or personal stream.'}
             footer={footer}>
-                    <VStack sx={{ gap: 16, mt: 16 }}                <VStack sx={{ gap: 4 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.nameLabel') || 'COLLECTION NAME'}
-                    </Text                    <Input sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}                        <InputField
+                    <VStack sx={{ gap: 16, mt: 16 }}                <VStack sx={{ gap: 4 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.nameLabel') || 'COLLECTION NAME'}>
+                    </Text                    ><Input sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}                        <InputField
                             sx={{ color: colors.textPrimary }}
                             placeholder={t('library.createCollection.namePlaceholder') || 'e.g., Grade 10 Science Essentials'}
                             value={name}
                             onChangeText={setName}
                         /                    ></Input                </VStack>
-                <VStack sx={{ gap: 4 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.descriptionLabel') || 'DESCRIPTION'}
+                <VStack sx={{ gap: 4 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.descriptionLabel') || 'DESCRIPTION'}>
                     </Text                    <Input sx={{ minHeight: 80, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}                        <InputField
                             sx={{ color: colors.textPrimary }}
                             placeholder={t('library.createCollection.descriptionPlaceholder') || 'What is this collection about?'}
@@ -79,7 +79,7 @@ export default function AddCollectionModal({ isOpen, onClose, onAdd }: AddCollec
                             onChangeText={setDescription}
                             multiline
                         /                    ></Input                </VStack>
-                <VStack sx={{ gap: 8 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.visibilityLabel') || 'VISIBILITY (SHARDING)'}
+                <VStack sx={{ gap: 8 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.visibilityLabel') || 'VISIBILITY (SHARDING)'}>
                     </Text                    <HorizontalChipRow
                         chips={visibilityOptions}
                         selectedValue={visibility}

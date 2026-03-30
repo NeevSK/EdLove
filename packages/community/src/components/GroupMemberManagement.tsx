@@ -97,7 +97,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                         
                             <Settings size={20} color={colors.textPrimary} /
                         ></Pressable
-                    </HStack>
+                    ></HStack>
 
                     <Box sx={{ padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable, backgroundColor: colors.tertiary + '40', borderWidth: 1, borderColor: colors.border }}>
                         <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
@@ -117,12 +117,12 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                         /
                         ><Button
                             label="Need Verification"
-                            onPress={() => handlePolicyChange('restricted')}
+                            onPress={() =/> handlePolicyChange('restricted')}
                             variant={policy === 'restricted' ? 'primary' : 'secondary'}
                             sx={{ flex: 1 }}
                         /
                     ></HStack
-                </VStack>
+                ></VStack>
 
                 {/* Pending Requests */}
                 <VStack sx={{ gap: Theme.spacing.md }}>
@@ -173,7 +173,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                                 <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}>
                                                     <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>NIC: {request.user.nic_number}</Text
                                                 ></Box
-                                            )}
+                                            >)}
                                         </HStack>
                                     </VStack>
                                     <HStack sx={{ gap: Theme.spacing.sm }}>
@@ -184,14 +184,14 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         
                                             <UserX size={20} color={colors.error} /
                                         ></Pressable
-                                        <Pressable>
+                                        ><Pressable>
                                             onPress={() => handleApproval(request.user_id, 'active')}
                                             accessibilityLabel={`Approve ${request.user?.full_name ?? 'member'}`}
                                             sx={{ padding: 10, borderRadius: 50, backgroundColor: `${colors.success}20` }}
                                         
                                             <UserCheck size={20} color={colors.success} /
                                         ></Pressable
-                                    </HStack>
+                                    ></HStack>
                                 </HStack>
                             </Box>
                         ))
@@ -246,14 +246,14 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
 
                                         {canManage && (
                                             <HStack sx={{ gap: Theme.spacing.sm }}>
-                                                <Button>
+                                                <Button/>
                                                     label={isAdmin ? "Demote" : "Promote"}
                                                     onPress={() => handleCapacityChange(member.user_id, isAdmin ? 'member' : 'admin')}
                                                     variant="outline"
                                                     sx={{ height: 32, paddingHorizontal: 12 }}
                                                 /
                                             ></HStack
-                                        )}
+                                        >)}
                                     </HStack>
                                 </Box>
                             </Pressable>
@@ -281,7 +281,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 }}
             /
         ></ScreenWrapper
-    );
+    >);
 
     async function handleCapacityChange(targetUserId: string, newCapacity: 'admin' | 'member') {
         try {

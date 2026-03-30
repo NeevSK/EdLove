@@ -289,7 +289,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 <span className="ob-error-icon">\u00E2\u0161 \u00EF\u00B8 </span
                 ><span className="ob-error-text">{completionError}</span
             ></div
-        );
+        >);
     };
 
 
@@ -310,7 +310,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         {t('onboarding.nameSubtitle')}>
                     </p>
                     {renderError()}
-                    <input>
+                    <input/>
                         className="ob-input"
                         type="text"
                         placeholder={t('onboarding.namePlaceholder')}
@@ -359,7 +359,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                 ><span className="ob-role-name">{t(`authority.${r.value}`)}</span
                                 ><span className="ob-role-desc">{t(r.descKey)}</span
                             ></button
-                        ))}
+                        >))}
                     </div>
                     <div className="ob-actions">
                         <button className="ob-btn-secondary" onClick={handleBack}
@@ -478,7 +478,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                         <span>{p.emoji}</span
                                         ><span>{p.name}</span
                                     ></div
-                                ))}
+                                >))}
                             </div>
 
                             {/* Step progress tracker */}
@@ -491,7 +491,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                         <div className="ob-tracker-dot" /
                                         ><span className="ob-tracker-label">{s.label}</span
                                     ></div
-                                ))}
+                                >))}
                             </div>
 
                             {/* Language picker */}

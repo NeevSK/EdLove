@@ -135,7 +135,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
                                                                             <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}>
-                                        </Text                                    </TouchableOpacity                                    <TouchableOpacity
+                                        </Text                                    ></TouchableOpacity                                    ><TouchableOpacity
                                         onPress={() =                                            setSurfaceZone(
                                                 resolved.surfaceId,
                                                 resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'outlook' : 'work'
@@ -150,7 +150,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
                                                                             <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone>
-                                        </Text                                    </TouchableOpacity                                </HStack                            );>
+                                        </Text                                    ></TouchableOpacity                                ></HStack                            >);>
                         }}
                     /                ></Animated.View            ></ScrollView
             <CreateClassroomModal>
@@ -197,7 +197,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                             borderBottomColor: colors.border,
                         }}
                                             <HStack justifyContent="space-between" alignItems="center"                            <Heading size="lg" color={colors.text}                                {t('self.breathingReset') || 'Breathing Reset'}>
-                            </Heading                            <TouchableOpacity
+                            </Heading                            ><TouchableOpacity
                                 onPress={() => {
                                     hapticLight();
                                     setIsBreathingOpen(false);
@@ -209,5 +209,5 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                                     borderColor: colors.border,
                                     borderWidth: 1,
                                 }}
-                                                            <X size={24} color={colors.text} /                            ></TouchableOpacity                        </HStack                    </Box                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}                        <BreathGuide onComplete={completeBreathingReset} /                    ></ScrollView                </Box            </Modal        </Box    );
+                                                            <X size={24} color={colors.text} /                            ></TouchableOpacity                        ></HStack                    ></Box                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}                        <BreathGuide onComplete={completeBreathingReset} /                    ></ScrollView                </Box            </Modal        </Box    );
 }

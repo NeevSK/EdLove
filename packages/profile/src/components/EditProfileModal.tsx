@@ -141,35 +141,35 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
     };
 
     return (
-        <Modal
+        <Modal>
             animationType="slide"
             transparent={true}
             visible={visible}
             onRequestClose={onClose}>
         
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <Box style={styles.overlay}>
-                    <KeyboardAvoidingView
+                    <KeyboardAvoidingView>
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        style={{ width: '100%', height: '100%', justifyContent: 'flex-end' }}>
+                        style={{ width: '100%', height: '100%', justifyContent: 'flex-end' }}
                     
-                        <Box style={[styles.modalContent, { backgroundColor: glass.modal.bg, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: glass.modal.border }]}
+                        <Box style={[styles.modalContent, { backgroundColor: glass.modal.bg, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: glass.modal.border }]}>
                             {/* Header */}>
-                            <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}
+                            <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}>
                                 <Heading {...({ color: text.primary, size: "lg" } as any)}>
                                     {t('profile.settings')}
                                 </Heading>
-                                <Pressable
+                                <Pressable>
                                     onPress={onClose}
-                                    sx={{ padding: Theme.spacing.xs }}>
+                                    sx={{ padding: Theme.spacing.xs }}
                                 
                                     <X color={text.muted} size={24} /
                                 ></Pressable>
                             </HStack>
 
-                            <VStack space="xl"
+                            <VStack space="xl">
                                 {/* Photo Edit Section */}>
-                                <Center
+                                <Center>
                                     <Box>
                                         ><Image
                                             source={{ uri: avatarUrl || 'https://via.placeholder.com/150' }}
@@ -179,7 +179,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 height: 100,
                                                 borderRadius: "$full" as any,
                                                 borderWidth: 2,
-                                                borderColor: accent.action>
+                                                borderColor: accent.action
                                             }}
                                         /
                                         ><Pressable
@@ -192,19 +192,19 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 padding: 8,
                                                 borderRadius: 20,
                                                 borderWidth: 1,
-                                                borderColor: accent.action>
+                                                borderColor: accent.action
                                             }}
                                         
                                             <Camera size={16} color={accent.action} /
                                         ></Pressable>
                                     </Box>
-                                    <Text {...({ color: text.muted, size: "xs", mt: "$2" } as any)}
+                                    <Text {...({ color: text.muted, size: "xs", mt: "$2" } as any)}>
                                         {t('profile.tapToChange')}>
                                     </Text>
                                 </Center>
 
                                 {/* Name Input */}
-                                <VStack space="xs"
+                                <VStack space="xs">
                                     <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.fullName')}</Text
                                     ><Input
                                         size="xl"
@@ -213,7 +213,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         isInvalid={false}
                                         isDisabled={loading}>
                                     
-                                        <InputField
+                                        <InputField>
                                             {...({ color: text.primary } as any)}
                                             value={fullName}
                                             onChangeText={setFullName}
@@ -224,7 +224,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                 </VStack>
 
                                 {/* Phone Input */}
-                                <VStack space="xs"
+                                <VStack space="xs">
                                     <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.phone') || 'Phone Number'}</Text
                                     ><Input
                                         size="xl"
@@ -233,7 +233,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         isInvalid={false}
                                         isDisabled={loading}>
                                     
-                                        <InputField
+                                        <InputField>
                                             {...({ color: text.primary } as any)}
                                             value={phone}
                                             onChangeText={setPhone}
@@ -245,7 +245,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                 </VStack>
 
                                 {/* Bio Input */}
-                                <VStack space="xs"
+                                <VStack space="xs">
                                     <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.bio') || 'Bio'}</Text
                                     ><Input
                                         size="xl"
@@ -254,7 +254,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         isInvalid={false}
                                         isDisabled={loading}>
                                     
-                                        <InputField
+                                        <InputField>
                                             {...({ color: text.primary } as any)}
                                             value={bio}
                                             onChangeText={setBio}
@@ -268,7 +268,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                 {/* NIC Number (Staff) */}
                                 {ability.can('update', 'TeacherProfile') && (
-                                    <VStack space="xs"
+                                    <VStack space="xs">
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.nicNumber') || 'NIC Number'}</Text
                                         ><Input
                                             size="xl"
@@ -276,7 +276,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                             isDisabled={loading}>
                                         
-                                            <InputField
+                                            <InputField>
                                                 {...({ color: text.primary } as any)}
                                                 value={nicNumber}
                                                 onChangeText={setNicNumber}
@@ -289,7 +289,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                 {/* Index Number (Students) */}
                                 {ability.can('update', 'StudentProfile') && (
-                                    <VStack space="xs"
+                                    <VStack space="xs">
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.indexNumber') || 'Index Number'}</Text
                                         ><Input
                                             size="xl"
@@ -297,7 +297,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                             isDisabled={loading}>
                                         
-                                            <InputField
+                                            <InputField>
                                                 {...({ color: text.primary } as any)}
                                                 value={indexNumber}
                                                 onChangeText={setIndexNumber}
@@ -310,30 +310,30 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
 
                                 {/* Role Selector (Developer Mode) */}
-                                <Box
+                                <Box>
                                     <Text >{...({ color: text.secondary, size: "sm", mb: "$1" } as any)}>{t('profile.role')} (Developer Access)</Text
                                     ><Select
                                         selectedValue={selectedRole || 'student'}
                                         onValueChange={(value: string | null) => setSelectedRole(value as Role)}
                                     
-                                        <SelectTrigger
+                                        <SelectTrigger>
                                             variant="outline"
                                             size="xl"
-                                            style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}>
+                                            style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                         
-                                            <SelectInput
+                                            <SelectInput/>
                                                 placeholder="Select role">
                                                 {...({ color: text.primary } as any)}
                                             /
                                             ><SelectIcon mr="$3" as={ChevronDown} color={text.muted} /
                                         ></SelectTrigger>
-                                        <SelectPortal
-                                            <SelectBackdrop />
-                                            <SelectContent
+                                        <SelectPortal>
+                                            <SelectBackdrop >/>
+                                            <SelectContent>
                                                 <SelectDragIndicatorWrapper>
                                                     ><SelectDragIndicator /
                                                 ></SelectDragIndicatorWrapper>
-                                                <SelectItem label={t('role.student')} value="student" /
+                                                <SelectItem label={t('role.student')} value="student" />
                                                 <SelectItem label={t('role.teacher')} value="teacher" />
                                                 ><SelectItem label={t('role.section_head')} value="sectionHead" /
                                                 ><SelectItem label={t('role.grade_head')} value="gradeHead" />
@@ -345,7 +345,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                 </Box>
 
                                 {/* Action Buttons */}
-                                <Button
+                                <Button>
                                     size="xl"
                                     variant="solid"
                                     action="primary"
@@ -353,11 +353,11 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     onPress={handleSave}
                                     style={{
                                         backgroundColor: accent.action,
-                                        borderRadius: Theme.corners.comfortable>
+                                        borderRadius: Theme.corners.comfortable
                                     }}
                                 
-                                    <ButtonText {...({ color: text.inverse } as any)}
-                                        {loading ? t('common.processing') : t('common.save')}>
+                                    <ButtonText {...({ color: text.inverse } as any)}>
+                                        {loading ? t('common.processing') : t('common.save')}
                                     </ButtonText>
                                     {!loading && <Save size={20} color={text.inverse} style={{ marginLeft: 8 }} />}
                                 </Button>

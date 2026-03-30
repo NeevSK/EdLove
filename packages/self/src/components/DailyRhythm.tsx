@@ -82,7 +82,7 @@ function DailyRhythmContent() {
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>{t('self.missingFields')}</ToastTitle
                     ></Toast
-                )
+                >)
             });
             return;
         }
@@ -109,7 +109,7 @@ function DailyRhythmContent() {
                     <Toast nativeID={id} action="success" variant="solid">
                         <ToastTitle>{t('self.timetableUpdated')}</ToastTitle
                     ></Toast
-                )
+                >)
             });
         } catch (err) {
             // Error handled in hook/toast
@@ -186,14 +186,14 @@ function DailyRhythmContent() {
                     
                         <Plus size={20} color={Theme.colors.sanctuarySaffron} /
                     ></Button
-                    <Button>
+                    ><Button>
                         variant="link"
                         onPress={() => setShowFullWeek(true)}
                         sx={{ paddingRight: 0 }}
                     
                         <Maximize2 size={20} color={Theme.colors.sanctuarySaffron} /
                     ></Button
-                </HStack>
+                ></HStack>
             </HStack>
 
             {/* List */}
@@ -203,7 +203,7 @@ function DailyRhythmContent() {
                     ><SkeletonCard height={80} /
                     ><SkeletonCard height={80} /
                 ></VStack
-            ) : periods.length === 0 ? (
+            >) : periods.length === 0 ? (
                 <PositiveInvitation>
                     icon={Clock}
                     title={t('self.noClasses')}
@@ -288,7 +288,7 @@ function DailyRhythmContent() {
                             {editingPeriod?.id ? t('self.editPeriod') : t('self.newPeriod')}
                         </Heading>
                         <ModalCloseButton>
-                            <CloseIcon >color={Theme.colors.mistGray} /
+                            <CloseIcon />color={Theme.colors.mistGray} /
                         ></ModalCloseButton
                     ></ModalHeader>
                     <ModalBody>
@@ -303,7 +303,7 @@ function DailyRhythmContent() {
                             ></Input>
                             <Input>
                                 <InputField
-                                    >placeholder={t('self.classPlaceholder')}
+                                    />placeholder={t('self.classPlaceholder')}
                                     value={editingPeriod?.class_name || ''}
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, class_name: val })}
                                     color={Theme.colors.sacredWhite}
@@ -312,7 +312,7 @@ function DailyRhythmContent() {
 
                             <HStack space="md">
                                 <Input style={{ flex: 1 }}>
-                                    <InputField>
+                                    <InputField/>
                                         placeholder={t('self.startPlaceholder')}
                                         value={editingPeriod?.start_time || ''}
                                         onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, start_time: val })}
@@ -320,14 +320,14 @@ function DailyRhythmContent() {
                                     /
                                 ></Input
                                 ><Input style={{ flex: 1 }}
-                                    <InputField>
+                                    <InputField/>
                                         placeholder={t('self.endPlaceholder')}
                                         value={editingPeriod?.end_time || ''}
                                         onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, end_time: val })}
                                         color={Theme.colors.sacredWhite}
                                     /
                                 ></Input
-                            </HStack>
+                            ></HStack>
 
                             <Select>
                                 selectedValue={editingPeriod?.type}
@@ -337,14 +337,14 @@ function DailyRhythmContent() {
                                     <SelectInput placeholder={t('self.type')} color={Theme.colors.sacredWhite} /
                                     ><SelectIcon as={ChevronDown} mr="$3" /
                                 ></SelectTrigger
-                                <SelectPortal>
+                                ><SelectPortal>
                                     <SelectBackdrop />
                                     <SelectContent>
                                         <SelectItem >label={t('self.subject')} value="subject" /
                                         ><SelectItem label={t('self.relief')} value="relief" /
                                         ><SelectItem label={t('self.interval')} value="interval" /
-                                    ></SelectContent
-                                </SelectPortal>
+                                    /></SelectContent
+                                ></SelectPortal>
                             </Select>
 
                             <HStack space="md" mt="$4">
@@ -358,7 +358,7 @@ function DailyRhythmContent() {
                                         <Trash size={18} color={Theme.colors.emberRed} /
                                         ><ButtonText ml="$2" color={Theme.colors.emberRed}>{t('common.delete')}</ButtonText
                                     ></Button
-                                )}
+                                >)}
                                 <Button>
                                     action="primary"
                                     sx={{ flex: 2, backgroundColor: Theme.colors.sanctuarySaffron }}
@@ -380,5 +380,5 @@ export default function DailyRhythm() {
         <ErrorBoundary name="Daily Rhythm">
             <DailyRhythmContent /
         ></ErrorBoundary
-    );
+    >);
 }

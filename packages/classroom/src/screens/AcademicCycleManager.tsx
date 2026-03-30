@@ -135,7 +135,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     ><SkeletonCard height={100} /
                     ><SkeletonCard height={100} /
                 ></VStack
-            </Box>
+            ></Box>
         );
     }
 
@@ -148,7 +148,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <Pressable onPress={() => setShowAddForm(!showAddForm)}
                         <Plus size={24} color={colors.action} /
                     ></Pressable
-                }
+                >}
             /
 
             <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
@@ -189,7 +189,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         ><Input variant="underlined"
                                             <InputField value={endDate} onChangeText={setEndDate} placeholder="YYYY-MM-DD" /
                                         ></Input
-                                    </VStack>
+                                    ></VStack>
                                 </HStack>
 
                                 <HStack space="md" alignItems="center">
@@ -198,7 +198,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                             {isCurrent ? <CheckCircle2 size={18} color={colors.success} /> : <Circle size={18} color={colors.textTertiary} />}
                                             <Text sx={{ fontSize: 13, color: colors.text }}>Set as Current Cycle</Text
                                         ></HStack
-                                    </Pressable>
+                                    ></Pressable>
                                 </HStack>
 
                                 <Button>
@@ -222,7 +222,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                 <Calendar size={48} color={colors.textTertiary} strokeWidth={1} /
                                 ><Text sx={{ marginTop: Theme.spacing.md, color: colors.textSecondary }}>No cycles defined yet.</Text
                             ></Box
-                        ) : (
+                        >) : (
                             cycles.map((cycle) => (
                                 <Box>
                                     key={cycle.id}
@@ -262,11 +262,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                                 <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}
                                                     <CheckCircle2 size={20} color={colors.textTertiary} /
                                                 ></TouchableOpacity
-                                            )}
+                                            >)}
                                             <TouchableOpacity onPress={() => handleDelete(cycle.id)}
                                                 <Trash2 size={20} color={colors.error} /
                                             ></TouchableOpacity
-                                        </HStack>
+                                        ></HStack>
                                     </HStack>
                                 </Box>
                             ))

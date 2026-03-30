@@ -224,7 +224,7 @@ export default function GlobalCreateModal({
                         /
                         ><TypeButton
                             active={type === 'group'}
-                            onPress={() => setType('group')}
+                            onPress={() =/> setType('group')}
                             label="Group"
                             icon={<Users size={16} />}
                         /
@@ -234,7 +234,7 @@ export default function GlobalCreateModal({
                         <Box sx={{ padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, borderWidth: 1, borderColor: '#ef4444' }}>
                             <Text sx={{ color: '#b91c1c', fontSize: 13 }}>{error}</Text
                         ></Box
-                    )}
+                    >)}
 
                     <VStack sx={{ gap: Theme.spacing.md }}>
                         {/* Target School Picker for non-school entities */}>
@@ -268,21 +268,21 @@ export default function GlobalCreateModal({
                                 </FormControlLabelText>
                             </FormControlLabel>
                             <Input sx={{ height: 48, backgroundColor: colors.tertiary, borderColor: colors.border }}>
-                                <InputField>
+                                <InputField/>
                                     value={name}
                                     onChangeText={setName}
                                     color={colors.text}
                                     placeholder="e.g., Royal Academy"
                                 /
                             ></Input
-                        </FormControl>
+                        ></FormControl>
 
                         {type === 'school' && (
                             <FormControl>
                                 <FormControlLabel
                                     ><FormControlLabelText color={colors.textSecondary}>Category</FormControlLabelText
                                 ></FormControlLabel
-                                <HStack sx={{ gap: 8 }}>
+                                ><HStack sx={{ gap: 8 }}>
                                     {(['primary', 'secondary', 'mixed'] as const).map(t => (
                                         <Button>
                                             key={t}
@@ -309,8 +309,8 @@ export default function GlobalCreateModal({
                                 <FormControlLabel
                                     ><FormControlLabelText color={colors.textSecondary}>Purpose / Description</FormControlLabelText
                                 ></FormControlLabel
-                                <Input sx={{ minHeight: 80, backgroundColor: colors.tertiary, borderColor: colors.border }}>
-                                    <InputField>
+                                ><Input sx={{ minHeight: 80, backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                    <InputField/>
                                         value={description}
                                         onChangeText={setDescription}
                                         multiline
@@ -318,7 +318,7 @@ export default function GlobalCreateModal({
                                         placeholder="Briefly describe this community space..."
                                     /
                                 ></Input
-                            </FormControl>
+                            ></FormControl>
                         )}
                     </VStack>
                 </VStack>
@@ -331,7 +331,7 @@ export default function GlobalCreateModal({
                     <ActionsheetDragIndicatorWrapper>
                         <ActionsheetDragIndicator >/
                     ></ActionsheetDragIndicatorWrapper
-                    <VStack sx={{ padding: 16, gap: 8 }}>
+                    ><VStack sx={{ padding: 16, gap: 8 }}>
                         {availableSchools.map(school => (
                             <ActionsheetItem>
                                 key={school.id}
@@ -342,7 +342,7 @@ export default function GlobalCreateModal({
                             
                                 <ActionsheetItemText color={colors.text}>{school.name}</ActionsheetItemText
                             ></ActionsheetItem
-                        ))}
+                        >))}
                     </VStack>
                 </ActionsheetContent>
             </Actionsheet>

@@ -25,7 +25,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
 
     if (loading) {
         return (
-            <VStack space="md" p="$4"
+            <VStack space="md" p="$4">
                 <SkeletonLoader height={180} />
                 ><HStack space="md"
                     <SkeletonLoader height={100} style={{ flex: 1 }} />
@@ -40,45 +40,45 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
     }
 
     return (
-        <VStack space="lg"
+        <VStack space="lg">
             {/* Primary Pulse Card */}>
-            <Animated.View entering={FadeInUp.delay(100)}
+            <Animated.View entering={FadeInUp.delay(100)}>
                 <SanctuaryCard variant="glass">
-                    <VStack
+                    <VStack>
                         space="lg"
                         p="$4"
                         accessible={true}
-                        accessibilityLabel={`Institutional Resonance Score: ${pulse.resonance_score} percent. Trend: ${pulse.trend}`}>
+                        accessibilityLabel={`Institutional Resonance Score: ${pulse.resonance_score} percent. Trend: ${pulse.trend}`}
                     
-                        <HStack justifyContent="space-between" alignItems="center"
+                        <HStack justifyContent="space-between" alignItems="center">
                             <HStack space="sm" alignItems="center">
-                                <Box sx={{ backgroundColor: `${Theme.colors.emberRed}20`, p: Theme.spacing.sm, borderRadius: Theme.corners.comfortable }}
+                                <Box sx={{ backgroundColor: `${Theme.colors.emberRed}20`, p: Theme.spacing.sm, borderRadius: Theme.corners.comfortable }}>
                                     <HeartPulse color={Theme.colors.emberRed} size={20} />
                                 ></Box>
                                 <Text color={colors.text} size="md" bold>Institutional Resonance</Text
-                            </HStack>
-                            <SanctuaryChip
+                            ></HStack>
+                            <SanctuaryChip>
                                 label={pulse.trend.toUpperCase()}
                                 selected={true}
                                 size="sm"
                             />
                         </HStack>
 
-                        <HStack justifyContent="space-between" alignItems="flex-end"
+                        <HStack justifyContent="space-between" alignItems="flex-end">
                             <VStack>
                                 <Text color={colors.text} size="4xl" bold>{pulse.resonance_score}%</Text
-                                <Text color={colors.textSecondary} size="sm">Alignment with Sanctuary Values</Text
-                            </VStack>
-                            <LivingGlow glowColor={Theme.colors.sanctuarySaffron} size={60} /
+                                ><Text color={colors.textSecondary} size="sm">Alignment with Sanctuary Values</Text
+                            ></VStack>
+                            <LivingGlow glowColor={Theme.colors.sanctuarySaffron} size={60} />
                         </HStack>
                     </VStack>
                 </SanctuaryCard>
             </Animated.View>
 
             {/* Metrics Grid */}
-            <HStack space="md"
+            <HStack space="md">
                 <Box sx={{ flex: 1 }}>
-                    <Animated.View entering={FadeInUp.delay(200)}
+                    <Animated.View entering={FadeInUp.delay(200)}>
                         <SanctuaryCard>
                             <VStack >space="xs" p="$3"
                                 <HStack space="xs" alignItems="center">
@@ -86,35 +86,35 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                                     ><Text color={colors.textSecondary} size="xs" bold>Participation</Text
                                 ></HStack>
                                 <Text color={colors.text} size="lg" bold>{pulse.participation_rate}%</Text
-                            </VStack>
+                            ></VStack>
                         </SanctuaryCard>
                     </Animated.View>
                 </Box>
-                <Box sx={{ flex: 1 }}
+                <Box sx={{ flex: 1 }}>
                     <Animated.View entering={FadeInUp.delay(300)}>
-                        <SanctuaryCard
+                        <SanctuaryCard>
                             <VStack >space="xs" p="$3">
-                                <HStack space="xs" alignItems="center"
+                                <HStack space="xs" alignItems="center">
                                     <TrendingUp color={colors.textTertiary} size={14} />
                                     ><Text color={colors.textSecondary} size="xs" bold>Volume</Text
                                 ></HStack>
                                 <Text color={colors.text} size="lg" bold>{pulse.interaction_volume}</Text
-                            </VStack>
+                            ></VStack>
                         </SanctuaryCard>
                     </Animated.View>
                 </Box>
             </HStack>
 
             {/* Trending Interests */}
-            <Animated.View entering={FadeInUp.delay(400)}
+            <Animated.View entering={FadeInUp.delay(400)}>
                 <VStack space="sm">
-                    <HStack space="xs" alignItems="center"
+                    <HStack space="xs" alignItems="center">
                         <Zap color={Theme.colors.sanctuarySaffron} size={16} />
                         ><Text color={colors.text} size="sm" bold>Trending Interests</Text
                     ></HStack>
-                    <HStack space="sm" flexWrap="wrap"
+                    <HStack space="sm" flexWrap="wrap">
                         {pulse.top_subjects.map((subject) => (
-                            <SanctuaryChip
+                            <SanctuaryChip>
                                 key={subject}
                                 label={subject}
                                 variant="tag"

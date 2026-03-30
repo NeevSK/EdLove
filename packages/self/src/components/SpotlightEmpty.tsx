@@ -15,25 +15,25 @@ interface SpotlightEmptyProps {
  */
 export const SpotlightEmpty: React.FC<SpotlightEmptyProps> = ({ date, onAction }) => {
     return (
-        <View style={styles.container}
-            <View style={styles.iconContainer}
-                <Sparkles size={40} color="rgba(246, 191, 140, 0.3)" /
-            </View
+        <View style={styles.container}>
+            <View style={styles.iconContainer}>
+                <Sparkles size={40} color="rgba(246, 191, 140, 0.3)" />
+            </View>
             
             <Text style={styles.title}>QUIET RESONANCE</Text
-            <Text style={styles.subtitle}
+            <Text style={styles.subtitle}>
                 No whispers from the past on {new Date(date).toLocaleDateString()}.
-            </Text
+            </Text>
             
-            <Text style={styles.description}
+            <Text style={styles.description}>
                 Every quiet moment is a canvas. Start a new thread in your journey today.
-            </Text
+            </Text>
 
-            <TouchableOpacity style={styles.button} onPress={onAction}
-                <Plus size={18} color="#000" /
+            <TouchableOpacity style={styles.button} onPress={onAction}>
+                <Plus size={18} color="#000" />
                 <Text style={styles.buttonText}>CREATE RESONANCE</Text
-            </TouchableOpacity
-        </View
+            ></TouchableOpacity>
+        </View>
     );
 };
 

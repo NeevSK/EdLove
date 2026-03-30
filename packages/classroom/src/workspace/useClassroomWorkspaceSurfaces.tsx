@@ -94,13 +94,13 @@ export function useClassroomWorkspaceSurfaces({
         }
 
         return (
-            <                <FeatureGuard action="read" subject="TeacherPulse"                    <SanctuaryNudge
+            <                <FeatureGuard >action="read" subject="TeacherPulse"                    <SanctuaryNudge
                         title={t('classroom.nudges.breathing.title') || 'Feeling Overwhelmed?'}
                         description={t('classroom.nudges.breathing.message') || 'Take a 60-second breathing reset to center yourself before your next session.'}
                         actionLabel={t('classroom.nudges.breathing.action') || 'Start Reset'}
                         onAction={() => setBreathingOpen(true)}
                         icon={Wind}
-                    /                ></FeatureGuard                <FeatureGuard action="read" subject="PrincipalPulse"                    <SanctuaryNudge
+                    /                ></FeatureGuard                ><FeatureGuard action="read" subject="PrincipalPulse"                    <SanctuaryNudge
                         title={t('principal.nudges.breathing.title') || 'Leadership Clarity'}
                         description={t('principal.nudges.breathing.message') || 'Principals carry the weight of the institution. A minute of breathing restores focus.'}
                         actionLabel={t('principal.nudges.breathing.action') || 'Pause & Breathe'}
@@ -129,13 +129,13 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'PrincipalDashboard')) {
             const principalContent =
                 !schoolIdToUse && !isDemoModeTriggered ? (
-                    <PrincipalOnboardingView>
+                    <PrincipalOnboardingView/>
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onCreateSchool={() => setIsCreateSchoolOpen(true)}
                         onJoinSchool={() => navigation.navigate('Search' as any)}
                     /                >) : (
-                    <PrincipalDashboard>
+                    <PrincipalDashboard/>
                         schoolId={schoolIdToUse || 'demo-school'}
                         userId={classroomData.userId}
                         onRefresh={fetchRoleData}
@@ -212,7 +212,7 @@ export function useClassroomWorkspaceSurfaces({
                                 schoolId={schoolIdToUse || undefined}
                                 userId={classroomData.userId}
                                 onRefresh={fetchRoleData}
-                            /                        ></Box                    </ScreenWrapper                );
+                            /                        ></Box                    ></ScreenWrapper                >);
 
             surfaces.push({
                 surfaceId: 'teacher',
@@ -247,7 +247,7 @@ export function useClassroomWorkspaceSurfaces({
                                 schoolId={schoolIdToUse || undefined}
                                 userId={classroomData.userId}
                                 onRefresh={fetchRoleData}
-                            /                        ></Box                    </ScreenWrapper                );
+                            /                        ></Box                    ></ScreenWrapper                >);
 
             surfaces.push({
                 surfaceId: 'student',

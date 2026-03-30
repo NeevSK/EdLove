@@ -144,7 +144,7 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                /              ></View            );
+                /              ></View            >);
           })}
         </View        >
         {/* Center point */}
@@ -176,9 +176,9 @@ export function RadarChart({
               ]}
                           <Text style={styles.labelText}                {point.label}>
               </Text              ><Text style={styles.labelValue}                {point.value}>
-              </Text            ></View          );
+              </Text            ></View          >);
         })}
-      </View    </Card  );
+      </View    ></Card  >);
 }
 
 // Spider Chart (similar to radar but with connected points)
@@ -282,8 +282,8 @@ export function SpiderChart({
                   }
                 ]}
                               <Text style={styles.pointLabel}                  {point.label}>
-                </Text                <Text style={styles.pointValue}                  {point.value}>
-                </Text              ></View            </View          );
+                </Text                ><Text style={styles.pointValue}                  {point.value}>
+                </Text              ></View            ></View          >);
         })}
         
         {/* Center point */}
@@ -292,7 +292,7 @@ export function SpiderChart({
           top: centerY - 4,
           width: 8,
           height: 8
-        }]} /      ></View    </Card  );
+        }]} /      ></View    ></Card  >);
 }
 
 const styles = StyleSheet.create({

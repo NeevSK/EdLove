@@ -76,7 +76,7 @@ export default function FullProfileScreenWeb() {
     };
 
     return (
-        <ScreenWrapper scroll={false}            <GlobalHeader
+        <ScreenWrapper scroll={false}            <GlobalHeader>
                 title={t('profile.fullProfile')}
                 showBack
                 onBack={() => navigation.goBack()}
@@ -96,13 +96,13 @@ export default function FullProfileScreenWeb() {
                             /                            ><VStack                                <Heading >size="xl">{profile.full_name}</Heading                                ><Text color={colors.textTertiary}>@{profile.username || 'no-handle'}</Text                                >{isTeacherProfile && profile.school_id ? (
                                     <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} /                                >) : null}
                             </VStack                        </HStack>
-                        <Box
+                        <Box>
                             sx={{
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.generous,
                                 padding: '$6',
                                 borderWidth: 1,
-                                borderColor: colors.border,>
+                                borderColor: colors.border,
                             }}
                                                     <Heading size="md" mb="$4">{t('profile.personalDetails')}</Heading                            ><VStack space="lg"                                <EditableItem
                                     icon={UserIcon}
@@ -119,7 +119,7 @@ export default function FullProfileScreenWeb() {
                                     onSave={handleSave}
                                     disabled={isOtherProfile}
                                 /                            ></VStack                        </Box
-                        <ContactLinktree
+                        <ContactLinktree>
                             links={socialLinks || []}
                             userName={profile.full_name}
                             bio={profile.bio}
@@ -130,14 +130,14 @@ export default function FullProfileScreenWeb() {
                             <SanctuaryButton onPress={() => setShowSocialModal(true)}                                <HStack space="sm" alignItems="center"                                    <Edit3 size={18} color="white" /                                    ><Text color="white" bold>Manage Social Links</Text                                ></HStack                            </SanctuaryButton                        )}
                     </VStack                </Box            </ScrollView
             {!isOtherProfile && (
-                <AddSocialLinkModal
+                <AddSocialLinkModal>
                     visible={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
                 /            >)}
 
             {isOtherProfile && currentUserId && (
-                <GiveThuthimalModal
+                <GiveThuthimalModal>
                     isOpen={showThuthimalModal}
                     onClose={() => setShowThuthimalModal(false)}
                     recipientId={profile.id}

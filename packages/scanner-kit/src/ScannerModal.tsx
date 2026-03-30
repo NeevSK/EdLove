@@ -143,22 +143,22 @@ export default function ScannerModal({
 
   if (!permission.granted) {
     return (
-      <Modal visible={visible} animationType="slide" transparent
+      <Modal visible={visible} animationType="slide" transparent>
         <View style={styles.container}>
-          <View style={styles.permissionContainer}
+          <View style={styles.permissionContainer}>
             <View style={{ gap: 10, alignItems: "center" }}>
-              <Text style={{ textAlign: "center", color: "#fff" }}
+              <Text style={{ textAlign: "center", color: "#fff" }}>
                 {t("scanner.permission.message")}>
               </Text>
-              <TouchableOpacity
+              <TouchableOpacity>
                 onPress={requestPermission}
-                style={[styles.button, { backgroundColor: accentColor }]}>
+                style={[styles.button, { backgroundColor: accentColor }]}
               
-                <Text style={styles.buttonText}
+                <Text style={styles.buttonText}>
                   {t("scanner.permission.grant")}>
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={onClose}
+              <TouchableOpacity onPress={onClose}>
                 <Text style={{ color: "#888" }}>{t("common.cancel")}</Text
               ></TouchableOpacity>
             </View>
@@ -169,20 +169,20 @@ export default function ScannerModal({
   }
 
   return (
-    <Modal
+    <Modal>
       visible={visible}
       animationType="slide"
       onRequestClose={onClose}
       presentationStyle="pageSheet">
     
-      <View style={styles.container}
-        <CameraView
+      <View style={styles.container}>
+        <CameraView>
           style={styles.camera}
           facing={facing}
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={{ barcodeTypes: ["qr"] }}>
+          barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
         
-          <View style={styles.overlay}
+          <View style={styles.overlay}>
             <View style={styles.header}>
               <Text style={styles.heading}>{modalTitle}</Text
               ><TouchableOpacity onPress={onClose} style={styles.closeButton}
@@ -190,14 +190,14 @@ export default function ScannerModal({
               ></TouchableOpacity>
             </View>
 
-            <View style={styles.scannerArea}
+            <View style={styles.scannerArea}>
               {processing ? (>
-                <View
+                <View>
                   style={{
                     backgroundColor: "rgba(0,0,0,0.7)",
                     padding: 20,
                     borderRadius: 10,
-                    alignItems: "center",>
+                    alignItems: "center",
                   }}
                 
                   <ActivityIndicator size="large" color={accentColor} /
@@ -206,32 +206,32 @@ export default function ScannerModal({
                   </Text>
                 </View>
               ) : galleryError ? (
-                <View
+                <View>
                   style={{
                     backgroundColor: "rgba(220,50,50,0.85)",
                     padding: 14,
                     borderRadius: 10,
-                    maxWidth: 260,>
+                    maxWidth: 260,
                   }}
                 
-                  <Text
+                  <Text>
                     style={{
                       color: "white",
                       textAlign: "center",
-                      fontSize: 13,>
+                      fontSize: 13,
                     }}
                   
                     {galleryError}
                   </Text>
-                  <TouchableOpacity
+                  <TouchableOpacity>
                     onPress={() => setGalleryError(null)}
                     style={{ marginTop: 8, alignSelf: "center" }}
                   
-                    <Text
+                    <Text>
                       style={{
                         color: "white",
                         textDecorationLine: "underline",
-                        fontSize: 12,>
+                        fontSize: 12,
                       }}
                     
                       {t("scanner.dismiss")}
@@ -239,34 +239,34 @@ export default function ScannerModal({
                   </TouchableOpacity>
                 </View>
               ) : (
-                <Text style={styles.instructionText}
+                <Text style={styles.instructionText}>
                   {t("scanner.instructions")}>
                 </Text>
               )}
             </View>
 
-            <View style={styles.controls}
-              <TouchableOpacity
+            <View style={styles.controls}>
+              <TouchableOpacity>
                 onPress={pickImage}
                 style={[styles.controlButton, { marginRight: 20 }]}
                 disabled={processing}>
               
                 <Text style={{ fontSize: 24 }}>\uD83D\uDDBC</Text
-                <Text
-                  style={[styles.controlLabel, processing && { color: "gray" }]}>
+                ><Text>
+                  style={[styles.controlLabel, processing && { color: "gray" }]}
                 
                   {t("scanner.controls.gallery")}
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
+              <TouchableOpacity>
                 onPress={toggleCameraFacing}
                 style={styles.controlButton}
                 disabled={processing}>
               
                 <Text style={{ fontSize: 24 }}>\uD83D\uDD04</Text
-                <Text
-                  style={[styles.controlLabel, processing && { color: "gray" }]}>
+                ><Text>
+                  style={[styles.controlLabel, processing && { color: "gray" }]}
                 
                   {t("scanner.controls.flip")}
                 </Text>

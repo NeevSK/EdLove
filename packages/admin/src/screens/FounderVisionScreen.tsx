@@ -45,17 +45,17 @@ export default function FounderVisionScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.primary }]}            <View style={styles.header}                <HStack justifyContent="space-between" alignItems="center"                    <VStack                        <Text style={styles.title}>Strategic Vision</Text                        <Text style={styles.subtitle}>Mapping the App Topology</Text                    </VStack                    <TouchableOpacity style={styles.shareButton}                        <Share2 size={20} color={Theme.colors.sanctuarySaffron} /                    </TouchableOpacity                </HStack            </View
-            <View style={styles.mappingContainer}                <UniversalPerspective 
+        <View style={[styles.container, { backgroundColor: colors.primary }]}            <View style={styles.header}                <HStack justifyContent="space-between" alignItems="center"                    <VStack                        <Text >style={styles.title}>Strategic Vision</Text                        ><Text style={styles.subtitle}>Mapping the App Topology</Text                    ></VStack                    <TouchableOpacity style={styles.shareButton}                        <Share2 size={20} color={Theme.colors.sanctuarySaffron} /                    </TouchableOpacity                </HStack            </View
+            <View style={styles.mappingContainer}                <UniversalPerspective >
                     topology={appLogicTopology as any}
                     initialPerspective="vastu" // Start as a Mind-map
                     title="Architecture Pulse"
                 /            </View
-            <View style={styles.statsFooter}                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusScroll}                    <StatusPill icon={GitMerge} label="7 Ecosystem Nodes" color={Theme.colors.sanctuarySaffron} /                    <StatusPill icon={Zap} label="High Resonance" color="#4ADE80" /                    <StatusPill icon={Shield} label="RLS Protected" color="#60A5FA" /                </ScrollView            </View        </View    );
+            <View style={styles.statsFooter}                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusScroll}                    <StatusPill icon={GitMerge} label="7 Ecosystem Nodes" color={Theme.colors.sanctuarySaffron} /                    <StatusPill icon={Zap} label="High Resonance" color="#4ADE80" /                    ><StatusPill icon={Shield} label="RLS Protected" color="#60A5FA" /                ></ScrollView            </View        </View    );>
 };
 
 const StatusPill = ({ icon: Icon, label, color }: any) => (
-    <GlassCard style={styles.pill}        <HStack alignItems="center" space="xs"            <Icon size={14} color={color} /            <Text style={styles.pillText}>{label}</Text        </HStack    </GlassCard);
+    <GlassCard style={styles.pill}        <HStack alignItems="center" space="xs"            <Icon size={14} color={color} /            ><Text style={styles.pillText}>{label}</Text        ></HStack    </GlassCard);
 
 const styles = StyleSheet.create({
     container: {

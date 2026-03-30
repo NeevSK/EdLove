@@ -197,17 +197,17 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     const currentInstruction = BREATH_CYCLE[phaseIndex]?.instruction || 'Begin...';
 
     return (
-        <VStack space="lg" sx={{ alignItems: 'center', padding: Theme.spacing.lg }}
+        <VStack space="lg" sx={{ alignItems: 'center', padding: Theme.spacing.lg }}>
             {/* Breath visualization - Lotus Petal */}>
-            <Box
+            <Box>
                 sx={{
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: 250,>
+                    minHeight: 250,
                 }}
             
-                <Animated.View style={petalStyle}
-                    <Box
+                <Animated.View style={petalStyle}>
+                    <Box>
                         sx={{
                             width: 150,
                             height: 150,
@@ -219,7 +219,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                             shadowOffset: { width: 0, height: 0 },
                             shadowOpacity: 0.6,
                             shadowRadius: 20,
-                            elevation: 10,>
+                            elevation: 10,
                         }}
                     
                         <Text style={{ fontSize: 48 }}>\uD83C\uDF38</Text
@@ -229,15 +229,15 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
 
             {/* Instruction text */}
             {isActive && (
-                <VStack space="sm" sx={{ alignItems: 'center' }}
-                    <Text
+                <VStack space="sm" sx={{ alignItems: 'center' }}>
+                    <Text>
                         color={colors.text}
                         size="2xl"
-                        sx={{ fontWeight: typography.fontWeight.semibold }}>
+                        sx={{ fontWeight: typography.fontWeight.semibold }}
                     
                         {currentInstruction}
                     </Text>
-                    <Text
+                    <Text>
                         color={colors.textSecondary}
                         size="sm">
                     
@@ -247,19 +247,19 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             )}
 
             {/* Controls */}
-            <Box sx={{ marginTop: Theme.spacing.lg }}
+            <Box sx={{ marginTop: Theme.spacing.lg }}>
                 {!isActive ? (>
-                    <Button
+                    <Button>
                         size="lg"
                         action="primary"
                         onPress={startSession}
                         sx={{
                             borderRadius: Theme.corners.full,
                             backgroundColor: colors.action,
-                            paddingHorizontal: Theme.spacing.xl,>
+                            paddingHorizontal: Theme.spacing.xl,
                         }}
                     
-                        <Wind
+                        <Wind>
                             color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
@@ -269,11 +269,11 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                         </ButtonText>
                     </Button>
                 ) : (
-                    <Pressable onPress={stopSession}
-                        <Text
+                    <Pressable onPress={stopSession}>
+                        <Text>
                             color={colors.textTertiary}
                             size="sm"
-                            sx={{ textDecorationLine: 'underline' }}>
+                            sx={{ textDecorationLine: 'underline' }}
                         
                             {t('self.stop')}
                         </Text>
@@ -283,19 +283,19 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
 
             {/* Info */}
             {!isActive && (
-                <Box
+                <Box>
                     sx={{
                         marginTop: Theme.spacing.md,
                         padding: Theme.spacing.md,
                         backgroundColor: colors.secondary,
-                        borderRadius: Theme.corners.comfortable,>
+                        borderRadius: Theme.corners.comfortable,
                     }}
                 
-                    <Text
+                    <Text>
                         color={colors.textSecondary}
                         size="xs"
                         textAlign="center"
-                        sx={{ fontStyle: 'italic' }}>
+                        sx={{ fontStyle: 'italic' }}
                     
                         {t('self.breathHero')}
                     </Text>

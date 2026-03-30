@@ -94,8 +94,8 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
     if (hasError || !url) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}
-                <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}
+            <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
+                <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}>
                     Unable to load video. Please check the URL and try again.>
                 </Text>
                 <SanctuaryButton onPress={() => navigation.goBack()} leftIcon={X}
@@ -106,16 +106,16 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: 'black' }}
+        <Box sx={{ flex: 1, backgroundColor: 'black' }}>
             {/* Browser-native <video> element  full codec + PiP support */}
             {/* @ts-ignore  Pressable style={absoluteFill} type mismatch on web */}
-            <Pressable
+            <Pressable>
                 onPress={() => { setShowControls(c => !c); resetHideTimer(); }}
                 style={StyleSheet.absoluteFill}
                 accessibilityLabel="Toggle controls"
             
                 {/* @ts-ignore  'video' is a valid DOM element in react-native-web */}
-                <video
+                <video>
                     ref={videoRef}
                     src={url}
                     style={styles.video as any}
@@ -131,21 +131,21 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
             {/* Overlay controls */}
             {showControls && (
-                <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="box-none"
+                <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="box-none">
                     {/* Header */}>
-                    <View style={styles.header} pointerEvents="auto"
-                        <Pressable
+                    <View style={styles.header} pointerEvents="auto">
+                        <Pressable>
                             onPress={() => navigation.goBack()}
                             accessibilityLabel="Close video"
                             style={styles.closeBtn}
                         
                             <X size={22} color="#fff" /
                         ></Pressable>
-                        <VStack sx={{ flex: 1 }}
+                        <VStack sx={{ flex: 1 }}>
                             <Text style={styles.titleText} numberOfLines={1}>{title}</Text
                             >{creator ? <Text style={styles.creatorText}>{creator}</Text> : null}
                         </VStack>
-                        <Pressable
+                        <Pressable>
                             onPress={handleFullscreen}
                             accessibilityLabel="Enter fullscreen"
                             style={styles.closeBtn}>
@@ -155,12 +155,12 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                     </View>
 
                     {/* Playback buttons */}
-                    <View style={styles.centerRow} pointerEvents="auto"
+                    <View style={styles.centerRow} pointerEvents="auto">
                         <Pressable onPress={() => handleSeekBy(-10)} style={styles.controlBtn} accessibilityLabel="Rewind 10 seconds"
                             <RotateCcw size={28} color="#fff" /
                             ><Text style={styles.seekLabel}>10</Text
                         ></Pressable>
-                        <Pressable onPress={handlePlayPause} style={styles.playBtn} accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
+                        <Pressable onPress={handlePlayPause} style={styles.playBtn} accessibilityLabel={isPlaying ? 'Pause' : 'Play'}>
                             {isPlaying
                                 ? <Pause size={36} color="#fff" fill="#fff" /
                                 >: <Play size={36} color="#fff" fill="#fff" />
@@ -173,10 +173,10 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                     </View>
 
                     {/* Progress bar + timestamps */}
-                    <View style={styles.footer} pointerEvents="auto"
+                    <View style={styles.footer} pointerEvents="auto">
                         <Text style={styles.timeText}>{formatTimeSecs(currentTime)}</Text
                         >{/* @ts-ignore  onClick on div in react-native-web */}
-                        <div
+                        <div>
                             style={styles.progressTrack as any}
                             onClick={handleProgressClick}
                             role="slider"

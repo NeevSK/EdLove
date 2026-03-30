@@ -199,7 +199,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                     <Box sx={{ padding: 40, alignItems: 'center' }}>
                         <Text color={colors.textSecondary}>{t('common.noItemsFound')}</Text
                     ></Box
-                ) : filteredItems.map(item => (
+                >) : filteredItems.map(item => (
                     <Pressable>
                         key={item.id}
                         onPress={() => handleReportIssue(item)}
@@ -281,7 +281,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         ><ModalCloseButton
                             <Icon >as={CloseIcon} /
                         ></ModalCloseButton
-                    </ModalHeader>
+                    ></ModalHeader>
                     <ModalBody>
                         <Text >color={colors.textSecondary} sx={{ marginBottom: Theme.spacing.md }}>
                             {t('classroom.inventory.reportIssue')} for: <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{selectedItem?.name}</Text
@@ -329,7 +329,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         
                             <ButtonText>{t('common.cancel')}</ButtonText
                         ></Button
-                        <Button>
+                        ><Button>
                             action="negative"
                             onPress={() => {
                                 setShowReportModal(false);
@@ -338,7 +338,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         
                             <ButtonText>{t('classroom.inventory.reportDamage')}</ButtonText
                         ></Button
-                    </ModalFooter>
+                    ></ModalFooter>
                 </ModalContent>
             </Modal>
 
@@ -354,7 +354,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         ><ModalCloseButton
                             <Icon >as={CloseIcon} /
                         ></ModalCloseButton
-                    </ModalHeader>
+                    ></ModalHeader>
                     <ModalBody>
                         <VStack >sx={{ gap: Theme.spacing.md }}>
                             <VStack sx={{ gap: 4 }}>
@@ -381,18 +381,18 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                         onChangeText={setRequestQty}
                                     /
                                 ></Input
-                            </VStack>
+                            ></VStack>
                             <VStack sx={{ gap: 4 }}>
                                 <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.reason')}</Text
                                 ><Input
                                     <InputField
-                                        >placeholder={t('classroom.inventory.reasonPlaceholder')}
+                                        />placeholder={t('classroom.inventory.reasonPlaceholder')}
                                         color={colors.text}
                                         value={requestReason}
                                         onChangeText={setRequestReason}
                                     /
                                 ></Input
-                            </VStack>
+                            ></VStack>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
@@ -404,7 +404,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         
                             <ButtonText>{t('common.cancel')}</ButtonText
                         ></Button
-                        <Button>
+                        ><Button>
                             action="primary"
                             onPress={() => {
                                 requestMutation.mutate({
@@ -419,7 +419,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         
                             <ButtonText>{requestMutation.isLoading ? t('classroom.inventory.sending') : t('classroom.inventory.submit')}</ButtonText
                         ></Button
-                    </ModalFooter>
+                    ></ModalFooter>
                 </ModalContent>
             </Modal>
 

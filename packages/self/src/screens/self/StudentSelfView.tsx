@@ -73,10 +73,10 @@ export default function StudentSelfView() {
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}
-            <HStack justifyContent="flex-end" space="xs"
+        <VStack space="lg" sx={{ p: 20 }}>
+            <HStack justifyContent="flex-end" space="xs">
                 {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box 
+                    <Box >
                         key={scale}
                         sx={{ 
                             bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
@@ -87,18 +87,18 @@ export default function StudentSelfView() {
                     
                         <Pressable onPress={() => setScale(scale)}
                             <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text
-                        </Pressable
-                    </Box
+                        ></Pressable>
+                    </Box>
                 ))}
-            </HStack
+            </HStack>
 
-            <JournalSection entries={journalEntries} loading={loadingJournals} /
-            <MoodSection logs={moodHistory} loading={loadingMoods} /
+            <JournalSection entries={journalEntries} loading={loadingJournals} />
+            <MoodSection logs={moodHistory} loading={loadingMoods} />
             <GoalSection goals={[]} loading={false} /> {/* TODO: Connect to actual goals hook if available */}
-            <NatureSection paths={null} loading={false} /
-            <IdentitySection /
-            <TeacherFeedbackSection /
-        </VStack
+            <NatureSection paths={null} loading={false} />
+            <IdentitySection />
+            <TeacherFeedbackSection />
+        </VStack>
     );
 
     const handleMoodSelect = async (mood: any, note: string) => {
@@ -112,8 +112,8 @@ export default function StudentSelfView() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}
-            <BaseSelfView
+        <ScreenWrapper scroll={false} noTopInset={true}>
+            <BaseSelfView>
                 perspective="student"
                 description={t('self.studentDescription', 'A steady space to grow your mind and heart.')}
                 domains={[
@@ -137,12 +137,12 @@ export default function StudentSelfView() {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} /
-                            },
+                            >},
                             {
                                 id: 'wisdom',
                                 label: 'Wisdom Seeds',
                                 content: <WisdomSeeds userId={userId ?? undefined} /
-                            }
+                            >}
                         ]
                     },
                     {
@@ -154,7 +154,7 @@ export default function StudentSelfView() {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
                                 content: (
-                                    <MoodPickerCard
+                                    <MoodPickerCard>
                                         isOpen={isMoodPickerOpen}
                                         onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
                                         onSelect={handleMoodSelect}
@@ -169,19 +169,19 @@ export default function StudentSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}
-                                        <EnergyBarChart
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                        <EnergyBarChart>
                                             bars={forecasts.slice().reverse()}
                                             height={80}
                                         /
-                                    </Box
+                                    </Box>
                                 )
                             },
                             {
                                 id: 'wind-down',
                                 label: 'Restorative Ritual',
                                 content: <WindDownRitual userId={userId ?? undefined} /
-                            }
+                            >}
                         ]
                     },
                     {
@@ -193,33 +193,33 @@ export default function StudentSelfView() {
                                 id: 'daily-rhythm',
                                 label: 'Working Pace',
                                 content: <DailyRhythm /
-                            },
+                            >},
                             {
                                 id: 'progress',
                                 label: 'Growth Tree',
                                 content: <ProgressTree userId={userId ?? undefined} /
-                            },
+                            >},
                             {
                                 id: 'grades',
                                 label: 'Academic Mirror',
                                 content: <MyGradesView userId={userId ?? undefined} /
-                            }
+                            >}
                         ]
                     }
                 ]}
                 sideBar={
-                    <VStack space="lg"
-                        <WarmMirrorCard text={warmMirrorText} /
-                        <ImpactRipplesCard ripples={ripples} /
-                    </VStack
+                    <VStack space="lg">
+                        <WarmMirrorCard text={warmMirrorText} />
+                        <ImpactRipplesCard ripples={ripples} />
+                    </VStack>
                 }
             /
 
 
-            <WelcomeModal
+            <WelcomeModal>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /
-        </ScreenWrapper
+        </ScreenWrapper>
     );
 }

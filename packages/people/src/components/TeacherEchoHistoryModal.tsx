@@ -54,7 +54,7 @@ export default function TeacherEchoHistoryModal({
             borderBottomColor: colors.border,
           }}
                   <HStack justifyContent="space-between" alignItems="center"            <Heading size="lg" color={colors.text}              My Feedback History>
-            </Heading            ><TouchableOpacity onPress={onClose}              <X size={24} color={colors.textTertiary} /            ></TouchableOpacity          ></HStack        </Box        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}          {loading ? (>
+            </Heading            ><TouchableOpacity onPress={onClose}              <X size={24} color={colors.textTertiary} /            ></TouchableOpacity          ></HStack        ></Box        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}          {loading ? (>
             <SkeletonCard /          >) : echoes.length === 0 ? (
             <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}              <Text color={colors.textTertiary} style={{ fontStyle: 'italic', textAlign: 'center' }}                No echoes sent yet. Use the "Principal Echo" action to share feedback.>
               </Text            </Box          ) : (

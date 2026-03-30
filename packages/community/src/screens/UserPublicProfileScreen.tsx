@@ -168,7 +168,7 @@ export default function UserPublicProfileScreen() {
         <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
         ></Box
-      ) : (
+      >) : (
         <ScrollView>
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: Theme.spacing.lg, gap: Theme.spacing.md }}
@@ -201,7 +201,7 @@ export default function UserPublicProfileScreen() {
                     <School color={colors.textTertiary} size={12} /
                     ><Text color={colors.textTertiary} size="xs">{user.school_name}</Text
                   ></HStack
-                )}
+                >)}
               </VStack>
 
               {/* Private Indicator */}
@@ -227,13 +227,13 @@ export default function UserPublicProfileScreen() {
                   /
                   ><Button
                     label={t("community.profile.reportAccount")}
-                    onPress={() => setShowShieldModal(true)}
+                    onPress={() =/> setShowShieldModal(true)}
                     icon={<ShieldAlert size={18} color={colors.textSecondary} />}
                     variant="outline"
                     sx={{ width: '100%' }}
                   /
                 ></VStack
-              )}
+              >)}
             </VStack>
           </SanctuaryCard>
 
@@ -316,5 +316,5 @@ export default function UserPublicProfileScreen() {
         targetUserName={user?.full_name ?? userName}
       /
     ></ScreenWrapper
-  );
+  >);
 }

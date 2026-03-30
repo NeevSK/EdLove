@@ -245,7 +245,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
 
     if (isLoading && activeUserId) {
         return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                 <SkeletonCard height={40} />
                 ><SkeletonCard height={200} /
                 ><HStack space="md" justifyContent="flex-end">
@@ -258,7 +258,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
 
     if (!activeUserId) {
         return (
-            <PositiveInvitation
+            <PositiveInvitation>
                 type="guest"
                 onAction={() => navigation.navigate('Auth' as never)}
             /
@@ -266,31 +266,31 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
     }
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
             {/* Header */}>
-            <VStack space="xs"
+            <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
                     {t('fireJournal.title')}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm"
-                    {isPastView ? t('fireJournal.pastRecord') : t('fireJournal.subtitle')}>
+                <Text color={Theme.colors.mistGray} size="sm">
+                    {isPastView ? t('fireJournal.pastRecord') : t('fireJournal.subtitle')}
                 </Text>
             </VStack>
 
             {/* Success Message */}
             {showSuccess && (
-                <Animated.View entering={FadeIn.duration(Theme.motion.quick)}                    <Box
+                <Animated.View entering={FadeIn.duration(Theme.motion.quick)}                    <Box>
                         sx={{
                             backgroundColor: Theme.colors.sageGreen,
                             padding: Theme.spacing.md,
                             borderRadius: Theme.corners.comfortable,
                             alignItems: 'center',
-                        }}>
+                        }}
                     
-                        <Text
+                        <Text>
                             color={Theme.colors.obsidian}
                             size="md"
-                            sx={{ fontWeight: Theme.typography.fontWeight.semibold }}>
+                            sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
                         
                             {t('fireJournal.released')}
                         </Text>
@@ -298,21 +298,21 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                 </Animated.View            )}
 
             {burnError && (
-                <Box
+                <Box>
                     sx={{
                         backgroundColor: Theme.colors.emberRed,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
-                    }}>
-                                    <Text color={Theme.colors.sacredWhite} size="sm" textAlign="center"                        {burnError}
-                    </Text                </Box            )}>
+                    }}
+                                    <Text color={Theme.colors.sacredWhite} size="sm" textAlign="center"                        {burnError}>
+                    </Text                ></Box            )}>
 
             {/* Text Input Area with Ember Particles */}
-            <Box sx={{ position: 'relative' }}
+            <Box sx={{ position: 'relative' }}>
                 {/* Floating Embers */}>
                 {isBurning && (
                     <
-                        <Animated.View
+                        <Animated.View>
                             style={[
                                 ember1Style,>
                                 {
@@ -360,25 +360,25 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                     ></
                 )}
 
-                <Animated.View style={containerStyle}
-                    <Box
+                <Animated.View style={containerStyle}>
+                    <Box>
                         sx={{
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                             padding: Theme.spacing.md,
                             minHeight: 200,
-                        }}>
+                        }}
                     
-                        <Input
+                        <Input>
                             variant="outline"
                             size="md"
                             sx={{
                                 borderWidth: 0,
                                 flex: 1,
-                            }}>
+                            }}
                             isDisabled={isBurning || isPastView}
                         
-                            <InputField
+                            <InputField>
                                 placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord')) : t('fireJournal.placeholder')}
                                 multiline
                                 value={isPastView ? (journalHistory[0]?.content_preview || '') : content}
@@ -398,9 +398,9 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
             </Box>
 
             {/* Action Buttons */}
-            <HStack space="md" justifyContent="flex-end"
+            <HStack space="md" justifyContent="flex-end">
                 {/* Voice Input (UI only for now) */}>
-                <Button
+                <Button>
                     size="md"
                     variant="link"
                     action="primary"
@@ -411,13 +411,13 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                         width: 48,
                         height: 48,
                         backgroundColor: Theme.colors.ink,
-                    }}>
+                    }}
                 
                     <Mic color={Theme.colors.sanctuarySaffron} size={20} /
                 ></Button>
 
                 {/* Burn Button */}
-                <Button
+                <Button>
                     size="md"
                     action="primary"
                     onPress={handleBurn}
@@ -429,9 +429,9 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             : Theme.colors.sanctuarySaffron,
                         paddingHorizontal: Theme.spacing.lg,
                         paddingVertical: Theme.spacing.md,
-                    }}>
+                    }}
                 
-                    <Flame
+                    <Flame>
                         color={Theme.colors.sacredWhite}
                         size={20}
                         style={{ marginRight: Theme.spacing.sm }}
@@ -443,29 +443,29 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
             </HStack>
 
             {/* Privacy & Guidance Note */}
-            <VStack space="sm"
-                <Box
+            <VStack space="sm">
+                <Box>
                     sx={{
                         backgroundColor: Theme.colors.ink,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
-                    }}>
+                    }}
                 
-                    <Text color={Theme.colors.mistGray} size="xs" textAlign="center"
+                    <Text color={Theme.colors.mistGray} size="xs" textAlign="center">
                         {t('fireJournal.privacy')}>
                     </Text>
                 </Box>
 
-                <Box
+                <Box>
                     sx={{
                         padding: Theme.spacing.sm,
-                    }}>
+                    }}
                 
-                    <Text
+                    <Text>
                         color={Theme.colors.dimGray}
                         size="xs"
                         textAlign="center"
-                        sx={{ fontStyle: 'italic' }}>
+                        sx={{ fontStyle: 'italic' }}
                     
                         {t('fireJournal.guidance')}
                     </Text>

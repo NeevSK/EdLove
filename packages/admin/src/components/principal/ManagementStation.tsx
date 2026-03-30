@@ -38,7 +38,7 @@ function StationAction({
   const colors = useThemedColors();
 
   return (
-    <Pressable
+    <Pressable>
       onPress={() => {
         hapticLight();
         onAction(target);
@@ -50,7 +50,7 @@ function StationAction({
         borderWidth: 1,
         borderColor: colors.border,
       }}
-          <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.md }}        <HStack space="md" alignItems="center" sx={{ flex: 1 }}          <Box
+          <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.md }}        <HStack space="md" alignItems="center" sx={{ flex: 1 }}          <Box>
             sx={{
               width: 40,
               height: 40,
@@ -59,11 +59,11 @@ function StationAction({
               justifyContent: 'center',
               backgroundColor: `${colors.action}14`,
             }}
-                      <LucideIcon size={20} color={colors.action} /          </Box
-          <VStack sx={{ flex: 1 }}            <Text color={colors.text} sx={{ fontSize: 13, fontWeight: '700' }}              {label}
+                      <LucideIcon size={20} color={colors.action} /          ></Box>
+          <VStack sx={{ flex: 1 }}            <Text color={colors.text} sx={{ fontSize: 13, fontWeight: '700' }}              {label}>
             </Text            <Text color={colors.textSecondary} sx={{ fontSize: 11, lineHeight: 16 }}              {description}
             </Text          </VStack        </HStack
-        <ArrowRight size={14} color={colors.textTertiary} /      </HStack    </Pressable  );
+        <ArrowRight size={14} color={colors.textTertiary} /      ></HStack    </Pressable  );>
 }
 
 export default function ManagementStation({ onAction }: ManagementStationProps) {
@@ -71,7 +71,7 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
   const colors = useThemedColors();
 
   return (
-    <Box
+    <Box>
       sx={{
         padding: Theme.spacing.lg,
         backgroundColor: colors.secondary,
@@ -79,14 +79,14 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
         borderWidth: 1,
         borderColor: colors.border,
       }}
-          <VStack space="md"        <VStack sx={{ gap: Theme.spacing.xs }}          <Text
+          <VStack space="md"        <VStack sx={{ gap: Theme.spacing.xs }}          <Text>
             color={Theme.colors.gurudeviViolet}
             sx={{ fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2 }}
                       {t('principal.management.station') || 'Institution Workspace'}
           </Text          <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}            Governance and structure
           </Text          <Text color={colors.textSecondary} sx={{ fontSize: 13, lineHeight: 20 }}            Move from the live school day into the official work of shaping the institution.
           </Text        </VStack
-        <VStack space="sm"          <StationAction
+        <VStack space="sm"          <StationAction>
             icon={LayoutGrid}
             label={t('principal.management.hierarchy') || 'System Hierarchy'}
             description={t('principal.management.hierarchyDesc') || 'Grades, sections, and institutional structure'}
@@ -98,17 +98,17 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
             description={t('principal.management.invitesDesc') || 'Invite principals, teachers, and school roles'}
             target="invites"
             onAction={onAction}
-          /          <StationAction
+          /          ><StationAction
             icon={NotebookPen}
             label={t('principal.management.notes') || 'Institutional Log'}
             description={t('principal.management.notesDesc') || 'Leadership notes, decisions, and official memory'}
             target="notes"
             onAction={onAction}
-          /          <StationAction
+          /          ><StationAction
             icon={Milestone}
             label={t('principal.management.cycles') || 'Academic Cycles'}
             description={t('principal.management.cyclesDesc') || 'Terms, semesters, and year structure'}
             target="cycles"
             onAction={onAction}
-          /        </VStack      </VStack    </Box  );
+          /        ></VStack      </VStack    </Box  );
 }

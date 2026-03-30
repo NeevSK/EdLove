@@ -164,7 +164,7 @@ export default function IdentityCard({
                             : 'gurudevi-guest'
                     }
                     size={120}
-                /            ></Box            <Text color={colors.text} mt={Theme.spacing.md} bold                INVITE
+                /            ></Box            ><Text color={colors.text} mt={Theme.spacing.md} bold                INVITE
             </Text            <Text color={colors.textSecondary} size="xs"                {t('profile.scanToConnect')}
             </Text        </Center    );
 
@@ -201,7 +201,7 @@ export default function IdentityCard({
                             {/* Identification Row */}
                             {(data.nic_number || data.index_number) && (
                                 <Box sx={{ bg: `${colors.action}10`, px: Theme.spacing.sm, py: Theme.spacing.xs, borderRadius: Theme.corners.tight, alignSelf: "flex-start" }}                                    <Text color={colors.action} size="xxs" bold                                        {can('manage', 'StudentDashboard') ? 'INDEX:' : 'NIC:'} {data.nic_number || data.index_number}>
-                                    </Text                                </Box                            )}>
+                                    </Text                                ></Box                            >)}>
                         </VStack                    </HStack
                     <RNImage
                         // eslint-disable-next-line @typescript-eslint/no-require-imports

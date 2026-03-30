@@ -56,14 +56,14 @@ export default function DirectMessagesListScreen() {
         const initials = item.other_user_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
         return (
-            <Animated.View entering={FadeInDown.delay(index * 100).springify()}
-                <TouchableOpacity
+            <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
+                <TouchableOpacity>
                     onPress={() => navigation.navigate('DirectMessage', {
                         conversationId: item.id,
                         userName: item.other_user_name
                     })}
                 
-                    <HStack
+                    <HStack>
                         sx={{
                             padding: Theme.spacing.md,
                             alignItems: 'center',
@@ -73,42 +73,42 @@ export default function DirectMessagesListScreen() {
                             gap: Theme.spacing.md,
                         }}
                     
-                        <Avatar size="md" sx={{ backgroundColor: colors.action }}
+                        <Avatar size="md" sx={{ backgroundColor: colors.action }}>
                             {item.other_user_avatar
                                 ? <AvatarImage source={{ uri: item.other_user_avatar }} alt={item.other_user_name} /
-                                : <AvatarFallbackText>{initials}</AvatarFallbackText
-                            }
-                        </Avatar
+                                >: <AvatarFallbackText>{initials}</AvatarFallbackText
+                            >}
+                        </Avatar>
 
-                        <VStack sx={{ flex: 1 }}
-                            <Text sx={{ fontWeight: '700', color: colors.textPrimary }}
+                        <VStack sx={{ flex: 1 }}>
+                            <Text sx={{ fontWeight: '700', color: colors.textPrimary }}>
                                 {item.other_user_name}
-                            </Text
-                            <Text sx={{ fontSize: 12, color: colors.textTertiary }} numberOfLines={1}
+                            </Text>
+                            <Text sx={{ fontSize: 12, color: colors.textTertiary }} numberOfLines={1}>
                                 Tap to continue conversation
-                            </Text
-                        </VStack
+                            </Text>
+                        </VStack>
 
-                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}
+                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}>
                             {new Date(item.updated_at).toLocaleDateString()}
-                        </Text
-                    </HStack
-                </TouchableOpacity
-            </Animated.View
+                        </Text>
+                    </HStack>
+                </TouchableOpacity>
+            </Animated.View>
         );
     };
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
-            </Box
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            </Box>
         );
     }
 
     return (
-        <Box sx={{ flex: 1 }}
-            <SanctuaryFlashList
+        <Box sx={{ flex: 1 }}>
+            <SanctuaryFlashList>
                 data={conversations}
                 keyExtractor={(item) => item.id}
                 estimatedItemSize={80}
@@ -116,13 +116,13 @@ export default function DirectMessagesListScreen() {
                 onRefresh={onRefresh}
                 refreshing={refreshing}
                 ListEmptyComponent={
-                    <Box sx={{ flex: 1, padding: Theme.spacing.xl, alignItems: 'center', justifyContent: 'center' }}
-                        <Text sx={{ textAlign: 'center', color: colors.textTertiary }}
+                    <Box sx={{ flex: 1, padding: Theme.spacing.xl, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text sx={{ textAlign: 'center', color: colors.textTertiary }}>
                             No messages yet. Start a conversation from a user's profile!
-                        </Text
-                    </Box
+                        </Text>
+                    </Box>
                 }
             /
-        </Box
+        </Box>
     );
 }

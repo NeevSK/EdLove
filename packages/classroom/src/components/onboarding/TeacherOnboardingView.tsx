@@ -58,7 +58,7 @@ export default function TeacherOnboardingView({
                         backgroundColor: 'rgba(212,132,58,0.1)',
                         marginBottom: 12
                     }}                        <Icon as={School} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    ><Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Teacher
-                    </Heading                    <Text sx={{ 
+                    </Heading                    ><Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
                         fontSize: 16,
@@ -90,7 +90,7 @@ export default function TeacherOnboardingView({
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
                                 }}                                    <Icon as={Plus} color="white" size={32} /                                ></Box                                ><VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="md" color={colors.text}>Create New Classroom</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Establish a personal sanctuary for your students, manage lessons, and track holistic growth.
-                                    </Text                                    {isGuest && (
+                                    </Text                                    >{isGuest && (
                                         <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} /                                            ><Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}                                                Requires Signup
                                             </Text                                        </HStack                                    )}
                                 </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
@@ -115,7 +115,7 @@ export default function TeacherOnboardingView({
                                     backgroundColor: colors.border,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                ></Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Join or Search School</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Connect with your institution to access shared resources and school-wide dashboards.
+                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                ></Box                                ><VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Join or Search School</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Connect with your institution to access shared resources and school-wide dashboards.
                                     </Text                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Try Demo Banner */}
                     <Box sx={{ 
@@ -160,7 +160,7 @@ export default function TeacherOnboardingView({
                                     borderRadius: 27
                                 }}
                                                             <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Teacher Sandbox>
-                                </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
+                                </ButtonText                                ><Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        ></VStack                    </Box
                 </VStack>
                 <Text sx={{ 
                     textAlign: 'center', 

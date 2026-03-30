@@ -83,7 +83,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
 
     if (workspace.isLoading) {
         return (
-            <ScreenWrapper                <GlobalHeader >title={classroomName} showBack onBack={() => navigation.goBack()} /                ><VStack sx={{ gap: '$md' as any, padding: '$4' as any }}                    <SkeletonCard height={100} /                    ><HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}                        <SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                    ></HStack                </VStack            </ScreenWrapper        );
+            <ScreenWrapper                <GlobalHeader >title={classroomName} showBack onBack={() => navigation.goBack()} /                ><VStack sx={{ gap: '$md' as any, padding: '$4' as any }}                    <SkeletonCard height={100} /                    ><HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}                        <SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                    ></HStack                ></VStack            </ScreenWrapper        );
     }
 
     const summaryCards = [
@@ -101,7 +101,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                 onBack={() => navigation.goBack()}
             /
             ><ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: bottomPadding }}                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <VStack                        <Text >sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase' }}                            Subject Sanctuary
-                        </Text                        <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.sanctuarySaffron }}                            {classroomName}>
+                        </Text                        ><Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.sanctuarySaffron }}                            {classroomName}>
                         </Heading                        ><Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary, marginTop: Theme.spacing.xs }}                            {workspace.pendingAssignments > 0
                                 ? `${workspace.pendingAssignments} assignment${workspace.pendingAssignments === 1 ? '' : 's'} waiting for your response`
                                 : 'Your submissions and study notes are in rhythm here'}
@@ -117,17 +117,17 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                     minWidth: 82,
                                 }}
                                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                    {card.label}>
-                                </Text                                <Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}                                    {card.value}>
-                                </Text                            ></Box                        ))}
+                                </Text                                ><Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}                                    {card.value}>
+                                </Text                            ></Box                        >))}
                     </HStack                    {workspace.recentSubmissions.length > 0 && (
                         <VStack sx={{ marginTop: Theme.spacing.md, gap: Theme.spacing.xs }}                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                Recent Submissions>
-                            </Text                            {workspace.recentSubmissions.map((submission) => (
+                            </Text                            >{workspace.recentSubmissions.map((submission) => (
                                 <Text key={submission.id} sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}                                    {submission.assignment_title} on {new Date(submission.submitted_at).toLocaleDateString()}>
-                                </Text                            ))}>
+                                </Text                            >))}>
                         </VStack                    >)}
                     {workspace.error && (
                         <Text sx={{ marginTop: Theme.spacing.sm, fontSize: Theme.typography.fontSize.sm, color: colors.error }}                            {workspace.error}>
-                        </Text                    )}>
+                        </Text                    >)}>
                 </Box>
                 <Box sx={{ backgroundColor: colors.secondary, paddingBottom: Theme.spacing.md, paddingTop: Theme.spacing.sm }}                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}                        <HStack sx={{ gap: 12 }}                            {STUDENT_FEATURES.map((f) => {
                                 const Icon = f.icon;
@@ -150,7 +150,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                             })}
                         </HStack                    </ScrollView                </Box
                 <Box flex={1}                    {renderFeatureContent()}>
-                </Box            </ScrollView>
+                </Box            ></ScrollView>
             {submissionModal && (
                 <SubmissionModal>
                     isOpen={true}

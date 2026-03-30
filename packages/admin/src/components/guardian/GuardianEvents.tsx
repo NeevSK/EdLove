@@ -19,7 +19,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
   const isDesktop = screenWidth > 1024;
 
   const renderEventItem = (event: any) => (
-    <TouchableOpacity
+    <TouchableOpacity>
       key={event.id}
       style={[
         styles.eventItem,
@@ -30,7 +30,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
         }
       ]}
       onPress={() => onEventPress(event)}
-          <View style={styles.eventDate}        <Text 
+          <View style={styles.eventDate}        <Text >
           style={[
             styles.eventDateDay,
             { 
@@ -73,7 +73,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
           ]}
                   {event.time} " {event.location}
         </Text      </View      {event.requiresRsvp && (
-        <View style={[
+        <View style={[>
           styles.rsvpBadge,
           { backgroundColor: theme.accent.action + '20' }
         ]}          <Text 
@@ -86,7 +86,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
     </TouchableOpacity  );
 
   return (
-    <View style={styles.eventsList}      {events.slice(0, limit).map(renderEventItem)}
+    <View style={styles.eventsList}      {events.slice(0, limit).map(renderEventItem)}>
     </View  );
 };
 

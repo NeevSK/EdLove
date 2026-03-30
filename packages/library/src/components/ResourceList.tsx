@@ -103,7 +103,7 @@ export function ResourceList({
                         thumbnailUrl={item.media?.url || (item as any).thumbnail_url || (item.type === 'video' || item.type === 'movie_trailer' ? getYoutubeThumbnail(item.url) : undefined)}
                         onPress={() => onOpenResource?.(item)}
                         onLongPress={item.url ? () => onOpenResourceOptions?.(item) : undefined}
-                    /                ></Box            );
+                    /                ></Box            >);
         }
 
         return (
@@ -154,7 +154,7 @@ export function ResourceList({
                     if (flashPlayResource) onOpenResource?.(flashPlayResource);
                     handleCloseFlashPlay();
                 }}
-            /        ></Box    );
+            /        ></Box    >);
 }
 
 // ============================================================================
@@ -197,7 +197,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
 
     return (
         <Actionsheet isOpen={!!resource} onClose={onClose}            <ActionsheetBackdrop /            ><ActionsheetContent sx={{ backgroundColor: Theme.colors.ink }}                <ActionsheetDragIndicatorWrapper                    <ActionsheetDragIndicator >/                ></ActionsheetDragIndicatorWrapper
-                <VStack space="lg" p={Theme.spacing.lg} sx={{ width: '100%' }}                    <HStack space="md" alignItems="center"                        <Box>
+                ><VStack space="lg" p={Theme.spacing.lg} sx={{ width: '100%' }}                    <HStack space="md" alignItems="center"                        <Box>
                             sx={{
                                 width: 56,
                                 height: 56,
@@ -208,11 +208,11 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                 borderWidth: 1,
                                 borderColor: `${config.color}40`,
                             }}
-                                                    <Icon color={config.color} size={28} /                            ><Text size="2xs" bold color={config.color}>{config.label}</Text                        ></Box                        <VStack sx={{ flex: 1 }}                            <Text color={Theme.colors.sacredWhite} size="md" bold numberOfLines={2}>{resource.title}</Text                            ><Text color={Theme.colors.mistGray} size="sm">{resource.creator_name}</Text                            >{metaParts ? <Text color={Theme.colors.shroud} size="xs">{metaParts}</Text> : null}
+                                                    <Icon color={config.color} size={28} /                            ><Text size="2xs" bold color={config.color}>{config.label}</Text                        ></Box                        ><VStack sx={{ flex: 1 }}                            <Text color={Theme.colors.sacredWhite} size="md" bold numberOfLines={2}>{resource.title}</Text                            ><Text color={Theme.colors.mistGray} size="sm">{resource.creator_name}</Text                            >{metaParts ? <Text color={Theme.colors.shroud} size="xs">{metaParts}</Text> : null}
                         </VStack                    </HStack
                     {resource.description ? (
                         <Box sx={{ backgroundColor: Theme.colors.glass.dark.highlight, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}                            <Text color={Theme.colors.starlightGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}                                {resource.description}>
-                            </Text                        </Box                    ) : null}>
+                            </Text                        ></Box                    ) : null}>
 
                     {resonantIslands.length > 0 && (
                         <VStack space="xs"                            <Text color={Theme.colors.shroud} size="xs" bold uppercase>Resonant Islands</Text                            ><HStack space="xs" sx={{ flexWrap: 'wrap' }}                                {resonantIslands.map((island) => (
@@ -226,7 +226,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                             borderWidth: 1,
                                             borderColor: 'rgba(255,255,255,0.1)'
                                         }}
-                                                                            <Text color="#fff" size="2xs">{island.name}</Text                                    ></Box                                ))}
+                                                                            <Text color="#fff" size="2xs">{island.name}</Text                                    ></Box                                >))}
                             </HStack                        </VStack                    )}
 
                     <HStack space="md"                        <Box sx={{ flex: 1 }}                            <SanctuaryButton>
@@ -250,7 +250,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                 action="negative"
                                 leftIcon={AlertTriangle}
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                         <SanctuaryButton>
                             onPress={onClose}
                             variant="outline"

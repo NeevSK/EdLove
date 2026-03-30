@@ -61,19 +61,19 @@ export default function SanctuaryInput({
     const { accent, scene, text } = useTheme();
 
     return (
-        <FormControl isInvalid={hasError} isDisabled={isDisabled}
+        <FormControl isInvalid={hasError} isDisabled={isDisabled}>
             {label && (
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}
-                    <FormControlLabelText
+                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
+                    <FormControlLabelText>
                         color={text.secondary}
                         sx={{ fontSize: '$sm' as any, fontWeight: '$medium' }}
                     
                         {label}
-                    </FormControlLabelText
-                </FormControlLabel
+                    </FormControlLabelText>
+                </FormControlLabel>
             )}
 
-            <Input
+            <Input>
                 variant="outline"
                 isDisabled={isDisabled}
                 isInvalid={hasError}
@@ -105,12 +105,12 @@ export default function SanctuaryInput({
                 }}
             
                 {leftIcon && (
-                    <InputSlot sx={{ paddingLeft: '$0' as any, paddingRight: '$3' as any }}
-                        <InputIcon as={leftIcon} color={Theme.colors.dimGray} /
-                    </InputSlot
+                    <InputSlot sx={{ paddingLeft: '$0' as any, paddingRight: '$3' as any }}>
+                        <InputIcon as={leftIcon} color={Theme.colors.dimGray} />
+                    </InputSlot>
                 )}
 
-                <InputField
+                <InputField>
                     placeholder={placeholder}
                     value={value}
                     onChangeText={onChangeText}
@@ -129,21 +129,21 @@ export default function SanctuaryInput({
                 /
 
                 {rightIcon && (
-                    <InputSlot sx={{ paddingRight: '$0' as any, paddingLeft: '$3' as any }} onPress={onRightIconPress}
-                        <InputIcon as={rightIcon} color={Theme.colors.sanctuarySaffron} /
-                    </InputSlot
+                    <InputSlot sx={{ paddingRight: '$0' as any, paddingLeft: '$3' as any }} onPress={onRightIconPress}>
+                        <InputIcon as={rightIcon} color={Theme.colors.sanctuarySaffron} />
+                    </InputSlot>
                 )}
-            </Input
+            </Input>
 
             {hasError && (
-                <FormControlError sx={{ marginTop: '$1' as any }}
-                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} {...({ size: 'xs' } as any)} /
-                    <FormControlErrorText color={Theme.colors.error} sx={{ fontSize: '$xs' as any, marginLeft: '$1' as any }}
+                <FormControlError sx={{ marginTop: '$1' as any }}>
+                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} {...({ size: 'xs' } as any)} />
+                    <FormControlErrorText color={Theme.colors.error} sx={{ fontSize: '$xs' as any, marginLeft: '$1' as any }}>
                         {error || 'Invalid input'}
-                    </FormControlErrorText
-                </FormControlError
+                    </FormControlErrorText>
+                </FormControlError>
             )}
-        </FormControl
+        </FormControl>
     );
 }
 

@@ -27,7 +27,7 @@ function AnalyticsWidget({
 
   return (
     <Card style={styles.widget}      <VStack space="xs"        <HStack style={styles.header}          <Text style={styles.title}>{title}</Text          >{trend && (
-            <Text style={[
+            <Text style={[>
               styles.trend,>
               { color: trend === 'up' ? Theme.colors.success : trend === 'down' ? Theme.colors.error : Theme.colors.warning }
             ]}              {trend === 'up' ? '\u2191' : trend === 'down' ? '\u2193' : '\u2192'}
@@ -62,10 +62,10 @@ export default function QuickAnalytics({
   const currentGrade = marks ? marksToGPA(marks) : null;
   
   return (
-    <ScrollView style={styles.container}      <VStack space="md"        {/* Header */}
+    <ScrollView style={styles.container}      <VStack space="md"        {/* Header */}>
         <Text style={styles.headerTitle}>\uD83D\uDCCA Quick Analytics</Text        
         >{/* Main Stats */}
-        <VStack space="sm"          <AnalyticsWidget
+        <VStack space="sm"          <AnalyticsWidget>
             title="Current Grade"
             value={currentGrade ? `${currentGrade.grade} (${marks}%)` : 'N/A'}
             showGrade={true}

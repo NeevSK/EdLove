@@ -103,14 +103,14 @@ export default function ClassroomScreen() {
 
         if (classroomData && arrangedWorkspaceSurfaces.length > 0) {
             return (
-                <Box sx={{ flex: 1 }}                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                            <ClassroomWorkspaceCanvas
+                <Box sx={{ flex: 1 }}                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                            <ClassroomWorkspaceCanvas>
                                 layout={layout}
                                 surfaces={arrangedWorkspaceSurfaces}
                                 onToggleHidden={setSurfaceHidden}
                                 onTogglePinned={setSurfacePinned}
                                 onMoveToNextZone={setSurfaceZone}
                             /                        ></Box                    </ScreenWrapper>
-                    <CreateSchoolModal
+                    <CreateSchoolModal>
                         isOpen={isCreateSchoolOpen}
                         onClose={() => setIsCreateSchoolOpen(false)}
                         onSuccess={() => {
@@ -136,7 +136,7 @@ export default function ClassroomScreen() {
         }
 
         return (
-            <FeatureGuard
+            <FeatureGuard>
                 action="read"
                 subject="ClassroomList"
                 fallback={>

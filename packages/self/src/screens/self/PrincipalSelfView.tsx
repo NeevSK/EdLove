@@ -72,10 +72,10 @@ export default function PrincipalSelfView() {
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}
-            <HStack justifyContent="flex-end" space="xs"
+        <VStack space="lg" sx={{ p: 20 }}>
+            <HStack justifyContent="flex-end" space="xs">
                 {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box 
+                    <Box >
                         key={scale}
                         sx={{ 
                             bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
@@ -86,16 +86,16 @@ export default function PrincipalSelfView() {
                     
                         <Pressable onPress={() => setScale(scale)}
                             <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text
-                        </Pressable
-                    </Box
+                        ></Pressable>
+                    </Box>
                 ))}
-            </HStack
+            </HStack>
 
-            <JournalSection entries={journalEntries} loading={loadingJournals} /
-            <MoodSection logs={moodHistory} loading={loadingMoods} /
-            <PrincipalPulse energy={null} decisions={decisions} loading={loadingDecisions} /
-            <DecisionSection decisions={decisions} loading={loadingDecisions} /
-        </VStack
+            <JournalSection entries={journalEntries} loading={loadingJournals} />
+            <MoodSection logs={moodHistory} loading={loadingMoods} />
+            <PrincipalPulse energy={null} decisions={decisions} loading={loadingDecisions} />
+            <DecisionSection decisions={decisions} loading={loadingDecisions} />
+        </VStack>
     );
 
     const handleMoodSelect = async (mood: any, note: string) => {
@@ -109,8 +109,8 @@ export default function PrincipalSelfView() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}
-            <BaseSelfView
+        <ScreenWrapper scroll={false} noTopInset={true}>
+            <BaseSelfView>
                 perspective="principal"
                 description={t('self.principalDescription', 'A restorative space for leadership clarity and personal rhythm.')}
                 domains={[
@@ -134,7 +134,7 @@ export default function PrincipalSelfView() {
                                 id: 'voice',
                                 label: 'Voice Journal',
                                 content: <VoiceJournaling userId={userId ?? undefined} /
-                            }
+                            >}
                         ]
                     },
                     {
@@ -146,7 +146,7 @@ export default function PrincipalSelfView() {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
                                 content: (
-                                    <MoodPickerCard
+                                    <MoodPickerCard>
                                         isOpen={isMoodPickerOpen}
                                         onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
                                         onSelect={handleMoodSelect}
@@ -161,12 +161,12 @@ export default function PrincipalSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}
-                                        <EnergyBarChart
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                        <EnergyBarChart>
                                             bars={forecasts.slice().reverse()}
                                             height={80}
                                         /
-                                    </Box
+                                    </Box>
                                 )
                             }
                         ]
@@ -180,12 +180,12 @@ export default function PrincipalSelfView() {
                                 id: 'decisions',
                                 label: 'Decision Journal',
                                 content: <DecisionJournalSection userId={userId} colors={colors} t={t} /
-                            },
+                            >},
                             {
                                 id: 'resonance',
                                 label: 'Resonance Patterns',
                                 content: user ? (
-                                    <ResonancePatternCard
+                                    <ResonancePatternCard>
                                         orientationSeeds={(user as any).orientation_seeds}
                                         moodLogs={moodHistory}
                                         energyForecasts={forecasts}
@@ -196,18 +196,18 @@ export default function PrincipalSelfView() {
                     }
                 ]}
                 sideBar={
-                    <VStack space="lg"
-                        <WarmMirrorCard text={warmMirrorText} /
-                        <ImpactRipplesCard ripples={ripples} /
-                    </VStack
+                    <VStack space="lg">
+                        <WarmMirrorCard text={warmMirrorText} />
+                        <ImpactRipplesCard ripples={ripples} />
+                    </VStack>
                 }
             /
 
 
-            <WelcomeModal
+            <WelcomeModal>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /
-        </ScreenWrapper
+        </ScreenWrapper>
     );
 }

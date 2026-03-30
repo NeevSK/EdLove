@@ -22,12 +22,12 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
     onShare,
 }) => {
     return (
-        <Modal
+        <Modal>
             visible={visible}
             transparent={true}
             animationType="slide"
             onRequestClose={onClose}>
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                 style={styles.overlay} 
                 activeOpacity={1} 
                 onPress={onClose}>
@@ -36,12 +36,12 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
                             size={24} 
                             color="#2E5CFF" 
                         /                        ><Text style={styles.title} numberOfLines={1}>{resource.title}</Text                    ></View
-                    <ScrollView style={styles.optionsList}                        <TouchableOpacity style={styles.option} onPress={() => { onBookmark(); onClose(); }}                            <MaterialCommunityIcons 
+                    ><ScrollView style={styles.optionsList}                        <TouchableOpacity style={styles.option} onPress={() => { onBookmark(); onClose(); }}                            <MaterialCommunityIcons 
                                 name={resource.has_bookmarked ? "bookmark" : "bookmark-outline"} 
                                 size={22} 
                                 color={resource.has_bookmarked ? "#2E5CFF" : "#666"} 
                             /                            ><Text style={[styles.optionText, resource.has_bookmarked && styles.activeText]}                                {resource.has_bookmarked ? "Bookmarked" : "Bookmark"}
-                            </Text                        </TouchableOpacity
+                            </Text                        ></TouchableOpacity
                         <TouchableOpacity style={styles.option} onPress={() => { onAddToCollection(); onClose(); }}                            <MaterialCommunityIcons name="folder-plus-outline" size={22} color="#666" /                            ><Text style={styles.optionText}>Add to Collection</Text                        ></TouchableOpacity
                         <TouchableOpacity style={styles.option} onPress={() => { onShare(); onClose(); }}                            <MaterialCommunityIcons name="share-variant-outline" size={22} color="#666" /                            ><Text style={styles.optionText}>Share Resource</Text                        ></TouchableOpacity                    </ScrollView
                     <TouchableOpacity style={styles.cancelButton} onPress={onClose}                        <Text style={styles.cancelText}>Cancel</Text                    </TouchableOpacity                </View            </TouchableOpacity        </Modal    );

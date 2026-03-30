@@ -83,17 +83,17 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
 
     if (isLoading) {
         return (
-            <VStack space="sm" sx={{ flex: 1 }}
-                <SkeletonCard height={72} /
-                <SkeletonCard height={72} /
-                <SkeletonCard height={72} /
-            </VStack
+            <VStack space="sm" sx={{ flex: 1 }}>
+                <SkeletonCard height={72} />
+                <SkeletonCard height={72} />
+                <SkeletonCard height={72} />
+            </VStack>
         );
     }
 
     if (!grades.length) {
         return (
-            <Box
+            <Box>
                 p={Theme.spacing.lg}
                 sx={{
                     backgroundColor: colors.tertiary,
@@ -101,19 +101,19 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                     alignItems: 'center',
                 }}
             
-                <Text color={colors.textSecondary} size="sm" textAlign="center"
+                <Text color={colors.textSecondary} size="sm" textAlign="center">
                     {t('student.noGradesYet')}
-                </Text
-            </Box
+                </Text>
+            </Box>
         );
     }
 
     return (
-        <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}
-            <VStack space="sm"
+        <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
+            <VStack space="sm">
                 {grades.map((item, i) => (
-                    <Animated.View key={item.id} entering={FadeInDown.delay(i * 40)}
-                        <Box
+                    <Animated.View key={item.id} entering={FadeInDown.delay(i * 40)}>
+                        <Box>
                             p={Theme.spacing.md}
                             sx={{
                                 backgroundColor: colors.secondary,
@@ -122,21 +122,21 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                                 borderLeftColor: GRADE_COLOR(item.grade),
                             }}
                         
-                            <HStack justifyContent="space-between" alignItems="flex-start"
-                                <VStack sx={{ flex: 1, marginRight: Theme.spacing.sm }}
-                                    <Text color={colors.text} size="sm" bold numberOfLines={1}
+                            <HStack justifyContent="space-between" alignItems="flex-start">
+                                <VStack sx={{ flex: 1, marginRight: Theme.spacing.sm }}>
+                                    <Text color={colors.text} size="sm" bold numberOfLines={1}>
                                         {item.assignments?.title ?? t('student.unknownAssignment')}
-                                    </Text
-                                    <Text color={colors.textSecondary} size="xs"
+                                    </Text>
+                                    <Text color={colors.textSecondary} size="xs">
                                         {item.classrooms?.name ?? ''}
-                                    </Text
+                                    </Text>
                                     {!!item.feedback && (
-                                        <Text color={colors.textTertiary} size="xs" mt="$1" numberOfLines={2}
+                                        <Text color={colors.textTertiary} size="xs" mt="$1" numberOfLines={2}>
                                             {item.feedback}
-                                        </Text
+                                        </Text>
                                     )}
-                                </VStack
-                                <Box
+                                </VStack>
+                                <Box>
                                     sx={{
                                         backgroundColor: GRADE_COLOR(item.grade),
                                         borderRadius: Theme.corners.full,
@@ -147,12 +147,12 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                                     }}
                                 
                                     <Text color={Theme.colors.white} bold size="sm">{item.grade}</Text
-                                </Box
-                            </HStack
-                        </Box
-                    </Animated.View
+                                ></Box>
+                            </HStack>
+                        </Box>
+                    </Animated.View>
                 ))}
-            </VStack
-        </ScrollView
+            </VStack>
+        </ScrollView>
     );
 }

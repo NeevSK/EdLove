@@ -36,7 +36,7 @@ export function PerformanceDashboard({
   return (
     <ScrollView style={styles.container}      <VStack space="md"        {/* Header Card */}>
         <Card style={styles.headerCard}          <Text style={styles.studentTitle}>Student Performance</Text          ><Text style={styles.studentSubtitle}>ID: {metrics.studentId}</Text          
-          ><HStack style={styles.metricsRow}            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{formatGPA(metrics.currentGPA)}</Text              ><Text style={styles.metricLabel}>Current GPA</Text            ></VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{metrics.averageMarks.toFixed(1)}%</Text              <Text style={styles.metricLabel}>Average Marks</Text            </VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>#{metrics.rankInClass}</Text              <Text style={styles.metricLabel}>Class Rank</Text            </VStack          </HStack          
+          ><HStack style={styles.metricsRow}            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{formatGPA(metrics.currentGPA)}</Text              ><Text style={styles.metricLabel}>Current GPA</Text            ></VStack            ><VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{metrics.averageMarks.toFixed(1)}%</Text              ><Text style={styles.metricLabel}>Average Marks</Text            ></VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>#{metrics.rankInClass}</Text              <Text style={styles.metricLabel}>Class Rank</Text            </VStack          </HStack          
           <View style={styles.trendContainer}            <Text style={[>
               styles.trendText,>
               { color: metrics.trendDirection === 'improving' ? Theme.colors.success : 
@@ -71,7 +71,7 @@ export function PerformanceDashboard({
         {recommendations.length > 0 && (
           <Card            <Text >style={styles.sectionTitle}>Recommendations</Text            ><VStack space="sm"              {recommendations.map((recommendation, index) => (
                 <Text key={index} style={styles.recommendationText}                  {index + 1}. {recommendation}>
-                </Text              ))}>
+                </Text              >))}>
             </VStack          ></Card        )}
       </VStack    </ScrollView  );
 }

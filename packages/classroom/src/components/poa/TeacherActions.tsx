@@ -8,7 +8,7 @@ interface ActionProps {
 }
 
 export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateClassroom }) => (
-    <FeatureGuard action="create" subject="Classroom"        <Box 
+    <FeatureGuard action="create" subject="Classroom"        <Box >
             as="button" 
             onClick={onCreateClassroom}
             sx={{ 
@@ -24,7 +24,7 @@ export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateCl
         </Box    </FeatureGuard);
 
 export const TeacherScanQRAction: React.FC = () => (
-    <FeatureGuard action="manage" subject="Attendance"        <Box 
+    <FeatureGuard action="manage" subject="Attendance"        <Box >
             as="button" 
             sx={{ 
                 flexDirection: 'row', 
@@ -40,7 +40,7 @@ export const TeacherScanQRAction: React.FC = () => (
         </Box    </FeatureGuard);
 
 export const TeacherPrincipalEchoAction: React.FC = () => (
-    <FeatureGuard action="read" subject="Announcement"        <Box 
+    <FeatureGuard action="read" subject="Announcement"        <Box >
             as="button" 
             sx={{ 
                 flexDirection: 'row', 
@@ -56,7 +56,7 @@ export const TeacherPrincipalEchoAction: React.FC = () => (
         </Box    </FeatureGuard);
 
 export const TeacherMyEchoesAction: React.FC = () => (
-    <FeatureGuard action="manage" subject="Announcement"        <Box 
+    <FeatureGuard action="manage" subject="Announcement"        <Box >
             as="button" 
             sx={{ 
                 flexDirection: 'row', 

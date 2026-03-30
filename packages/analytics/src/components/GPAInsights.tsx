@@ -39,7 +39,7 @@ export function GPAInsights({
         </HStack>
         {/* Trend */}
         <View style={styles.trendContainer}          <Text style={styles.trendLabel}>Performance Trend</Text          ><Text style={[styles.trendValue, { color: trendColor }]}            {trendDirection.charAt(0).toUpperCase() + trendDirection.slice(1)}
-          </Text        </View
+          </Text        ></View
         {/* Target Progress */}
         <View style={styles.progressContainer}          <Text style={styles.progressLabel}>Target: {formatGPA(targetGPA)}</Text          ><View style={styles.progressBar}            <View 
               style={[
@@ -53,7 +53,7 @@ export function GPAInsights({
           </Text        </View
         {/* Recommendations */}
         <View style={styles.recommendationsContainer}          <Text style={styles.recommendationsTitle}>Recommendations</Text          ><VStack space="xs"            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map((rec, index) => (
-              <Text key={index} style={styles.recommendationText}                " {rec}
+              <Text key={index} style={styles.recommendationText}                " {rec}>
               </Text            ))}>
           </VStack        </View      </VStack    </Card  );
 }

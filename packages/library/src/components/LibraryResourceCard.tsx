@@ -68,8 +68,8 @@ export function LibraryResourceCard({
     }), [colors]);
 
     const renderFooter = () => (
-        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.sm }}            <HStack sx={{ gap: Theme.spacing.sm }}                {onLike && (
-                    <SanctuaryButton
+        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.sm }}            <HStack sx={{ gap: Theme.spacing.sm }}                {onLike && (>
+                    <SanctuaryButton>
                         onPress={onLike}
                         variant="ghost"
                         size="xs"
@@ -78,7 +78,7 @@ export function LibraryResourceCard({
                                             {isLiked ? 'Liked' : 'Like'}
                     </SanctuaryButton                )}
                 {onaddToDesk && (
-                    <SanctuaryButton
+                    <SanctuaryButton>
                         onPress={onaddToDesk}
                         variant="ghost"
                         size="xs"
@@ -89,12 +89,12 @@ export function LibraryResourceCard({
             </HStack        </HStack    );
 
     return (
-        <SanctuaryCard
+        <SanctuaryCard>
             onPress={onPress}
             href={href}
             footer={renderFooter()}
             elevated
-                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                <Box
+                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                <Box>
                     sx={{
                         backgroundColor: colors.secondary,
                         padding: Theme.spacing.md,
@@ -104,10 +104,10 @@ export function LibraryResourceCard({
                         borderWidth: 1,
                         borderColor: colors.border
                     }}
-                                    <Icon color={colors.action} size={24} /                    <Text style={styles.typeLabel}>{config.label}</Text                </Box
-                <View style={{ flex: 1 }}                    <Text style={styles.title} numberOfLines={2}                        {title}
+                                    <Icon color={colors.action} size={24} /                    ><Text style={styles.typeLabel}>{config.label}</Text                ></Box
+                <View style={{ flex: 1 }}                    <Text style={styles.title} numberOfLines={2}                        {title}>
                     </Text                    {description && (
-                        <Text style={styles.description} numberOfLines={2}                            {description}
+                        <Text style={styles.description} numberOfLines={2}                            {description}>
                         </Text                    )}
                     {isPublic && (
                         <Box sx={{
@@ -119,7 +119,7 @@ export function LibraryResourceCard({
                             marginTop: 4,
                             borderWidth: 0.5,
                             borderColor: colors.border
-                        }}                            <Text style={styles.badge}>Public Resource</Text                        </Box                    )}
+                        }}                            <Text style={styles.badge}>Public Resource</Text                        ></Box                    )}
                 </View            </HStack        </SanctuaryCard    );
 }
 

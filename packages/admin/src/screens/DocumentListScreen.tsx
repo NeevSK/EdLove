@@ -91,7 +91,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           ]}
           numberOfLines={2}
                   {document.title}
-        </Text        <View 
+        </Text        ><View 
           style={[
             styles.statusBadge,
             { backgroundColor: getStatusColor(document.status) }
@@ -102,7 +102,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
               { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
             ]}
                       {document.status.toUpperCase()}
-          </Text        </View      </View      
+          </Text        ></View      ></View      
       <Text >
         style={[
           styles.documentMeta,>
@@ -112,7 +112,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       </Text      >
       {document.status === 'review' && document.authorId !== user.userId && (
         <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}          <Text style={[styles.reviewText, { color: theme.accent.action }]}            Pending Review>
-          </Text        </View      )}>
+          </Text        ></View      )}>
     </TouchableOpacity  );
 
   const renderStatusFilter = (status: DocumentStatus | 'all') => {
@@ -142,13 +142,13 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           ]}
                   {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
-        </Text      </TouchableOpacity    );
+        </Text      ></TouchableOpacity    >);
   };
 
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...>
-        </Text      </View    );>
+        </Text      ></View    );>
   }
 
   return (

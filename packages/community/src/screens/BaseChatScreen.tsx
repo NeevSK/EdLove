@@ -177,11 +177,11 @@ export default function BaseChatScreen({
         const time = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const avatar = (side: 'left' | 'right') => (
-            <TouchableOpacity
+            <TouchableOpacity>
                 onPress={() => onPressAuthor?.(item.author_id, authorName)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             
-                <Avatar size="xs" sx={{ [side === 'left' ? 'marginRight' : 'marginLeft']: 8, marginTop: 4, backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.action }}
+                <Avatar size="xs" sx={{ [side === 'left' ? 'marginRight' : 'marginLeft']: 8, marginTop: 4, backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.action }}>
                     {(isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)
                         ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} /
                         >: <AvatarFallbackText>{initials}</AvatarFallbackText
@@ -191,9 +191,9 @@ export default function BaseChatScreen({
         );
 
         return (
-            <HStack sx={{ justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md }}
+            <HStack sx={{ justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md }}>
                 {!isOwn && avatar('left')}>
-                <VStack sx={{ maxWidth: '72%', gap: 2 }}
+                <VStack sx={{ maxWidth: '72%', gap: 2 }}>
                     {!isOwn && (>
                         <Text sx={{ fontSize: 11, color: colors.textTertiary, marginLeft: 2 }}>{authorName}</Text
                     >)}
@@ -205,9 +205,9 @@ export default function BaseChatScreen({
                         paddingHorizontal: Theme.spacing.md,
                         paddingVertical: Theme.spacing.sm,
                         borderWidth: isOwn ? 0 : 1,
-                        borderColor: colors.border,>
-                    }}
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: isOwn ? Theme.colors.sacredWhite : colors.text, lineHeight: 20 }}
+                        borderColor: colors.border,
+                    }}>
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: isOwn ? Theme.colors.sacredWhite : colors.text, lineHeight: 20 }}>
                             {item.content}>
                         </Text>
                     </Box>
@@ -219,8 +219,8 @@ export default function BaseChatScreen({
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}
-            <GlobalHeader
+        <ScreenWrapper scroll={false} noTopInset={true}>
+            <GlobalHeader>
                 title={title}
                 subtitle={subtitle}
                 showBack
@@ -229,11 +229,11 @@ export default function BaseChatScreen({
 
             ><Box sx={{ flex: 1 }}
                 {loading ? (>
-                    <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                    <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
                     ></Box>
                 ) : (
-                    <FlatList
+                    <FlatList>
                         ref={listRef}
                         data={messages}
                         keyExtractor={item => item.id}
@@ -241,7 +241,7 @@ export default function BaseChatScreen({
                         contentContainerStyle={{ paddingVertical: Theme.spacing.md, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
-                            <Text sx={{ textAlign: 'center', color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm }}
+                            <Text sx={{ textAlign: 'center', color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm }}>
                                 No messages yet. Say hello =K>
                             </Text>
                         }
@@ -249,34 +249,34 @@ export default function BaseChatScreen({
                 >)}
 
                 {/* Compose bar */}
-                <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}
+                <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}>
                     {isReadOnly ? (>
-                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}
+                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
                             <Text color={colors.textTertiary} size="sm" italic>
                                 {t('chat.historicalView', 'Viewing historical sanctuary records.')}
                             </Text>
                         </Box>
                     ) : isBlocked ? (
-                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}
+                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
                             <Text color={colors.textSecondary} size="sm" italic>
                                 {blockedMessage || 'You cannot send messages to this sanctuary.'}
                             </Text>
                         </Box>
                     ) : (
-                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}
-                            <TextInput
+                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}>
+                            <TextInput>
                                 value={draft}
                                 onChangeText={setDraft}
                                 placeholder="Write a message&"
                                 placeholderTextColor={colors.textTertiary}
                                 multiline
-                                style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}>
+                                style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
                                 returnKeyType="default"
                             /
                             ><TouchableOpacity
                                 onPress={handleSend}
                                 disabled={!draft.trim() || sending}
-                                style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}>
+                                style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}
                             
                                 {sending
                                     ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /

@@ -99,7 +99,7 @@ export default function MuteHubScreen() {
                         borderRadius: Theme.corners.comfortable, 
                         borderWidth: 1, 
                         borderColor: Theme.colors.glass.light.border 
-                    }}                        <HStack space="md" alignItems="center"                            <Shield size={24} color={colors.action} /                            ><VStack flex={1}                                <Text bold color={colors.text}>{t('profile.safety.mutedTotal')}</Text                                ><Text size="xs" color={colors.textSecondary}>{t('profile.safety.mutedDesc')}</Text                            ></VStack                        </HStack                    </Box
+                    }}                        <HStack space="md" alignItems="center"                            <Shield size={24} color={colors.action} /                            ><VStack flex={1}                                <Text bold color={colors.text}>{t('profile.safety.mutedTotal')}</Text                                ><Text size="xs" color={colors.textSecondary}>{t('profile.safety.mutedDesc')}</Text                            ></VStack                        ></HStack                    </Box
                     <Heading size="sm" color={colors.textSecondary} mt={Theme.spacing.md}                        {t('profile.safety.mutedList')} ({mutedUsers.length})>
                     </Heading>
                     {mutedUsers.length === 0 && !loading ? (
@@ -119,8 +119,8 @@ export default function MuteHubScreen() {
                                                 fullName={user.full_name}
                                                 size={40}
                                                 authority={user.authority}
-                                            /                                            ><VStack                                                <Text >bold color={colors.text}>{user.full_name}</Text                                                ><Text size="xs" color={colors.textTertiary}>@{user.id.substring(0, 8)}</Text                                            ></VStack                                        </HStack                                        
-                                        <TouchableOpacity >
+                                            /                                            ><VStack                                                <Text >bold color={colors.text}>{user.full_name}</Text                                                ><Text size="xs" color={colors.textTertiary}>@{user.id.substring(0, 8)}</Text                                            ></VStack                                        ></HStack                                        
+                                        ><TouchableOpacity >
                                             onPress={() => {
                                                 hapticLight();
                                                 handleUnmute(user.id, user.full_name);
@@ -133,7 +133,7 @@ export default function MuteHubScreen() {
                                                 borderRadius: Theme.corners.tight,
                                                 backgroundColor: `${colors.error}15`
                                             }}
-                                                                                    <Trash2 size={20} color={colors.error} /                                        ></TouchableOpacity                                    </HStack                                </Box                            ))}
+                                                                                    <Trash2 size={20} color={colors.error} /                                        ></TouchableOpacity                                    ></HStack                                </Box                            ))}
                         </VStack                    )}>
                 </VStack            </ScrollView        </ScreenWrapper    );
 }

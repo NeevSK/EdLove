@@ -66,7 +66,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>{t('bulk_creation.errors.invalidNumber') || 'Please enter a number between 1 and 100'}</ToastTitle
                     ></Toast
-                ),
+                >),
             });
             return;
         }
@@ -96,7 +96,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>{t('bulk_creation.errors.requiredFields') || 'Name and Index are required'}</ToastTitle
                     ></Toast
-                ),
+                >),
             });
             return;
         }
@@ -174,7 +174,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>{t('bulk_creation.errors.noValidStudents') || 'No valid students to add'}</ToastTitle
                     ></Toast
-                ),
+                >),
             });
             return;
         }
@@ -299,7 +299,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     backgroundColor: colors.secondary,
                                 }}
                             
-                                <InputField>
+                                <InputField/>
                                     placeholder={t('bulk_creation.namePlaceholder') || "Enter full name"}
                                     value={currentStudent.name}
                                     onChangeText={(value: string) => updateStudent('name', value)}
@@ -321,7 +321,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     backgroundColor: colors.secondary,
                                 }}
                             
-                                <InputField>
+                                <InputField/>
                                     placeholder={t('bulk_creation.indexPlaceholder') || "Enter index number"}
                                     value={currentStudent.index_number}
                                     onChangeText={(value: string) => updateStudent('index_number', value)}
@@ -344,7 +344,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     minHeight: 80,
                                 }}
                             
-                                <TextareaInput>
+                                <TextareaInput/>
                                     placeholder={t('bulk_creation.notesPlaceholder') || "Add any notes about this student..."}
                                     value={currentStudent.notes}
                                     onChangeText={(value: string) => updateStudent('notes', value)}
@@ -482,7 +482,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                                 <Pressable onPress={() => handleRemoveStudent(index)}
                                                     <Trash2 size={18} color={Theme.colors.emberRed} /
                                                 ></Pressable
-                                            </HStack>
+                                            ></HStack>
                                         </HStack>
                                     </Box>
                                 );

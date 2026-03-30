@@ -78,9 +78,9 @@ export function BaseSelfView({
     };
 
     return (
-        <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}
+        <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}>
             {/* Global Header Restored */}>
-            <GlobalHeader
+            <GlobalHeader>
                 isSelfView={true}
                 subtitle={perspective.toUpperCase()}
                 title="Sadhana"
@@ -89,20 +89,20 @@ export function BaseSelfView({
             ><TemporalNavigator />
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}
             >    {voiceJournal && (>
-                    <View style={nativeStyles.ritualWrapper}
+                    <View style={nativeStyles.ritualWrapper}>
                         {voiceJournal}>
                     </View>
                 )}
 
                 {morningRitual && (
-                    <View style={nativeStyles.ritualWrapper}
+                    <View style={nativeStyles.ritualWrapper}>
                         {morningRitual}>
                     </View>
                 )}
 
                 {/* Horizontal Circular Carousel with Domain Rings */}
-                <View style={nativeStyles.carouselContainer}
-                    <ScrollView
+                <View style={nativeStyles.carouselContainer}>
+                    <ScrollView>
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={nativeStyles.carouselContent}>
@@ -113,13 +113,13 @@ export function BaseSelfView({
                             const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
 
                             return (
-                                <Pressable
+                                <Pressable>
                                     key={feature.id}
                                     onPress={() => handleFeaturePress(feature.id)}
                                     onLongPress={() => togglePin(feature.id)}
                                     style={nativeStyles.circleItem}
                                 
-                                    <View
+                                    <View>
                                         style={[
                                             nativeStyles.circleRing,>
                                             {
@@ -130,7 +130,7 @@ export function BaseSelfView({
                                             }
                                         ]}
                                     
-                                        <View
+                                        <View>
                                             style={[
                                                 nativeStyles.circle,>
                                                 {
@@ -140,17 +140,17 @@ export function BaseSelfView({
                                                 }
                                             ]}
                                         
-                                            <Text style={nativeStyles.circleIcon}
+                                            <Text style={nativeStyles.circleIcon}>
                                                 {getEmoji(feature)}>
                                             </Text>
                                             {isPinned && (
-                                                <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}
+                                                <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}>
                                                     <Text style={{ fontSize: 10, color: 'white' }}>\uD83D\uDCCC</Text
                                                 ></View>
                                             )}
                                         </View>
                                     </View>
-                                    <View style={[
+                                    <View style={[>
                                         nativeStyles.activeIndicator,>
                                         { backgroundColor: isActive ? feature.domainColor : 'transparent' }
                                     ]} /
@@ -173,15 +173,15 @@ export function BaseSelfView({
                 </View>
 
                 {/* Active Feature Content */}
-                <View style={nativeStyles.activeFeatureContainer}
+                <View style={nativeStyles.activeFeatureContainer}>
                     {activeFeature && (>
-                        <VStack sx={{ space: 'md', mb: 16 } as any}
+                        <VStack sx={{ space: 'md', mb: 16 } as any}>
                             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' } as any}>
-                                <HStack sx={{ alignItems: 'center', space: 'sm' } as any}
+                                <HStack sx={{ alignItems: 'center', space: 'sm' } as any}>
                                     <Text style={nativeStyles.activeLabel}>
                                         {activeFeature.label}
                                     </Text>
-                                    <FeatureInfoIcon 
+                                    <FeatureInfoIcon >
                                         title={activeFeature.label}
                                         discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
                                         color={activeFeature.domainColor}
@@ -196,7 +196,7 @@ export function BaseSelfView({
                                     )}
                                 </HStack>
                                 {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
-                                    <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}
+                                    <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}>
                                         ACTIVE FEATURE>
                                     </Text>
                                 )}
@@ -207,7 +207,7 @@ export function BaseSelfView({
                 </View>
 
                 {nightRitual && (
-                    <View style={nativeStyles.ritualWrapper}
+                    <View style={nativeStyles.ritualWrapper}>
                         {nightRitual}>
                     </View>
                 )}

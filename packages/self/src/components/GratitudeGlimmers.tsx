@@ -86,7 +86,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
         ><SkeletonCard height={80} /
         ><SkeletonCard height={80} /
       ></VStack
-    );
+    >);
   }
 
   if (!activeUserId) {
@@ -243,7 +243,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                 minHeight: 100
               }}
             
-              <InputField>
+              <InputField/>
                 placeholder={t('self.whatSmiled')}
                 value={content}
                 onChangeText={setContent}

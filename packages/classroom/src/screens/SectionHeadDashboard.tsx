@@ -149,10 +149,10 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                             <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>CLASSES</Text
                             ><Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>12</Text
                         ></Box
-                        <Box sx={styles.statBox}>
+                        ><Box sx={styles.statBox}>
                             <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>TEACHERS</Text
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>8</Text
-                        </Box>
+                            ><Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>8</Text
+                        ></Box>
                     </HStack>
 
                     {/* Quick Coordination */}
@@ -165,13 +165,13 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                 <Calendar size={18} color={Theme.colors.sacredWhite} /
                                 ><Text sx={{ color: Theme.colors.sacredWhite }}>Review Section Schedule</Text
                             ></HStack
-                        </SanctuaryButton>
+                        ></SanctuaryButton>
                         <SanctuaryButton onPress={() => { }} variant="outline"
                             <HStack gap="$2" alignItems="center">
                                 <Users size={18} color={Theme.colors.sacredWhite} />
                                 <Text sx={{ color: Theme.colors.sacredWhite }}>Staff Workload Balance</Text
                             ></HStack
-                        </SanctuaryButton>
+                        ></SanctuaryButton>
                     </VStack>
                 </VStack>
             </ScrollView>

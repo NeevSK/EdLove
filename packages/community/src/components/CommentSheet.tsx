@@ -137,7 +137,7 @@ function CommentRow({
                         <TouchableOpacity onPress={confirmDelete} style={styles.actionBtn}>
                             <Trash2 size={13} color={text.muted as string} /
                         ></TouchableOpacity
-                    )}
+                    >)}
                 </HStack>
             </View>
         </View>

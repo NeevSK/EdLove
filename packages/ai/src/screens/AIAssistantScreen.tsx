@@ -60,7 +60,7 @@ export default function AIAssistantScreen() {
                     { backgroundColor: isUser ? accent.action : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)') }
                 ]}
                             <Text color={isUser ? gradientNodes[0] : text.primary} sx={{ fontSize: '$md' as any }}                    {item.content}>
-                </Text            </Animated.View        );>
+                </Text            ></Animated.View        >);>
     };
 
     return (
@@ -87,7 +87,7 @@ export default function AIAssistantScreen() {
                     ListFooterComponent={
                         isThinking ? (
                             <Box sx={{ padding: '$md' as any, opacity: 0.6 }}                                <Text color={text.secondary} italic size="sm"                                    {t('aiAssistant.thinking')}>
-                                </Text                            </Box                        ) : null>
+                                </Text                            ></Box                        >) : null>
                     }
                 /
                 >{/* Input Area */}
@@ -109,7 +109,7 @@ export default function AIAssistantScreen() {
                                     styles.sendButton,>
                                     { backgroundColor: accent.action, opacity: inputText.trim() ? 1 : 0.5 }
                                 ]}
-                                                            <Send color={gradientNodes[0]} size={20} /                            ></TouchableOpacity                        </HStack                    )}
+                                                            <Send color={gradientNodes[0]} size={20} /                            ></TouchableOpacity                        ></HStack                    )}
                 </Box            </KeyboardAvoidingView        </ScreenWrapper    );>
 }
 

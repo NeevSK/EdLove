@@ -98,7 +98,7 @@ export default function StudentPulseSection({
                   paddingHorizontal: 8,
                   paddingVertical: 2,
                 }}
-                              <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.atRiskCount ?? 0}</Text              ></Box              ><Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>At-risk students</Text            ></HStack            {onViewAtRisk && <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text>}
+                              <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.atRiskCount ?? 0}</Text              ></Box              ><Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>At-risk students</Text            ></HStack            >{onViewAtRisk && <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text>}
           </Box        </TouchableOpacity
         {!classroomId && (
           <TouchableOpacity onPress={onViewEnrollments} activeOpacity={0.8} style={{ flex: 1 }}            <Box>
@@ -117,7 +117,7 @@ export default function StudentPulseSection({
                     paddingHorizontal: 8,
                     paddingVertical: 2,
                   }}
-                                  <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.pendingEnrollments ?? 0}</Text                ></Box                ><Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text                ><ChevronRight size={16} color={colors.textTertiary} /              ></HStack              {onViewEnrollments && (
+                                  <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.pendingEnrollments ?? 0}</Text                ></Box                ><Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text                ><ChevronRight size={16} color={colors.textTertiary} /              ></HStack              >{onViewEnrollments && (
                 <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text              >)}
             </Box          </TouchableOpacity        )}
       </HStack>

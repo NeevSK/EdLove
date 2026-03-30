@@ -37,18 +37,18 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading dashboard...>
-        </Text      </View    );>
+        </Text      ></View    );>
   }
 
   if (!dashboard) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.errorText, { color: theme.accent.danger }]}          {error || 'Failed to load dashboard'}>
-        </Text      </View    );>
+        </Text      ></View    );>
   }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header (Direct Component) */}>
-      <GuardianHeader >
+      <GuardianHeader />
         studentCount={dashboard.students.length} 
         isDesktop={isDesktop} 
       />
@@ -83,7 +83,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                 onNotificationPress={onNotificationPress}
                 limit={5}
               /            ></View
-            <View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}              <Text >
+            ><View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}              <Text >
                 style={[
                   styles.sectionHeader,>
                   { 
@@ -94,11 +94,11 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                   }
                 ]}
                               Upcoming Events
-              </Text              <GuardianEvents 
+              </Text              ><GuardianEvents 
                 events={dashboard.upcomingEvents}
                 onEventPress={onEventPress}
                 limit={5}
-              /            </View          </View        ) : (
+              /            ></View          ></View        ) : (
           <            {/* Mobile Notifications (POA) */}
             <View style={styles.section}              <Text >
                 style={[
@@ -128,7 +128,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                   }
                 ]}
                               Upcoming Events
-              </Text              <GuardianEvents 
+              </Text              ><GuardianEvents 
                 events={dashboard.upcomingEvents}
                 onEventPress={onEventPress}
                 limit={3}

@@ -266,7 +266,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                 justifyContent: 'center',
                                             }}
                                         
-                                            <Icon>
+                                            <Icon/>
                                                 color={reminder.is_active ? Theme.colors.sanctuarySaffron : Theme.colors.dimGray}
                                                 size={20}
                                             /
@@ -384,7 +384,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                         borderColor: Theme.colors.obsidian,
                                     }}
                                 
-                                    <InputField>
+                                    <InputField/>
                                         value={title}
                                         onChangeText={setTitle}
                                         placeholder="e.g., Take a break"
@@ -407,7 +407,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                         borderColor: Theme.colors.obsidian,
                                     }}
                                 
-                                    <InputField>
+                                    <InputField/>
                                         value={description}
                                         onChangeText={setDescription}
                                         placeholder="e.g., Every 2 hours during class"
@@ -447,7 +447,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                         justifyContent: 'center',
                                                     }}
                                                 
-                                                    <Icon>
+                                                    <Icon/>
                                                         color={isSelected ? Theme.colors.white : Theme.colors.mistGray}
                                                         size={24}
                                                     /

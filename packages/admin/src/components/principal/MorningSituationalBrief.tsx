@@ -101,8 +101,8 @@ export default function MorningSituationalBrief({
                 backgroundColor: dotColor,
               }}
             /            ><Text sx={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '600' }}              {presence ? `${presence.present} of ${presence.total} teachers present today` : 'No attendance data yet'}
-            </Text            {onViewStaff && <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View</Text>}
-          </HStack        </Box      </TouchableOpacity
+            </Text            >{onViewStaff && <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View</Text>}
+          </HStack        ></Box      </TouchableOpacity
       <HStack sx={{ gap: Theme.spacing.sm }}        <Box>
           sx={{
             flex: 1,
@@ -118,7 +118,7 @@ export default function MorningSituationalBrief({
               color: attendanceDelta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336'),
             }}
                       {pulse ? deltaLabel : ''}
-          </Text        </Box
+          </Text        ></Box
         <Box>
           sx={{
             flex: 1,
@@ -152,6 +152,6 @@ export default function MorningSituationalBrief({
                 color: pendingLeaves > 0 ? (Theme.colors.amberGlow ?? '#ffc107') : colors.text,
               }}
                           {pendingLeaves}
-            </Text            {onViewApprovals && <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Tap to review</Text>}
+            </Text            >{onViewApprovals && <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Tap to review</Text>}
           </Box        </TouchableOpacity      </HStack    </VStack  );
 }

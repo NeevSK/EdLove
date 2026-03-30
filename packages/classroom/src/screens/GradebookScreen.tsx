@@ -279,13 +279,13 @@ export default function GradebookScreen({
                                             <HStack sx={{ gap: 12, alignItems: 'center' }}                                                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700' }}                                                    {g.marks}/>100
                                                 </Text                                                ><Text color={g.publication_state === 'published' ? Theme.colors.mossGreen : Theme.colors.starlightGray} sx={{ fontSize: 11, fontWeight: '700' }}                                                    {g.publication_state === 'published' ? 'Published' : 'Draft'}
                                                 </Text                                                ><Button size="xs" variant="outline" sx={{ borderColor: Theme.colors.sanctuarySaffron }} onPress={() => setGradingStudentId(g.student_id)}                                                    <ButtonText color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 11 }}                                                        {t('grading.gradebook.grade') || 'Edit Draft'}
-                                                    </ButtonText                                                </Button                                                <Button
+                                                    </ButtonText                                                ></Button                                                ><Button
                                                     size="xs"
                                                     variant="outline"
                                                     sx={{ borderColor: Theme.colors.mossGreen }}
                                                     onPress={() => publishGrade(g.id)}
                                                                                                     <ButtonText color={Theme.colors.mossGreen} sx={{ fontSize: 11 }}                                                        {g.publication_state === 'published' ? 'Republish' : 'Publish'}>
-                                                    </ButtonText                                                </Button                                            </HStack                                        </HStack                                    </TouchableOpacity                                ))}>
+                                                    </ButtonText                                                ></Button                                            ></HStack                                        </HStack                                    </TouchableOpacity                                ))}>
                             </VStack>
                         </
                     )}

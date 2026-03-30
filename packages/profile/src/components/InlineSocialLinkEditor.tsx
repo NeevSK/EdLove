@@ -71,12 +71,12 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
     };
 
     return (
-        <SanctuaryCard variant="glass" style={styles.container}
-            <VStack space="md" sx={{ padding: Theme.spacing.md }}
+        <SanctuaryCard variant="glass" style={styles.container}>
+            <VStack space="md" sx={{ padding: Theme.spacing.md }}>
                 {/* Platform Selection */}
-                <HStack space="sm" sx={{ flexWrap: 'wrap' }}
+                <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
                     {PLATFORMS.map((p) => (
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             key={p.value}
                             onPress={() => setPlatform(p.value)}
                             style={[
@@ -87,14 +87,14 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                 }
                             ]}
                         
-                            <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} /
-                        </TouchableOpacity
+                            <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} />
+                        </TouchableOpacity>
                     ))}
-                </HStack
+                </HStack>
 
                 {/* URL Input */}
-                <HStack space="sm" alignItems="center"
-                    <TextInput
+                <HStack space="sm" alignItems="center">
+                    <TextInput>
                         value={url}
                         onChangeText={setUrl}
                         placeholder={platform === 'whatsapp' ? 'Phone number' : 'Username or link'}
@@ -110,9 +110,9 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                     /
                     
                     {/* Privacy Selection */}
-                    <HStack space="xs" style={styles.privacyContainer}
+                    <HStack space="xs" style={styles.privacyContainer}>
                         {PRIVACY_LEVELS.map((pl) => (
-                            <TouchableOpacity
+                            <TouchableOpacity>
                                 key={pl.value}
                                 onPress={() => setPrivacy(pl.value)}
                                 style={[
@@ -124,39 +124,39 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                 ]}
                             
                                 <Text style={{ fontSize: 16 }}>{pl.emoji}</Text
-                            </TouchableOpacity
+                            ></TouchableOpacity>
                         ))}
-                    </HStack
-                </HStack
+                    </HStack>
+                </HStack>
 
                 {/* Actions */}
-                <HStack space="md" justifyContent="flex-end" alignItems="center"
+                <HStack space="md" justifyContent="flex-end" alignItems="center">
                     {!isNew && onDelete && link?.id && (
-                        <TouchableOpacity 
+                        <TouchableOpacity >
                             onPress={() => onDelete(link.id!)} 
                             style={styles.actionBtn}
                             disabled={isSaving}
                         
-                            <Trash2 size={18} color={Theme.colors.emberOrange} /
-                        </TouchableOpacity
+                            <Trash2 size={18} color={Theme.colors.emberOrange} />
+                        </TouchableOpacity>
                     )}
-                    <TouchableOpacity onPress={onCancel} style={styles.actionBtn} disabled={isSaving}
-                        <X size={20} color={colors.textTertiary} /
-                    </TouchableOpacity
-                    <TouchableOpacity 
+                    <TouchableOpacity onPress={onCancel} style={styles.actionBtn} disabled={isSaving}>
+                        <X size={20} color={colors.textTertiary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity >
                         onPress={handleSave} 
                         style={[styles.saveBtn, { backgroundColor: colors.action }]}
                         disabled={isSaving || !url.trim()}
                     
                         {isSaving ? (
                             <Text color="white" bold>...</Text
-                        ) : (
-                            <Check size={20} color="white" /
+                        >) : (
+                            <Check size={20} color="white" />
                         )}
-                    </TouchableOpacity
-                </HStack
-            </VStack
-        </SanctuaryCard
+                    </TouchableOpacity>
+                </HStack>
+            </VStack>
+        </SanctuaryCard>
     );
 }
 

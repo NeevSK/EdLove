@@ -270,7 +270,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     if (!isVisible) return null;
 
     return (
-        <View style={styles.overlayContainer}
+        <View style={styles.overlayContainer}>
             <Animated.View >
                 {...panResponder.panHandlers}
                 style={[styles.fabWrapper, containerStyle]}
@@ -293,7 +293,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                 shadowOpacity: 0.15,
                                 shadowRadius: 15,
                                 shadowOffset: { width: 0, height: 4 },
-                                elevation: 12,>
+                                elevation: 12,
                             }),
                         borderWidth: 1.5,
                         borderColor: isDark ? Theme.colors.glass.dark.border : Theme.colors.glass.light.border,
@@ -302,24 +302,24 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 
                     {hasActiveGaps ? (
                         <Text style={styles.emojiText}>\u2757</Text
-                    ) : icon ? (
+                    >) : icon ? (
                     >    icon
                     ) : (
                         <Text style={styles.emojiText}>{config.emoji}</Text
-                    )}
+                    >)}
                 </Bo>x>
             </Animated.View>
 
             {/* Simple Action Drawer Integration */}
-            <UniversalModal
+            <UniversalModal>
                 isOpen={isDrawerVisible}
                 onClose={() => setIsDrawerVisible(false)}
             
-                <Pressable accessibilityRole="button"
+                <Pressable accessibilityRole="button">
                     style={styles.modalOverlay}
                     onPress={() => setIsDrawerVisible(false)}
                 
-                    <Box
+                    <Box>
                         sx={{
                             backgroundColor: Theme.colors.shroud,
                             borderTopLeftRadius: Theme.corners.generous,
@@ -327,7 +327,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             padding: Theme.spacing.xl,
                             minHeight: ACTION_DRAWER_HEIGHT,
                             width: '100%',
-                            marginTop: 'auto',>
+                            marginTop: 'auto',
                         }}
                     
                         <Box sx={{
@@ -337,8 +337,8 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             borderRadius: 2,
                             alignSelf: 'center',
                             marginBottom: Theme.spacing.lg,
-                            opacity: 0.3>
-                        }} /
+                            opacity: 0.3
+                        }} />
 
                         <VStack sx={{ gap: '$md' as any }}
                         >    <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$xl' as any, fontWeight: '600', marginBottom: '$2' as any }}>
@@ -346,7 +346,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             </Text>
 
                             {onBreathingReset && (
-                                <Pressable accessibilityRole="button"
+                                <Pressable accessibilityRole="button">
                                     onPress={() => {
                                         setIsDrawerVisible(false);
                                         onBreathingReset();
@@ -357,7 +357,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                         pressed && { backgroundColor: `${Theme.colors.sageGreen}33` } // 20% opacity
                                     ]}
                                 
-                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}
+                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}>
                                         <Wind size={20} color={Theme.colors.sageGreen} strokeWidth={2} />
                                         <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any, fontWeight: '600' }}
                                         >    Breathing Reset>
@@ -367,7 +367,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             )}
 
                             {actions?.map((action, idx) => (
-                                <Pressable
+                                <Pressable>
                                     key={idx}
                                     onPress={() => {
                                         setIsDrawerVisible(false);
@@ -381,10 +381,10 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                         pressed && { backgroundColor: `${Theme.colors.sacredWhite}0D` } // 5% opacity
                                     ]}
                                 
-                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}
+                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}>
                                         {action.icon && <action.icon size={20} color={Theme.colors.sanctuarySaffron} strokeWidth={2} />}
                                         <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any }}>{action.label}</Text
-                                    </HStack>
+                                    ></HStack>
                                 </Pr>essable>
                             ))}
                         </VStack>

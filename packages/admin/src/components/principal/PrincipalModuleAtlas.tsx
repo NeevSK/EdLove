@@ -68,7 +68,7 @@ function CapabilityCard({
   const Icon = CAPABILITY_ICONS[capability.id] ?? Files;
 
   return (
-    <Box
+    <Box>
       sx={{
         width: '100%',
         backgroundColor: colors.secondary,
@@ -78,7 +78,7 @@ function CapabilityCard({
         padding: Theme.spacing.md,
         gap: Theme.spacing.sm,
       }}
-          <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: Theme.spacing.sm }}        <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, flex: 1 }}          <Box
+          <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: Theme.spacing.sm }}        <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, flex: 1 }}          <Box>
             sx={{
               width: 36,
               height: 36,
@@ -92,7 +92,7 @@ function CapabilityCard({
                     ? `${Theme.colors.gurudeviBlue}22`
                     : `${Theme.colors.gurudeviViolet}22`,
             }}
-                      <Icon
+                      <Icon>
               size={18}
               color={
                 capability.zone === 'today'
@@ -101,18 +101,18 @@ function CapabilityCard({
                     ? Theme.colors.gurudeviBlue
                     : Theme.colors.gurudeviViolet
               }
-            /          </Box          <VStack sx={{ gap: 2, flex: 1 }}            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>{capability.title}</Text            <Text sx={{ fontSize: 11, color: colors.textSecondary }}              {capability.atlasFamily ?? 'Principal ERP'}
+            /          </Box          <VStack sx={{ gap: 2, flex: 1 }}            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>{capability.title}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}              {capability.atlasFamily ?? 'Principal ERP'}
             </Text          </VStack        </HStack
-        <Box
+        <Box>
           sx={{
             paddingHorizontal: Theme.spacing.sm,
             paddingVertical: 4,
             borderRadius: Theme.corners.full,
             backgroundColor: `${Theme.colors.gurudeviViolet}20`,
           }}
-                  <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.gurudeviViolet, textTransform: 'uppercase' }}            {capability.status}
+                  <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.gurudeviViolet, textTransform: 'uppercase' }}            {capability.status}>
           </Text        </Box      </HStack
-      <Text sx={{ fontSize: 12, lineHeight: 18, color: colors.textSecondary }}        {capability.description}
+      <Text sx={{ fontSize: 12, lineHeight: 18, color: colors.textSecondary }}        {capability.description}>
       </Text    </Box  );
 }
 
@@ -127,8 +127,8 @@ export default function PrincipalModuleAtlas({
     .filter(Boolean);
 
   return (
-    <VStack sx={{ gap: Theme.spacing.md }}      <VStack sx={{ gap: Theme.spacing.xs }}        <Text sx={{ fontSize: 18, fontWeight: '700', color: colors.text }}>{title}</Text        <Text sx={{ fontSize: 13, lineHeight: 20, color: colors.textSecondary }}>{subtitle}</Text      </VStack
+    <VStack sx={{ gap: Theme.spacing.md }}      <VStack sx={{ gap: Theme.spacing.xs }}        <Text sx={{ fontSize: 18, fontWeight: '700', color: colors.text }}>{title}</Text        ><Text sx={{ fontSize: 13, lineHeight: 20, color: colors.textSecondary }}>{subtitle}</Text      ></VStack
       <VStack sx={{ gap: Theme.spacing.sm }}        {capabilities.map((capability) => (
-          <CapabilityCard key={capability.id} capability={capability} /        ))}
+          <CapabilityCard key={capability.id} capability={capability} /        >))}>
       </VStack    </VStack  );
 }

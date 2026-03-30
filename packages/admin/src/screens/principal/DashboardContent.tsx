@@ -148,7 +148,7 @@ export function DashboardContent({
               onClick={onOpenCommons}
                           <Share2 size={18} /> {t('principal.ia.actions.commonsCta') || 'Open Community Commons'}
               {renderScopeBadge('open_commons')}
-            </button          </div        )}
+            </button          ></div        )}
       /
       ><div
         style={{
@@ -184,7 +184,7 @@ export function DashboardContent({
               onClick={() => onNavigate('invites')}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
                           <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                <Building2 size={16} /> Role invites
-              </span              {renderScopeBadge('invites')}
+              </span              >{renderScopeBadge('invites')}
             </button            <button
               className="secondary-button"
               onClick={() => onNavigate('notes')}

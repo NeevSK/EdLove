@@ -49,7 +49,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     {/* Hero Section */}>
                     <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
-                            <AvatarDisplay >
+                            <AvatarDisplay />
                                 userId={school.id}
                                 avatarUrl={null}
                                 fullName={school.name}

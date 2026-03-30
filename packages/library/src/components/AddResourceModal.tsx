@@ -54,63 +54,63 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
     };
 
     const footer = (
-        <HStack {...({ space: "md" } as any)}
+        <HStack {...({ space: "md" } as any)}>
             <SanctuaryButton onPress={onClose} variant="ghost" action="secondary">{t('library.addResource.dismiss')}</SanctuaryButton
-            <SanctuaryButton
+            ><SanctuaryButton>
                 onPress={handleAdd}
                 isDisabled={!title || !url}
             
                 {t('library.addResource.submit')}
-            </SanctuaryButton
-        </HStack
+            </SanctuaryButton>
+        </HStack>
     );
 
     return (
-        <SanctuaryModal
+        <SanctuaryModal>
             isOpen={isOpen}
             onClose={onClose}
             title={t('library.addResource.title')}
             subtitle={t('library.addResource.subtitle')}
             footer={footer}
         
-            <VStack {...({ space: "md", mt: "$4" } as any)}
-                <VStack {...({ space: "xs" } as any)}
+            <VStack {...({ space: "md", mt: "$4" } as any)}>
+                <VStack {...({ space: "xs" } as any)}>
                     <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.infoSection')}</Text
-                    <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}
-                        <InputField
+                    ><Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                        <InputField>
                             {...({ color: text.primary } as any)}
                             placeholder={t('library.addResource.titlePlaceholder')}
                             value={title}
                             onChangeText={setTitle}
                         /
-                    </Input
-                </VStack
+                    </Input>
+                </VStack>
 
-                <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}
-                    <InputField
+                <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                    <InputField>
                         {...({ color: text.primary } as any)}
                         placeholder={t('library.addResource.urlPlaceholder')}
                         value={url}
                         onChangeText={setUrl}
                         autoCapitalize="none"
                     /
-                </Input
+                </Input>
 
-                <Input sx={{ minHeight: 80, backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}
-                    <InputField
+                <Input sx={{ minHeight: 80, backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                    <InputField>
                         {...({ color: text.primary } as any)}
                         placeholder={t('library.addResource.descriptionPlaceholder')}
                         value={description}
                         onChangeText={setDescription}
                         multiline
                     /
-                </Input
+                </Input>
 
-                <VStack {...({ space: "xs" } as any)}
+                <VStack {...({ space: "xs" } as any)}>
                     <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.typeSection')}</Text
-                    <HStack {...({ space: "xs", flexWrap: "wrap" } as any)}
+                    ><HStack {...({ space: "xs", flexWrap: "wrap" } as any)}>
                         {LIBRARY_RESOURCE_CATEGORIES.map(cat => (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 key={cat.id}
                                 onPress={() => setType(cat.id as LibResourceType)}
                                 variant={type === cat.id ? 'solid' : 'outline'}
@@ -118,23 +118,23 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                                 action="secondary"
                             
                                 {t(`library.types.${cat.id}` as any)}
-                            </SanctuaryButton
+                            </SanctuaryButton>
                         ))}
-                    </HStack
-                </VStack
+                    </HStack>
+                </VStack>
 
-                <VStack {...({ space: "xs" } as any)}
+                <VStack {...({ space: "xs" } as any)}>
                     <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.tagsSection')}</Text
-                    <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}
-                        <InputField
+                    ><Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                        <InputField>
                             {...({ color: text.primary } as any)}
                             placeholder={t('library.addResource.tagsPlaceholder')}
                             value={tags}
                             onChangeText={setTags}
                         /
-                    </Input
-                </VStack
-            </VStack
-        </SanctuaryModal
+                    </Input>
+                </VStack>
+            </VStack>
+        </SanctuaryModal>
     );
 }

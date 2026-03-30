@@ -28,7 +28,7 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
   const colors = useThemedColors();
 
   const AdminAction = ({ icon: LucideIcon, label, color, onPress }: any) => (
-    <Pressable
+    <Pressable>
       onPress={() => {
         hapticLight();
         if (onPress) onPress();
@@ -46,13 +46,13 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
         gap: Theme.spacing.xs,
         minHeight: 100,
       }}
-          <Box
+          <Box>
         sx={{
           padding: Theme.spacing.sm,
           borderRadius: Theme.corners.medium,
           backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',
         }}
-              <LucideIcon size={20} color={color || Theme.colors.sanctuarySaffron} /      </Box      <Text
+              <LucideIcon size={20} color={color || Theme.colors.sanctuarySaffron} /      ></Box      <Text>
         color={colors.text}
         sx={{
           fontSize: 11,
@@ -63,12 +63,12 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
       </Text    </Pressable  );
 
   return (
-    <VStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.sm }}      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}        <Text
+    <VStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.sm }}      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}        <Text>
           color={colors.textSecondary}
           sx={{ fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}
                   {t('teacher.admin.title') || 'Administrative Portal'} 
         </Text      </HStack
-      <VStack sx={{ gap: Theme.spacing.sm }}        <HStack sx={{ gap: Theme.spacing.sm }}          <AdminAction
+      <VStack sx={{ gap: Theme.spacing.sm }}        <HStack sx={{ gap: Theme.spacing.sm }}          <AdminAction>
             icon={Calendar}
             label={t('teacher.admin.myLeaves') || 'My Leaves'}
             color={Theme.colors.amberGlow}
@@ -76,21 +76,21 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
             icon={ArrowRightLeft}
             label={t('teacher.admin.substitutions') || 'Substitutions'}
             color={colors.action}
-          /        </HStack        <HStack sx={{ gap: Theme.spacing.sm }}          <AdminAction
+          /        ></HStack        <HStack sx={{ gap: Theme.spacing.sm }}          <AdminAction
             icon={FileText}
             label={t('teacher.admin.reportGen') || 'Student Reports'}
             color={Theme.colors.sageGreen}
-          /          <AdminAction
+          /          ><AdminAction
             icon={ClipboardList}
             label={t('teacher.admin.templates') || 'Letter Templates'}
             color={Theme.colors.emberRed}
-          /        </HStack        <HStack sx={{ gap: Theme.spacing.sm }}          <AdminAction
+          /        ></HStack        <HStack sx={{ gap: Theme.spacing.sm }}          <AdminAction
             icon={DollarSign}
             label={t('teacher.admin.financials') || 'Financials'}
             color={Theme.colors.sageGreen}
-          /          <AdminAction
+          /          ><AdminAction
             icon={CheckSquare}
             label={t('teacher.admin.approvals') || 'Approvals'}
             color={Theme.colors.emberRed}
-          /        </HStack      </VStack    </VStack  );
+          /        ></HStack      </VStack    </VStack  );
 }

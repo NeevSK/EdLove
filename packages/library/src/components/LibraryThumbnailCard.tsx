@@ -201,7 +201,7 @@ export function LibraryThumbnailCard({
 
     const overlay = (
         <View style={styles.overlay}            {/* Top: type badge + bookmark + verified */}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                ></View                <View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                ></View                ><View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
                         <TouchableOpacity >
                             onPress={(e) => {
                                 if (Platform.OS === 'web') (e as unknown as { stopPropagation: () => void }).stopPropagation();
@@ -211,13 +211,13 @@ export function LibraryThumbnailCard({
                             accessibilityRole="button"
                             accessibilityLabel={has_bookmarked ? "Unbookmark" : "Bookmark"}
                             accessibilityHint={has_bookmarked ? "Removes this resource from your bookmarks" : "Adds this resource to your bookmarks"}
-                                                    <Bookmark >
+                                                    <Bookmark />
                                 size={16} 
                                 color={has_bookmarked ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.8)'}
                                 fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
-                            /                        ></TouchableOpacity                    )}>
+                            /                        ></TouchableOpacity                    >)}>
                     {verified && (
-                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}                            <BadgeCheck color={Theme.colors.sageGreen} size={14} /                        ></View                    )}
+                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}                            <BadgeCheck color={Theme.colors.sageGreen} size={14} /                        ></View                    >)}
                 </View            </View>
             {/* Bottom: gradient + title + meta */}
             <LinearGradient colors={gradientColors} style={styles.gradient}                <Text style={styles.title} numberOfLines={2}>{title}</Text                ><View style={styles.meta}                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
@@ -247,7 +247,7 @@ export function LibraryThumbnailCard({
                     <View style={styles.card}                {thumbnailUrl ? (>
                     <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}>
                     </ImageBackground                >) : (
-                    <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        ></View                        {overlay}
+                    <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        ></View                        >{overlay}
                     </                )}
             </View        </Pressable    );
 }

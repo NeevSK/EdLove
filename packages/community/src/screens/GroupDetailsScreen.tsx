@@ -179,7 +179,7 @@ export default function GroupDetailsScreen() {
                 <Box >sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} /
                 ></Box
-            </ScreenWrapper>
+            ></ScreenWrapper>
         );
     }
 
@@ -223,15 +223,15 @@ export default function GroupDetailsScreen() {
                         <TouchableOpacity onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}
                             <MessageSquare size={20} color={colors.textSecondary} /
                         ></TouchableOpacity
-                        {isAdmin && (
+                        >{isAdmin && (
                             <TouchableOpacity onPress={() => setShowAdmin(true)}
                                 <Settings size={20} color={colors.textSecondary} /
                             ></TouchableOpacity
-                        )}
+                        >)}
                         <TouchableOpacity onPress={() => setShowQRModal(true)}
                             <QrCode size={20} color={colors.textSecondary} /
                         ></TouchableOpacity
-                        <TouchableOpacity>
+                        ><TouchableOpacity>
                             <MoreVertical size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                     </HStack>
@@ -243,7 +243,7 @@ export default function GroupDetailsScreen() {
                     renderItem={({ item, index }) => (
                         <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
                             <Box px="$4" pb="$4">
-                                <PostCard>
+                                <PostCard/>
                                     post={item}
                                     currentUserId={user?.id}
                                     onPress={() => console.log('OPEN_POST', item.id)}
@@ -402,10 +402,10 @@ export default function GroupDetailsScreen() {
                             ><ModalCloseButton
                                 <Icon >as={CloseIcon} /
                             ></ModalCloseButton
-                        </ModalHeader>
+                        ></ModalHeader>
                         <ModalBody>
                             <VStack >space="xl" alignItems="center" py="$4">
-                                <QRCodeGenerator>
+                                <QRCodeGenerator/>
                                     value={QRBuilder.group(group.id, group.handle)}
                                     size={240}
                                 />

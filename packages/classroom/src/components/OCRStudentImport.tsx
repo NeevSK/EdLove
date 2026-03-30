@@ -75,7 +75,7 @@ export default function OCRStudentImport({
       toast.show({
         placement: 'top',
         render: ({ id }: { id: string }) => (
-          <SanctuaryToast
+          <SanctuaryToast>
             message="Select at least one student to import"
             type="info"
             visible
@@ -104,7 +104,7 @@ export default function OCRStudentImport({
       toast.show({
         placement: 'top',
         render: ({ id }: { id: string }) => (
-          <SanctuaryToast
+          <SanctuaryToast>
             message="Failed to import students. Please try again."
             type="error"
             visible
@@ -120,7 +120,7 @@ export default function OCRStudentImport({
 
   if (phase === 'scan') {
     return (
-      <OCRScanner
+      <OCRScanner>
         onStudentsScanned={handleScanned}
         onCancel={onCancel}
         colors={{
@@ -131,7 +131,7 @@ export default function OCRStudentImport({
           textSecondary: Theme.colors.starlightGray,
           tertiary: Theme.colors.ink,
           accent: Theme.colors.sanctuarySaffron,
-          success: Theme.colors.sageGreen,>
+          success: Theme.colors.sageGreen,
         }}
       /
     >);
@@ -139,7 +139,7 @@ export default function OCRStudentImport({
 
   if (phase === 'importing') {
     return (
-      <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}
+      <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}>
         <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>\u23F3</Text
         ><Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}
           Importing students...>
@@ -152,9 +152,9 @@ export default function OCRStudentImport({
   const selectedCount = students.filter(s => s.selected).length;
 
   return (
-    <VStack sx={{ flex: 1, gap: Theme.spacing.md }}
+    <VStack sx={{ flex: 1, gap: Theme.spacing.md }}>
       <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}
+        <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}>
           Review Students ({students.length} found)>
         </Heading>
         <TouchableOpacity onPress={() => setPhase('scan')}
@@ -162,14 +162,14 @@ export default function OCRStudentImport({
         ></TouchableOpacity>
       </HStack>
 
-      <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}
+      <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
         Tap a student to toggle selection. Amber items have low OCR confidence.>
       </Text>
 
-      <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}
+      <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
         {students.map((student, index) => (
           <TouchableOpacity key={index} onPress={() => toggleStudent(index)}
-            <View
+            <View>
               style={{
                 backgroundColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable,
@@ -186,16 +186,16 @@ export default function OCRStudentImport({
                     : Theme.colors.sageGreen
                   : Theme.colors.mistGray,
                 padding: Theme.spacing.md,
-                opacity: student.selected ? 1 : 0.5,>
+                opacity: student.selected ? 1 : 0.5,
               }}
             
-              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <VStack sx={{ gap: 2, flex: 1 }}>
-                  <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}
+                  <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
                     {student.name}>
                   </Text>
-                  <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}
-                    Index: {student.index_number}>
+                  <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}>
+                    Index: {student.index_number}
                   </Text>
                   {student.uncertain && student.selected && (
                     <Text style={{ color: '#f59e0b', fontSize: 11 }}
@@ -203,14 +203,14 @@ export default function OCRStudentImport({
                     </Text>
                   )}
                 </VStack>
-                <Text
+                <Text>
                   style={{
                     fontSize: 20,
                     color: student.selected
                       ? student.uncertain
                         ? '#f59e0b'
                         : Theme.colors.sageGreen
-                      : Theme.colors.mistGray,>
+                      : Theme.colors.mistGray,
                   }}
                 
                   {student.selected ? (student.uncertain ? '?' : '\u2713') : '\u25CB'}
@@ -221,8 +221,8 @@ export default function OCRStudentImport({
         ))}
       </VStack>
 
-      <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}
-        <TouchableOpacity
+      <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}>
+        <TouchableOpacity>
           onPress={onCancel}
           style={{
             flex: 1,
@@ -230,12 +230,12 @@ export default function OCRStudentImport({
             borderColor: Theme.colors.mistGray,
             borderRadius: Theme.corners.comfortable,
             paddingVertical: 14,
-            alignItems: 'center',>
+            alignItems: 'center',
           }}
         
           <Text sx={{ color: Theme.colors.sacredWhite }}>Cancel</Text
         ></TouchableOpacity>
-        <TouchableOpacity
+        <TouchableOpacity>
           onPress={handleConfirm}
           style={{
             flex: 2,
@@ -246,8 +246,8 @@ export default function OCRStudentImport({
             alignItems: 'center',
           }}
         
-          <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}
-            Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}>
+          <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}>
+            Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
           </Text>
         </TouchableOpacity>
       </HStack>

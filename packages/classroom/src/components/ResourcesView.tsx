@@ -199,7 +199,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         <Box sx={{ alignItems: 'center', paddingVertical: 32 }}>
                             <Text color={colors.textTertiary}>No resources found.</Text
                         ></Box
-                    )}
+                    >)}
 
                     {filteredResources.map(resource => (
                         <Pressable>
@@ -254,13 +254,13 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                                 togglePinMutation.mutate({ id: resource.id, isPinned: !resource.is_pinned });
                                             }}
                                         
-                                            <Icon>
+                                            <Icon/>
                                                 as={Pin}
                                                 fill={resource.is_pinned ? Theme.colors.sanctuarySaffron : 'none'}
                                                 sx={{ width: 16, height: 16, color: resource.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary }}
                                             /
                                         ></Pressable
-                                        <Pressable>
+                                        ><Pressable>
                                             sx={{ padding: 8 }}
                                             onPress={(e) => {
                                                 e.stopPropagation();
@@ -269,7 +269,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                         
                                             <Icon as={Trash2} sx={{ width: 16, height: 16, color: Theme.colors.emberRed }} /
                                         ></Pressable
-                                    </HStack>
+                                    ></HStack>
                                 )}
                             </HStack>
                         </Pressable>
@@ -303,7 +303,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                     </ButtonText>
                     <Plus color={Theme.colors.sacredWhite} size={20} /
                 ></Button
-            )}
+            >)}
 
             {/* Add Resource Modal */}
             <Modal>
@@ -317,7 +317,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         ><ModalCloseButton
                             <Icon >as={CloseIcon} sx={{ color: colors.textTertiary }} /
                         ></ModalCloseButton
-                    </ModalHeader>
+                    ></ModalHeader>
                     <ModalBody>
                         <VStack >sx={{ gap: Theme.spacing.md }}>
                             <VStack sx={{ gap: 4 }}>
@@ -361,16 +361,16 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                 </Text>
                                 {type === 'note' ? (
                                     <Textarea sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
-                                        <TextareaInput>
+                                        <TextareaInput/>
                                             placeholder={t('classroom.resources.contentPlaceholder') || "Enter note content..."}
                                             sx={{ color: colors.text }}
                                             value={content}
                                             onChangeText={setContent}
                                         /
                                     ></Textarea
-                                ) : (
+                                >) : (
                                     <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
-                                        <InputField>
+                                        <InputField/>
                                             placeholder="https://..."
                                             keyboardType="url"
                                             autoCapitalize="none"
@@ -379,7 +379,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                             onChangeText={setContent}
                                         /
                                     ></Input
-                                )}
+                                >)}
                             </VStack>
                         </VStack>
                     </ModalBody>
@@ -394,7 +394,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         
                             <ButtonText sx={{ color: colors.textSecondary }}>{t('common.cancel') || 'Cancel'}</ButtonText
                         ></Button
-                        <Button>
+                        ><Button>
                             onPress={() => {
                                 addResourceMutation.mutate({ title, type, content });
                             }}

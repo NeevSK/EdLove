@@ -46,9 +46,9 @@ function ZoneButton({
               borderRadius: Theme.corners.full,
               backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}24` : Theme.colors.linen,
             }}
-                      <Text sx={{ fontSize: 10, fontWeight: '800', color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark }}              {count}
+                      <Text sx={{ fontSize: 10, fontWeight: '800', color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark }}              {count}>
             </Text          </Box        </HStack        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}          {detail}>
-        </Text      </Box    </TouchableOpacity  );
+        </Text      ></Box    </TouchableOpacity  );
 }
 
 interface PrincipalNativeDashboardShellProps {
@@ -85,9 +85,9 @@ export function PrincipalNativeDashboardShell({
           paddingBottom: Theme.spacing.md,
           borderBottomWidth: 1,
           borderBottomColor: colors.border,
-          backgroundColor: Theme.colors.vellum,>
+          backgroundColor: Theme.colors.vellum,
         }}
-              <HStack sx={{ gap: Theme.spacing.xs }}          <ZoneButton
+              <HStack sx={{ gap: Theme.spacing.xs }}          <ZoneButton>
             id="today"
             label="Today"
             detail="Awareness, approvals, and immediate coordination."
@@ -109,14 +109,14 @@ export function PrincipalNativeDashboardShell({
             isActive={activeZone === 'outlook'}
             onPress={onZoneChange}
           /        ></HStack      </Box>
-      <ScrollView        <VStack sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}          {error ? (
-            <Box
+      <ScrollView        <VStack >sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}          {error ? (>
+            <Box>
               sx={{
                 padding: Theme.spacing.md,
                 backgroundColor: Theme.colors.errorBackground,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: Theme.colors.emberRed,>
+                borderColor: Theme.colors.emberRed,
               }}
                           <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text            ></Box          ) : null}
 

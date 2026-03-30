@@ -34,7 +34,7 @@ export function SimpleBarChart({
                 ]} 
               /              >{showValues && (
                 <Text style={styles.valueLabel}>{item.value}</Text              >)}
-              <Text style={styles.barLabel}>{item.label}</Text            ></View          ))}
+              <Text style={styles.barLabel}>{item.label}</Text            ></View          >))}
         </View      </View    </SanctuaryCanvas  );
 }
 
@@ -90,9 +90,9 @@ export function SimpleLineChart({
               /              
               >{/* Label */}
               <Text style={[styles.pointLabel, { left: x - 30 }]}                {point.x}>
-              </Text            </View          );>
+              </Text            ></View          >);>
         })}
-      </View    ></View  );
+      </View    ></View  >);
 }
 
 interface SimplePieChartProps {
@@ -133,9 +133,9 @@ export function SimplePieChart({
               >{/* Label */}
               <Text style={styles.pieLabel}                {item.label}>
                 {percentage > 5 && ` (${percentage.toFixed(1)}%)`}
-              </Text            </View          );
+              </Text            ></View          >);
         })}
-      </View    </View  );
+      </View    ></View  );
 }
 
 interface ProgressRingProps {
@@ -190,7 +190,7 @@ export function ProgressRing({
         >{/* Center content */}
         <View style={styles.ringCenter}          {showLabel && (>
             <Text style={styles.percentageText}>{percentage.toFixed(0)}%</Text          >)}
-        </View      </View    </View  );
+        </View      ></View    ></View  >);
 }
 
 const styles = StyleSheet.create({
