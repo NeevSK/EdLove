@@ -92,8 +92,8 @@ const PostCard = React.memo(function PostCard({
                             style={StyleSheet.absoluteFill}
                             resizeMode="cover"
                         /
-                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} /
-                    </Box
+                        ><Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} /
+                    ></Box
                 </Box
             );
         }
@@ -101,9 +101,9 @@ const PostCard = React.memo(function PostCard({
         // Non-image attachments: document / video / audio \u2014 render a tappable link chip
         const mediaIcon = media_type === 'video'
             ? <Video size={16} color={colors.action} /
-            : media_type === 'audio'
+            >: media_type === 'audio'
                 ? <Music size={16} color={colors.action} /
-                : <FileText size={16} color={colors.action} />;
+                >: <FileText size={16} color={colors.action} />;
 
         const mediaLabel = media_type === 'video' ? 'Video'
             : media_type === 'audio' ? 'Audio'
@@ -129,8 +129,8 @@ const PostCard = React.memo(function PostCard({
             
                 {mediaIcon}
                 <Text color={colors.action} size="sm" sx={{ marginLeft: 6 }}>{mediaLabel}</Text
-                <Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} /
-            </TouchableOpacity
+                ><Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} /
+            ></TouchableOpacity
         );
     };
 
@@ -154,14 +154,14 @@ const PostCard = React.memo(function PostCard({
                     {urgency && urgency !== 'low' && (
                         <Box sx={{ backgroundColor: urg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}
                             <AlertTriangle size={11} color={urg.color} /
-                            <Text size="xs" bold sx={{ color: urg.color }}>{urg.label}</Text
-                        </Box
+                            ><Text size="xs" bold sx={{ color: urg.color }}>{urg.label}</Text
+                        ></Box
                     )}
                     {has_accepted_answer && (
                         <Box sx={{ backgroundColor: 'rgba(22,163,74,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}
                             <CheckCircle2 size={11} color="#16A34A" /
-                            <Text size="xs" bold sx={{ color: '#16A34A' }}>Answered</Text
-                        </Box
+                            ><Text size="xs" bold sx={{ color: '#16A34A' }}>Answered</Text
+                        ></Box
                     )}
                 </HStack
             );
@@ -172,8 +172,8 @@ const PostCard = React.memo(function PostCard({
                 <Box sx={{ marginBottom: 4 }}
                     <Box sx={{ backgroundColor: 'rgba(99,102,241,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 }}
                         <BookOpen size={11} color="#6366F1" /
-                        <Text size="xs" bold sx={{ color: '#6366F1' }}>Resource</Text
-                    </Box
+                        ><Text size="xs" bold sx={{ color: '#6366F1' }}>Resource</Text
+                    ></Box
                 </Box
             );
         }
@@ -191,11 +191,11 @@ const PostCard = React.memo(function PostCard({
                 <VStack space="xs" sx={{ marginBottom: 4 }}
                     <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}
                         <Text size="xs" bold sx={{ color: cfg.color }}>{cfg.label}</Text
-                    </Box
+                    ></Box
                     {!!feedback_response && (
                         <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: Theme.colors.sanctuarySaffron }}
                             <Text color={colors.textSecondary} size="xs" italic>{feedback_response}</Text
-                        </Box
+                        ></Box
                     )}
                 </VStack
             );
@@ -318,7 +318,7 @@ const PostCard = React.memo(function PostCard({
                     currentUserId={currentUserId}
                     isAuthor={author_id === currentUserId}
                 /
-            );
+            >);
         }
         return null;
     };
@@ -336,9 +336,9 @@ const PostCard = React.memo(function PostCard({
                         
                             <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}
                                 <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText
-                                {!is_anonymous && author_avatar && (
+                                >{!is_anonymous && author_avatar && (
                                     <AvatarImage source={{ uri: author_avatar }} alt={author_name} /
-                                )}
+                                >)}
                             </Avatar
                         </TouchableOpacity
                         <VStack
@@ -356,7 +356,7 @@ const PostCard = React.memo(function PostCard({
                     <Box
                         <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}
                             <MoreHorizontal color={colors.textTertiary} size={20} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
 
                         {menuOpen && (
                             <Box sx={{
@@ -381,8 +381,8 @@ const PostCard = React.memo(function PostCard({
                                         
                                             <HStack space="md" alignItems="center"
                                                 <XIcon size={16} color={colors.error} /
-                                                <Text size="sm" color={colors.error}>Delete Post</Text
-                                            </HStack
+                                                ><Text size="sm" color={colors.error}>Delete Post</Text
+                                            ></HStack
                                         </TouchableOpacity
                                     )}
 
@@ -394,8 +394,8 @@ const PostCard = React.memo(function PostCard({
                                         
                                             <HStack space="md" alignItems="center"
                                                 <ShieldAlert size={16} color={colors.text} /
-                                                <Text size="sm" color={colors.text}>Report Post</Text
-                                            </HStack
+                                                ><Text size="sm" color={colors.text}>Report Post</Text
+                                            ></HStack
                                         </TouchableOpacity
                                     )}
 
@@ -406,8 +406,8 @@ const PostCard = React.memo(function PostCard({
                                         
                                             <HStack space="md" alignItems="center"
                                                 <UserX size={16} color={Theme.colors.sanctuarySaffron} /
-                                                <Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text
-                                            </HStack
+                                                ><Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text
+                                            ></HStack
                                         </TouchableOpacity
                                     )}
                                 </VStack
@@ -440,7 +440,7 @@ const PostCard = React.memo(function PostCard({
                                 color={isLiked ? colors.error : colors.textTertiary}
                                 fill={isLiked ? colors.error : 'none'}
                             /
-                            {localLikeCount > 0 && (
+                            >{localLikeCount > 0 && (
                                 <Text color={isLiked ? colors.error : colors.textTertiary} size="xs" sx={{ marginLeft: 4 }}
                                     {localLikeCount}
                                 </Text
@@ -454,7 +454,7 @@ const PostCard = React.memo(function PostCard({
                                     size={20}
                                     color={hasResonated ? colors.action : colors.textTertiary}
                                 /
-                            </LivingGlow
+                            ></LivingGlow
                         </TouchableOpacity
 
                         <TouchableOpacity onPress={onComment} style={styles.actionButton}
@@ -467,7 +467,7 @@ const PostCard = React.memo(function PostCard({
                         {/* Share button \u2014 clipboard on web, native share sheet otherwise */}
                         <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post"
                             <Share2 size={18} color={colors.textTertiary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                     </HStack
 
                     {/* Engagement Count */}
@@ -725,26 +725,26 @@ function PollWidget({
                         <HStack space="xs" alignItems="center"
                             style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}
                             <Lock size={11} color={colors.textTertiary} /
-                            <Text color={colors.textTertiary} size="xs">Anonymous</Text
-                        </HStack
+                            ><Text color={colors.textTertiary} size="xs">Anonymous</Text
+                        ></HStack
                     )}
                     {allow_multiple && (
                         <Box style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}
                             <Text color={colors.textTertiary} size="xs">Multi-select</Text
-                        </Box
+                        ></Box
                     )}
                 </HStack
 
                 {isExpired ? (
                     <HStack space="xs" alignItems="center"
                         <Clock size={12} color={colors.textTertiary} /
-                        <Text color={colors.textTertiary} size="xs">Poll ended</Text
-                    </HStack
+                        ><Text color={colors.textTertiary} size="xs">Poll ended</Text
+                    ></HStack
                 ) : timeLeft ? (
                     <HStack space="xs" alignItems="center"
                         <Clock size={12} color={colors.action} /
-                        <Text color={colors.action} size="xs">{timeLeft}</Text
-                    </HStack
+                        ><Text color={colors.action} size="xs">{timeLeft}</Text
+                    ></HStack
                 ) : null}
             </HStack
 
@@ -791,7 +791,7 @@ function PollWidget({
                                             : `${colors.overlay}88`,
                                 }}
                             /
-                        )}
+                        >)}
 
                         <HStack justifyContent="space-between" style={{ paddingHorizontal: 12, zIndex: 1 }} alignItems="center"
                             <HStack space="sm" alignItems="center" style={{ flex: 1 }}
@@ -808,8 +808,8 @@ function PollWidget({
                                         {isSelected && (
                                             allow_multiple
                                                 ? <Check size={12} color="#fff" strokeWidth={3} /
-                                                : <Box style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' }} /
-                                        )}
+                                                >: <Box style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' }} /
+                                        >)}
                                     </Box
                                 )}
                                 {isWinner && <Trophy size={14} color={Theme.colors.sanctuarySaffron} />}
@@ -840,7 +840,7 @@ function PollWidget({
                                     </Text
                                     {!is_anonymous && (
                                         <Text color={colors.textTertiary} size="xs">{count}</Text
-                                    )}
+                                    >)}
                                 </VStack
                             )}
                         </HStack
@@ -877,8 +877,8 @@ function PollWidget({
                         
                             {isRemoving
                                 ? <ActivityIndicator size="small" color={colors.textTertiary} /
-                                : <XIcon size={11} color={colors.textTertiary} /
-                            }
+                                >: <XIcon size={11} color={colors.textTertiary} /
+                            >}
                             <Text color={colors.textTertiary} size="xs"
                                 {isRemoving ? 'Removing\u2026' : 'Remove vote'}
                             </Text
@@ -893,7 +893,7 @@ function PollWidget({
 export default PostCard;
 
 /** Maps each canonical PostType to its footer badge config. */
-const TYPE_BADGE: Record<PostType, { label: string; bg: string; border: string; text: string }> = {
+const TYPE_BADGE: Record<PostType, { label: string; bg: string; border: string; text: string }/> = {
     announcement: { label: 'Sacred Bulletin', bg: '$amber100',          border: '$amber400',           text: '$amber700' },
     question:     { label: 'Question',        bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.5)', text: '#3B82F6' },
     resource:     { label: 'Resource',        bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.5)', text: '#6366F1' },

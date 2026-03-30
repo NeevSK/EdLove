@@ -287,7 +287,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             toast.show({
                 placement: 'bottom',
                 render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid"                        <ToastTitle>Failed to save profile. Please try again.</ToastTitle                    </Toast                ),
+                    <Toast nativeID={id} action="error" variant="solid"                        <ToastTitle>Failed to save profile. Please try again.</ToastTitle                    ></Toast                ),
             });
         }
     };
@@ -304,8 +304,8 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         value={name}
                         onChangeText={setName}
                         color={colors.text}
-                    /                </Input                <Text color={colors.textSecondary} size="sm"                    This name becomes the gentle way Gurudevi addresses you across your sanctuary surfaces.
-                </Text                <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$2' }}                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText                </Button                <Button
+                    /                ></Input                <Text color={colors.textSecondary} size="sm"                    This name becomes the gentle way Gurudevi addresses you across your sanctuary surfaces.
+                </Text                <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$2' }}                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText                ></Button                <Button
                     variant="link"
                     onPress={() => {
                         hapticLight();
@@ -319,7 +319,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         }
                     }}
                     sx={{ mt: '$1' }}
-                                    <ButtonText color={colors.textTertiary}>{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText                </Button            </VStack        </StepShell    );
+                                    <ButtonText color={colors.textTertiary}>{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText                ></Button            </VStack        </StepShell    );
 
     const ROLE_OPTIONS: Array<{ value: Role; emoji: string; descKey: string }> = [
         { value: 'teacher', emoji: '\uD83E\uDDD1\u200D\uD83C\uDFEB', descKey: 'onboarding.roleDesc.teacher' },
@@ -328,7 +328,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     ];
 
     const renderRoleStep = () => (
-        <VStack space="xl" mt="$8" px="$6"            <ProgressIndicator currentStep={1} totalSteps={7} /            <Heading size="2xl" color={colors.action} textAlign="center"                {t('onboarding.roleTitle')}
+        <VStack space="xl" mt="$8" px="$6"            <ProgressIndicator currentStep={1} totalSteps={7} /            ><Heading size="2xl" color={colors.action} textAlign="center"                {t('onboarding.roleTitle')}
             </Heading            <Text size="md" color={colors.textSecondary} textAlign="center"                {t('onboarding.roleSubtitle')}
             </Text            <VStack space="md"                {ROLE_OPTIONS.map((r) => {
                     const selected = role === r.value;
@@ -347,7 +347,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                 flexDirection: 'row',
                                 alignItems: 'center',
                             }}
-                                                    <Text size="2xl" mr="$3">{r.emoji}</Text                            <VStack flex={1}                                <Text
+                                                    <Text size="2xl" mr="$3">{r.emoji}</Text                            ><VStack flex={1}                                <Text
                                     size="md"
                                     fontWeight="$bold"
                                     color={selected ? colors.action : colors.text}
@@ -363,10 +363,10 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                     }}
-                                                                    <Text size="xs" color={Theme.colors.sacredWhite}>\u2713</Text                                </Box                            )}
+                                                                    <Text size="xs" color={Theme.colors.sacredWhite}>\u2713</Text                                ></Box                            )}
                         </Pressable                    );
                 })}
-            </VStack            <HStack space="md" mt="$6"                <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}                    <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText                </Button                <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText                </Button            </HStack        </VStack    );
+            </VStack            <HStack space="md" mt="$6"                <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}                    <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText                ></Button                <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText                ></Button            </HStack        </VStack    );
 
     const renderTourStep = (index: number) => {
         const tourIdx = index - 2; // steps 2-6 map to tour screens 0-4
@@ -374,7 +374,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         if (!screen) return null;
 
         return (
-            <VStack space="xl" mt="$8" px="$6" flex={1}                <ProgressIndicator currentStep={index} totalSteps={7} /                <VStack
+            <VStack space="xl" mt="$8" px="$6" flex={1}                <ProgressIndicator currentStep={index} totalSteps={7} /                ><VStack
                     space="md"
                     alignItems="center"
                                     <Text
@@ -389,11 +389,11 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         textAlign="center"
                         accessibilityRole="header"
                                             {screen.title}
-                    </Heading                    <Text color={colors.textSecondary} textAlign="center" size="lg" fontWeight="$bold">{screen.subtitle}</Text                    <Box sx={{ flex: 1, justifyContent: 'center', py: '$4' }}                        <Text textAlign="center" color={colors.text} size="md" lineHeight="$xl">{screen.content}</Text                    </Box                </VStack                <VStack space="md" mt="$auto" pb="$4"                    <HStack space="md"                        <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}                            <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText                        </Button                        <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}                            <ButtonText color={Theme.colors.sacredWhite}>{index === 6 ? t('onboarding.finish') : t('onboarding.next')}</ButtonText                        </Button                    </HStack                    <Button variant="link" onPress={handleSkipTour}                        <ButtonText color={colors.textTertiary}>{t('onboarding.skip')}</ButtonText                    </Button                </VStack            </VStack        );
+                    </Heading                    <Text color={colors.textSecondary} textAlign="center" size="lg" fontWeight="$bold">{screen.subtitle}</Text                    <Box sx={{ flex: 1, justifyContent: 'center', py: '$4' }}                        <Text textAlign="center" color={colors.text} size="md" lineHeight="$xl">{screen.content}</Text                    ></Box                </VStack                <VStack space="md" mt="$auto" pb="$4"                    <HStack space="md"                        <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}                            <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText                        ></Button                        <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}                            <ButtonText color={Theme.colors.sacredWhite}>{index === 6 ? t('onboarding.finish') : t('onboarding.next')}</ButtonText                        ></Button                    </HStack                    <Button variant="link" onPress={handleSkipTour}                        <ButtonText color={colors.textTertiary}>{t('onboarding.skip')}</ButtonText                    </Button                </VStack            </VStack        );
     };
 
     return (
-        <ScreenWrapper            <Box sx={{ flex: 1, backgroundColor: colors.primary }}                <Box
+        <ScreenWrapper            <Box >sx={{ flex: 1, backgroundColor: colors.primary }}                <Box
                     sx={{
                         position: 'absolute',
                         top: -50,
@@ -403,7 +403,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         borderRadius: 90,
                         backgroundColor: `${colors.action}12`,
                     }}
-                /                <Box
+                /                ><Box
                     sx={{
                         position: 'absolute',
                         left: -20,
@@ -413,7 +413,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         borderRadius: 80,
                         backgroundColor: `${Theme.colors.gurudeviBlue}12`,
                     }}
-                /                <VStack flex={1}                    <VStack px="$6" pt="$5" pb="$2" space="sm"                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}                            {JOURNEY_PILLARS.map((pillar) => (
+                /                ><VStack flex={1}                    <VStack px="$6" pt="$5" pb="$2" space="sm"                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}                            {JOURNEY_PILLARS.map((pillar) => (
                                 <Box
                                     key={pillar}
                                     sx={{
@@ -428,7 +428,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                     </Text                                </Box                            ))}
                         </HStack                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                            SANCTUARY JOURNEY
                         </Text                    </VStack                    {isCompleting ? (
-                        <Center flex={1}                            <Text color={colors.text}>Finalizing your sanctuary...</Text                        </Center                    ) : (
+                        <Center flex={1}                            <Text color={colors.text}>Finalizing your sanctuary...</Text                        ></Center                    ) : (
                         <                            {currentStep === 0 && renderNameStep()}
                             {currentStep === 1 && renderRoleStep()}
                             {currentStep >= 2 && currentStep <= 6 && renderTourStep(currentStep)}

@@ -60,7 +60,7 @@ import { formatDistanceToNow } from 'date-fns';
 // Simple fallback for StackFallback if not available in repo/ui
 const StackFallback = ({ variant }: { variant?: string }) => (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}        {[1, 2, 3].map(i => (
-            <div key={i} style={{ height: '100px', backgroundColor: 'var(--background-alt)', borderRadius: '12px', opacity: 0.5 }} /        ))}
+            <div key={i} style={{ height: '100px', backgroundColor: 'var(--background-alt)', borderRadius: '12px', opacity: 0.5 }} /        >))}
     </div);
 
 type CommunityTab = 'feed' | 'groups' | 'dms';
@@ -181,7 +181,7 @@ export default function CommunityScreenWeb() {
                                     }
                                     setShowCreatePost(true);
                                 }}
-                                                            <PenLine size={15} /                                {t('community.actions.newPost') || "New Post"}
+                                                            <PenLine size={15} /                                >{t('community.actions.newPost') || "New Post"}
                             </button                            <button
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
@@ -193,14 +193,14 @@ export default function CommunityScreenWeb() {
                                     }
                                     setShowCreateGroup(true);
                                 }}
-                                                            <Plus size={15} /                                {t('community.actions.newGroup') || "New Group"}
+                                                            <Plus size={15} /                                >{t('community.actions.newGroup') || "New Group"}
                             </button                            {/* Notification bell with unread badge */}
                             <div style={{ position: 'relative', display: 'inline-flex' }}                                <button
                                     className="secondary-button"
                                     style={{ display: 'inline-flex', alignItems: 'center', padding: '8px' }}
                                     title="Notifications"
                                     onClick={() => {/* TODO: open notifications panel */}}
-                                                                    <Bell size={17} /                                </button                                {notifCount > 0 && (
+                                                                    <Bell size={17} /                                ></button                                {notifCount > 0 && (
                                     <span style={{
                                         position: 'absolute',
                                         top: '-4px',
@@ -229,38 +229,38 @@ export default function CommunityScreenWeb() {
                                 label={t('community.tabs.feed') || "Feed"}
                                 active={activeTab === 'feed'}
                                 onClick={() => setActiveTab('feed')}
-                            /                            <SidebarItem
+                            /                            ><SidebarItem
                                 icon={<Users2 size={18} />}
                                 label={t('community.tabs.groups') || "Groups"}
                                 active={activeTab === 'groups'}
                                 onClick={() => setActiveTab('groups')}
-                            /                            <SidebarItem
+                            /                            ><SidebarItem
                                 icon={<MessageSquare size={18} />}
                                 label={t('community.tabs.dms') || "Messages"}
                                 active={activeTab === 'dms'}
                                 onClick={() => setActiveTab('dms')}
-                            /                        </nav
+                            /                        ></nav
                         {activeTab === 'feed' && (
-                            <                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} /                                <div style={{ padding: '0 16px' }}                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.filters.title') || "Filters"}</div                                    <SidebarItem
+                            <                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} /                                ><div style={{ padding: '0 16px' }}                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.filters.title') || "Filters"}</div                                    ><SidebarItem
                                         icon={<Activity size={16} />}
                                         label={t('community.filters.allUpdates') || "All Updates"}
                                         active={selectedGroupId === 'all'}
                                         onClick={() => setSelectedGroupId('all')}
-                                    /                                    <SidebarItem
+                                    /                                    ><SidebarItem
                                         icon={<Heart size={16} />}
                                         label={t('community.filters.joined') || "Joined"}
                                         active={selectedGroupId === 'pulse'}
                                         onClick={() => setSelectedGroupId('pulse')}
-                                    /                                </div                            </                        )}
+                                    /                                ></div                            </                        )}
 
                         {activeTab === 'groups' && (
-                            <                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} /                                <div style={{ padding: '0 16px' }}                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.myGroups') || "My Sanctuary"}</div                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}                                        {joinedGroups?.map((g) => (
+                            <                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} /                                ><div style={{ padding: '0 16px' }}                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.myGroups') || "My Sanctuary"}</div                                    ><div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}                                        {joinedGroups?.map((g) => (
                                             <button
                                                 key={g.id}
                                                 className={`sidebar-item ${selectedGroupId === g.id ? 'active' : ''}`}
                                                 style={{ padding: '8px 12px' }}
                                                 onClick={() => { setSelectedGroupId(g.id); }}
-                                                                                            <span className="sidebar-icon"                                                    <Hash size={14} /                                                </span                                                <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span                                            </button                                        ))}
+                                                                                            <span className="sidebar-icon"                                                    <Hash size={14} /                                                ></span                                                <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span                                            ></button                                        ))}
                                     </div                                </div                            </                        )}
                     </aside
                     {/* CENTER: Main Feed / Groups / DMs */}
@@ -268,22 +268,22 @@ export default function CommunityScreenWeb() {
                         <div className="community-sub-nav"                            <button
                                 className={`sub-nav-item ${activeTab === 'feed' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('feed')}
-                                                            <Compass size={16} /                                <span>{t('community.tabs.feed') || "Feed"}</span                            </button                            <button
+                                                            <Compass size={16} /                                ><span>{t('community.tabs.feed') || "Feed"}</span                            ></button                            <button
                                 className={`sub-nav-item ${activeTab === 'groups' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('groups')}
-                                                            <Users2 size={16} /                                <span>{t('community.tabs.groups') || "Groups"}</span                            </button                            <button
+                                                            <Users2 size={16} /                                ><span>{t('community.tabs.groups') || "Groups"}</span                            ></button                            <button
                                 className={`sub-nav-item ${activeTab === 'dms' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('dms')}
-                                                            <MessageSquare size={16} /                                <span>{t('community.tabs.dms') || "DMs"}</span                            </button                        </div
+                                                            <MessageSquare size={16} /                                ><span>{t('community.tabs.dms') || "DMs"}</span                            ></button                        </div
                         {/* Search bar (Persistent across Feed and Groups) */}
                         {activeTab !== 'dms' && (
-                            <div className="sanctuary-search-shell" style={{ marginBottom: '16px' }}                                <Compass size={16} color="var(--ink-ghost)" /                                <input
+                            <div className="sanctuary-search-shell" style={{ marginBottom: '16px' }}                                <Compass size={16} color="var(--ink-ghost)" /                                ><input
                                     placeholder={t('community.search.placeholder') || 'Search posts, groups, members&'}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     aria-label="Search community"
-                                /                                {searchQuery && (
-                                    <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', lineHeight: 1 }} aria-label="Clear search"></button                                )}
+                                /                                >{searchQuery && (
+                                    <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', lineHeight: 1 }} aria-label="Clear search"></button                                >)}
                             </div                        )}
 
                         {activeTab === 'feed' && (
@@ -297,7 +297,7 @@ export default function CommunityScreenWeb() {
                                             context="community"
                                             actionLabel="Create account"
                                             onAction={() => navigation.navigate('Auth')}
-                                        /                                        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'center' }}                                            <button
+                                        /                                        ><div style={{ marginTop: 12, display: 'flex', justifyContent: 'center' }}                                            <button
                                                 className="secondary-button"
                                                 onClick={() => setActiveTab('groups')}
                                                                                             Explore groups
@@ -308,8 +308,8 @@ export default function CommunityScreenWeb() {
                                             className="premium-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                                             onClick={() => setActiveTab('groups')}
-                                                                                    Explore Groups <ArrowRight size={16} /                                        </button                                    </div                                ) : isLoadingPosts ? (
-                                    <StackFallback variant="cards" /                                ) : (() => {
+                                                                                    Explore Groups <ArrowRight size={16} /                                        ></button                                    </div                                ) : isLoadingPosts ? (
+                                    <StackFallback variant="cards" /                                >) : (() => {
                                     const isConcreteGroup = selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse';
                                     const visiblePosts = isConcreteGroup
                                         ? (filteredPosts || []).filter(p => p.group_id === selectedGroupId)
@@ -348,7 +348,7 @@ export default function CommunityScreenWeb() {
                                                     });
                                                 }
                                             }}
-                                        /                                    ));
+                                        /                                    >));
                                 })()}
                             </div                        )}
 
@@ -356,11 +356,11 @@ export default function CommunityScreenWeb() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}                                <div style={{ display: 'flex', gap: '8px' }}                                    <button 
                                         className={`top-tab ${groupsSubTab === 'joined' ? 'active' : ''}`}
                                         onClick={() => setGroupsSubTab('joined')}
-                                                                            <Lock size={14} style={{ marginRight: 4 }} /                                        {t('community.groups.joinedTitle') || "Joined Schools"}
+                                                                            <Lock size={14} style={{ marginRight: 4 }} /                                        >{t('community.groups.joinedTitle') || "Joined Schools"}
                                     </button                                    <button 
                                         className={`top-tab ${groupsSubTab === 'global' ? 'active' : ''}`}
                                         onClick={() => setGroupsSubTab('global')}
-                                                                            <Globe size={14} style={{ marginRight: 4 }} /                                        {t('community.tabs.infiniteGalaxy') || "Global Groups"}
+                                                                            <Globe size={14} style={{ marginRight: 4 }} /                                        >{t('community.tabs.infiniteGalaxy') || "Global Groups"}
                                     </button                                </div
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}                                    {(groupsSubTab === 'joined' ? joinedGroups : discoverGroups)?.map(g => {
                                         const initials = (g.name || 'G').charAt(0).toUpperCase();
@@ -401,7 +401,7 @@ export default function CommunityScreenWeb() {
                                                 <div style={{ flex: 1, minWidth: 0 }}                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}                                                        <span style={{ fontWeight: '600', fontSize: '15px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}                                                            {g.name}
                                                         </span                                                        {g.join_policy === 'invite_only' && <Lock size={12} color="var(--ink-ghost)" />}
                                                     </div                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}                                                        {g.description || "Building resonance together..."}
-                                                    </div                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}                                                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '4px' }}                                                            <Users2 size={10} /                                                            {g.member_count} members
+                                                    </div                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}                                                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '4px' }}                                                            <Users2 size={10} /                                                            >{g.member_count} members
                                                         </span                                                        {!isJoined && (
                                                             <span className="status-pill" style={{
                                                                 background: 'var(--reward-soft)',
@@ -417,7 +417,7 @@ export default function CommunityScreenWeb() {
 
                         {activeTab === 'dms' && (
                             <div className="sanctuary-card" style={{ padding: '0', overflow: 'hidden' }}                                {!can('create', 'DirectMessage') ? (
-                                    <div style={{ padding: '56px 32px', textAlign: 'center' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>Messages are for Citizens</h3                                        <p style={{ marginTop: 10, marginBottom: 18, color: 'var(--ink-ghost)' }}                                            Upgrade your account to start private conversations.
+                                    <div style={{ padding: '56px 32px', textAlign: 'center' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>Messages are for Citizens</h3                                        ><p style={{ marginTop: 10, marginBottom: 18, color: 'var(--ink-ghost)' }}                                            Upgrade your account to start private conversations.
                                         </p                                        <PositiveInvitation
                                             title="Unlock Messages"
                                             description="Create an account to join groups and connect 1:1."
@@ -425,8 +425,8 @@ export default function CommunityScreenWeb() {
                                             context="community"
                                             actionLabel="Create account"
                                             onAction={() => navigation.navigate('Auth')}
-                                        /                                    </div                                ) : loadingDMs ? (
-                                    <div style={{ padding: '40px', textAlign: 'center' }}                                        <ActivityIndicator color="var(--action)" /                                    </div                                ) : conversations.length === 0 ? (
+                                        /                                    ></div                                ) : loadingDMs ? (
+                                    <div style={{ padding: '40px', textAlign: 'center' }}                                        <ActivityIndicator color="var(--action)" /                                    ></div                                ) : conversations.length === 0 ? (
                                     <div style={{ padding: '80px 40px', textAlign: 'center' }}                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}                                            No messages yet. Start a conversation from a user's profile!
                                         </p                                    </div                                ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column' }}                                        {conversations.map((item, index) => {
@@ -450,8 +450,8 @@ export default function CommunityScreenWeb() {
                                                     }}
                                                     className="interactive-row"
                                                                                                     <div style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'var(--action-soft)', overflow: 'hidden' }}                                                        {item.other_user_avatar 
-                                                            ? <img src={item.other_user_avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                            : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--action)', fontWeight: '700' }}>{initials}</div                                                        }
-                                                    </div                                                    <div style={{ flex: 1 }}                                                        <div style={{ fontWeight: '700', fontSize: '15px' }}>{item.other_user_name}</div                                                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>Tap to continue conversation</div                                                    </div                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}                                                        {new Date(item.updated_at).toLocaleDateString()}
+                                                            ? <img src={item.other_user_avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                            >: <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--action)', fontWeight: '700' }}>{initials}</div                                                        >}
+                                                    </div                                                    <div style={{ flex: 1 }}                                                        <div style={{ fontWeight: '700', fontSize: '15px' }}>{item.other_user_name}</div                                                        ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>Tap to continue conversation</div                                                    ></div                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}                                                        {new Date(item.updated_at).toLocaleDateString()}
                                                     </div                                                </button                                            );
                                         })}
                                     </div                                )}
@@ -461,19 +461,19 @@ export default function CommunityScreenWeb() {
                     <aside className="community-panel"                        <CommunityHearth
                             manifestos={manifestos}
                             userId={user?.id || 'guest'}
-                        /                    </aside                </div            </div
+                        /                    ></aside                </div            </div
             {/* Create Post Modal */}
             <CreatePostModal
                 isOpen={showCreatePost}
                 onClose={() => { setShowCreatePost(false); fetchPosts?.(); }}
                 groupId={typeof selectedGroupId === 'string' && selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse' ? selectedGroupId : undefined}
             /
-            {/* Create Group Modal */}
+            >{/* Create Group Modal */}
             <CreateGroupModal
                 isOpen={showCreateGroup}
                 onClose={() => { setShowCreateGroup(false); fetchGroups?.(); }}
             /
-            {/* Comment Sheet  slides up over the feed when a comment button is tapped */}
+            >{/* Comment Sheet  slides up over the feed when a comment button is tapped */}
             <CommentSheet
                 postId={commentPostId}
                 postAuthorId={commentPostAuthorId}
@@ -481,11 +481,11 @@ export default function CommunityScreenWeb() {
                 postType={commentPostType}
                 onClose={() => setCommentPostId(null)}
             /            
-            <style dangerouslySetInnerHTML={{ __html: `
+            ><style dangerouslySetInnerHTML={{ __html: `
                 .interactive-row:hover {
                     background: var(--background-alt) !important;
                 }
-            ` }} /        </div    );
+            ` }} /        ></div    );
 }
 
 function SidebarItem({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
@@ -498,5 +498,5 @@ function SidebarItem({ icon, label, active, onClick }: { icon: any, label: strin
                 className: 'sidebar-icon',
                 color: active ? 'var(--water)' : 'var(--ink-ghost)'
             })}
-            <span className="sidebar-label">{label}</span        </button    );
+            <span className="sidebar-label">{label}</span        ></button    );
 }

@@ -300,7 +300,7 @@ export default function TabNavigator({
     <div className="vellum-app-shell"
       <div className="world-bg" aria-hidden="true" /
 
-      {/* \u2500\u2500 TOP BAR \u2500\u2500 */}
+      >{/* \u2500\u2500 TOP BAR \u2500\u2500 */}
       <header className="top-bar"
         <div
           className="top-bar-left"
@@ -327,11 +327,11 @@ export default function TabNavigator({
               }}
             
               <Menu size={24} /
-            </button
+            ></button
           )}
           <span className="brand-lotus">\uD83E\uDEB7</span
-          <span className="brand-name">{t("webNav.brandName")}</span
-        </div
+          ><span className="brand-name">{t("webNav.brandName")}</span
+        ></div
         <div className="top-bar-right" /
       </header
 
@@ -343,7 +343,7 @@ export default function TabNavigator({
             onClick={closeSidebar}
             aria-hidden="true"
           /
-        )}
+        >)}
 
         {/* \u2500\u2500 SIDEBAR \u2500\u2500 */}
         <aside
@@ -399,9 +399,9 @@ export default function TabNavigator({
             
               {isSidebarExpanded ? (
                 <ChevronLeft size={16} /
-              ) : (
+              >) : (
                 <Menu size={16} /
-              )}
+              >)}
             </button
           </div
 
@@ -426,7 +426,7 @@ export default function TabNavigator({
                     size={20}
                     color={isActive ? "var(--water)" : "var(--ink-ghost)"}
                   /
-                  {(isSidebarExpanded || isMobileView) && (
+                  >{(isSidebarExpanded || isMobileView) && (
                     <span className="sidebar-label"
                       {getLabel(conf.name, conf.labelKey)}
                     </span
@@ -438,7 +438,7 @@ export default function TabNavigator({
 
           <div className="sidebar-footer"
             <div className="sidebar-divider" /
-            <button
+            ><button
               className={`sidebar-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
               title={t("common.notifications")}
               onClick={() => {
@@ -459,11 +459,11 @@ export default function TabNavigator({
                       : "var(--ink-ghost)"
                   }
                 /
-                <NotificationBadge count={unreadCount} /
-              </div
+                ><NotificationBadge count={unreadCount} /
+              ></div
               {(isSidebarExpanded || isMobileView) && (
                 <span className="sidebar-label">Notifications</span
-              )}
+              >)}
             </button
 
             <button
@@ -480,7 +480,7 @@ export default function TabNavigator({
             
               <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 <Settings size={20} color="var(--ink-ghost)" /
-              </div
+              ></div
               {(isSidebarExpanded || isMobileView) && (
                 <div className="profile-info" style={{ marginLeft: '12px' }}
                   <span className="profile-nm" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}
@@ -527,7 +527,7 @@ export default function TabNavigator({
                       fallback={<StackFallback />}
                     
                       <SelfStackNavigatorWeb /
-                    </React.Suspense
+                    ></React.Suspense
                   </ErrorBoundary
                 )}
               </Tab.Screen
@@ -538,7 +538,7 @@ export default function TabNavigator({
                       fallback={<StackFallback />}
                     
                       <CommunityStackNavigatorWeb /
-                    </React.Suspense
+                    ></React.Suspense
                   </ErrorBoundary
                 )}
               </Tab.Screen
@@ -550,9 +550,9 @@ export default function TabNavigator({
                     
                       {isFounderLane ? (
                         <FounderStackNavigatorWeb /
-                      ) : (
+                      >) : (
                         <ClassroomStackNavigatorWeb /
-                      )}
+                      >)}
                     </React.Suspense
                   </ErrorBoundary
                 )}
@@ -564,7 +564,7 @@ export default function TabNavigator({
                       fallback={<StackFallback />}
                     
                       <LibraryStackNavigatorWeb /
-                    </React.Suspense
+                    ></React.Suspense
                   </ErrorBoundary
                 )}
               </Tab.Screen
@@ -575,7 +575,7 @@ export default function TabNavigator({
                       fallback={<StackFallback />}
                     
                       <ProfileStackNavigatorWeb /
-                    </React.Suspense
+                    ></React.Suspense
                   </ErrorBoundary
                 )}
               </Tab.Screen
@@ -587,7 +587,7 @@ export default function TabNavigator({
                       fallback={<StackFallback />}
                     
                       <NotificationsScreenWeb /
-                    </React.Suspense
+                    ></React.Suspense
                   </ErrorBoundary
                 )}
               </Tab.Screen
@@ -598,7 +598,7 @@ export default function TabNavigator({
                       fallback={<StackFallback />}
                     
                       <AppSettingsScreenWeb /
-                    </React.Suspense
+                    ></React.Suspense
                   </ErrorBoundary
                 )}
               </Tab.Screen
@@ -632,7 +632,7 @@ export default function TabNavigator({
                   size={22}
                   color={isActive ? "var(--water)" : "var(--ink-ghost)"}
                 /
-                <span className="mobile-nav-label"
+                ><span className="mobile-nav-label"
                   {getMobileLabel(conf.name)}
                 </span
               </button
@@ -657,10 +657,10 @@ export default function TabNavigator({
                     : "var(--ink-ghost)"
                 }
               /
-              <NotificationBadge count={unreadCount} size="sm" /
-            </div
+              ><NotificationBadge count={unreadCount} size="sm" /
+            ></div
             <span className="mobile-nav-label">{t("webNav.alerts")}</span
-          </button
+          ></button
         </nav
       )}
 
@@ -671,7 +671,7 @@ export default function TabNavigator({
       /
 
 
-      <UniversalModal
+      ><UniversalModal
         isOpen={isBreathingOpen}
         onClose={() => setBreathingOpen(false)}
       
@@ -704,7 +704,7 @@ export default function TabNavigator({
               }}
             
               <X size={24} /
-            </button
+            ></button
           </HStack
           <BreathGuide onComplete={() => setBreathingOpen(false)} /
         </Box

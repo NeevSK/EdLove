@@ -287,8 +287,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         return (
             <div className="ob-error-banner"
                 <span className="ob-error-icon">\u00E2\u0161 \u00EF\u00B8 </span
-                <span className="ob-error-text">{completionError}</span
-            </div
+                ><span className="ob-error-text">{completionError}</span
+            ></div
         );
     };
 
@@ -301,8 +301,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 <div className="ob-step"
                     <div className="ob-step-shell"
                         <div className="ob-step-meta">Step 1 \u00C2\u00B7 Arrival</div
-                        <div className="ob-step-icon">\uD83D\u2018\u2039</div
-                    </div
+                        ><div className="ob-step-icon">\uD83D\u2018\u2039</div
+                    ></div
                     <h2 className="ob-step-title"
                         {t('onboarding.nameTitle')}
                     </h2
@@ -320,7 +320,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         autoFocus
                         autoComplete="given-name"
                     /
-                    <div className="ob-actions"
+                    ><div className="ob-actions"
                         <button
                             className="ob-btn-primary"
                             onClick={handleNext}
@@ -339,8 +339,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 <div className="ob-step"
                     <div className="ob-step-shell"
                         <div className="ob-step-meta">Step 2 \u00C2\u00B7 Belonging</div
-                        <div className="ob-step-icon">\uD83D\u017D\u00AF</div
-                    </div
+                        ><div className="ob-step-icon">\uD83D\u017D\u00AF</div
+                    ></div
                     <h2 className="ob-step-title"
                         {t('onboarding.roleTitle')}
                     </h2
@@ -356,9 +356,9 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                 onClick={() => { setAuthority(r.value as AuthorityTier); hapticLight(); }}
                             
                                 <span className="ob-role-emoji">{r.emoji}</span
-                                <span className="ob-role-name">{t(`authority.${r.value}`)}</span
-                                <span className="ob-role-desc">{t(r.descKey)}</span
-                            </button
+                                ><span className="ob-role-name">{t(`authority.${r.value}`)}</span
+                                ><span className="ob-role-desc">{t(r.descKey)}</span
+                            ></button
                         ))}
                     </div
                     <div className="ob-actions"
@@ -393,13 +393,13 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 <div className="ob-step"
                     <div className="ob-step-shell"
                         <div className="ob-step-meta">Sanctuary Tour</div
-                        <div className="ob-step-icon">{screen.emoji}</div
-                    </div
+                        ><div className="ob-step-icon">{screen.emoji}</div
+                    ></div
                     <h2 className="ob-step-title">{screen.title}</h2
                     <p className="ob-step-subtitle">{screen.subtitle}</p
                     {renderError()}
                     <div className="ob-tour-content">{screen.content}</div
-                    <div className="ob-actions"
+                    ><div className="ob-actions"
                         <button className="ob-btn-secondary" onClick={handleBack}
                             \u00E2\u2020\u0090 {t('onboarding.back')}
                         </button
@@ -425,13 +425,13 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
     return (
         <div className="ob-root"
             <div className="ob-atmosphere ob-atmosphere-one" /
-            <div className="ob-atmosphere ob-atmosphere-two" /
-            {isNarrow ? (
+            ><div className="ob-atmosphere ob-atmosphere-two" /
+            >{isNarrow ? (
                 /* \u00E2\u201D\u20AC\u00E2\u201D\u20AC Narrow: single-column scroll \u00E2\u201D\u20AC\u00E2\u201D\u20AC */
                 <div className="ob-narrow"
                     <div className="ob-narrow-header"
                         <span className="ob-brand-name">\uD83E\uDEB7 Gurudevi</span
-                        <div className="ob-lang-row"
+                        ><div className="ob-lang-row"
                             {LANGUAGES.map((lang) => (
                                 <button
                                     key={lang.code}
@@ -447,7 +447,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     {/* Progress bar */}
                     <div className="ob-progress-track" role="progressbar" aria-valuenow={currentStep} aria-valuemax={TOTAL_STEPS - 1}
                         <div className="ob-progress-fill" style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }} /
-                    </div
+                    ></div
 
                     <div className="ob-narrow-content"
                         {renderStep()}
@@ -461,8 +461,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         <div className="ob-left-inner"
                             <div className="ob-brand"
                                 <span className="ob-brand-icon">\uD83E\uDEB7</span
-                                <span className="ob-brand-name">Gurudevi</span
-                            </div
+                                ><span className="ob-brand-name">Gurudevi</span
+                            ></div
 
                             <div
                                 <h1 className="ob-left-headline">Your Sacred<br />Sanctuary</h1
@@ -476,8 +476,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                 {PILLARS.map((p) => (
                                     <div key={p.name} className="ob-pillar"
                                         <span>{p.emoji}</span
-                                        <span>{p.name}</span
-                                    </div
+                                        ><span>{p.name}</span
+                                    ></div
                                 ))}
                             </div
 
@@ -489,8 +489,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                         className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
                                     
                                         <div className="ob-tracker-dot" /
-                                        <span className="ob-tracker-label">{s.label}</span
-                                    </div
+                                        ><span className="ob-tracker-label">{s.label}</span
+                                    ></div
                                 ))}
                             </div
 
@@ -519,7 +519,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                         key={i}
                                         className={`ob-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}`}
                                     /
-                                ))}
+                                >))}
                             </div
 
                             {renderStep()}
@@ -1000,6 +1000,6 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     }
                 }
             `}</style
-        </div
+        ></div
     );
 }

@@ -129,26 +129,26 @@ export default function TeacherObservationsWorkspace({
                                     action="primary"
                                     onPress={() => setShowCreateModal(true)}
                                     sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: Theme.corners.full }}
-                                                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        <ButtonText color={Theme.colors.sacredWhite}>New</ButtonText                                    </HStack                                </Button                            )}
+                                                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        ><ButtonText color={Theme.colors.sacredWhite}>New</ButtonText                                    ></HStack                                </Button                            )}
                         </HStack
                         <HStack sx={{ gap: Theme.spacing.sm }}                            <SignalPill
                                 icon={<MessageCircle size={14} color={Theme.colors.gurudeviBlue} />}
                                 label="Total"
                                 value={String(observations.length)}
                                 colors={colors}
-                            /                            <SignalPill
+                            /                            ><SignalPill
                                 icon={<Sparkles size={14} color={Theme.colors.sageGreen} />}
                                 label="Positive"
                                 value={String(positiveCount)}
                                 colors={colors}
-                            /                            <SignalPill
+                            /                            ><SignalPill
                                 icon={<TriangleAlert size={14} color={Theme.colors.emberRed} />}
                                 label="Concerns"
                                 value={String(concernCount)}
                                 colors={colors}
-                            /                        </HStack                    </VStack                </Box
+                            /                        ></HStack                    </VStack                </Box
                 {isLoading ? (
-                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    </Box                ) : observations.length === 0 ? (
+                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : observations.length === 0 ? (
                     <Box
                         sx={{
                             backgroundColor: Theme.colors.silk,
@@ -159,7 +159,7 @@ export default function TeacherObservationsWorkspace({
                             alignItems: 'center',
                             gap: Theme.spacing.sm,
                         }}
-                                            <MessageCircle size={36} color={colors.textTertiary} /                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            No observations yet
+                                            <MessageCircle size={36} color={colors.textTertiary} /                        ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            No observations yet
                         </Heading                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}                            Start with one true observation from today. The goal is signal, not volume.
                         </Text                    </Box                ) : (
                     observations.map((observation) => (
@@ -181,13 +181,13 @@ export default function TeacherObservationsWorkspace({
                                                     <VStack sx={{ gap: Theme.spacing.xs }}                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                    <VStack sx={{ flex: 1 }}                        <Text sx={{ color: colors.text, fontWeight: '700' as const }}                            {students.find((student) => student.id === observation.student_id)?.full_name || 'Student observation'}
                         </Text                                        <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase' }}                                            {observation.observation_type} " {observation.visibility === 'student_visible' ? 'Visible to student' : 'Private'}
                                         </Text                                    </VStack                                    {canManage && (
-                                        <Pressable onPress={() => handleDelete(observation.id)}                                            <Trash2 size={16} color={Theme.colors.emberRed} /                                        </Pressable                                    )}
+                                        <Pressable onPress={() => handleDelete(observation.id)}                                            <Trash2 size={16} color={Theme.colors.emberRed} /                                        ></Pressable                                    )}
                                 </HStack                                <Text sx={{ color: colors.textSecondary }}>{observation.content}</Text                                <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}                                    {observation.created_at ? new Date(observation.created_at).toLocaleDateString() : 'Just now'}
                                 </Text                            </VStack                        </Box                    ))
                 )}
             </VStack
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}                <ModalBackdrop /                <ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}                    <ModalHeader                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            Create observation
-                        </Heading                    </ModalHeader                    <ModalBody                        <VStack sx={{ gap: Theme.spacing.md }}                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Student
+            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}                <ModalBackdrop /                ><ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}                    <ModalHeader                        <Heading >sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            Create observation
+                        </Heading                    </ModalHeader                    <ModalBody                        <VStack >sx={{ gap: Theme.spacing.md }}                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Student
                                 </Text                                <ScrollView horizontal showsHorizontalScrollIndicator={false}                                    <HStack sx={{ gap: Theme.spacing.sm }}                                        {students.map((student) => {
                                             const isActive = selectedStudentId === student.id;
                                             return (
@@ -241,7 +241,7 @@ export default function TeacherObservationsWorkspace({
                                     onChangeText={setContent}
                                     color={colors.text}
                                     multiline
-                                /                            </Input                        </VStack                    </ModalBody                    <ModalFooter                        <HStack sx={{ gap: Theme.spacing.sm }}                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)}                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText                            </Button                            <Button
+                                /                            ></Input                        </VStack                    </ModalBody                    <ModalFooter                        <HStack sx={{ gap: Theme.spacing.sm }}                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)}                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText                            ></Button                            <Button
                                 action="primary"
                                 onPress={handleCreate}
                                 isDisabled={!content.trim() || !selectedStudent || !userId || isSaving}

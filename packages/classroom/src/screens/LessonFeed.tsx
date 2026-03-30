@@ -158,11 +158,11 @@ export default function LessonFeed({
                     <HStack sx={{ alignItems: 'center', gap: 8 }}
                         {material.type === 'pdf' ? (
                             <FileText size={20} color={colors.action} /
-                        ) : (
+                        >) : (
                             <LinkIcon size={20} color={colors.warning} /
-                        )}
+                        >)}
                         <VStack
-                            <Text color={colors.text} sx={{ fontWeight: '600', fontSize: 16 }}
+                            <Text >color={colors.text} sx={{ fontWeight: '600', fontSize: 16 }}
                                 {material.title}
                             </Text
                             <Text color={colors.textSecondary} sx={{ fontSize: 12 }}
@@ -176,10 +176,10 @@ export default function LessonFeed({
                     <HStack sx={{ gap: 16 }}
                         <TouchableOpacity onPress={() => onEditItem?.(material, 'material')}
                             <Edit2 size={18} color={colors.textSecondary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                         <TouchableOpacity onPress={() => onDeleteItem?.(material.id, 'material')}
                             <Trash2 size={18} color={colors.error} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                     </HStack
                 )}
             </HStack
@@ -206,8 +206,8 @@ export default function LessonFeed({
                         onOpenAssignment?.(assignment.id);
                     }}
                     style={{ flex: 1 }}
-                                    <VStack sx={{ gap: 4 }}                        <HStack sx={{ alignItems: 'center', gap: 4 }}                            <Box sx={{ padding: 4, backgroundColor: colors.success, borderRadius: 4 }}                                <Text color={Theme.colors.white} sx={{ fontWeight: '700', fontSize: 12 }}>ASSIGNMENT</Text                            </Box                            {!isTeacher && isSubmitted && (
-                                <HStack sx={{ alignItems: 'center', gap: 4 }}                                    <CheckCircle2 size={12} color={colors.success} /                                    <Text color={colors.success} sx={{ fontSize: 12, fontWeight: '700' }}                                        Submitted
+                                    <VStack sx={{ gap: 4 }}                        <HStack sx={{ alignItems: 'center', gap: 4 }}                            <Box sx={{ padding: 4, backgroundColor: colors.success, borderRadius: 4 }}                                <Text color={Theme.colors.white} sx={{ fontWeight: '700', fontSize: 12 }}>ASSIGNMENT</Text                            ></Box                            {!isTeacher && isSubmitted && (
+                                <HStack sx={{ alignItems: 'center', gap: 4 }}                                    <CheckCircle2 size={12} color={colors.success} /                                    ><Text color={colors.success} sx={{ fontSize: 12, fontWeight: '700' }}                                        Submitted
                                     </Text                                </HStack                            )}
                             {assignment.due_date && (
                                 <Text color={colors.warning} sx={{ fontSize: 12 }}                                    Due: {new Date(assignment.due_date).toLocaleDateString()}
@@ -223,24 +223,24 @@ export default function LessonFeed({
                 {isTeacher && (
                     <HStack sx={{ gap: 16 }}                        <TouchableOpacity onPress={() => onEditItem?.(assignment, 'assignment')}
                             <Edit2 size={18} color={colors.textSecondary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                         <TouchableOpacity onPress={() => onDeleteItem?.(assignment.id, 'assignment')}
                             <Trash2 size={18} color={colors.error} /
-                        </TouchableOpacity                    </HStack                )}
+                        ></TouchableOpacity                    </HStack                )}
 
                 {!isTeacher && !isSubmitted && onOpenAssignmentRecord && (
                     <Button
                         size="sm"
                         sx={{ backgroundColor: colors.success, borderRadius: Theme.corners.comfortable }}
                         onPress={() => onOpenAssignmentRecord(assignment)}
-                                            <ButtonText color={Theme.colors.white}>Turn In</ButtonText                    </Button                )}
+                                            <ButtonText color={Theme.colors.white}>Turn In</ButtonText                    ></Button                )}
             </HStack        </Box        );
     };
 
     return (
         <Box sx={{ flex: 1, backgroundColor: colors.primary }}
             <ScrollView
-                <VStack sx={{ padding: Theme.spacing.lg, gap: 16 }}
+                <VStack >sx={{ padding: Theme.spacing.lg, gap: 16 }}
                     <Heading color={colors.action} sx={{ fontSize: 24 }}
                         {t('classroom.learningPath') || 'Learning Path'}
                     </Heading
@@ -263,9 +263,9 @@ export default function LessonFeed({
                     {isLoading && (
                         <VStack sx={{ gap: 16 }}
                             <SkeletonCard height={80} /
-                            <SkeletonCard height={80} /
-                            <SkeletonCard height={80} /
-                        </VStack
+                            ><SkeletonCard height={80} /
+                            ><SkeletonCard height={80} /
+                        ></VStack
                     )}
 
                     {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
@@ -284,7 +284,7 @@ export default function LessonFeed({
                                 
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                         <VStack
-                                            <HStack sx={{ alignItems: 'center', gap: 4 }}
+                                            <HStack >sx={{ alignItems: 'center', gap: 4 }}
                                                 <Heading color={isCurrentMonth(monthTitle) ? colors.action : colors.text} sx={{ fontSize: 16 }}
                                                     {monthTitle}
                                                 </Heading
@@ -297,7 +297,7 @@ export default function LessonFeed({
                                                         marginLeft: 8
                                                     }}
                                                         <Text color={Theme.colors.white} sx={{ fontWeight: 'bold', fontSize: 10 }}>CURRENT</Text
-                                                    </Box
+                                                    ></Box
                                                 )}
                                             </HStack
                                             <Text color={colors.textSecondary} sx={{ fontSize: 12 }}
@@ -332,8 +332,8 @@ export default function LessonFeed({
                                                 <TouchableOpacity onPress={() => onAddMaterial?.(lessonId || monthTitle)}
                                                     <HStack sx={{ alignItems: "center", gap: 4 }}
                                                         <Plus size={16} color={colors.action} /
-                                                        <Text color={colors.action} sx={{ fontWeight: 'bold', fontSize: 12 }}>ADD</Text
-                                                    </HStack
+                                                        ><Text color={colors.action} sx={{ fontWeight: 'bold', fontSize: 12 }}>ADD</Text
+                                                    ></HStack
                                                 </TouchableOpacity
                                             )}
                                         </HStack
@@ -355,8 +355,8 @@ export default function LessonFeed({
                                                 <TouchableOpacity onPress={() => onAddAssignment?.(lessonId || monthTitle)}
                                                     <HStack sx={{ alignItems: "center", gap: 4 }}
                                                         <Plus size={16} color={colors.success} /
-                                                        <Text color={colors.success} sx={{ fontWeight: 'bold', fontSize: 12 }}>ADD</Text
-                                                    </HStack
+                                                        ><Text color={colors.success} sx={{ fontWeight: 'bold', fontSize: 12 }}>ADD</Text
+                                                    ></HStack
                                                 </TouchableOpacity
                                             )}
                                         </HStack

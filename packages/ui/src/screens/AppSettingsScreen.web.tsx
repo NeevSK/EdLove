@@ -115,7 +115,7 @@ function SettingsOption({
               }}
                           {value}
             </Text          )}
-          <ChevronRight size={20} color={colors.textTertiary} /        </HStack      </HStack    </Pressable  );
+          <ChevronRight size={20} color={colors.textTertiary} /        ></HStack      </HStack    </Pressable  );
 }
 
 /**
@@ -230,7 +230,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           title={t('settings.appearance.title')}
           description={t('settings.appearance.description')}
         /
-        <SettingsOption
+        ><SettingsOption
           colors={colors}
           icon={<Sparkles size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.fidelity.title')}
@@ -246,7 +246,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel={t('settings.fidelity.title')}
           accessibilityHint={t('settings.fidelity.hint')}
         /
-        {/* Living Theme Toggle */}
+        >{/* Living Theme Toggle */}
         <Box sx={{
           backgroundColor: colors.secondary as any,
           borderRadius: Theme.corners.comfortable,
@@ -260,7 +260,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 backgroundColor: (enableLivingTheme ? colors.action : colors.tertiary) as any,
                 alignItems: 'center', justifyContent: 'center',
               }}                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.sacredWhite : (colors.textTertiary as any)}
-                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} /              </Box              <VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('settings.living_theme.title')}
+                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} /              ></Box              <VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('settings.living_theme.title')}
                 </Text                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {enableLivingTheme
                     ? t('settings.living_theme.on')
                     : t('settings.living_theme.off')}
@@ -283,7 +283,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           title={t('settings.language.title')}
           description={t('settings.language.description')}
         /
-        <SettingsOption
+        ><SettingsOption
           colors={colors}
           icon={<Globe size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.language.current')}
@@ -293,13 +293,13 @@ export default function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel={t('settings.language.current')}
           accessibilityHint={t('settings.language.hint')}
         /
-        {/* Profile Visibility & Preview */}
+        >{/* Profile Visibility & Preview */}
         <SectionHeader
           colors={colors}
           title={t('profile.privacy.title', 'Profile & Visibility')}
           description={t('profile.privacy.description', 'Manage how others see your profile')}
         /
-        <Box sx={{
+        ><Box sx={{
           backgroundColor: colors.secondary as any,
           borderRadius: Theme.corners.comfortable,
           padding: Theme.spacing.md,
@@ -311,7 +311,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 borderRadius: Theme.corners.comfortable,
                 backgroundColor: (user?.public_profile !== false ? colors.action : colors.tertiary) as any,
                 alignItems: 'center', justifyContent: 'center',
-              }}                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} /              </Box              <VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
+              }}                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} /              ></Box              <VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
                 </Text                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {user?.public_profile !== false
                     ? t('profile.privacy.public_on', 'Others can find and view your profile')
                     : t('profile.privacy.public_off', 'Your profile is hidden from the community')}
@@ -346,7 +346,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           title={t('settings.device.title')}
           description={t('settings.device.description')}
         /
-        <Box
+        ><Box
           sx={{
             backgroundColor: colors.secondary as any,
             borderRadius: Theme.corners.comfortable,
@@ -387,7 +387,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   borderRadius: Theme.corners.tight,
                   marginTop: Theme.spacing.xs,
                 }}
-                              <HStack space="xs" alignItems="center"                  <Info size={16} color={colors.text as any} /                  <Text
+                              <HStack space="xs" alignItems="center"                  <Info size={16} color={colors.text as any} /                  ><Text
                     sx={{
                       fontSize: Theme.typography.fontSize.sm,
                       color: colors.text as any,
@@ -404,7 +404,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             'Help us improve Gurudevi'
           )}
         /
-        <SettingsOption
+        ><SettingsOption
           colors={colors}
           icon={<Zap size={24} color={Theme.colors.sacredWhite} />}
           title="Trube Lab"
@@ -413,7 +413,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel="Open Trube Lab"
           accessibilityHint="Experiment with living surface compositions and lighting."
         /
-        {/* Gentle guidance footer */}
+        >{/* Gentle guidance footer */}
         <Box
           sx={{
             padding: Theme.spacing.md,
@@ -422,7 +422,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             marginTop: Theme.spacing.lg,
             marginBottom: Theme.spacing.xl,
           }}
-                  <HStack space="sm" alignItems="flex-start"            <Info size={20} color={colors.action as any} /            <VStack flex={1} space="xs"              <Text
+                  <HStack space="sm" alignItems="flex-start"            <Info size={20} color={colors.action as any} /            ><VStack flex={1} space="xs"              <Text
                 sx={{
                   fontSize: Theme.typography.fontSize.sm,
                   color: colors.text as any,
@@ -468,7 +468,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           ]}
           onSelect={(id) => handleFidelityChange(id as any)}
           onClose={() => setShowFidelityModal(false)}
-        /      )}
+        /      >)}
 
       {/* Language Selection Modal */}
       {showLanguageModal && (
@@ -500,7 +500,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           ]}
           onSelect={(id) => handleLanguageChange(id as any)}
           onClose={() => setShowLanguageModal(false)}
-        /      )}
+        /      >)}
     </Box  );
 }
 
@@ -539,7 +539,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
         onPress={onClose}
         accessible={false}
       /
-      <Box
+      ><Box
         sx={{
           backgroundColor: colors.primary as any,
           borderTopLeftRadius: Theme.corners.generous,
@@ -556,7 +556,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
           }}
                   {title}
         </Text
-        <VStack space="sm"          {options.map((option) => (
+        ><VStack space="sm"          {options.map((option) => (
             <Pressable
               key={option.id}
               onPress={() => {
@@ -598,7 +598,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
                                       {option.description}
                   </Text                </VStack
                 {option.isSelected && (
-                  <Check size={24} color={colors.action as any} /                )}
+                  <Check size={24} color={colors.action as any} /                >)}
               </HStack            </Pressable          ))}
         </VStack
         <Button

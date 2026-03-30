@@ -130,7 +130,7 @@ function PathRow({ emoji, pathName, stageLabel, narrative, colors }: PathRowProp
         
             <HStack space="md" alignItems="flex-start"
                 <Text style={styles.pathEmoji}>{emoji}</Text
-                <VStack flex={1} space="xs"
+                ><VStack flex={1} space="xs"
                     <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
@@ -173,7 +173,7 @@ function MoonRow({ moon, colors, t }: MoonRowProps) {
         
             <HStack space="md" alignItems="flex-start"
                 <Text style={styles.pathEmoji}>{moon.emoji}</Text
-                <VStack flex={1} space="xs"
+                ><VStack flex={1} space="xs"
                     <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
@@ -235,7 +235,7 @@ function ResonanceRow({ stats, colors }: ResonanceRowProps) {
         
             <HStack space="md" alignItems="flex-start"
                 <Text style={styles.pathEmoji}>\u2728</Text
-                <VStack flex={1} space="xs"
+                ><VStack flex={1} space="xs"
                     <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
@@ -288,7 +288,7 @@ function RecognitionRow({ badges, colors }: RecognitionRowProps) {
                 borderBottomWidth: 1,
                 borderBottomColor: `${colors.border}60`,
             }}
-                    <HStack space="md" alignItems="flex-start"                <Text style={styles.pathEmoji}>\uD83C\uDFC5</Text                <VStack flex={1} space="xs"                    <HStack justifyContent="space-between" alignItems="center"                        <Text
+                    <HStack space="md" alignItems="flex-start"                <Text style={styles.pathEmoji}>\uD83C\uDFC5</Text                ><VStack flex={1} space="xs"                    <HStack justifyContent="space-between" alignItems="center"                        <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
@@ -331,7 +331,7 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
             <Box sx={{ paddingVertical: Theme.spacing.md }}
                 <HStack space="md" alignItems="center"
                     <Text style={styles.pathEmoji}>\u2728</Text
-                    <VStack flex={1} space="xs"
+                    ><VStack flex={1} space="xs"
                         <Text
                             size="xs"
                             color={colors.textTertiary}
@@ -352,7 +352,7 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
         <Box sx={{ paddingVertical: Theme.spacing.md }}
             <HStack space="md" alignItems="flex-start"
                 <Text style={styles.pathEmoji}>\u2728</Text
-                <VStack flex={1} space="sm"
+                ><VStack flex={1} space="sm"
                     <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
@@ -458,7 +458,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                 }}
             
                 <ActivityIndicator color={colors.action} /
-            </Box
+            ></Box
         );
     }
 
@@ -467,7 +467,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         return (
             <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}
                 <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text
-            </Box
+            ></Box
         );
     }
 
@@ -533,7 +533,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                         colors={colors}
                     /
 
-                    {/* Banyan \u2014 teachers and principals */}
+                    >{/* Banyan \u2014 teachers and principals */}
                     {isTeacherRole && (
                         <PathRow
                             emoji="\uD83C\uDF33"
@@ -542,7 +542,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                             narrative={BANYAN_NARRATIVES[banyan]}
                             colors={colors}
                         /
-                    )}
+                    >)}
 
                     {/* River \u2014 students */}
                     {isStudentRole && (
@@ -553,7 +553,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                             narrative={RIVER_NARRATIVES[river]}
                             colors={colors}
                         /
-                    )}
+                    >)}
 
                     {/* Crystal \u2014 students */}
                     {isStudentRole && (
@@ -564,22 +564,22 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                             narrative={CRYSTAL_NARRATIVES[crystal]}
                             colors={colors}
                         /
-                    )}
+                    >)}
 
                     {/* Moon \u2014 all users, live */}
                     {moon && <MoonRow moon={moon} colors={colors} t={t} />}
 
                     {/* Community Resonance \u2014 aggregated from social actions */}
                     <ResonanceRow stats={resonance} colors={colors} /
-                    {/* Rewards / recognition \u2014 shown as narrative signals rather than a score */}
+                    >{/* Rewards / recognition \u2014 shown as narrative signals rather than a score */}
                     <RecognitionRow badges={journeyRewards?.badges ?? []} colors={colors} /
-                    {/* Whispered Moments \u2014 all users */}
+                    >{/* Whispered Moments \u2014 all users */}
                     <WhisperedMomentsRow
                         moments={moments}
                         colors={colors}
                         t={t}
                     /
-                </Box
+                ></Box
             </Box
         </Animated.View
     );

@@ -221,13 +221,13 @@ export default function LibraryScreenWeb() {
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                     onClick={handleAddResourcePress}
                                     disabled={isPastView}
-                                                                    <Plus size={15} /                                    {t('library.contributeResource') || 'Contribute Resource'}
+                                                                    <Plus size={15} /                                    >{t('library.contributeResource') || 'Contribute Resource'}
                                 </button                            )}
                             <button
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                 onClick={() => navigation.navigate('LibraryMap')}
-                                                            <MapIcon size={15} /                                Knowledge Map
+                                                            <MapIcon size={15} /                                >Knowledge Map
                             </button                        </div                    )}
                 /                <div style={{ marginBottom: '20px' }}                    <TemporalNavigator /                </div
                 {/* 2. FILTERS & SEARCH */}
@@ -235,13 +235,13 @@ export default function LibraryScreenWeb() {
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}                        <div className="sanctuary-search-shell" style={{
                             flex: 1,
                             minWidth: '200px',
-                        }}                            <Search size={18} color="var(--ink-ghost)" /                            <input
+                        }}                            <Search size={18} color="var(--ink-ghost)" /                            ><input
                                 className="search-input"
                                 style={{ padding: '8px 0' }}
                                 placeholder={t('library.searchPlaceholder') || 'Explore the sanctuary...'}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                            /                            {searchQuery && (
+                            /                            >{searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery('')}
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', padding: '0 4px', lineHeight: 1 }}
@@ -267,14 +267,14 @@ export default function LibraryScreenWeb() {
                                 flexShrink: 0,
                             }}
                             aria-label={t('library.sort.label')}
-                                                    <option value="recent">{t('library.sort.recent')}</option                            <option value="popular">{t('library.sort.popular')}</option                            <option value="most_endorsed">{t('library.sort.endorsed')}</option                            <option value="most_bookmarked">{t('library.sort.bookmarked')}</option                        </select
+                                                    <option value="recent">{t('library.sort.recent')}</option                            ><option value="popular">{t('library.sort.popular')}</option                            ><option value="most_endorsed">{t('library.sort.endorsed')}</option                            ><option value="most_bookmarked">{t('library.sort.bookmarked')}</option                        ></select
                         {/* View mode toggle (Always visible in search, relevant for results) */}
                         <div style={{ display: 'flex', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}                            <button
                                 onClick={() => setViewMode('shelf')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'shelf' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'shelf' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Shelf view"
                                 title="Shelf view"
-                                                            <Layers size={16} /                            </button                            <button
+                                                            <Layers size={16} /                            ></button                            <button
                                 onClick={() => setViewMode('grid')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'grid' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'grid' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Grid view"
@@ -304,10 +304,10 @@ export default function LibraryScreenWeb() {
                                     className={`top-tab ${selectedCategoryId === id ? 'active' : ''}`}
                                     onClick={() => setSelectedCategoryId(id)}
                                     style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                                                    <Icon size={14} /                                    {id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
+                                                                    <Icon size={14} /                                    >{id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
                                 </button                            );
                         })}
-                        <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} /                        {LIBRARY_UI_CATEGORIES.map(cat => (
+                        <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} /                        >{LIBRARY_UI_CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
                                 className={`top-tab ${selectedCategoryId === cat.id ? 'active' : ''}`}
@@ -318,11 +318,11 @@ export default function LibraryScreenWeb() {
                     </div                </div
                 {/* 3. CONTENT AREA */}
                 {loading && resources.length === 0 ? (
-                    <StackFallback /                ) : (
+                    <StackFallback /                >) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}                        
                         {/* HERO BANNER (Only in default mode) */}
                         {!isSearchMode && heroResource && (
-                            <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} /                        )}
+                            <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} /                        >)}
 
                         {isSearchMode ? (
                             /* SEARCH / FILTERED RESULTS VIEW - Switches between modes */
@@ -339,7 +339,7 @@ export default function LibraryScreenWeb() {
                                                                 type="collection"
                                                                 subject={col.subjects?.[0] || 'Curated'}
                                                                 onPress={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
-                                                            /                                                        </div                                                    ))}
+                                                            /                                                        ></div                                                    ))}
                                                 </div                                            </SmartShelf                                        )}
                                         {orderedShelfDefs.map(shelf => {
                                             const shelfItems = resources.filter(res => shelf.types.includes(res.type));
@@ -357,7 +357,7 @@ export default function LibraryScreenWeb() {
                                                                     onBookmarkToggle={() => handleBookmark(res)}
                                                                     onPress={() => handleOpenResource(res)}
                                                                     onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                                                /                                                            </div                                                        ))}
+                                                                /                                                            ></div                                                        ))}
                                                     </div                                                </SmartShelf                                            );
                                         })}
 
@@ -373,7 +373,7 @@ export default function LibraryScreenWeb() {
                                                                 verified={res.verified}
                                                                 onPress={() => handleOpenResource(res)}
                                                                 onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                                            /                                                        </div                                                    ))}
+                                                            /                                                        ></div                                                    ))}
                                                 </div                                            </SmartShelf                                        )}
                                     </                                )}
 
@@ -389,7 +389,7 @@ export default function LibraryScreenWeb() {
                                                 verified={res.verified}
                                                 onPress={() => handleOpenResource(res)}
                                                 onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                            /                                        ))}
+                                            /                                        >))}
                                     </div                                )}
 
                                 {viewMode === 'list' && (
@@ -409,9 +409,9 @@ export default function LibraryScreenWeb() {
                                                 }}
                                                 className="sanctuary-card"
                                                                                             <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', background: 'var(--action-soft)', flexShrink: 0 }}                                                    {(res.media?.url || getYoutubeThumbnail(res.url)) ? (
-                                                        <img src={res.media?.url || getYoutubeThumbnail(res.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                    ) : (
-                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action)' }}                                                            <Plus size={24} /                                                        </div                                                    )}
-                                                </div                                                <div style={{ flex: 1 }}                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)', marginBottom: '4px' }}>{res.type.toUpperCase()}</div                                                    <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}>{res.title}</div                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{res.subjects?.[0]} \u00E2\u20AC\u00A2 {res.creator_name}</div                                                </div                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}                                                    <Play size={14} fill="currentColor" /                                                    {t('library.view')}
+                                                        <img src={res.media?.url || getYoutubeThumbnail(res.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                    >) : (
+                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action)' }}                                                            <Plus size={24} /                                                        ></div                                                    )}
+                                                </div                                                <div style={{ flex: 1 }}                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)', marginBottom: '4px' }}>{res.type.toUpperCase()}</div                                                    ><div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}>{res.title}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{res.subjects?.[0]} \u00E2\u20AC\u00A2 {res.creator_name}</div                                                ></div                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}                                                    <Play size={14} fill="currentColor" /                                                    >{t('library.view')}
                                                 </div                                            </div                                        ))}
                                     </div                                )}
 
@@ -443,7 +443,7 @@ export default function LibraryScreenWeb() {
                                                 const res = resources.find(r => r.id === node.id);
                                                 if (res) handleOpenResource(res);
                                             }}
-                                        /                                    </div                                )}
+                                        /                                    ></div                                )}
                             </div                        ) : (
                             /* DEFAULT VIEW - Netflix Style Shelves */
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}                                {/* Featured Collections */}
@@ -469,7 +469,7 @@ export default function LibraryScreenWeb() {
                                                     className="sanctuary-card"
                                                     onClick={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
                                                                                                     <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}
-                                                    </div                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
+                                                    </div                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
                                                     </div                                                    
                                                     {/* Subtle accent line */}
                                                     <div style={{ 
@@ -480,7 +480,7 @@ export default function LibraryScreenWeb() {
                                                         height: '4px', 
                                                         background: 'var(--action)', 
                                                         opacity: 0.3 
-                                                    }} /                                                </div                                            ))}
+                                                    }} /                                                ></div                                            ))}
                                         </div                                    </SmartShelf                                )}
 
                                 {/* Categorized Shelves */}
@@ -500,7 +500,7 @@ export default function LibraryScreenWeb() {
                                                             onBookmarkToggle={() => handleBookmark(res)}
                                                             onPress={() => handleOpenResource(res)}
                                                             onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                                        /                                                    </div                                                ))}
+                                                        /                                                    ></div                                                ))}
                                             </div                                        </SmartShelf                                    );
                                 })}
                             </div                        )}
@@ -555,7 +555,7 @@ export default function LibraryScreenWeb() {
                             showToast((err as Error).message ?? 'Failed to add resource', 'error');
                         }
                     }}
-                /            )}
+                /            >)}
         </div    );
 }
 
@@ -578,7 +578,7 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                     src={resource.media.url} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     alt={resource.title}
-                /            )}
+                /            >)}
             <div style={{
                 position: 'absolute',
                 bottom: 0,
@@ -600,6 +600,6 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                     color: 'var(--sanctuary-saffron)',
                 }}                    {resource.subjects?.[0] && <span>| {resource.subjects[0].toUpperCase()}</span>}
                     {resource.subjects?.[0] && <span>&bull; {resource.subjects[0].toUpperCase()}</span>}
-                </div                <h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1                <p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p                <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                        <Play size={16} fill="currentColor" /                        Open Now
+                </div                <h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1                ><p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p                ><div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                        <Play size={16} fill="currentColor" /                        >Open Now
                     </button                </div            </div        </div    );
 }

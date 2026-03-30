@@ -65,7 +65,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid"
                         <ToastTitle>{t('bulk_creation.errors.invalidNumber') || 'Please enter a number between 1 and 100'}</ToastTitle
-                    </Toast
+                    ></Toast
                 ),
             });
             return;
@@ -95,7 +95,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid"
                         <ToastTitle>{t('bulk_creation.errors.requiredFields') || 'Name and Index are required'}</ToastTitle
-                    </Toast
+                    ></Toast
                 ),
             });
             return;
@@ -173,7 +173,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid"
                         <ToastTitle>{t('bulk_creation.errors.noValidStudents') || 'No valid students to add'}</ToastTitle
-                    </Toast
+                    ></Toast
                 ),
             });
             return;
@@ -205,7 +205,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 </Heading
                 <Pressable onPress={() => { hapticLight(); onCancel(); }}
                     <X size={24} color={colors.textSecondary} /
-                </Pressable
+                ></Pressable
             </HStack
 
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.xl, paddingBottom: 120 }}
@@ -235,7 +235,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     textAlign: 'center'
                                 }}
                             /
-                        </Input
+                        ></Input
 
                         <Button
                             size="lg"
@@ -285,7 +285,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                 }}
                             /
-                        </Box
+                        ></Box
 
                         {/* Name Input */}
                         <VStack sx={{ gap: Theme.spacing.xs }}
@@ -306,7 +306,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     color={colors.text}
                                     placeholderTextColor={colors.textTertiary}
                                 /
-                            </Input
+                            ></Input
                         </VStack
 
                         {/* Index Number Input */}
@@ -328,7 +328,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     color={colors.text}
                                     placeholderTextColor={colors.textTertiary}
                                 /
-                            </Input
+                            ></Input
                         </VStack
 
                         {/* Notes Input (Optional) */}
@@ -351,7 +351,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     color={colors.text}
                                     placeholderTextColor={colors.textTertiary}
                                 /
-                            </Textarea
+                            ></Textarea
                         </VStack
 
                         {/* Navigation Buttons */}
@@ -481,7 +481,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                                 </Pressable
                                                 <Pressable onPress={() => handleRemoveStudent(index)}
                                                     <Trash2 size={18} color={Theme.colors.emberRed} /
-                                                </Pressable
+                                                ></Pressable
                                             </HStack
                                         </HStack
                                     </Box
@@ -502,7 +502,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 }}
                             
                                 <Plus size={20} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} /
-                                <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}
+                                ><ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}
                                     {t('bulk_creation.addOneMore') || 'Add One More'}
                                 </ButtonText
                             </Button
@@ -519,7 +519,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 }}
                             
                                 <Save size={20} color={Theme.colors.sacredWhite} style={{ marginRight: 8 }} /
-                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}
+                                ><ButtonText sx={{ color: Theme.colors.sacredWhite }}
                                     {t('bulk_creation.addStudentsAction', { count: validStudentsCount }) || `Add ${validStudentsCount} Student(s)`}
                                 </ButtonText
                             </Button

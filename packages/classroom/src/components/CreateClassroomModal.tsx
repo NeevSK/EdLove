@@ -383,7 +383,7 @@ export default function CreateClassroomModal({
                     navigation.navigate('Profile' as never);
                 }}
                 feature="classroom"
-            /            <SanctuaryModal
+            /            ><SanctuaryModal
                 isOpen={isOpen}
                 onClose={handleClose}
                 title={mode === 'join'
@@ -428,7 +428,7 @@ export default function CreateClassroomModal({
                                     }}
                                     isDisabled={isSubmitting || (state.aesthetics.classType === 'subject' && !state.academic.subject.trim())}
                                                                     {isSubmitting ? (
-                                        <Spinner {...({ color: text.inverse, size: "small" } as any)} /                                    ) : (
+                                        <Spinner {...({ color: text.inverse, size: "small" } as any)} /                                    >) : (
                                         <ButtonText {...({ color: text.inverse } as any)}                                            {mode === 'edit' ? 'Save' : 'Establish Sanctuary'}
                                         </ButtonText                                    )}
                                 </Button                            </                        )}
@@ -458,7 +458,7 @@ export default function CreateClassroomModal({
 
                     {state.step === 1 && (
                         <                            {(mode === 'create' || mode === 'edit') && (
-                                <FormControl isRequired isInvalid={!!error}                                    <FormControlLabel                                        <FormControlLabelText sx={{ color: colors.textSecondary }}                                            {t('classroom.labelClassName') || 'What shall we call your Sanctuary?'}
+                                <FormControl isRequired isInvalid={!!error}                                    <FormControlLabel                                        <FormControlLabelText >sx={{ color: colors.textSecondary }}                                            {t('classroom.labelClassName') || 'What shall we call your Sanctuary?'}
                                         </FormControlLabelText                                    </FormControlLabel                                    <Input
                                         sx={{
                                             backgroundColor: colors.tertiary,
@@ -479,10 +479,10 @@ export default function CreateClassroomModal({
                                             color={colors.text}
                                             placeholderTextColor={colors.textTertiary}
                                             sx={{ fontSize: 18, fontWeight: '600' }}
-                                        /                                    </Input                                </FormControl                            )}
+                                        /                                    ></Input                                </FormControl                            )}
 
                             {(mode === 'create' || mode === 'edit') && (
-                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText sx={{ color: colors.textSecondary }}                                            Classroom Handle (unique ID)
+                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText >sx={{ color: colors.textSecondary }}                                            Classroom Handle (unique ID)
                                         </FormControlLabelText                                    </FormControlLabel                                    <Input
                                         sx={{
                                             backgroundColor: colors.tertiary,
@@ -501,7 +501,7 @@ export default function CreateClassroomModal({
                                     </Text                                </FormControl                            )}
 
                             {(mode === 'create' || mode === 'edit') && (
-                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText sx={{ color: colors.textSecondary }}                                            {t('classroom.description') || 'Brief Description'}
+                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText >sx={{ color: colors.textSecondary }}                                            {t('classroom.description') || 'Brief Description'}
                                         </FormControlLabelText                                    </FormControlLabel                                    <Input
                                         sx={{
                                             minHeight: 100,
@@ -517,21 +517,21 @@ export default function CreateClassroomModal({
                                             numberOfLines={4}
                                             color={colors.text}
                                             placeholderTextColor={colors.textTertiary}
-                                        /                                    </Input                                </FormControl                            )}
+                                        /                                    ></Input                                </FormControl                            )}
 
                             {mode === 'join' && (
                                 <Box sx={{ marginBottom: Theme.spacing.md }}                                    <Button
                                         variant="outline"
                                         onPress={() => setIsScannerOpen(true)}
                                         sx={{ borderColor: Theme.colors.sanctuarySaffron }}
-                                                                            <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center"                                            <ScanLine color={Theme.colors.sanctuarySaffron} size={20} /                                            <ButtonText {...({ color: Theme.colors.sanctuarySaffron } as any)}                                                {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
+                                                                            <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center"                                            <ScanLine color={Theme.colors.sanctuarySaffron} size={20} /                                            ><ButtonText {...({ color: Theme.colors.sanctuarySaffron } as any)}                                                {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
                                             </ButtonText                                        </HStack                                    </Button
                                     {schoolId && (
-                                        <HStack alignItems="center" sx={{ marginVertical: Theme.spacing.md }}                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} /                                            <Text sx={{ color: colors.textTertiary, paddingHorizontal: Theme.spacing.md, fontSize: Theme.typography.fontSize.sm }}                                                {t('common.or') || 'OR'}
-                                            </Text                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} /                                        </HStack                                    )}
+                                        <HStack alignItems="center" sx={{ marginVertical: Theme.spacing.md }}                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} /                                            ><Text sx={{ color: colors.textTertiary, paddingHorizontal: Theme.spacing.md, fontSize: Theme.typography.fontSize.sm }}                                                {t('common.or') || 'OR'}
+                                            </Text                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} /                                        ></HStack                                    )}
 
                                     {schoolId && (
-                                        <VStack sx={{ gap: Theme.spacing.md }}                                            <FormControl isRequired                                                <FormControlLabel                                                    <FormControlLabelText sx={{ color: colors.textSecondary }}                                                        {t('classroom.selectSection') || 'Select Section'}
+                                        <VStack sx={{ gap: Theme.spacing.md }}                                            <FormControl isRequired                                                <FormControlLabel                                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                                        {t('classroom.selectSection') || 'Select Section'}
                                                     </FormControlLabelText                                                </FormControlLabel                                                <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}                                                    {sections.map((section) => (
                                                         <Button
                                                             key={section.id}
@@ -550,7 +550,7 @@ export default function CreateClassroomModal({
 
                     {state.step === 2 && (
                         <                            {schoolId && (
-                                <VStack sx={{ gap: Theme.spacing.md }}                                    <FormControl isRequired                                        <FormControlLabel                                            <FormControlLabelText sx={{ color: colors.textSecondary }}                                                {t('classroom.selectGrade') || 'Target Grade'}
+                                <VStack sx={{ gap: Theme.spacing.md }}                                    <FormControl isRequired                                        <FormControlLabel                                            <FormControlLabelText >sx={{ color: colors.textSecondary }}                                                {t('classroom.selectGrade') || 'Target Grade'}
                                             </FormControlLabelText                                        </FormControlLabel                                        <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}                                            {grades.map((grade) => (
                                                 <Button
                                                     key={grade.id}
@@ -566,7 +566,7 @@ export default function CreateClassroomModal({
                                                     </ButtonText                                                </Button                                            ))}
                                         </Box                                    </FormControl                                </VStack                            )}
 
-                            <FormControl                                <FormControlLabel                                    <FormControlLabelText sx={{ color: colors.textSecondary }}                                        {t('classroom.labelSubject') || 'Core Subject'}
+                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                        {t('classroom.labelSubject') || 'Core Subject'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack flexWrap="wrap" sx={{ gap: 8 }}                                    {availableSubjects.map((sub: any) => (
                                         <Button
                                             key={sub.id}
@@ -580,7 +580,7 @@ export default function CreateClassroomModal({
                                                                                     <ButtonText color={state.academic.subject === sub.id ? text.inverse : colors.textSecondary}                                                {sub.en}
                                             </ButtonText                                        </Button                                    ))}
                                 </HStack                            </FormControl
-                            <FormControl                                <FormControlLabel                                    <FormControlLabelText sx={{ color: colors.textSecondary }}                                        {t('classroom.theme') || 'Sanctuary Theme'}
+                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                        {t('classroom.theme') || 'Sanctuary Theme'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack sx={{ flexWrap: 'wrap', gap: 12, paddingVertical: 4 }}                                    {CLASSROOM_THEMES.map((theme) => (
                                         <Pressable key={theme.id} onPress={() => updateAesthetics({ themeId: theme.id })}                                            <Box
                                                 sx={{
@@ -596,7 +596,7 @@ export default function CreateClassroomModal({
                                                                                             {state.aesthetics.themeId === theme.id && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: 'white' }} />}
                                             </Box                                        </Pressable                                    ))}
                                 </HStack                            </FormControl
-                            <FormControl                                <FormControlLabel                                    <FormControlLabelText sx={{ color: colors.textSecondary }}                                        {t('classroom.labelType') || 'Institutional Role'}
+                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                        {t('classroom.labelType') || 'Institutional Role'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack sx={{ gap: Theme.spacing.md }}                                    {(['own', 'subject'] as const).map((type) => (
                                         <Button
                                             key={type}
@@ -613,11 +613,11 @@ export default function CreateClassroomModal({
                                 </HStack                            </FormControl                        </                    )}
 
                     {state.step === 3 && (
-                        <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}                            <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}                                <Icon as={Globe} color={Theme.colors.sanctuarySaffron} size={64} /                            </Box                            
+                        <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}                            <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}                                <Icon as={Globe} color={Theme.colors.sanctuarySaffron} size={64} /                            ></Box                            
                             <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}                                    Sanctuary Established!
                                 </Heading                                <Text sx={{ textAlign: 'center', color: colors.textSecondary }}                                    Your classroom <Text sx={{ fontWeight: 'bold', color: colors.text }}>{state.details.name}</Text> is ready for the breath-like learning journey.
                                 </Text                            </VStack
-                            <Box sx={{ backgroundColor: colors.tertiary, padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, width: '100%' }}                                <VStack sx={{ gap: Theme.spacing.md }}                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                                        <Text sx={{ fontSize: 14, color: colors.text }}>Classroom Hub Initialized</Text                                    </HStack                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                                        <Text sx={{ fontSize: 14, color: colors.text }}>Linked Sanctuary Group Active</Text                                    </HStack                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                                        <Text sx={{ fontSize: 14, color: colors.text }}>QR Code & Handle Registered</Text                                    </HStack                                </VStack                            </Box                        </VStack                    )}
+                            <Box sx={{ backgroundColor: colors.tertiary, padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, width: '100%' }}                                <VStack sx={{ gap: Theme.spacing.md }}                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                                        ><Text sx={{ fontSize: 14, color: colors.text }}>Classroom Hub Initialized</Text                                    ></HStack                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                                        ><Text sx={{ fontSize: 14, color: colors.text }}>Linked Sanctuary Group Active</Text                                    ></HStack                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                                        ><Text sx={{ fontSize: 14, color: colors.text }}>QR Code & Handle Registered</Text                                    ></HStack                                </VStack                            </Box                        </VStack                    )}
                 </VStack            </SanctuaryModal
             <ScannerModal
                 visible={isScannerOpen}
