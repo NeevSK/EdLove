@@ -58,7 +58,7 @@ export default function PrincipalOnboardingView({
                         backgroundColor: 'rgba(212,132,58,0.1)',
                         marginBottom: 12
                     }}                        <Icon as={Building2} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    ><Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Principal
-                    </Heading                    <Text sx={{ 
+                    </Heading                    ><Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
                         fontSize: 16,
@@ -90,7 +90,7 @@ export default function PrincipalOnboardingView({
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
                                 }}                                    <Icon as={Building} color="white" size={32} /                                ></Box                                ><VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="md" color={colors.text}>Found New Sanctuary</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Establish a digital presence for your school, manage staff, and track student progress.
-                                    </Text                                    {isGuest && (
+                                    </Text                                    >{isGuest && (
                                         <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} /                                            ><Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}                                                Requires Signup
                                             </Text                                        </HStack                                    )}
                                 </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
@@ -115,7 +115,7 @@ export default function PrincipalOnboardingView({
                                     backgroundColor: colors.border,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                ></Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Join Existing Institution</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Search for your school and request administrative access.
+                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                ></Box                                ><VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Join Existing Institution</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Search for your school and request administrative access.
                                     </Text                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Try Demo Banner */}
                     <Box sx={{ 
@@ -161,7 +161,7 @@ export default function PrincipalOnboardingView({
                                     borderRadius: 27
                                 }}
                                                             <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Demo Sandbox>
-                                </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
+                                </ButtonText                                ><Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        ></VStack                    </Box
                 </VStack>
                 {/* Footer Info */}
                 <Text sx={{ 

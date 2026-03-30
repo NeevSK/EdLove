@@ -52,5 +52,5 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
                         host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
                       }}
                                           <View style={{ flex: 1 }}                        {children}>
-                      </View                      <SyncManager /                    ></AnalyticsProvider                  </ExternalLinkProvider                </ToastProvider              </DeepLinkProvider            </FABProvider          </AssetLoaderWatcher        </GluestackUIProvider      </EnvironmentProvider    </QueryClientProvider  );>
+                      </View                      ><SyncManager /                    ></AnalyticsProvider                  </ExternalLinkProvider                </ToastProvider              </DeepLinkProvider            </FABProvider          </AssetLoaderWatcher        </GluestackUIProvider      </EnvironmentProvider    </QueryClientProvider  );>
 }

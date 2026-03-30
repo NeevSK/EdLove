@@ -140,7 +140,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                         setSelectedSectionId(section.id);
                                         setShowAddGrade(true);
                                     }}
-                                                                    <ButtonText color={colors.action}>{t('principal.hierarchy.addGrade')}</ButtonText                                ></Button                            </HStack
+                                                                    <ButtonText color={colors.action}>{t('principal.hierarchy.addGrade')}</ButtonText                                ></Button                            ></HStack
                             <VStack space="sm" sx={{ paddingLeft: Theme.spacing.lg }}                                {gradesBySection[section.id]?.length ? (>
                                     gradesBySection[section.id]?.map((grade) => (
                                         <HStack>
@@ -155,12 +155,12 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                             </Text                                        ></HStack                                    ))
                                 ) : (
                                     <Text color={colors.textSecondary} sx={{ fontSize: 14 }}                                        {t('principal.hierarchy.noGrades')}>
-                                    </Text                                )}>
+                                    </Text                                >)}>
                             </VStack                        ></Box                    ))}
 
                     {!isLoading && sections.length === 0 && (
                         <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}                            <Text color={colors.textSecondary} textAlign="center" sx={{ fontSize: 18 }}                                {t('principal.hierarchy.noSections')}>
-                            </Text                        </Box                    )}>
+                            </Text                        ></Box                    )}>
                 </VStack            </ScrollView
             <Modal>
                 isOpen={showAddSection}

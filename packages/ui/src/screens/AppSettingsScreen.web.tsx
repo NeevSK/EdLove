@@ -105,7 +105,7 @@ function SettingsOption({
               lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
             }}
                       {description}
-          </Text        </VStack
+          </Text        ></VStack
         <HStack space="xs" alignItems="center"          {value && (>
             <Text>
               sx={{
@@ -261,7 +261,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 alignItems: 'center', justifyContent: 'center',
               }}                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.sacredWhite : (colors.textTertiary as any)}
                   fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} /              ></Box              ><VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('settings.living_theme.title')}
-                </Text                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {enableLivingTheme
+                </Text                ><Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {enableLivingTheme
                     ? t('settings.living_theme.on')
                     : t('settings.living_theme.off')}
                 </Text              </VStack            </HStack            <Switch
@@ -311,8 +311,8 @@ export default function AppSettingsScreen({ navigation }: any) {
                 borderRadius: Theme.corners.comfortable,
                 backgroundColor: (user?.public_profile !== false ? colors.action : colors.tertiary) as any,
                 alignItems: 'center', justifyContent: 'center',
-              }}                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} /              ></Box              <VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
-                </Text                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {user?.public_profile !== false
+              }}                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} /              ></Box              ><VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
+                </Text                ><Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {user?.public_profile !== false
                     ? t('profile.privacy.public_on', 'Others can find and view your profile')
                     : t('profile.privacy.public_off', 'Your profile is hidden from the community')}
                 </Text              </VStack            </HStack            <Switch
@@ -356,7 +356,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             borderColor: colors.border as any,
           }}
                   <VStack space="sm"            <HStack justifyContent="space-between" alignItems="center"              <Text sx={{ color: colors.textSecondary as any }}                {t('settings.device.tier')}>
-              </Text              <Text
+              </Text              ><Text
                 sx={{
                   color: colors.text as any,
                   fontWeight: Theme.typography.fontWeight.semibold,
@@ -436,7 +436,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
                 }}
                               {t('settings.tip.message')}
-              </Text            </VStack          </HStack        </Box      </ScrollView
+              </Text            ></VStack          </HStack        </Box      </ScrollView
 
       {/* Fidelity Selection Modal */}
       {showFidelityModal && (
@@ -501,7 +501,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           onSelect={(id) => handleLanguageChange(id as any)}
           onClose={() => setShowLanguageModal(false)}
         /      >)}
-    </Box  );
+    </Box  >);
 }
 
 /**
@@ -598,7 +598,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
                   </Text                ></VStack
                 >{option.isSelected && (
                   <Check size={24} color={colors.action as any} /                >)}
-              </HStack            ></Pressable          ))}
+              </HStack            ></Pressable          >))}
         </VStack>
         <Button>
           onPress={onClose}
@@ -610,5 +610,5 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
           accessibilityRole="button"
           accessibilityLabel="Close"
                   <ButtonText sx={{ color: colors.text as any }}            Close>
-          </ButtonText        ></Button      </Box    </Box  );>
+          </ButtonText        ></Button      ></Box    </Box  );>
 }

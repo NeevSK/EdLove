@@ -259,7 +259,7 @@ export default function ClassroomList({
         const studentCount = (classroom as any).student_count || 0;
 
         return (
-            <ClassroomCard
+            <ClassroomCard>
                 classroom={classroom}
                 onPress={handleClassroomPress}
                 onClassroomPress={onClassroomPress}
@@ -278,7 +278,7 @@ export default function ClassroomList({
 
     if (loading) {
         return (
-            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}
+            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
                 <SkeletonCard height={80} />
                 ><SkeletonCard height={80} /
                 ><SkeletonCard height={80} />
@@ -288,7 +288,7 @@ export default function ClassroomList({
 
     if (error) {
         return (
-            <View style={styles.centerContainer}
+            <View style={styles.centerContainer}>
                 <Text style={styles.errorText}>\u26A0\uFE0F {error}</Text
                 ><TouchableOpacity
                     style={styles.retryButton}
@@ -302,10 +302,10 @@ export default function ClassroomList({
 
     if (isNested) {
         return (
-            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}
+            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
                 {classrooms.length === 0 ? (
                     emptyContent || (>
-                        <PositiveInvitation
+                        <PositiveInvitation>
                             context="classroom"
                             onAction={() => {
                                 hapticLight();
@@ -318,7 +318,7 @@ export default function ClassroomList({
                     >)
                 ) : (
                     classrooms.map((classroom) => (
-                        <ClassroomCard
+                        <ClassroomCard>
                             key={classroom.id}
                             classroom={classroom}
                             onPress={handleClassroomPress}
@@ -333,7 +333,7 @@ export default function ClassroomList({
                     >))
                 )}
 
-                <CreateClassroomModal
+                <CreateClassroomModal>
                     isOpen={isCreateModalOpen}
                     initialData={pendingInitialData}
                     onClose={() => {
@@ -350,9 +350,9 @@ export default function ClassroomList({
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
             {classrooms.length === 0 ? (>
-                <PositiveInvitation
+                <PositiveInvitation>
                     context="classroom"
                     onAction={() => {
                         hapticLight();
@@ -364,7 +364,7 @@ export default function ClassroomList({
                 /
             >) : (
                 <
-                    <FlatList
+                    <FlatList>
                         data={classrooms}
                         renderItem={renderClassroomCard}
                         keyExtractor={keyExtractor}
@@ -382,7 +382,7 @@ export default function ClassroomList({
                     /
 
                     >{canCreateClassroom && (
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             onPress={() => {
                                 hapticLight();
                                 setPendingInitialData(null);
@@ -408,7 +408,7 @@ export default function ClassroomList({
                 </
             )}
 
-            <CreateClassroomModal
+            <CreateClassroomModal>
                 isOpen={isCreateModalOpen}
                 initialData={pendingInitialData}
                 onClose={() => {
@@ -459,7 +459,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
         toast.show({
             placement: "top",
             render: ({ id }: { id: string }) => (
-                <Toast nativeID={"toast-" + id}
+                <Toast nativeID={"toast-" + id}>
                     <VStack sx={{ gap: 4 }}>
                         <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle
                         ><ToastDescription
@@ -472,37 +472,37 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
     }, [classroom.id, dismissSample, toast, t]);
 
     return (
-        <TouchableOpacity
+        <TouchableOpacity>
             onPress={handlePress}
             activeOpacity={0.7}>
         
-            <Box
+            <Box>
                 sx={{
                     borderRadius: Theme.corners.generous,
                     padding: Theme.spacing.md,
                     borderWidth: 1,
                     backgroundColor: colors.secondary,
-                    borderColor: colors.border,>
+                    borderColor: colors.border,
                 }}
             
-                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}
+                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}>
                     <Box sx={{
                         width: 50,
                         height: 50,
                         borderRadius: Theme.corners.comfortable,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: colors.tertiary>
-                    }}
-                        <BookOpen
+                        backgroundColor: colors.tertiary
+                    }}>
+                        <BookOpen>
                             size={24}
                             color={Theme.colors.sanctuarySaffron}
                         />
                     ></Box>
 
-                    <VStack sx={{ flex: 1, gap: 4 }}
+                    <VStack sx={{ flex: 1, gap: 4 }}>
                         <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}
+                            <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
                                 {classroom.name}>
                             </Text>
                             {(classroom as any).is_sample && (
@@ -515,23 +515,23 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                                     borderColor: Theme.colors.amberGlow,
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    gap: 2>
-                                }}
+                                    gap: 2
+                                }}>
                                     <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} /
                                     ><Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text
                                 ></Box>
                             )}
                         </HStack>
-                        <HStack alignItems="center" sx={{ gap: 8 }}
+                        <HStack alignItems="center" sx={{ gap: 8 }}>
                             <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}>
                                 {classroom.subject || t('classroom.noSubject')}
                             </Text>
-                            <Box
+                            <Box>
                                 sx={{
                                     width: 4,
                                     height: 4,
                                     borderRadius: 2,
-                                    backgroundColor: colors.textTertiary,>
+                                    backgroundColor: colors.textTertiary,
                                 }}
                             /
                             ><HStack alignItems="center" sx={{ gap: 4 }}
@@ -543,17 +543,17 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                         </HStack>
                     </VStack>
 
-                    <TouchableOpacity onPress={handleAttendancePress}
+                    <TouchableOpacity onPress={handleAttendancePress}>
                         <Box sx={{
                             padding: Theme.spacing.sm,
                             borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.tertiary,>
-                        }}
+                            backgroundColor: colors.tertiary,
+                        }}>
                             <ClipboardCheck size={20} color={Theme.colors.sageGreen} /
                         ></Box>
                     </TouchableOpacity>
 
-                    <ChevronRight
+                    <ChevronRight>
                         size={20}
                         color={colors.textSecondary}
                     />

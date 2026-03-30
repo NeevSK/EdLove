@@ -123,7 +123,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
-              <View                <User >color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} /              ></View            ),
+              <View                <User >color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} /              ></View            >),
           }}
                   {() => (
             <ErrorBoundary name="Profile Stack"              <ProfileStackNavigator /            ></ErrorBoundary          )}

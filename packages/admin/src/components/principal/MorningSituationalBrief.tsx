@@ -85,32 +85,32 @@ export default function MorningSituationalBrief({
     attendanceDelta > 0 ? `+${attendanceDelta}% vs yesterday` : attendanceDelta < 0 ? `${attendanceDelta}% vs yesterday` : 'same as yesterday';
 
   return (
-    <VStack sx={{ gap: Theme.spacing.sm }}      <TouchableOpacity onPress={onViewStaff} activeOpacity={0.8}        <Box
+    <VStack sx={{ gap: Theme.spacing.sm }}      <TouchableOpacity onPress={onViewStaff} activeOpacity={0.8}        <Box>
           sx={{
             backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,>
+            borderColor: colors.border,
           }}
-                  <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}            <Box
+                  <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}            <Box>
               sx={{
                 width: 10,
                 height: 10,
                 borderRadius: 5,
-                backgroundColor: dotColor,>
+                backgroundColor: dotColor,
               }}
             /            ><Text sx={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '600' }}              {presence ? `${presence.present} of ${presence.total} teachers present today` : 'No attendance data yet'}
             </Text            {onViewStaff && <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View</Text>}
           </HStack        </Box      </TouchableOpacity
-      <HStack sx={{ gap: Theme.spacing.sm }}        <Box
+      <HStack sx={{ gap: Theme.spacing.sm }}        <Box>
           sx={{
             flex: 1,
             backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,>
+            borderColor: colors.border,
           }}
                   <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Student Attendance</Text          ><Text sx={{ fontSize: 22, fontWeight: '700', color: colors.text }}>{pulse ? `${pulse.todayRate}%` : '-'}</Text          ><Text
             sx={{
@@ -119,14 +119,14 @@ export default function MorningSituationalBrief({
             }}
                       {pulse ? deltaLabel : ''}
           </Text        </Box
-        <Box
+        <Box>
           sx={{
             flex: 1,
             backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,>
+            borderColor: colors.border,
           }}
                   <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>At-Risk Students</Text          ><Text
             sx={{
@@ -136,14 +136,14 @@ export default function MorningSituationalBrief({
             }}
                       {pulse?.atRiskCount ?? 0}
           </Text          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{'attendance < 75%'}</Text        ></Box
-        <TouchableOpacity onPress={onViewApprovals} activeOpacity={0.8} style={{ flex: 1 }}          <Box
+        <TouchableOpacity onPress={onViewApprovals} activeOpacity={0.8} style={{ flex: 1 }}          <Box>
             sx={{
               flex: 1,
               backgroundColor: colors.primary,
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
-              borderColor: colors.border,>
+              borderColor: colors.border,
             }}
                       <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Pending Leaves</Text            ><Text
               sx={{

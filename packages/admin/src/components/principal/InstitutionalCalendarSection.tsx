@@ -99,13 +99,13 @@ export default function InstitutionalCalendarSection({
   } as const;
 
   return (
-    <Box
+    <Box>
       sx={{
         backgroundColor: colors.primary,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
-        padding: Theme.spacing.md,>
+        padding: Theme.spacing.md,
       }}
           <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>School Calendar</Text        ><TouchableOpacity
           onPress={() => {
@@ -113,34 +113,34 @@ export default function InstitutionalCalendarSection({
             onAddEvent?.();
           }}
           activeOpacity={0.8}
-                  <Box
+                  <Box>
             sx={{
               backgroundColor: Theme.colors.gurudeviBlue ?? '#2196f3',
               borderRadius: Theme.corners.medium ?? 8,
               paddingHorizontal: 10,
-              paddingVertical: 4,>
+              paddingVertical: 4,
             }}
                       <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ Add</Text          ></Box        </TouchableOpacity      </HStack
       {loading && <SkeletonCard height={60} />}
 
       {!loading && events.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No upcoming events
+        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No upcoming events>
         </Text      )}>
 
       {!loading &&
         events.map((event) => (
-          <HStack
+          <HStack>
             key={event.id}
-            sx={{ alignItems: 'center', gap: Theme.spacing.sm, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-                      <Box
+            sx={{ alignItems: 'center', gap: Theme.spacing.sm, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border }}
+                      <Box>
               sx={{
                 backgroundColor: typeBadgeColor(event.type),
                 borderRadius: 8,
                 paddingHorizontal: 7,
-                paddingVertical: 2,>
+                paddingVertical: 2,
               }}
-                          <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>{TYPE_LABELS[event.type] ?? event.type}</Text            ></Box            <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}              {event.title}
-            </Text            <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(event.start_date)}</Text          </HStack        ))}
+                          <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>{TYPE_LABELS[event.type] ?? event.type}</Text            ></Box            ><Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}              {event.title}
+            </Text            <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(event.start_date)}</Text          ></HStack        ))}
 
       {showForm && (
         <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}          <TextInput placeholder="Event title" placeholderTextColor={colors.textSecondary} value={title} onChangeText={setTitle} style={inputStyle} /
@@ -152,10 +152,10 @@ export default function InstitutionalCalendarSection({
                       paddingVertical: 4,
                       backgroundColor: selectedType === type ? typeBadgeColor(type) : colors.border,
                     }}
-                                      <Text sx={{ fontSize: 12, fontWeight: '600', color: selectedType === type ? '#fff' : colors.textSecondary }}                      {TYPE_LABELS[type]}
+                                      <Text sx={{ fontSize: 12, fontWeight: '600', color: selectedType === type ? '#fff' : colors.textSecondary }}                      {TYPE_LABELS[type]}>
                     </Text                  </Box                </TouchableOpacity              ))}>
-            </HStack          </RNScrollView
-          <TextInput
+            </HStack          ></RNScrollView
+          <TextInput>
             placeholder="Start date (YYYY-MM-DD)"
             placeholderTextColor={colors.textSecondary}
             value={startDate}
@@ -174,7 +174,7 @@ export default function InstitutionalCalendarSection({
                 borderRadius: Theme.corners.medium ?? 8,
                 padding: Theme.spacing.sm,
                 alignItems: 'center',
-                opacity: saving ? 0.6 : 1,>
+                opacity: saving ? 0.6 : 1,
               }}
                           <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}>{saving ? 'Saving...' : 'Save Event'}</Text            ></Box          </TouchableOpacity        </VStack      )}
     </Box  );

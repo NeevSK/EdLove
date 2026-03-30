@@ -204,11 +204,11 @@ export const OrientationCaptureStep = ({
     });
 
     return (
-        <VStack style={{ flex: 1 }} space="md"
+        <VStack style={{ flex: 1 }} space="md">
             {/* Progress dots */}>
-            <HStack space="xs" justifyContent="center" style={{ paddingTop: Theme.spacing.md }}
+            <HStack space="xs" justifyContent="center" style={{ paddingTop: Theme.spacing.md }}>
                 {Array.from({ length: totalSteps }).map((_, i) => (
-                    <Box
+                    <Box>
                         key={i}
                         style={{
                             width: i === currentStep ? 18 : 6,
@@ -222,42 +222,42 @@ export const OrientationCaptureStep = ({
                 >))}
             </HStack>
 
-            <ScrollView
+            <ScrollView>
                 style={{ flex: 1 }}
                 contentContainerStyle={{ padding: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}>
             
                 {/* Header */}
-                <VStack space="xs" style={{ marginBottom: Theme.spacing.lg }}
-                    <Text
+                <VStack space="xs" style={{ marginBottom: Theme.spacing.lg }}>
+                    <Text>
                         style={{
                             fontSize: 11,
                             fontWeight: '700',
                             letterSpacing: 1.2,
                             color: Theme.colors.sanctuarySaffron,
-                            textTransform: 'uppercase',>
+                            textTransform: 'uppercase',
                         }}
                     
                         {`${questionIndex + 1} of ${QUESTIONS.length}`}
                     </Text>
-                    <Heading
+                    <Heading>
                         size="lg"
                         color={colors.text}
-                        style={{ lineHeight: 28 }}>
+                        style={{ lineHeight: 28 }}
                     
                         {question?.situation}
                     </Heading>
-                    <Text color={colors.textSecondary} size="sm"
+                    <Text color={colors.textSecondary} size="sm">
                         {question?.prompt}>
                     </Text>
                 </VStack>
 
                 {/* Options */}
-                <VStack space="sm"
+                <VStack space="sm">
                     {question?.options.map((opt, i) => {
                         const isSelected = selected === i;
                         return (
-                            <Pressable
+                            <Pressable>
                                 key={i}
                                 onPress={() => handleSelect(i)}
                                 style={[
@@ -272,7 +272,7 @@ export const OrientationCaptureStep = ({
                                     },
                                 ]}
                             
-                                <HStack space="md" alignItems="center"
+                                <HStack space="md" alignItems="center">
                                     <Text style={{ fontSize: 28 }}>{opt.emoji}</Text
                                     ><Text
                                         style={{
@@ -280,7 +280,7 @@ export const OrientationCaptureStep = ({
                                             fontSize: Theme.typography.fontSize.sm,
                                             lineHeight: 20,
                                             color: isSelected ? colors.text : colors.textSecondary,
-                                            fontWeight: isSelected ? '600' : '400',>
+                                            fontWeight: isSelected ? '600' : '400',
                                         }}
                                     
                                         {opt.label}
@@ -292,13 +292,13 @@ export const OrientationCaptureStep = ({
                 </VStack>
 
                 {/* Privacy note */}
-                <Text
+                <Text>
                     style={{
                         marginTop: Theme.spacing.lg,
                         fontSize: Theme.typography.fontSize.xs,
                         color: colors.textTertiary,
                         textAlign: 'center',
-                        lineHeight: 16,>
+                        lineHeight: 16,
                     }}
                 
                     \uD83D\uDD12 Your answers are private. They help the app feel more like you \u2014 we never label or categorize you.
@@ -306,15 +306,15 @@ export const OrientationCaptureStep = ({
             </ScrollView>
 
             {/* Footer actions */}
-            <HStack
+            <HStack>
                 space="md"
                 style={{
                     paddingHorizontal: Theme.spacing.lg,
                     paddingBottom: Theme.spacing.xl,
-                    paddingTop: Theme.spacing.sm,>
+                    paddingTop: Theme.spacing.sm,
                 }}
             
-                <Pressable
+                <Pressable>
                     onPress={handleBack}
                     style={{
                         flex: 1,
@@ -325,19 +325,19 @@ export const OrientationCaptureStep = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexDirection: 'row',
-                        gap: 4,>
+                        gap: 4,
                     }}
                 
                     <ChevronLeft color={colors.textSecondary} size={16} /
                     ><Text color={colors.textSecondary} size="sm">Back</Text
                 ></Pressable>
-                <Pressable
+                <Pressable>
                     onPress={onSkip}
                     style={{
                         flex: 2,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',>
+                        alignItems: 'center',
                     }}
                 
                     <Text color={colors.textTertiary} size="sm">Skip for now</Text

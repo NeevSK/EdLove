@@ -149,7 +149,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                                             {lang.code.toUpperCase()}
                             </Text                        ></Pressable                    >))}
                     </HStack                ></Box
-                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}                        <Box>
+                ><VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}                        <Box>
                             sx={{
                                 alignSelf: 'flex-start',
                                 px: Theme.spacing.md,
@@ -221,7 +221,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         borderColor: `${pillar.tone}30`,
                                     }}
                                                                     <Text size="xs" color={pillar.tone} bold                                        {pillar.label}>
-                                    </Text                                ></Box                            ))}>
+                                    </Text                                ></Box                            >))}>
                         </HStack                    ></VStack
                     <Box>
                         sx={{
@@ -237,7 +237,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                             elevation: 4,
                         }}
                                             <VStack space="xl"                            <VStack space="sm"                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                    BEGIN QUIETLY>
-                                </Text                                <Text color={colors.textSecondary} size="md"                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.>
+                                </Text                                ><Text color={colors.textSecondary} size="md"                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.>
                                 </Text                            ></VStack
                             <VStack space="lg"                                <HStack space="md" alignItems="center" justifyContent="center"                                <Checkbox>
                                     size="md"
@@ -283,7 +283,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         }
                                     }}
                                                                     <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}>
-                                    </ButtonText                                </Button>
+                                    </ButtonText                                ></Button>
                                 <Button>
                                     size="lg"
                                     variant="outline"
@@ -297,7 +297,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         backgroundColor: 'transparent',
                                     }}
                                                                     <ButtonText color={colors.textSecondary} fontWeight="$medium"                                        {t('welcome.login')}>
-                                    </ButtonText                                ></Button                            </VStack>
+                                    </ButtonText                                ></Button                            ></VStack>
                             <Text color={colors.textTertiary} size="xs" textAlign="center"                                {t('welcome.footer')}>
-                            </Text                        </VStack                    </Box                </VStack            </Box        </ScreenWrapper    );>
+                            </Text                        ></VStack                    </Box                </VStack            </Box        </ScreenWrapper    );>
 }

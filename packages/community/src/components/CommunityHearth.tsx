@@ -59,17 +59,17 @@ export default function CommunityHearth({
         slides.push({
             key: 'welcome',
             content: (
-                <VStack space="sm"
+                <VStack space="sm">
                     <HStack space="xs" alignItems="center">
                         <Sparkles size={14} color={Theme.colors.sanctuarySaffron} /
                         ><Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}
                             Welcome to the Circle>
                         </Text>
                     </HStack>
-                    <Heading size="md" color={colors.text}
+                    <Heading size="md" color={colors.text}>
                         Feel the School's Pulse>
                     </Heading>
-                    <Text size="sm" color={colors.textSecondary}
+                    <Text size="sm" color={colors.textSecondary}>
                         The Hearth is where we share wisdom, celebrate growth, and align our visions. Explore what's blooming today.>
                     </Text>
                 </VStack>
@@ -87,22 +87,22 @@ export default function CommunityHearth({
             slides.push({
                 key: `manifesto-${manifesto.id}`,
                 content: (
-                    <VStack space="sm"
+                    <VStack space="sm">
                         <HStack space="xs" alignItems="center">
                             <Star size={14} color={Theme.colors.sanctuarySaffron} /
                             ><Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}>
                                 {manifesto.vibe || 'Vision'} Manifesto
                             </Text>
                         </HStack>
-                        <Heading size="md" color={colors.text}
+                        <Heading size="md" color={colors.text}>
                             {manifesto.title}>
                         </Heading>
-                        <Text size="sm" color={colors.textSecondary} numberOfLines={3} sx={{ lineHeight: 22 }}
+                        <Text size="sm" color={colors.textSecondary} numberOfLines={3} sx={{ lineHeight: 22 }}>
                             {manifesto.content}>
                         </Text>
                         {onEndorseManifesto && (
                             <Pressable onPress={() => onEndorseManifesto(manifesto.id)}
-                                <HStack space="xs" alignItems="center" mt="$2"
+                                <HStack space="xs" alignItems="center" mt="$2">
                                     <Sparkles size={14} color={Theme.colors.sanctuarySaffron} />
                                     ><Text size="xs" color={Theme.colors.sanctuarySaffron} bold
                                         Align with Vision \u2192>
@@ -120,21 +120,21 @@ export default function CommunityHearth({
         slides.push({
             key: 'spotlight',
             content: (
-                <VStack space="sm"
+                <VStack space="sm">
                     <HStack space="xs" alignItems="center">
                         <Megaphone size={14} color={Theme.colors.gurudeviViolet} /
                         ><Text size="xs" color={Theme.colors.gurudeviViolet} bold sx={{ textTransform: 'uppercase' }}
                             Community Spotlight>
                         </Text>
                     </HStack>
-                    <Heading size="md" color={colors.text}
+                    <Heading size="md" color={colors.text}>
                         {spotlightPost.content.substring(0, 40)}...>
                     </Heading>
-                    <Text size="sm" color={colors.textSecondary} numberOfLines={2}
+                    <Text size="sm" color={colors.textSecondary} numberOfLines={2}>
                         {spotlightPost.content}>
                     </Text>
                     {spotlightPost.author_name && (
-                        <Text size="xs" color={colors.textTertiary}
+                        <Text size="xs" color={colors.textTertiary}>
                             Shared by {spotlightPost.author_name}>
                         </Text>
                     )}
@@ -180,27 +180,27 @@ export default function CommunityHearth({
     };
 
     return (
-        <VStack space="sm" sx={{ marginBottom: Theme.spacing.lg }}
+        <VStack space="sm" sx={{ marginBottom: Theme.spacing.lg }}>
             <HStack justifyContent="space-between" alignItems="center" px="$4">
-                <Text size="sm" color={Theme.colors.mistGray} bold
+                <Text size="sm" color={Theme.colors.mistGray} bold>
                     The Community Hearth>
                 </Text>
-                <HStack space="xs"
+                <HStack space="xs">
                     {slides.map((_, i) => (
-                        <Box
+                        <Box>
                             key={i}
                             sx={{
                                 width: i === activeIndex ? 16 : 6,
                                 height: 6,
                                 borderRadius: 3,
-                                backgroundColor: i === activeIndex ? colors.action : colors.border,>
+                                backgroundColor: i === activeIndex ? colors.action : colors.border,
                             }}
                         /
                     >))}
                 </HStack>
             </HStack>
 
-            <ScrollView
+            <ScrollView>
                 ref={scrollRef}
                 horizontal
                 pagingEnabled={false} // Disable paging for "Netflix-style" peaking
@@ -211,23 +211,23 @@ export default function CommunityHearth({
                 scrollEventThrottle={16}
                 snapToInterval={SNAP_INTERVAL}
                 decelerationRate="fast"
-                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md }}>
+                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md }}
             
                 {slides.map((slide, index) => (
-                    <Box
+                    <Box>
                         key={slide.key}
                         sx={{
                             width: CARD_WIDTH,
-                            marginRight: index === slides.length - 1 ? 0 : Theme.spacing.md,>
+                            marginRight: index === slides.length - 1 ? 0 : Theme.spacing.md,
                         }}
                     
-                        <SanctuaryCard
+                        <SanctuaryCard>
                             onPress={slide.key === 'spotlight' ? () => onPressSpotlight?.(spotlightPost!.id) : undefined}
                             elevated={false} // Disable elevation to fix perceived glow layer issues
                             variant="glass"
                             style={{ minHeight: 180 }} // Dynamic minHeight
                         
-                            <Box sx={{ flex: 1, justifyContent: 'center' }}
+                            <Box sx={{ flex: 1, justifyContent: 'center' }}>
                                 <Animated.View layout={LinearTransition}>
                                     {slide.content}
                                 </Animated.View>

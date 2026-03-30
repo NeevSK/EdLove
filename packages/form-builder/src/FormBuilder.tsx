@@ -341,7 +341,7 @@ export const FormBuilder = ({
                                         <TouchableOpacity onPress={() => removeField(field.id)}
                                             <Icon as={Trash2} color={Theme.colors.emberRed} size={18} /
                                         ></TouchableOpacity
-                                    </HStack>
+                                    ></HStack>
 
                                     <HStack sx={{ gap: 16, marginTop: 12 }}>
                                         <VStack sx={{ flex: 1, gap: 6 }}>
@@ -378,7 +378,7 @@ export const FormBuilder = ({
                                                 ><option value="textarea">Long Text</option
                                                 ><option value="select">Dropdown</option
                                             ></select
-                                        </VStack>
+                                        ></VStack>
                                     </HStack>
                                 </VStack>
                             </Box>
@@ -495,7 +495,7 @@ export const FormBuilder = ({
                                 borderWidth: 1,
                                 borderColor: colors.border
                             }}>
-                                <QRCodeGenerator >
+                                <QRCodeGenerator />
                                     value={`${window.location.origin}/f/${templateId}`} 
                                     size={104} 
                                     backgroundColor="white"
@@ -520,13 +520,13 @@ export const FormBuilder = ({
                             ><Heading size="sm" sx={{ marginTop: 16 }}>AWaiting Cloud Sync</Heading
                             ><Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}>Save your form to start collecting responses.</Text
                         ></Box
-                    ) : responses.length === 0 && !isFetchingResponses ? (
+                    >) : responses.length === 0 && !isFetchingResponses ? (
                         <Box sx={{ padding: 60, alignItems: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}>
                             <Icon as={BarChart3} size={48} color={colors.textTertiary} /
                             ><Heading size="sm" sx={{ marginTop: 16 }}>Listening for Resonance...</Heading
                             ><Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}>Share your form to see real-time student insights.</Text
                         ></Box
-                    ) : (
+                    >) : (
                         <VStack sx={{ gap: 20 }}>
                             {formAnalytics.aggregate(fields, responses).map((stat, i) => (
                                 <Box >
@@ -553,7 +553,7 @@ export const FormBuilder = ({
                                                         ><Box sx={{ height: 8, backgroundColor: colors.tertiary, borderRadius: 4, overflow: 'hidden' }}
                                                             <Box sx={{ height: '100%', width: `${percentage}%`, backgroundColor: Theme.colors.sageGreen }} /
                                                         ></Box
-                                                    </VStack>
+                                                    ></VStack>
                                                 );
                                             })}
                                         </VStack>
@@ -574,7 +574,7 @@ export const FormBuilder = ({
                                                 <Box key={idx} sx={{ padding: 12, backgroundColor: colors.tertiary, borderRadius: 12 }}>
                                                     <Text sx={{ fontSize: 13 }}>{entry}</Text
                                                 ></Box
-                                            ))}
+                                            >))}
                                         </VStack>
                                     )}
                                 </Box>

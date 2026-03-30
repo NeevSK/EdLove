@@ -84,7 +84,7 @@ export default function MuteHubScreen() {
     };
 
     return (
-        <ScreenWrapper scroll={false}            <GlobalHeader
+        <ScreenWrapper scroll={false}            <GlobalHeader>
                 title={t('profile.safety_hub')}
                 showBack
                 onBack={() => navigation.goBack()}
@@ -98,29 +98,29 @@ export default function MuteHubScreen() {
                         bg: Theme.colors.glass.light.surface, 
                         borderRadius: Theme.corners.comfortable, 
                         borderWidth: 1, 
-                        borderColor: Theme.colors.glass.light.border >
+                        borderColor: Theme.colors.glass.light.border 
                     }}                        <HStack space="md" alignItems="center"                            <Shield size={24} color={colors.action} /                            ><VStack flex={1}                                <Text bold color={colors.text}>{t('profile.safety.mutedTotal')}</Text                                ><Text size="xs" color={colors.textSecondary}>{t('profile.safety.mutedDesc')}</Text                            ></VStack                        </HStack                    </Box
-                    <Heading size="sm" color={colors.textSecondary} mt={Theme.spacing.md}                        {t('profile.safety.mutedList')} ({mutedUsers.length})
+                    <Heading size="sm" color={colors.textSecondary} mt={Theme.spacing.md}                        {t('profile.safety.mutedList')} ({mutedUsers.length})>
                     </Heading>
                     {mutedUsers.length === 0 && !loading ? (
                         <Center h={200}                            <VStack space="md" alignItems="center"                                <XCircle size={48} color={colors.textTertiary} opacity={0.5} /                                ><Text color={colors.textTertiary}>{t('profile.safety.noMutes')}</Text                            ></VStack                        </Center                    ) : (
                         <VStack space="sm"                            {mutedUsers.map((user) => (
-                                <Box
+                                <Box>
                                     key={user.id}
                                     sx={{
                                         p: Theme.spacing.md,
                                         bg: Theme.colors.glass.light.surface,
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
-                                        borderColor: Theme.colors.glass.light.border,>
+                                        borderColor: Theme.colors.glass.light.border,
                                     }}
-                                                                    <HStack justifyContent="space-between" alignItems="center"                                        <HStack space="md" alignItems="center"                                            <UserAvatar
+                                                                    <HStack justifyContent="space-between" alignItems="center"                                        <HStack space="md" alignItems="center"                                            <UserAvatar>
                                                 avatarUrl={user.avatar_url}
                                                 fullName={user.full_name}
                                                 size={40}
                                                 authority={user.authority}
                                             /                                            ><VStack                                                <Text >bold color={colors.text}>{user.full_name}</Text                                                ><Text size="xs" color={colors.textTertiary}>@{user.id.substring(0, 8)}</Text                                            ></VStack                                        </HStack                                        
-                                        <TouchableOpacity 
+                                        <TouchableOpacity >
                                             onPress={() => {
                                                 hapticLight();
                                                 handleUnmute(user.id, user.full_name);

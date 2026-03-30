@@ -114,7 +114,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     <Text color={colors.text} bold                        {isWanderer
                             ? t('auth.createAccount')
                             : t('profile.viewEditProfile')}>
-                    </Text                ></HStack            </TouchableOpacity        </Center    );
+                    </Text                ></HStack            ></TouchableOpacity        ></Center    );
 };
 
 const StatsSection = ({ profile, role }: any) => {
@@ -163,7 +163,7 @@ const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) 
                 icon={Info}
                 label={t('profile.aboutTitle')}
                 onPress={() => hapticLight()}
-            /        ></VStack    </Center);
+            /        ></VStack    ></Center);
 
 const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
     const showToast = useStore((state) => state.showToast);
@@ -244,7 +244,7 @@ const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH
                     opacity: 0.7
                 }}
                             <ButtonText color={colors.action}                    {t('profile.account.switch')}>
-                </ButtonText            </Button        </VStack    );>
+                </ButtonText            ></Button        </VStack    );>
 };
 
 // --- Main Screen ---
@@ -362,7 +362,7 @@ export const ProfileScreen = () => {
                             borderColor: colors.border,
                             borderWidth: 1,
                         }}
-                                            <Settings size={24} color={colors.action} /                    ></TouchableOpacity                }
+                                            <Settings size={24} color={colors.action} /                    ></TouchableOpacity                >}
             /
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}                <ScrollView>
                     showsVerticalScrollIndicator={false}
@@ -394,7 +394,7 @@ export const ProfileScreen = () => {
                                                     navigation.openAuth?.();
                                                 }}
                                                 sx={{ bg: Theme.colors.sacredWhite, alignSelf: 'flex-start', mt: '$2' }}
-                                                                                            <ButtonText color={colors.action}>{t('auth.createAccount')}</ButtonText                                            ></Button                                        </VStack                                    </Box                                </Animated.View                            </Center                        )}
+                                                                                            <ButtonText color={colors.action}>{t('auth.createAccount')}</ButtonText                                            ></Button                                        ></VStack                                    ></Box                                </Animated.View                            </Center                        )}
 
                         <Animated.View entering={FadeInDown.delay(80).duration(500)}                            <Center                                <Box
                                     >sx={{
@@ -422,7 +422,7 @@ export const ProfileScreen = () => {
                                                         borderColor: colors.border,
                                                     }}
                                                                                                     <Text size="xs" color={colors.textSecondary} bold                                                        {pillar}>
-                                                    </Text                                                ></Box                                            ))}>
+                                                    </Text                                                ></Box                                            >))}>
                                         </HStack                                        ><Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                                            PERSONAL SANCTUARY
                                         </Text                                        <Heading size="sm" color={colors.text}                                            Your profile is the living record of how you move through Gurudevi.
                                         </Heading                                        <Text color={colors.textSecondary} size="sm"                                            Everything below stays the same functionally, but this space helps hold identity, progress, and support in one calmer rhythm.
@@ -448,19 +448,19 @@ export const ProfileScreen = () => {
                                         icon={Settings}
                                         label={t('settings.title')}
                                         onPress={() => navigation.openSettings?.()}
-                                    /                                ></Box                            </Center                        </Animated.View
+                                    /                                ></Box                            ></Center                        </Animated.View
                         <Animated.View entering={FadeInDown.delay(475).duration(500)}                            <Center                                <Box sx={{ width: cardWidth }}                                    <ProfileListItem>
                                         icon={Info}
                                         label={t('profile.privacyLedgerTitle', 'Privacy Ledger')}
                                         onPress={() => navigation.openPrivacyLedger?.()}
-                                    /                                ></Box                            </Center                        </Animated.View
+                                    /                                ></Box                            ></Center                        </Animated.View
                         <Animated.View entering={FadeInDown.delay(500).duration(500)}                            <Center                                <Box sx={{ width: cardWidth }}                                    <ProfileListItem>
                                         icon={Eye}
                                         label={t('profile.publicPreviewTitle', 'Public Preview')}
                                         onPress={() => profile?.id ? navigation.openPublicProfile?.({ id: profile.id, type: 'user' }) : undefined}
-                                    /                                ></Box                            </Center                        </Animated.View
+                                    /                                ></Box                            ></Center                        </Animated.View
                         <Animated.View entering={FadeInDown.delay(550).duration(500)}                            <SupportSection t={t} colors={colors} navigation={navigation} cardWidth={cardWidth} /                        </Animated.View>
-                        <Animated.View entering={FadeInDown.delay(600).duration(500)}                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} /                        </Animated.View>
+                        <Animated.View entering={FadeInDown.delay(600).duration(500)}                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} /                        ></Animated.View>
                         <Animated.View entering={FadeInDown.delay(700).duration(500)}                            <Center                                <Box >sx={{ width: cardWidth, mt: Theme.spacing.md }}                                    <AccountActions
                                         t={t}
                                         colors={colors}
@@ -515,5 +515,5 @@ export const ProfileScreen = () => {
                     onClose={() => setLogoutModalVisible(false)}
                     onLogout={confirmLogout}
                     isLoading={isLoggingOut}
-                /            ></Box         </ScreenWrapper     );
+                /            ></Box         ></ScreenWrapper     );
 };

@@ -40,26 +40,26 @@ export default function TeacherEchoHistoryModal({
   }, [teacherId, visible]);
 
   return (
-    <Modal
+    <Modal>
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
       onRequestClose={onClose}>
-          <Box flex={1} sx={{ backgroundColor: colors.primary }}        <Box
+          <Box flex={1} sx={{ backgroundColor: colors.primary }}        <Box>
           sx={{
             paddingTop: 50,
             paddingBottom: Theme.spacing.md,
             paddingHorizontal: Theme.spacing.md,
             borderBottomWidth: 1,
             borderBottomColor: colors.border,
-          }}>
-                  <HStack justifyContent="space-between" alignItems="center"            <Heading size="lg" color={colors.text}              My Feedback History
-            </Heading            ><TouchableOpacity onPress={onClose}              <X size={24} color={colors.textTertiary} /            ></TouchableOpacity          </HStack        </Box        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}          {loading ? (>
+          }}
+                  <HStack justifyContent="space-between" alignItems="center"            <Heading size="lg" color={colors.text}              My Feedback History>
+            </Heading            ><TouchableOpacity onPress={onClose}              <X size={24} color={colors.textTertiary} /            ></TouchableOpacity          ></HStack        </Box        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}          {loading ? (>
             <SkeletonCard /          >) : echoes.length === 0 ? (
             <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}              <Text color={colors.textTertiary} style={{ fontStyle: 'italic', textAlign: 'center' }}                No echoes sent yet. Use the "Principal Echo" action to share feedback.>
               </Text            </Box          ) : (
             echoes.map((echo) => (
-              <Box
+              <Box>
                 key={echo.id}
                 sx={{
                   padding: Theme.spacing.md,
@@ -68,24 +68,24 @@ export default function TeacherEchoHistoryModal({
                   borderLeftWidth: 4,
                   borderLeftColor: echo.priority === 'high' ? Theme.colors.emberRed : colors.action,
                   marginBottom: Theme.spacing.sm,
-                }}>
-                              <HStack justifyContent="space-between" style={{ marginBottom: 4 }}                  <Text style={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: colors.textSecondary }}                    {echo.category} \u00B7 {echo.priority}
-                    {echo.is_read ? '  read' : '  pending'}>
+                }}
+                              <HStack justifyContent="space-between" style={{ marginBottom: 4 }}                  <Text style={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: colors.textSecondary }}                    {echo.category} \u00B7 {echo.priority}>
+                    {echo.is_read ? '  read' : '  pending'}
                   </Text                  ><Text style={{ fontSize: 10, color: colors.textTertiary }}                    {new Date(echo.created_at).toLocaleDateString()}
                   </Text                </HStack                <Text color={colors.text} style={{ fontSize: 13, lineHeight: 20, marginBottom: 6 }}                  {echo.content}
                 </Text                {echo.principal_response ? (
-                  <Box
+                  <Box>
                     sx={{
                       padding: Theme.spacing.sm,
                       backgroundColor: colors.primary,
                       borderRadius: Theme.corners.comfortable,
                       borderLeftWidth: 3,
                       borderLeftColor: colors.action,
-                    }}>
-                                      <Text style={{ fontSize: 10, fontWeight: '800', color: colors.action, marginBottom: 2 }}                      Principal's Reply
-                    </Text                    <Text color={colors.text} style={{ fontSize: 12 }}                      {echo.principal_response}>
-                    </Text                  </Box                ) : (
-                  <Text color={colors.textTertiary} style={{ fontSize: 11, fontStyle: 'italic' }}                    Awaiting principal response...
+                    }}
+                                      <Text style={{ fontSize: 10, fontWeight: '800', color: colors.action, marginBottom: 2 }}                      Principal's Reply>
+                    </Text                    ><Text color={colors.text} style={{ fontSize: 12 }}                      {echo.principal_response}>
+                    </Text                  ></Box                ) : (
+                  <Text color={colors.textTertiary} style={{ fontSize: 11, fontStyle: 'italic' }}                    Awaiting principal response...>
                   </Text                )}>
               </Box            >))
           )}

@@ -174,13 +174,13 @@ export default function GlobalCreateModal({
 
     return (
         <
-            <SanctuaryModal
+            <SanctuaryModal>
                 isOpen={isOpen}
                 onClose={handleClose}
                 title="Ecosystem Creation"
                 footer={>
-                    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}
-                        <Button
+                    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+                        <Button>
                             variant="outline"
                             action="secondary"
                             onPress={handleClose}
@@ -207,10 +207,10 @@ export default function GlobalCreateModal({
                     </HStack>
                 }
             
-                <VStack sx={{ gap: Theme.spacing.xl }}
+                <VStack sx={{ gap: Theme.spacing.xl }}>
                     {/* Entity Type Selector */}>
-                    <HStack sx={{ gap: Theme.spacing.sm }}
-                        <TypeButton
+                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                        <TypeButton>
                             active={type === 'school'}
                             onPress={() => setType('school')}
                             label="School"
@@ -231,15 +231,15 @@ export default function GlobalCreateModal({
                     ></HStack
 
                     >{error && (
-                        <Box sx={{ padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, borderWidth: 1, borderColor: '#ef4444' }}
+                        <Box sx={{ padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, borderWidth: 1, borderColor: '#ef4444' }}>
                             <Text sx={{ color: '#b91c1c', fontSize: 13 }}>{error}</Text
                         ></Box
                     )}
 
-                    <VStack sx={{ gap: Theme.spacing.md }}
+                    <VStack sx={{ gap: Theme.spacing.md }}>
                         {/* Target School Picker for non-school entities */}>
                         {type !== 'school' && (
-                            <FormControl isRequired
+                            <FormControl isRequired>
                                 <FormControlLabel>
                                     <FormControlLabelText >color={colors.textSecondary}>Target Institution</FormControlLabelText
                                 ></FormControlLabel
@@ -253,22 +253,22 @@ export default function GlobalCreateModal({
                                         height: 48
                                     }}
                                 
-                                    <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}
-                                        {selectedSchool ? selectedSchool.name : "Select School..."}>
+                                    <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}>
+                                        {selectedSchool ? selectedSchool.name : "Select School..."}
                                     </ButtonText>
                                     <ChevronDown size={18} color={colors.textSecondary} /
                                 ></Button
                             ></FormControl>
                         )}
 
-                        <FormControl isRequired
+                        <FormControl isRequired>
                             <FormControlLabel>
                                 <FormControlLabelText >color={colors.textSecondary}
                                     {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Class Name/ID' : 'Group Name'}
                                 </FormControlLabelText>
                             </FormControlLabel>
-                            <Input sx={{ height: 48, backgroundColor: colors.tertiary, borderColor: colors.border }}
-                                <InputField
+                            <Input sx={{ height: 48, backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                <InputField>
                                     value={name}
                                     onChangeText={setName}
                                     color={colors.text}
@@ -278,13 +278,13 @@ export default function GlobalCreateModal({
                         </FormControl>
 
                         {type === 'school' && (
-                            <FormControl
+                            <FormControl>
                                 <FormControlLabel
                                     ><FormControlLabelText color={colors.textSecondary}>Category</FormControlLabelText
                                 ></FormControlLabel
-                                <HStack sx={{ gap: 8 }}
+                                <HStack sx={{ gap: 8 }}>
                                     {(['primary', 'secondary', 'mixed'] as const).map(t => (
-                                        <Button
+                                        <Button>
                                             key={t}
                                             variant={schoolType === t ? 'solid' : 'outline'}
                                             onPress={() => setSchoolType(t)}
@@ -295,7 +295,7 @@ export default function GlobalCreateModal({
                                             }}
                                             size="sm"
                                         
-                                            <ButtonText color={schoolType === t ? '#fff' : colors.textSecondary}
+                                            <ButtonText color={schoolType === t ? '#fff' : colors.textSecondary}>
                                                 {t.charAt(0).toUpperCase() + t.slice(1)}>
                                             </ButtonText>
                                         </Button>
@@ -305,12 +305,12 @@ export default function GlobalCreateModal({
                         )}
 
                         {type === 'group' && (
-                            <FormControl
+                            <FormControl>
                                 <FormControlLabel
                                     ><FormControlLabelText color={colors.textSecondary}>Purpose / Description</FormControlLabelText
                                 ></FormControlLabel
-                                <Input sx={{ minHeight: 80, backgroundColor: colors.tertiary, borderColor: colors.border }}
-                                    <InputField
+                                <Input sx={{ minHeight: 80, backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                    <InputField>
                                         value={description}
                                         onChangeText={setDescription}
                                         multiline
@@ -328,12 +328,12 @@ export default function GlobalCreateModal({
             <Actionsheet isOpen={showSchoolPicker} onClose={() => setShowSchoolPicker(false)}
                 <ActionsheetBackdrop /
                 ><ActionsheetContent sx={{ backgroundColor: colors.secondary }}
-                    <ActionsheetDragIndicatorWrapper
+                    <ActionsheetDragIndicatorWrapper>
                         <ActionsheetDragIndicator >/
                     ></ActionsheetDragIndicatorWrapper
-                    <VStack sx={{ padding: 16, gap: 8 }}
+                    <VStack sx={{ padding: 16, gap: 8 }}>
                         {availableSchools.map(school => (
-                            <ActionsheetItem
+                            <ActionsheetItem>
                                 key={school.id}
                                 onPress={() => {
                                     setSelectedSchoolId(school.id);
@@ -353,7 +353,7 @@ export default function GlobalCreateModal({
 function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress: () => void, label: string, icon: any }) {
     const colors = useThemedColors();
     return (
-        <Button
+        <Button>
             variant={active ? 'solid' : 'outline'}
             onPress={onPress}
             sx={{
@@ -361,11 +361,11 @@ function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress
                 gap: 4,
                 backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
                 borderColor: active ? Theme.colors.sanctuarySaffron : colors.border
-            }}>
+            }}
             size="sm"
         
             {React.cloneElement(icon, { color: active ? '#fff' : colors.textSecondary })}
             <ButtonText color={active ? '#fff' : colors.textSecondary}>{label}</ButtonText
         ></Button
-    );
+    >);
 }

@@ -88,7 +88,7 @@ export default function AIAssistantScreen() {
             <div style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', background: 'var(--surface)', overflowY: 'auto' }}                <div style={{ padding: '24px 20px 16px' }}                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}                        School Flow>
                     </div                    >{activeGaps.length === 0 ? (>
                         <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}                            All clear \u2726 No pending items.>
-                        </div                    ) : (>
+                        </div                    >) : (>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}                            {activeGaps.map(gap => (
                                 <button>
                                     key={gap.id}
@@ -103,7 +103,7 @@ export default function AIAssistantScreen() {
                                         fontFamily: 'var(--font-body)',
                                     }}
                                                                     <div style={{ fontSize: '12px', fontWeight: '700', color: gap.priority === 'high' ? '#c0392b' : '#e67e22', marginBottom: '2px' }}                                        {gap.priority === 'high' ? '\u26A1' : '\u26A0'} {gap.title}>
-                                    </div                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{gap.suggestedAction}</div                                ></button                            ))}
+                                    </div                                    ><div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{gap.suggestedAction}</div                                ></button                            >))}
                         </div                    )}
                 </div>
                 {/* Clear history */}
@@ -118,8 +118,8 @@ export default function AIAssistantScreen() {
                         onClick={() => navigation.goBack()}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: '600', padding: '4px 8px', borderRadius: '8px' }}
                                             \u2190 Back
-                    </button                    <div style={{ flex: 1 }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                            <span style={{ fontSize: '18px' }}>\u2728</span                            ><span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}                                {t('aiAssistant.title') || 'Sanctuary Guide'}
-                            </span                        </div                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}                            {t('aiAssistant.subtitle') || 'Your AI companion for reflection and school flow'}
+                    </button                    ><div style={{ flex: 1 }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                            <span style={{ fontSize: '18px' }}>\u2728</span                            ><span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}                                {t('aiAssistant.title') || 'Sanctuary Guide'}
+                            </span                        ></div                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}                            {t('aiAssistant.subtitle') || 'Your AI companion for reflection and school flow'}
                         </div                    </div                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', background: 'var(--background-alt)', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border-light)' }}                        {context.roles[0] ?? 'member'}
                     </div                </div
                 {/* Messages */}
@@ -190,5 +190,5 @@ export default function AIAssistantScreen() {
                             transition: 'background 0.2s',
                         }}
                                             {isThinking ? '\u2026' : '\u27A4'}
-                    </button                </div            </div        </div    );
+                    </button                ></div            </div        </div    );
 }

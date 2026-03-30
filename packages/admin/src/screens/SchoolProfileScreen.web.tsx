@@ -31,10 +31,10 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
     if (!school) return <div style={{ padding: '40px', textAlign: 'center' }}>School not found</div>;
 
     return (
-        <div className="sub-view-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}
+        <div className="sub-view-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
              {/* Header with Back button */}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}
-                <button
+             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+                <button>
                     onClick={() => navigation.goBack()}
                     className="secondary-button"
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px' }}
@@ -45,11 +45,11 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
                 {/* Left Column: Essential Info */}
-                <div
+                <div>
                     {/* Hero Section */}>
-                    <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}
+                    <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
-                            <AvatarDisplay 
+                            <AvatarDisplay >
                                 userId={school.id}
                                 avatarUrl={null}
                                 fullName={school.name}
@@ -60,7 +60,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                             /
                             
                             ><div style={{ flex: 1 }}
-                                <EditableItem
+                                <EditableItem>
                                     icon={SchoolIcon}
                                     label="School Name"
                                     value={school.name}
@@ -81,7 +81,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
 
                                 ><div style={{ display: 'flex', gap: '12px' }}
                                     {isEditable && (>
-                                        <button className="premium-button" style={{ padding: '10px 20px' }}
+                                        <button className="premium-button" style={{ padding: '10px 20px' }}>
                                             Manage School>
                                         </button>
                                     )}
@@ -91,9 +91,9 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     </div>
 
                     {/* Quick Stats Grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}
+                            <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}>
                                 <Users size={24} color="var(--water)" /
                             ></div
                             ><div
@@ -101,7 +101,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                                 ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Students</div
                             ></div>
                         </div>
-                        <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}
+                        <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <div style={{ padding: '12px', background: 'var(--moss-soft)', borderRadius: '12px' }}>
                                 <BookOpen size={24} color="var(--moss)" /
                             ></div
@@ -113,7 +113,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     </div>
 
                     {/* About Section */}
-                    <div className="sanctuary-card" style={{ padding: '32px' }}
+                    <div className="sanctuary-card" style={{ padding: '32px' }}>
                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Our Mission</h3
                         ><p style={{ color: 'var(--ink-ghost)', lineHeight: '1.6', fontSize: '15px' }}
                             Welcome to the public profile of {school.name}. We are dedicated to nurturing the growth of every student and educator in our community.
@@ -122,9 +122,9 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                 </div>
 
                 {/* Right Column: Socials & Context */}
-                <div
+                <div>
                      {/* Social Sanctuary */}>
-                     <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px' }}
+                     <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                             <Globe size={18} color="var(--ink-ghost)" /
                             ><h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}
@@ -132,7 +132,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                             </h3>
                         </div>
                         
-                        <ContactLinktree 
+                        <ContactLinktree >
                             links={[]} 
                             userName={school.name}
                             userId={school.id}
@@ -142,7 +142,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     ></div
 
                     {/* Info Card */}
-                    <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)' }}
+                    <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)' }}>
                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                             <Layout size={16} color="var(--ink-ghost)" /
                             ><span style={{ fontSize: '13px', fontWeight: '700' }}>School Structure</span

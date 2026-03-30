@@ -182,7 +182,7 @@ export default function CommunityScreenWeb() {
                                     setShowCreatePost(true);
                                 }}
                                                             <PenLine size={15} /                                >{t('community.actions.newPost') || "New Post"}
-                            </button                            <button
+                            </button                            ><button
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
                                 onClick={() => {
@@ -194,13 +194,13 @@ export default function CommunityScreenWeb() {
                                     setShowCreateGroup(true);
                                 }}
                                                             <Plus size={15} /                                >{t('community.actions.newGroup') || "New Group"}
-                            </button                            {/* Notification bell with unread badge */}
+                            </button                            >{/* Notification bell with unread badge */}
                             <div style={{ position: 'relative', display: 'inline-flex' }}                                <button>
                                     className="secondary-button"
                                     style={{ display: 'inline-flex', alignItems: 'center', padding: '8px' }}
                                     title="Notifications"
                                     onClick={() => {/* TODO: open notifications panel */}}
-                                                                    <Bell size={17} /                                ></button                                {notifCount > 0 && (
+                                                                    <Bell size={17} /                                ></button                                >{notifCount > 0 && (
                                     <span style={{
                                         position: 'absolute',
                                         top: '-4px',
@@ -251,7 +251,7 @@ export default function CommunityScreenWeb() {
                                         label={t('community.filters.joined') || "Joined"}
                                         active={selectedGroupId === 'pulse'}
                                         onClick={() => setSelectedGroupId('pulse')}
-                                    /                                ></div                            </                        )}
+                                    /                                ></div                            ></                        )}
 
                         {activeTab === 'groups' && (
                             <                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} /                                ><div style={{ padding: '0 16px' }}                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.myGroups') || "My Sanctuary"}</div                                    ><div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}                                        {joinedGroups?.map((g) => (
@@ -260,7 +260,7 @@ export default function CommunityScreenWeb() {
                                                 className={`sidebar-item ${selectedGroupId === g.id ? 'active' : ''}`}
                                                 style={{ padding: '8px 12px' }}
                                                 onClick={() => { setSelectedGroupId(g.id); }}
-                                                                                            <span className="sidebar-icon"                                                    <Hash size={14} /                                                ></span                                                <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span                                            ></button                                        ))}
+                                                                                            <span className="sidebar-icon"                                                    <Hash size={14} /                                                ></span                                                ><span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span                                            ></button                                        ))}
                                     </div                                </div                            </                        )}
                     </aside>
                     {/* CENTER: Main Feed / Groups / DMs */}
@@ -268,7 +268,7 @@ export default function CommunityScreenWeb() {
                         <div className="community-sub-nav"                            <button>
                                 className={`sub-nav-item ${activeTab === 'feed' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('feed')}
-                                                            <Compass size={16} /                                ><span>{t('community.tabs.feed') || "Feed"}</span                            ></button                            <button
+                                                            <Compass size={16} /                                ><span>{t('community.tabs.feed') || "Feed"}</span                            ></button                            ><button
                                 className={`sub-nav-item ${activeTab === 'groups' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('groups')}
                                                             <Users2 size={16} /                                ><span>{t('community.tabs.groups') || "Groups"}</span                            ></button                            <button
@@ -303,7 +303,7 @@ export default function CommunityScreenWeb() {
                                                                                             Explore groups
                                             </button                                        </div                                    </div                                ) : (!joinedGroups || joinedGroups.length === 0) ? (
                                     <div className="sanctuary-card" style={{ padding: '28px' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}                                            Your feed will appear after you join a group>
-                                        </h3                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.>
+                                        </h3                                        ><p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.>
                                         </p                                        ><button
                                             className="premium-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
@@ -317,7 +317,7 @@ export default function CommunityScreenWeb() {
                                     if (visiblePosts.length === 0) {
                                         return (
                                             <div style={{ padding: '80px 40px', textAlign: 'center' }}                                                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}                                                    {q ? `No posts match "${searchQuery}"` : t('community.empty.title')}>
-                                                </p                                            </div                                        );>
+                                                </p                                            ></div                                        );>
                                     }
                                     return visiblePosts.map((post) => (
                                         <PostCard>
@@ -357,7 +357,7 @@ export default function CommunityScreenWeb() {
                                         className={`top-tab ${groupsSubTab === 'joined' ? 'active' : ''}`}
                                         onClick={() => setGroupsSubTab('joined')}
                                                                             <Lock size={14} style={{ marginRight: 4 }} /                                        >{t('community.groups.joinedTitle') || "Joined Schools"}
-                                    </button                                    <button 
+                                    </button                                    ><button 
                                         className={`top-tab ${groupsSubTab === 'global' ? 'active' : ''}`}
                                         onClick={() => setGroupsSubTab('global')}
                                                                             <Globe size={14} style={{ marginRight: 4 }} /                                        >{t('community.tabs.infiniteGalaxy') || "Global Groups"}
@@ -451,7 +451,7 @@ export default function CommunityScreenWeb() {
                                                     className="interactive-row"
                                                                                                     <div style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'var(--action-soft)', overflow: 'hidden' }}                                                        {item.other_user_avatar 
                                                             ? <img src={item.other_user_avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                            >: <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--action)', fontWeight: '700' }}>{initials}</div                                                        >}
-                                                    </div                                                    <div style={{ flex: 1 }}                                                        <div style={{ fontWeight: '700', fontSize: '15px' }}>{item.other_user_name}</div                                                        ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>Tap to continue conversation</div                                                    ></div                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}                                                        {new Date(item.updated_at).toLocaleDateString()}
+                                                    </div                                                    ><div style={{ flex: 1 }}                                                        <div style={{ fontWeight: '700', fontSize: '15px' }}>{item.other_user_name}</div                                                        ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>Tap to continue conversation</div                                                    ></div                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}                                                        {new Date(item.updated_at).toLocaleDateString()}
                                                     </div                                                </button                                            );
                                         })}
                                     </div                                )}
@@ -463,13 +463,13 @@ export default function CommunityScreenWeb() {
                             userId={user?.id || 'guest'}
                         /                    ></aside                </div            </div
             {/* Create Post Modal */}
-            <CreatePostModal>
+            <CreatePostModal/>
                 isOpen={showCreatePost}
                 onClose={() => { setShowCreatePost(false); fetchPosts?.(); }}
                 groupId={typeof selectedGroupId === 'string' && selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse' ? selectedGroupId : undefined}
             /
             >{/* Create Group Modal */}
-            <CreateGroupModal>
+            <CreateGroupModal/>
                 isOpen={showCreateGroup}
                 onClose={() => { setShowCreateGroup(false); fetchGroups?.(); }}
             /
@@ -485,7 +485,7 @@ export default function CommunityScreenWeb() {
                 .interactive-row:hover {
                     background: var(--background-alt) !important;
                 }
-            ` }} /        ></div    );
+            ` }} /        ></div    >);
 }
 
 function SidebarItem({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {

@@ -146,7 +146,7 @@ export default function MapScreen() {
     const renderContent = () => {
         if (loading) {
             return (
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
                 ></Box>
             );
@@ -154,7 +154,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'astro' && activeData && layout) {
             return (
-                <AstroView 
+                <AstroView >
                     data={activeData as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -167,7 +167,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'jyoti' && activeData) {
             return (
-                <JyotiView 
+                <JyotiView >
                     data={activeData as any} 
                     layout={layout!} 
                     width={width}
@@ -178,7 +178,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'terra' && activeData) {
             return (
-                <TerraView 
+                <TerraView >
                     data={activeData as any} 
                     layout={layout!} 
                     width={width}
@@ -189,7 +189,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'dharma' && activeData) {
             return (
-                <DharmaView 
+                <DharmaView >
                     data={activeData as any} 
                     layout={layout!} 
                     width={width}
@@ -200,7 +200,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'vatya' && activeData) {
             return (
-                <VatyaView 
+                <VatyaView >
                     data={activeData as any} 
                     layout={layout!}
                     selectedNode={selectedNode as any}
@@ -212,7 +212,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'vastu' && activeData && layout) {
             return (
-                <VastuView 
+                <VastuView >
                     data={activeData as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -224,21 +224,21 @@ export default function MapScreen() {
         }
 
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
             ></Box>
         );
     };
 
     return (
-        <ScreenWrapper scroll={false}
-            <GlobalHeader
+        <ScreenWrapper scroll={false}>
+            <GlobalHeader>
                 title="Knowledge Cosmos"
                 subtitle="Isomorphic Visualization Engine"
                 showBack
                 onBack={() => navigation.goBack()}
                 rightAction={
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={handleExport}
                         disabled={isExporting}
                         style={{ 
@@ -249,7 +249,7 @@ export default function MapScreen() {
                             flexDirection: 'row',
                             alignItems: 'center',
                             opacity: isExporting ? 0.5 : 1,
-                            marginRight: 12>
+                            marginRight: 12
                         }}
                     
                         <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} /
@@ -262,13 +262,13 @@ export default function MapScreen() {
 
             ><Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
                 <View style={styles.perspectiveSwitcherContainer}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
                         {getAvailablePerspectives(activeData).map((p) => {
                             const isActive = activePerspective === p.id;
                             const isDisabled = p.disabled;
                             const Icon = p.icon;
                             return (
-                                <TouchableOpacity 
+                                <TouchableOpacity >
                                     key={p.id}
                                     onPress={() => !isDisabled && setActivePerspective(p.id)}
                                     disabled={isDisabled}
@@ -278,7 +278,7 @@ export default function MapScreen() {
                                         isDisabled && { opacity: 0.3 }
                                     ]}
                                 
-                                    <Icon 
+                                    <Icon >
                                         size={18} 
                                         color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
                                     />
@@ -299,8 +299,8 @@ export default function MapScreen() {
                 flex: 1, 
                 backgroundColor: colors.obsidian || colors.black,
                 overflow: 'hidden',
-                position: 'relative'>
-            }}
+                position: 'relative'
+            }}>
                 {renderContent()}
 
                 {selectedNode && (
@@ -313,32 +313,32 @@ export default function MapScreen() {
                         borderRadius: 32,
                         padding: 24,
                         borderWidth: 1,
-                        borderColor: 'rgba(255, 255, 255, 0.1)',>
-                    } as any}
-                        <VStack spacing={12}
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                    } as any}>
+                        <VStack spacing={12}>
                             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <VStack
+                                <VStack>
                                     <Text >sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
                                         {selectedNode.label}
                                     </Text>
-                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}
+                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
                                         {selectedNode.type} " {selectedNode.group}>
                                     </Text>
                                 </VStack>
                                 <TouchableOpacity onPress={() => setSelectedNode(null)}
-                                    <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                    <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
                                         <X size={20} color={Theme.colors.sacredWhite} />
                                     ></Box>
                                 </TouchableOpacity>
                             </HStack>
 
                             {selectedNode.metadata?.description && (
-                                <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}
+                                <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
                                     {selectedNode.metadata.description}>
                                 </Text>
                             )}
 
-                            <TouchableOpacity 
+                            <TouchableOpacity >
                                 style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                                 onPress={() => {
                                     if (selectedNode.type === 'resource') {
@@ -347,8 +347,8 @@ export default function MapScreen() {
                                     }
                                 }}
                             
-                                <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}
-                                    {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}>
+                                <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                    {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                 </Text>
                             </TouchableOpacity>
                         </VStack>

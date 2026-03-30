@@ -129,7 +129,7 @@ export default function TeacherObservationsWorkspace({
                                     action="primary"
                                     onPress={() => setShowCreateModal(true)}
                                     sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: Theme.corners.full }}
-                                                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        ><ButtonText color={Theme.colors.sacredWhite}>New</ButtonText                                    ></HStack                                </Button                            )}
+                                                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        ><ButtonText color={Theme.colors.sacredWhite}>New</ButtonText                                    ></HStack                                ></Button                            )}
                         </HStack>
                         <HStack sx={{ gap: Theme.spacing.sm }}                            <SignalPill>
                                 icon={<MessageCircle size={14} color={Theme.colors.gurudeviBlue} />}
@@ -201,9 +201,9 @@ export default function TeacherObservationsWorkspace({
                                                             backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.secondary,
                                                         }}
                                                                                                             <Text sx={{ color: isActive ? Theme.colors.sacredWhite : colors.text }}                                                            {student.full_name}>
-                                                        </Text                                                    </Box                                                </Pressable                                            );>
+                                                        </Text                                                    ></Box                                                </Pressable                                            );>
                                         })}
-                                    </HStack                                </ScrollView                            </VStack                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Observation type
+                                    </HStack                                ></ScrollView                            </VStack                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Observation type
                                 </Text                                <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    {OBSERVATION_TYPES.map((type) => {
                                         const isActive = observationType === type;
                                         return (
@@ -217,9 +217,9 @@ export default function TeacherObservationsWorkspace({
                                                         backgroundColor: isActive ? Theme.colors.gurudeviBlue : colors.secondary,
                                                     }}
                                                                                                     <Text sx={{ color: isActive ? Theme.colors.inkTruth : colors.text, textTransform: 'capitalize' }}                                                        {type}>
-                                                    </Text                                                </Box                                            </Pressable                                        );>
+                                                    </Text                                                ></Box                                            </Pressable                                        );>
                                     })}
-                                </HStack                            </VStack                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Visibility
+                                </HStack                            ></VStack                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Visibility
                                 </Text                                <HStack sx={{ gap: Theme.spacing.sm }}                                    {(['private', 'student_visible'] as const).map((option) => {
                                         const isActive = visibility === option;
                                         return (
@@ -233,9 +233,9 @@ export default function TeacherObservationsWorkspace({
                                                         backgroundColor: isActive ? Theme.colors.sageGreen : colors.secondary,
                                                     }}
                                                                                                     <Text sx={{ color: isActive ? Theme.colors.inkTruth : colors.text }}                                                        {option === 'student_visible' ? 'Visible to student' : 'Private'}>
-                                                    </Text                                                </Box                                            </Pressable                                        );>
+                                                    </Text                                                ></Box                                            </Pressable                                        );>
                                     })}
-                                </HStack                            </VStack                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 100 }}                                <InputField
+                                </HStack                            ></VStack                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 100 }}                                <InputField
                                     placeholder="What did you notice?"
                                     value={content}
                                     onChangeText={setContent}
@@ -274,5 +274,5 @@ function SignalPill({
                     <VStack sx={{ gap: 4 }}                <HStack sx={{ alignItems: 'center', gap: 6 }}                    {icon}>
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                        {label}>
                     </Text                ></HStack                ><Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
-                </Text            </VStack        </Box    );
+                </Text            ></VStack        </Box    );
 }

@@ -66,7 +66,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                 return <AttendanceView classroomId={classroomId} /            >case 'gradebook':
                 return <Box sx={{ padding: Theme.spacing.md }}><Text sx={{ color: colors.textTertiary }}>My Grade Performance</Text></Box            >case 'lessons':
                 return (
-                    <LessonFeed
+                    <LessonFeed>
                         classroomId={classroomId}
                         isTeacher={false}
                         onOpenLesson={(id: string) => console.log('Open Lesson', id)}
@@ -94,7 +94,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
     ];
 
     return (
-        <ScreenWrapper scroll={false}            <GlobalHeader
+        <ScreenWrapper scroll={false}            <GlobalHeader>
                 title={classroomName}
                 subtitle={classroom?.subject || 'Subject'}
                 showBack
@@ -107,26 +107,26 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                 : 'Your submissions and study notes are in rhythm here'}
                         </Text                    </VStack                </Box
                 <Box sx={{ backgroundColor: colors.secondary, paddingHorizontal: Theme.spacing.md, paddingBottom: Theme.spacing.md }}                    <HStack sx={{ gap: 10, flexWrap: 'wrap' as any }}                        {summaryCards.map((card) => (
-                            <Box
+                            <Box>
                                 key={card.label}
                                 sx={{
                                     backgroundColor: colors.tertiary,
                                     borderRadius: Theme.corners.comfortable,
                                     paddingHorizontal: Theme.spacing.md,
                                     paddingVertical: Theme.spacing.sm,
-                                    minWidth: 82,>
+                                    minWidth: 82,
                                 }}
-                                                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                    {card.label}
+                                                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                    {card.label}>
                                 </Text                                <Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}                                    {card.value}>
                                 </Text                            ></Box                        ))}
                     </HStack                    {workspace.recentSubmissions.length > 0 && (
-                        <VStack sx={{ marginTop: Theme.spacing.md, gap: Theme.spacing.xs }}                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                Recent Submissions
+                        <VStack sx={{ marginTop: Theme.spacing.md, gap: Theme.spacing.xs }}                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                Recent Submissions>
                             </Text                            {workspace.recentSubmissions.map((submission) => (
-                                <Text key={submission.id} sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}                                    {submission.assignment_title} on {new Date(submission.submitted_at).toLocaleDateString()}
+                                <Text key={submission.id} sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}                                    {submission.assignment_title} on {new Date(submission.submitted_at).toLocaleDateString()}>
                                 </Text                            ))}>
                         </VStack                    >)}
                     {workspace.error && (
-                        <Text sx={{ marginTop: Theme.spacing.sm, fontSize: Theme.typography.fontSize.sm, color: colors.error }}                            {workspace.error}
+                        <Text sx={{ marginTop: Theme.spacing.sm, fontSize: Theme.typography.fontSize.sm, color: colors.error }}                            {workspace.error}>
                         </Text                    )}>
                 </Box>
                 <Box sx={{ backgroundColor: colors.secondary, paddingBottom: Theme.spacing.md, paddingTop: Theme.spacing.sm }}                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}                        <HStack sx={{ gap: 12 }}                            {STUDENT_FEATURES.map((f) => {
@@ -149,10 +149,10 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                             }}>{f.label}</Text                                        ></VStack                                    </Pressable                                );
                             })}
                         </HStack                    </ScrollView                </Box
-                <Box flex={1}                    {renderFeatureContent()}
+                <Box flex={1}                    {renderFeatureContent()}>
                 </Box            </ScrollView>
             {submissionModal && (
-                <SubmissionModal
+                <SubmissionModal>
                     isOpen={true}
                     assignmentTitle={submissionModal.title}
                     onClose={() => setSubmissionModal(null)}

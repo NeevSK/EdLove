@@ -123,8 +123,8 @@ export default function CommunityScreen() {
     };
 
     const renderFeedFilterChips = () => (
-        <Animated.View entering={FadeInDown.delay(300).springify()}
-            <HorizontalChipRow
+        <Animated.View entering={FadeInDown.delay(300).springify()}>
+            <HorizontalChipRow>
                 chips={feedFilterChips}
                 selectedValue={activeFeedFilter}
                 onSelect={(value) => {
@@ -137,8 +137,8 @@ export default function CommunityScreen() {
 
     const renderCommunityHearth = () => {
         return (
-            <Box mt="$4"
-                <CommunityHearth
+            <Box mt="$4">
+                <CommunityHearth>
                     manifestos={manifestos}
                     userId={userId || 'guest'}
                     onPressSpotlight={(postId) => {
@@ -151,12 +151,12 @@ export default function CommunityScreen() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title')} />
                 {/* Sub-Tabs via Chips - ALWAYS VISIBLE for navigation awareness */}
                 ><Animated.View entering={FadeInDown.delay(150).springify()}
-                    <HorizontalChipRow
+                    <HorizontalChipRow>
                         chips={[>
                             { label: t('community.tabs.resonantFeed'), value: 'feed' },
                             { label: t('community.tabs.infiniteGalaxy'), value: 'groups' },
@@ -171,15 +171,15 @@ export default function CommunityScreen() {
 
                 {/* Main Content Area with Capability-Based Gating */}
                 {activeTab === 'feed' && (
-                    <FeatureGuard 
+                    <FeatureGuard >
                         action="read" 
                         subject="CommunityFeed"
                         fallback={>
-                            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
+                            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}>
                                 <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
                                     {renderCommunityHearth()}
-                                    <Box px="$4"
-                                        <PositiveInvitation
+                                    <Box px="$4">
+                                        <PositiveInvitation>
                                             type="guest"
                                             title={t('community.guestTitle')}
                                             description={t('community.guestDesc')}
@@ -190,13 +190,13 @@ export default function CommunityScreen() {
                             </ScrollView>
                         }
                     
-                        <SanctuaryFlashList
+                        <SanctuaryFlashList>
                             data={listData}
                             keyExtractor={(item) => item.id}
                             estimatedItemSize={Theme.listSizes.communityCard}
                             renderItem={({ item, index }) => (
-                                <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}
-                                    <PostCard
+                                <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
+                                    <PostCard>
                                         post={item}
                                         onPress={() => { }}
                                         onLike={() => {
@@ -223,7 +223,7 @@ export default function CommunityScreen() {
                             )}
                             ListEmptyComponent={
                                 !loading ? (
-                                    <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing['2xl'] }}
+                                    <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing['2xl'] }}>
                                         <Box sx={{
                                             padding: Theme.spacing.xl,
                                             backgroundColor: Theme.colors.gurudeviViolet + '11',
@@ -235,11 +235,11 @@ export default function CommunityScreen() {
                                             <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
                                                 {t('community.empty.title') || 'Your Sanctuary is Waiting for its First Spark'}
                                             </Heading>
-                                            <Text textAlign="center" color={colors.textSecondary}
+                                            <Text textAlign="center" color={colors.textSecondary}>
                                                 {t('community.empty.desc') || 'Share a thought, a lesson, or a moment of grace to seed your school\'s collective wisdom.'}>
                                             </Text>
                                         </VStack>
-                                        <SanctuaryButton
+                                        <SanctuaryButton>
                                             onPress={() => hasJoinedGroups ? handleOpenCreatePost() : setActiveTab('groups')}
                                             action="primary"
                                             size="lg"
@@ -252,7 +252,7 @@ export default function CommunityScreen() {
                                 ) : null
                             }
                             ListHeaderComponent={
-                                <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}
+                                <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
                                     <TemporalNavigator />
                                     {renderCommunityHearth()}
                                     >{renderFeedFilterChips()}
@@ -264,7 +264,7 @@ export default function CommunityScreen() {
                             onEndReachedThreshold={0.5}
                             ListFooterComponent={
                                 isFetchingNextPosts ? (
-                                    <ActivityIndicator style={{ marginVertical: Theme.spacing.md }} color={Theme.colors.sanctuarySaffron} /
+                                    <ActivityIndicator style={{ marginVertical: Theme.spacing.md }} color={Theme.colors.sanctuarySaffron} />
                                 ) : null
                             }
                             contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
@@ -273,12 +273,12 @@ export default function CommunityScreen() {
                 )}
 
                 {activeTab === 'groups' && (
-                    <FeatureGuard 
+                    <FeatureGuard >
                         action="read" 
                         subject="CommunityGroups"
                         fallback={>
-                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}
-                                <PositiveInvitation
+                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
+                                <PositiveInvitation>
                                     type="guest"
                                     title={t('community.groups.guestTitle')}
                                     description={t('community.groups.guestDesc')}
@@ -287,7 +287,7 @@ export default function CommunityScreen() {
                             ></VStack>
                         }
                     
-                        <GroupsScreen
+                        <GroupsScreen>
                             userId={userId ?? undefined}
                             schoolId={schoolId || undefined}
                             onCreatePost={handleOpenCreatePost}
@@ -300,12 +300,12 @@ export default function CommunityScreen() {
                 )}
 
                 {activeTab === 'dms' && (
-                    <FeatureGuard 
+                    <FeatureGuard >
                         action="read" 
                         subject="DirectMessages"
                         fallback={>
-                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}
-                                <PositiveInvitation
+                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
+                                <PositiveInvitation>
                                     type="guest"
                                     title={t('community.dms.guestTitle')}
                                     description={t('community.dms.guestDesc')}
@@ -318,7 +318,7 @@ export default function CommunityScreen() {
                     ></FeatureGuard>
                 )}
 
-                <CreatePostModal
+                <CreatePostModal>
                     isOpen={showCreateModal && !isPastView}
                     onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
                     groupId={createPostGroupId}

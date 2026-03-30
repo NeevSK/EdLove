@@ -226,7 +226,7 @@ export default function ThuthimalClaimScreen() {
                 },
               ]}
                           <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}                {t('thuthimalClaim.enterSanctuary')}>
-              </Text            </TouchableOpacity          </VStack        </Animated.View      </Box    </ScreenWrapper  );>
+              </Text            ></TouchableOpacity          ></VStack        </Animated.View      </Box    </ScreenWrapper  );>
 }
 
 const styles = StyleSheet.create({

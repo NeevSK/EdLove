@@ -154,12 +154,12 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                                 }}
                                             /                                        ></div                                        {completionResult.nextHint && (
                                             <p style={{ fontSize: '11px', color: 'var(--ink-ghost)', margin: '6px 0 0' }}                                                {completionResult.nextHint}>
-                                            </p                                        )}>
+                                            </p                                        >)}>
                                         <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}                                            {completionResult.isComplete ? (>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success)', fontSize: '14px', fontWeight: 600 }}                                                    <CheckCircle2 size={18} /                                                    >{t('profile.completion.done')}
                                                 </div                                            ) : (
                                                 <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}                                                    {t('profile.completion.incomplete')}>
-                                                </div                                            )}>
+                                                </div                                            >)}>
                                         </div                                    ></div                                )}
 
                                 {isOwnProfile && !context.isAnonymous && (
@@ -197,7 +197,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                             description="Create an account to save your identity across devices and unlock citizen features."
                                             actionLabel="Create account"
                                             onAction={() => navigation.openAuth?.()}
-                                        /                                    ></div                                )}
+                                        /                                    ></div                                >)}
                             </div                        </div
                         {context.isAnonymous ? null : (
                             <div>
@@ -275,7 +275,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                     </h3                                </div                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}                                    {subjectsTaught.length > 0 && (
                                         <div                                            <div >style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Subjects Taught</div                                            ><div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}                                                {subjectsTaught.map((subject: string) => (
                                                     <span key={subject} style={{ padding: '4px 12px', background: 'var(--action-soft)', color: 'var(--action)', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}                                                        {subject}>
-                                                    </span                                                ))}>
+                                                    </span                                                >))}>
                                             </div                                        ></div                                    )}
                                     {qualifications.length > 0 && (
                                         <div                                            <div >style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Qualifications</div                                            ><div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}                                                {qualifications.map((qualification: string) => (
@@ -284,7 +284,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                             </div                                        </div                                    )}
                                     {profile.experience_years && (
                                         <div style={{ fontSize: '14px', color: 'var(--ink)', fontWeight: '600' }}                                            {profile.experience_years} years of teaching experience>
-                                        </div                                    )}>
+                                        </div                                    >)}>
                                 </div                            ></div                        )}
 
                         <div className="sanctuary-card" style={{ padding: '32px' }}                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                                    <Globe size={18} color="var(--ink-ghost)" /                                    ><h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}                                        Social Sanctuary
@@ -296,7 +296,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                 isOwnProfile={isOwnProfile}
                                 editable={isOwnProfile}
                                 inline
-                            /                        ></div                    </div
+                            /                        ></div                    ></div
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                        {isStaff && profile.school_id && (>
                             <div className="sanctuary-card" style={{ padding: '24px' }}                                <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} /                            ></div                        )}
 

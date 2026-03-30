@@ -22,7 +22,7 @@ export function SimpleBarChart({
   return (
     <SanctuaryCanvas height={height} render={{ standard: () => <View /> }}      <View style={[styles.container, { height }]}        {title && <Text style={styles.title}>{title}</Text>}
         <View style={styles.chartContainer}          {data.map((item, index) => (
-            <View key={index} style={styles.barContainer}              <View 
+            <View key={index} style={styles.barContainer}              <View >
                 style={[
                   styles.bar,>
                   { 
@@ -62,9 +62,9 @@ export function SimpleLineChart({
           const x = (index / (data.length - 1)) * 250;
           
           return (
-            <View key={index} style={styles.lineChartContainer}              {/* Line */}
+            <View key={index} style={styles.lineChartContainer}              {/* Line */}>
               {index > 0 && (
-                <View 
+                <View >
                   style={[
                     styles.line,>
                     {
@@ -78,7 +78,7 @@ export function SimpleLineChart({
                 /              >)}
               
               {/* Point */}
-              <View 
+              <View >
                 style={[
                   styles.point,>
                   {
@@ -89,7 +89,7 @@ export function SimpleLineChart({
                 ]} 
               /              
               >{/* Label */}
-              <Text style={[styles.pointLabel, { left: x - 30 }]}                {point.x}
+              <Text style={[styles.pointLabel, { left: x - 30 }]}                {point.x}>
               </Text            </View          );>
         })}
       </View    ></View  );
@@ -117,8 +117,8 @@ export function SimplePieChart({
           const endAngle = startAngle + (percentage / 100) * 360;
           
           return (
-            <View key={index} style={styles.pieSliceContainer}              {/* Pie slice visualization - simplified as arc */}
-              <View 
+            <View key={index} style={styles.pieSliceContainer}              {/* Pie slice visualization - simplified as arc */}>
+              <View >
                 style={[
                   styles.pieSlice,>
                   {
@@ -131,7 +131,7 @@ export function SimplePieChart({
                 ]} 
               /              
               >{/* Label */}
-              <Text style={styles.pieLabel}                {item.label}
+              <Text style={styles.pieLabel}                {item.label}>
                 {percentage > 5 && ` (${percentage.toFixed(1)}%)`}
               </Text            </View          );
         })}
@@ -160,8 +160,8 @@ export function ProgressRing({
   const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
 
   return (
-    <View style={[styles.container, { width: size, height: size }]}      <View style={styles.ringContainer}        {/* Background ring */}
-        <View 
+    <View style={[styles.container, { width: size, height: size }]}      <View style={styles.ringContainer}        {/* Background ring */}>
+        <View >
           style={[
             styles.ring,>
             {
@@ -174,7 +174,7 @@ export function ProgressRing({
           ]} 
         /        
         >{/* Progress ring */}
-        <View 
+        <View >
           style={[
             styles.ring,>
             {
@@ -188,7 +188,7 @@ export function ProgressRing({
           ]} 
         /        
         >{/* Center content */}
-        <View style={styles.ringCenter}          {showLabel && (
+        <View style={styles.ringCenter}          {showLabel && (>
             <Text style={styles.percentageText}>{percentage.toFixed(0)}%</Text          >)}
         </View      </View    </View  );
 }

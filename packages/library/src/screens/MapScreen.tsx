@@ -187,7 +187,7 @@ export default function MapScreen() {
     const renderContent = () => {
         if (loading) {
             return (
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
                 ></Box>
             );
@@ -195,7 +195,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'astro' && data && layout) {
             return (
-                <AstroView 
+                <AstroView >
                     data={data as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -208,7 +208,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'jyoti' && data) {
             return (
-                <JyotiView 
+                <JyotiView >
                     data={data as any} 
                     layout={layout!} 
                     width={width}
@@ -219,7 +219,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'terra' && data) {
             return (
-                <TerraView 
+                <TerraView >
                     data={data as any} 
                     layout={layout!} 
                     width={width}
@@ -230,7 +230,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'dharma' && data) {
             return (
-                <DharmaView 
+                <DharmaView >
                     data={data as any} 
                     layout={layout!} 
                     width={width}
@@ -241,7 +241,7 @@ export default function MapScreen() {
 
         if (activePerspective === 'vastu' && data && layout) {
             return (
-                <VastuView 
+                <VastuView >
                     data={data as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -253,21 +253,21 @@ export default function MapScreen() {
         }
 
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
             ></Box>
         );
     };
 
     return (
-        <ScreenWrapper scroll={false}
-            <GlobalHeader
+        <ScreenWrapper scroll={false}>
+            <GlobalHeader>
                 title="Knowledge Cosmos"
                 subtitle="Isomorphic Visualization Engine"
                 showBack
                 onBack={() => navigation.goBack()}
                 rightAction={
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={handleExport}
                         disabled={isExporting}
                         style={{ 
@@ -278,7 +278,7 @@ export default function MapScreen() {
                             flexDirection: 'row',
                             alignItems: 'center',
                             opacity: isExporting ? 0.5 : 1,
-                            marginRight: 12>
+                            marginRight: 12
                         }}
                     
                         <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} /
@@ -291,14 +291,14 @@ export default function MapScreen() {
 
             ><Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
                 <View style={styles.perspectiveSwitcherContainer}>
-                    <BlurView intensity={30} tint="dark" style={styles.blurContainer}
+                    <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
                             {getAvailablePerspectives(data).map((p) => {
                                 const isActive = activePerspective === p.id;
                                 const isDisabled = p.disabled;
                                 const Icon = p.icon;
                                 return (
-                                    <TouchableOpacity 
+                                    <TouchableOpacity >
                                         key={p.id}
                                         onPress={() => !isDisabled && setActivePerspective(p.id)}
                                         disabled={isDisabled}
@@ -308,7 +308,7 @@ export default function MapScreen() {
                                             isDisabled && { opacity: 0.3 }
                                         ]}
                                     
-                                        <Icon 
+                                        <Icon >
                                             size={18} 
                                             color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
                                         />
@@ -326,44 +326,44 @@ export default function MapScreen() {
                 </View>
             </Box>
 
-            <GestureHandlerRootView style={{ flex: 1 }}
+            <GestureHandlerRootView style={{ flex: 1 }}>
                 <Box sx={{ 
                     flex: 1, 
                     backgroundColor: colors.obsidian || colors.black,
-                    overflow: 'hidden'>
-                }}
+                    overflow: 'hidden'
+                }}>
                     {renderContent()}
 
                     {selectedNode && (
-                        <Animated.View 
+                        <Animated.View >
                             entering={FadeInDown}
                             style={styles.nodeSheetContainer}>
                         
-                            <BlurView intensity={30} tint="dark" style={styles.blurSheet}
+                            <BlurView intensity={30} tint="dark" style={styles.blurSheet}>
                                 <VStack spacing={12}>
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                         <VStack>
                                             <Text >sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}
                                                 {selectedNode.label}>
                                             </Text>
-                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}
+                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
                                                 {selectedNode.type} " {selectedNode.group}>
                                             </Text>
                                         </VStack>
                                         <TouchableOpacity onPress={() => setSelectedNode(null)}
-                                            <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                            <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
                                                 <X size={20} color={colors.textPrimary} />
                                             ></Box>
                                         </TouchableOpacity>
                                     </HStack>
 
                                     {selectedNode.metadata?.description && (
-                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}
+                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
                                             {selectedNode.metadata.description}>
                                         </Text>
                                     )}
 
-                                    <TouchableOpacity 
+                                    <TouchableOpacity >
                                         style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                                         onPress={() => {
                                             // @ts-ignore
@@ -373,8 +373,8 @@ export default function MapScreen() {
                                             }
                                         }}
                                     
-                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}
-                                            {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}>
+                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                            {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                         </Text>
                                     </TouchableOpacity>
                                 </VStack>
@@ -451,8 +451,8 @@ function StatCardNative({ label, value, icon: Icon }: { label: string; value: nu
             borderRadius: 20,
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 12>
-        }}
+            gap: 12
+        }}>
             <Icon size={20} color={Theme.colors.sanctuarySaffron} /
             ><VStack>
                 <Text >sx={{ fontSize: 10, color: Theme.colors.starlightGray }}>{label}</Text

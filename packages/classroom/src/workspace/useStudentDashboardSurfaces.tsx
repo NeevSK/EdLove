@@ -231,7 +231,7 @@ export function useStudentDashboardSurfaces({
                                     onAction={onOpenCommunity}
                                 /                            >}
                         /                        >{isGuest ? (
-                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" context="classroom" onAction={onOpenGuestAuth} /                            ></Box                        ): null}
+                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" context="classroom" onAction={onOpenGuestAuth} /                            ></Box                        >): null}
                     </                ),
             },
             {

@@ -29,15 +29,15 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
     if (!classroom) return <div style={{ padding: '40px', textAlign: 'center' }}>Classroom not found</div>;
 
     return (
-        <div className="sub-view-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}                <button
+        <div className="sub-view-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}                <button>
                     onClick={() => navigation.goBack()}
                     className="secondary-button"
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px' }}
                                     <ArrowLeft size={16} /> Back
                 </button            </div
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}                
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}                >
                 <div                    <div >className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px' }}                        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}                            <div style={{ padding: '24px', background: 'var(--accent-action-soft)', borderRadius: '24px' }}                                <GraduationCap size={48} color="var(--accent-action)" /                            ></div                            >
-                            <div style={{ flex: 1 }}                                <EditableItem
+                            <div style={{ flex: 1 }}                                <EditableItem>
                                     icon={Hash}
                                     label="Classroom Name"
                                     value={classroom.name}

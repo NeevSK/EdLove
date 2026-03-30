@@ -162,7 +162,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
     if (isLoading && userId) {
         return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                 <SkeletonCard height={40} />
                 ><SkeletonCard height={280} /
                 ><SkeletonCard height={80} />
@@ -172,7 +172,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
     if (!userId) {
         return (
-            <PositiveInvitation
+            <PositiveInvitation>
                 type="guest"
                 onAction={() => navigation.navigate('Auth' as never)}
             /
@@ -180,19 +180,19 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     }
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
             {/* Header */}>
-            <VStack space="xs"
+            <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
                     {t('progressTree.title')}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm"
+                <Text color={Theme.colors.mistGray} size="sm">
                     {t('progressTree.subtitle')}>
                 </Text>
             </VStack>
 
             {/* Tree Visualization */}
-            <Box
+            <Box>
                 sx={{
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -200,12 +200,12 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
-                    position: 'relative',>
+                    position: 'relative',
                 }}
             
                 {/* Bloom effect */}
                 {showBloom && (
-                    <Animated.View
+                    <Animated.View>
                         style={[
                             bloomStyle,>
                             {
@@ -222,7 +222,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                             size="lg"
                             sx={{
                                 fontWeight: typography.fontWeight.bold,
-                                marginTop: Theme.spacing.sm,>
+                                marginTop: Theme.spacing.sm,
                             }}
                         
                             Milestone reached!
@@ -231,86 +231,86 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                 )}
 
                 {/* Main tree */}
-                <Animated.View style={treeStyle}
+                <Animated.View style={treeStyle}>
                     <Text style={{ fontSize: 96 }}>
                         {currentStage?.emoji || '\uD83C\uDF31'}
                     </Text>
                 </Animated.View>
 
-                <Text
+                <Text>
                     color={Theme.colors.sacredWhite}
                     size="2xl"
                     sx={{
                         fontWeight: typography.fontWeight.semibold,
-                        marginTop: Theme.spacing.md,>
+                        marginTop: Theme.spacing.md,
                     }}
                 
                     {currentStage?.label || ''}
                 </Text>
-                <Text
+                <Text>
                     color={Theme.colors.mistGray}
                     size="sm"
-                    sx={{ fontStyle: 'italic' }}>
+                    sx={{ fontStyle: 'italic' }}
                 
                     {currentStage?.description || ''}
                 </Text>
             </Box>
 
             {/* Gentle progress indicator */}
-            <Box
+            <Box>
                 sx={{
                     backgroundColor: Theme.colors.ink,
                     padding: Theme.spacing.md,
-                    borderRadius: Theme.corners.comfortable,>
+                    borderRadius: Theme.corners.comfortable,
                 }}
             
-                <Text
+                <Text>
                     color={Theme.colors.dimGray}
                     size="xs"
-                    sx={{ marginBottom: Theme.spacing.sm }}>
+                    sx={{ marginBottom: Theme.spacing.sm }}
                 
                     {interactionCount} interactions nurturing your tree
                 </Text>
 
                 {nextStage && (
                     <
-                        <Box
+                        <Box>
                             sx={{
                                 width: '100%',
                                 height: 8,
                                 backgroundColor: Theme.colors.ink,
                                 borderRadius: 4,
-                                overflow: 'hidden',>
+                                overflow: 'hidden',
                             }}
                         
-                            <Box
+                            <Box>
                                 sx={{
                                     width: `${progressPercent}%`,
                                     height: '100%',
-                                    backgroundColor: Theme.colors.sageGreen,>
+                                    backgroundColor: Theme.colors.sageGreen,
                                 }}
                             /
                         ></Box>
-                        <Text
+                        <Text>
                             color={Theme.colors.dimGray}
                             size="xs"
                             sx={{ marginTop: Theme.spacing.sm }}
                         
-                            Next: {nextStage.label} ({nextStage.minInteractions - interactionCount} more interactions)>
+                            Next: {nextStage.label} ({nextStage.minInteractions - interactionCount} more interactions)
                         </Text>
                     </
                 )}
             </Box>
 
             {/* Philosophy note */}
-            <Box
+            <Box>
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,>
+                    borderRadius: Theme.corners.comfortable,
                 }}
             
-                <Text
+                <Text>
                     color={Theme.colors.mistGray}
                     size="xs"
                     textAlign="center"

@@ -330,7 +330,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         <Text style={[styles.searchIcon, { color: Theme.colors.sanctuarySaffron }]}
                             \u2315>
                         </Text>
-                        <TextInput accessibilityLabel="Text input field">
+                        <TextInput accessibilityLabel="Text input field"/>
                             ref={inputRef}
                             style={[styles.searchInput, { color: inputColor }]}
                             placeholder="Navigate anywhere\u2026"

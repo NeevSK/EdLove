@@ -128,11 +128,11 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
     const centerVec = vec(CENTER, CENTER);
 
     return (
-        <View style={{ width: CHART_SIZE, height: CHART_SIZE }}
+        <View style={{ width: CHART_SIZE, height: CHART_SIZE }}>
             <Canvas style={StyleSheet.absoluteFill}>
                 {/* Grid circles */}
                 {gridRadii.map((r, i) => (
-                    <Circle
+                    <Circle>
                         key={`grid-${i}`}
                         cx={CENTER}
                         cy={CENTER}
@@ -148,7 +148,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                 {AXES.map((axis, i) => {
                     const tip = polar(axis.angle, MAX_RADIUS);
                     return (
-                        <Line
+                        <Line>
                             key={`axis-${i}`}
                             p1={centerVec}
                             p2={vec(tip.x, tip.y)}
@@ -160,7 +160,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                 })}
 
                 {/* The Resonance Polygon */}
-                <Group
+                <Group>
                     <Path
                         >path={polygonPath}
                         color={color}
@@ -177,7 +177,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
 
                     >{/* Polygon corner glows */}
                     {points.map((pt, i) => (
-                        <Circle
+                        <Circle>
                             key={`pt-${i}`}
                             cx={pt.x}
                             cy={pt.y}
@@ -188,7 +188,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                 </Group>
 
                 {/* Center dot */}
-                <Circle
+                <Circle>
                     cx={CENTER}
                     cy={CENTER}
                     r={2}
@@ -241,7 +241,7 @@ export function ResonancePatternCard({
     const accentColor = Theme.colors.sanctuarySaffron;
 
     return (
-        <View
+        <View>
             style={{
                 backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.generous,
@@ -251,9 +251,9 @@ export function ResonancePatternCard({
                 ...Theme.shadows.sm,>
             }}
         
-            <VStack space="md"
+            <VStack space="md">
                 {/* Header */}>
-                <HStack space="sm" alignItems="center"
+                <HStack space="sm" alignItems="center">
                     <Sparkles color={accentColor} size={16} />
                     ><Text
                         style={{
@@ -261,7 +261,7 @@ export function ResonancePatternCard({
                             fontWeight: '700',
                             letterSpacing: 1,
                             color: accentColor,
-                            textTransform: 'uppercase',>
+                            textTransform: 'uppercase',
                         }}
                     
                         Your Learning Pattern
@@ -269,22 +269,22 @@ export function ResonancePatternCard({
                 </HStack>
 
                 {isForming ? (
-                    <Text
+                    <Text>
                         style={{
                             color: colors.textSecondary,
                             fontSize: Theme.typography.fontSize.sm,
                             lineHeight: 20,
                             textAlign: 'center',
-                            padding: Theme.spacing.lg,>
+                            padding: Theme.spacing.lg,
                         }}
                     
                         \u2726 Still forming...{'\n'}
-                        <Text style={{ color: colors.textTertiary, fontSize: 12 }}
+                        <Text style={{ color: colors.textTertiary, fontSize: 12 }}>
                             Your pattern will emerge as you use the app.>
                         </Text>
                     </Text>
                 ) : (
-                    <HStack space="lg" alignItems="center"
+                    <HStack space="lg" alignItems="center">
                         {/* Radar chart */}>
                         <RadarChart points={points} color={accentColor} />
                         {/* Axis labels */}
@@ -295,7 +295,7 @@ export function ResonancePatternCard({
                                 const pole = pct < 0.4 ? axis.lo : pct > 0.6 ? axis.hi : '\u2014';
                                 const intensity = Math.abs(value - 50) / 50; // 0=neutral, 1=strong
                                 return (
-                                    <View key={axis.key}
+                                    <View key={axis.key}>
                                         <HStack justifyContent="space-between" alignItems="center">
                                             <Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.lo}</Text
                                             ><Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.hi}</Text
@@ -305,10 +305,10 @@ export function ResonancePatternCard({
                                                 height: 4,
                                                 backgroundColor: colors.border,
                                                 borderRadius: 2,
-                                                marginTop: 2,>
+                                                marginTop: 2,
                                             }}
                                         
-                                            <View
+                                            <View>
                                                 style={{
                                                     position: 'absolute',
                                                     left: `${value}%` as any,
@@ -317,7 +317,7 @@ export function ResonancePatternCard({
                                                     height: 6,
                                                     borderRadius: 3,
                                                     backgroundColor: accentColor,
-                                                    transform: [{ translateX: -3 }],>
+                                                    transform: [{ translateX: -3 }],
                                                 }}
                                             /
                                         ></View>
@@ -329,12 +329,12 @@ export function ResonancePatternCard({
                 )}
 
                 {/* Footer note */}
-                <Text
+                <Text>
                     style={{
                         color: colors.textTertiary,
                         fontSize: 10,
                         textAlign: 'center',
-                        fontStyle: 'italic',>
+                        fontStyle: 'italic',
                     }}
                 
                     {dataQuality === 'strong' && orientationSeeds
@@ -347,7 +347,7 @@ export function ResonancePatternCard({
                 </Text>
 
                 {!isForming && onExplore && (
-                    <Pressable
+                    <Pressable>
                         onPress={onExplore}
                         style={{
                             alignSelf: 'center',
@@ -355,10 +355,10 @@ export function ResonancePatternCard({
                             paddingVertical: Theme.spacing.sm,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: accentColor + '60',>
+                            borderColor: accentColor + '60',
                         }}
                     
-                        <Text style={{ color: accentColor, fontSize: 12, fontWeight: '600' }}
+                        <Text style={{ color: accentColor, fontSize: 12, fontWeight: '600' }}>
                             Explore your pattern \u2192>
                         </Text>
                     </Pressable>

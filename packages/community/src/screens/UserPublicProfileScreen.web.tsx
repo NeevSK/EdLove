@@ -160,7 +160,7 @@ export default function UserPublicProfileScreen() {
           <VStack sx={{ gap: 24, padding: 32 }}>
             <VStack sx={{ alignItems: 'center', gap: 16 }}>
               <HStack sx={{ justifyContent: 'center', marginBottom: 16 }}>
-                <UserAvatar>
+                <UserAvatar/>
                   avatarUrl={user?.avatar_url}
                   fullName={user?.full_name || userName}
                   size={120}
@@ -230,7 +230,7 @@ export default function UserPublicProfileScreen() {
                       <Gift size={18} /
                       ><Text sx={{ fontWeight: '800' }}>Send Thuthimal {'=O'}</Text
                     ></HStack
-                  </Button>
+                  ></Button>
                 )}
               </VStack>
             )}
@@ -285,7 +285,7 @@ export default function UserPublicProfileScreen() {
                     backgroundColor: glass.surface.bg,
                     borderWidth: 1,
                     borderColor: glass.surface.border
-                  }}>
+                  }}
                     <VStack sx={{ gap: 12 }}>
                       <Heading sx={{ fontSize: 18, fontWeight: '800', color: text.primary }}>
                         {t("community.profile.aspiration")}
@@ -331,7 +331,7 @@ export default function UserPublicProfileScreen() {
                             <MessageSquare size={14} color={text.secondary} /
                             ><Text sx={{ fontSize: 13, color: text.secondary }}>--</Text
                           ></HStack
-                        </HStack>
+                        ></HStack>
                       </VStack>
                     </Box>
                   ))}
@@ -358,7 +358,7 @@ export default function UserPublicProfileScreen() {
                     ><StatCard label={t("community.profile.endorsements") || "Endorsements"} value={stats.endorsements.toString()} icon={<Heart size={16} />} /
                     ><StatCard label={t("community.profile.pulse") || "Pulse"} value={t("community.profile.pulseActive") || "Active"} icon={<Activity size={16} />} /
                   ></HStack
-                </VStack>
+                ></VStack>
 
                 <VStack sx={{ gap: 16 }}>
                   <Heading sx={{ fontSize: 18, fontWeight: '800', color: text.primary }}>

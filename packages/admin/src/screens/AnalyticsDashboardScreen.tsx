@@ -134,7 +134,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             }
           ]}
                   {icon}
-        </Text        <Text 
+        </Text        ><Text 
           style={[
             styles.metricTitle,
             { 
@@ -144,7 +144,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             }
           ]}
                   {title}
-        </Text      </View      
+        </Text      ></View      
       <Text >
         style={[
           styles.metricValue,>
@@ -168,7 +168,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           }
         ]}
               {getChangeIndicator(key)}
-      </Text    </TouchableOpacity  );
+      </Text    ></TouchableOpacity  );
 
   const getChangeIndicator = (metric: string) => {
     // Placeholder for trend indicators
@@ -204,7 +204,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           }
         ]}
               {title}
-      </Text      <Text 
+      </Text      ><Text 
         style={[
           styles.liveMetricValue,
           { 
@@ -215,7 +215,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           }
         ]}
               {value}
-      </Text      <Text 
+      </Text      ><Text 
         style={[
           styles.liveMetricSubtitle,
           { 
@@ -251,13 +251,13 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               }
             ]}
                       {range.charAt(0).toUpperCase() + range.slice(1)}
-          </Text        </TouchableOpacity      ))}
+          </Text        ></TouchableOpacity      >))}
     </View  );
 
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading analytics dashboard...>
-        </Text      </View    );>
+        </Text      ></View    );>
   }
 
   return (
@@ -283,7 +283,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               }
             ]}
                       {tenantName}
-          </Text        </View        
+          </Text        ></View        
         {renderTimeRangeSelector()}
       </View>
       <ScrollView >
@@ -343,7 +343,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 metricIcons[key as keyof typeof metricIcons] || '\uD83D\uDCCA'
               );
             })}
-          </View        </View
+          </View        ></View
         {/* Live System Metrics */}
         {liveMetrics && (
           <View style={styles.section}            <Text >
@@ -385,7 +385,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`,
                 getSystemHealthColor(liveMetrics.system_health)
               )}
-            </View          ></View        )}
+            </View          ></View        >)}
 
         {/* Resource Usage */}
         {liveMetrics && (

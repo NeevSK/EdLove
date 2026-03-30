@@ -39,7 +39,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
         const IconComponent = icon;
 
         return (
-            <Pressable
+            <Pressable>
                 onPress={() => {
                     if (!isActive) {
                         hapticSuccess();
@@ -48,18 +48,18 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                     }
                 }}
             
-                <Box
+                <Box>
                     sx={{
                         padding: Theme.spacing.md,
                         backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
                         borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',
-                    }}>
+                    }}
                 
-                    <HStack justifyContent="space-between" alignItems="center"
+                    <HStack justifyContent="space-between" alignItems="center">
                         <HStack space="md" alignItems="center">
-                            <Box
+                            <Box>
                                 sx={{
                                     width: 36,
                                     height: 36,
@@ -67,7 +67,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                     backgroundColor: isActive ? 'rgba(230, 126, 34, 0.2)' : 'rgba(255,255,255,0.05)',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                }}>
+                                }}
                             
                                 <IconComponent size={20} color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} /
                             ></Box
@@ -75,7 +75,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                 <Text >color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}>
                                     {label}
                                 </Text>
-                                <Text color={Theme.colors.dimGray} size="xs"
+                                <Text color={Theme.colors.dimGray} size="xs">
                                     {description}>
                                 </Text>
                             </VStack>
@@ -90,7 +90,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
     const renderLanguageItem = (lang: 'si' | 'ta' | 'en', label: string) => {
         const isActive = currentLanguage === lang;
         return (
-            <Pressable
+            <Pressable>
                 onPress={() => {
                     if (!isActive) {
                         hapticSuccess();
@@ -98,16 +98,16 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                     }
                 }}
             
-                <Box
+                <Box>
                     sx={{
                         paddingVertical: Theme.spacing.md,
                         paddingHorizontal: Theme.spacing.lg,
                         backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : 'transparent',
                         borderRadius: Theme.corners.comfortable,
-                    }}>
+                    }}
                 
-                    <HStack justifyContent="space-between" alignItems="center"
-                        <Text
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <Text>
                             color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite}
                             bold={isActive}>
                         
@@ -121,30 +121,30 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
     };
 
     return (
-        <VStack space="2xl" pb={100}
+        <VStack space="2xl" pb={100}>
             {/* Language Section */}>
-            <VStack space="sm"
+            <VStack space="sm">
                 <Text color={Theme.colors.dimGray} size="xs" ml={Theme.spacing.md} textTransform="uppercase" bold>
                     {t('profile.language') || 'LANGUAGE'}
                 </Text>
 
-                <Box style={styles.sectionContainer}
+                <Box style={styles.sectionContainer}>
                     <HStack sx={{ p: Theme.spacing.md }} space="md" alignItems="center">
-                        <Box style={styles.iconBox}
+                        <Box style={styles.iconBox}>
                             <Globe size={20} color={Theme.colors.sanctuarySaffron} /
                         ></Box
                         ><VStack
                             <Text >color={Theme.colors.sacredWhite} bold>
                                 {t('profile.appLanguage') || 'App Language'}
                             </Text>
-                            <Text color={Theme.colors.mistGray} size="xs"
+                            <Text color={Theme.colors.mistGray} size="xs">
                                 Choose your preferred language>
                             </Text>
                         </VStack>
                     </HStack>
 
                     <Divider bg={Theme.colors.ink} />
-                    <VStack sx={{ p: Theme.spacing.xs }}
+                    <VStack sx={{ p: Theme.spacing.xs }}>
                         {renderLanguageItem('si', '\u0DC3\u0DD2\u0D82\u0DC4\u0DBD')}>
                         {renderLanguageItem('ta', '\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD')}
                         {renderLanguageItem('en', 'English')}
@@ -153,20 +153,20 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
             </VStack>
 
             {/* App Settings Section */}
-            <VStack space="sm"
+            <VStack space="sm">
                 <Text color={Theme.colors.dimGray} size="xs" ml={Theme.spacing.md} textTransform="uppercase" bold>
                     {t('profile.settings') || 'SETTINGS'}
                 </Text>
 
-                <Box style={styles.sectionContainer}
+                <Box style={styles.sectionContainer}>
                     {/* Theme Selector */}>
                     <Pressable onPress={() => {
                         hapticLight();
                         setShowThemeModal(true);
                     }}
-                        <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center"
+                        <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center">
                             <HStack space="md" alignItems="center">
-                                <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}
+                                <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}>
                                     <Moon size={20} color="#9B59B6" /
                                 ></Box
                                 ><VStack
@@ -180,18 +180,18 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
 
                     <Divider bg={Theme.colors.ink} ml={56} />
                     {/* Data Saver (Placeholder) */}
-                    <Pressable onPress={hapticLight}
+                    <Pressable onPress={hapticLight}>
                         <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center">
-                            <HStack space="md" alignItems="center"
+                            <HStack space="md" alignItems="center">
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(46, 204, 113, 0.1)' }]}>
                                     <Database size={20} color="#2ECC71" /
                                 ></Box>
-                                <VStack
+                                <VStack>
                                     <Text >color={Theme.colors.sacredWhite}>Data Saver</Text
                                     ><Text color={Theme.colors.dimGray} size="xs">Reduce usage</Text
                                 ></VStack>
                             </HStack>
-                            <Box style={styles.comingSoonBadge}
+                            <Box style={styles.comingSoonBadge}>
                                 <Text color={Theme.colors.ink} size="2xs" bold>SOON</Text
                             ></Box>
                         </HStack>
@@ -200,43 +200,43 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
             </VStack>
 
             {/* Theme Selection Modal */}
-            <Modal
+            <Modal>
                 animationType="slide"
                 transparent={true}
                 visible={showThemeModal}
                 onRequestClose={() => setShowThemeModal(false)}
             
-                <Box sx={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}
-                    <Box
+                <Box sx={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}>
+                    <Box>
                         sx={{
                             backgroundColor: Theme.colors.ink,
                             borderTopLeftRadius: Theme.corners.generous,
                             borderTopRightRadius: Theme.corners.generous,
                             padding: Theme.spacing.xl,
                             paddingBottom: 40,
-                        }}>
+                        }}
                     
-                        <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}
-                            <Heading color={Theme.colors.sacredWhite} size="lg"
+                        <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}>
+                            <Heading color={Theme.colors.sacredWhite} size="lg">
                                 Choose Theme>
                             </Heading>
-                            <Pressable
+                            <Pressable>
                                 onPress={() => setShowThemeModal(false)}
                                 sx={{ padding: Theme.spacing.xs }}
                             
                                 <X color={Theme.colors.mistGray} size={24} /
                             ></Pressable
-                        </HStack>
+                        ></HStack>
 
-                        <VStack space="md"
+                        <VStack space="md">
                             {renderThemeOption('system', Smartphone, 'System Default', 'Follow device settings')}>
                             {renderThemeOption('light', Sun, 'Light Mode', 'Always use light colors')}
                             {renderThemeOption('dark', Moon, 'Dark Mode', 'Always use dark colors')}
                             {renderThemeOption('auto', Zap, 'Auto (Time-based)', 'Changes based on time of day')}
                         </VStack>
 
-                        <Text color={Theme.colors.dimGray} size="xs" mt={Theme.spacing.lg} textAlign="center"
-                            Auto mode adjusts theme based on time of day (evening: 8 PM - 6 AM)>
+                        <Text color={Theme.colors.dimGray} size="xs" mt={Theme.spacing.lg} textAlign="center">
+                            Auto mode adjusts theme based on time of day (evening: 8 PM - 6 AM)
                         </Text>
                     </Box>
                 </Box>

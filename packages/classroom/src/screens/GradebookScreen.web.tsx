@@ -44,7 +44,7 @@ function GradeModal({
     <div>
       style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={(event) => event.target === event.currentTarget && onClose()}
-          <div style={{ background: 'var(--background)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '400px', margin: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.25)' }}        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}          <div            <h3 >style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: '800' }}>Grade Entry</h3            ><p style={{ margin: 0, fontSize: '12px', color: 'var(--ink-ghost)' }}>{studentName}</p          ></div          <button onClick={onClose} style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}            <X size={18} color="var(--ink-ghost)" /          ></button        </div
+          <div style={{ background: 'var(--background)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '400px', margin: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.25)' }}        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}          <div            <h3 >style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: '800' }}>Grade Entry</h3            ><p style={{ margin: 0, fontSize: '12px', color: 'var(--ink-ghost)' }}>{studentName}</p          ></div          ><button onClick={onClose} style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}            <X size={18} color="var(--ink-ghost)" /          ></button        </div
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}          <div            <label >style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}              Marks (0-{maxMarks})
             </label            <input
               type="number"
@@ -96,7 +96,7 @@ function SettingsModal({
       style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={(event) => event.target === event.currentTarget && onClose()}
           <div style={{ background: 'var(--background)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '360px', margin: '16px' }}        <h3 style={{ margin: '0 0 20px', fontSize: '17px', fontWeight: '800' }}>Grading Settings</h3        ><div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}          <div            <label >style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}              Grading Mode
-            </label            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}              {(['marks', 'gpa', 'both'] as const).map((mode) => (
+            </label            ><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}              {(['marks', 'gpa', 'both'] as const).map((mode) => (
                 <button>
                   key={mode}
                   type="button"
@@ -111,7 +111,7 @@ function SettingsModal({
                     cursor: 'pointer',
                   }}
                                   {mode === 'marks' ? 'Marks' : mode === 'gpa' ? 'GPA' : 'Both'}
-                </button              ))}
+                </button              >))}
             </div          </div          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}            <input type="checkbox" checked={showRanks} onChange={(event) => setShowRanks(event.target.checked)} /            >Show student ranks
           </label        </div        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}          <button onClick={onClose} className="secondary-button" style={{ flex: 1 }}>Cancel</button          ><button onClick={handleSave} className="premium-button" style={{ flex: 2, background: 'var(--sanctuary-saffron)' }} disabled={saving}            {saving ? '...' : 'Save Settings'}
           </button        </div      </div    </div  );
@@ -157,7 +157,7 @@ export default function GradebookScreenWeb() {
             onClick={() => navigation.goBack()}
             style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-ghost)' }}
                       <ChevronLeft size={14} /> Back
-          </button          <div style={{ flex: 1 }}            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Gradebook - {classroomName}</h2          ></div          <button
+          </button          ><div style={{ flex: 1 }}            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Gradebook - {classroomName}</h2          ></div          <button
             onClick={() => setShowSettings(true)}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '700' }}
                       <Settings2 size={14} /> Settings
@@ -182,7 +182,7 @@ export default function GradebookScreenWeb() {
                     fontFamily: 'var(--font-body)',
                   }}
                                   {sort.label}
-                </button              ))}
+                </button              >))}
             </div>
             <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden' }}              <div style={{ display: 'grid', gridTemplateColumns: '60px 1.2fr 110px 110px 180px', gap: '12px', padding: '14px 20px', borderBottom: '1px solid var(--border-light)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)' }}                <span>Rank</span                ><span>Student</span                ><span>Marks</span                ><span>Status</span                ><span>Action</span              ></div
               {sortedGrades.map((grade) => {
@@ -203,7 +203,7 @@ export default function GradebookScreenWeb() {
                           onClick={() => publishGrade(grade.id)}
                           style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--moss)', background: 'rgba(34,197,94,0.08)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', color: 'var(--moss)' }}
                                                   {grade.publication_state === 'published' ? 'Republish' : 'Publish'}
-                        </button                      ) : null}
+                        </button                      >) : null}
                     </div                  </div                );
               })}
             </div>

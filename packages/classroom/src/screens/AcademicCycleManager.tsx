@@ -128,7 +128,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}
+            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 <GlobalHeader title="Academic Cycles" onBack={onBack} /
                 ><VStack space="md" sx={{ padding: Theme.spacing.lg }}
                     <SkeletonCard height={100} /
@@ -140,8 +140,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}
-            <GlobalHeader
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            <GlobalHeader>
                 title={t('principal.cycles.title') || 'Academic Cycles'}
                 onBack={onBack}
                 rightAction={>
@@ -151,9 +151,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                 }
             /
 
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}
+            <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
                 <VStack space="xl">
-                    <Box
+                    <Box>
                         <Text >color={colors.textSecondary} sx={{ fontSize: 13, marginBottom: Theme.spacing.xs }}
                             {t('principal.cycles.description') || 'Define your terms and semesters to synchronize syllabus progress and attendance reports.'}
                         </Text>
@@ -167,7 +167,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                             borderWidth: 1,
                             borderColor: colors.border
                         }}>
-                            <VStack space="md"
+                            <VStack space="md">
                                 <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>New Cycle</Text
 
                                 ><VStack space="xs"
@@ -175,16 +175,16 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                     ><Input variant="underlined"
                                         <InputField value={name} onChangeText={setName} placeholder="Cycle Name" /
                                     ></Input
-                                </VStack>
+                                ></VStack>
 
-                                <HStack space="md"
+                                <HStack space="md">
                                     <VStack space="xs" sx={{ flex: 1 }}>
                                         <Text sx={{ fontSize: 12, color: colors.textSecondary }}>Start Date</Text
                                         ><Input variant="underlined"
                                             <InputField value={startDate} onChangeText={setStartDate} placeholder="YYYY-MM-DD" /
                                         ></Input
                                     ></VStack>
-                                    <VStack space="xs" sx={{ flex: 1 }}
+                                    <VStack space="xs" sx={{ flex: 1 }}>
                                         <Text sx={{ fontSize: 12, color: colors.textSecondary }}>End Date</Text
                                         ><Input variant="underlined"
                                             <InputField value={endDate} onChangeText={setEndDate} placeholder="YYYY-MM-DD" /
@@ -192,39 +192,39 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                     </VStack>
                                 </HStack>
 
-                                <HStack space="md" alignItems="center"
+                                <HStack space="md" alignItems="center">
                                     <Pressable onPress={() => setIsCurrent(!isCurrent)}
-                                        <HStack space="sm" alignItems="center"
+                                        <HStack space="sm" alignItems="center">
                                             {isCurrent ? <CheckCircle2 size={18} color={colors.success} /> : <Circle size={18} color={colors.textTertiary} />}
                                             <Text sx={{ fontSize: 13, color: colors.text }}>Set as Current Cycle</Text
                                         ></HStack
                                     </Pressable>
                                 </HStack>
 
-                                <Button
+                                <Button>
                                     onPress={handleCreate}
                                     disabled={saving}
                                     sx={{
                                         backgroundColor: colors.action,
                                         borderRadius: Theme.corners.medium,
                                         marginTop: Theme.spacing.sm
-                                    }}>
+                                    }}
                                 
                                     <ButtonText>{saving ? 'Saving...' : 'Create Cycle'}</ButtonText
                                 ></Button
-                            </VStack>
+                            ></VStack>
                         </Box>
                     )}
 
-                    <VStack space="md"
+                    <VStack space="md">
                         {cycles.length === 0 ? (>
-                            <Box sx={{ alignItems: 'center', padding: Theme.spacing.xl }}
+                            <Box sx={{ alignItems: 'center', padding: Theme.spacing.xl }}>
                                 <Calendar size={48} color={colors.textTertiary} strokeWidth={1} /
                                 ><Text sx={{ marginTop: Theme.spacing.md, color: colors.textSecondary }}>No cycles defined yet.</Text
                             ></Box
                         ) : (
                             cycles.map((cycle) => (
-                                <Box
+                                <Box>
                                     key={cycle.id}
                                     sx={{
                                         backgroundColor: colors.secondary,
@@ -232,11 +232,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
                                         borderColor: cycle.is_current ? colors.success + '44' : colors.border,
-                                    }}>
+                                    }}
                                 
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <VStack space="xs">
-                                            <HStack space="sm" alignItems="center"
+                                            <HStack space="sm" alignItems="center">
                                                 <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{cycle.name}</Text
                                                 >{cycle.is_current && (
                                                     <Box sx={{
@@ -249,15 +249,15 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                                     ></Box
                                                 >)}
                                             </HStack>
-                                            <HStack space="xs" alignItems="center"
+                                            <HStack space="xs" alignItems="center">
                                                 <Clock size={12} color={colors.textTertiary} />
-                                                <Text sx={{ fontSize: 12, color: colors.textSecondary }}
+                                                <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
                                                     {cycle.start_date} to {cycle.end_date}>
                                                 </Text>
                                             </HStack>
                                         </VStack>
 
-                                        <HStack space="md"
+                                        <HStack space="md">
                                             {!cycle.is_current && (>
                                                 <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}
                                                     <CheckCircle2 size={20} color={colors.textTertiary} /

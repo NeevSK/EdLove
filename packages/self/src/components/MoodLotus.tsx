@@ -180,7 +180,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
 
     if (isLoading) {
         return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                 <SkeletonCard height={280} />
                 ><SkeletonCard height={80} /
                 ><SkeletonCard height={60} />
@@ -190,7 +190,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
 
     if (!activeUserId) {
         return (
-            <PositiveInvitation
+            <PositiveInvitation>
                 type="guest"
                 onAction={() => navigation.navigate('Auth' as never)}
             /
@@ -198,10 +198,10 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
     }
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
             {showBreathGuide ? (>
-                <VStack space="md"
-                    <Button
+                <VStack space="md">
+                    <Button>
                         size="sm"
                         variant="link"
                         onPress={() => setShowBreathGuide(false)}
@@ -214,16 +214,16 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
             ) : (
                 <
                     {/* Header */}
-                    <HStack justifyContent="space-between" alignItems="center"
+                    <HStack justifyContent="space-between" alignItems="center">
                         <VStack space="xs" sx={{ flex: 1 }}>
-                            <Heading color={colors.text} size="lg"
+                            <Heading color={colors.text} size="lg">
                                 {t('self.moodLotus')}>
                             </Heading>
-                            <Text color={colors.textSecondary} size="sm"
-                                {isPastView ? t('self.historicalMood') : t('self.moodLotusDesc')}>
+                            <Text color={colors.textSecondary} size="sm">
+                                {isPastView ? t('self.historicalMood') : t('self.moodLotusDesc')}
                             </Text>
                         </VStack>
-                        <Button
+                        <Button>
                             size="sm"
                             variant="link"
                             onPress={() => setShowBreathGuide(true)}
@@ -239,22 +239,22 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                     </HStack>
 
                     {/* Lotus Visualization */}
-                    <Box
+                    <Box>
                         sx={{
                             alignItems: 'center',
                             justifyContent: 'center',
                             padding: Theme.spacing.xl,
                             height: 280, // Fixed height to prevent jump
-                        }}>
+                        }}
                     
-                        <Animated.View style={lotusStyle}
-                            <Image
+                        <Animated.View style={lotusStyle}>
+                            <Image>
                                 source={currentMood.image}
                                 style={styles.lotusImage}
                                 resizeMode="contain"
                             />
                             >{/* Glow effect behind */}
-                            <Animated.View
+                            <Animated.View>
                                 style={[
                                     styles.glow,>
                                     {
@@ -266,7 +266,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                             /
                         ></Animated.View>
 
-                        <Animated.Text
+                        <Animated.Text>
                             style={{
                                 marginTop: Theme.spacing.md,
                                 fontSize: typography.fontSize.xl,
@@ -276,19 +276,19 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                 textShadowColor: currentMood.color,
                                 textShadowOffset: { width: 0, height: 0 },
                                 textShadowRadius: 10,
-                            }}>
+                            }}
                         
                             {currentMood.label}
                         </Animated.Text>
                     </Box>
 
                     {/* Emoji Mood Picker */}
-                    <Box sx={{ paddingHorizontal: Theme.spacing.sm, marginTop: Theme.spacing.lg }}
+                    <Box sx={{ paddingHorizontal: Theme.spacing.sm, marginTop: Theme.spacing.lg }}>
                         <HStack justifyContent="space-between" alignItems="center">
                             {MOOD_STATES.map((state) => {
                                 const isActive = Math.round(moodValue) === state.value;
                                 return (
-                                    <Pressable
+                                    <Pressable>
                                         key={state.value}
                                         onPress={() => {
                                             if (isPastView) return;
@@ -301,8 +301,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                             opacity: isPastView && !isActive ? 0.3 : 1
                                         }}
                                     
-                                        <VStack alignItems="center" space="xs"
-                                            <Box
+                                        <VStack alignItems="center" space="xs">
+                                            <Box>
                                                 sx={{
                                                     width: 54,
                                                     height: 54,
@@ -312,17 +312,17 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                                     backgroundColor: isActive ? state.color + '33' : colors.secondary,
                                                     borderWidth: 2,
                                                     borderColor: isActive ? state.color : colors.border,
-                                                }}>
+                                                }}
                                             
                                                 <Text sx={{ fontSize: 26 }}>{state.emoji}</Text
                                             ></Box>
-                                            <Text
+                                            <Text>
                                                 numberOfLines={1}
                                                 sx={{
                                                     fontSize: Theme.typography.fontSize.xs,
                                                     color: isActive ? state.color : colors.textTertiary,
                                                     fontWeight: isActive ? '700' : '400',
-                                                }}>
+                                                }}
                                             
                                                 {state.label}
                                             </Text>
@@ -334,7 +334,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                     </Box>
 
                     {/* Privacy note - Refined for Zen aesthetic */}
-                    <Box
+                    <Box>
                         sx={{
                             backgroundColor: colors.secondary,
                             padding: Theme.spacing.md,
@@ -343,14 +343,14 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                             borderWidth: 1,
                             borderColor: colors.border,
                             borderStyle: 'dashed' // Subtle boundary
-                        }}>
+                        }}
                     
-                        <Text color={colors.textSecondary} size="xs" textAlign="center"
+                        <Text color={colors.textSecondary} size="xs" textAlign="center">
                             {t('self.privacyNote') || '= Your mood data is private and only visible to you'}>
                         </Text>
                         {lastSaved && (
-                            <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$1"
-                                {t('self.savedAt', { time: lastSaved.toLocaleTimeString() })}>
+                            <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$1">
+                                {t('self.savedAt', { time: lastSaved.toLocaleTimeString() })}
                             </Text>
                         )}
                     </Box>

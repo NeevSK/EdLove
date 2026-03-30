@@ -55,9 +55,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     }, []);
 
     const renderSearchBar = () => (
-        <Animated.View entering={FadeInDown.delay(100).springify()}
+        <Animated.View entering={FadeInDown.delay(100).springify()}>
             <Box px="$4" mb="$3">
-                <HStack 
+                <HStack >
                     space="sm" 
                     alignItems="center" 
                     sx={{ 
@@ -67,7 +67,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         height: 48,
                         borderWidth: 1,
                         borderColor: colors.border
-                    }}>
+                    }}
                 
                     <Compass size={18} color={colors.textSecondary} /
                     ><TextInput
@@ -85,7 +85,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         onChangeText={handleSearchChange}
                     /
                     >{searchQuery ? (
-                        <Pressable onPress={handleClearSearch}
+                        <Pressable onPress={handleClearSearch}>
                             <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>\u00D7</Text
                         ></Pressable
                     >) : null}
@@ -95,9 +95,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     );
 
     const renderSubTabs = () => (
-        <Animated.View entering={FadeInDown.delay(150).springify()}
+        <Animated.View entering={FadeInDown.delay(150).springify()}>
             <HStack space="sm" mx="$4" mb="$3" mt="$1">
-                <Pressable
+                <Pressable>
                     onPress={() => setActiveSubTab('sanctuary')}
                     sx={{
                         flex: 1,
@@ -109,7 +109,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         borderColor: activeSubTab === 'sanctuary' ? Theme.colors.sanctuarySaffron : colors.border,
                     }}
                 
-                    <HStack space="xs" alignItems="center"
+                    <HStack space="xs" alignItems="center">
                         <Shield size={14} color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.textSecondary} /
                         ><Text
                             size="sm"
@@ -120,7 +120,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         </Text>
                     </HStack>
                 </Pressable>
-                <Pressable
+                <Pressable>
                     onPress={() => setActiveSubTab('galaxy')}
                     sx={{
                         flex: 1,
@@ -132,7 +132,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         borderColor: activeSubTab === 'galaxy' ? Theme.colors.gurudeviViolet : colors.border,
                     }}
                 
-                    <HStack space="xs" alignItems="center"
+                    <HStack space="xs" alignItems="center">
                         <Compass size={14} color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.textSecondary} /
                         ><Text
                             size="sm"
@@ -151,9 +151,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         if (activeSubTab !== 'galaxy') return null;
 
         return (
-            <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}
+            <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}>
                 <Box sx={{ mx: '$4', mb: '$4' }}>
-                    <SanctuaryButton
+                    <SanctuaryButton>
                         action="primary"
                         onPress={() => onCreateGroup?.()}
                         leftIcon={Plus}
@@ -169,7 +169,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     const getEmptyComponent = () => {
         if (loading) {
             return (
-                <VStack space="md" py="$4" px="$4"
+                <VStack space="md" py="$4" px="$4">
                     <SkeletonCard height={72} /
                     ><SkeletonCard height={72} /
                     ><SkeletonCard height={72} /
@@ -179,7 +179,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
         if (activeSubTab === 'sanctuary') {
             return (
-                <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}
+                <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}>
                     <Box sx={{
                         padding: Theme.spacing.xl,
                         backgroundColor: Theme.colors.sanctuarySaffron + '11',
@@ -187,15 +187,15 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     }}>
                         <Shield size={48} color={Theme.colors.sanctuarySaffron} /
                     ></Box
-                    <VStack space="sm" alignItems="center"
+                    ><VStack space="sm" alignItems="center">
                         <Heading size="md" textAlign="center" color={Theme.colors.sanctuarySaffron}>
                             {t('community.groups.noSanctuaryTitle') || 'Your Sanctuary is Quiet'}
                         </Heading>
-                        <Text textAlign="center" color={colors.textSecondary}
+                        <Text textAlign="center" color={colors.textSecondary}>
                             {t('community.groups.noSanctuaryDesc') || 'You haven\'t joined any school circles yet. Explore the Galaxy to find your tribe.'}>
                         </Text>
                     </VStack>
-                    <SanctuaryButton
+                    <SanctuaryButton>
                         onPress={() => setActiveSubTab('galaxy')}
                         variant="outline"
                         size="lg"
@@ -207,7 +207,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         }
 
         return (
-            <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}
+            <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}>
                 <Box sx={{
                     padding: Theme.spacing.xl,
                     backgroundColor: Theme.colors.gurudeviViolet + '11',
@@ -215,15 +215,15 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 }}>
                     <Compass size={48} color={Theme.colors.gurudeviViolet} /
                 ></Box
-                <VStack space="sm" alignItems="center"
+                ><VStack space="sm" alignItems="center">
                     <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
                         {t('community.groups.noGalaxyTitle') || 'Galaxy Waiting to Bloom'}
                     </Heading>
-                    <Text textAlign="center" color={colors.textSecondary}
+                    <Text textAlign="center" color={colors.textSecondary}>
                         {t('community.groups.noGalaxyDesc') || 'Be the first to create a club, interest group, or inter-school circle.'}>
                     </Text>
                 </VStack>
-                <SanctuaryButton
+                <SanctuaryButton>
                     onPress={() => onCreateGroup?.()}
                     action="primary"
                     size="lg"
@@ -237,8 +237,8 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     const renderItem = useCallback(({ item, index }: { item: Group, index: number }) => {
         const animationDelay = Math.min(index * 150, 1500);
         return (
-            <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}
-                <GroupCard
+            <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
+                <GroupCard>
                     id={item.id}
                     name={isDemo() ? `(Sample) ${item.name}` : item.name}
                     memberCount={item.member_count}
@@ -261,11 +261,11 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     }, [hasNextGroups, isFetchingNextGroups, fetchNextGroups]);
 
     return (
-        <Box sx={{ flex: 1 }}
+        <Box sx={{ flex: 1 }}>
             {renderSubTabs()}>
             {renderSearchBar()}
             {renderGalaxyActions()}
-            <SanctuaryFlashList
+            <SanctuaryFlashList>
                 data={activeGroups as any}
                 renderItem={renderItem}
                 keyExtractor={keyExtractor}

@@ -73,7 +73,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   };
 
   const renderDocumentItem = (document: DocumentWorkflow, index: number) => (
-    <TouchableOpacity
+    <TouchableOpacity>
       key={document.id}
       style={[
         styles.documentItem,>
@@ -84,7 +84,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
         }
       ]}
       onPress={() => onDocumentPress(document)}
-          <View style={styles.documentHeader}        <Text 
+          <View style={styles.documentHeader}        <Text >
           style={[
             styles.documentTitle, >
             { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
@@ -96,14 +96,14 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
             styles.statusBadge,
             { backgroundColor: getStatusColor(document.status) }
           ]}
-                  <Text 
+                  <Text >
             style={[
               styles.statusText,>
               { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
             ]}
                       {document.status.toUpperCase()}
           </Text        </View      </View      
-      <Text 
+      <Text >
         style={[
           styles.documentMeta,>
           { color: theme.text.secondary, fontFamily: 'System' }
@@ -111,7 +111,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
               Version {document.version} " Updated {formatDate(document.updatedAt)}
       </Text      >
       {document.status === 'review' && document.authorId !== user.userId && (
-        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}          <Text style={[styles.reviewText, { color: theme.accent.action }]}            Pending Review
+        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}          <Text style={[styles.reviewText, { color: theme.accent.action }]}            Pending Review>
           </Text        </View      )}>
     </TouchableOpacity  );
 
@@ -122,7 +122,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       : documents.filter(doc => doc.status === status).length;
 
     return (
-      <TouchableOpacity
+      <TouchableOpacity>
         key={status}
         style={[
           styles.filterChip,>
@@ -132,7 +132,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           }
         ]}
         onPress={() => setSelectedStatus(status)}
-              <Text 
+              <Text >
           style={[
             styles.filterText,>
             { 
@@ -147,20 +147,20 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...>
         </Text      </View    );>
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}>
       <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}          Documents>
         </Text        ><TouchableOpacity
           style={[styles.createButton, { backgroundColor: theme.accent.action }]}
           onPress={onCreateNew}
-                  <Text style={[styles.createButtonText, { color: theme.text.inverse }]}            + New
+                  <Text style={[styles.createButtonText, { color: theme.text.inverse }]}            + New>
           </Text        ></TouchableOpacity      </View>
       {/* Status Filters */}
-      <ScrollView 
+      <ScrollView >
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
@@ -168,7 +168,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
               {statusFilters.map(renderStatusFilter)}
       </ScrollView>
       {/* Documents List */}
-      <ScrollView 
+      <ScrollView >
         style={styles.documentsContainer}
         contentContainerStyle={styles.documentsContent}
         showsVerticalScrollIndicator={false}>
@@ -177,7 +177,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
                 ? 'No documents yet. Create your first document to get started.'
                 : `No ${selectedStatus} documents found.`
               }>
-            </Text          </View        ) : (
+            </Text          ></View        ) : (
           filteredDocuments.map(renderDocumentItem)
         )}
       </ScrollView    </View  );

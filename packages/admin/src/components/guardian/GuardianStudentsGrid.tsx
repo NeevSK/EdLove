@@ -32,7 +32,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
   };
 
   const renderStudentCard = (student: StudentOverview) => (
-    <TouchableOpacity
+    <TouchableOpacity>
       key={student.studentId}
       style={[
         styles.studentCard,>
@@ -43,7 +43,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
         }
       ]}
       onPress={() => onStudentPress(student)}
-          <View style={styles.studentHeader}        <Text 
+          <View style={styles.studentHeader}        <Text >
           style={[
             styles.studentName,>
             { 
@@ -66,7 +66,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                   Grade {student.grade} " {student.classroom}
         </Text      </View
       {/* Attendance Summary */}
-      <View style={styles.section}        <Text 
+      <View style={styles.section}        <Text >
           style={[
             styles.sectionTitle,>
             { 
@@ -110,7 +110,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                           {student.attendance.present} present " {student.attendance.absent} absent " {student.attendance.late} late
             </Text          </View        </div      </View
       {/* Recent Grades */}
-      <View style={styles.section}        <Text 
+      <View style={styles.section}        <Text >
           style={[
             styles.sectionTitle,>
             { 
@@ -122,7 +122,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
           ]}
                   Recent Grades
         </Text        {student.grades.latest.slice(0, 3).map((grade, index) => (
-          <View key={index} style={styles.gradeItem}            <Text 
+          <View key={index} style={styles.gradeItem}            <Text >
               style={[
                 styles.gradeSubject,>
                 { 
@@ -144,7 +144,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
               ]}
                           {grade.grade}
             </Text          </View        ))}
-        <Text 
+        <Text >
           style={[
             styles.averageGrade,>
             { 
@@ -157,7 +157,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
         </Text      </View
       {/* Upcoming Assignments */}
       {student.upcomingAssignments.length > 0 && (
-        <View style={styles.section}          <Text 
+        <View style={styles.section}          <Text >
             style={[
               styles.sectionTitle,>
               { 
@@ -169,7 +169,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
             ]}
                       Upcoming Assignments
           </Text          {student.upcomingAssignments.slice(0, 2).map((assignment) => (
-            <View key={assignment.id} style={styles.assignmentItem}              <Text 
+            <View key={assignment.id} style={styles.assignmentItem}              <Text >
                 style={[
                   styles.assignmentTitle,>
                   { 
@@ -194,7 +194,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
     </TouchableOpacity  );
 
   return (
-    <View style={[
+    <View style={[>
       styles.studentsGrid,
       isDesktop && styles.studentsGridDesktop>
     ]}      {students.map(renderStudentCard)}

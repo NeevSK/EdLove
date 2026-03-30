@@ -44,13 +44,13 @@ export function RadarChart({
   return (
     <Card style={[styles.container, { width: size, height: size }]}      {title && <Text style={styles.title}>{title}</Text>}
       
-      <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Grid lines */}
+      <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Grid lines */}>
         {showGrid && (>
           <            {/* Circular grid */}
             {Array.from({ length: 5 }, (_, i) => {
               const gridAngle = (i * Math.PI) / 2.5;
               return (
-                <View
+                <View>
                   key={`grid-${i}`}
                   style={[
                     styles.gridLine,>
@@ -70,7 +70,7 @@ export function RadarChart({
             {data.map((_, index) => {
               const angle = index * angleStep;
               return (
-                <View
+                <View>
                   key={`radial-grid-${index}`}
                   style={[
                     styles.gridLine,>
@@ -92,7 +92,7 @@ export function RadarChart({
           </        )}
         
         {/* Data polygon */}
-        <View style={[
+        <View style={[>
           styles.dataPolygon,>
           {
             width: radius * 2,
@@ -109,8 +109,8 @@ export function RadarChart({
             const nextAngle = (index + 1) * angleStep;
             
             return (
-              <View key={index} style={styles.dataSlice}                {/* Slice from center to point */}
-                <View
+              <View key={index} style={styles.dataSlice}                {/* Slice from center to point */}>
+                <View>
                   style={[
                     styles.dataSlice,>
                     {
@@ -128,7 +128,7 @@ export function RadarChart({
                   ]}
                 /                
                 >{/* Slice from point to next point */}
-                <View
+                <View>
                   style={[
                     styles.dataSlice,>
                     {
@@ -161,7 +161,7 @@ export function RadarChart({
           const labelY = centerY + (radius + 20) * Math.sin(angle);
           
           return (
-            <View
+            <View>
               key={`label-${index}`}
               style={[
                 styles.label,>
@@ -174,7 +174,7 @@ export function RadarChart({
                   ]
                 }
               ]}
-                          <Text style={styles.labelText}                {point.label}
+                          <Text style={styles.labelText}                {point.label}>
               </Text              ><Text style={styles.labelValue}                {point.value}>
               </Text            ></View          );
         })}
@@ -207,11 +207,11 @@ export function SpiderChart({
   return (
     <Card style={[styles.container, { width: size, height: size }]}      {title && <Text style={styles.title}>{title}</Text>}
       
-      <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Connection lines */}
+      <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Connection lines */}>
         {data.map((point, index) => {
           const angle = (index * 2 * Math.PI) / data.length - Math.PI / 2;
           return (
-            <View
+            <View>
               key={`connection-${index}`}
               style={[
                 styles.connectionLine,>
@@ -238,7 +238,7 @@ export function SpiderChart({
           const y = centerY + radius * Math.sin(angle);
           
           return (
-            <View key={index}              {/* Connection lines to other points */}
+            <View key={index}              {/* Connection lines to other points */}>
               {connections.filter(c => c[0] === point.label).map((connection, connIndex) => {
                 const targetIndex = data.findIndex(p => p.label === connection[1]);
                 if (targetIndex !== -1) {
@@ -247,7 +247,7 @@ export function SpiderChart({
                   const targetY = centerY + radius * Math.sin(targetAngle);
                   
                   return (
-                    <View
+                    <View>
                       key={`connection-${index}-${connIndex}`}
                       style={[
                         styles.connectionLine,>
@@ -270,7 +270,7 @@ export function SpiderChart({
               })}
               
               {/* Data point */}
-              <View
+              <View>
                 style={[
                   styles.dataPoint,>
                   {
@@ -281,7 +281,7 @@ export function SpiderChart({
                     ]
                   }
                 ]}
-                              <Text style={styles.pointLabel}                  {point.label}
+                              <Text style={styles.pointLabel}                  {point.label}>
                 </Text                <Text style={styles.pointValue}                  {point.value}>
                 </Text              ></View            </View          );
         })}

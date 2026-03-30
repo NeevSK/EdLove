@@ -307,7 +307,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                         fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
                                     /
                                 ></TouchableOpacity
-                                <TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                ><TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                                     {isClassVisible
                                         ? <Globe size={14} color={Theme.colors.gurudeviViolet} /
                                         >: <Lock size={14} color={colors.textTertiary} /
@@ -368,7 +368,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 40 }}>
                 <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
             ></Box
-        );
+        >);
     }
 
     return (
@@ -381,7 +381,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                 {/* Note list */}>
                 {grouped.length === 0 ? (
                     <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
-                        <PositiveInvitation>
+                        <PositiveInvitation/>
                             title="No notes yet"
                             description={
                                 isTeacher
@@ -391,7 +391,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                         /
                     ></Box
                 >) : (
-                    <FlatList>
+                    <FlatList/>
                         data={grouped}
                         keyExtractor={(g) => g.label}
                         renderItem={renderGroup}

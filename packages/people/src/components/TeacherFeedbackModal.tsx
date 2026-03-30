@@ -84,14 +84,14 @@ export default function TeacherFeedbackModal({
       </Button    </HStack  );
 
   return (
-    <SanctuaryModal
+    <SanctuaryModal>
       isOpen={isOpen}
       onClose={onClose}
       title={t('teacher.feedback.title')}
       subtitle={t('teacher.feedback.subtitle')}
       footer={footer}>
-          <VStack sx={{ gap: Theme.spacing.md }}        <VStack sx={{ gap: Theme.spacing.xs }}          <Text
-            sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
+          <VStack sx={{ gap: Theme.spacing.md }}        <VStack sx={{ gap: Theme.spacing.xs }}          <Text>
+            sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.category')}
           </Text          ><Select onValueChange={setCategory} defaultValue={category}            <SelectTrigger
@@ -100,12 +100,12 @@ export default function TeacherFeedbackModal({
                           <SelectInput placeholder="Select category" {...({ color: text.primary } as any)} /              ><SelectIcon sx={{ marginRight: Theme.spacing.md }} as={ChevronDown} /            ></SelectTrigger            ><SelectPortal              <SelectBackdrop >/              ><SelectContent                {CATEGORIES.map((cat) => (
                   <SelectItem key={cat.value} label={cat.label} value={cat.value} /                >))}
               </SelectContent            </SelectPortal          </Select        </VStack>
-        <VStack sx={{ gap: Theme.spacing.xs }}          <Text
-            sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
+        <VStack sx={{ gap: Theme.spacing.xs }}          <Text>
+            sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.priority')}
           </Text          ><HStack sx={{ gap: Theme.spacing.sm }}            {(['low', 'medium', 'high'] as const).map((p) => (
-              <Button
+              <Button>
                 key={p}
                 size="xs"
                 variant={priority === p ? 'solid' : 'outline'}
@@ -113,14 +113,14 @@ export default function TeacherFeedbackModal({
                   flex: 1,
                   backgroundColor: priority === p ? (p === 'high' ? accent.danger : accent.action) : 'transparent',
                   borderColor: p === 'high' ? accent.danger : glass.interact.border,
-                  borderRadius: Theme.corners.comfortable,>
+                  borderRadius: Theme.corners.comfortable,
                 }}
                 onPress={() => setPriority(p)}
-                              <ButtonText {...({ color: priority === p ? text.inverse : text.secondary } as any)}                  {p.toUpperCase()}
+                              <ButtonText {...({ color: priority === p ? text.inverse : text.secondary } as any)}                  {p.toUpperCase()}>
                 </ButtonText              ></Button            ))}>
           </HStack        </VStack
-        <VStack sx={{ gap: Theme.spacing.xs }}          <Text
-            sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
+        <VStack sx={{ gap: Theme.spacing.xs }}          <Text>
+            sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.content')}
           </Text          ><Textarea
@@ -128,13 +128,13 @@ export default function TeacherFeedbackModal({
             isInvalid={false}
             isDisabled={false}
             sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border, minHeight: 100 }}
-                      <TextareaInput
+                      <TextareaInput>
               placeholder={t('teacher.feedback.placeholder')}
               value={content}
               onChangeText={setContent}>
               {...({ color: text.primary } as any)}
             /          ></Textarea        ></VStack
-        <Box
+        <Box>
           sx={{
             padding: Theme.spacing.sm,
             backgroundColor: glass.interact.bg,
@@ -142,10 +142,10 @@ export default function TeacherFeedbackModal({
             borderLeftWidth: 4,
             borderLeftColor: accent.reward,
             borderColor: glass.interact.border,
-            borderWidth: 1,>
+            borderWidth: 1,
           }}
-                  <Text
-            sx={{ fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}>
+                  <Text>
+            sx={{ fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}
             {...({ color: text.secondary } as any)}
                       {t('teacher.feedback.note')}
           </Text        ></Box      </VStack    </SanctuaryModal  );

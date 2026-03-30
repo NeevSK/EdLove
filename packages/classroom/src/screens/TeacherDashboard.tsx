@@ -94,14 +94,14 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
 
     return (
         <Box sx={{ flex: 1, backgroundColor: colors.primary }}            {isDemoMode ? <SandboxBanner /> : null}
-            <ScrollView
+            <ScrollView>
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
                     padding: Theme.spacing.lg,
                     gap: Theme.spacing.lg,
-                    paddingBottom: Theme.spacing.xl * 2,>
+                    paddingBottom: Theme.spacing.xl * 2,
                 }}
-                            <Animated.View entering={FadeInDown.delay(50)}                    <WorkspaceCanvas
+                            <Animated.View entering={FadeInDown.delay(50)}                    <WorkspaceCanvas>
                         surfaces={dashboardSurfaces}
                         layout={layout}
                         title="Teacher Workspace"
@@ -122,7 +122,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                             if (!resolved) return null;
 
                             return (
-                                <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    <TouchableOpacity
+                                <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    <TouchableOpacity>
                                         onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
                                         style={{
                                             paddingHorizontal: Theme.spacing.md,
@@ -132,11 +132,11 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                                             borderWidth: 1,
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
-                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}
+                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}>
                                         </Text                                    </TouchableOpacity                                    <TouchableOpacity
                                         onPress={() =                                            setSurfaceZone(
                                                 resolved.surfaceId,
-                                                resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'outlook' : 'work'>
+                                                resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'outlook' : 'work'
                                             )
                                         }
                                         style={{
@@ -147,17 +147,17 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                                             borderWidth: 1,
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
-                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone
+                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone>
                                         </Text                                    </TouchableOpacity                                </HStack                            );>
                         }}
-                    /                ></Animated.View            </ScrollView
-            <CreateClassroomModal
+                    /                ></Animated.View            ></ScrollView
+            <CreateClassroomModal>
                 isOpen={isCreateModalOpen}
                 mode={modalMode}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={bumpRefresh}
             /
-            <ScannerModal
+            <ScannerModal>
                 visible={isScannerOpen}
                 onClose={() => setIsScannerOpen(false)}
                 onScan={handleScan}
@@ -186,15 +186,15 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                 animationType="slide"
                 presentationStyle="pageSheet"
                 onRequestClose={() => setIsBreathingOpen(false)}
-                            <Box flex={1} sx={{ backgroundColor: colors.primary }}                    <Box
+                            <Box flex={1} sx={{ backgroundColor: colors.primary }}                    <Box>
                         sx={{
                             paddingTop: 50,
                             paddingBottom: Theme.spacing.md,
                             paddingHorizontal: Theme.spacing.md,
                             borderBottomWidth: 1,
-                            borderBottomColor: colors.border,>
+                            borderBottomColor: colors.border,
                         }}
-                                            <HStack justifyContent="space-between" alignItems="center"                            <Heading size="lg" color={colors.text}                                {t('self.breathingReset') || 'Breathing Reset'}
+                                            <HStack justifyContent="space-between" alignItems="center"                            <Heading size="lg" color={colors.text}                                {t('self.breathingReset') || 'Breathing Reset'}>
                             </Heading                            <TouchableOpacity
                                 onPress={() => {
                                     hapticLight();

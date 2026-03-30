@@ -98,10 +98,10 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                                         autoCapitalize="none"
                                         sx={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold', letterSpacing: 4 }}
                                     /                                ></Input                            </FormControl
-                            <Button
+                            <Button>
                                 onPress={handleClaim}
                                 disabled={loading || inviteCode.length < 6}
-                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50 }}>
+                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50 }}
                                                             {loading ? <Spinner >{...({ color: text.inverse } as any)} /> : <ButtonText>Claim Record</ButtonText>}
                             </Button                        </VStack                    )}
                 </ModalBody            </ModalContent        </Modal    );

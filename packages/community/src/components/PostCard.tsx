@@ -87,7 +87,7 @@ const PostCard = React.memo(function PostCard({
                             backgroundColor: colors.secondary,
                         }}
                     
-                        <Image>
+                        <Image/>
                             source={{ uri: media_url }}
                             style={StyleSheet.absoluteFill}
                             resizeMode="cover"
@@ -131,7 +131,7 @@ const PostCard = React.memo(function PostCard({
                 <Text color={colors.action} size="sm" sx={{ marginLeft: 6 }}>{mediaLabel}</Text
                 ><Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} /
             ></TouchableOpacity
-        );
+        >);
     };
 
     /**
@@ -156,13 +156,13 @@ const PostCard = React.memo(function PostCard({
                             <AlertTriangle size={11} color={urg.color} /
                             ><Text size="xs" bold sx={{ color: urg.color }}>{urg.label}</Text
                         ></Box
-                    )}
+                    >)}
                     {has_accepted_answer && (
                         <Box sx={{ backgroundColor: 'rgba(22,163,74,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                             <CheckCircle2 size={11} color="#16A34A" /
                             ><Text size="xs" bold sx={{ color: '#16A34A' }}>Answered</Text
                         ></Box
-                    )}
+                    >)}
                 </HStack>
             );
         }
@@ -196,7 +196,7 @@ const PostCard = React.memo(function PostCard({
                         <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: Theme.colors.sanctuarySaffron }}>
                             <Text color={colors.textSecondary} size="xs" italic>{feedback_response}</Text
                         ></Box
-                    )}
+                    >)}
                 </VStack>
             );
         }
@@ -312,7 +312,7 @@ const PostCard = React.memo(function PostCard({
     const renderPollContent = () => {
         if (post_type === 'poll' && poll_data) {
             return (
-                <PollWidget>
+                <PollWidget/>
                     postId={id}
                     pollData={poll_data}
                     currentUserId={currentUserId}
@@ -435,7 +435,7 @@ const PostCard = React.memo(function PostCard({
                     <HStack space="lg">
                         {/* Like / Heart Reaction */}
                         <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
-                            <Heart>
+                            <Heart/>
                                 size={20}
                                 color={isLiked ? colors.error : colors.textTertiary}
                                 fill={isLiked ? colors.error : 'none'}
@@ -450,7 +450,7 @@ const PostCard = React.memo(function PostCard({
                         {/* Resonance Reaction */}
                         <TouchableOpacity onPress={handleResonate} style={styles.actionButton} disabled={isResonating}>
                             <LivingGlow active={hasResonated}>
-                                <Sparkles>
+                                <Sparkles/>
                                     size={20}
                                     color={hasResonated ? colors.action : colors.textTertiary}
                                 /
@@ -468,7 +468,7 @@ const PostCard = React.memo(function PostCard({
                         <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post">
                             <Share2 size={18} color={colors.textTertiary} /
                         ></TouchableOpacity
-                    </HStack>
+                    ></HStack>
 
                     {/* Engagement Count */}
                     {totalReactions > 0 && (
@@ -519,8 +519,8 @@ function PollWidget({
     const colors = useThemedColors();
 
     // \u2500\u2500 Vote state \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-    const [counts, setCounts] = React.useState<Record<string, number>>({});
-    const [userVotes, setUserVotes] = React.useState<Set<string>>(new Set());
+    const [counts, setCounts] = React.useState<Record<string, number/>>({});
+    const [userVotes, setUserVotes] = React.useState<Set<string/>>(new Set());
     const [totalVotes, setTotalVotes] = React.useState(0);
     const [isLoading, setIsLoading] = React.useState(true);
     const [isVoting, setIsVoting] = React.useState(false);
@@ -531,7 +531,7 @@ function PollWidget({
     const [isExpired, setIsExpired] = React.useState(false);
 
     // \u2500\u2500 Animated progress bars (one Animated.Value per option, 0\u2013100) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-    const progressAnims = React.useRef<Record<string, Animated.Value>>({});
+    const progressAnims = React.useRef<Record<string, Animated.Value/>>({});
     options.forEach(opt => {
         if (!progressAnims.current[opt.id]) {
             progressAnims.current[opt.id] = new Animated.Value(0);
@@ -580,7 +580,7 @@ function PollWidget({
                 setUserVotes(myVotes);
             } else {
                 // No current user; ensure we clear any previous selection state
-                setUserVotes(new Set<string>());
+                setUserVotes(new Set<string/>());
             }
         } catch (err) {
             console.error('[PollWidget] fetchVotes error:', err);
@@ -739,12 +739,12 @@ function PollWidget({
                         <Clock size={12} color={colors.textTertiary} /
                         ><Text color={colors.textTertiary} size="xs">Poll ended</Text
                     ></HStack
-                ) : timeLeft ? (
+                >) : timeLeft ? (
                     <HStack space="xs" alignItems="center">
                         <Clock size={12} color={colors.action} /
                         ><Text color={colors.action} size="xs">{timeLeft}</Text
                     ></HStack
-                ) : null}
+                >) : null}
             </HStack>
 
             {/* Options */}

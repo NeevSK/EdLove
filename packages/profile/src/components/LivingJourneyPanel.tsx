@@ -308,7 +308,7 @@ function RecognitionRow({ badges, colors }: RecognitionRowProps) {
                                         borderColor: `${colors.action}30`,
                                     }}
                                                                     <Text size="xs" color={colors.text}                                        {badge}>
-                                    </Text                                ></Box                            ))}>
+                                    </Text                                ></Box                            >))}>
                         </HStack                    >)}
                 </VStack            </HStack        </Box    );
 }
@@ -468,7 +468,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
             <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}>
                 <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text
             ></Box
-        );
+        >);
     }
 
     const bhumi = growth.bhumi_stage ?? 'bijam';
@@ -535,7 +535,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
 
                     >{/* Banyan \u2014 teachers and principals */}
                     {isTeacherRole && (
-                        <PathRow>
+                        <PathRow/>
                             emoji="\uD83C\uDF33"
                             pathName={t('journey.banyanPath')}
                             stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -546,7 +546,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
 
                     {/* River \u2014 students */}
                     {isStudentRole && (
-                        <PathRow>
+                        <PathRow/>
                             emoji="\uD83C\uDF0A"
                             pathName={t('journey.riverPath')}
                             stageLabel={river.charAt(0).toUpperCase() + river.slice(1)}

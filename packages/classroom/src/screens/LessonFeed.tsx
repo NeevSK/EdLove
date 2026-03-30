@@ -177,10 +177,10 @@ export default function LessonFeed({
                         <TouchableOpacity onPress={() => onEditItem?.(material, 'material')}
                             <Edit2 size={18} color={colors.textSecondary} /
                         ></TouchableOpacity
-                        <TouchableOpacity onPress={() => onDeleteItem?.(material.id, 'material')}
+                        ><TouchableOpacity onPress={() => onDeleteItem?.(material.id, 'material')}
                             <Trash2 size={18} color={colors.error} /
                         ></TouchableOpacity
-                    </HStack>
+                    ></HStack>
                 )}
             </HStack>
         </Box>
@@ -233,7 +233,7 @@ export default function LessonFeed({
                         size="sm"
                         sx={{ backgroundColor: colors.success, borderRadius: Theme.corners.comfortable }}
                         onPress={() => onOpenAssignmentRecord(assignment)}
-                                            <ButtonText color={Theme.colors.white}>Turn In</ButtonText                    ></Button                )}
+                                            <ButtonText color={Theme.colors.white}>Turn In</ButtonText                    ></Button                >)}
             </HStack        </Box        );
     };
 
@@ -357,7 +357,7 @@ export default function LessonFeed({
                                                         <Plus size={16} color={colors.success} /
                                                         ><Text color={colors.success} sx={{ fontWeight: 'bold', fontSize: 12 }}>ADD</Text
                                                     ></HStack
-                                                </TouchableOpacity>
+                                                ></TouchableOpacity>
                                             )}
                                         </HStack>
 

@@ -422,7 +422,7 @@ export default function TabNavigator({
                   aria-current={isActive ? "page" : undefined}
                   style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
                 
-                  <Icon>
+                  <Icon/>
                     size={20}
                     color={isActive ? "var(--water)" : "var(--ink-ghost)"}
                   /
@@ -451,7 +451,7 @@ export default function TabNavigator({
               style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
             
               <div style={{ position: "relative" }}>
-                <Bell>
+                <Bell/>
                   size={20}
                   color={
                     activeTab === "NotificationsPanel"
@@ -481,7 +481,7 @@ export default function TabNavigator({
               <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Settings size={20} color="var(--ink-ghost)" /
               ></div
-              {(isSidebarExpanded || isMobileView) && (
+              >{(isSidebarExpanded || isMobileView) && (
                 <div className="profile-info" style={{ marginLeft: '12px' }}>
                   <span className="profile-nm" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}>
                     {role?.split("_").join(" ") || "Guest"}
@@ -528,7 +528,7 @@ export default function TabNavigator({
                     
                       <SelfStackNavigatorWeb /
                     ></React.Suspense
-                  </ErrorBoundary>
+                  ></ErrorBoundary>
                 )}
               </Tab.Screen>
               <Tab.Screen name="Community">
@@ -539,7 +539,7 @@ export default function TabNavigator({
                     
                       <CommunityStackNavigatorWeb /
                     ></React.Suspense
-                  </ErrorBoundary>
+                  ></ErrorBoundary>
                 )}
               </Tab.Screen>
               <Tab.Screen name="Classroom">
@@ -576,7 +576,7 @@ export default function TabNavigator({
                     
                       <ProfileStackNavigatorWeb /
                     ></React.Suspense
-                  </ErrorBoundary>
+                  ></ErrorBoundary>
                 )}
               </Tab.Screen>
               {/* Panel screens \u2014 rendered within shell, URL-native via React Navigation */}
@@ -588,7 +588,7 @@ export default function TabNavigator({
                     
                       <NotificationsScreenWeb /
                     ></React.Suspense
-                  </ErrorBoundary>
+                  ></ErrorBoundary>
                 )}
               </Tab.Screen>
               <Tab.Screen name="SettingsPanel">
@@ -599,7 +599,7 @@ export default function TabNavigator({
                     
                       <AppSettingsScreenWeb /
                     ></React.Suspense
-                  </ErrorBoundary>
+                  ></ErrorBoundary>
                 )}
               </Tab.Screen>
             </Tab.Navigator>
@@ -649,7 +649,7 @@ export default function TabNavigator({
             aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}
           
             <div style={{ position: "relative" }}>
-              <Bell>
+              <Bell/>
                 size={22}
                 color={
                   activeTab === "NotificationsPanel"
@@ -661,7 +661,7 @@ export default function TabNavigator({
             ></div
             ><span className="mobile-nav-label">{t("webNav.alerts")}</span
           ></button
-        </nav>
+        ></nav>
       )}
 
       <AchievementUnlockOverlay>

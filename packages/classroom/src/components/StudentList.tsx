@@ -145,7 +145,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                             <Box sx={{ padding: Theme.spacing.xs }}>
                                                 <Sparkles size={20} color={Theme.colors.sanctuarySaffron} /
                                             ></Box
-                                        </Pressable>
+                                        ></Pressable>
                                     )}
                                     {!student.student_id && student.invite_code && (
                                         <Pressable onPress={() => handleShowQr(student)}
@@ -158,7 +158,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                         <Box sx={{ padding: Theme.spacing.xs }}>
                                             <Edit2 size={20} color={colors.textSecondary} /
                                         ></Box
-                                    </Pressable>
+                                    ></Pressable>
                                     <Pressable>
                                         onPress={() => handleRemoveStudent(student.id)}
                                         disabled={isDeleting === student.id}
@@ -225,13 +225,13 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                             {t('classroom.students.inviteTitle') || 'Invite Student'}
                         </Heading>
                         <ModalCloseButton>
-                            <Icon >as={CloseIcon} sx={{ color: colors.textSecondary }} /
+                            <Icon />as={CloseIcon} sx={{ color: colors.textSecondary }} /
                         ></ModalCloseButton
                     ></ModalHeader>
                     <ModalBody>
                         <VStack >sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}>
                             <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous, ...Theme.shadows.md }}>
-                                <QRCodeGenerator>
+                                <QRCodeGenerator/>
                                     value={studentForQr?.invite_code || ''}
                                     size={200}
                                     color="black"

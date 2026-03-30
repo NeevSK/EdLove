@@ -137,7 +137,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                 onPress={() => handleGenerateCode('principal')}
                                 disabled={isGenerating}
                                                             <ButtonText color={Theme.colors.sacredWhite}                                    {isGenerating ? t('common.generating') || 'Generating...' : t('principal.invites.generatePrincipal') || 'Generate Principal Code'}>
-                                </ButtonText                            </Button                        )}>
+                                </ButtonText                            ></Button                        >)}>
 
                         {can('create', 'TeacherPulse') && (
                             <Button>
@@ -145,7 +145,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                 onPress={() => handleGenerateCode('teacher')}
                                 disabled={isGenerating}
                                                             <ButtonText color={Theme.colors.sacredWhite}                                    {isGenerating ? t('common.generating') || 'Generating...' : t('principal.invites.generateTeacher') || 'Generate Teacher Code'}>
-                                </ButtonText                            ></Button                        )}>
+                                </ButtonText                            ></Button                        >)}>
 
                         <HStack space="md"                            <Button>
                                 sx={{ flex: 1, backgroundColor: Theme.colors.twilightBlue, padding: Theme.spacing.lg }}
@@ -155,14 +155,14 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                 sx={{ flex: 1, backgroundColor: Theme.colors.twilightBlue, padding: Theme.spacing.lg }}
                                 onPress={() => handleGenerateCode('gradeHead')}
                                 disabled={isGenerating}
-                                                            <ButtonText color={Theme.colors.sacredWhite}>{t('principal.invites.generateGradeHead') || '+ Grade Head'}</ButtonText                            ></Button                        </HStack
+                                                            <ButtonText color={Theme.colors.sacredWhite}>{t('principal.invites.generateGradeHead') || '+ Grade Head'}</ButtonText                            ></Button                        ></HStack
                         {can('create', 'StudentPulse') && (
                             <Button>
                                 sx={{ backgroundColor: Theme.colors.sanctuarySaffron, padding: Theme.spacing.lg }}
                                 onPress={() => handleGenerateCode('student')}
                                 disabled={isGenerating}
                                                             <ButtonText color={Theme.colors.sacredWhite}                                    {isGenerating ? t('common.generating') || 'Generating...' : t('principal.invites.generateStudent') || 'Generate Student Code'}>
-                                </ButtonText                            </Button                        )}>
+                                </ButtonText                            ></Button                        >)}>
                     </VStack>
                     {isLoading && (
                         <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}                            <Spinner color={Theme.colors.sanctuarySaffron} /                        ></Box                    )}
@@ -172,7 +172,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
 
                     {!isLoading && inviteCodes.length > 0 && (
                         <VStack space="md"                            <Text color={Theme.colors.starlightGray} sx={{ fontWeight: '600', marginTop: Theme.spacing.md, fontSize: 18 }}                                {t('principal.invites.activeCodesTitle') || 'Active Invite Codes'}>
-                            </Text                            {inviteCodes.map((invite) => (
+                            </Text                            >{inviteCodes.map((invite) => (
                                 <Box>
                                     key={invite.code}
                                     sx={{
@@ -183,7 +183,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                         borderLeftColor: getRoleBadgeColor(invite.authority),
                                     }}
                                                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}                                        <VStack space="xs" sx={{ flex: 1 }}                                            <HStack space="sm" sx={{ alignItems: 'center' }}                                                <Text color={Theme.colors.sacredWhite} sx={{ fontWeight: '700', fontSize: 20, fontFamily: 'monospace' }}                                                    {invite.code}>
-                                                </Text                                                ><HStack space="xs"                                                    <Button size="xs" variant="link" action="secondary" onPress={() => handleCopyCode(invite.code)} sx={{}}                                                        <Copy size={14} color={Theme.colors.mistGray} /                                                    ></Button                                                    <Button size="xs" variant="link" action="secondary" onPress={() => setQrCodeData({ code: invite.code, authority: invite.authority })} sx={{}}                                                        <QrCode size={14} color={Theme.colors.mistGray} /                                                    ></Button                                                </HStack                                            </HStack
+                                                </Text                                                ><HStack space="xs"                                                    <Button size="xs" variant="link" action="secondary" onPress={() => handleCopyCode(invite.code)} sx={{}}                                                        <Copy size={14} color={Theme.colors.mistGray} /                                                    ></Button                                                    ><Button size="xs" variant="link" action="secondary" onPress={() => setQrCodeData({ code: invite.code, authority: invite.authority })} sx={{}}                                                        <QrCode size={14} color={Theme.colors.mistGray} /                                                    ></Button                                                </HStack                                            </HStack
                                             <HStack space="sm" sx={{ alignItems: 'center' }}                                                <Box>
                                                     sx={{
                                                         paddingHorizontal: Theme.spacing.sm,
@@ -192,7 +192,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                                         borderRadius: Theme.corners.tight,
                                                     }}
                                                                                                     <Text color={Theme.colors.sacredWhite} sx={{ fontWeight: '600', fontSize: 12 }}                                                        {getRoleIcon(invite.authority)} {invite.authority.toUpperCase()}>
-                                                    </Text                                                ></Box                                                <Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}                                                    {invite.used ? t('principal.invites.used') || 'Used' : t('principal.invites.active') || 'Active'}>
+                                                    </Text                                                ></Box                                                ><Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}                                                    {invite.used ? t('principal.invites.used') || 'Used' : t('principal.invites.active') || 'Active'}>
                                                 </Text                                            ></HStack
                                             <Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}                                                {t('principal.invites.createdAt') || 'Created:'} {new Date(invite.created_at).toLocaleDateString()}>
                                             </Text                                        </VStack                                    </HStack                                </Box                            ))}>
@@ -200,7 +200,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
 
                     {!isLoading && inviteCodes.length === 0 && (
                         <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}                            <Text color={Theme.colors.starlightGray} textAlign="center" sx={{ fontSize: 18 }}                                {t('principal.invites.noCodes') || 'No active invite codes. Generate your first code to get started!'}>
-                            </Text                        </Box                    )}>
+                            </Text                        ></Box                    )}>
                 </VStack            </ScrollView
             <Modal isOpen={qrCodeData !== null} onClose={() => setQrCodeData(null)}                <ModalBackdrop /                ><ModalContent
                     sx={{

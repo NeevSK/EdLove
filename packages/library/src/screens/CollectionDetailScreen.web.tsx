@@ -17,7 +17,7 @@ import { ArrowLeft } from 'lucide-react-native';
 
 function StackFallback() {
     return (
-        <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}            Loading collection...
+        <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}            Loading collection...>
         </div    );>
 }
 
@@ -84,7 +84,7 @@ export default function CollectionDetailScreenWeb() {
     }
 
     return (
-        <div className="sanctuary-screen"            <div className="sanctuary-container"                <WebScreenHeader
+        <div className="sanctuary-screen"            <div className="sanctuary-container"                <WebScreenHeader>
                     title={collection.name}
                     note={collection.is_virtual ? t('library.dynamicCollection') : t('library.curatedCollection')}
                     actions={(>
@@ -97,15 +97,15 @@ export default function CollectionDetailScreenWeb() {
                             <div style={{ fontSize: '13px', color: 'var(--ink-ghost)' }}                                {t('library.curatedBy')} <span style={{ fontWeight: '700', color: 'var(--ink)' }}>{collection.creator_name}</span                            ></div                        )}
                         <div style={{ width: '4px', height: '4px', borderRadius: '2px', background: 'var(--border)' }} /                        ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)' }}                            {collection.is_virtual ? t('library.dynamic') : t('library.collection')}
                         </div                    </div                </div>
-                <div
+                <div>
                     style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                         gap: '24px',
                         paddingBottom: '80px',
-                    }}>
+                    }}
                                     {collection.resources.map((res: LibraryResource) => (
-                        <LibraryThumbnailCard
+                        <LibraryThumbnailCard>
                             key={res.id}
                             title={res.title}
                             type={res.type}
@@ -118,5 +118,5 @@ export default function CollectionDetailScreenWeb() {
                         /                    >))}
                     {collection.resources.length === 0 && (
                         <div style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center' }}                            <Text style={{ color: theme.text.muted }}>{t('library.emptyCollection')}</Text                        ></div                    >)}
-                </div            </div        </div    );
+                </div            ></div        </div    );
 }

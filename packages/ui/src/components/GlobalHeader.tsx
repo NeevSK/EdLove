@@ -132,8 +132,8 @@ export default function GlobalHeader({
         <Box sx={{
             width: '100%',
             height: headerHeight,
-            position: 'relative',>
-        }}
+            position: 'relative',
+        }}>
             {/* GLASS BACKDROP */}
             <Box sx={{
                 position: 'absolute',
@@ -141,9 +141,9 @@ export default function GlobalHeader({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                overflow: 'hidden',>
-            }}
-                <BlurView
+                overflow: 'hidden',
+            }}>
+                <BlurView>
                     intensity={blurEnabled ? 36 : 0}
                     tint={isDark ? 'dark' : 'light'}
                     style={{ flex: 1, backgroundColor: scene.chrome.bg }}
@@ -153,7 +153,7 @@ export default function GlobalHeader({
                     height={headerHeight}
                     phase={phase}
                     cornerRadius={0}
-                    style={{ position: 'absolute', top: 0, left: 0 }}>
+                    style={{ position: 'absolute', top: 0, left: 0 }}
                 
                     <></
                 </TemporalGlass>
@@ -164,19 +164,19 @@ export default function GlobalHeader({
                 gap: '$md' as any,
                 paddingHorizontal: '$4' as any,
                 paddingTop: insets.top + 14,
-                paddingBottom: '$4' as any,>
-            }}
-                <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}
-                    {/* LEFT: Greeting or Title */}>
-                    <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}
+                paddingBottom: '$4' as any,
+            }}>
+                <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}>
+                    {/* LEFT: Greeting or Title */}
+                    <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
                         {/* Only show Profile Icon/Menu if specifically requested */}>
                         {showBack ? (
                             <Pressable accessibilityRole="button" onPress={onBack || (() => navigation.goBack())}
                                 <Box sx={{
                                     backgroundColor: glass.interact.bg,
                                     padding: 8,
-                                    borderRadius: 12,>
-                                }}
+                                    borderRadius: 12,
+                                }}>
                                     <ChevronLeft size={24} color={text.onChrome} /
                                 ></Box>
                             </Pressable>
@@ -187,11 +187,11 @@ export default function GlobalHeader({
                         )}
 
                         {isSelfView && (
-                            <Pressable accessibilityRole="button"
+                            <Pressable accessibilityRole="button">
                                 onPress={() => navigation.navigate('Profile')}
                             
-                                <Box sx={{ marginRight: '$4' }}
-                                    <UserAvatar
+                                <Box sx={{ marginRight: '$4' }}>
+                                    <UserAvatar>
                                         avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
                                         fullName={userFullName}
                                         fallbackEmoji={RoleEmoji}
@@ -202,34 +202,34 @@ export default function GlobalHeader({
                             </Pressable>
                         )}
 
-                        <VStack
+                        <VStack>
                             {(subtitle || (!title && greetingText)) && (>
-                                <HStack sx={{ gap: 4, alignItems: 'center' }}
-                                <Text
+                                <HStack sx={{ gap: 4, alignItems: 'center' }}>
+                                <Text>
                                         color={text.secondary}
                                         sx={{
                                             fontSize: '$xs' as any,
                                             letterSpacing: 0.5,
                                             fontWeight: 'bold',
                                             paddingBottom: 2, // Added to prevent clipping of descenders
-                                            fontFamily: Theme.typography.fontFamily.english>
+                                            fontFamily: Theme.typography.fontFamily.english
                                         }}
                                     
                                         {title ? subtitle : greetingText}
                                     </Text>
                                     {!title && (
-                                        <Text sx={{ fontSize: 14, marginTop: -2 }}
+                                        <Text sx={{ fontSize: 14, marginTop: -2 }}>
                                             {emoji}>
                                         </Text>
                                     )}
                                 </HStack>
                             )}
-                            <Text
+                            <Text>
                                 color={text.onChrome}
                                 sx={{
                                     fontSize: '$lg' as any,
                                     fontFamily: Theme.typography.fontFamily.english,
-                                    fontWeight: 'bold'>
+                                    fontWeight: 'bold'
                                 }}
                             
                                 {title ? title : (isSelfView ? (showFullNameAsPrimary ? userFullName : RoleLabel) : displayName)}
@@ -238,9 +238,9 @@ export default function GlobalHeader({
                     </HStack>
 
                     {/* RIGHT: Actions */}
-                    <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}
+                    <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}>
                         {showSearch && (>
-                            <TouchableOpacity accessibilityRole="button"
+                            <TouchableOpacity accessibilityRole="button">
                                 onPress={() => {
                                     hapticLight();
                                     setIsSearchActive(!isSearchActive);
@@ -249,11 +249,11 @@ export default function GlobalHeader({
                                 <Box sx={{
                                     padding: 8,
                                     borderRadius: 20,
-                                    backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'>
-                                }}
+                                    backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'
+                                }}>
                                     {isSearchActive ? (
                                         <X size={22} color={text.onChrome} /
-                                    >) : (>
+                                    >) : (
                                         <Search size={22} color={text.onChrome} /
                                     >)}>
                                 </Box>
@@ -265,7 +265,7 @@ export default function GlobalHeader({
                                 hapticLight();
                                 setShowNotifications(true);
                             }}
-                                <Box sx={{ position: 'relative' }}
+                                <Box sx={{ position: 'relative' }}>
                                     <Bell size={24} color={text.onChrome} />
                                     >{/* Notification Dot */}
                                     {unreadCount > 0 && (
@@ -278,7 +278,7 @@ export default function GlobalHeader({
                                             borderRadius: 4,
                                             backgroundColor: accent.action,
                                             borderWidth: 1.5,
-                                            borderColor: scene.chrome.bg>
+                                            borderColor: scene.chrome.bg
                                         }} /
                                     >)}
                                 </Box>
@@ -290,9 +290,9 @@ export default function GlobalHeader({
                 {/* EXPANDABLE SEARCH BAR */}
                 {isSearchActive && (
                     <Box sx={{
-                        marginTop: Theme.spacing.sm,>
-                    }}
-                        <SanctuaryInput
+                        marginTop: Theme.spacing.sm,
+                    }}>
+                        <SanctuaryInput>
                             value={searchQuery}
                             onChangeText={setSearchQuery}
                             placeholder={searchProps?.placeholder ?? t('searchPlaceholder')}
@@ -302,7 +302,7 @@ export default function GlobalHeader({
                     ></Box>
                 )}
 
-                <NotificationDrawer
+                <NotificationDrawer>
                     isVisible={showNotifications}
                     onClose={() => setShowNotifications(false)}
                     notifications={notifications}

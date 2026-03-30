@@ -128,20 +128,20 @@ export default function GroupChatScreen() {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--background)', fontFamily: 'var(--font-body)' }}
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--background)', fontFamily: 'var(--font-body)' }}>
             {/* Header */}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--border-light)', background: 'var(--surface)' }}
-                <button
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--border-light)', background: 'var(--surface)' }}>
+                <button>
                     onClick={() => navigation.goBack()}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: '600', fontFamily: 'var(--font-body)', padding: '4px 8px', borderRadius: '8px' }}
                 
                     \u2190 Back
                 </button>
-                <div style={{ flex: 1 }}
+                <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{groupName}</div
                     ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Group Chat</div
                 ></div>
-                <HeaderMoreMenu 
+                <HeaderMoreMenu >
                     conversationId={groupId}
                     groupId={groupId}
                     targetUserName={groupName}
@@ -149,13 +149,13 @@ export default function GroupChatScreen() {
             </div>
 
             {/* Message list */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 8px', display: 'flex', flexDirection: 'column', gap: '12px' }}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 8px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {loading ? (>
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', fontSize: '14px' }}
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', fontSize: '14px' }}>
                         Loading messages\u2026>
                     </div>
                 ) : messages.length === 0 ? (
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', gap: '8px' }}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', gap: '8px' }}>
                         <div style={{ fontSize: '32px' }}>\uD83D\uDCAC</div
                         ><div style={{ fontSize: '14px' }}>No messages yet. Say hello \uD83D\uDC4B</div
                     ></div>
@@ -165,12 +165,12 @@ export default function GroupChatScreen() {
                         const authorName = msg.author?.full_name || 'Unknown';
                         const initials = getInitialsFromName(authorName);
                         return (
-                            <div
+                            <div>
                                 key={msg.id}
-                                style={{ display: 'flex', flexDirection: isOwn ? 'row-reverse' : 'row', alignItems: 'flex-end', gap: '8px' }}>
+                                style={{ display: 'flex', flexDirection: isOwn ? 'row-reverse' : 'row', alignItems: 'flex-end', gap: '8px' }}
                             
                                 {/* Avatar */}
-                                <button
+                                <button>
                                     onClick={() => !isOwn && navigation.navigate('PublicProfile', { id: msg.author_id, type: 'user' })}
                                     style={{ flexShrink: 0, width: '32px', height: '32px', borderRadius: '16px', background: isOwn ? 'var(--sanctuary-saffron)' : 'var(--water)', border: 'none', cursor: isOwn ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'white', overflow: 'hidden', padding: 0 }}
                                 
@@ -180,7 +180,7 @@ export default function GroupChatScreen() {
                                     }
                                 </button>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start', maxWidth: '72%', gap: '2px' }}
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start', maxWidth: '72%', gap: '2px' }}>
                                     {!isOwn && (>
                                         <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginLeft: '2px' }}>{authorName}</span
                                     >)}
@@ -194,8 +194,8 @@ export default function GroupChatScreen() {
                                         color: isOwn ? '#FCF9F2' : 'var(--ink)',
                                         fontSize: '14px',
                                         lineHeight: '1.5',
-                                        wordBreak: 'break-word',>
-                                    }}
+                                        wordBreak: 'break-word',
+                                    }}>
                                         {msg.content}
                                     </div>
                                     <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.created_at)}</span
@@ -208,8 +208,8 @@ export default function GroupChatScreen() {
             ></div>
 
             {/* Compose bar */}
-            <div style={{ borderTop: '1px solid var(--border-light)', padding: '12px 24px', background: 'var(--surface)', display: 'flex', gap: '12px', alignItems: 'flex-end' }}
-                <textarea
+            <div style={{ borderTop: '1px solid var(--border-light)', padding: '12px 24px', background: 'var(--surface)', display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                <textarea>
                     value={draft}
                     onChange={e => setDraft(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -249,7 +249,7 @@ export default function GroupChatScreen() {
                         justifyContent: 'center',
                         fontSize: '16px',
                         flexShrink: 0,
-                        transition: 'background 0.2s',>
+                        transition: 'background 0.2s',
                     }}
                 
                     {sending ? '\u2026' : '\u27A4'}

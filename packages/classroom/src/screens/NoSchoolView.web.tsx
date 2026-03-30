@@ -55,7 +55,7 @@ function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement> & { label
     return (
         <div>
             {label && <SectionLabel>{label}</SectionLabel>}
-            <input>
+            <input/>
                 {...rest}
                 style={{
                     width: '100%', boxSizing: 'border-box' as const,
@@ -164,7 +164,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                         onClick={() => setStep('type')} disabled={!name.trim()}
                         Next \u2014 Choose school type <ChevronRight size={14} /
                     ></button
-                </
+                ></
             )}
 
             {step === 'type' && (
@@ -486,7 +486,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
     };
 
     if (done) return (
-        <SuccessCard>
+        <SuccessCard/>
             emoji="\uD83C\uDF31"
             title="Enrolled!"
             body="You've been linked to your classroom. Your teacher will see you in the roll."
@@ -505,7 +505,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 
             <div>
                 <SectionLabel>Your Classroom Code</SectionLabel
-                <input>
+                ><input/>
                     value={code}
                     onChange={e => setCode(e.target.value.toLowerCase().slice(0, 12))}
                     onKeyDown={(e: any) => e.key === 'Enter' && code.length >= 6 && handleClaim()}

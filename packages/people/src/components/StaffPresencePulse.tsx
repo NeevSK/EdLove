@@ -55,16 +55,16 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                     <HStack space="md"                        <VStack style={styles.statBox}                            <Clock size={18} color={colors.primary} /                            ><Text variant="p4" mt="$1">{t('staffPresence.checkedInAt')}</Text                            ><Text variant="p3" weight="bold"                                {todayAttendance ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_in)) : '--:--'}
                             </Text                        </VStack                        <VStack style={styles.statBox}                            <LogOut size={18} color={colors.secondary} /                            ><Text variant="p4" mt="$1">{t('staffPresence.checkedOutAt')}</Text                            ><Text variant="p3" weight="bold"                                {todayAttendance?.check_out ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_out)) : '--:--'}
                             </Text                        </VStack                    </HStack
-                    <Button
+                    <Button>
                         size="lg"
                         onPress={handleToggleAttendance}
                         isDisabled={actionLoading}
                         style={{
                             backgroundColor: isCheckedIn ? colors.error : colors.success,
-                            borderRadius: 12>
+                            borderRadius: 12
                         }}
                                             <HStack space="xs" alignItems="center"                            {isCheckedIn ? <LogOut size={20} color="white" /> : <LogIn size={20} color="white" />}
-                            <ButtonText color="white"                                {isCheckedIn ? t('staffPresence.checkOutButton') : t('staffPresence.checkInButton')}
+                            <ButtonText color="white"                                {isCheckedIn ? t('staffPresence.checkOutButton') : t('staffPresence.checkInButton')}>
                             </ButtonText                        </HStack                    </Button                </VStack            </GlassCard>
             <HStack space="md" mt="$4"                <TouchableOpacity style={styles.secondaryAction} activeOpacity={0.7}                    <SanctuaryCard variant="glass"                        <VStack alignItems="center"                            <Calendar size={20} color={colors.primary} /                            ><Text variant="p4" mt="$2">{t('staffPresence.requestLeave')}</Text                        ></VStack                    ></SanctuaryCard                </TouchableOpacity                <TouchableOpacity style={styles.secondaryAction} activeOpacity={0.7}                    <SanctuaryCard variant="glass"                        <VStack alignItems="center"                            <CheckCircle2 size={20} color={colors.success} /                            <Text variant="p4" mt="$2">{t('staffPresence.viewHistory')}</Text                        ></VStack                    </SanctuaryCard                </TouchableOpacity            </HStack        </View    );
 };

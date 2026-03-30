@@ -473,7 +473,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                             borderColor: `${colors.action}28`,
                                         }}
                                                                             <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.5 }}                                            ENTER THE SANCTUARY>
-                                        </Text                                    ></Box                                    <Heading size="3xl" color={colors.text} textAlign="center" sx={{ fontFamily: '$english', fontWeight: '$bold', letterSpacing: -1.2 }}                                        Gurudevi>
+                                        </Text                                    ></Box                                    ><Heading size="3xl" color={colors.text} textAlign="center" sx={{ fontFamily: '$english', fontWeight: '$bold', letterSpacing: -1.2 }}                                        Gurudevi>
                                     </Heading                                ></VStack                            </LivingGlow                        </BreathAnimation                        <BreathAnimation delay={200}                            <Text color={colors.textSecondary} size="md" textAlign="center" sx={{ maxWidth: 320 }}                                {t('auth.tagline') || 'Enter the Sanctuary of Learning'}
                             </Text                        </BreathAnimation                        <HStack space="sm" sx={{ flexWrap: 'wrap', justifyContent: 'center' }}                            {ENTRY_PILLARS.map((pillar) => (
                                 <Box>
@@ -487,7 +487,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                         borderColor: colors.border,
                                     }}
                                                                     <Text size="xs" color={colors.textSecondary} bold                                        {pillar}>
-                                    </Text                                ></Box                            ))}>
+                                    </Text                                ></Box                            >))}>
                         </HStack                    ></VStack
                     <Box>
                         sx={{
@@ -513,7 +513,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                     </Heading                                    ><Text color={colors.textSecondary} size="sm"                                        {isSignUp
                                             ? 'Choose the path that feels easiest now. You can start with Google or move more slowly with email.'
                                             : 'Reconnect with your profile, invitations, and saved learning flow without losing where you were.'}
-                                    </Text                                </VStack                            </GlassCard
+                                    </Text                                ></VStack                            </GlassCard
                             {!shouldHideGeneralAuth && (
                                 <Box sx={{
                                     backgroundColor: colors.overlay,
@@ -557,7 +557,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
 
                             {!showEmailAuth && !shouldHideGeneralAuth && (
                                 <BreathAnimation delay={400}                                    <VStack space="md"                                        <VStack space="xs"                                            <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                                CHOOSE YOUR PATH>
-                                            </Text                                            <Text color={colors.textSecondary}                                                Keep moving with Google, or enter with an email and password.>
+                                            </Text                                            ><Text color={colors.textSecondary}                                                Keep moving with Google, or enter with an email and password.>
                                             </Text                                        ></VStack
                                         <Button>
                                             size="xl"
@@ -583,7 +583,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
 
                             {showEmailAuth && (
                                 <BreathAnimation delay={400}                                    <GlassCard style={{ padding: 24, borderRadius: Theme.corners.generous, backgroundColor: colors.overlay }}                                        <VStack space="lg" sx={{ width: '100%' }}                                            <VStack space="xs"                                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                                    EMAIL PATH>
-                                                </Text                                                <Heading size="md" color={colors.text}                                                    {isSignUp ? t('auth.createAccount') : t('auth.signInEmail')}>
+                                                </Text                                                ><Heading size="md" color={colors.text}                                                    {isSignUp ? t('auth.createAccount') : t('auth.signInEmail')}>
                                                 </Heading                                            ></VStack
                                             <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary, borderColor: colors.border }}                                                <InputField>
                                                     placeholder={t('auth.email')}
@@ -640,10 +640,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                         borderColor: `${colors.error}24`,
                                     }}
                                                                     <Text color={colors.error} size="sm"                                        {errors._form}>
-                                    </Text                                ></Box                            ) : null}>
+                                    </Text                                ></Box                            >) : null}>
                         </VStack                    </Box                </VStack            </Box
             {Scanner && (
-                <Scanner>
+                <Scanner/>
                     visible={showScanner}
                     onClose={() => setShowScanner(false)}
                     onScan={async (data) => {
@@ -674,5 +674,5 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     setShowSyncModal(false);
                 }}
             /
-        ></ScreenWrapper    );
+        ></ScreenWrapper    >);
 }

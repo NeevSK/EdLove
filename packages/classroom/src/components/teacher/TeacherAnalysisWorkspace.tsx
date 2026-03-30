@@ -109,7 +109,7 @@ export default function TeacherAnalysisWorkspace({
                                     <VStack sx={{ gap: Theme.spacing.md }}                        <VStack sx={{ gap: 4 }}                            <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                Analysis>
                             </Text                            ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                Read the classroom before reacting>
                             </Heading                            ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
-                            </Text                        </VStack
+                            </Text                        ></VStack
                         <HStack sx={{ gap: Theme.spacing.sm }}                            <StatCard>
                                 label="Average GPA"
                                 value={stats.averageGpa}
@@ -125,7 +125,7 @@ export default function TeacherAnalysisWorkspace({
                                 value={String(stats.concernCount)}
                                 icon={<TriangleAlert size={16} color={Theme.colors.emberRed} />}
                                 colors={colors}
-                            /                        ></HStack                    </VStack                </Box
+                            /                        ></HStack                    ></VStack                </Box
                 {isLoading ? (
                     <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : (
                     <Box>
@@ -139,7 +139,7 @@ export default function TeacherAnalysisWorkspace({
                                             <VStack sx={{ gap: Theme.spacing.md }}                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                Student analysis queue>
                             </Heading                            >{studentSignals.length === 0 ? (>
                                 <Text sx={{ color: colors.textSecondary }}                                    No students available for analysis yet.>
-                                </Text                            ) : (
+                                </Text                            >) : (
                                 studentSignals.map((student, index) => (
                                     <HStack>
                                         key={student.id}
@@ -153,7 +153,7 @@ export default function TeacherAnalysisWorkspace({
                                         }}
                                                                             <VStack sx={{ flex: 1 }}                                            <Text sx={{ color: colors.text, fontWeight: '700' as const }}                                                {student.full_name}>
                                             </Text                                            ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                                {student.observationCount} observations " {student.concernCount} concern signals>
-                                            </Text                                        </VStack                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                            {student.concernCount > 0 ? (
+                                            </Text                                        ></VStack                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                            {student.concernCount > 0 ? (
                                                 <SignalBadge>
                                                     label={`${student.concernCount} concern`}
                                                     tone="warning"
@@ -169,7 +169,7 @@ export default function TeacherAnalysisWorkspace({
                                                 action="primary"
                                                 onPress={() => setSelectedStudent({ id: student.id, full_name: student.full_name })}
                                                 sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: Theme.corners.full }}
-                                                                                            <HStack sx={{ alignItems: 'center', gap: 6 }}                                                    <Sparkles size={14} color={Theme.colors.sacredWhite} /                                                    ><ButtonText color={Theme.colors.sacredWhite}>Open</ButtonText                                                ></HStack                                            </Button                                        </HStack                                    </HStack                                ))
+                                                                                            <HStack sx={{ alignItems: 'center', gap: 6 }}                                                    <Sparkles size={14} color={Theme.colors.sacredWhite} /                                                    ><ButtonText color={Theme.colors.sacredWhite}>Open</ButtonText                                                ></HStack                                            ></Button                                        ></HStack                                    ></HStack                                ))
                             )}
                         </VStack                    </Box                )}
             </VStack>
@@ -208,7 +208,7 @@ function StatCard({
                     <VStack sx={{ gap: Theme.spacing.xs }}                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                    {icon}>
                     <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}                        {label}>
                     </Text                ></HStack                ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                    {value}
-                </Heading            </VStack        </Box    );
+                </Heading            ></VStack        </Box    );
 }
 
 function SignalBadge({
@@ -234,5 +234,5 @@ function SignalBadge({
                 backgroundColor,>
             }}
                     <Text sx={{ color, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                {label}>
-            </Text        </Box    );>
+            </Text        ></Box    >);>
 }

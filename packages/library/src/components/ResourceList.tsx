@@ -96,7 +96,7 @@ export function ResourceList({
             };
 
             return (
-                <Box sx={{ margin: 6 }}                    <LibraryThumbnailCard
+                <Box sx={{ margin: 6 }}                    <LibraryThumbnailCard>
                         title={item.title}
                         type={item.type}
                         subject={item.subjects?.[0] || ''}
@@ -107,7 +107,7 @@ export function ResourceList({
         }
 
         return (
-            <ResourceRow
+            <ResourceRow>
                 resource={item}
                 onOpen={() => onOpenResource?.(item)}
                 onOpenAnotherWay={item.url ? () => onOpenResourceOptions?.(item) : undefined}
@@ -127,7 +127,7 @@ export function ResourceList({
     }, [onRefresh]);
 
     return (
-        <Box sx={{ flex: 1 }}            <SanctuaryFlashList
+        <Box sx={{ flex: 1 }}            <SanctuaryFlashList>
                 data={resources}
                 renderItem={renderItem}
                 key={`resource-list-${viewMode}`}
@@ -197,7 +197,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
 
     return (
         <Actionsheet isOpen={!!resource} onClose={onClose}            <ActionsheetBackdrop /            ><ActionsheetContent sx={{ backgroundColor: Theme.colors.ink }}                <ActionsheetDragIndicatorWrapper                    <ActionsheetDragIndicator >/                ></ActionsheetDragIndicatorWrapper
-                <VStack space="lg" p={Theme.spacing.lg} sx={{ width: '100%' }}                    <HStack space="md" alignItems="center"                        <Box
+                <VStack space="lg" p={Theme.spacing.lg} sx={{ width: '100%' }}                    <HStack space="md" alignItems="center"                        <Box>
                             sx={{
                                 width: 56,
                                 height: 56,
@@ -206,17 +206,17 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderWidth: 1,
-                                borderColor: `${config.color}40`,>
+                                borderColor: `${config.color}40`,
                             }}
                                                     <Icon color={config.color} size={28} /                            ><Text size="2xs" bold color={config.color}>{config.label}</Text                        ></Box                        <VStack sx={{ flex: 1 }}                            <Text color={Theme.colors.sacredWhite} size="md" bold numberOfLines={2}>{resource.title}</Text                            ><Text color={Theme.colors.mistGray} size="sm">{resource.creator_name}</Text                            >{metaParts ? <Text color={Theme.colors.shroud} size="xs">{metaParts}</Text> : null}
                         </VStack                    </HStack
                     {resource.description ? (
-                        <Box sx={{ backgroundColor: Theme.colors.glass.dark.highlight, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}                            <Text color={Theme.colors.starlightGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}                                {resource.description}
+                        <Box sx={{ backgroundColor: Theme.colors.glass.dark.highlight, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}                            <Text color={Theme.colors.starlightGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}                                {resource.description}>
                             </Text                        </Box                    ) : null}>
 
                     {resonantIslands.length > 0 && (
                         <VStack space="xs"                            <Text color={Theme.colors.shroud} size="xs" bold uppercase>Resonant Islands</Text                            ><HStack space="xs" sx={{ flexWrap: 'wrap' }}                                {resonantIslands.map((island) => (
-                                    <Box
+                                    <Box>
                                         key={island.id}
                                         sx={{
                                             px: 8,
@@ -224,19 +224,19 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                             borderRadius: 8,
                                             backgroundColor: 'rgba(255,255,255,0.05)',
                                             borderWidth: 1,
-                                            borderColor: 'rgba(255,255,255,0.1)'>
+                                            borderColor: 'rgba(255,255,255,0.1)'
                                         }}
                                                                             <Text color="#fff" size="2xs">{island.name}</Text                                    ></Box                                ))}
                             </HStack                        </VStack                    )}
 
-                    <HStack space="md"                        <Box sx={{ flex: 1 }}                            <SanctuaryButton
+                    <HStack space="md"                        <Box sx={{ flex: 1 }}                            <SanctuaryButton>
                                 onPress={onOpenFull}
                                 action="primary"
                                 leftIcon={Play}
                                 isDisabled={resource.link_status === 'broken'}>
                                                             {resource.link_status === 'broken' ? 'Broken Link' : 'Open Resonance'}
                             </SanctuaryButton                        ></Box                        {onOpenAnotherWay && resource.url && resource.link_status !== 'broken' && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onOpenAnotherWay}
                                 variant="outline"
                                 action="secondary"
@@ -244,14 +244,14 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                                             {''}
                             </SanctuaryButton                        >)}
                         {resource.link_status !== 'broken' && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={() => onReportBroken(resource.id)}
                                 variant="outline"
                                 action="negative"
                                 leftIcon={AlertTriangle}
                                                             {''}
                             </SanctuaryButton                        )}
-                        <SanctuaryButton
+                        <SanctuaryButton>
                             onPress={onClose}
                             variant="outline"
                             action="secondary"

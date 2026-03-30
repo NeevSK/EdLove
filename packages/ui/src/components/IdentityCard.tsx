@@ -157,11 +157,11 @@ export default function IdentityCard({
     }), [colors]);
 
     const defaultBackSide = () => (
-        <Center h="100%"            <Box sx={{ p: Theme.spacing.md, bg: "white", borderRadius: Theme.corners.comfortable }}                <QRCodeGenerator
+        <Center h="100%"            <Box sx={{ p: Theme.spacing.md, bg: "white", borderRadius: Theme.corners.comfortable }}                <QRCodeGenerator>
                     value={
                         data.id
                             ? QRBuilder.userInvite(data.id, data.role || 'unknown', data.username || undefined)
-                            : 'gurudevi-guest'>
+                            : 'gurudevi-guest'
                     }
                     size={120}
                 /            ></Box            <Text color={colors.text} mt={Theme.spacing.md} bold                INVITE
@@ -169,7 +169,7 @@ export default function IdentityCard({
             </Text        </Center    );
 
     return (
-        <Pressable
+        <Pressable>
             onPress={handleFlip}
             disabled={!allowFlip}
             accessibilityRole="button"
@@ -182,8 +182,8 @@ export default function IdentityCard({
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.6,
                 shadowRadius: 20,
-                elevation: 10,>
-            }, style]}                {/* FRONT SIDE - IDENTITY */}
+                elevation: 10,
+            }, style]}                {/* FRONT SIDE - IDENTITY */}>
                 <Animated.View style={[styles.cardCommon, frontStyle]}                    <Box style={styles.glassLayer} /
                     ><HStack space="lg" alignItems="center" h="100%" sx={{ p: Theme.spacing.xl }}                        <UserAvatar 
                             avatarUrl={data.avatar_url}
@@ -192,15 +192,15 @@ export default function IdentityCard({
                             size={80}
                         />
                         >{/* Details */}
-                        <VStack space="xs" flex={1}                            <HStack alignItems="center" space="xs"                                <Text color={colors.textSecondary as string} size="xs" bold textTransform="uppercase"                                    {roleContext.label}
+                        <VStack space="xs" flex={1}                            <HStack alignItems="center" space="xs"                                <Text color={colors.textSecondary as string} size="xs" bold textTransform="uppercase"                                    {roleContext.label}>
                                 </Text                                ><roleContext.icon size={14} color={roleContext.color} /                            ></HStack>
-                            <Text color={colors.text} size="xl" bold numberOfLines={1}                                {data.full_name || 'Guest User'}
+                            <Text color={colors.text} size="xl" bold numberOfLines={1}                                {data.full_name || 'Guest User'}>
                             </Text>
-                            <Text color={colors.textSecondary} size="xs" numberOfLines={1} mb={2}                                {data.school_name || t('profile.noSchoolConnected')}
+                            <Text color={colors.textSecondary} size="xs" numberOfLines={1} mb={2}                                {data.school_name || t('profile.noSchoolConnected')}>
                             </Text>
                             {/* Identification Row */}
                             {(data.nic_number || data.index_number) && (
-                                <Box sx={{ bg: `${colors.action}10`, px: Theme.spacing.sm, py: Theme.spacing.xs, borderRadius: Theme.corners.tight, alignSelf: "flex-start" }}                                    <Text color={colors.action} size="xxs" bold                                        {can('manage', 'StudentDashboard') ? 'INDEX:' : 'NIC:'} {data.nic_number || data.index_number}
+                                <Box sx={{ bg: `${colors.action}10`, px: Theme.spacing.sm, py: Theme.spacing.xs, borderRadius: Theme.corners.tight, alignSelf: "flex-start" }}                                    <Text color={colors.action} size="xxs" bold                                        {can('manage', 'StudentDashboard') ? 'INDEX:' : 'NIC:'} {data.nic_number || data.index_number}>
                                     </Text                                </Box                            )}>
                         </VStack                    </HStack
                     <RNImage

@@ -84,7 +84,7 @@ export function useClassroomWorkspaceSurfaces({
     const renderNudge = () => {
         if (classroomData && !classroomData.profileCompleted && !isGuest) {
             return (
-                <SanctuaryNudge
+                <SanctuaryNudge>
                     title="Sanctuary Entry"
                     description="Complete your profile to unlock full school features."
                     actionLabel="Finish"
@@ -129,13 +129,13 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'PrincipalDashboard')) {
             const principalContent =
                 !schoolIdToUse && !isDemoModeTriggered ? (
-                    <PrincipalOnboardingView
+                    <PrincipalOnboardingView>
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onCreateSchool={() => setIsCreateSchoolOpen(true)}
                         onJoinSchool={() => navigation.navigate('Search' as any)}
                     /                >) : (
-                    <PrincipalDashboard
+                    <PrincipalDashboard>
                         schoolId={schoolIdToUse || 'demo-school'}
                         userId={classroomData.userId}
                         onRefresh={fetchRoleData}
@@ -200,7 +200,7 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'TeacherDashboard')) {
             const teacherContent =
                 classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
-                    <TeacherOnboardingView
+                    <TeacherOnboardingView>
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onCreateClassroom={() => setIsCreateClassroomOpen(true)}
@@ -208,7 +208,7 @@ export function useClassroomWorkspaceSurfaces({
                     /                >) : (
                     <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1 }}                            <GlobalHeader title="Classroom" subtitle={undefined} /                            >{renderNudge()}
                             {isDemoModeTriggered && <SandboxBanner />}
-                            <TeacherDashboard
+                            <TeacherDashboard>
                                 schoolId={schoolIdToUse || undefined}
                                 userId={classroomData.userId}
                                 onRefresh={fetchRoleData}
@@ -235,7 +235,7 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'StudentDashboard')) {
             const studentContent =
                 classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
-                    <StudentOnboardingView
+                    <StudentOnboardingView>
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onJoinClass={() => setIsClaimInviteOpen(true)}
@@ -243,7 +243,7 @@ export function useClassroomWorkspaceSurfaces({
                     /                >) : (
                     <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1 }}                            <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} /                            >{renderNudge()}
                             {isDemoModeTriggered && <SandboxBanner />}
-                            <StudentDashboard
+                            <StudentDashboard>
                                 schoolId={schoolIdToUse || undefined}
                                 userId={classroomData.userId}
                                 onRefresh={fetchRoleData}

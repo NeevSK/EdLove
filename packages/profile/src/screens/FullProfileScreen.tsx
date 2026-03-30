@@ -114,7 +114,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                 showBack
                 onBack={() => navigation.goBack()}
             /            ><ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}                <VStack space="2xl" sx={{ paddingVertical: Theme.spacing.md }}
-                    <Center                        <Box                            <IdentityCard >>data={profile} /                        ></Box                    </Center
+                    <Center                        <Box                            <IdentityCard >>data={profile} /                        ></Box                    ></Center
                     <Center mt={Theme.spacing.lg}                        <AvatarDisplay>
                             userId={profile.id}
                             avatarUrl={profile.avatar_url}
@@ -207,8 +207,8 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                         placeholder="19XXXXXXXXXX"
                                         onSave={isOtherProfile ? async () => { } : handleSave}
                                     /                                >)}
-                            </VStack                        ></Box                    </Center
-                    {isTeacherProfile && (
+                            </VStack                        ></Box                    ></Center
+                    >{isTeacherProfile && (
                         <Center                            <Box
                                 >sx={{
                                     backgroundColor: colors.secondary,
@@ -265,7 +265,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 ...Theme.shadows.md
                             }}
                                                     <Heading size="md" color={colors.text} mb="$4"                                {t('profile.aboutMe')}>
-                            </Heading                            <EditableItem
+                            </Heading                            ><EditableItem
                                 field="bio"
                                 label={t('profile.bio')}
                                 value={profile.bio}
@@ -285,7 +285,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 <TouchableOpacity accessibilityRole="button">
                                     onPress={() => setShowSocialModal(true)}
                                     style={styles.manageSocialsBtn}
-                                                                    <HStack space="sm" alignItems="center"                                        <Edit3 size={18} color={colors.action} /                                        ><Text color={colors.action} bold>Manage Social Hub</Text                                    ></HStack                                </TouchableOpacity                            )}
+                                                                    <HStack space="sm" alignItems="center"                                        <Edit3 size={18} color={colors.action} /                                        ><Text color={colors.action} bold>Manage Social Hub</Text                                    ></HStack                                ></TouchableOpacity                            >)}
                         </Box                    </Center
                     {isTeacherProfile && profile.school_id && (
                         <Center                            <Box >sx={{ width: CARD_WIDTH }}                                <StaffPresencePulse
@@ -296,14 +296,14 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                     <Box alignItems="center" mt="$4"                        <Text size="xs" color={colors.textTertiary}                            v1.2.0 " Sanctuary ID: {profile.id?.substring(0, 8)}>
                         </Text                    </Box                </VStack            </ScrollView>
             {!isOtherProfile && (
-                <AddSocialLinkModal>
+                <AddSocialLinkModal/>
                     visible={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
                 /            >)}
 
             {isOtherProfile && currentUserId && (
-                <GiveThuthimalModal>
+                <GiveThuthimalModal/>
                     isOpen={showThuthimalModal}
                     onClose={() => setShowThuthimalModal(false)}
                     recipientId={profile.id}
@@ -319,7 +319,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                     visible={showCelebration}
                     onHide={() => setShowCelebration(false)}
                 /            >)}
-        </ScreenWrapper    );
+        </ScreenWrapper    >);
 }
 
 const styles = StyleSheet.create({

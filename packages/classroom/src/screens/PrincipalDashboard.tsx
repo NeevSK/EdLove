@@ -123,7 +123,7 @@ export default function PrincipalDashboard({
         activeView={activeView}
         onActiveViewChange={setActiveView}
         renderMain={() => (
-          <ScreenWrapper scroll={false} noTopInset            <PrincipalNativeDashboardShell
+          <ScreenWrapper scroll={false} noTopInset            <PrincipalNativeDashboardShell>
               title={t('classroom.schoolManagement') || 'Principal Workspace'}
               subtitle={school?.name || 'Balanced cockpit for institutional leadership'}
               showSandboxBanner={schoolId === 'demo-school' || isDemoExperience}
@@ -133,7 +133,7 @@ export default function PrincipalDashboard({
               isLoading={isLoading}
               error={error}>
                           {surfaces[activeZone].content}
-            </PrincipalNativeDashboardShell          </ScreenWrapper        )}
+            </PrincipalNativeDashboardShell          ></ScreenWrapper        )}
         renderAdditionalView={({ activeView: nextView, navigatePrincipalView }) => {
           if (nextView === 'notes' || nextView === 'log') {
             return <PrincipalNotes schoolId={schoolId} onBack={() => navigatePrincipalView('main')} />;
@@ -170,7 +170,7 @@ export default function PrincipalDashboard({
                 size={220}
               /            ></Box            <Text color={colors.textSecondary} sx={{ marginTop: 20, textAlign: 'center' }}              Scan to join the <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{school?.name}</Text> sanctuary.
             </Text            {school?.handle ? (
-              <Text color={colors.textTertiary} sx={{ marginTop: 8, fontSize: 12 }}                @{school.handle}
+              <Text color={colors.textTertiary} sx={{ marginTop: 8, fontSize: 12 }}                @{school.handle}>
               </Text            ) : null}>
           </ModalBody          <ModalFooter            <Button
               action="primary"

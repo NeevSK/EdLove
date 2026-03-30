@@ -154,7 +154,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                 })}
                                 fullWidth
                                                             Open Now
-                            </SanctuaryButton                        </HStack                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                            <SanctuaryButton
+                            </SanctuaryButton                        ></HStack                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                            <SanctuaryButton
                                 variant="outline"
                                 action="secondary"
                                 onPress={() => closeRequest({
@@ -176,7 +176,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                 }}
                                 leftIcon={ArrowLeftRight}
                                                             Reset Saved Preference
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                     </VStack                ) : null}
                             {pendingRequest && (
                     <VStack sx={{ gap: Theme.spacing.md }}                        <Box>
@@ -192,7 +192,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                             </Text                            ><Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}                                Destination: {pendingRequest.domain}
                             </Text                            {pendingRequest.options.sourceBadge ? (
                                 <Text sx={{ color: accent.action, fontSize: 12, marginTop: 4, fontWeight: '700' }}                                    {pendingRequest.options.sourceBadge}>
-                                </Text                            ) : null}>
+                                </Text                            >) : null}>
                             {pendingRequest.overrideCount >= 2 && !pendingRequest.currentPreference ? (
                                 <Text sx={{ color: text.secondary, fontSize: 12, marginTop: Theme.spacing.sm }}                                    You often choose a different link method. Saving a default may reduce friction.>
                                 </Text                            >) : null}>
@@ -219,8 +219,8 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                                     },
                                                 ]}
                                                                                             {isSelected ? <Check size={10} color={Theme.colors.sacredWhite} /> : null}
-                                            </View                                            <VStack sx={{ flex: 1 }}                                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                                    {method.title}
-                                                </Text                                                <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                                    {method.description}
+                                            </View                                            ><VStack sx={{ flex: 1 }}                                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                                    {method.title}
+                                                </Text                                                ><Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                                    {method.description}
                                                 </Text                                            </VStack                                        </HStack                                    </Pressable                                );
                             })}
                         </VStack>
@@ -240,8 +240,8 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                 ]}
                                                             {rememberChoice ? <Check size={12} color={Theme.colors.sacredWhite} /> : null}
                             </View                            ><VStack sx={{ flex: 1 }}                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                    Remember my choice on this {pendingRequest.platform === 'web' ? 'browser' : 'device'}
-                                </Text                                <Text sx={{ color: text.secondary, fontSize: 12 }}                                    You can still choose another method whenever you need to.
-                                </Text                            </VStack                        </Pressable                    </VStack                )}
+                                </Text                                ><Text sx={{ color: text.secondary, fontSize: 12 }}                                    You can still choose another method whenever you need to.
+                                </Text                            ></VStack                        </Pressable                    </VStack                )}
             </SanctuaryModal        </    );
 }
 

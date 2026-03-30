@@ -284,20 +284,20 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 onPress={() => handleTogglePin(note)}
                                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             
-                                <Pin>
+                                <Pin/>
                                     size={14}
                                     color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
                                     fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
                                 /
                             ></TouchableOpacity
-                        )}
+                        >)}
                         <TouchableOpacity>
                             onPress={() => handleDelete(note.id)}
                             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         
                             <X size={14} color={colors.textTertiary} /
                         ></TouchableOpacity
-                    </HStack>
+                    ></HStack>
                 </HStack>
 
                 {/* Content */}
@@ -368,14 +368,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
                         ></Box
-                    ) : grouped.length === 0 ? (
+                    >) : grouped.length === 0 ? (
                         <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
-                            <PositiveInvitation>
+                            <PositiveInvitation/>
                                 title="Your logbook is empty"
                                 description="Tap the button below to capture your first thought \u2014 a to-do for tomorrow, a classroom observation, or a decision you just made."
                             /
                         ></Box
-                    ) : (
+                    >) : (
                         <FlatList>
                             data={grouped}
                             keyExtractor={(g) => g.label}
@@ -481,7 +481,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             
                                 <NotebookPen size={20} color={Theme.colors.sacredWhite} /
                             ></TouchableOpacity
-                        </Box>
+                        ></Box>
                     )}
                 </VStack>
             </KeyboardAvoidingView>

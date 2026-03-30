@@ -115,7 +115,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                     >{/* Content */}
                     <VStack sx={{ flex: 1, gap: 2 }}                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text                        ><HStack space="xs" alignItems="center"                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text                            >{metaParts.length > 0 && (
                                 <                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} /                                    ><Text size="xs" color={colors.textTertiary}>{metaParts.join(' \u00B7 ')}</Text                                ></                            )}
-                        </HStack                        <HStack space="xs" alignItems="center"                            {resource.verified && (
+                        </HStack                        ><HStack space="xs" alignItems="center"                            {resource.verified && (
                                 <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>VERIFIED</Text                                ></Box                            )}
                             {resource.is_community && (
                                 <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>COMMUNITY</Text                                ></Box                            )}

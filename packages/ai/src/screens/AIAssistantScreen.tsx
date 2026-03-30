@@ -51,22 +51,22 @@ export default function AIAssistantScreen() {
     const renderMessage = ({ item }: { item: Message }) => {
         const isUser = item.role === 'user';
         return (
-            <Animated.View
+            <Animated.View>
                 entering={FadeInUp.springify().damping(15)}
                 layout={Layout.springify()}
                 style={[
                     styles.messageBubble,
-                    isUser ? styles.userBubble : styles.assistantBubble,>
+                    isUser ? styles.userBubble : styles.assistantBubble,
                     { backgroundColor: isUser ? accent.action : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)') }
                 ]}
-                            <Text color={isUser ? gradientNodes[0] : text.primary} sx={{ fontSize: '$md' as any }}                    {item.content}
+                            <Text color={isUser ? gradientNodes[0] : text.primary} sx={{ fontSize: '$md' as any }}                    {item.content}>
                 </Text            </Animated.View        );>
     };
 
     return (
-        <ScreenWrapper
+        <ScreenWrapper>
             backgroundColor={gradientNodes[0]}>
-                    <KeyboardAvoidingView
+                    <KeyboardAvoidingView>
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={styles.container}>
                             {/* Header */}
@@ -78,7 +78,7 @@ export default function AIAssistantScreen() {
                             </Text                        ></HStack                        <Text color={text.secondary} size="xs"                            {t('aiAssistant.subtitle')}
                         </Text                    </VStack                </HStack
                 {/* Chat Area */}
-                <FlatList
+                <FlatList>
                     ref={flatListRef}
                     data={messages}
                     renderItem={renderMessage}
@@ -86,15 +86,15 @@ export default function AIAssistantScreen() {
                     contentContainerStyle={styles.listContent}
                     ListFooterComponent={
                         isThinking ? (
-                            <Box sx={{ padding: '$md' as any, opacity: 0.6 }}                                <Text color={text.secondary} italic size="sm"                                    {t('aiAssistant.thinking')}
+                            <Box sx={{ padding: '$md' as any, opacity: 0.6 }}                                <Text color={text.secondary} italic size="sm"                                    {t('aiAssistant.thinking')}>
                                 </Text                            </Box                        ) : null>
                     }
                 /
                 >{/* Input Area */}
-                <Box style={styles.inputContainer}                    {!userRole ? (
+                <Box style={styles.inputContainer}                    {!userRole ? (>
                         <VStack space="xs" alignItems="center" p="$4"                            <Text color={text.secondary} size="sm" textAlign="center"                                {t('aiAssistant.loginPrompt')}>
                             </Text                            ><TouchableOpacity accessibilityRole="button" onPress={() => (navigation as any).navigate('Welcome')}                                <Text color={accent.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text                            ></TouchableOpacity                        ></VStack                    ) : (
-                        <HStack style={[styles.inputWrapper, { backgroundColor: glass.surface.bg, borderColor: glass.surface.border, borderWidth: 1 }]} space="sm"                            <TextInput accessibilityLabel="Text input field"
+                        <HStack style={[styles.inputWrapper, { backgroundColor: glass.surface.bg, borderColor: glass.surface.border, borderWidth: 1 }]} space="sm"                            <TextInput accessibilityLabel="Text input field">
                                 style={[styles.input, { color: text.primary }]}
                                 placeholder={t('aiAssistant.placeholder')}
                                 placeholderTextColor={text.secondary}

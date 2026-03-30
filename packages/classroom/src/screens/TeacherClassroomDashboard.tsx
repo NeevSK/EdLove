@@ -296,7 +296,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
 
     if (workspace.isLoading) {
         return (
-            <ScreenWrapper                <GlobalHeader >title={classroomName} showBack onBack={() => navigation.goBack()} /                ><VStack sx={{ gap: '$md' as any, padding: '$4' as any }}                    <SkeletonCard height={100} /                    ><HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}                        <SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                    ></HStack                </VStack            </ScreenWrapper        );
+            <ScreenWrapper                <GlobalHeader >title={classroomName} showBack onBack={() => navigation.goBack()} /                ><VStack sx={{ gap: '$md' as any, padding: '$4' as any }}                    <SkeletonCard height={100} /                    ><HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}                        <SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                    ></HStack                ></VStack            ></ScreenWrapper        );
     }
 
     const schoolId = classroom?.school_id || '';
@@ -331,9 +331,9 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                             elevation: 4,
                         }}
                                             <VStack sx={{ gap: Theme.spacing.md }}                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: Theme.spacing.md }}                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase', letterSpacing: 1 }}                                        Teacher Classroom>
-                                    </Text                                    <Heading sx={{ fontSize: Theme.typography.fontSize['2xl'], color: Theme.colors.inkTruth }}                                        {classroomName}>
+                                    </Text                                    ><Heading sx={{ fontSize: Theme.typography.fontSize['2xl'], color: Theme.colors.inkTruth }}                                        {classroomName}>
                                     </Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                        Hold the classroom as one living workspace: roster, rhythm, assignments, notes, and insight in one sanctuary.
-                                    </Text                                </VStack                                {activeFeature === 'lessons' && (
+                                    </Text                                ></VStack                                >{activeFeature === 'lessons' && (
                                     <Button>
                                         size="sm"
                                         action="primary"
@@ -343,7 +343,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                                             borderRadius: Theme.corners.full,
                                             paddingHorizontal: Theme.spacing.md,
                                         }}
-                                                                            <HStack alignItems="center" sx={{ gap: 4 }}                                            <Plus size={16} color={Theme.colors.sacredWhite} /                                            ><ButtonText color={Theme.colors.sacredWhite}>New Module</ButtonText                                        ></HStack                                    </Button                                )}
+                                                                            <HStack alignItems="center" sx={{ gap: 4 }}                                            <Plus size={16} color={Theme.colors.sacredWhite} /                                            ><ButtonText color={Theme.colors.sacredWhite}>New Module</ButtonText                                        ></HStack                                    ></Button                                )}
                             </HStack>
                             <HStack sx={{ gap: Theme.spacing.sm }}                                <Box sx={{ flex: 1, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border, padding: Theme.spacing.sm }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>Subject</Text                                    ><Text sx={{ color: colors.text, fontWeight: '700' as const }}>{classroom?.subject || 'Classroom'}</Text                                ></Box                                ><Box sx={{ flex: 1, backgroundColor: activeTone.tint, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border, padding: Theme.spacing.sm }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>Current Lane</Text                                    ><Text sx={{ color: activeTone.color, fontWeight: '700' as const }}>{activeTone.label}</Text                                ></Box                                <Box sx={{ flex: 1, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border, padding: Theme.spacing.sm }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>Signals</Text                                    ><Text sx={{ color: colors.text, fontWeight: '700' as const }}                                        {workspace.summary.assignmentCount} tasks \u00B7 {workspace.summary.observationCount} notes
                                     </Text                                </Box                            </HStack                        </VStack                    </Box                </Box
@@ -359,7 +359,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                                 </Text                                ><Text sx={{ color: colors.textSecondary }}                                    Move between roster and attendance report to follow classroom rhythm without leaving this workspace.>
                                 </Text                                >{!!workspace.workspaceError && (
                                     <Text sx={{ color: colors.error, fontSize: Theme.typography.fontSize.xs, marginTop: Theme.spacing.xs }}                                        {workspace.workspaceError.message}>
-                                    </Text                                )}>
+                                    </Text                                >)}>
                             </VStack                            <HStack sx={{ gap: Theme.spacing.sm }}                                <Button size="sm" variant="outline" action="secondary" onPress={() => setActiveFeature('students')}                                    <ButtonText color={colors.text}>Roster</ButtonText                                ></Button                                <Button size="sm" action="primary" onPress={() => setActiveView('attendance_report')} sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}                                    <ButtonText color={Theme.colors.sacredWhite}>Report</ButtonText                                ></Button                            </HStack                        </HStack                    </Box                </Box
                 <Box sx={{ backgroundColor: 'rgba(245,237,214,0.96)', paddingBottom: Theme.spacing.md, paddingTop: Theme.spacing.sm, borderTopWidth: 1, borderTopColor: Theme.colors.linen, borderBottomWidth: 1, borderBottomColor: Theme.colors.linen }}                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}                        <HStack sx={{ gap: 12 }}                            {TEACHER_FEATURES.map((f) => {
                                 const Icon = f.icon;
@@ -389,7 +389,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                             })}
                         </HStack                    </ScrollView                </Box
                 <Box flex={1} sx={{ backgroundColor: Theme.colors.vellum }}                    {renderFeatureContent()}>
-                </Box            </ScrollView>
+                </Box            ></ScrollView>
             {/* Modals */}
             <Modal isOpen={showAddMonthModal} onClose={() => setShowAddMonthModal(false)}                <ModalBackdrop /                ><ModalContent sx={{ backgroundColor: colors.secondary }}                    <ModalHeader><Heading color={colors.text} sx={{ fontSize: 18 }}>Add Monthly Module</Heading></ModalHeader                    ><ModalBody sx={{ paddingBottom: Theme.spacing.lg }}                        <VStack sx={{ gap: 16 }}                            <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Give this month a title (e.g., "September 2026")</Text                            ><Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}                                <InputField placeholder="Enter title..." value={newMonthTitle} onChangeText={setNewMonthTitle} color={colors.text} /                            ></Input                        ></VStack                    </ModalBody                    <ModalFooter                        <HStack sx={{ gap: 8 }}                            <Button variant="outline" action="secondary" onPress={() => setShowAddMonthModal(false)}><ButtonText color={colors.textTertiary}>Cancel</ButtonText></Button                            ><Button action="primary" onPress={handleAddMonth} isDisabled={!newMonthTitle.trim() || isSubmitting}                                {isSubmitting ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText color={Theme.colors.sacredWhite}>Create</ButtonText>}
                             </Button                        </HStack                    </ModalFooter                </ModalContent            </Modal
@@ -412,7 +412,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                         </VStack                    </ModalBody                    <ModalFooter                        <HStack >sx={{ gap: 8 }}                            <Button variant="outline" action="secondary" onPress={() => { setShowAddContentModal(false); resetForm(); }}><ButtonText color={colors.textTertiary}>Cancel</ButtonText></Button                            ><Button action="primary" onPress={handleAddContent} isDisabled={!formTitle.trim() || isSubmitting}                                {isSubmitting ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText color={Theme.colors.sacredWhite}>Add</ButtonText>}
                             </Button                        </HStack                    </ModalFooter                </ModalContent            </Modal
             {showAnalysisModal && analysisStudent && (
-                <StudentAnalysisModal>
+                <StudentAnalysisModal/>
                     visible={showAnalysisModal}
                     onClose={() => { setShowAnalysisModal(false); setAnalysisStudent(null); }}
                     studentId={analysisStudent.id}
@@ -425,5 +425,5 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                 isOpen={showGroupsModal}
                 onClose={() => setShowGroupsModal(false)}
                 students={students}
-            /        ></ScreenWrapper    );
+            /        ></ScreenWrapper    >);
 }

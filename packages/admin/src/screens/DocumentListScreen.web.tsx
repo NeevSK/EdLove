@@ -124,7 +124,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               ]}
               numberOfLines={3}
                           {document.title}
-            </Text            <View 
+            </Text            ><View 
               style={[
                 styles.statusBadge,
                 { backgroundColor: getStatusColor(document.status) }
@@ -135,7 +135,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
                 ]}
                               {document.status.toUpperCase()}
-              </Text            </View          </View          
+              </Text            ></View          ></View          
           <Text >
             style={[
               styles.documentMeta,>
@@ -175,7 +175,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             ]}
             numberOfLines={2}
                       {document.title}
-          </Text          <View 
+          </Text          ><View 
             style={[
               styles.statusBadge,
               { backgroundColor: getStatusColor(document.status) }
@@ -186,7 +186,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
               ]}
                           {document.status.toUpperCase()}
-            </Text            </View        </View        
+            </Text            ></View        ></View        
         <Text >
           style={[
             styles.documentMeta,>
@@ -196,7 +196,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         </Text        >
         {document.status === 'review' && document.authorId !== user.userId && (
           <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}            <Text style={[styles.reviewText, { color: theme.accent.action }]}              Pending Review>
-            </Text          </View        )}>
+            </Text          ></View        )}>
       </TouchableOpacity    );
   };
 
@@ -227,13 +227,13 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           ]}
                   {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
-        </Text      </TouchableOpacity    );
+        </Text      ></TouchableOpacity    >);
   };
 
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...>
-        </Text      </View    );>
+        </Text      ></View    );>
   }
 
   return (
@@ -270,7 +270,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   styles.viewButtonText,>
                   { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
                 ]}                  List
-                </Text              </TouchableOpacity              <TouchableOpacity
+                </Text              ></TouchableOpacity              <TouchableOpacity
                 style={[
                   styles.viewButton,
                   viewMode === 'grid' && { backgroundColor: theme.accent.action }
@@ -305,7 +305,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   ? 'No documents yet. Create your first document to get started.'
                   : `No ${selectedStatus} documents found.`
               }>
-            </Text          ></View        ) : (
+            </Text          ></View        >) : (
           filteredDocuments.map(renderDocumentItem)
         )}
       </ScrollView    </View  );

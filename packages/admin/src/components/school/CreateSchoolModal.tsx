@@ -212,7 +212,7 @@ export default function CreateSchoolModal({
                         variant="outline"
                         onPress={() => updateStep(state.step - 1)}
                         sx={{ flex: 1, borderColor: colors.border }}
-                                            <Icon as={ChevronLeft} color={colors.textSecondary} sx={{ marginRight: 8 }} /                        ><ButtonText color={colors.textSecondary}>Back</ButtonText                    ></Button                )}
+                                            <Icon as={ChevronLeft} color={colors.textSecondary} sx={{ marginRight: 8 }} /                        ><ButtonText color={colors.textSecondary}>Back</ButtonText                    ></Button                >)}
                 <Button>
                     action="primary"
                     onPress={state.step === 4 ? handleSubmit : () => updateStep(state.step + 1)}
@@ -224,7 +224,7 @@ export default function CreateSchoolModal({
                                     {isSubmitting ? (
                         <Spinner color={Theme.colors.sacredWhite} /                    >) : (
                         <                            <ButtonText color={Theme.colors.sacredWhite}                                {state.step === 4 ? 'Establish Sanctuary' : 'Next Step'}
-                            </ButtonText                            {state.step < 4 && <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} />}
+                            </ButtonText                            >{state.step < 4 && <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} />}
                         </                    )}
                 </Button            </HStack        );
     };
@@ -278,8 +278,8 @@ export default function CreateSchoolModal({
                                                     backgroundColor: state.basicInfo.officialType === type.key ? 'rgba(212,132,58,0.1)' : 'transparent'
                                                 }}
                                                                                             <Text sx={{ fontSize: 12, color: state.basicInfo.officialType === type.key ? Theme.colors.sanctuarySaffron : colors.text }}                                                    {type.en}>
-                                                </Text                                            </TouchableOpacity                                        ))}>
-                                    </HStack                                ></VStack                            </VStack                        )}
+                                                </Text                                            ></TouchableOpacity                                        >))}>
+                                    </HStack                                ></VStack                            ></VStack                        >)}
 
                         {state.step === 2 && (
                             <VStack sx={{ gap: Theme.spacing.lg }}                                <Heading size="md" color={colors.text}>Sacred Geography</Heading                                ><VStack sx={{ gap: 8 }}                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Province</Text                                    ><ScrollView horizontal showsHorizontalScrollIndicator={false}                                        <HStack sx={{ gap: 8 }}                                            {SRI_LANKAN_PROVINCES.map((p) => (
@@ -295,7 +295,7 @@ export default function CreateSchoolModal({
                                                         backgroundColor: state.location.provinceId === p.id ? 'rgba(212,132,58,0.1)' : colors.tertiary
                                                     }}
                                                                                                     <Text sx={{ fontWeight: '600', color: state.location.provinceId === p.id ? Theme.colors.sanctuarySaffron : colors.text }}                                                        {p.en}>
-                                                    </Text                                                </TouchableOpacity                                            ))}>
+                                                    </Text                                                ></TouchableOpacity                                            >))}>
                                         </HStack                                    ></ScrollView                                </VStack
                                 {state.location.provinceId && (
                                     <VStack sx={{ gap: 8 }}                                        <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>District</Text                                        ><HStack flexWrap="wrap" sx={{ gap: 8 }}                                            {availableDistricts.map((d) => (
@@ -311,7 +311,7 @@ export default function CreateSchoolModal({
                                                         backgroundColor: state.location.districtId === d.id ? 'rgba(212,132,58,0.05)' : 'transparent'
                                                     }}
                                                                                                     <Text sx={{ fontSize: 13, color: state.location.districtId === d.id ? Theme.colors.sanctuarySaffron : colors.text }}                                                        {d.en}>
-                                                    </Text                                                </TouchableOpacity                                            ))}>
+                                                    </Text                                                ></TouchableOpacity                                            >))}>
                                         </HStack                                    ></VStack                                )}
 
                                 <SanctuaryInput>
@@ -327,7 +327,7 @@ export default function CreateSchoolModal({
                                     onChangeText={(val) => updateLocation({ address: val })}
                                     multiline
                                     numberOfLines={2}
-                                /                            ></VStack                        )}
+                                /                            ></VStack                        >)}
 
                         {state.step === 3 && (
                             <VStack sx={{ gap: Theme.spacing.lg }}                                <Heading size="md" color={colors.text}>Nature & Pulse</Heading                                ><VStack sx={{ gap: 8 }}                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Student Demographic</Text                                    ><HStack sx={{ gap: 12 }}                                        {STUDENT_TYPES.map((type) => (
@@ -344,7 +344,7 @@ export default function CreateSchoolModal({
                                                     alignItems: 'center'
                                                 }}
                                                                                             <Text sx={{ fontSize: 24, marginBottom: 4 }}                                                    {type.id === 'mixed' ? '=k' : type.id === 'boys' ? '=f' : '=g'}>
-                                                </Text                                                <Text sx={{ fontWeight: '700', textTransform: 'capitalize', color: colors.text }}>{type.en}</Text                                            ></TouchableOpacity                                        ))}
+                                                </Text                                                ><Text sx={{ fontWeight: '700', textTransform: 'capitalize', color: colors.text }}>{type.en}</Text                                            ></TouchableOpacity                                        >))}
                                     </HStack                                </VStack
                                 <VStack sx={{ gap: 8 }}                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Religious Affiliation</Text                                    ><HStack flexWrap="wrap" sx={{ gap: 8 }}                                        {RELIGIOUS_AFFILIATIONS.map((r) => (
                                             <TouchableOpacity >
@@ -359,7 +359,7 @@ export default function CreateSchoolModal({
                                                     backgroundColor: state.demographics.religiousAffiliation === r.id ? 'rgba(212,132,58,0.1)' : 'transparent'
                                                 }}
                                                                                             <Text sx={{ fontSize: 13, color: state.demographics.religiousAffiliation === r.id ? Theme.colors.sanctuarySaffron : colors.text }}                                                    {r.en}>
-                                                </Text                                            </TouchableOpacity                                        ))}>
+                                                </Text                                            ></TouchableOpacity                                        >))}>
                                     </HStack                                ></VStack
                                 <SanctuaryInput>
                                     label="Estimated Student Count"

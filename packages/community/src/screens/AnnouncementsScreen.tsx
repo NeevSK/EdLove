@@ -150,11 +150,11 @@ export default function AnnouncementsScreen({
                             }}
                             onPress={() => setShowCreateModal(true)}
                                                     <ButtonText color={Theme.colors.sacredWhite}                                {t('announcements.create') || '+ Create Announcement'}>
-                            </ButtonText                        ></Button                    )}>
+                            </ButtonText                        ></Button                    >)}>
 
                     {/* Loading State */}
                     {isLoading && (
-                        <VStack space="md"                            <SkeletonCard height={120} /                            ><SkeletonCard height={120} /                            ><SkeletonCard height={120} /                        ></VStack                    )}
+                        <VStack space="md"                            <SkeletonCard height={120} /                            ><SkeletonCard height={120} /                            ><SkeletonCard height={120} /                        ></VStack                    >)}
 
                     {/* Error State */}
                     {error && !isLoading && (
@@ -196,7 +196,7 @@ export default function AnnouncementsScreen({
                                             </Text                                        ></HStack>
                                         {/* Content */}
                                         <Text color={Theme.colors.sacredWhite} size="md"                                            {announcement.content}>
-                                        </Text                                    </VStack                                </Box                            ))}>
+                                        </Text                                    ></VStack                                ></Box                            ))}>
                         </VStack                    )}
 
                     {/* Regular Announcements */}
@@ -229,7 +229,7 @@ export default function AnnouncementsScreen({
                                             </Text                                        ></HStack>
                                         {/* Content */}
                                         <Text color={Theme.colors.starlightGray} size="md"                                            {announcement.content}>
-                                        </Text                                    </VStack                                </Box                            ))}>
+                                        </Text                                    ></VStack                                ></Box                            ))}>
                         </VStack                    )}
 
                     {/* Empty State */}
@@ -260,7 +260,7 @@ export default function AnnouncementsScreen({
                         backgroundColor: Theme.colors.ink,
                     }}
                                     <ModalHeader                        <Heading >size="lg" color={Theme.colors.sanctuarySaffron}                            {t('announcements.createTitle') || 'Create Announcement'}
-                        </Heading                    </ModalHeader                    <ModalBody                        <VStack >space="md"                            <Textarea
+                        </Heading                    ></ModalHeader                    <ModalBody                        <VStack >space="md"                            <Textarea
                                 sx={{
                                     backgroundColor: Theme.colors.obsidian,
                                     minHeight: 150,
@@ -276,14 +276,14 @@ export default function AnnouncementsScreen({
                                         color: Theme.colors.sacredWhite,
                                     }}
                                 /                            ></Textarea
-                            {/* Pin Toggle */}
+                            >{/* Pin Toggle */}
                             <HStack>
                                 sx={{
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                 }}
                                                             <Text color={Theme.colors.starlightGray}                                    {t('announcements.pinAnnouncement') || 'Pin to top'}>
-                                </Text                                ><Switch value={isPinned} onValueChange={setIsPinned} /                            ></HStack                        </VStack                    </ModalBody                    <ModalFooter                        <HStack space="md" sx={{ width: '100%' }}                            <Button
+                                </Text                                ><Switch value={isPinned} onValueChange={setIsPinned} /                            ></HStack                        ></VStack                    </ModalBody                    <ModalFooter                        <HStack space="md" sx={{ width: '100%' }}                            <Button
                                 variant="outline"
                                 sx={{ flex: 1, borderColor: Theme.colors.mistGray }}
                                 onPress={() => {
@@ -293,7 +293,7 @@ export default function AnnouncementsScreen({
                                 }}
                                 disabled={isCreating}
                                                             <ButtonText color={Theme.colors.sacredWhite}                                    {t('common.cancel') || 'Cancel'}>
-                                </ButtonText                            </Button                            <Button
+                                </ButtonText                            ></Button                            <Button
                                 sx={{
                                     flex: 1,
                                     backgroundColor: Theme.colors.sanctuarySaffron,

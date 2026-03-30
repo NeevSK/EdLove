@@ -58,7 +58,7 @@ function ZoneShell({
   children: React.ReactNode;
 }) {
   return (
-    <section
+    <section>
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -68,8 +68,8 @@ function ZoneShell({
         border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '20px',
-      }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}        <div style={{ minWidth: 0 }}          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: 'var(--ink)' }}>{title}</h2          ><p style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: '1.6', color: 'var(--ink-ghost)' }}>{subtitle}</p        ></div        <div
+      }}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}        <div style={{ minWidth: 0 }}          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: 'var(--ink)' }}>{title}</h2          ><p style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: '1.6', color: 'var(--ink-ghost)' }}>{subtitle}</p        ></div        ><div
           style={{
             flexShrink: 0,
             padding: '4px 10px',
@@ -110,7 +110,7 @@ export function DashboardContent({
     if (!scopeMeta) return null;
 
     return (
-      <span
+      <span>
         title={t(scopeMeta.scopeHelpTextKey)}
         style={{
           fontSize: '10px',
@@ -121,9 +121,9 @@ export function DashboardContent({
           background: 'var(--background-alt)',
           color: 'var(--ink-ghost)',
           letterSpacing: '0.4px',
-        }}>
+        }}
               {t(scopeMeta.scopeBadgeLabelKey)}
-      </span    );
+      </span    >);
   };
 
   const todayCount = getPrincipalCapabilitiesByZone('today', 'live').length;
@@ -131,12 +131,12 @@ export function DashboardContent({
   const outlookCount = getPrincipalCapabilitiesByZone('outlook').filter((capability) => capability.status !== 'hidden').length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}      <WebScreenHeader
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}      <WebScreenHeader>
         title={<>Principal <span style={{ color: 'var(--lotus)' }}>Workspace</span>.</>}
         note={`Balanced cockpit for ${school?.name || 'your school'}: operate today, govern the institution, and prepare the next layers.`}
         timeText={school?.name || 'Sri Lankan School Leadership'}
         actions={(
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}            <button
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}            <button>
               className="secondary-button"
               style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
               onClick={onNavigateToProfile}>
@@ -157,29 +157,29 @@ export function DashboardContent({
           gap: '24px',
           alignItems: 'start',
         }}
-              <ZoneShell
+              <ZoneShell>
           title="Today"
           subtitle="Situational awareness, urgent operations, and the few things that cannot wait."
           count={todayCount}>
                   {renderTodayZone?.({ schoolId, principalId, studentPulse, atRiskCount, onShowAtRisk })}
         </ZoneShell>
-        <ZoneShell
+        <ZoneShell>
           title="Institution"
           subtitle="The official work of shaping the school, its structure, and its institutional memory."
           count={institutionCount}>
-                  <div
+                  <div>
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
               gap: '12px',
-            }}>
-                      <button
+            }}
+                      <button>
               className="secondary-button"
               onClick={() => onNavigate('hierarchy')}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
                           <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                <LayoutGrid size={16} /> Shape structure
               </span              >{renderScopeBadge('hierarchy')}
-            </button            <button
+            </button            ><button
               className="secondary-button"
               onClick={() => onNavigate('invites')}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
@@ -194,12 +194,12 @@ export function DashboardContent({
             </button          </div
           {renderInstitutionZone?.({ schoolId, principalId })}
         </ZoneShell>
-        <ZoneShell
+        <ZoneShell>
           title="Outlook"
           subtitle="Aggregated patterns, community signals, and the ERP families this workspace is preparing to hold."
           count={outlookCount}>
                   {publishedGradingCompletion && (
-            <div
+            <div>
               style={{
                 padding: '12px 14px',
                 borderRadius: '16px',
@@ -208,9 +208,9 @@ export function DashboardContent({
                 color: 'var(--ink-ghost)',
                 fontSize: '12px',
                 lineHeight: '1.6',
-              }}>
+              }}
                           Published grading is live in {publishedGradingCompletion.classroomsWithPublishedGrades} of {publishedGradingCompletion.totalClassrooms} classrooms.
             </div          >)}
           {renderOutlookZone?.({ schoolId, principalId })}
-        </ZoneShell      </div    </div  );
+        </ZoneShell      ></div    </div  );
 }

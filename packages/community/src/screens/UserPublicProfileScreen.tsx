@@ -156,8 +156,8 @@ export default function UserPublicProfileScreen() {
   >});
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}
-      <GlobalHeader
+    <ScreenWrapper scroll={false} noTopInset={true}>
+      <GlobalHeader>
         title={user?.full_name ?? userName}
         subtitle={authorityLabel}
         showBack
@@ -165,18 +165,18 @@ export default function UserPublicProfileScreen() {
       /
 
       >{loading ? (
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
         ></Box
       ) : (
-        <ScrollView
+        <ScrollView>
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: Theme.spacing.lg, gap: Theme.spacing.md }}>
+          contentContainerStyle={{ padding: Theme.spacing.lg, gap: Theme.spacing.md }}
         
           {/* Basic Identity Card - Always Visible */}
-          <SanctuaryCard
+          <SanctuaryCard>
             <VStack >space="md" sx={{ alignItems: 'center', padding: Theme.spacing.lg }}
-              <UserAvatar
+              <UserAvatar>
                 avatarUrl={user?.avatar_url}
                 fullName={user?.full_name ?? userName}
                 authority={user?.authority}
@@ -184,12 +184,12 @@ export default function UserPublicProfileScreen() {
               /
 
               ><VStack space="xs" sx={{ alignItems: "center" }}
-                <Text color={colors.text} size="xl" bold
+                <Text color={colors.text} size="xl" bold>
                   {user?.full_name ?? userName}>
                 </Text>
 
                 {/* Authority badge */}
-                <HStack space="xs" alignItems="center"
+                <HStack space="xs" alignItems="center">
                   <BadgeCheck color={Theme.colors.sanctuarySaffron} size={14} /
                   ><Text color={colors.textSecondary} size="sm"
                     {authorityLabel}
@@ -197,7 +197,7 @@ export default function UserPublicProfileScreen() {
                 </HStack>
 
                 {user?.school_name && (
-                  <HStack space="xs" alignItems="center"
+                  <HStack space="xs" alignItems="center">
                     <School color={colors.textTertiary} size={12} /
                     ><Text color={colors.textTertiary} size="xs">{user.school_name}</Text
                   ></HStack
@@ -206,7 +206,7 @@ export default function UserPublicProfileScreen() {
 
               {/* Private Indicator */}
               {isPrivate && (
-                <HStack space="xs" sx={{ mt: '$1', alignItems: 'center', opacity: 0.6 }}
+                <HStack space="xs" sx={{ mt: '$1', alignItems: 'center', opacity: 0.6 }}>
                   <Shield size={14} color={colors.textTertiary} /
                   ><Text size="xs" color={colors.textTertiary} italic
                     {t("community.profile.privateSanctuary") || "Private Sanctuary"}
@@ -216,8 +216,8 @@ export default function UserPublicProfileScreen() {
 
               {/* Main Message Action */}
               {user && currentUserId && currentUserId !== userId && (
-                <VStack space="sm" sx={{ width: '100%', mt: Theme.spacing.md }}
-                  <Button
+                <VStack space="sm" sx={{ width: '100%', mt: Theme.spacing.md }}>
+                  <Button>
                     label={t("community.profile.sendMessage")}
                     onPress={handleMessagePress}
                     icon={<Send size={20} color="white" />}
@@ -238,7 +238,7 @@ export default function UserPublicProfileScreen() {
           </SanctuaryCard>
 
           {isPrivate ? (
-            <Box sx={{ p: Theme.spacing.md, alignItems: 'center' }}
+            <Box sx={{ p: Theme.spacing.md, alignItems: 'center' }}>
               <Text textAlign="center" color={colors.textTertiary} size="sm">
                 {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private."}
               </Text>
@@ -247,15 +247,15 @@ export default function UserPublicProfileScreen() {
             <
               {/* Bio / Aspiration section if available */}
               {user?.bio && (
-                <SanctuaryCard
+                <SanctuaryCard>
                   <VStack >space="xs" sx={{ padding: Theme.spacing.md }}
-                    <HStack space="xs" alignItems="center" sx={{ mb: '$1' }}
+                    <HStack space="xs" alignItems="center" sx={{ mb: '$1' }}>
                       <Info size={14} color={colors.action} /
                       ><Text color={colors.textSecondary} size="xs" bold sx={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         {t("community.profile.aspiration")}
                       </Text>
                     </HStack>
-                    <Text color={colors.text} size="sm" sx={{ lineHeight: '$md' }}
+                    <Text color={colors.text} size="sm" sx={{ lineHeight: '$md' }}>
                       {user.bio}>
                     </Text>
                   </VStack>
@@ -263,12 +263,12 @@ export default function UserPublicProfileScreen() {
               )}
 
               {/* Contribution stats */}
-              <SanctuaryCard
+              <SanctuaryCard>
                 <VStack >space="sm" sx={{ padding: Theme.spacing.md }}
-                  <Text color={colors.textSecondary} size="xs" bold sx={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
+                  <Text color={colors.textSecondary} size="xs" bold sx={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
                     {t("community.profile.contributions")}>
                   </Text>
-                  <HStack space="lg"
+                  <HStack space="lg">
                     <VStack space="xs" sx={{ alignItems: 'center', flex: 1 }}>
                       <MessageSquare color={colors.action} size={20} /
                       ><Text color={colors.text} size="lg" bold>{stats.posts}</Text
@@ -296,10 +296,10 @@ export default function UserPublicProfileScreen() {
               </SanctuaryCard>
 
               {/* Privacy note */}
-              <Text
+              <Text>
                 color={colors.textTertiary}
                 size="xs"
-                sx={{ textAlign: 'center', paddingHorizontal: Theme.spacing.lg }}>
+                sx={{ textAlign: 'center', paddingHorizontal: Theme.spacing.lg }}
               
                 {t("community.profile.privacyNote")}
               </Text>
@@ -309,7 +309,7 @@ export default function UserPublicProfileScreen() {
       )}
 
       {/* Social Shield Modal */}
-      <SocialShieldModal
+      <SocialShieldModal>
         isOpen={showShieldModal}
         onClose={() => setShowShieldModal(false)}
         targetUserId={userId}

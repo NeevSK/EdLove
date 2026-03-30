@@ -83,8 +83,8 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
     if (hasError || !url) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}
-                <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}
+            <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
+                <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}>
                     Unable to load video. Please check the URL and try again.>
                 </Text>
                 <SanctuaryButton onPress={() => navigation.goBack()} leftIcon={X}
@@ -95,7 +95,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: 'black' }}
+        <Box sx={{ flex: 1, backgroundColor: 'black' }}>
             <StatusBar hidden={!showControls} />
 
             ><Pressable
@@ -103,7 +103,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                 sx={{ flex: 1 }}
                 accessibilityLabel="Toggle controls"
             
-                <VideoView
+                <VideoView>
                     player={player}
                     style={StyleSheet.absoluteFill}
                     contentFit="contain"
@@ -112,15 +112,15 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
             ></Pressable>
 
             {showControls && (
-                <Animated.View entering={FadeIn} style={StyleSheet.absoluteFill} pointerEvents="box-none"
+                <Animated.View entering={FadeIn} style={StyleSheet.absoluteFill} pointerEvents="box-none">
                     <Box sx={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', padding: Theme.spacing.md }}>
                         {/* Header */}
-                        <HStack justifyContent="space-between" alignItems="center"
+                        <HStack justifyContent="space-between" alignItems="center">
                             <VStack sx={{ flex: 1, marginRight: Theme.spacing.md }}>
                                 <Text color="white" size="lg" bold numberOfLines={1}>{title}</Text
                                 ><Text color={Theme.colors.starlightGray} size="sm" numberOfLines={1}>{creator}</Text
                             ></VStack>
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={() => navigation.goBack()}
                                 variant="ghost"
                                 size="sm"
@@ -132,9 +132,9 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                         </HStack>
 
                         {/* Centre play controls */}
-                        <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                        <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <HStack space="xl" alignItems="center">
-                                <SanctuaryButton
+                                <SanctuaryButton>
                                     variant="ghost"
                                     leftIcon={RotateCcw}
                                     onPress={() => handleSeekBy(-10000)}
@@ -142,7 +142,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                                 
                                     {''}
                                 </SanctuaryButton>
-                                <Pressable
+                                <Pressable>
                                     onPress={handlePlayPause}
                                     accessibilityLabel={isPlaying ? 'Pause video' : 'Play video'}
                                     accessibilityRole="button"
@@ -155,16 +155,16 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                                         justifyContent: 'center',
                                         shadowColor: Theme.colors.sanctuarySaffron,
                                         shadowRadius: 20,
-                                        shadowOpacity: 0.5,>
+                                        shadowOpacity: 0.5,
                                     }}
                                 
                                     {isPlaying ? (
                                         <Pause color="white" size={40} fill="white" /
-                                    >) : (>
+                                    >) : (
                                         <Play color="white" size={40} fill="white" /
                                     >)}>
                                 </Pressable>
-                                <SanctuaryButton
+                                <SanctuaryButton>
                                     variant="ghost"
                                     leftIcon={RotateCw}
                                     onPress={() => handleSeekBy(10000)}
@@ -176,8 +176,8 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                         </Box>
 
                         {/* Footer: progress + time */}
-                        <VStack space="sm"
-                            <Pressable
+                        <VStack space="sm">
+                            <Pressable>
                                 onPress={(e: GestureResponderEvent) => {
                                     const { locationX } = (e as any).nativeEvent;
                                     handleProgressTap(locationX, progressBarWidth.current);
@@ -187,12 +187,12 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                                 }}
                                 accessibilityLabel="Seek in video"
                             
-                                <View style={styles.progressTrack}
+                                <View style={styles.progressTrack}>
                                     <View style={[styles.progressFill, { width: progressWidth as any }]} />
                                 ></View>
                             </Pressable>
 
-                            <HStack justifyContent="space-between" alignItems="center"
+                            <HStack justifyContent="space-between" alignItems="center">
                                 <Text color="white" size="xs">
                                     {formatTimeMs(positionMillis)} / {formatTimeMs(durationMillis)}
                                 </Text>

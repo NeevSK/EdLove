@@ -200,9 +200,9 @@ export function LibraryThumbnailCard({
     ];
 
     const overlay = (
-        <View style={styles.overlay}            {/* Top: type badge + bookmark + verified */}
+        <View style={styles.overlay}            {/* Top: type badge + bookmark + verified */}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                ></View                <View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
-                        <TouchableOpacity 
+                        <TouchableOpacity >
                             onPress={(e) => {
                                 if (Platform.OS === 'web') (e as unknown as { stopPropagation: () => void }).stopPropagation();
                                 onBookmarkToggle();
@@ -211,7 +211,7 @@ export function LibraryThumbnailCard({
                             accessibilityRole="button"
                             accessibilityLabel={has_bookmarked ? "Unbookmark" : "Bookmark"}
                             accessibilityHint={has_bookmarked ? "Removes this resource from your bookmarks" : "Adds this resource to your bookmarks"}
-                                                    <Bookmark 
+                                                    <Bookmark >
                                 size={16} 
                                 color={has_bookmarked ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.8)'}
                                 fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
@@ -230,7 +230,7 @@ export function LibraryThumbnailCard({
             </LinearGradient        </View    );
 
     return (
-        <Pressable
+        <Pressable>
             onPress={onPress}
             onLongPress={onLongPress}
             style={(state: { hovered?: boolean; pressed?: boolean }) => [
@@ -244,7 +244,7 @@ export function LibraryThumbnailCard({
                 target: target,
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,
             }}
-                    <View style={styles.card}                {thumbnailUrl ? (
+                    <View style={styles.card}                {thumbnailUrl ? (>
                     <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}>
                     </ImageBackground                >) : (
                     <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        ></View                        {overlay}

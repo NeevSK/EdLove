@@ -75,7 +75,7 @@ function CommentRow({
     };
 
     return (
-        <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.reward }]}            {/* Avatar */}
+        <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.reward }]}            {/* Avatar */}>
             <View style={[styles.avatar, { backgroundColor: comment.is_anonymous ? glass.interact.bg as string : accent.muted as string }]}                {comment.is_anonymous
                     ? <EyeOff size={14} color={text.muted as string} /
                     >: (comment.author_avatar
@@ -85,9 +85,9 @@ function CommentRow({
                 }
             </View>
 
-            <View style={styles.commentBody}
+            <View style={styles.commentBody}>
                 <HStack justifyContent="space-between" alignItems="center">
-                    <HStack {...({ space: 'xs', alignItems: 'center' } as any)}
+                    <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
                         <Text sx={{ fontSize: 12, fontWeight: '700', color: text.primary }}>
                             {comment.author_name}
                         </Text>
@@ -97,25 +97,25 @@ function CommentRow({
                             ></View
                         >)}
                     </HStack>
-                    <Text sx={{ fontSize: 10, color: text.muted }}
+                    <Text sx={{ fontSize: 10, color: text.muted }}>
                         {formatTimestamp(comment.created_at)}>
                     </Text>
                 </HStack>
 
-                <Text sx={{ fontSize: 14, color: text.secondary, marginTop: 3, lineHeight: 20 }}
+                <Text sx={{ fontSize: 14, color: text.secondary, marginTop: 3, lineHeight: 20 }}>
                     {comment.content}>
                 </Text>
 
-                <HStack {...({ space: 'md', alignItems: 'center', marginTop: 6 } as any)}
+                <HStack {...({ space: 'md', alignItems: 'center', marginTop: 6 } as any)}>
                     {/* Upvote */}>
                     <TouchableOpacity onPress={() => onUpvote(comment.id)} style={styles.actionBtn}
-                        <ThumbsUp
+                        <ThumbsUp>
                             size={13}
                             color={comment.has_upvoted ? accent.action as string : text.muted as string}
                             fill={comment.has_upvoted ? accent.action as string : 'transparent'}
                         /
                         >{comment.upvotes > 0 && (
-                            <Text sx={{ fontSize: 11, color: comment.has_upvoted ? accent.action : text.muted, marginLeft: 3 }}
+                            <Text sx={{ fontSize: 11, color: comment.has_upvoted ? accent.action : text.muted, marginLeft: 3 }}>
                                 {comment.upvotes}>
                             </Text>
                         )}
@@ -123,7 +123,7 @@ function CommentRow({
 
                     {/* Mark official (post author, question type) */}
                     {isPostAuthor && postType === 'question' && !comment.is_anonymous && (
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             onPress={() => onMarkOfficial(comment.id, !comment.is_official_answer)}
                             style={styles.actionBtn}
                         
@@ -134,7 +134,7 @@ function CommentRow({
 
                     {/* Delete own */}
                     {isOwn && (
-                        <TouchableOpacity onPress={confirmDelete} style={styles.actionBtn}
+                        <TouchableOpacity onPress={confirmDelete} style={styles.actionBtn}>
                             <Trash2 size={13} color={text.muted as string} /
                         ></TouchableOpacity
                     )}
@@ -190,7 +190,7 @@ export function CommentSheet({
     };
 
     const sheetContent = (
-        <KeyboardAvoidingView
+        <KeyboardAvoidingView>
             style={[
                 styles.sheet,>
                 {
@@ -202,12 +202,12 @@ export function CommentSheet({
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
         
             {/*  Header  */}
-            <View style={styles.header}
+            <View style={styles.header}>
                 <TouchableOpacity onPress={onClose} style={styles.dragHandle} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
                     <ChevronDown size={22} color={text.secondary as string} /
                 ></TouchableOpacity
                 ><Text sx={{ fontSize: 15, fontWeight: '700', color: text.primary, flex: 1, textAlign: 'center' }}
-                    {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}>
+                    {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}
                 </Text>
                 <View style={{ width: 34 }} /
             ></View>
@@ -216,20 +216,20 @@ export function CommentSheet({
             {isLoading ? (
                 <ActivityIndicator color={accent.action as string} style={{ marginVertical: 40 }} /
             >) : comments.length === 0 ? (
-                <View style={styles.empty}
-                    <Text sx={{ fontSize: 14, color: text.muted, textAlign: 'center' }}
+                <View style={styles.empty}>
+                    <Text sx={{ fontSize: 14, color: text.muted, textAlign: 'center' }}>
                         Be the first to share a thought <1>
                     </Text>
                 </View>
             ) : (
-                <FlatList
+                <FlatList>
                     ref={flatListRef}
                     data={comments}
                     keyExtractor={item => item.id}
                     contentContainerStyle={styles.listContent}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
-                        <CommentRow
+                        <CommentRow>
                             comment={item}
                             currentUserId={currentUserId}
                             isPostAuthor={isPostAuthor}
@@ -243,9 +243,9 @@ export function CommentSheet({
             >)}
 
             {/*  Composer  */}
-            <View style={[styles.composer, { borderTopColor: glass.interact.border as string }]}
+            <View style={[styles.composer, { borderTopColor: glass.interact.border as string }]}>
                 {/* Anonymous toggle */}>
-                <TouchableOpacity
+                <TouchableOpacity>
                     onPress={() => setIsAnonymous(v => !v)}
                     style={[styles.anonBtn, { borderColor: isAnonymous ? accent.action as string : glass.interact.border as string }]}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -293,7 +293,7 @@ export function CommentSheet({
         // Web: fixed bottom drawer, no RN Modal needed
         if (!postId) return null;
         return (
-            <View
+            <View>
                 style={{
                     position: 'fixed' as any,
                     bottom: 0,
@@ -304,7 +304,7 @@ export function CommentSheet({
                     borderTopLeftRadius: Theme.corners.comfortable,
                     borderTopRightRadius: Theme.corners.comfortable,
                     boxShadow: '0 -4px 32px rgba(107,100,128,0.18)',
-                    overflow: 'hidden',>
+                    overflow: 'hidden',
                 } as any}
             
                 {sheetContent}
@@ -314,13 +314,13 @@ export function CommentSheet({
 
     // Native: Modal bottom sheet
     return (
-        <Modal
+        <Modal>
             visible={!!postId}
             animationType="slide"
             transparent
             onRequestClose={onClose}>
         
-            <TouchableOpacity
+            <TouchableOpacity>
                 activeOpacity={1}
                 onPress={onClose}
                 style={styles.backdrop}

@@ -49,21 +49,21 @@ function ZoneIntro({
   copy: string;
 }) {
   return (
-    <VStack sx={{ gap: Theme.spacing.xs }}      <Text
+    <VStack sx={{ gap: Theme.spacing.xs }}      <Text>
         sx={{
           fontSize: 12,
           fontWeight: '800',
           color: Theme.colors.gurudeviViolet,
           textTransform: 'uppercase',
           letterSpacing: 1.2,
-        }}>
+        }}
               {eyebrow}
-      </Text      <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.inkTruth }}>{title}</Heading      ><Text sx={{ fontSize: 13, lineHeight: 20, color: Theme.colors.bark }}>{copy}</Text    ></VStack  );
+      </Text      ><Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.inkTruth }}>{title}</Heading      ><Text sx={{ fontSize: 13, lineHeight: 20, color: Theme.colors.bark }}>{copy}</Text    ></VStack  );
 }
 
 function SnapshotTile({ label, value }: { label: string; value: number | string }) {
   return (
-    <Box
+    <Box>
       sx={{
         flex: 1,
         minWidth: '47%',
@@ -72,9 +72,9 @@ function SnapshotTile({ label, value }: { label: string; value: number | string 
         borderWidth: 1,
         borderColor: Theme.colors.border,
         padding: Theme.spacing.md,
-      }}>
-          <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.bark, textTransform: 'uppercase', letterSpacing: 0.6 }}        {label}
-      </Text      <Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}        {value}>
+      }}
+          <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.bark, textTransform: 'uppercase', letterSpacing: 0.6 }}        {label}>
+      </Text      ><Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}        {value}>
       </Text    ></Box  );
 }
 
@@ -104,15 +104,15 @@ function InstitutionLinks({
     hint: string;
     onPress: () => void;
   }) => (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85}      <Box
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85}      <Box>
         sx={{
           backgroundColor: Theme.colors.silk,
           borderRadius: Theme.corners.comfortable,
           borderWidth: 1,
           borderColor: colors.border,
           padding: Theme.spacing.md,
-        }}>
-              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}          <Box
+        }}
+              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}          <Box>
             sx={{
               width: 36,
               height: 36,
@@ -120,8 +120,8 @@ function InstitutionLinks({
               backgroundColor: `${Theme.colors.gurudeviBlue}18`,
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
-                      <Icon size={18} color={Theme.colors.gurudeviBlue} /          ></Box          <VStack sx={{ flex: 1 }}            <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.text }}>{label}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>{hint}</Text          ></VStack        </HStack      </Box    </TouchableOpacity  );
+            }}
+                      <Icon size={18} color={Theme.colors.gurudeviBlue} /          ></Box          ><VStack sx={{ flex: 1 }}            <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.text }}>{label}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>{hint}</Text          ></VStack        ></HStack      </Box    </TouchableOpacity  );
 
   return (
     <VStack sx={{ gap: Theme.spacing.sm }}      <LinkRow icon={Building2} label="Institution profile" hint="Open the official school record." onPress={onOpenProfile} /      ><LinkRow icon={MessageSquare} label="Community commons" hint="Step into the culture and mission layer." onPress={onOpenCommons} /      ><LinkRow icon={QrCode} label="School QR" hint="Share the sanctuary entry point." onPress={onOpenQr} /      ><LinkRow icon={Wind} label="Leadership breathing" hint="Reset before the next decision." onPress={onOpenBreathing} /      ><LinkRow icon={NotebookPen} label="Edit school details" hint="Adjust name, handle, and institution basics." onPress={onEditSchool} /    ></VStack  );

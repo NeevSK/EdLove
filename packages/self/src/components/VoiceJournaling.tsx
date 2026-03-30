@@ -206,46 +206,46 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
     };
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
             {/* Header */}>
-            <VStack space="xs"
+            <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
                     {t('voiceJournaling.title')}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm"
+                <Text color={Theme.colors.mistGray} size="sm">
                     {t('voiceJournaling.subtitle')}>
                 </Text>
             </VStack>
 
             {/* Recording Visualization */}
-            <Box
+            <Box>
                 sx={{
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: Theme.spacing.xl,
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
-                    minHeight: 200,>
+                    minHeight: 200,
                 }}
             
                 {recordingState === 'idle' ? (
-                    <VStack space="md" sx={{ alignItems: 'center' }}
+                    <VStack space="md" sx={{ alignItems: 'center' }}>
                         <Text style={{ fontSize: 64 }}>\uD83C\uDF99\uFE0F</Text
                         ><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
                             Tap to start speaking>
                         </Text>
                     </VStack>
                 ) : recordingState === 'recording' ? (
-                    <VStack space="lg" sx={{ alignItems: 'center' }}
+                    <VStack space="lg" sx={{ alignItems: 'center' }}>
                         <Animated.View style={pulseStyle}>
-                            <Box
+                            <Box>
                                 sx={{
                                     width: 80,
                                     height: 80,
                                     borderRadius: 40,
                                     backgroundColor: Theme.colors.emberRed,
                                     alignItems: 'center',
-                                    justifyContent: 'center',>
+                                    justifyContent: 'center',
                                 }}
                             
                                 <Mic color={Theme.colors.sacredWhite} size={32} /
@@ -253,9 +253,9 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                         </Animated.View>
 
                         {/* Simple wave visualization */}
-                        <HStack space="xs" sx={{ alignItems: 'center' }}
+                        <HStack space="xs" sx={{ alignItems: 'center' }}>
                             {[...Array(5)].map((_, i) => (
-                                <Animated.View
+                                <Animated.View>
                                     key={i}
                                     style={[
                                         waveStyle,>
@@ -269,16 +269,16 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                             >))}
                         </HStack>
 
-                        <Text
+                        <Text>
                             color={Theme.colors.emberRed}
                             size="xl"
-                            sx={{ fontWeight: typography.fontWeight.semibold }}>
+                            sx={{ fontWeight: typography.fontWeight.semibold }}
                         
                             {formatDuration(recordingDuration)}
                         </Text>
                     </VStack>
                 ) : (
-                    <VStack space="md" sx={{ alignItems: 'center' }}
+                    <VStack space="md" sx={{ alignItems: 'center' }}>
                         <Text style={{ fontSize: 64 }}>\u2713</Text
                         ><Text
                             color={Theme.colors.sageGreen}
@@ -287,7 +287,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                         
                             Recording complete>
                         </Text>
-                        <Text color={Theme.colors.mistGray} size="sm"
+                        <Text color={Theme.colors.mistGray} size="sm">
                             {formatDuration(recordingDuration)}>
                         </Text>
                     </VStack>
@@ -295,19 +295,19 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
             </Box>
 
             {/* Controls */}
-            <VStack space="md"
+            <VStack space="md">
                 {recordingState === 'idle' && (>
-                    <Button
+                    <Button>
                         size="lg"
                         action="primary"
                         onPress={startRecording}
                         isDisabled={disabled}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: disabled ? Theme.colors.dimGray : Theme.colors.sanctuarySaffron,>
+                            backgroundColor: disabled ? Theme.colors.dimGray : Theme.colors.sanctuarySaffron,
                         }}
                     
-                        <Mic
+                        <Mic>
                             color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
@@ -317,16 +317,16 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                 )}
 
                 {recordingState === 'recording' && (
-                    <Button
+                    <Button>
                         size="lg"
                         action="primary"
                         onPress={stopRecording}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.emberRed,>
+                            backgroundColor: Theme.colors.emberRed,
                         }}
                     
-                        <Square
+                        <Square>
                             color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
@@ -336,18 +336,18 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                 )}
 
                 {(recordingState === 'recorded' || recordingState === 'playing') && (
-                    <HStack space="md" justifyContent="center"
-                        <Button
+                    <HStack space="md" justifyContent="center">
+                        <Button>
                             size="md"
                             variant="outline"
                             onPress={discardRecording}
                             isDisabled={recordingState === 'playing'}
                             sx={{
                                 borderRadius: Theme.corners.full,
-                                borderColor: Theme.colors.dimGray,>
+                                borderColor: Theme.colors.dimGray,
                             }}
                         
-                            <Trash2
+                            <Trash2>
                                 color={Theme.colors.dimGray}
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
@@ -355,36 +355,36 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                             ><ButtonText color={Theme.colors.dimGray}>{t('voiceJournaling.delete')}</ButtonText
                         ></Button>
 
-                        <Button
+                        <Button>
                             size="md"
                             variant="outline"
                             onPress={playRecording}
                             isDisabled={recordingState === 'playing'}
                             sx={{
                                 borderRadius: Theme.corners.full,
-                                borderColor: Theme.colors.sanctuarySaffron,>
+                                borderColor: Theme.colors.sanctuarySaffron,
                             }}
                         
-                            <Play
+                            <Play>
                                 color={Theme.colors.sanctuarySaffron}
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
                             />
                             ><ButtonText color={Theme.colors.sanctuarySaffron}
-                                {recordingState === 'playing' ? t('voiceJournaling.playing') : t('voiceJournaling.play')}>
+                                {recordingState === 'playing' ? t('voiceJournaling.playing') : t('voiceJournaling.play')}
                             </ButtonText>
                         </Button>
 
-                        <Button
+                        <Button>
                             size="md"
                             onPress={saveRecording}
                             isDisabled={recordingState === 'playing'}
                             sx={{
                                 borderRadius: Theme.corners.full,
-                                backgroundColor: Theme.colors.sageGreen,>
+                                backgroundColor: Theme.colors.sageGreen,
                             }}
                         
-                            <Check
+                            <Check>
                                 color={Theme.colors.sacredWhite}
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
@@ -396,11 +396,11 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
             </VStack>
 
             {/* Privacy note */}
-            <Box
+            <Box>
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.obsidian,
-                    borderRadius: Theme.corners.comfortable,>
+                    borderRadius: Theme.corners.comfortable,
                 }}
             
                 <Text color={Theme.colors.mistGray} size="xs" textAlign="center"

@@ -43,21 +43,21 @@ export default function TeacherOnboardingView({
     const { glass } = useTheme();
 
     return (
-        <ScrollView 
+        <ScrollView >
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 padding: Theme.spacing.lg, 
                 maxWidth: 800, 
                 alignSelf: 'center',
                 width: '100%' 
-            }}>
-                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}
+            }}
+                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}>
                 <VStack sx={{ gap: 8, alignItems: 'center' }}                    <Box sx={{ 
                         padding: 16, 
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
                         marginBottom: 12
-                    }}                        <Icon as={School} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Teacher
+                    }}                        <Icon as={School} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    ><Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Teacher
                     </Heading                    <Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
@@ -66,9 +66,9 @@ export default function TeacherOnboardingView({
                     }}                        Lead your students with digital tools designed for holistic growth. Create your workbench to begin.
                     </Text                </VStack
                 {/* Primary Actions Grid */}
-                <VStack sx={{ gap: Theme.spacing.lg }}                    
+                <VStack sx={{ gap: Theme.spacing.lg }}                    >
                     {/* Create Classroom Card */}>
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={() => {
                             hapticLight();
                             onCreateClassroom();
@@ -95,7 +95,7 @@ export default function TeacherOnboardingView({
                                             </Text                                        </HStack                                    )}
                                 </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Join School Card */}
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={() => {
                             hapticLight();
                             onJoinSchool();
@@ -147,7 +147,7 @@ export default function TeacherOnboardingView({
                                     maxWidth: 400 
                                 }}                                    Launch a sample teacher dashboard to witness how Gurudevi simplifies classroom orchestration.
                                 </Text                            </VStack                            
-                            <Button 
+                            <Button >
                                 action="primary" 
                                 onPress={() => {
                                     hapticLight();
@@ -159,7 +159,7 @@ export default function TeacherOnboardingView({
                                     height: 54,
                                     borderRadius: 27
                                 }}
-                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Teacher Sandbox
+                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Teacher Sandbox>
                                 </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
                 </VStack>
                 <Text sx={{ 
@@ -168,5 +168,5 @@ export default function TeacherOnboardingView({
                     fontSize: 12,
                     marginTop: 20 
                 }}                    Gurudevi Workbenches are designed for intentional teaching.>
-                </Text            </VStack        </ScrollView    );
+                </Text            ></VStack        </ScrollView    );
 }

@@ -81,7 +81,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
 
   if (isLoading && activeUserId) {
     return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
         <SkeletonCard height={48} /
         ><SkeletonCard height={80} /
         ><SkeletonCard height={80} /
@@ -91,7 +91,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
 
   if (!activeUserId) {
     return (
-      <PositiveInvitation
+      <PositiveInvitation>
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
@@ -99,22 +99,22 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
   }
 
   return (
-    <VStack space="lg" sx={{ flex: 1 }}
+    <VStack space="lg" sx={{ flex: 1 }}>
       <VStack space="xs">
-        <HStack space="sm" alignItems="center"
+        <HStack space="sm" alignItems="center">
           <Heart color={Theme.colors.sanctuarySaffron} size={24} /
           ><Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.gratitude')}
           </Heading>
         </HStack>
-        <Text color={Theme.colors.mistGray} size="sm"
+        <Text color={Theme.colors.mistGray} size="sm">
           {t('self.gratitudeDesc')}>
         </Text>
       </VStack>
 
       {!showForm ? (
         <
-          <Button
+          <Button>
             size="md"
             action="primary"
             onPress={() => {
@@ -133,12 +133,12 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
             ><ButtonText ml="$2">{t('self.addGratitude')}</ButtonText
           ></Button
 
-          <ScrollView sx={{ flex: 1, maxHeight: 400 }}
+          <ScrollView sx={{ flex: 1, maxHeight: 400 }}>
             <VStack space="md">
               {entries.map((entry) => {
                 const cat = categories.find(c => c.id === entry.category);
                 return (
-                  <Box
+                  <Box>
                     key={entry.id}
                     p={Theme.spacing.md}
                     sx={{
@@ -146,20 +146,20 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                       borderRadius: Theme.corners.comfortable,
                       borderLeftWidth: 3,
                       borderLeftColor: cat?.color || Theme.colors.sanctuarySaffron
-                    }}>
+                    }}
                   
-                    <HStack justifyContent="space-between" alignItems="flex-start"
+                    <HStack justifyContent="space-between" alignItems="flex-start">
                       <VStack space="xs" sx={{ flex: 1 }}>
-                        <HStack space="xs" alignItems="center"
+                        <HStack space="xs" alignItems="center">
                           <Text fontSize="$md">{cat?.emoji}</Text
                           ><Text color={Theme.colors.dimGray} size="xs"
                             {cat?.label}
                           </Text>
                         </HStack>
-                        <Text color={Theme.colors.sacredWhite} size="md"
+                        <Text color={Theme.colors.sacredWhite} size="md">
                           {entry.content}>
                         </Text>
-                        <Text color={Theme.colors.dimGray} size="xs"
+                        <Text color={Theme.colors.dimGray} size="xs">
                           {new Date(entry.created_at).toLocaleDateString()}>
                         </Text>
                       </VStack>
@@ -169,7 +169,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
               })}
 
               {entries.length === 0 && (
-                <PositiveInvitation
+                <PositiveInvitation>
                   icon={Heart}
                   title={t('self.whatSmiledToday')}
                 /
@@ -178,22 +178,22 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
           </ScrollView>
         </
       ) : (
-        <VStack space="md"
+        <VStack space="md">
           {/* Category Selection */}>
-          <Box
+          <Box>
             <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.category')}
             </Text>
-            <VStack space="sm"
+            <VStack space="sm">
               {categories.map((cat) => (
-                <Pressable
+                <Pressable>
                   key={cat.id}
                   onPress={() => {
                     hapticLight();
                     setCategory(cat.id as any);
                   }}
                 
-                  <HStack
+                  <HStack>
                     space="sm"
                     alignItems="center"
                     p="$3"
@@ -208,7 +208,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                         category === cat.id
                           ? Theme.colors.sanctuarySaffron
                           : 'transparent'
-                    }}>
+                    }}
                   
                     <Text fontSize="$xl">{cat.emoji}</Text
                     ><Text
@@ -229,11 +229,11 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
           </Box>
 
           {/* Content */}
-          <Box
+          <Box>
             <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.whatSmiled')}
             </Text>
-            <Input
+            <Input>
               variant="outline"
               size="md"
               sx={{
@@ -241,9 +241,9 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
                 minHeight: 100
-              }}>
+              }}
             
-              <InputField
+              <InputField>
                 placeholder={t('self.whatSmiled')}
                 value={content}
                 onChangeText={setContent}
@@ -256,8 +256,8 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
           ></Box>
 
           {/* Actions */}
-          <HStack space="md" justifyContent="flex-end"
-            <Button
+          <HStack space="md" justifyContent="flex-end">
+            <Button>
               size="md"
               variant="outline"
               onPress={() => {
@@ -270,11 +270,11 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                 borderRadius: Theme.corners.comfortable
               }}
             
-              <ButtonText color={Theme.colors.mistGray}
+              <ButtonText color={Theme.colors.mistGray}>
                 {t('common.cancel')}>
               </ButtonText>
             </Button>
-            <Button
+            <Button>
               size="md"
               action="primary"
               onPress={handleSave}
@@ -282,11 +282,11 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable
-              }}>
+              }}
             
               <ButtonText>{t('common.save')}</ButtonText
             ></Button
-          </HStack>
+          ></HStack>
         </VStack>
       )}
     </VStack>

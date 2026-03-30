@@ -163,7 +163,7 @@ export default function SubmissionModal({
     if (showSuccess) {
         return (
             <Modal isOpen={isOpen} onClose={() => { }}
-                <ModalBackdrop
+                <ModalBackdrop>
                     sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }}
                 />
                 ><ModalContent
@@ -176,14 +176,14 @@ export default function SubmissionModal({
                         borderRadius: Theme.corners.generous,
                     }}
                 
-                    <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}
+                    <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}>
                         <Text sx={{ fontSize: 64 }}>\u2705</Text
                         ><Heading sx={{ color: accent.reward, fontSize: 32 }}
                             {t('submission.success') || 'Success!'}>
                         </Heading>
-                        <Text
+                        <Text>
                             {...({ color: text.secondary } as any)}
-                            sx={{ textAlign: 'center' }}>
+                            sx={{ textAlign: 'center' }}
                         
                             {t('submission.successMessage') ||
                                 'Your work has been sent to the teacher.'}
@@ -195,8 +195,8 @@ export default function SubmissionModal({
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={handleCancel}
-            <ModalBackdrop
+        <Modal isOpen={isOpen} onClose={handleCancel}>
+            <ModalBackdrop>
                 sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }}
             />
             ><ModalContent
@@ -210,76 +210,76 @@ export default function SubmissionModal({
                     width: '100%',
                 }}
             
-                <VStack
+                <VStack>
                     sx={{
                         flex: 1,
                         padding: Theme.spacing.lg,
                         gap: Theme.spacing.lg,
-                    }}>
+                    }}
                 
                     {/* Header */}
-                    <HStack
+                    <HStack>
                         sx={{
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                        }}>
+                        }}
                     
-                        <Heading sx={{ fontSize: 24, color: accent.action }}
+                        <Heading sx={{ fontSize: 24, color: accent.action }}>
                             {t('submission.title') || 'Submit Work'}>
                         </Heading>
 
-                        <Button
+                        <Button>
                             variant="outline"
                             size="sm"
                             sx={{
                                 borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable,
-                            }}>
+                            }}
                             onPress={handleCancel}
                             disabled={isSubmitting}
                         
-                            <ButtonText {...({ color: text.secondary } as any)}
+                            <ButtonText {...({ color: text.secondary } as any)}>
                                 {t('common.cancel') || 'Cancel'}>
                             </ButtonText>
                         </Button>
                     </HStack>
 
                     {/* Assignment Title */}
-                    <Box
+                    <Box>
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: glass.interact.bg,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
                             borderColor: glass.interact.border,
-                        }}>
+                        }}
                     
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 14 }}
+                        <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 14 }}>
                             {t('submission.assignmentLabel') || 'Assignment'}>
                         </Text>
-                        <Text
+                        <Text>
                             {...({ color: text.primary } as any)}
-                            sx={{ fontSize: 18, fontWeight: '600' }}>
+                            sx={{ fontSize: 18, fontWeight: '600' }}
                         
                             {assignmentTitle}
                         </Text>
                     </Box>
 
                     {/* Text Input */}
-                    <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}
+                    <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
                         <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
                             {t('submission.answerLabel') || 'Your Answer'}
                         </Text>
-                        <Textarea
+                        <Textarea>
                             sx={{
                                 flex: 1,
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 200,
-                            }}>
+                            }}
                         
-                            <TextareaInput
+                            <TextareaInput>
                                 placeholder={
                                     t('submission.answerPlaceholder') ||
                                     'Type your answer here...'>
@@ -293,13 +293,13 @@ export default function SubmissionModal({
                     </VStack>
 
                     {/* Photo Attachment */}
-                    <VStack sx={{ gap: Theme.spacing.sm }}
+                    <VStack sx={{ gap: Theme.spacing.sm }}>
                         <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
                             {t('submission.photoLabel') || 'Attach Photo (Optional)'}
                         </Text>
 
                         {photoUri ? (
-                            <Box
+                            <Box>
                                 <Image
                                     >source={{ uri: photoUri }}
                                     style={{
@@ -315,20 +315,20 @@ export default function SubmissionModal({
                                     sx={{ marginTop: Theme.spacing.sm }}
                                     onPress={() => setPhotoUri(null)}
                                 
-                                    <ButtonText {...({ color: accent.danger } as any)}
+                                    <ButtonText {...({ color: accent.danger } as any)}>
                                         {t('submission.removePhoto') || 'Remove Photo'}>
                                     </ButtonText>
                                 </Button>
                             </Box>
                         ) : (
-                            <HStack sx={{ gap: Theme.spacing.md }}
-                                <Button
+                            <HStack sx={{ gap: Theme.spacing.md }}>
+                                <Button>
                                     variant="outline"
                                     sx={{
                                         flex: 1,
                                         borderColor: accent.action,
                                         borderRadius: Theme.corners.comfortable,
-                                    }}>
+                                    }}
                                     onPress={() => handlePickImage(true)}
                                     disabled={isSubmitting}
                                 
@@ -337,13 +337,13 @@ export default function SubmissionModal({
                                     </ButtonText>
                                 </Button>
 
-                                <Button
+                                <Button>
                                     variant="outline"
                                     sx={{
                                         flex: 1,
                                         borderColor: accent.action,
                                         borderRadius: Theme.corners.comfortable,
-                                    }}>
+                                    }}
                                     onPress={() => handlePickImage(false)}
                                     disabled={isSubmitting}
                                 
@@ -356,24 +356,24 @@ export default function SubmissionModal({
                     </VStack>
 
                     {/* Submit Button */}
-                    <Button
+                    <Button>
                         sx={{
                             backgroundColor: accent.reward,
                             padding: Theme.spacing.lg,
                             borderRadius: Theme.corners.comfortable,
-                        }}>
+                        }}
                         onPress={handleSubmit}
                         disabled={isSubmitting}
                     
                         {isSubmitting ? (
-                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}
+                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
                                 <Spinner {...({ color: text.inverse, size: "small" } as any)} />
                                 ><ButtonText {...({ color: text.inverse } as any)}
                                     {t('submission.submitting') || 'Turning in...'}>
                                 </ButtonText>
                             </HStack>
                         ) : (
-                            <ButtonText
+                            <ButtonText>
                                 {...({ color: text.inverse, fontWeight: '700', fontSize: 18 } as any)}
                             
                                 \u270D\uFE0F {t('submission.turnIn') || 'Turn In'}>

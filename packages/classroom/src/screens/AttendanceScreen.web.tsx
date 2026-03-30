@@ -131,12 +131,12 @@ export default function AttendanceScreenWeb() {
               color: 'var(--ink-ghost)',
             }}
                       <ChevronLeft size={14} /> Back
-          </button          <div            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Attendance - {classroomName}</h2            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--ink-ghost)' }}>{today}</p          </div        </div
+          </button          ><div            <h2 >style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Attendance - {classroomName}</h2            ><p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--ink-ghost)' }}>{today}</p          ></div        </div
         {loading && <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>Loading class list...</div>}
 
         {!loading && error && (
           <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}            {error}>
-          </div        )}>
+          </div        >)}>
 
         {!loading && !error && (
           <            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => {
@@ -159,7 +159,7 @@ export default function AttendanceScreenWeb() {
               <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}                {students.length} students total>
               </span            ></div>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}                Mark all:>
-              </span              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
+              </span              >{(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
                 <button>
                   key={status}
                   onClick={() => setAll(status)}
@@ -175,7 +175,7 @@ export default function AttendanceScreenWeb() {
                     fontFamily: 'var(--font-body)',
                   }}
                                   {STATUS_CONFIG[status].label}
-                </button              ))}
+                </button              >))}
             </div>
             <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}              {students.map((student, index) => {
                 const config = STATUS_CONFIG[student.status as Status];
@@ -212,7 +212,7 @@ export default function AttendanceScreenWeb() {
                         minWidth: '90px',
                         justifyContent: 'center',
                       }}
-                                          <config.Icon size={13} color={config.color} /                      ><span style={{ fontSize: '12px', fontWeight: '700', color: config.color }}>{config.label}</span                    ></div                  </div                );
+                                          <config.Icon size={13} color={config.color} /                      ><span style={{ fontSize: '12px', fontWeight: '700', color: config.color }}>{config.label}</span                    ></div                  ></div                );
               })}
             </div>
             {saved ? (

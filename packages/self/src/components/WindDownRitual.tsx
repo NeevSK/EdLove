@@ -235,7 +235,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           </Text>
         </HStack>
         <Progress value={progress}>
-          <ProgressFilledTrack>
+          <ProgressFilledTrack/>
             sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
           />
         </Progress>
@@ -281,7 +281,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   minHeight: 100
                 }}
               
-                <InputField>
+                <InputField/>
                   placeholder={currentStepData.placeholder}
                   value={currentStepData.value || ''}
                   onChangeText={currentStepData.setValue || (() => { })}
@@ -292,7 +292,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 /
               </Input>
             </>>>>>>>>Box
-          )}>
+          )}
 
           {currentStepData.id === 'breathe' && (
             <VStack space="md" alignItems="center" mt="$4">

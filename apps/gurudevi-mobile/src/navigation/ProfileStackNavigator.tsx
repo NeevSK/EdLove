@@ -30,7 +30,7 @@ function ProfileStackCapabilities({ children }: { children: React.ReactNode }) {
                 goBack: () => navigation.goBack(),
             }}
                     {children}
-        </ProfileNavigationProvider    );
+        </ProfileNavigationProvider    >);
 }
 
 export default function ProfileStackNavigator() {
