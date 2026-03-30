@@ -100,23 +100,23 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   if (completed) {
     return (
       <VStack space="lg" sx={{ flex: 1 }}
-        <VStack space="xs"
+        <VStack space="xs">
           <HStack space="sm" alignItems="center"
             <Moon color={Theme.colors.sanctuarySaffron} size={24} /
             ><Heading color={Theme.colors.sacredWhite} size="lg"
               {t('self.windDown')}
-            </Heading
-          </HStack
+            </Heading>
+          </HStack>
           <Text color={Theme.colors.mistGray} size="sm"
-            {t('self.windDownDesc')}
-          </Text
-        </VStack
+            {t('self.windDownDesc')}>
+          </Text>
+        </VStack>
 
         <Box
           p={Theme.spacing.xl}
           sx={{
             backgroundColor: Theme.colors.ink,
-            borderRadius: Theme.corners.comfortable
+            borderRadius: Theme.corners.comfortable>
           }}
         
           <VStack space="lg" alignItems="center"
@@ -127,38 +127,38 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 color={Theme.colors.sacredWhite}
                 size="xl"
                 bold
-                textAlign="center"
+                textAlign="center">
               
                 {t('self.windDownComplete')}
-              </Text
+              </Text>
               <Text
                 color={Theme.colors.mistGray}
                 size="md"
-                textAlign="center"
+                textAlign="center">
               
                 {t('self.windDownCompleteDesc')}
-              </Text
-            </VStack
+              </Text>
+            </VStack>
 
             {/* Summary */}
             <VStack space="md" w="$full" mt="$4"
-              {wentWell && (
+              {wentWell && (>
                 <Box
                   p="$3"
                   sx={{
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
-                    borderLeftColor: Theme.colors.sanctuarySaffron
+                    borderLeftColor: Theme.colors.sanctuarySaffron>
                   }}
                 
                   <Text color={Theme.colors.dimGray} size="xs" mb="$1"
-                    {t('self.wentWell')}
-                  </Text
+                    {t('self.wentWell')}>
+                  </Text>
                   <Text color={Theme.colors.sacredWhite} size="sm"
-                    {wentWell}
-                  </Text
-                </Box
+                    {wentWell}>
+                  </Text>
+                </Box>
               )}
 
               {tomorrowIntent && (
@@ -168,18 +168,18 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
-                    borderLeftColor: Theme.colors.sanctuarySaffron
+                    borderLeftColor: Theme.colors.sanctuarySaffron>
                   }}
                 
                   <Text color={Theme.colors.dimGray} size="xs" mb="$1"
-                    {t('self.tomorrowIntentLabel')}
-                  </Text
+                    {t('self.tomorrowIntentLabel')}>
+                  </Text>
                   <Text color={Theme.colors.sacredWhite} size="sm"
-                    {tomorrowIntent}
-                  </Text
-                </Box
+                    {tomorrowIntent}>
+                  </Text>
+                </Box>
               )}
-            </VStack
+            </VStack>
 
             <Button
               size="md"
@@ -188,16 +188,16 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
               mt="$4"
               sx={{
                 borderColor: Theme.colors.dimGray,
-                borderRadius: Theme.corners.comfortable
+                borderRadius: Theme.corners.comfortable>
               }}
             
               <ButtonText color={Theme.colors.mistGray}
-                {t('self.startAnother')}
-              </ButtonText
-            </Button
-          </VStack
-        </Box
-      </VStack
+                {t('self.startAnother')}>
+              </ButtonText>
+            </Button>
+          </VStack>
+        </Box>
+      </VStack>
     );
   }
 
@@ -212,34 +212,34 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}
-      <VStack space="xs"
+      <VStack space="xs">
         <HStack space="sm" alignItems="center"
           <Moon color={Theme.colors.sanctuarySaffron} size={24} /
           ><Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.windDown')}
-          </Heading
-        </HStack
+          </Heading>
+        </HStack>
         <Text color={Theme.colors.mistGray} size="sm"
-          {t('self.windDownDesc')}
-        </Text
-      </VStack
+          {t('self.windDownDesc')}>
+        </Text>
+      </VStack>
 
       {/* Progress Bar */}
       <VStack space="xs"
-        <HStack justifyContent="space-between"
+        <HStack justifyContent="space-between">
           <Text color={Theme.colors.mistGray} size="xs"
-            {t('self.step')} {currentStep + 1} {t('self.stepOf')} {steps.length}
-          </Text
+            {t('self.step')} {currentStep + 1} {t('self.stepOf')} {steps.length}>
+          </Text>
           <Text color={Theme.colors.mistGray} size="xs"
-            {Math.round(progress)}%
-          </Text
-        </HStack
+            {Math.round(progress)}%>
+          </Text>
+        </HStack>
         <Progress value={progress}
           <ProgressFilledTrack
             sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
-          /
-        </Progress
-      </VStack
+          />
+        </Progress>
+      </VStack>
 
       {/* Current Step */}
       <Box
@@ -247,33 +247,33 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         sx={{
           backgroundColor: Theme.colors.ink,
           borderRadius: Theme.corners.comfortable,
-          minHeight: 250
+          minHeight: 250>
         }}
       
         <VStack space="lg" sx={{ flex: 1 }}
-          <VStack space="xs"
+          <VStack space="xs">
             <Text
               color={Theme.colors.sanctuarySaffron}
               size="sm"
-              bold
+              bold>
             
               {currentStepData.id === 'breathe' ? '<' : ''} Step {currentStep + 1}
-            </Text
+            </Text>
             <Heading color={Theme.colors.sacredWhite} size="md"
-              {currentStepData.title}
-            </Heading
+              {currentStepData.title}>
+            </Heading>
             {currentStepData.description && (
               <Text color={Theme.colors.mistGray} size="md"
-                {currentStepData.description}
-              </Text
+                {currentStepData.description}>
+              </Text>
             )}
-          </VStack
+          </VStack>
 
           {currentStepData.input && (
             <Box
               <Input
                 variant="outline"
-                >size="md"
+                >>>size="md"
                 sx={{
                   backgroundColor: Theme.colors.ink,
                   borderWidth: 1,
@@ -290,9 +290,9 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   placeholderTextColor={Theme.colors.dimGray}
                   sx={{ textAlignVertical: 'top' }}
                 /
-              </Input
-            </>Box
-          )}
+              </Input>
+            </>>>Box
+          )}>>
 
           {currentStepData.id === 'breathe' && (
             <VStack space="md" alignItems="center" mt="$4"
@@ -303,18 +303,18 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   borderRadius: 50,
                   backgroundColor: Theme.colors.sanctuarySaffron + '20',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center'>
                 }}
               
                 <Text fontSize="$4xl"><</Text
-              </Box
-              ><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
+              </Box>
+              >>><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
                 {t('self.breatheInstructions')}
-              </Text
-            </VStack
+              </Text>
+            </VStack>
           )}
-        </VStack
-      </Box
+        </VStack>
+      </Box>
 
       {/* Navigation */}
       <HStack space="md" justifyContent="space-between"
@@ -326,19 +326,19 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           sx={{
             borderColor: Theme.colors.ink,
             borderRadius: Theme.corners.comfortable,
-            flex: 1
+            flex: 1>
           }}
         
           <ButtonText color={Theme.colors.mistGray}
-            {t('common.back')}
-          </ButtonText
-        </Button
+            {t('common.back')}>
+          </ButtonText>
+        </Button>
         <Button
           size="md"
           action="primary"
           onPress={handleNext}
           isDisabled={
-            currentStepData.input && !(currentStepData.value as string)?.trim()
+            currentStepData.input && !(currentStepData.value as string)?.trim()>
           }
           sx={{
             backgroundColor: Theme.colors.sanctuarySaffron,
@@ -347,10 +347,10 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           }}
         
           <ButtonText
-            {currentStep === steps.length - 1 ? t('common.complete') : t('common.next')}
-          </ButtonText
-        </Button
-      </HStack
-    </VStack
+            {currentStep === steps.length - 1 ? t('common.complete') : t('common.next')}>
+          </ButtonText>
+        </Button>
+      </HStack>
+    </VStack>
   );
 }

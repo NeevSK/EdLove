@@ -397,7 +397,7 @@ export default function CreateClassroomModal({
                                     action="secondary"
                                     onPress={handleClose}
                                     sx={{ flex: 1, borderColor: glass.interact.border }}
-                                    isDisabled={isSubmitting}
+                                    isDisabled={isSubmitting}>
                                                                     <ButtonText {...({ color: text.secondary } as any)}                                        {t('common.cancel') || 'Cancel'}
                                     </ButtonText                                </Button                                <Button
                                     action="primary"
@@ -409,7 +409,7 @@ export default function CreateClassroomModal({
                                     }}
                                     isDisabled={!state.details.name.trim() || !state.details.handle.trim()}
                                                                     <ButtonText {...({ color: text.inverse } as any)}                                        {'Next \u2014 Academic Focus'}
-                                    </ButtonText                                </Button                            </                        )}
+                                    </ButtonText                                </Button                            </                        )}>
                         {state.step === 2 && (
                             <                                <Button
                                     variant="outline"
@@ -424,13 +424,13 @@ export default function CreateClassroomModal({
                                     sx={{
                                         flex: 2,
                                         backgroundColor: Theme.colors.sanctuarySaffron,
-                                        borderRadius: Theme.corners.comfortable,
+                                        borderRadius: Theme.corners.comfortable,>
                                     }}
                                     isDisabled={isSubmitting || (state.aesthetics.classType === 'subject' && !state.academic.subject.trim())}
                                                                     {isSubmitting ? (
                                         <Spinner {...({ color: text.inverse, size: "small" } as any)} /                                    >) : (
                                         <ButtonText {...({ color: text.inverse } as any)}                                            {mode === 'edit' ? 'Save' : 'Establish Sanctuary'}
-                                        </ButtonText                                    )}
+                                        </ButtonText                                    )}>
                                 </Button                            </                        )}
                         {state.step === 3 && (
                             <Button
@@ -439,10 +439,10 @@ export default function CreateClassroomModal({
                                 sx={{
                                     flex: 1,
                                     backgroundColor: Theme.colors.sanctuarySaffron,
-                                    borderRadius: Theme.corners.comfortable,
+                                    borderRadius: Theme.corners.comfortable,>
                                 }}
                                                             <ButtonText {...({ color: text.inverse } as any)}                                    {'Enter Classroom Dashboard'}
-                                </ButtonText                            </Button                        )}
+                                </ButtonText                            </Button                        )}>
                     </HStack                }
                             <VStack sx={{ gap: Theme.spacing.xl }}                    {error && (
                         <Box
@@ -451,10 +451,10 @@ export default function CreateClassroomModal({
                                 backgroundColor: `${accent.danger}30`,
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
-                                borderColor: accent.danger,
+                                borderColor: accent.danger,>
                             }}
                                                     <Text sx={{ color: accent.danger, fontSize: Theme.typography.fontSize.sm }}                                {error}
-                            </Text                        </Box                    )}
+                            </Text                        </Box                    )}>
 
                     {state.step === 1 && (
                         <                            {(mode === 'create' || mode === 'edit') && (
@@ -493,7 +493,7 @@ export default function CreateClassroomModal({
                                                                             <InputField
                                             placeholder="e.g. grade-10-maths"
                                             value={state.details.handle}
-                                            onChangeText={(textValue: string) =                                                updateDetails({ handle: textValue.toLowerCase().replace(/[^a-z0-9_-]/g, '') })
+                                            onChangeText={(textValue: string) =                                                updateDetails({ handle: textValue.toLowerCase().replace(/[^a-z0-9_-]/g, '') })>
                                             }
                                             color={colors.text}
                                             placeholderTextColor={colors.textTertiary}
@@ -543,7 +543,7 @@ export default function CreateClassroomModal({
                                                                 borderColor: state.academic.sectionId === section.id ? Theme.colors.sanctuarySaffron : colors.border,
                                                             }}
                                                                                                                     <ButtonText color={state.academic.sectionId === section.id ? text.inverse : colors.textSecondary}                                                                {section.name}
-                                                            </ButtonText                                                        </Button                                                    ))}
+                                                            </ButtonText                                                        </Button                                                    ))}>
                                                 </Box                                            </FormControl                                        </VStack                                    )}
                                 </Box                            )}
                         </                    )}
@@ -563,7 +563,7 @@ export default function CreateClassroomModal({
                                                         borderColor: state.academic.gradeId === grade.id ? Theme.colors.sanctuarySaffron : colors.border,
                                                     }}
                                                                                                     <ButtonText color={state.academic.gradeId === grade.id ? text.inverse : colors.textSecondary}                                                        {grade.number}
-                                                    </ButtonText                                                </Button                                            ))}
+                                                    </ButtonText                                                </Button                                            ))}>
                                         </Box                                    </FormControl                                </VStack                            )}
 
                             <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.labelSubject') || 'Core Subject'}
@@ -578,7 +578,7 @@ export default function CreateClassroomModal({
                                                 borderColor: state.academic.subject === sub.id ? Theme.colors.sanctuarySaffron : colors.border,
                                             }}
                                                                                     <ButtonText color={state.academic.subject === sub.id ? text.inverse : colors.textSecondary}                                                {sub.en}
-                                            </ButtonText                                        </Button                                    ))}
+                                            </ButtonText                                        </Button                                    ))}>
                                 </HStack                            </FormControl
                             <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.theme') || 'Sanctuary Theme'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack sx={{ flexWrap: 'wrap', gap: 12, paddingVertical: 4 }}                                    {CLASSROOM_THEMES.map((theme) => (
@@ -609,7 +609,7 @@ export default function CreateClassroomModal({
                                                 height: 48
                                             }}
                                                                                     <ButtonText color={state.aesthetics.classType === type ? text.inverse : colors.textSecondary}                                                {type === 'own' ? (t('classroom.roleClassTeacher') || 'Class Teacher') : (t('classroom.roleSubjectTeacher') || 'Subject Teacher')}
-                                            </ButtonText                                        </Button                                    ))}
+                                            </ButtonText                                        </Button                                    ))}>
                                 </HStack                            </FormControl                        </                    )}
 
                     {state.step === 3 && (

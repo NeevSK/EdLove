@@ -96,7 +96,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                     backgroundColor: colors.primary,
                     paddingHorizontal: Theme.spacing.lg,
                     paddingTop: Theme.spacing.xl,
-                    paddingBottom: Theme.spacing['2xl'],
+                    paddingBottom: Theme.spacing['2xl'],>
                 }}
                             <Box
                     sx={{
@@ -106,7 +106,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         width: 220,
                         height: 220,
                         borderRadius: 110,
-                        backgroundColor: `${colors.action}14`,
+                        backgroundColor: `${colors.action}14`,>
                     }}
                 /                ><Box
                     sx={{
@@ -145,7 +145,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                                     <Text
                                 size="xs"
                                 color={i18n.language?.startsWith(lang.code) ? Theme.colors.sacredWhite : colors.textSecondary}
-                                bold={i18n.language?.startsWith(lang.code)}
+                                bold={i18n.language?.startsWith(lang.code)}>
                                                             {lang.code.toUpperCase()}
                             </Text                        </Pressable                    ))}
                     </HStack                </Box
@@ -157,10 +157,10 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                 borderRadius: Theme.corners.full,
                                 backgroundColor: `${colors.action}14`,
                                 borderWidth: 1,
-                                borderColor: `${colors.action}30`,
+                                borderColor: `${colors.action}30`,>
                             }}
                                                     <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.6 }}                                SANCTUARY FOR TEACHERS
-                            </Text                        </Box
+                            </Text                        </Box>
                         <VStack space="md"                            <Box
                                 sx={{
                                     width: 156,
@@ -176,14 +176,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                     shadowOffset: { width: 0, height: 10 },
                                     shadowOpacity: 0.18,
                                     shadowRadius: 24,
-                                    elevation: 10,
+                                    elevation: 10,>
                                 }}
                                                             <Box
                                     sx={{
                                         position: 'absolute',
                                         inset: 10,
                                         borderRadius: 32,
-                                        backgroundColor: `${colors.action}08`,
+                                        backgroundColor: `${colors.action}08`,>
                                     }}
                                 /                                ><Image
                                     source={LOGO}
@@ -196,7 +196,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                     size="4xl"
                                     textAlign="center"
                                     sx={{ letterSpacing: -1.8, fontWeight: '$bold' }}
-                                                                    Gurudevi
+                                                                    Gurudevi>
                                 </Heading                                <Text
                                     color={colors.textSecondary}
                                     size="lg"
@@ -205,7 +205,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                                                     {t('welcome.subtitle')}
                                 </Text                            </VStack                        </VStack
                         <HStack space="sm" justifyContent="center" sx={{ flexWrap: 'wrap' }}                            {[
-                                { label: 'Self', tone: colors.action },
+                                { label: 'Self', tone: colors.action },>
                                 { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
                                 { label: 'Community', tone: Theme.colors.gurudeviViolet },
                                 { label: 'Library', tone: Theme.colors.success },
@@ -218,10 +218,10 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         borderRadius: Theme.corners.full,
                                         backgroundColor: `${pillar.tone}12`,
                                         borderWidth: 1,
-                                        borderColor: `${pillar.tone}30`,
+                                        borderColor: `${pillar.tone}30`,>
                                     }}
                                                                     <Text size="xs" color={pillar.tone} bold                                        {pillar.label}
-                                    </Text                                </Box                            ))}
+                                    </Text                                </Box                            ))}>
                         </HStack                    </VStack
                     <Box
                         sx={{
@@ -234,10 +234,10 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                             shadowOffset: { width: 0, height: 8 },
                             shadowOpacity: 0.1,
                             shadowRadius: 20,
-                            elevation: 4,
+                            elevation: 4,>
                         }}
                                             <VStack space="xl"                            <VStack space="sm"                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                    BEGIN QUIETLY
-                                </Text                                <Text color={colors.textSecondary} size="md"                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.
+                                </Text                                <Text color={colors.textSecondary} size="md"                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.>
                                 </Text                            </VStack
                             <VStack space="lg"                                <HStack space="md" alignItems="center" justifyContent="center"                                <Checkbox
                                     size="md"
@@ -256,7 +256,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                             borderWidth: 2,
                                             ':checked': {
                                                 backgroundColor: 'transparent',
-                                                borderColor: colors.action,
+                                                borderColor: colors.action,>
                                             },
                                             ':active': {
                                                 backgroundColor: 'transparent',
@@ -279,11 +279,11 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         elevation: 2,
                                         width: '100%',
                                         ':active': {
-                                            opacity: 0.8
+                                            opacity: 0.8>
                                         }
                                     }}
                                                                     <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}
-                                    </ButtonText                                </Button
+                                    </ButtonText                                </Button>
                                 <Button
                                     size="lg"
                                     variant="outline"
@@ -294,10 +294,10 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         height: 54,
                                         borderWidth: 1,
                                         width: '100%',
-                                        backgroundColor: 'transparent',
+                                        backgroundColor: 'transparent',>
                                     }}
                                                                     <ButtonText color={colors.textSecondary} fontWeight="$medium"                                        {t('welcome.login')}
-                                    </ButtonText                                </Button                            </VStack
+                                    </ButtonText                                </Button                            </VStack>
                             <Text color={colors.textTertiary} size="xs" textAlign="center"                                {t('welcome.footer')}
-                            </Text                        </VStack                    </Box                </VStack            </Box        </ScreenWrapper    );
+                            </Text                        </VStack                    </Box                </VStack            </Box        </ScreenWrapper    );>
 }

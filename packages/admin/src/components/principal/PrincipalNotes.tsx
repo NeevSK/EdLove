@@ -244,13 +244,13 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     borderLeftColor: note.is_done ? colors.border : meta.color,
                     padding: Theme.spacing.md,
                     marginBottom: Theme.spacing.sm,
-                    opacity: note.is_done ? 0.6 : 1,
+                    opacity: note.is_done ? 0.6 : 1,>
                 }}
             
                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
-                    {/* Left: check-off (todos) or type icon */}
+                    {/* Left: check-off (todos) or type icon */}>
                     <HStack sx={{ gap: 8, alignItems: 'center', flex: 1 }}
-                        {isTodo ? (
+                        {isTodo ? (>
                             <TouchableOpacity
                                 onPress={() => handleToggleDone(note)}
                                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -259,7 +259,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                     ? <CheckSquare size={18} color={colors.textTertiary} /
                                     >: <Square size={18} color={meta.color} /
                                 >}
-                            </TouchableOpacity
+                            </TouchableOpacity>
                         ) : (
                             <NoteIcon size={14} color={note.is_done ? colors.textTertiary : meta.color} /
                         >)}
@@ -269,12 +269,12 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 fontWeight: '700',
                                 color: note.is_done ? colors.textTertiary : meta.color,
                                 textTransform: 'uppercase',
-                                letterSpacing: 0.5,
+                                letterSpacing: 0.5,>
                             }}
                         
                             {meta.label}
-                        </Text
-                    </HStack
+                        </Text>
+                    </HStack>
 
                     {/* Right: time + actions */}
                     <HStack sx={{ gap: 10, alignItems: 'center' }}
@@ -297,8 +297,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         
                             <X size={14} color={colors.textTertiary} /
                         ></TouchableOpacity
-                    </HStack
-                </HStack
+                    </HStack>
+                </HStack>
 
                 {/* Content */}
                 <Text
@@ -307,11 +307,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         color: note.is_done ? colors.textTertiary : colors.text,
                         marginTop: Theme.spacing.xs,
                         lineHeight: 20,
-                        textDecorationLine: note.is_done ? 'line-through' : 'none',
+                        textDecorationLine: note.is_done ? 'line-through' : 'none',>
                     }}
                 
                     {note.content}
-                </Text
+                </Text>
 
                 {/* Context tag */}
                 {(note.context_teacher || note.context_classroom) && (
@@ -319,10 +319,10 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         <BookMarked size={11} color={colors.textTertiary} /
                         ><Text sx={{ fontSize: 11, color: colors.textTertiary }}
                             {note.context_teacher?.full_name || (note.context_classroom as any)?.name}
-                        </Text
-                    </HStack
+                        </Text>
+                    </HStack>
                 )}
-            </Box
+            </Box>
         );
     };
 
@@ -336,15 +336,15 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     textTransform: 'uppercase',
                     letterSpacing: 1,
                     marginBottom: Theme.spacing.sm,
-                    paddingHorizontal: Theme.spacing.lg,
+                    paddingHorizontal: Theme.spacing.lg,>
                 }}
             
                 {group.label}
-            </Text
+            </Text>
             <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}
                 {group.data.map((note) => renderNoteCard({ item: note }))}
-            </VStack
-        </VStack
+            </VStack>
+        </VStack>
     );
 
     // \u2500\u2500 Render \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -364,7 +364,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 keyboardVerticalOffset={100}
             
                 <VStack sx={{ flex: 1 }}
-                    {loading ? (
+                    {loading ? (>
                         <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
                         ></Box
@@ -395,7 +395,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 backgroundColor: colors.secondary,
                                 borderTopWidth: 1,
                                 borderTopColor: colors.border,
-                                padding: Theme.spacing.md,
+                                padding: Theme.spacing.md,>
                             }}
                         
                             {/* Type selector */}
@@ -425,11 +425,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                                 }}
                                             
                                                 {meta.label}
-                                            </Text
-                                        </TouchableOpacity
+                                            </Text>
+                                        </TouchableOpacity>
                                     );
                                 })}
-                            </View
+                            </View>
 
                             <TextInput
                                 value={draft}
@@ -439,7 +439,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 multiline
                                 autoFocus
                                 style={[
-                                    styles.textInput,
+                                    styles.textInput,>
                                     {
                                         color: colors.text,
                                         backgroundColor: colors.tertiary,
@@ -454,14 +454,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                     style={styles.cancelBtn}
                                 
                                     <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}
-                                        Cancel
-                                    </Text
-                                </TouchableOpacity
+                                        Cancel>
+                                    </Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={handleSave}
                                     disabled={!draft.trim() || saving}
                                     style={[
-                                        styles.saveBtn,
+                                        styles.saveBtn,>
                                         { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.tertiary },
                                     ]}
                                 
@@ -469,9 +469,9 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                         ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /
                                         >: <Text sx={{ fontSize: 14, fontWeight: '700', color: draft.trim() ? Theme.colors.sacredWhite : colors.textTertiary }}>Save</Text
                                     >}
-                                </TouchableOpacity
-                            </HStack
-                        </Box
+                                </TouchableOpacity>
+                            </HStack>
+                        </Box>
                     ) : (
                         <Box sx={{ position: 'absolute', bottom: 24, right: 20 }}
                             <TouchableOpacity
@@ -481,11 +481,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             
                                 <NotebookPen size={20} color={Theme.colors.sacredWhite} /
                             ></TouchableOpacity
-                        </Box
+                        </Box>
                     )}
-                </VStack
-            </KeyboardAvoidingView
-        </ScreenWrapper
+                </VStack>
+            </KeyboardAvoidingView>
+        </ScreenWrapper>
     );
 }
 

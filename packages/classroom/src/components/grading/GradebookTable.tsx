@@ -55,7 +55,7 @@ export default function GradebookTable({
         if (grading_mode === 'marks') {
             return (
                 <Text sx={{ color: Theme.colors.inkTruth, fontWeight: '700' }}
-                    {grade.marks}/100
+                    {grade.marks}/>100
                 </Text
             );
         }
@@ -81,7 +81,7 @@ export default function GradebookTable({
                         {grade.marks}
                     </Text
                     <Text sx={{ color: Theme.colors.starlightGray }}>\u00B7</Text
-                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}
+                    ><Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}
                         {letterGrade}
                     </Text
                 </HStack
@@ -102,7 +102,7 @@ export default function GradebookTable({
             showRanks={show_ranks}
             renderGradeDisplay={renderGradeDisplay}
         /
-    ), [sortedGrades.length, studentNames, show_ranks, t, renderGradeDisplay]);
+    >), [sortedGrades.length, studentNames, show_ranks, t, renderGradeDisplay]);
 
     // Key extractor
     const keyExtractor = useCallback((item: StudentGrade) => item.id, []);
@@ -172,7 +172,7 @@ export default function GradebookTable({
                     maxToRenderPerBatch={10}
                     windowSize={5}
                 /
-            </VStack
+            ></VStack
         </Box
     );
 }

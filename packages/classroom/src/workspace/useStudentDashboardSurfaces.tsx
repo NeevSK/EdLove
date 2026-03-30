@@ -91,7 +91,7 @@ function QuickAction({
             sx={{
                 flex: 1,
                 gap: Theme.spacing.xs,
-                opacity: disabled ? 0.5 : 1,
+                opacity: disabled ? 0.5 : 1,>
             }}
                     <Box
                 asChild
@@ -103,7 +103,7 @@ function QuickAction({
                     justifyContent: 'center',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: colors.border,>
                 }}
                             <button onClick={disabled ? undefined : onPress as any}                    <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} /                ></button            </Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700' }}                {label}
             </Text        </VStack    );
@@ -131,7 +131,7 @@ function StatWidget({
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
                 borderColor: colors.border,
-                minHeight: 100,
+                minHeight: 100,>
             }}
                     <VStack sx={{ gap: 4 }}                <LucideIcon color={color || colors.textSecondary} size={20} /                ><Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}
                 </Text                <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700' }}                    {value}

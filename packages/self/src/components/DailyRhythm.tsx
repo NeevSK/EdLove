@@ -131,7 +131,7 @@ function DailyRhythmContent() {
 
     return (
         <VStack space="md" sx={{ flex: 1 }}
-            {/* Guest Mode Banner */}
+            {/* Guest Mode Banner */}>
             {isGuest && (
                 <Box
                     p="$3"
@@ -139,21 +139,21 @@ function DailyRhythmContent() {
                         backgroundColor: colors.secondary,
                         borderRadius: Theme.corners.comfortable,
                         borderLeftWidth: 4,
-                        borderLeftColor: Theme.colors.sanctuarySaffron
+                        borderLeftColor: Theme.colors.sanctuarySaffron>
                     }}
                 
                     <HStack space="sm" alignItems="center"
                         <Cloud size={20} color={Theme.colors.sanctuarySaffron} /
                         ><Text size="sm" color={colors.text} sx={{ flex: 1 }}
                             \uD83D\uDCBE {t('self.guestMode', { defaultValue: 'Guest Mode - Data saved locally' })}
-                        </Text
-                    </HStack
-                </Box
+                        </Text>
+                    </HStack>
+                </Box>
             )}
 
             {/* Header & Day Picker */}
             <HStack space="sm" justifyContent="space-between" alignItems="center"
-                <HStack space="xs"
+                <HStack space="xs">
                     {DAYS.map((day) => (
                         <Pressable
                             key={day.id}
@@ -170,11 +170,11 @@ function DailyRhythmContent() {
                             }}
                         
                             <Text bold={activeDay === day.id} color={activeDay === day.id ? Theme.colors.sacredWhite : Theme.colors.mistGray}
-                                {day.label}
-                            </Text
-                        </Pressable
+                                {day.label}>
+                            </Text>
+                        </Pressable>
                     ))}
-                </HStack
+                </HStack>
                 <HStack space="sm"
                     <Button
                         size="sm"
@@ -193,8 +193,8 @@ function DailyRhythmContent() {
                     
                         <Maximize2 size={20} color={Theme.colors.sanctuarySaffron} /
                     ></Button
-                </HStack
-            </HStack
+                </HStack>
+            </HStack>
 
             {/* List */}
             {loading && periods.length === 0 ? (
@@ -211,7 +211,7 @@ function DailyRhythmContent() {
                 /
             >) : (
                 <ScrollView showsVerticalScrollIndicator={false}
-                    <VStack space="md"
+                    <VStack space="md">
                         {periods.map((period) => {
                             const active = isPeriodActive(period.start_time || '', period.end_time || '');
                             const endHour = (period.end_time || '00:00').split(':')[0];
@@ -242,41 +242,41 @@ function DailyRhythmContent() {
                                             borderWidth: 1,
                                             borderColor: borderColor,
                                             opacity: passed ? 0.6 : 1,
-                                            ... (active ? Theme.shadows.md : {})
+                                            ... (active ? Theme.shadows.md : {})>
                                         }}
                                     
                                         <HStack space="md" alignItems="center"
-                                            <VStack alignItems="center" sx={{ width: 60 }}
+                                            <VStack alignItems="center" sx={{ width: 60 }}>
                                                 <Text size="xs" color={Theme.colors.mistGray}>{period.start_time?.slice(0, 5)}</Text
                                                 ><Box sx={{ width: 1, height: 10, backgroundColor: Theme.colors.dimGray, my: 2 }} /
                                                 ><Text size="xs" color={Theme.colors.mistGray}>{period.end_time?.slice(0, 5)}</Text
                                             ></VStack
 
                                             <VStack sx={{ flex: 1 }}
-                                                <HStack justifyContent="space-between" alignItems="center"
+                                                <HStack justifyContent="space-between" alignItems="center">
                                                     <Heading size="sm" color={active ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite}
-                                                        {period.subject || period.activity}
-                                                    </Heading
+                                                        {period.subject || period.activity}>
+                                                    </Heading>
                                                     {active && (
                                                         <Box px="$2" py="$0.5" sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: '$full' }}
                                                             <Text size="2xs" color={Theme.colors.sacredWhite} bold>{t('common.now') || 'NOW'}</Text
                                                         ></Box
                                                     )}
-                                                </HStack
+                                                </HStack>
                                                 <HStack space="xs" alignItems="center"
                                                     <Text size="xs" color={Theme.colors.mistGray}>{period.class_name}</Text
                                                     >{period.type === 'relief' && (
                                                         <Text size="xs" color={Theme.colors.emberRed} italic>({t('self.relief')})</Text
                                                     >)}
-                                                </HStack
-                                            </VStack
-                                        </HStack
-                                    </Box
-                                </Pressable
+                                                </HStack>
+                                            </VStack>
+                                        </HStack>
+                                    </Box>
+                                </Pressable>
                             );
                         })}
-                    </VStack
-                </ScrollView
+                    </VStack>
+                </ScrollView>
             )}
 
             {/* Editor Modal */}
@@ -286,13 +286,13 @@ function DailyRhythmContent() {
                     <ModalHeader
                         <Heading >size="lg" color={Theme.colors.sanctuarySaffron}
                             {editingPeriod?.id ? t('self.editPeriod') : t('self.newPeriod')}
-                        </Heading
+                        </Heading>
                         <ModalCloseButton
                             <CloseIcon >color={Theme.colors.mistGray} /
                         ></ModalCloseButton
-                    </ModalHeader
+                    </ModalHeader>
                     <ModalBody
-                        <VStack space="lg" pb="$6"
+                        <VStack space="lg" pb="$6">
                             <Input
                                 <InputField
                                     placeholder={t('self.subjectPlaceholder')}
@@ -300,7 +300,7 @@ function DailyRhythmContent() {
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, subject: val })}
                                     color={Theme.colors.sacredWhite}
                                 /
-                            </Input
+                            </Input>
                             <Input
                                 <InputField
                                     placeholder={t('self.classPlaceholder')}
@@ -308,10 +308,10 @@ function DailyRhythmContent() {
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, class_name: val })}
                                     color={Theme.colors.sacredWhite}
                                 /
-                            </Input
+                            </Input>
 
                             <HStack space="md"
-                                <Input style={{ flex: 1 }}
+                                <Input style={{ flex: 1 }}>
                                     <InputField
                                         placeholder={t('self.startPlaceholder')}
                                         value={editingPeriod?.start_time || ''}
@@ -327,7 +327,7 @@ function DailyRhythmContent() {
                                         color={Theme.colors.sacredWhite}
                                     /
                                 ></Input
-                            </HStack
+                            </HStack>
 
                             <Select
                                 selectedValue={editingPeriod?.type}
@@ -338,17 +338,17 @@ function DailyRhythmContent() {
                                     ><SelectIcon as={ChevronDown} mr="$3" /
                                 ></SelectTrigger
                                 <SelectPortal
-                                    <SelectBackdrop /
+                                    <SelectBackdrop />
                                     <SelectContent
                                         <SelectItem >label={t('self.subject')} value="subject" /
                                         ><SelectItem label={t('self.relief')} value="relief" /
                                         ><SelectItem label={t('self.interval')} value="interval" /
                                     ></SelectContent
-                                </SelectPortal
-                            </Select
+                                </SelectPortal>
+                            </Select>
 
                             <HStack space="md" mt="$4"
-                                {editingPeriod?.id && (
+                                {editingPeriod?.id && (>
                                     <Button
                                         variant="outline"
                                         action="negative"
@@ -362,16 +362,16 @@ function DailyRhythmContent() {
                                 <Button
                                     action="primary"
                                     sx={{ flex: 2, backgroundColor: Theme.colors.sanctuarySaffron }}
-                                    onPress={handleSave}
+                                    onPress={handleSave}>
                                 
                                     <ButtonText color={Theme.colors.sacredWhite}>{t('common.save')}</ButtonText
                                 ></Button
-                            </HStack
-                        </VStack
-                    </ModalBody
-                </ModalContent
-            </Modal
-        </VStack 
+                            </HStack>
+                        </VStack>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        </VStack >
     );
 }
 

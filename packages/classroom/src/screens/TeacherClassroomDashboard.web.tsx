@@ -205,10 +205,10 @@ export default function TeacherClassroomDashboardWeb() {
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
                                     borderColor: colors.border,
-                                    padding: Theme.spacing.md,
+                                    padding: Theme.spacing.md,>
                                 }}
                                                             <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                    <VStack sx={{ flex: 1 }}                                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                            Classroom roster
-                                        </Heading                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                            The registry stays central, while group management now lives beside direct student actions.
+                                        </Heading                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                            The registry stays central, while group management now lives beside direct student actions.>
                                         </Text                                    </VStack                                    <Button
                                         size="sm"
                                         variant="outline"
@@ -304,11 +304,11 @@ export default function TeacherClassroomDashboardWeb() {
                                                                                     <ButtonText color={Theme.colors.sacredWhite}>New Module</ButtonText                                        ></Button                                    )}
                                     <StatPill label="Students" value={String(students.length)} colors={colors} /                                    ><StatPill label="Subject" value={classroom?.subject || 'Classroom'} colors={colors} /                                    ><StatPill label="Current lane" value={activeTone.label} colors={colors} highlightColor={activeTone.color} highlightTint={activeTone.tint} /                                    ><StatPill label="Signals" value={`${workspace.summary.assignmentCount}/${workspace.summary.observationCount}`} colors={colors} /                                ></HStack                            </HStack
                             <VStack sx={{ gap: Theme.spacing.sm }}                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                    Teacher Classroom
-                                </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize['2xl'] }}                                    {classroomName || classroom?.name || 'Classroom'}
+                                </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize['2xl'] }}                                    {classroomName || classroom?.name || 'Classroom'}>
                                 </Heading                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm, maxWidth: 760 }}                                    The web surface now follows the same canonical teacher classroom inventory as native, while keeping a wider command-lane rhythm.
                                 </Text                                {!!workspace.workspaceError && (
                                     <Text sx={{ color: colors.error, fontSize: Theme.typography.fontSize.xs }}                                        {workspace.workspaceError.message}
-                                    </Text                                )}
+                                    </Text                                )}>
                             </VStack                        </VStack                    </Box
                     <HStack sx={{ alignItems: 'flex-start', gap: Theme.spacing.md }}                    <Box
                         sx={{
@@ -321,10 +321,10 @@ export default function TeacherClassroomDashboardWeb() {
                             shadowColor: Theme.colors.shadowAmbient,
                             shadowOffset: { width: 0, height: 8 },
                             shadowOpacity: 1,
-                            shadowRadius: 18,
+                            shadowRadius: 18,>
                         }}
                                             <Box sx={{ padding: Theme.spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border }}                            <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                <VStack sx={{ flex: 1 }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}                                        Student Pulse
-                                    </Text                                    <Text sx={{ color: colors.textSecondary }}                                        Keep the roster, attendance, and deeper analysis in one teacher command lane.
+                                    </Text                                    <Text sx={{ color: colors.textSecondary }}                                        Keep the roster, attendance, and deeper analysis in one teacher command lane.>
                                     </Text                                </VStack                                <HStack sx={{ gap: Theme.spacing.sm }}                                    <Button size="sm" variant="outline" action="secondary" onPress={() => setActiveFeature('students')}                                        <ButtonText color={colors.text}>Roster</ButtonText                                    ></Button                                    <Button size="sm" action="primary" onPress={() => setActiveFeature('attendance')} sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}                                        <ButtonText color={Theme.colors.sacredWhite}>Attendance</ButtonText                                    ></Button                                </HStack                            </HStack                        </Box
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}                            <HStack sx={{ gap: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.md }}                                {FEATURES.map((feature) => {
                                     const Icon = feature.icon;
@@ -355,10 +355,10 @@ export default function TeacherClassroomDashboardWeb() {
                                 borderRadius: Theme.corners.generous,
                                 borderWidth: 1,
                                 borderColor: Theme.colors.linen,
-                                padding: Theme.spacing.lg,
+                                padding: Theme.spacing.lg,>
                             }}
                                                     <VStack sx={{ gap: Theme.spacing.md }}                                <VStack sx={{ gap: 4 }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}                                        Classroom Compass
-                                    </Text                                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                        {activeTone.label}
+                                    </Text                                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                        {activeTone.label}>
                                     </Heading                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                        One dominant workspace lane, with quicker jumps kept nearby instead of competing inside it.
                                     </Text                                </VStack                                <Box
                                     sx={{
@@ -382,7 +382,7 @@ export default function TeacherClassroomDashboardWeb() {
                                                         padding: Theme.spacing.sm,
                                                     }}
                                                                                                     <Text sx={{ color: isCurrent ? tone.color : colors.text, fontWeight: '700' as const }}                                                        {tone.label}
-                                                    </Text                                                </Box                                            </Pressable                                        );
+                                                    </Text                                                </Box                                            </Pressable                                        );>
                                     })}
                                 </VStack                            </VStack                        </Box                        <Box
                             sx={{
@@ -422,7 +422,7 @@ export default function TeacherClassroomDashboardWeb() {
                                                         backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.secondary,
                                                     }}
                                                                                                     <Text sx={{ color: isActive ? Theme.colors.sacredWhite : colors.text, textTransform: 'uppercase' }}                                                        {type}
-                                                    </Text                                                </Box                                            </Pressable                                        );
+                                                    </Text                                                </Box                                            </Pressable                                        );>
                                     })}
                                 </HStack                            )}
                             <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField placeholder="Title" value={formTitle} onChangeText={setFormTitle} color={colors.text} /                            ></Input                            {(contentType === 'assignment' || formType === 'note') && (
@@ -466,7 +466,7 @@ function StatPill({
                 borderRadius: Theme.corners.full,
                 borderWidth: 1,
                 borderColor: colors.border,
-                backgroundColor: highlightTint || colors.primary,
+                backgroundColor: highlightTint || colors.primary,>
             }}
                     <Text sx={{ color: colors.textTertiary, fontSize: 10, textTransform: 'uppercase', fontWeight: '700' as const }}                {label}
             </Text            <Text sx={{ color: highlightColor || colors.text, fontWeight: '700' as const }}>{value}</Text        ></Box    );
@@ -488,7 +488,7 @@ function RailStat({
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
                 borderColor: colors.border,
-                padding: Theme.spacing.sm,
+                padding: Theme.spacing.sm,>
             }}
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}                {label}
             </Text            <Text sx={{ color: colors.text, fontWeight: '700' as const }}>{value}</Text        ></Box    );

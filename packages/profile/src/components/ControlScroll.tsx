@@ -54,11 +54,11 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
-                        borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',
+                        borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',>
                     }}
                 
                     <HStack justifyContent="space-between" alignItems="center"
-                        <HStack space="md" alignItems="center"
+                        <HStack space="md" alignItems="center">
                             <Box
                                 sx={{
                                     width: 36,
@@ -66,24 +66,24 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                     borderRadius: 12,
                                     backgroundColor: isActive ? 'rgba(230, 126, 34, 0.2)' : 'rgba(255,255,255,0.05)',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
+                                    justifyContent: 'center',>
                                 }}
                             
                                 <IconComponent size={20} color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} /
                             ></Box
                             <VStack
-                                <Text color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}
+                                <Text color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}>
                                     {label}
-                                </Text
+                                </Text>
                                 <Text color={Theme.colors.dimGray} size="xs"
-                                    {description}
-                                </Text
-                            </VStack
-                        </HStack
+                                    {description}>
+                                </Text>
+                            </VStack>
+                        </HStack>
                         {isActive && <Check size={20} color={Theme.colors.sanctuarySaffron} />}
-                    </HStack
-                </Box
-            </Pressable
+                    </HStack>
+                </Box>
+            </Pressable>
         );
     };
 
@@ -103,103 +103,101 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         paddingVertical: Theme.spacing.md,
                         paddingHorizontal: Theme.spacing.lg,
                         backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : 'transparent',
-                        borderRadius: Theme.corners.comfortable,
+                        borderRadius: Theme.corners.comfortable,>
                     }}
                 
                     <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite}
-                            bold={isActive}
+                            bold={isActive}>
                         
                             {label}
-                        </Text
+                        </Text>
                         {isActive && <Check size={18} color={Theme.colors.sanctuarySaffron} />}
-                    </HStack
-                </Box
-            </Pressable
+                    </HStack>
+                </Box>
+            </Pressable>
         );
     };
 
     return (
         <VStack space="2xl" pb={100}
-            {/* Language Section */}
+            {/* Language Section */}>
             <VStack space="sm"
-                <Text color={Theme.colors.dimGray} size="xs" ml={Theme.spacing.md} textTransform="uppercase" bold
+                <Text color={Theme.colors.dimGray} size="xs" ml={Theme.spacing.md} textTransform="uppercase" bold>
                     {t('profile.language') || 'LANGUAGE'}
-                </Text
+                </Text>
 
                 <Box style={styles.sectionContainer}
-                    <HStack sx={{ p: Theme.spacing.md }} space="md" alignItems="center"
+                    <HStack sx={{ p: Theme.spacing.md }} space="md" alignItems="center">
                         <Box style={styles.iconBox}
                             <Globe size={20} color={Theme.colors.sanctuarySaffron} /
                         ></Box
                         <VStack
-                            <Text color={Theme.colors.sacredWhite} bold
+                            <Text color={Theme.colors.sacredWhite} bold>
                                 {t('profile.appLanguage') || 'App Language'}
-                            </Text
+                            </Text>
                             <Text color={Theme.colors.mistGray} size="xs"
-                                Choose your preferred language
-                            </Text
-                        </VStack
-                    </HStack
+                                Choose your preferred language>
+                            </Text>
+                        </VStack>
+                    </HStack>
 
-                    <Divider bg={Theme.colors.ink} /
-
+                    <Divider bg={Theme.colors.ink} />
                     <VStack sx={{ p: Theme.spacing.xs }}
-                        {renderLanguageItem('si', '\u0DC3\u0DD2\u0D82\u0DC4\u0DBD')}
+                        {renderLanguageItem('si', '\u0DC3\u0DD2\u0D82\u0DC4\u0DBD')}>
                         {renderLanguageItem('ta', '\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD')}
                         {renderLanguageItem('en', 'English')}
-                    </VStack
-                </Box
-            </VStack
+                    </VStack>
+                </Box>
+            </VStack>
 
             {/* App Settings Section */}
             <VStack space="sm"
-                <Text color={Theme.colors.dimGray} size="xs" ml={Theme.spacing.md} textTransform="uppercase" bold
+                <Text color={Theme.colors.dimGray} size="xs" ml={Theme.spacing.md} textTransform="uppercase" bold>
                     {t('profile.settings') || 'SETTINGS'}
-                </Text
+                </Text>
 
                 <Box style={styles.sectionContainer}
-                    {/* Theme Selector */}
+                    {/* Theme Selector */}>
                     <Pressable onPress={() => {
                         hapticLight();
                         setShowThemeModal(true);
                     }}
                         <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center"
-                            <HStack space="md" alignItems="center"
+                            <HStack space="md" alignItems="center">
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}
                                     <Moon size={20} color="#9B59B6" /
                                 ></Box
                                 <VStack
                                     <Text color={Theme.colors.sacredWhite}>Theme</Text
                                     <Text color={Theme.colors.dimGray} size="xs">{getThemeLabel(themeMode)}</Text
-                                </VStack
-                            </HStack
+                                </VStack>
+                            </HStack>
                             <ChevronRight size={20} color={Theme.colors.mistGray} /
-                        </HStack
-                    </Pressable
+                        </HStack>
+                    </Pressable>
 
-                    <Divider bg={Theme.colors.ink} ml={56} /
-
+                    <Divider bg={Theme.colors.ink} ml={56} />
                     {/* Data Saver (Placeholder) */}
                     <Pressable onPress={hapticLight}
-                        <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center"
+                        <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center">
                             <HStack space="md" alignItems="center"
-                                <Box style={[styles.iconBox, { backgroundColor: 'rgba(46, 204, 113, 0.1)' }]}
+                                <Box style={[styles.iconBox, { backgroundColor: 'rgba(46, 204, 113, 0.1)' }]}>
                                     <Database size={20} color="#2ECC71" /
-                                </Box
+                                </Box>
                                 <VStack
                                     <Text color={Theme.colors.sacredWhite}>Data Saver</Text
                                     <Text color={Theme.colors.dimGray} size="xs">Reduce usage</Text
-                                </VStack
-                            </HStack
+                                </VStack>
+                            </HStack>
                             <Box style={styles.comingSoonBadge}
                                 <Text color={Theme.colors.ink} size="2xs" bold>SOON</Text
-                            </Box
-                        </HStack
-                    </Pressable
-                </Box
-            </VStack
+                            </Box>
+                        </HStack>
+                    </Pressable>
+                </Box>
+            </VStack>
 
             {/* Theme Selection Modal */}
             <Modal
@@ -215,35 +213,35 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                             borderTopLeftRadius: Theme.corners.generous,
                             borderTopRightRadius: Theme.corners.generous,
                             padding: Theme.spacing.xl,
-                            paddingBottom: 40,
+                            paddingBottom: 40,>
                         }}
                     
                         <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}
                             <Heading color={Theme.colors.sacredWhite} size="lg"
-                                Choose Theme
-                            </Heading
+                                Choose Theme>
+                            </Heading>
                             <Pressable
                                 onPress={() => setShowThemeModal(false)}
                                 sx={{ padding: Theme.spacing.xs }}
                             
                                 <X color={Theme.colors.mistGray} size={24} /
                             ></Pressable
-                        </HStack
+                        </HStack>
 
                         <VStack space="md"
-                            {renderThemeOption('system', Smartphone, 'System Default', 'Follow device settings')}
+                            {renderThemeOption('system', Smartphone, 'System Default', 'Follow device settings')}>
                             {renderThemeOption('light', Sun, 'Light Mode', 'Always use light colors')}
                             {renderThemeOption('dark', Moon, 'Dark Mode', 'Always use dark colors')}
                             {renderThemeOption('auto', Zap, 'Auto (Time-based)', 'Changes based on time of day')}
-                        </VStack
+                        </VStack>
 
                         <Text color={Theme.colors.dimGray} size="xs" mt={Theme.spacing.lg} textAlign="center"
-                            Auto mode adjusts theme based on time of day (evening: 8 PM - 6 AM)
-                        </Text
-                    </Box
-                </Box
-            </Modal
-        </VStack
+                            Auto mode adjusts theme based on time of day (evening: 8 PM - 6 AM)>
+                        </Text>
+                    </Box>
+                </Box>
+            </Modal>
+        </VStack>
     );
 }
 

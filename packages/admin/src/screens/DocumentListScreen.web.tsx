@@ -110,7 +110,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         <TouchableOpacity
           key={document.id}
           style={[
-            styles.documentCardGrid,
+            styles.documentCardGrid,>
             { 
               backgroundColor: theme.glass.surface.bg,
               borderColor: theme.glass.surface.border,
@@ -119,7 +119,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           onPress={() => onDocumentPress(document)}
                   <View style={styles.cardHeader}            <Text 
               style={[
-                styles.documentTitleGrid,
+                styles.documentTitleGrid,>
                 { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
               ]}
               numberOfLines={3}
@@ -131,28 +131,28 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               ]}
                           <Text 
                 style={[
-                  styles.statusText,
+                  styles.statusText,>
                   { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
                 ]}
                               {document.status.toUpperCase()}
               </Text            </View          </View          
           <Text 
             style={[
-              styles.documentMeta,
+              styles.documentMeta,>
               { color: theme.text.secondary, fontFamily: 'System' }
             ]}
                       Version {document.version}
-          </Text          
+          </Text          >
           <Text 
             style={[
-              styles.documentMeta,
+              styles.documentMeta,>
               { color: theme.text.secondary, fontFamily: 'System' }
             ]}
                       Updated {formatDate(document.updatedAt)}
-          </Text          
+          </Text          >
           {document.status === 'review' && document.authorId !== user.userId && (
             <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}              <Text style={[styles.reviewText, { color: theme.accent.action }]}                Pending Review
-              </Text            </View          )}
+              </Text            </View          )}>
         </TouchableOpacity      );
     }
 
@@ -160,7 +160,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       <TouchableOpacity
         key={document.id}
         style={[
-          styles.documentItem,
+          styles.documentItem,>
           { 
             backgroundColor: theme.glass.surface.bg,
             borderColor: theme.glass.surface.border,
@@ -170,7 +170,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         onPress={() => onDocumentPress(document)}
               <View style={styles.documentHeader}          <Text 
             style={[
-              styles.documentTitle, 
+              styles.documentTitle, >
               { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
             ]}
             numberOfLines={2}
@@ -182,21 +182,21 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             ]}
                       <Text 
               style={[
-                styles.statusText,
+                styles.statusText,>
                 { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
               ]}
                           {document.status.toUpperCase()}
             </Text            </View        </View        
         <Text 
           style={[
-            styles.documentMeta,
+            styles.documentMeta,>
             { color: theme.text.secondary, fontFamily: 'System' }
           ]}
                   Version {document.version} " Updated {formatDate(document.updatedAt)}
-        </Text        
+        </Text        >
         {document.status === 'review' && document.authorId !== user.userId && (
           <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}            <Text style={[styles.reviewText, { color: theme.accent.action }]}              Pending Review
-            </Text          </View        )}
+            </Text          </View        )}>
       </TouchableOpacity    );
   };
 
@@ -210,7 +210,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       <TouchableOpacity
         key={status}
         style={[
-          styles.filterChip,
+          styles.filterChip,>
           {
             backgroundColor: isActive ? theme.accent.action : theme.glass.surface.bg,
             borderColor: isActive ? theme.accent.action : theme.glass.surface.border
@@ -219,7 +219,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         onPress={() => setSelectedStatus(status)}
               <Text 
           style={[
-            styles.filterText,
+            styles.filterText,>
             { 
               color: isActive ? theme.text.inverse : theme.text.primary,
               fontFamily: 'System', fontWeight: '500'
@@ -233,19 +233,19 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...
-        </Text      </View    );
+        </Text      </View    );>
   }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Enhanced Header */}
-      <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}            Documents
+      <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}            Documents>
           </Text          <Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
           </Text        </View        
         <View style={styles.headerActions}          <TouchableOpacity
             style={[styles.createButton, { backgroundColor: theme.accent.action }]}
-            onPress={onCreateNew}
+            onPress={onCreateNew}>
                       <Text style={[styles.createButtonText, { color: theme.text.inverse }]}              + New Document
-            </Text          </TouchableOpacity        </View      </View
+            </Text          </TouchableOpacity        </View      </View>
       {/* Web Controls */}
       <View style={[styles.webControls, { backgroundColor: theme.glass.surface.bg }]}        <View style={styles.searchSection}          <input
             type="text"
@@ -263,11 +263,11 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             <View style={styles.viewToggle}              <TouchableOpacity
                 style={[
                   styles.viewButton,
-                  viewMode === 'list' && { backgroundColor: theme.accent.action }
+                  viewMode === 'list' && { backgroundColor: theme.accent.action }>
                 ]}
                 onPress={() => setViewMode('list')}
                               <Text style={[
-                  styles.viewButtonText,
+                  styles.viewButtonText,>
                   { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
                 ]}                  List
                 </Text              </TouchableOpacity              <TouchableOpacity
@@ -277,7 +277,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 ]}
                 onPress={() => setViewMode('grid')}
                               <Text style={[
-                  styles.viewButtonText,
+                  styles.viewButtonText,>
                   { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
                 ]}                  Grid
                 </Text              </TouchableOpacity            </View          )}
@@ -287,15 +287,15 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
+        contentContainerStyle={styles.filterContent}>
               {statusFilters.map(renderStatusFilter)}
-      </ScrollView
+      </ScrollView>
       {/* Documents List/Grid */}
       <ScrollView 
         style={styles.documentsContainer}
         contentContainerStyle={[
           styles.documentsContent,
-          viewMode === 'grid' && styles.documentsGrid
+          viewMode === 'grid' && styles.documentsGrid>
         ]}
         showsVerticalScrollIndicator={false}
               {filteredDocuments.length === 0 ? (
@@ -303,7 +303,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 ? `No documents found matching "${searchQuery}"`
                 : selectedStatus === 'all' 
                   ? 'No documents yet. Create your first document to get started.'
-                  : `No ${selectedStatus} documents found.`
+                  : `No ${selectedStatus} documents found.`>
               }
             </Text          </View        ) : (
           filteredDocuments.map(renderDocumentItem)

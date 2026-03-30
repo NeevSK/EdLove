@@ -134,7 +134,7 @@ export default function SocialShieldModal({
                             </VStack
                             <TouchableOpacity onPress={onClose}
                                 <X color={text.muted} size={24} /
-                            </TouchableOpacity
+                            ></TouchableOpacity
                         </HStack
 
                         {step === 'reason' ? (
@@ -157,7 +157,7 @@ export default function SocialShieldModal({
                                             <HStack {...({ space: "md", alignItems: "center" } as any)}
                                                 <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}
                                                     <ItemIcon size={20} color={isSelected ? accent.action : text.muted} /
-                                                </Box
+                                                ></Box
                                                 <Text {...({ color: isSelected ? text.primary : text.secondary, bold: isSelected } as any)}
                                                     {item.label}
                                                 </Text
@@ -174,7 +174,7 @@ export default function SocialShieldModal({
                                         {shouldBlock && <Box sx={{ width: 12, height: 12, borderRadius: 2, backgroundColor: accent.action }} />}
                                     </TouchableOpacity
                                     <Text size="sm" color={text.secondary}>Also block this user from interacting with me</Text
-                                </HStack
+                                ></HStack
 
                                 <Button
                                     onPress={handleNext}
@@ -182,7 +182,7 @@ export default function SocialShieldModal({
                                     sx={{ backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50, mt: '$2' }}
                                 
                                     <ButtonText {...({ color: text.inverse, bold: true } as any)}>Next: Choose Guardian</ButtonText
-                                </Button
+                                ></Button
                             </VStack
                         ) : (
                             <VStack {...({ space: "md" } as any)}
@@ -204,7 +204,7 @@ export default function SocialShieldModal({
                                             <HStack {...({ space: "md", alignItems: "center" } as any)}
                                                 <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}
                                                     <ItemIcon size={20} color={isSelected ? accent.action : text.muted} /
-                                                </Box
+                                                ></Box
                                                 <VStack flex={1}
                                                     <Text {...({ color: isSelected ? text.primary : text.secondary, bold: true } as any)}
                                                         {item.label}
@@ -223,13 +223,13 @@ export default function SocialShieldModal({
                                         sx={{ flex: 1, borderRadius: Theme.corners.comfortable, height: 50 }}
                                     
                                         <ButtonText {...({ color: text.primary } as any)}>Back</ButtonText
-                                    </Button
+                                    ></Button
                                     <Button
                                         onPress={handleSubmit}
                                         sx={{ flex: 2, backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50 }}
                                     
                                         <ButtonText {...({ color: text.inverse, bold: true } as any)}>Submit Report</ButtonText
-                                    </Button
+                                    ></Button
                                 </HStack
                                 
                                 <Text size="xs" color={text.muted} textAlign="center" sx={{ mt: '$2' }}

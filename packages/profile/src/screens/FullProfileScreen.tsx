@@ -114,7 +114,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                 showBack
                 onBack={() => navigation.goBack()}
             /            ><ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}                <VStack space="2xl" sx={{ paddingVertical: Theme.spacing.md }}
-                    <Center                        <Box                            <IdentityCard >data={profile} /                        ></Box                    </Center
+                    <Center                        <Box                            <IdentityCard >>data={profile} /                        ></Box                    </Center
                     <Center mt={Theme.spacing.lg}                        <AvatarDisplay
                             userId={profile.id}
                             avatarUrl={profile.avatar_url}

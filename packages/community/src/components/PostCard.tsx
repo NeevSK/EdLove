@@ -84,7 +84,7 @@ const PostCard = React.memo(function PostCard({
                             overflow: 'hidden',
                             borderWidth: 1,
                             borderColor: colors.overlay,
-                            backgroundColor: colors.secondary,
+                            backgroundColor: colors.secondary,>
                         }}
                     
                         <Image
@@ -94,7 +94,7 @@ const PostCard = React.memo(function PostCard({
                         /
                         ><Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} /
                     ></Box
-                </Box
+                </Box>
             );
         }
 
@@ -151,7 +151,7 @@ const PostCard = React.memo(function PostCard({
             const urg = urgencyConfig[urgencyLevel];
             return (
                 <HStack space="sm" alignItems="center" sx={{ marginBottom: 4 }}
-                    {urgency && urgency !== 'low' && (
+                    {urgency && urgency !== 'low' && (>
                         <Box sx={{ backgroundColor: urg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}
                             <AlertTriangle size={11} color={urg.color} /
                             ><Text size="xs" bold sx={{ color: urg.color }}>{urg.label}</Text
@@ -163,18 +163,18 @@ const PostCard = React.memo(function PostCard({
                             ><Text size="xs" bold sx={{ color: '#16A34A' }}>Answered</Text
                         ></Box
                     )}
-                </HStack
+                </HStack>
             );
         }
 
         if (isResource) {
             return (
                 <Box sx={{ marginBottom: 4 }}
-                    <Box sx={{ backgroundColor: 'rgba(99,102,241,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                    <Box sx={{ backgroundColor: 'rgba(99,102,241,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                         <BookOpen size={11} color="#6366F1" /
                         ><Text size="xs" bold sx={{ color: '#6366F1' }}>Resource</Text
                     ></Box
-                </Box
+                </Box>
             );
         }
 
@@ -189,7 +189,7 @@ const PostCard = React.memo(function PostCard({
             const cfg = feedback_status ? statusConfig[feedback_status] : statusConfig.pending;
             return (
                 <VStack space="xs" sx={{ marginBottom: 4 }}
-                    <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}
+                    <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}>
                         <Text size="xs" bold sx={{ color: cfg.color }}>{cfg.label}</Text
                     ></Box
                     {!!feedback_response && (
@@ -197,7 +197,7 @@ const PostCard = React.memo(function PostCard({
                             <Text color={colors.textSecondary} size="xs" italic>{feedback_response}</Text
                         ></Box
                     )}
-                </VStack
+                </VStack>
             );
         }
 
@@ -325,33 +325,33 @@ const PostCard = React.memo(function PostCard({
 
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}
-            <VStack space="md"
+            <VStack space="md">
                 {/* Header: Author & Meta */}
                 <HStack justifyContent="space-between" alignItems="center"
-                    <HStack space="md" alignItems="center"
+                    <HStack space="md" alignItems="center">
                         <TouchableOpacity
                             onPress={!is_anonymous ? onAuthorPress : undefined}
                             disabled={is_anonymous || !onAuthorPress}
-                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                         
                             <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}
                                 <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText
                                 >{!is_anonymous && author_avatar && (
                                     <AvatarImage source={{ uri: author_avatar }} alt={author_name} /
                                 >)}
-                            </Avatar
-                        </TouchableOpacity
+                            </Avatar>
+                        </TouchableOpacity>
                         <VStack
-                            <HStack space="xs" alignItems="center"
+                            <HStack space="xs" alignItems="center">
                                 <Text color={colors.text} bold size="sm"
-                                    {is_anonymous ? 'Anonymous' : author_name}
-                                </Text
-                            </HStack
+                                    {is_anonymous ? 'Anonymous' : author_name}>
+                                </Text>
+                            </HStack>
                             <Text color={colors.textSecondary} size="xs"
-                                {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
-                            </Text
-                        </VStack
-                    </HStack
+                                {formatDistanceToNow(new Date(created_at), { addSuffix: true })}>
+                            </Text>
+                        </VStack>
+                    </HStack>
 
                     <Box
                         <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}
@@ -370,20 +370,20 @@ const PostCard = React.memo(function PostCard({
                                 minWidth: 150,
                                 zIndex: 10,
                                 overflow: 'hidden',
-                                elevation: 4,
+                                elevation: 4,>
                             }}
                                 <VStack
-                                    {/* Own post: Delete */}
+                                    {/* Own post: Delete */}>
                                     {author_id === currentUserId && (
                                         <TouchableOpacity
                                             style={styles.menuItem}
-                                            onPress={handleDelete}
+                                            onPress={handleDelete}>
                                         
                                             <HStack space="md" alignItems="center"
                                                 <XIcon size={16} color={colors.error} /
                                                 ><Text size="sm" color={colors.error}>Delete Post</Text
                                             ></HStack
-                                        </TouchableOpacity
+                                        </TouchableOpacity>
                                     )}
 
                                     {/* Report (other people's posts) */}
@@ -396,33 +396,33 @@ const PostCard = React.memo(function PostCard({
                                                 <ShieldAlert size={16} color={colors.text} /
                                                 ><Text size="sm" color={colors.text}>Report Post</Text
                                             ></HStack
-                                        </TouchableOpacity
+                                        </TouchableOpacity>
                                     )}
 
                                     {!is_anonymous && author_id !== currentUserId && (
                                         <TouchableOpacity 
                                             style={[styles.menuItem, { borderBottomWidth: 0 }]} 
-                                            onPress={handleBlock}
+                                            onPress={handleBlock}>
                                         
                                             <HStack space="md" alignItems="center"
                                                 <UserX size={16} color={Theme.colors.sanctuarySaffron} /
                                                 ><Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text
                                             ></HStack
-                                        </TouchableOpacity
+                                        </TouchableOpacity>
                                     )}
-                                </VStack
-                            </Box
+                                </VStack>
+                            </Box>
                         )}
-                    </Box
-                </HStack
+                    </Box>
+                </HStack>
 
                 {/* Type-specific metadata (urgency, feedback status, resource chip) */}
                 {renderTypeMetadata()}
 
                 {/* Content */}
                 <Text color={colors.textPrimary} size="md" sx={{ lineHeight: 22 }} numberOfLines={onPress ? 4 : undefined}
-                    {content}
-                </Text
+                    {content}>
+                </Text>
 
                 {/* Media Content */}
                 {renderMediaContent()}
@@ -432,7 +432,7 @@ const PostCard = React.memo(function PostCard({
 
                 {/* Footer: Actions */}
                 <HStack justifyContent="space-between" alignItems="center" mt="$1"
-                    <HStack space="lg"
+                    <HStack space="lg">
                         {/* Like / Heart Reaction */}
                         <TouchableOpacity onPress={handleLike} style={styles.actionButton}
                             <Heart
@@ -442,39 +442,39 @@ const PostCard = React.memo(function PostCard({
                             /
                             >{localLikeCount > 0 && (
                                 <Text color={isLiked ? colors.error : colors.textTertiary} size="xs" sx={{ marginLeft: 4 }}
-                                    {localLikeCount}
-                                </Text
+                                    {localLikeCount}>
+                                </Text>
                             )}
-                        </TouchableOpacity
+                        </TouchableOpacity>
 
                         {/* Resonance Reaction */}
                         <TouchableOpacity onPress={handleResonate} style={styles.actionButton} disabled={isResonating}
-                            <LivingGlow active={hasResonated}
+                            <LivingGlow active={hasResonated}>
                                 <Sparkles
                                     size={20}
                                     color={hasResonated ? colors.action : colors.textTertiary}
                                 /
                             ></LivingGlow
-                        </TouchableOpacity
+                        </TouchableOpacity>
 
                         <TouchableOpacity onPress={onComment} style={styles.actionButton}
-                            <MessageCircle size={20} color={colors.textTertiary} /
+                            <MessageCircle size={20} color={colors.textTertiary} />
                             <Text color={colors.textTertiary} size="sm" sx={{ marginLeft: 4 }}
-                                {comment_count}
-                            </Text
-                        </TouchableOpacity
+                                {comment_count}>
+                            </Text>
+                        </TouchableOpacity>
 
                         {/* Share button \u2014 clipboard on web, native share sheet otherwise */}
                         <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post"
                             <Share2 size={18} color={colors.textTertiary} /
                         ></TouchableOpacity
-                    </HStack
+                    </HStack>
 
                     {/* Engagement Count */}
                     {totalReactions > 0 && (
                         <Text color={colors.textTertiary} size="xs"
-                            {totalReactions} {isQuestion ? 'Upvotes' : 'Resonances'}
-                        </Text
+                            {totalReactions} {isQuestion ? 'Upvotes' : 'Resonances'}>
+                        </Text>
                     )}
 
                     {/* Type Badge \u2014 contextual label per post type */}
@@ -485,16 +485,16 @@ const PostCard = React.memo(function PostCard({
                             borderColor: TYPE_BADGE[post_type]?.border ?? colors.action,
                             paddingHorizontal: 8,
                             paddingVertical: 2,
-                            borderRadius: Theme.corners.tight,
+                            borderRadius: Theme.corners.tight,>
                         }}
                             <Text sx={{ color: TYPE_BADGE[post_type]?.text ?? colors.action }} size="xs" bold
-                                {TYPE_BADGE[post_type]?.label ?? 'Post'}
-                            </Text
-                        </Box
-                    </LivingGlow
-                </HStack
-            </VStack
-        </SanctuaryCard
+                                {TYPE_BADGE[post_type]?.label ?? 'Post'}>
+                            </Text>
+                        </Box>
+                    </LivingGlow>
+                </HStack>
+            </VStack>
+        </SanctuaryCard>
     );
 });
 
@@ -716,14 +716,13 @@ function PollWidget({
     }
 
     return (
-        <VStack space="sm" sx={{ marginTop: Theme.spacing.sm }}
-
+        <VStack space="sm" sx={{ marginTop: Theme.spacing.sm }}>
             {/* Poll header: meta badges + countdown */}
             <HStack justifyContent="space-between" alignItems="center"
-                <HStack space="xs" alignItems="center"
+                <HStack space="xs" alignItems="center">
                     {is_anonymous && (
                         <HStack space="xs" alignItems="center"
-                            style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}
+                            style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}>
                             <Lock size={11} color={colors.textTertiary} /
                             ><Text color={colors.textTertiary} size="xs">Anonymous</Text
                         ></HStack
@@ -733,7 +732,7 @@ function PollWidget({
                             <Text color={colors.textTertiary} size="xs">Multi-select</Text
                         ></Box
                     )}
-                </HStack
+                </HStack>
 
                 {isExpired ? (
                     <HStack space="xs" alignItems="center"
@@ -746,7 +745,7 @@ function PollWidget({
                         ><Text color={colors.action} size="xs">{timeLeft}</Text
                     ></HStack
                 ) : null}
-            </HStack
+            </HStack>
 
             {/* Options */}
             {options.map(opt => {
@@ -782,7 +781,7 @@ function PollWidget({
                                     left: 0, top: 0, bottom: 0,
                                     width: progressAnims.current[opt.id]!.interpolate({
                                         inputRange: [0, 100],
-                                        outputRange: ['0%', '100%'],
+                                        outputRange: ['0%', '100%'],>
                                     }),
                                     backgroundColor: isWinner
                                         ? `${Theme.colors.sanctuarySaffron}28`
@@ -794,7 +793,7 @@ function PollWidget({
                         >)}
 
                         <HStack justifyContent="space-between" style={{ paddingHorizontal: 12, zIndex: 1 }} alignItems="center"
-                            <HStack space="sm" alignItems="center" style={{ flex: 1 }}
+                            <HStack space="sm" alignItems="center" style={{ flex: 1 }}>
                                 {/* Checkbox (multi) or radio dot (single) \u2014 hidden when poll is closed */}
                                 {!isExpired && (
                                     <Box style={{
@@ -803,14 +802,14 @@ function PollWidget({
                                         borderWidth: isSelected ? 0 : 1.5,
                                         borderColor: colors.overlay,
                                         backgroundColor: isSelected ? colors.action : 'transparent',
-                                        alignItems: 'center', justifyContent: 'center',
+                                        alignItems: 'center', justifyContent: 'center',>
                                     }}
                                         {isSelected && (
                                             allow_multiple
                                                 ? <Check size={12} color="#fff" strokeWidth={3} /
                                                 >: <Box style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' }} /
                                         >)}
-                                    </Box
+                                    </Box>
                                 )}
                                 {isWinner && <Trophy size={14} color={Theme.colors.sanctuarySaffron} />}
                                 <Text
@@ -818,11 +817,11 @@ function PollWidget({
                                     size="sm"
                                     bold={isSelected || isWinner}
                                     style={{ flex: 1, paddingVertical: 12 }}
-                                    numberOfLines={3}
+                                    numberOfLines={3}>
                                 
                                     {opt.text}
-                                </Text
-                            </HStack
+                                </Text>
+                            </HStack>
 
                             {/* Percentage + count \u2014 only after voting/expiry */}
                             {showResults && (
@@ -833,33 +832,33 @@ function PollWidget({
                                         style={{
                                             color: isWinner
                                                 ? Theme.colors.sanctuarySaffron
-                                                : isSelected ? colors.action : colors.textTertiary,
+                                                : isSelected ? colors.action : colors.textTertiary,>
                                         }}
                                     
                                         {Math.round(percentage)}%
-                                    </Text
+                                    </Text>
                                     {!is_anonymous && (
                                         <Text color={colors.textTertiary} size="xs">{count}</Text
                                     >)}
-                                </VStack
+                                </VStack>
                             )}
-                        </HStack
-                    </TouchableOpacity
+                        </HStack>
+                    </TouchableOpacity>
                 );
             })}
 
             {/* Footer row: total responses + contextual hints */}
             <HStack justifyContent="space-between" alignItems="center" style={{ marginTop: 2 }}
-                <Text color={colors.textTertiary} size="xs"
+                <Text color={colors.textTertiary} size="xs">
                     {totalVotes} {totalVotes === 1 ? 'response' : 'responses'}
-                </Text
+                </Text>
 
                 <HStack space="md" alignItems="center"
-                    {/* Change-vote hint \u2014 visible when voted + poll open */}
+                    {/* Change-vote hint \u2014 visible when voted + poll open */}>
                     {hasVoted && !isExpired && (
                         <Text color={colors.textTertiary} size="xs" italic
-                            {allow_multiple ? 'Tap to toggle' : 'Tap to change'}
-                        </Text
+                            {allow_multiple ? 'Tap to toggle' : 'Tap to change'}>
+                        </Text>
                     )}
 
                     {/* Remove vote \u2014 explicit retract button */}
@@ -871,7 +870,7 @@ function PollWidget({
                                 flexDirection: 'row', alignItems: 'center', gap: 3,
                                 paddingHorizontal: 8, paddingVertical: 4,
                                 borderRadius: Theme.corners.tight,
-                                borderWidth: 1, borderColor: colors.overlay,
+                                borderWidth: 1, borderColor: colors.overlay,>
                             }}
                             accessibilityLabel="Remove my vote"
                         
@@ -880,13 +879,13 @@ function PollWidget({
                                 >: <XIcon size={11} color={colors.textTertiary} /
                             >}
                             <Text color={colors.textTertiary} size="xs"
-                                {isRemoving ? 'Removing\u2026' : 'Remove vote'}
-                            </Text
-                        </TouchableOpacity
+                                {isRemoving ? 'Removing\u2026' : 'Remove vote'}>
+                            </Text>
+                        </TouchableOpacity>
                     )}
-                </HStack
-            </HStack
-        </VStack
+                </HStack>
+            </HStack>
+        </VStack>
     );
 }
 

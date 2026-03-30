@@ -87,23 +87,22 @@ export default function FounderDashboard() {
             /
 
             ><ScrollView showsVerticalScrollIndicator={false}
-                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}
-
+                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}>
                     {/* 1. Ecosystem Pulse (Aggregate Stats) */}
                     <VStack sx={{ gap: Theme.spacing.md }}
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <Heading sx={{ fontSize: 18, fontWeight: '700' }} color={colors.text}
-                                Ecosystem Pulse
-                            </Heading
+                                Ecosystem Pulse>
+                            </Heading>
                             <FounderGlow active={true} intensity="subtle"
-                                <HStack sx={{ gap: 4, alignItems: 'center', backgroundColor: colors.secondary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}
+                                <HStack sx={{ gap: 4, alignItems: 'center', backgroundColor: colors.secondary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
                                     <HeartPulse size={16} color={colors.success} /
                                     ><Text sx={{ fontSize: 12, fontWeight: '800' }} color={colors.success}
                                         Health: {stats?.ecosystem_health || 0}%
-                                    </Text
-                                </HStack
-                            </FounderGlow
-                        </HStack
+                                    </Text>
+                                </HStack>
+                            </FounderGlow>
+                        </HStack>
 
                         {/* Quick Access to Main School */}
                         {schools.find(s => s.id === user?.school_id) && (
@@ -126,20 +125,20 @@ export default function FounderDashboard() {
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
                                     borderColor: Theme.colors.sanctuarySaffron,
-                                    marginBottom: Theme.spacing.md
+                                    marginBottom: Theme.spacing.md>
                                 }}
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}
+                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
                                             <SchoolIcon size={24} color={Theme.colors.sanctuarySaffron} /
                                             ><VStack
                                                 <Text >sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text
                                                 ><Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text
                                             ></VStack
-                                        </HStack
+                                        </HStack>
                                         <ChevronRight size={20} color={colors.textTertiary} /
-                                    </HStack
-                                </Box
-                            </TouchableOpacity
+                                    </HStack>
+                                </Box>
+                            </TouchableOpacity>
                         )}
 
 
@@ -197,25 +196,25 @@ export default function FounderDashboard() {
                             <Box sx={{ flex: 1 }} /
                             ><Box sx={{ flex: 1 }} /
                         ></HStack
-                    </VStack
+                    </VStack>
 
                     {/* 2. School Gallery */}
                     <VStack sx={{ gap: Theme.spacing.md }}
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <Heading sx={{ fontSize: 18, fontWeight: '700' }} color={colors.text}
-                                Institutions
-                            </Heading
+                                Institutions>
+                            </Heading>
                             <Box sx={{
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
                                 borderRadius: 12,
-                                backgroundColor: colors.secondary
+                                backgroundColor: colors.secondary>
                             }}
                                 <Text sx={{ fontSize: 12 }} color={colors.textSecondary}
-                                    {filteredSchools.length} Registered
-                                </Text
-                            </Box
-                        </HStack
+                                    {filteredSchools.length} Registered>
+                                </Text>
+                            </Box>
+                        </HStack>
 
                         {isLoading ? (
                             <VStack sx={{ gap: Theme.spacing.md }}
@@ -245,17 +244,17 @@ export default function FounderDashboard() {
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
                                         borderColor: colors.border,
-                                        borderStyle: 'dashed'
+                                        borderStyle: 'dashed'>
                                     }}
                                         <Text color={colors.textTertiary}>No institutions found</Text
                                     ></Box
                                 )}
-                            </VStack
+                            </VStack>
                         )}
-                    </VStack
+                    </VStack>
 
-                </VStack
-            </ScrollView
+                </VStack>
+            </ScrollView>
 
             <GlobalCreateModal
                 isOpen={isCreateModalOpen}
@@ -264,7 +263,7 @@ export default function FounderDashboard() {
                 availableSchools={schools}
             /
 
-        </ScreenWrapper
+        </ScreenWrapper>
     );
 }
 
@@ -294,9 +293,9 @@ function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, l
                 <LucideIcon color={color} size={28} /
             ></TouchableOpacity
             <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 11, fontWeight: '700' }}
-                {label}
-            </Text
-        </VStack
+                {label}>
+            </Text>
+        </VStack>
     );
 }
 
@@ -312,18 +311,18 @@ function StatCard({ label, value, icon, color }: { label: string, value: number,
             backgroundColor: colors.secondary,
             borderRadius: Theme.corners.comfortable,
             borderLeftWidth: 4,
-            borderLeftColor: color
+            borderLeftColor: color>
         }}
             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}
-                {icon}
-            </HStack
+                {icon}>
+            </HStack>
             <Text sx={{ fontSize: 24, fontWeight: '800' }} color={colors.text}
-                {value.toLocaleString()}
-            </Text
+                {value.toLocaleString()}>
+            </Text>
             <Text sx={{ fontSize: 11, fontWeight: '600' }} color={colors.textTertiary}
-                {label.toUpperCase()}
-            </Text
-        </Box
+                {label.toUpperCase()}>
+            </Text>
+        </Box>
     );
 }
 
@@ -339,7 +338,7 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                 backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: colors.border
+                borderColor: colors.border>
             }}
                 <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}
                     <Box sx={{
@@ -348,21 +347,21 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                         borderRadius: 12,
                         backgroundColor: colors.action + '22',
                         justifyContent: 'center',
-                        alignItems: 'center'
+                        alignItems: 'center'>
                     }}
                         <SchoolIcon size={24} color={colors.action} /
                     ></Box
                     <VStack sx={{ flex: 1 }}
-                        <Text sx={{ fontWeight: '700', fontSize: 16 }} color={colors.text}
+                        <Text sx={{ fontWeight: '700', fontSize: 16 }} color={colors.text}>
                             {school.name}
-                        </Text
+                        </Text>
                         <Text sx={{ fontSize: 12 }} color={colors.textSecondary}
-                            {school.type} " {school.id.substring(0, 8)}...
-                        </Text
-                    </VStack
+                            {school.type} " {school.id.substring(0, 8)}...>
+                        </Text>
+                    </VStack>
                     <ChevronRight size={20} color={colors.textTertiary} /
-                </HStack
-            </Box
-        </TouchableOpacity
+                </HStack>
+            </Box>
+        </TouchableOpacity>
     );
 }

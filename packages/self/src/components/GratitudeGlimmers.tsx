@@ -83,9 +83,9 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
         <SkeletonCard height={48} /
-        <SkeletonCard height={80} /
-        <SkeletonCard height={80} /
-      </VStack
+        ><SkeletonCard height={80} /
+        ><SkeletonCard height={80} /
+      ></VStack
     );
   }
 
@@ -95,7 +95,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
-    );
+    >);
   }
 
   return (
@@ -103,7 +103,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
       <VStack space="xs"
         <HStack space="sm" alignItems="center"
           <Heart color={Theme.colors.sanctuarySaffron} size={24} /
-          <Heading color={Theme.colors.sacredWhite} size="lg"
+          ><Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.gratitude')}
           </Heading
         </HStack
@@ -130,8 +130,8 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
             }}
           
             <Plus color={Theme.colors.sacredWhite} size={20} /
-            <ButtonText ml="$2">{t('self.addGratitude')}</ButtonText
-          </Button
+            ><ButtonText ml="$2">{t('self.addGratitude')}</ButtonText
+          ></Button
 
           <ScrollView sx={{ flex: 1, maxHeight: 400 }}
             <VStack space="md"
@@ -152,7 +152,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                       <VStack space="xs" sx={{ flex: 1 }}
                         <HStack space="xs" alignItems="center"
                           <Text fontSize="$md">{cat?.emoji}</Text
-                          <Text color={Theme.colors.dimGray} size="xs"
+                          ><Text color={Theme.colors.dimGray} size="xs"
                             {cat?.label}
                           </Text
                         </HStack
@@ -173,7 +173,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                   icon={Heart}
                   title={t('self.whatSmiledToday')}
                 /
-              )}
+              >)}
             </VStack
           </ScrollView
         </
@@ -181,7 +181,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
         <VStack space="md"
           {/* Category Selection */}
           <Box
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
+            <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.category')}
             </Text
             <VStack space="sm"
@@ -211,7 +211,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                     }}
                   
                     <Text fontSize="$xl">{cat.emoji}</Text
-                    <Text
+                    ><Text
                       color={
                         category === cat.id
                           ? Theme.colors.sacredWhite
@@ -230,7 +230,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
 
           {/* Content */}
           <Box
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
+            <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.whatSmiled')}
             </Text
             <Input
@@ -252,7 +252,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                 placeholderTextColor={Theme.colors.dimGray}
                 sx={{ textAlignVertical: 'top' }}
               /
-            </Input
+            ></Input
           </Box
 
           {/* Actions */}
@@ -285,7 +285,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
               }}
             
               <ButtonText>{t('common.save')}</ButtonText
-            </Button
+            ></Button
           </HStack
         </VStack
       )}

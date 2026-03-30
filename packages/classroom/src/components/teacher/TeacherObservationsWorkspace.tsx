@@ -119,10 +119,10 @@ export default function TeacherObservationsWorkspace({
                         shadowOffset: { width: 0, height: 8 },
                         shadowOpacity: 1,
                         shadowRadius: 18,
-                        elevation: 4,
+                        elevation: 4,>
                     }}
                                     <VStack sx={{ gap: Theme.spacing.md }}                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}                            <VStack sx={{ flex: 1, gap: 4 }}                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                    Observations
-                                </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                    Track classroom noticing, not just incidents
+                                </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                    Track classroom noticing, not just incidents>
                                 </Heading                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Keep small signals close to the classroom rhythm, so growth and concern stay visible before they become reports.
                                 </Text                            </VStack                            {canManage && (
                                 <Button
@@ -130,7 +130,7 @@ export default function TeacherObservationsWorkspace({
                                     onPress={() => setShowCreateModal(true)}
                                     sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: Theme.corners.full }}
                                                                     <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        ><ButtonText color={Theme.colors.sacredWhite}>New</ButtonText                                    ></HStack                                </Button                            )}
-                        </HStack
+                        </HStack>
                         <HStack sx={{ gap: Theme.spacing.sm }}                            <SignalPill
                                 icon={<MessageCircle size={14} color={Theme.colors.gurudeviBlue} />}
                                 label="Total"
@@ -157,7 +157,7 @@ export default function TeacherObservationsWorkspace({
                             borderColor: colors.border,
                             padding: Theme.spacing.xl,
                             alignItems: 'center',
-                            gap: Theme.spacing.sm,
+                            gap: Theme.spacing.sm,>
                         }}
                                             <MessageCircle size={36} color={colors.textTertiary} /                        ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            No observations yet
                         </Heading                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}                            Start with one true observation from today. The goal is signal, not volume.
@@ -176,7 +176,7 @@ export default function TeacherObservationsWorkspace({
                                     : observation.observation_type === 'positive'
                                         ? Theme.colors.sageGreen
                                         : Theme.colors.gurudeviBlue,
-                                padding: Theme.spacing.md,
+                                padding: Theme.spacing.md,>
                             }}
                                                     <VStack sx={{ gap: Theme.spacing.xs }}                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                    <VStack sx={{ flex: 1 }}                        <Text sx={{ color: colors.text, fontWeight: '700' as const }}                            {students.find((student) => student.id === observation.student_id)?.full_name || 'Student observation'}
                         </Text                                        <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase' }}                                            {observation.observation_type} " {observation.visibility === 'student_visible' ? 'Visible to student' : 'Private'}
@@ -185,7 +185,7 @@ export default function TeacherObservationsWorkspace({
                                 </HStack                                <Text sx={{ color: colors.textSecondary }}>{observation.content}</Text                                <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}                                    {observation.created_at ? new Date(observation.created_at).toLocaleDateString() : 'Just now'}
                                 </Text                            </VStack                        </Box                    ))
                 )}
-            </VStack
+            </VStack>
             <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}                <ModalBackdrop /                ><ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}                    <ModalHeader                        <Heading >sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            Create observation
                         </Heading                    </ModalHeader                    <ModalBody                        <VStack >sx={{ gap: Theme.spacing.md }}                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Student
                                 </Text                                <ScrollView horizontal showsHorizontalScrollIndicator={false}                                    <HStack sx={{ gap: Theme.spacing.sm }}                                        {students.map((student) => {
@@ -201,7 +201,7 @@ export default function TeacherObservationsWorkspace({
                                                             backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.secondary,
                                                         }}
                                                                                                             <Text sx={{ color: isActive ? Theme.colors.sacredWhite : colors.text }}                                                            {student.full_name}
-                                                        </Text                                                    </Box                                                </Pressable                                            );
+                                                        </Text                                                    </Box                                                </Pressable                                            );>
                                         })}
                                     </HStack                                </ScrollView                            </VStack                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Observation type
                                 </Text                                <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    {OBSERVATION_TYPES.map((type) => {
@@ -217,7 +217,7 @@ export default function TeacherObservationsWorkspace({
                                                         backgroundColor: isActive ? Theme.colors.gurudeviBlue : colors.secondary,
                                                     }}
                                                                                                     <Text sx={{ color: isActive ? Theme.colors.inkTruth : colors.text, textTransform: 'capitalize' }}                                                        {type}
-                                                    </Text                                                </Box                                            </Pressable                                        );
+                                                    </Text                                                </Box                                            </Pressable                                        );>
                                     })}
                                 </HStack                            </VStack                            <VStack sx={{ gap: Theme.spacing.xs }}                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Visibility
                                 </Text                                <HStack sx={{ gap: Theme.spacing.sm }}                                    {(['private', 'student_visible'] as const).map((option) => {
@@ -233,7 +233,7 @@ export default function TeacherObservationsWorkspace({
                                                         backgroundColor: isActive ? Theme.colors.sageGreen : colors.secondary,
                                                     }}
                                                                                                     <Text sx={{ color: isActive ? Theme.colors.inkTruth : colors.text }}                                                        {option === 'student_visible' ? 'Visible to student' : 'Private'}
-                                                    </Text                                                </Box                                            </Pressable                                        );
+                                                    </Text                                                </Box                                            </Pressable                                        );>
                                     })}
                                 </HStack                            </VStack                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 100 }}                                <InputField
                                     placeholder="What did you notice?"
@@ -269,10 +269,10 @@ function SignalPill({
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
                 borderColor: colors.border,
-                padding: Theme.spacing.sm,
+                padding: Theme.spacing.sm,>
             }}
                     <VStack sx={{ gap: 4 }}                <HStack sx={{ alignItems: 'center', gap: 6 }}                    {icon}
-                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                        {label}
+                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                        {label}>
                     </Text                </HStack                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
                 </Text            </VStack        </Box    );
 }

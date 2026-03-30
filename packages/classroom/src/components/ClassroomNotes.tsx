@@ -269,11 +269,11 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     borderLeftWidth: 3,
                     borderLeftColor: meta.color,
                     padding: Theme.spacing.md,
-                    marginBottom: Theme.spacing.sm,
+                    marginBottom: Theme.spacing.sm,>
                 }}
             
                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
-                    {/* Type badge */}
+                    {/* Type badge */}>
                     <HStack sx={{ gap: 6, alignItems: 'center', flex: 1 }}
                         <NoteIcon size={14} color={meta.color} /
                         ><Text
@@ -286,14 +286,14 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             }}
                         
                             {meta.label}
-                        </Text
+                        </Text>
                         {isClassVisible && (
                             <Globe size={12} color={colors.textTertiary} /
                         >)}
                         {!isClassVisible && (
                             <Lock size={12} color={colors.textTertiary} /
                         >)}
-                    </HStack
+                    </HStack>
 
                     {/* Actions (own notes only) */}
                     <HStack sx={{ gap: 10, alignItems: 'center' }}
@@ -312,33 +312,33 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                         ? <Globe size={14} color={Theme.colors.gurudeviViolet} /
                                         >: <Lock size={14} color={colors.textTertiary} /
                                     >}
-                                </TouchableOpacity
+                                </TouchableOpacity>
                             </
                         )}
                         <TouchableOpacity onPress={() => handleDelete(note.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             <X size={14} color={colors.textTertiary} /
                         ></TouchableOpacity
-                    </HStack
-                </HStack
+                    </HStack>
+                </HStack>
 
                 <Text
                     sx={{
                         fontSize: Theme.typography.fontSize.sm,
                         color: colors.text,
                         marginTop: Theme.spacing.xs,
-                        lineHeight: 20,
+                        lineHeight: 20,>
                     }}
                 
                     {note.content}
-                </Text
+                </Text>
 
                 {/* Author line for class-visible notes (shows who wrote it) */}
                 {isClassVisible && note.author && (
                     <Text sx={{ fontSize: 11, color: colors.textTertiary, marginTop: 4 }}
-                        \u2014 {note.author.full_name}
-                    </Text
+                        \u2014 {note.author.full_name}>
+                    </Text>
                 )}
-            </Box
+            </Box>
         );
     };
 
@@ -352,15 +352,15 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     textTransform: 'uppercase',
                     letterSpacing: 1,
                     marginBottom: Theme.spacing.sm,
-                    paddingHorizontal: Theme.spacing.lg,
+                    paddingHorizontal: Theme.spacing.lg,>
                 }}
             
                 {group.label}
-            </Text
+            </Text>
             <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}
                 {group.data.map((note) => renderNoteCard({ item: note }))}
-            </VStack
-        </VStack
+            </VStack>
+        </VStack>
     );
 
     if (loading) {
@@ -375,10 +375,10 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={120}
+            keyboardVerticalOffset={120}>
         
             <VStack sx={{ flex: 1 }}
-                {/* Note list */}
+                {/* Note list */}>
                 {grouped.length === 0 ? (
                     <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}
                         <PositiveInvitation
@@ -386,7 +386,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             description={
                                 isTeacher
                                     ? "Tap the button below to add your first note \u2014 recap today's lesson, pin an announcement, or jot a private reminder."
-                                    : "Tap the button below to add personal study notes for this class. Teacher announcements will appear here too."
+                                    : "Tap the button below to add personal study notes for this class. Teacher announcements will appear here too.">
                             }
                         /
                     ></Box
@@ -410,7 +410,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             backgroundColor: colors.secondary,
                             borderTopWidth: 1,
                             borderTopColor: colors.border,
-                            padding: Theme.spacing.md,
+                            padding: Theme.spacing.md,>
                         }}
                     
                         {/* Type selector (teacher only: all types; student: personal only) */}
@@ -428,23 +428,23 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             <TouchableOpacity
                                 onPress={() =
                                     setDraftVisibility((v) =
-                                        v === 'private' ? 'class' : 'private'
+                                        v === 'private' ? 'class' : 'private'>
                                     )
                                 }
                                 style={styles.visibilityToggle}
                             
                                 <HStack sx={{ gap: 6, alignItems: 'center' }}
-                                    {draftVisibility === 'class' ? (
+                                    {draftVisibility === 'class' ? (>
                                         <Globe size={14} color={Theme.colors.gurudeviViolet} /
                                     >) : (
                                         <Lock size={14} color={colors.textTertiary} /
                                     >)}
                                     <Text sx={{ fontSize: 12, color: draftVisibility === 'class' ? Theme.colors.gurudeviViolet : colors.textTertiary }}
-                                        {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
-                                    </Text
+                                        {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}>
+                                    </Text>
                                     <ChevronDown size={12} color={colors.textTertiary} /
                                 ></HStack
-                            </TouchableOpacity
+                            </TouchableOpacity>
                         )}
 
                         {/* Text input */}
@@ -460,7 +460,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                             ? "What do you need to remember?\u2026"
                                             : draftType === 'personal'
                                                 ? "Write your study note\u2026"
-                                                : "Write your note\u2026"
+                                                : "Write your note\u2026">
                             }
                             placeholderTextColor={colors.textTertiary}
                             multiline
@@ -485,14 +485,14 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                 style={styles.cancelBtn}
                             
                                 <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}
-                                    Cancel
-                                </Text
-                            </TouchableOpacity
+                                    Cancel>
+                                </Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleSave}
                                 disabled={!draft.trim() || saving}
                                 style={[
-                                    styles.saveBtn,
+                                    styles.saveBtn,>
                                     {
                                         backgroundColor: draft.trim()
                                             ? Theme.colors.sanctuarySaffron
@@ -509,22 +509,22 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                             fontWeight: '700',
                                             color: draft.trim()
                                                 ? Theme.colors.sacredWhite
-                                                : colors.textTertiary,
+                                                : colors.textTertiary,>
                                         }}
                                     
                                         Save
-                                    </Text
+                                    </Text>
                                 )}
-                            </TouchableOpacity
-                        </HStack
-                    </Box
+                            </TouchableOpacity>
+                        </HStack>
+                    </Box>
                 ) : (
                     /* Floating add button */
                     <Box
                         sx={{
                             position: 'absolute',
                             bottom: 24,
-                            right: 20,
+                            right: 20,>
                         }}
                     
                         <TouchableOpacity
@@ -534,10 +534,10 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                         
                             <NotebookPen size={20} color={Theme.colors.sacredWhite} /
                         ></TouchableOpacity
-                    </Box
+                    </Box>
                 )}
-            </VStack
-        </KeyboardAvoidingView
+            </VStack>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -582,11 +582,11 @@ function ScrollableTypeSelector({
                             }}
                         
                             {meta.label}
-                        </Text
-                    </TouchableOpacity
+                        </Text>
+                    </TouchableOpacity>
                 );
             })}
-        </View
+        </View>
     );
 }
 

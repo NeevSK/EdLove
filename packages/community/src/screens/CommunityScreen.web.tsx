@@ -169,7 +169,7 @@ export default function CommunityScreenWeb() {
                         title={t('community.title') || "The Heart"}
                         note={t('community.subtitle') || "Ecosystem Resonance"}
                         timeText={isEcosystemRole ? "Architect's Stream" : "Global Resonance"}
-                    actions={(can('create', 'CommunityPost') || can('create', 'CommunityGroup')) ? (
+                    actions={(can('create', 'CommunityPost') || can('create', 'CommunityGroup')) ? (>
                         <                            <button
                                 className="premium-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
@@ -216,14 +216,14 @@ export default function CommunityScreenWeb() {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         padding: '0 3px',
-                                        lineHeight: 1,
+                                        lineHeight: 1,>
                                     }}                                        {notifCount > 99 ? '99+' : notifCount}
                                     </span                                )}
                             </div                        </                    ) : undefined}
                 /
                 {/* 2. COMMUNITY GRID */}
                 <div className="community-grid"
-                    {/* LEFT: Sanctuary Explorer */}
+                    {/* LEFT: Sanctuary Explorer */}>
                     <aside className="community-sidebar"                        <nav className="sidebar-nav" style={{ gap: '8px' }}                            <SidebarItem
                                 icon={<Compass size={18} />}
                                 label={t('community.tabs.feed') || "Feed"}
@@ -262,7 +262,7 @@ export default function CommunityScreenWeb() {
                                                 onClick={() => { setSelectedGroupId(g.id); }}
                                                                                             <span className="sidebar-icon"                                                    <Hash size={14} /                                                ></span                                                <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span                                            ></button                                        ))}
                                     </div                                </div                            </                        )}
-                    </aside
+                    </aside>
                     {/* CENTER: Main Feed / Groups / DMs */}
                     <div className="community-feed"                        {/*  Responsive Upper Bar (Hidden on Desktop via CSS)  */}
                         <div className="community-sub-nav"                            <button
@@ -288,7 +288,7 @@ export default function CommunityScreenWeb() {
 
                         {activeTab === 'feed' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                                {!can('read', 'CommunityFeed') ? (
-                                    <div className="sanctuary-card" style={{ padding: '28px' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}                                            The Feed is born from Groups
+                                    <div className="sanctuary-card" style={{ padding: '28px' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}                                            The Feed is born from Groups>
                                         </h3                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            As a wanderer, you can discover groups and explore the ecosystem. Upgrade your account to join circles and let your feed emerge.
                                         </p                                        <PositiveInvitation
                                             title="Become a Citizen"
@@ -303,7 +303,7 @@ export default function CommunityScreenWeb() {
                                                                                             Explore groups
                                             </button                                        </div                                    </div                                ) : (!joinedGroups || joinedGroups.length === 0) ? (
                                     <div className="sanctuary-card" style={{ padding: '28px' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}                                            Your feed will appear after you join a group
-                                        </h3                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.
+                                        </h3                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.>
                                         </p                                        <button
                                             className="premium-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
@@ -317,7 +317,7 @@ export default function CommunityScreenWeb() {
                                     if (visiblePosts.length === 0) {
                                         return (
                                             <div style={{ padding: '80px 40px', textAlign: 'center' }}                                                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}                                                    {q ? `No posts match "${searchQuery}"` : t('community.empty.title')}
-                                                </p                                            </div                                        );
+                                                </p                                            </div                                        );>
                                     }
                                     return visiblePosts.map((post) => (
                                         <PostCard
@@ -395,9 +395,9 @@ export default function CommunityScreenWeb() {
                                                         : 'linear-gradient(180deg, var(--action-soft), rgba(var(--action-rgb), 0.14))',
                                                     border: g.is_public
                                                         ? '1px solid rgba(var(--reward-rgb), 0.18)'
-                                                        : '1px solid rgba(var(--action-rgb), 0.18)'
+                                                        : '1px solid rgba(var(--action-rgb), 0.18)'>
                                                 }}                                                    {initials}
-                                                </div
+                                                </div>
                                                 <div style={{ flex: 1, minWidth: 0 }}                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}                                                        <span style={{ fontWeight: '600', fontSize: '15px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}                                                            {g.name}
                                                         </span                                                        {g.join_policy === 'invite_only' && <Lock size={12} color="var(--ink-ghost)" />}
                                                     </div                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}                                                        {g.description || "Building resonance together..."}
@@ -406,7 +406,7 @@ export default function CommunityScreenWeb() {
                                                             <span className="status-pill" style={{
                                                                 background: 'var(--reward-soft)',
                                                                 color: 'var(--reward)',
-                                                                borderColor: 'rgba(var(--reward-rgb), 0.18)',
+                                                                borderColor: 'rgba(var(--reward-rgb), 0.18)',>
                                                             }}                                                                Discover
                                                             </span                                                        )}
                                                     </div                                                </div                                                
@@ -428,7 +428,7 @@ export default function CommunityScreenWeb() {
                                         /                                    ></div                                ) : loadingDMs ? (
                                     <div style={{ padding: '40px', textAlign: 'center' }}                                        <ActivityIndicator color="var(--action)" /                                    ></div                                ) : conversations.length === 0 ? (
                                     <div style={{ padding: '80px 40px', textAlign: 'center' }}                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}                                            No messages yet. Start a conversation from a user's profile!
-                                        </p                                    </div                                ) : (
+                                        </p                                    </div                                ) : (>
                                     <div style={{ display: 'flex', flexDirection: 'column' }}                                        {conversations.map((item, index) => {
                                             const initials = item.other_user_name?.split(' ').map((w: any) => w[0]).join('').slice(0, 2).toUpperCase();
                                             return (
@@ -456,7 +456,7 @@ export default function CommunityScreenWeb() {
                                         })}
                                     </div                                )}
                             </div                        )}
-                    </div
+                    </div>
                     {/* RIGHT: Presence & Stats */}
                     <aside className="community-panel"                        <CommunityHearth
                             manifestos={manifestos}
@@ -492,7 +492,7 @@ function SidebarItem({ icon, label, active, onClick }: { icon: any, label: strin
     return (
         <button
             onClick={onClick}
-            className={`sidebar-item ${active ? 'active' : ''}`}
+            className={`sidebar-item ${active ? 'active' : ''}`}>
                     {React.cloneElement(icon, {
                 size: 18,
                 className: 'sidebar-icon',

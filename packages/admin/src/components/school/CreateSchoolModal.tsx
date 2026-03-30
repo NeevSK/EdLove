@@ -202,7 +202,7 @@ export default function CreateSchoolModal({
                 <VStack sx={{ width: '100%', gap: Theme.spacing.md }}                    <Button
                         action="primary"
                         onPress={handleEnterDashboard}
-                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
+                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}>
                                             <ButtonText color={Theme.colors.sacredWhite}>Enter Dashboard</ButtonText                        ><Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} /                    ></Button                </VStack            );
         }
 
@@ -234,9 +234,9 @@ export default function CreateSchoolModal({
             isOpen={isOpen}
             onClose={handleClose}
             title={isEdit ? 'Refine Sanctuary' : 'Found New Sanctuary'}
-            footer={renderFooter()}
+            footer={renderFooter()}>
                     <VStack sx={{ gap: Theme.spacing.lg }}                {/* Step Indicator */}
-                {state.step < 5 && (
+                {state.step < 5 && (>
                     <HStack sx={{ gap: 4, justifyContent: 'center' }}                        {[1, 2, 3, 4].map((s) => (
                             <Box
                                 key={s}
@@ -244,7 +244,7 @@ export default function CreateSchoolModal({
                                     height: 4,
                                     flex: 1,
                                     borderRadius: 2,
-                                    backgroundColor: s <= state.step ? Theme.colors.sanctuarySaffron : colors.tertiary,
+                                    backgroundColor: s <= state.step ? Theme.colors.sanctuarySaffron : colors.tertiary,>
                                 }}
                             /                        >))}
                     </HStack                )}
@@ -278,7 +278,7 @@ export default function CreateSchoolModal({
                                                     backgroundColor: state.basicInfo.officialType === type.key ? 'rgba(212,132,58,0.1)' : 'transparent'
                                                 }}
                                                                                             <Text sx={{ fontSize: 12, color: state.basicInfo.officialType === type.key ? Theme.colors.sanctuarySaffron : colors.text }}                                                    {type.en}
-                                                </Text                                            </TouchableOpacity                                        ))}
+                                                </Text                                            </TouchableOpacity                                        ))}>
                                     </HStack                                </VStack                            </VStack                        )}
 
                         {state.step === 2 && (
@@ -295,7 +295,7 @@ export default function CreateSchoolModal({
                                                         backgroundColor: state.location.provinceId === p.id ? 'rgba(212,132,58,0.1)' : colors.tertiary
                                                     }}
                                                                                                     <Text sx={{ fontWeight: '600', color: state.location.provinceId === p.id ? Theme.colors.sanctuarySaffron : colors.text }}                                                        {p.en}
-                                                    </Text                                                </TouchableOpacity                                            ))}
+                                                    </Text                                                </TouchableOpacity                                            ))}>
                                         </HStack                                    </ScrollView                                </VStack
                                 {state.location.provinceId && (
                                     <VStack sx={{ gap: 8 }}                                        <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>District</Text                                        ><HStack flexWrap="wrap" sx={{ gap: 8 }}                                            {availableDistricts.map((d) => (
@@ -311,7 +311,7 @@ export default function CreateSchoolModal({
                                                         backgroundColor: state.location.districtId === d.id ? 'rgba(212,132,58,0.05)' : 'transparent'
                                                     }}
                                                                                                     <Text sx={{ fontSize: 13, color: state.location.districtId === d.id ? Theme.colors.sanctuarySaffron : colors.text }}                                                        {d.en}
-                                                    </Text                                                </TouchableOpacity                                            ))}
+                                                    </Text                                                </TouchableOpacity                                            ))}>
                                         </HStack                                    </VStack                                )}
 
                                 <SanctuaryInput
@@ -359,7 +359,7 @@ export default function CreateSchoolModal({
                                                     backgroundColor: state.demographics.religiousAffiliation === r.id ? 'rgba(212,132,58,0.1)' : 'transparent'
                                                 }}
                                                                                             <Text sx={{ fontSize: 13, color: state.demographics.religiousAffiliation === r.id ? Theme.colors.sanctuarySaffron : colors.text }}                                                    {r.en}
-                                                </Text                                            </TouchableOpacity                                        ))}
+                                                </Text                                            </TouchableOpacity                                        ))}>
                                     </HStack                                </VStack
                                 <SanctuaryInput
                                     label="Estimated Student Count"
@@ -387,7 +387,7 @@ export default function CreateSchoolModal({
                         {state.step === 5 && (
                             <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}                                <Box sx={{ backgroundColor: 'rgba(34,197,94,0.1)', padding: 24, borderRadius: 60 }}                                    <Icon as={CheckCircle} color="#22C55E" size={64} /                                ></Box                                
                                 <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                    <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}                                        Sanctuary Founded!
-                                    </Heading                                    <Text sx={{ textAlign: 'center', color: colors.textSecondary }}                                        Your institution is now part of the Gurudevi ecosystem. 
+                                    </Heading                                    <Text sx={{ textAlign: 'center', color: colors.textSecondary }}                                        Your institution is now part of the Gurudevi ecosystem. >
                                     </Text                                </VStack
                                 <Box sx={{ backgroundColor: colors.tertiary, padding: 16, borderRadius: 16, width: '100%' }}                                    <VStack sx={{ gap: 12 }}                                        <HStack sx={{ gap: 8, alignItems: 'center' }}                                            <Icon as={BookOpen} color={Theme.colors.sanctuarySaffron} size={16} /                                            ><Text sx={{ fontSize: 14 }}>Academic Cycle Initialized</Text                                        ></HStack                                        <HStack sx={{ gap: 8, alignItems: 'center' }}                                            <Icon as={MessageSquare} color={Theme.colors.sanctuarySaffron} size={16} /                                            ><Text sx={{ fontSize: 14 }}>Community Space Ready</Text                                        ></HStack                                    </VStack                                </Box                            </VStack                        )}
                     </VStack                </ScrollView

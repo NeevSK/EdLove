@@ -80,7 +80,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                     overflow: 'hidden',
                     backgroundColor: colors.secondary,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: colors.border,>
                 }}                    <LinearGradient
                         colors={[`${Theme.colors.gurudeviViolet}26`, 'transparent']}
                         start={{ x: 0, y: 0 }}
@@ -113,7 +113,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                     overflow: 'hidden',
                     backgroundColor: colors.secondary,
                     borderWidth: 1,
-                    borderColor: Theme.colors.sanctuarySaffron + '33',
+                    borderColor: Theme.colors.sanctuarySaffron + '33',>
                 }}                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}                        <Box sx={{
                             width: 48,
                             height: 48,
@@ -403,7 +403,7 @@ export default function LibraryScreen() {
                 searchProps={{
                     value: searchQuery,
                     onChangeText: setSearchQuery,
-                    placeholder: t('library.searchPlaceholder')
+                    placeholder: t('library.searchPlaceholder')>
                 }}
                 rightAction={
                     <HStack sx={{ gap: 8, alignItems: 'center' }}                        {isSyncing && (
@@ -444,12 +444,12 @@ export default function LibraryScreen() {
                                         onPress={() => setViewMode('list')} 
                                         style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
                                                                             <List size={14} color={viewMode === 'list' ? Theme.colors.sacredWhite : colors.textSecondary} /                                    </TouchableOpacity                                </HStack                            </HStack                        </Animated.View
-                        {viewMode === 'shelf' && !isSearchMode ? (
+                        {viewMode === 'shelf' && !isSearchMode ? (>
                             <ScrollView 
                                 style={{ flex: 1 }}
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                                refreshControl={
+                                refreshControl={>
                                     <ActivityIndicator animating={refreshing} color={Theme.colors.sanctuarySaffron} /                                >}
                                                             {heroResource && (
                                     <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} /                                >)}
@@ -489,7 +489,7 @@ export default function LibraryScreen() {
                                                         thumbnailUrl={col.thumbnail_url}
                                                         verified={col.is_official}
                                                         contextData={col}
-                                                        onPress={(collection) =                                                            navigation.navigate('CollectionDetail', { id: collection.id, title: collection.name })
+                                                        onPress={(collection) =                                                            navigation.navigate('CollectionDetail', { id: collection.id, title: collection.name })>
                                                         }
                                                     /                                                >))}
                                             </SmartShelf                                        </Box                                    )}
@@ -564,10 +564,10 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
     return (
         <LinearGradient 
             colors={['transparent', `${colors.obsidian}88`, `${colors.obsidian}EE`]}
-            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}
+            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}>
                     <Box sx={{ alignSelf: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron, px: 8, py: 3, borderRadius: 4, mb: 8 }}                <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sacredWhite, letterSpacing: 1 }}>\u2727 FEATURED</Text            ></Box            <Text sx={{ fontSize: 22, fontWeight: '800', lineHeight: 28, mb: 6, color: colors.textPrimary }}>{resource.title}</Text            {resource.description && (
                 <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={2}                    {resource.description}
-                </Text            )}
+                </Text            )}>
             <HStack sx={{ alignItems: 'center', gap: 10 }}                <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Theme.colors.sanctuarySaffron, px: 14, py: 8, borderRadius: 12 }}                    <Play size={14} color={Theme.colors.sacredWhite} fill={Theme.colors.sacredWhite} /                    ><Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 13 }}>Open</Text                ></Box            </HStack        </LinearGradient    );
 }
 

@@ -33,7 +33,7 @@ function Spin({ size = 16 }: { size?: number }) {
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-            style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}
+            style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}>
             <path d="M21 12a9 9 0 1 1-6.219-8.56" /
         ></svg
     );
@@ -43,10 +43,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
         <p style={{
             margin: '0 0 8px', fontSize: '11px', fontWeight: '800',
-            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'
+            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'>
         }}
             {children}
-        </p
+        </p>
     );
 }
 
@@ -63,11 +63,11 @@ function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement> & { label
                     border: `1.5px solid ${error ? 'var(--ember)' : 'var(--border)'}`,
                     background: 'var(--background-alt)', color: 'var(--ink)',
                     fontFamily: 'var(--font-body)', fontSize: '14px',
-                    ...rest.style,
+                    ...rest.style,>
                 }}
             /
             >{error && <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--ember)' }}>{error}</p>}
-        </div
+        </div>
     );
 }
 
@@ -82,7 +82,7 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}
             <div style={{
                 width: '64px', height: '64px', borderRadius: '50%',
-                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'>
             }}
                 <CheckCircle2 size={32} color="var(--moss)" /
             ></div
@@ -90,13 +90,13 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
             <div
                 <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3
                 <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p
-            </div
+            </div>
             <button className="premium-button"
                 style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}
-                onClick={onCta}
+                onClick={onCta}>
                 {cta} <ArrowRight size={14} /
             ></button
-        </div
+        </div>
     );
 }
 
@@ -156,7 +156,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
-            {step === 'details' && (
+            {step === 'details' && (>
                 <
                     <FieldInput label="School Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Gurudevi Life School" /
                     ><button className="premium-button"
@@ -171,7 +171,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                 <
                     <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px' }}
                         What kind of school is <strong style={{ color: 'var(--ink)' }}>{name}</strong>?
-                    </p
+                    </p>
                     {SCHOOL_TYPES.map(t => (
                         <button key={t.value} onClick={() => setType(t.value)} style={{
                             display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px',
@@ -185,7 +185,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                                 ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{t.desc}</div
                             ></div
                             {type === t.value && <CheckCircle2 size={16} color="var(--sanctuary-saffron)" />}
-                        </button
+                        </button>
                     ))}
                     {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
                     <div style={{ display: 'flex', gap: '10px' }}
@@ -194,11 +194,11 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                             style={{ flex: 2, background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                             onClick={handleCreate} disabled={loading}
                             {loading ? <><Spin /> Creating\u2026</> : <><Building2 size={14} /> Create School</>}
-                        </button
-                    </div
+                        </button>
+                    </div>
                 </
             )}
-        </div
+        </div>
     );
 }
 
@@ -279,7 +279,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            {/* Method tabs */}
+            {/* Method tabs */}>
             <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '10px' }}
                 {([{ id: 'code', label: '\uD83D\uDD11 Invite Code' }, { id: 'search', label: '\uD83D\uDD0D Search School' }] as const).map(m => (
                     <button key={m.id} onClick={() => setMethod(m.id)} style={{
@@ -290,7 +290,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                         boxShadow: method === m.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
                     }}>{m.label}</button
                 >))}
-            </div
+            </div>
 
             {/* Invite code */}
             {method === 'code' && (
@@ -308,14 +308,14 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                         onClick={handleCode} disabled={code.length < 15 || codeLoading}
                         {codeLoading ? <Spin /> : <Key size={14} />}
                         {codeLoading ? 'Joining\u2026' : 'Join with Code'}
-                    </button
-                </div
+                    </button>
+                </div>
             )}
 
             {/* Search */}
             {method === 'search' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
-                    <div style={{ display: 'flex', gap: '8px' }}
+                    <div style={{ display: 'flex', gap: '8px' }}>
                         <input value={query} onChange={e => setQuery(e.target.value)}
                             onKeyDown={(e: any) => e.key === 'Enter' && handleSearch()}
                             placeholder="Type school name\u2026"
@@ -323,28 +323,28 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                         ><button className="secondary-button" onClick={handleSearch} disabled={query.length < 3 || searching}
                             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                             {searching ? <Spin size={13} /> : <Search size={13} />} Search
-                        </button
-                    </div
+                        </button>
+                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}
                         {results.map(s => (
                             <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}
-                                <div
+                                <div>
                                     <div >style={{ fontSize: '14px', fontWeight: '700' }}>{s.name}</div
                                     ><div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.type}</div
                                 ></div
                                 <button className="secondary-button" style={{ fontSize: '12px', padding: '6px 12px' }}
                                     onClick={() => handleRequest(s.id)} disabled={requesting === s.id}
                                     {requesting === s.id ? <Spin size={12} /> : 'Request Join'}
-                                </button
-                            </div
+                                </button>
+                            </div>
                         ))}
                         {!searching && query.length >= 3 && results.length === 0 && (
                             <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', textAlign: 'center', margin: 0 }}>No schools found. Try a different name or get an invite code.</p
                         >)}
-                    </div
-                </div
+                    </div>
+                </div>
             )}
-        </div
+        </div>
     );
 }
 
@@ -396,16 +396,16 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
             <div style={{ padding: '12px 16px', background: 'rgba(212,132,58,0.06)', borderRadius: '10px', border: '1px solid rgba(212,132,58,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}
                 \uD83D\uDCA1 A <strong style={{ color: 'var(--ink)' }}>standalone classroom</strong> is personal \u2014 it's not linked to any school.
                 You can join a school later and move classrooms under it.
-            </div
+            </div>
             <FieldInput label="Classroom Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grade 10B Science" /
             <FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" /
             >{error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
             <button className="premium-button"
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                onClick={handleCreate} disabled={!name.trim() || loading}
+                onClick={handleCreate} disabled={!name.trim() || loading}>
                 {loading ? <><Spin /> Creating\u2026</> : <><BookOpen size={14} /> Create Classroom</>}
-            </button
-        </div
+            </button>
+        </div>
     );
 }
 
@@ -426,7 +426,7 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
-            {/* Tab bar */}
+            {/* Tab bar */}>
             <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '12px' }}
                 {TABS.map(t => (
                     <button key={t.id} onClick={() => setTab(t.id)} style={{
@@ -439,9 +439,9 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
                         transition: 'all 0.15s',
                     }}
                         {t.icon} {t.label}
-                    </button
+                    </button>
                 ))}
-            </div
+            </div>
 
             {tab === 'join_school' && (
                 joinedSchoolId
@@ -458,7 +458,7 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
             {tab === 'standalone' && (
                 <TeacherCreateStandaloneClassroom onSuccess={onSuccess} /
             >)}
-        </div
+        </div>
     );
 }
 
@@ -497,11 +497,11 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}
+            <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
                 <Users size={13} color="var(--water)" style={{ marginRight: 6 }} /
                 >Ask your teacher for your classroom invite code.
                 It's typically 8 characters, like <code style={{ fontWeight: '800', letterSpacing: '1px' }}>a1b2c3d4</code>.
-            </div
+            </div>
 
             <div
                 <SectionLabel>Your Classroom Code</SectionLabel
@@ -520,14 +520,14 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
                     }}
                 /
                 {error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-            </div
+            </div>
 
             <button className="premium-button"
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                onClick={handleClaim} disabled={code.length < 6 || loading}
+                onClick={handleClaim} disabled={code.length < 6 || loading}>
                 {loading ? <><Spin /> Joining\u2026</> : <><BookOpen size={14} /> Join Classroom</>}
-            </button
-        </div
+            </button>
+        </div>
     );
 }
 
@@ -555,19 +555,19 @@ export default function NoSchoolView() {
 
     return (
         <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}
-            <div style={{ textAlign: 'center', marginBottom: '32px' }}
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <div style={{ fontSize: '48px', marginBottom: '10px' }}>{META.emoji}</div
                 ><h1 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '800' }}>{META.heading}</h1
                 ><p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px', lineHeight: '1.6', maxWidth: '380px', marginInline: 'auto' as any }}
                     {META.sub}
-                </p
-            </div
+                </p>
+            </div>
 
             <div className="sanctuary-card" style={{ padding: '28px 32px' }}
                 {canCreateSchool && <PrincipalCreateSchool onSuccess={handleSuccess} />}
                 {canCreateClassroom && <TeacherFlow onSuccess={handleSuccess} />}
                 {canJoinClassroom && !canCreateClassroom && <StudentJoinClassroom onSuccess={handleSuccess} />}
-            </div
-        </div
+            </div>
+        </div>
     );
 }

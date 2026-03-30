@@ -113,7 +113,7 @@ export const BanyanSection: React.FC = () => (
             ><Text style={[styles.title, { color: '#10B981' }]}>The Banyan Tree</Text
         ></View
         <Text style={styles.contentText}>Visualizing your classroom's collective growth roots.</Text
-    </View
+    ></View
 );
 
 // --- PRINCIPAL SECTIONS ---
@@ -253,7 +253,7 @@ export const IdentitySection: React.FC = () => (
             ><Text style={[styles.title, { color: '#A78BFA' }]}>Who Am I Becoming?</Text
         ></View
         <Text style={styles.placeholder}>Reflecting your inner qualities...</Text
-    </View
+    ></View
 );
 
 export const TeacherFeedbackSection: React.FC = () => (
@@ -263,5 +263,5 @@ export const TeacherFeedbackSection: React.FC = () => (
             ><Text style={[styles.title, { color: '#C4B5FD' }]}>Teacher Echoes</Text
         ></View
         <Text style={styles.placeholder}>Guidance from your mentors.</Text
-    </View
+    ></View
 );

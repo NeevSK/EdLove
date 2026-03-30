@@ -214,13 +214,13 @@ export default function LibraryScreenWeb() {
                     title="The Sanctuary"
                     note="Gurudevi Knowledge Hub"
                     timeText="Curated Wisdom"
-                    actions={(
+                    actions={(>
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}                            {canContribute && (
                                 <button
                                     className='premium-button'
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                     onClick={handleAddResourcePress}
-                                    disabled={isPastView}
+                                    disabled={isPastView}>
                                                                     <Plus size={15} /                                    >{t('library.contributeResource') || 'Contribute Resource'}
                                 </button                            )}
                             <button
@@ -234,7 +234,7 @@ export default function LibraryScreenWeb() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}                    {/* Search + Sort row */}
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}                        <div className="sanctuary-search-shell" style={{
                             flex: 1,
-                            minWidth: '200px',
+                            minWidth: '200px',>
                         }}                            <Search size={18} color="var(--ink-ghost)" /                            ><input
                                 className="search-input"
                                 style={{ padding: '8px 0' }}
@@ -248,7 +248,7 @@ export default function LibraryScreenWeb() {
                                     aria-label="Clear search"
                                                                     &#10005;
                                 </button                            )}
-                        </div
+                        </div>
                         {/* Sort selector */}
                         <select
                             value={selectedSort}
@@ -295,7 +295,7 @@ export default function LibraryScreenWeb() {
                         gap: '8px',
                         overflowX: 'auto',
                         paddingBottom: '8px',
-                        scrollbarWidth: 'none'
+                        scrollbarWidth: 'none'>
                     }}                        {['All', 'trending', 'bookmarks', 'activity'].map(id => {
                             const Icon = id === 'All' ? Globe : id === 'trending' ? Flame : id === 'bookmarks' ? Bookmark : Clock;
                             return (
@@ -320,7 +320,7 @@ export default function LibraryScreenWeb() {
                 {loading && resources.length === 0 ? (
                     <StackFallback /                >) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}                        
-                        {/* HERO BANNER (Only in default mode) */}
+                        {/* HERO BANNER (Only in default mode) */}>
                         {!isSearchMode && heroResource && (
                             <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} /                        >)}
 
@@ -328,9 +328,9 @@ export default function LibraryScreenWeb() {
                             /* SEARCH / FILTERED RESULTS VIEW - Switches between modes */
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                                <div style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '16px' }}                                    {debouncedSearchQuery 
                                         ? t('library.foundResults', { count: resources.length, query: debouncedSearchQuery })
-                                        : t('library.showingCurated', { category: selectedCategoryId })
+                                        : t('library.showingCurated', { category: selectedCategoryId })>
                                     }
-                                </div                                
+                                </div                                >
                                 {viewMode === 'shelf' && (
                                     <                                        {collections.length > 0 && (
                                             <SmartShelf title="Matching Collections"                                                <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}                                                    {collections.map(col => (
@@ -464,13 +464,13 @@ export default function LibraryScreenWeb() {
                                                         border: '1px solid var(--border)',
                                                         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                                         position: 'relative',
-                                                        overflow: 'hidden'
+                                                        overflow: 'hidden'>
                                                     }}
                                                     className="sanctuary-card"
                                                     onClick={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
                                                                                                     <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}
                                                     </div                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
-                                                    </div                                                    
+                                                    </div                                                    >
                                                     {/* Subtle accent line */}
                                                     <div style={{ 
                                                         position: 'absolute', 
@@ -479,7 +479,7 @@ export default function LibraryScreenWeb() {
                                                         right: 0, 
                                                         height: '4px', 
                                                         background: 'var(--action)', 
-                                                        opacity: 0.3 
+                                                        opacity: 0.3 >
                                                     }} /                                                ></div                                            ))}
                                         </div                                    </SmartShelf                                )}
 
@@ -514,7 +514,7 @@ export default function LibraryScreenWeb() {
                                                             {isFetchingNextResources ? t('library.loadingMore') : t('library.loadMoreFindings')}
                             </button                        )}
                     </div                )}
-            </div
+            </div>
 
             {/* Add Resource Modal \u2014 teachers/curators can contribute */}
             {can('create', 'LibraryResource') && can('create', 'LibraryResource') && (
@@ -571,7 +571,7 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                 position: 'relative',
                 cursor: 'pointer',
                 marginBottom: '40px',
-                background: 'linear-gradient(180deg, var(--action-soft) 0%, var(--scene-surface) 100%)',
+                background: 'linear-gradient(180deg, var(--action-soft) 0%, var(--scene-surface) 100%)',>
             }}
                     {resource.media?.url && (
                 <img 
@@ -589,7 +589,7 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
-                zIndex: 1,
+                zIndex: 1,>
             }}                <div style={{ 
                     display: 'flex', 
                     alignItems: 'center', 

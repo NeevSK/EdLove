@@ -183,7 +183,7 @@ export default function GradebookScreenWeb() {
                   }}
                                   {sort.label}
                 </button              ))}
-            </div
+            </div>
             <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden' }}              <div style={{ display: 'grid', gridTemplateColumns: '60px 1.2fr 110px 110px 180px', gap: '12px', padding: '14px 20px', borderBottom: '1px solid var(--border-light)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)' }}                <span>Rank</span                ><span>Student</span                ><span>Marks</span                ><span>Status</span                ><span>Action</span              ></div
               {sortedGrades.map((grade) => {
                 const marks = grade.marks ?? 0;
@@ -191,7 +191,7 @@ export default function GradebookScreenWeb() {
                 return (
                   <div
                     key={grade.student_id}
-                    style={{ display: 'grid', gridTemplateColumns: '60px 1.2fr 110px 110px 180px', gap: '12px', padding: '16px 20px', borderBottom: '1px solid var(--border-light)', alignItems: 'center' }}
+                    style={{ display: 'grid', gridTemplateColumns: '60px 1.2fr 110px 110px 180px', gap: '12px', padding: '16px 20px', borderBottom: '1px solid var(--border-light)', alignItems: 'center' }}>
                                       <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--ink)' }}>#{grade.rank ?? '-'}</span                    ><div                      <div >style={{ fontSize: '14px', fontWeight: '700' }}>{studentNames[grade.student_id] ?? 'Student'}</div                      >{grade.feedback ? <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{grade.feedback}</div> : null}
                     </div                    <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink)' }}>{marks}/{maxMarks}</span                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}                      <span style={{ fontSize: '12px', fontWeight: '800', color: statusColor }}>{marks >= passingMarks ? 'Passing' : 'Needs support'}</span                      ><span style={{ fontSize: '11px', fontWeight: '700', color: grade.publication_state === 'published' ? 'var(--moss)' : 'var(--ink-ghost)' }}                        {grade.publication_state === 'published' ? 'Published' : 'Draft'}
                       </span                    </div                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}                      <button
@@ -206,7 +206,7 @@ export default function GradebookScreenWeb() {
                         </button                      ) : null}
                     </div                  </div                );
               })}
-            </div
+            </div>
             {gradingStudent ? (
               <GradeModal
                 studentName={studentNames[gradingStudent.student_id] ?? 'Student'}

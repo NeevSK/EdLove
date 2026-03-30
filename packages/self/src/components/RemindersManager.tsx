@@ -195,45 +195,45 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
-            {/* Header */}
+            {/* Header */}>
             <HStack justifyContent="space-between" alignItems="center"
-                <VStack space="xs" sx={{ flex: 1 }}
+                <VStack space="xs" sx={{ flex: 1 }}>
                     <Heading color={Theme.colors.sacredWhite} size="lg"
-                        {t('reminders.title')}
-                    </Heading
+                        {t('reminders.title')}>
+                    </Heading>
                     <Text color={Theme.colors.mistGray} size="sm"
-                        Gentle nudges for self-care
-                    </Text
-                </VStack
+                        Gentle nudges for self-care>
+                    </Text>
+                </VStack>
                 <Button
                     size="sm"
                     onPress={openCreateModal}
                     sx={{
                         borderRadius: Theme.corners.full,
                         backgroundColor: Theme.colors.sanctuarySaffron,
-                        paddingHorizontal: Theme.spacing.md,
+                        paddingHorizontal: Theme.spacing.md,>
                     }}
                 
                     <Plus color={Theme.colors.sacredWhite} size={16} style={{ marginRight: 4 }} /
                     ><ButtonText>{t('reminders.addReminder')}</ButtonText
                 ></Button
-            </HStack
+            </HStack>
 
             {/* Reminders List */}
             <VStack space="md"
-                {reminders.length === 0 ? (
+                {reminders.length === 0 ? (>
                     <Box
                         sx={{
                             padding: Theme.spacing.xl,
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
-                            alignItems: 'center',
+                            alignItems: 'center',>
                         }}
                     
                         <Text color={Theme.colors.mistGray} size="md" textAlign="center"
-                            {t('reminders.noReminders')}
-                        </Text
-                    </Box
+                            {t('reminders.noReminders')}>
+                        </Text>
+                    </Box>
                 ) : (
                     reminders.map((reminder) => {
                         const Icon = ICON_MAP[reminder.icon_type] || Bell;
@@ -250,11 +250,11 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                     borderLeftColor: reminder.is_active
                                         ? Theme.colors.sanctuarySaffron
                                         : Theme.colors.dimGray,
-                                    opacity: reminder.is_active ? 1 : 0.6,
+                                    opacity: reminder.is_active ? 1 : 0.6,>
                                 }}
                             
                                 <HStack space="md" alignItems="center"
-                                    {/* Icon */}
+                                    {/* Icon */}>
                                     <Pressable onPress={() => toggleReminder(reminder)}
                                         <Box
                                             sx={{
@@ -263,7 +263,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                 borderRadius: 20,
                                                 backgroundColor: Theme.colors.obsidian,
                                                 alignItems: 'center',
-                                                justifyContent: 'center',
+                                                justifyContent: 'center',>
                                             }}
                                         
                                             <Icon
@@ -271,32 +271,32 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                 size={20}
                                             /
                                         ></Box
-                                    </Pressable
+                                    </Pressable>
 
                                     {/* Content */}
                                     <VStack space="xs" sx={{ flex: 1 }}
                                         <Text
                                             color={Theme.colors.sacredWhite}
                                             size="md"
-                                            sx={{ fontWeight: typography.fontWeight.semibold }}
+                                            sx={{ fontWeight: typography.fontWeight.semibold }}>
                                         
                                             {reminder.title}
-                                        </Text
+                                        </Text>
                                         {reminder.description && (
                                             <Text color={Theme.colors.mistGray} size="sm"
-                                                {reminder.description}
-                                            </Text
+                                                {reminder.description}>
+                                            </Text>
                                         )}
                                         {reminder.is_default && (
                                             <Text color={Theme.colors.shadowViolet} size="xs"
-                                                \uD83D\uDCA7 Default reminder
-                                            </Text
+                                                \uD83D\uDCA7 Default reminder>
+                                            </Text>
                                         )}
-                                    </VStack
+                                    </VStack>
 
                                     {/* Actions */}
                                     <HStack space="xs"
-                                        {!reminder.is_default && (
+                                        {!reminder.is_default && (>
                                             <
                                                 <Pressable onPress={() => openEditModal(reminder)}
                                                     <Box
@@ -306,12 +306,12 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                             borderRadius: 18,
                                                             backgroundColor: Theme.colors.obsidian,
                                                             alignItems: 'center',
-                                                            justifyContent: 'center',
+                                                            justifyContent: 'center',>
                                                         }}
                                                     
                                                         <Edit color={Theme.colors.mistGray} size={16} /
                                                     ></Box
-                                                </Pressable
+                                                </Pressable>
                                                 <Pressable onPress={() => deleteReminder(reminder.id)}
                                                     <Box
                                                         sx={{
@@ -320,28 +320,28 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                             borderRadius: 18,
                                                             backgroundColor: Theme.colors.obsidian,
                                                             alignItems: 'center',
-                                                            justifyContent: 'center',
+                                                            justifyContent: 'center',>
                                                         }}
                                                     
                                                         <Trash2 color={Theme.colors.emberRed} size={16} /
                                                     ></Box
-                                                </Pressable
+                                                </Pressable>
                                             </
                                         )}
-                                    </HStack
-                                </HStack
-                            </Box
+                                    </HStack>
+                                </HStack>
+                            </Box>
                         );
                     })
                 )}
-            </VStack
+            </VStack>
 
             {/* Info */}
             <Box
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
+                    borderRadius: Theme.corners.comfortable,>
                 }}
             
                 <Text
@@ -351,8 +351,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     sx={{ fontStyle: 'italic' }}
                 
                     \uD83D\uDD14 Tap the icon to toggle reminders on/>off
-                </Text
-            </Box
+                </Text>
+            </Box>
 
             {/* Create/Edit Modal */}
             <Modal isOpen={showCreateModal} onClose={closeModal}
@@ -366,22 +366,22 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     <ModalHeader
                         <Heading >color={Theme.colors.sacredWhite} size="lg"
                             {editingReminder ? 'Edit Reminder' : 'New Reminder'}
-                        </Heading
+                        </Heading>
                         <ModalCloseButton /
                     ></ModalHeader
                     <ModalBody
-                        <VStack space="md"
+                        <VStack space="md">
                             {/* Title */}
                             <VStack space="xs"
                                 <Text color={Theme.colors.starlightGray} size="sm"
-                                    Title
-                                </Text
+                                    Title>
+                                </Text>
                                 <Input
                                     variant="outline"
                                     size="md"
                                     sx={{
                                         backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,
+                                        borderColor: Theme.colors.obsidian,>
                                     }}
                                 
                                     <InputField
@@ -392,19 +392,19 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                         placeholderTextColor={Theme.colors.dimGray}
                                     /
                                 ></Input
-                            </VStack
+                            </VStack>
 
                             {/* Description */}
                             <VStack space="xs"
                                 <Text color={Theme.colors.starlightGray} size="sm"
-                                    Description (optional)
-                                </Text
+                                    Description (optional)>
+                                </Text>
                                 <Input
                                     variant="outline"
                                     size="md"
                                     sx={{
                                         backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,
+                                        borderColor: Theme.colors.obsidian,>
                                     }}
                                 
                                     <InputField
@@ -416,13 +416,13 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                         multiline
                                     /
                                 ></Input
-                            </VStack
+                            </VStack>
 
                             {/* Icon Type */}
                             <VStack space="xs"
                                 <Text color={Theme.colors.starlightGray} size="sm"
-                                    Icon
-                                </Text
+                                    Icon>
+                                </Text>
                                 <HStack space="md"
                                     {Object.keys(ICON_MAP).map((type) => {
                                         const Icon = ICON_MAP[type];
@@ -444,7 +444,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                             ? Theme.colors.sanctuarySaffron
                                                             : Theme.colors.ink,
                                                         alignItems: 'center',
-                                                        justifyContent: 'center',
+                                                        justifyContent: 'center',>
                                                     }}
                                                 
                                                     <Icon
@@ -452,13 +452,13 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                         size={24}
                                                     /
                                                 ></Box
-                                            </Pressable
+                                            </Pressable>
                                         );
                                     })}
-                                </HStack
-                            </VStack
-                        </VStack
-                    </ModalBody
+                                </HStack>
+                            </VStack>
+                        </VStack>
+                    </ModalBody>
                     <ModalFooter
                         <HStack >space="md" sx={{ width: '100%' }}
                             <Button
@@ -466,7 +466,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                 variant="outline"
                                 onPress={closeModal}
                                 sx={{
-                                    borderColor: Theme.colors.dimGray,
+                                    borderColor: Theme.colors.dimGray,>
                                 }}
                             
                                 <ButtonText color={Theme.colors.mistGray}>Cancel</ButtonText
@@ -476,17 +476,17 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                 onPress={saveReminder}
                                 isDisabled={!title.trim()}
                                 sx={{
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    backgroundColor: Theme.colors.sanctuarySaffron,>
                                 }}
                             
                                 <ButtonText
-                                    {editingReminder ? 'Update' : 'Create'}
-                                </ButtonText
-                            </Button
-                        </HStack
-                    </ModalFooter
-                </ModalContent
-            </Modal
-        </VStack
+                                    {editingReminder ? 'Update' : 'Create'}>
+                                </ButtonText>
+                            </Button>
+                        </HStack>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </VStack>
     );
 }

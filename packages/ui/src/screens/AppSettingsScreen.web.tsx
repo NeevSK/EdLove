@@ -87,15 +87,15 @@ function SettingsOption({
             borderRadius: Theme.corners.comfortable,
             backgroundColor: (isActive ? colors.action : colors.tertiary) as any,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'center',>
           }}
                   {icon}
-        </Box
+        </Box>
         <VStack flex={1} space="xs"          <Text
             sx={{
               fontSize: Theme.typography.fontSize.md,
               fontWeight: Theme.typography.fontWeight.semibold,
-              color: colors.text as any,
+              color: colors.text as any,>
             }}
                       {title}
           </Text          <Text
@@ -111,7 +111,7 @@ function SettingsOption({
               sx={{
                 fontSize: Theme.typography.fontSize.sm,
                 color: colors.textSecondary as any,
-                marginRight: Theme.spacing.xs,
+                marginRight: Theme.spacing.xs,>
               }}
                           {value}
             </Text          )}
@@ -126,7 +126,7 @@ function SectionHeader({ title, description, colors }: { title: string; descript
     <VStack space="xs" sx={{ marginBottom: Theme.spacing.md, marginTop: Theme.spacing.lg }}      <Heading
         size="lg"
         sx={{
-          color: colors.text as any,
+          color: colors.text as any,>
         }}
               {title}
       </Heading      {description && (
@@ -134,7 +134,7 @@ function SectionHeader({ title, description, colors }: { title: string; descript
           sx={{
             fontSize: Theme.typography.fontSize.sm,
             color: colors.textSecondary as any,
-            lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
+            lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,>
           }}
                   {description}
         </Text      )}
@@ -223,7 +223,7 @@ export default function AppSettingsScreen({ navigation }: any) {
     <Box flex={1} sx={{ backgroundColor: colors.primary as any }}      <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: Theme.spacing.md }}
+        contentContainerStyle={{ padding: Theme.spacing.md }}>
               {/* Appearance Section */}
         <SectionHeader
           colors={colors}
@@ -253,7 +253,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           padding: Theme.spacing.md,
           marginBottom: Theme.spacing.sm,
           borderWidth: 1,
-          borderColor: (enableLivingTheme ? colors.action : colors.border) as any,
+          borderColor: (enableLivingTheme ? colors.action : colors.border) as any,>
         }}          <HStack space="md" alignItems="center" justifyContent="space-between"            <HStack space="md" alignItems="center" flex={1}              <Box sx={{
                 width: 40, height: 40,
                 borderRadius: Theme.corners.comfortable,
@@ -359,7 +359,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               </Text              <Text
                 sx={{
                   color: colors.text as any,
-                  fontWeight: Theme.typography.fontWeight.semibold,
+                  fontWeight: Theme.typography.fontWeight.semibold,>
                 }}
                               {reality.deviceTier.charAt(0).toUpperCase() + reality.deviceTier.slice(1)}
               </Text            </HStack
@@ -367,7 +367,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               </Text              <Text
                 sx={{
                   color: colors.text as any,
-                  fontWeight: Theme.typography.fontWeight.semibold,
+                  fontWeight: Theme.typography.fontWeight.semibold,>
                 }}
                               {reality.totalMemoryGB.toFixed(1)} GB
               </Text            </HStack
@@ -375,7 +375,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               </Text              <Text
                 sx={{
                   color: colors.text as any,
-                  fontWeight: Theme.typography.fontWeight.semibold,
+                  fontWeight: Theme.typography.fontWeight.semibold,>
                 }}
                               {reality.networkQuality.charAt(0).toUpperCase() + reality.networkQuality.slice(1)}
               </Text            </HStack
@@ -385,7 +385,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   backgroundColor: colors.warning as any,
                   padding: Theme.spacing.sm,
                   borderRadius: Theme.corners.tight,
-                  marginTop: Theme.spacing.xs,
+                  marginTop: Theme.spacing.xs,>
                 }}
                               <HStack space="xs" alignItems="center"                  <Info size={16} color={colors.text as any} /                  ><Text
                     sx={{
@@ -401,7 +401,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           title={t('settings.support.title', 'Support')}
           description={t(
             'settings.support.description',
-            'Help us improve Gurudevi'
+            'Help us improve Gurudevi'>
           )}
         /
         ><SettingsOption
@@ -420,7 +420,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             backgroundColor: colors.tertiary as any,
             borderRadius: Theme.corners.comfortable,
             marginTop: Theme.spacing.lg,
-            marginBottom: Theme.spacing.xl,
+            marginBottom: Theme.spacing.xl,>
           }}
                   <HStack space="sm" alignItems="flex-start"            <Info size={20} color={colors.action as any} /            ><VStack flex={1} space="xs"              <Text
                 sx={{
@@ -443,7 +443,7 @@ export default function AppSettingsScreen({ navigation }: any) {
         <SelectionModal
           colors={colors}
           title={t('settings.fidelity.select')}
-          options={[
+          options={[>
             {
               id: 'auto',
               label: t('settings.fidelity.auto'),
@@ -475,7 +475,7 @@ export default function AppSettingsScreen({ navigation }: any) {
         <SelectionModal
           colors={colors}
           title={t('settings.language.select')}
-          options={[
+          options={[>
             {
               id: 'en',
               label: 'English',
@@ -532,7 +532,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-end',>
       }}
           <Pressable
         sx={{ flex: 1 }}
@@ -552,10 +552,10 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
             fontSize: Theme.typography.fontSize.xl,
             fontWeight: Theme.typography.fontWeight.bold,
             color: colors.text as any,
-            marginBottom: Theme.spacing.md,
+            marginBottom: Theme.spacing.md,>
           }}
                   {title}
-        </Text
+        </Text>
         ><VStack space="sm"          {options.map((option) => (
             <Pressable
               key={option.id}
@@ -580,13 +580,12 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
                   : colors.border) as any,
                 minHeight: 72,
               }}
-                          <HStack space="md" alignItems="center"                {option.icon}
-
+                          <HStack space="md" alignItems="center"                {option.icon}>
                 <VStack flex={1} space="xs"                  <Text
                     sx={{
                       fontSize: Theme.typography.fontSize.md,
                       fontWeight: Theme.typography.fontWeight.semibold,
-                      color: colors.text as any,
+                      color: colors.text as any,>
                     }}
                                       {option.label}
                   </Text                  <Text
@@ -600,16 +599,16 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
                 {option.isSelected && (
                   <Check size={24} color={colors.action as any} /                >)}
               </HStack            </Pressable          ))}
-        </VStack
+        </VStack>
         <Button
           onPress={onClose}
           sx={{
             marginTop: Theme.spacing.md,
-            backgroundColor: colors.tertiary as any,
+            backgroundColor: colors.tertiary as any,>
           }}
           accessible={true}
           accessibilityRole="button"
           accessibilityLabel="Close"
                   <ButtonText sx={{ color: colors.text as any }}            Close
-          </ButtonText        </Button      </Box    </Box  );
+          </ButtonText        </Button      </Box    </Box  );>
 }

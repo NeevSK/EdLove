@@ -163,6 +163,74 @@ function mergeOrphanAngleLines(text) {
   return { text: lines.join("\n"), changed };
 }
 
+function fixMissingJsxAngles(text) {
+  const lines = text.split(/\r?\n/);
+  let changed = false;
+
+  // 1) Fix obvious closing tags missing `>`: `</Text` -> `</Text>`
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("</")) continue;
+    if (trimmed.includes(">")) continue;
+    // Avoid touching TS/JS generics like `</` in comments/strings; keep this very conservative.
+    if (!/^\s*<\/[A-Za-z][\w.]*\s*$/.test(line)) continue;
+    lines[i] = line + ">";
+    changed = true;
+  }
+
+  // 2) Fix multiline opening tags whose closing `>` has been stripped.
+  // We only close when the *next non-empty line* looks like it starts JSX children/new JSX/return close.
+  let inTag = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!inTag) {
+      // Start of an opening tag on this line?
+      // Example: `<Box sx={{`
+      // Avoid: `<` inside expressions by requiring line to start with optional whitespace then `<Ident`.
+      if (!/^\s*<[A-Za-z][\w.]*\b/.test(line)) continue;
+      if (trimmed.startsWith("</")) continue;
+      if (line.includes(">")) continue;
+      inTag = true;
+      continue;
+    }
+
+    // We're in a tag continuation; if we already see `>` then we are done.
+    if (line.includes(">")) {
+      inTag = false;
+      continue;
+    }
+
+    // Find next non-empty line (or end).
+    let j = i + 1;
+    while (j < lines.length && lines[j].trim() === "") j++;
+    const next = j < lines.length ? lines[j] : "";
+    const nextTrimmed = next.trim();
+
+    const nextLooksLikeChildOrNewElement =
+      nextTrimmed.startsWith("<") ||
+      nextTrimmed.startsWith("{") ||
+      nextTrimmed.startsWith(")") ||
+      nextTrimmed.startsWith(";") ||
+      nextTrimmed.startsWith("return") ||
+      nextTrimmed.startsWith("}") ||
+      nextTrimmed.startsWith("]");
+
+    if (!nextLooksLikeChildOrNewElement) continue;
+
+    // Close the tag on the current line.
+    if (!trimmed.endsWith(">") && !trimmed.endsWith("/>")) {
+      lines[i] = line + ">";
+      changed = true;
+    }
+    inTag = false;
+  }
+
+  return { text: lines.join("\n"), changed };
+}
+
 function insertAt(text, idx, insert) {
   return text.slice(0, idx) + insert + text.slice(idx);
 }
@@ -242,6 +310,13 @@ function applyFixesToFile(absPath, diagsForFile) {
   const scrub = scrubInvalidChars(text);
   if (scrub.changed) {
     text = scrub.text;
+    changed = true;
+    fixCount++;
+  }
+
+  const jsxAngles = fixMissingJsxAngles(text);
+  if (jsxAngles.changed) {
+    text = jsxAngles.text;
     changed = true;
     fixCount++;
   }

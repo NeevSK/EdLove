@@ -107,7 +107,7 @@ export default function TimetableScreen() {
                 <div style={{ padding: '12px 24px', background: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)' }}
                     {draft.recommendations.map((rec: string, i: number) => (
                         <div key={i} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>\u26A0 {rec}</div
-                    ))}
+                    >))}
                 </div
             )}
 
@@ -144,9 +144,9 @@ export default function TimetableScreen() {
                     ) : !draft ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', gap: '12px' }}
                             <div style={{ fontSize: '40px' }}>\uD83D\uDCC5</div
-                            <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>No timetable yet</div
-                            <button className="premium-button" onClick={generate}>Generate Timetable</button
-                        </div
+                            ><div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>No timetable yet</div
+                            ><button className="premium-button" onClick={generate}>Generate Timetable</button
+                        ></div
                     ) : classroomIds.length === 0 ? (
                         <div style={{ color: 'var(--ink-ghost)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}
                             No classrooms found. Add classrooms in your school settings first.
@@ -156,7 +156,7 @@ export default function TimetableScreen() {
                             {/* Grid header */}
                             <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}
                                 <div /
-                                {DAYS.map(day => (
+                                >{DAYS.map(day => (
                                     <div key={day} style={{ textAlign: 'center', fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', padding: '8px 4px' }}
                                         {DAY_SHORT[day]}
                                     </div
@@ -182,11 +182,11 @@ export default function TimetableScreen() {
                                                 {slot ? (
                                                     <
                                                         <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink)' }}>{slot.subject}</div
-                                                        <div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{slot.teacher_name}</div
-                                                    </
+                                                        ><div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{slot.teacher_name}</div
+                                                    ></
                                                 ) : (
                                                     <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', opacity: 0.5 }}>\u2014</div
-                                                )}
+                                                >)}
                                             </div
                                         );
                                     })}
