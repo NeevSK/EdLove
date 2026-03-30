@@ -7,5 +7,12 @@ const Stack = createNativeStackNavigator();
 
 export default function SelfStackNavigator() {
     return (
-        <Stack.Navigator id="SelfStack" screenOptions={{ headerShown: false }}            <Stack.Screen name="SelfMain" component={SelfMain} /            ><Stack.Screen name="AIAssistant" component={AIAssistant} /        ></Stack.Navigator    );
+        <Stack.Navigator
+            id="SelfStack"
+            screenOptions={{ headerShown: false }}
+        >
+            <Stack.Screen name="SelfMain" component={SelfMain} />
+            <Stack.Screen name="AIAssistant" component={AIAssistant} />
+        </Stack.Navigator>
+    );
 }
