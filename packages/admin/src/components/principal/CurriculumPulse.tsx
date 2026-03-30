@@ -67,7 +67,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     <Heading sx={{ fontSize: Theme.typography.fontSize.md }} color={colors.text}>
                         {t('principal.pulse.title')}
                     </Heading>
-                    <Box>
+                    <Box
                         sx={{
                             paddingHorizontal: Theme.spacing.sm,
                             paddingVertical: 2,
@@ -76,15 +76,17 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                             borderWidth: 1,
                             borderColor: Theme.colors.amberGlow,
                         }}
-                    
+                    >
                         <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
                             <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                            ><Text sx={{ fontSize: 10, fontWeight: '700' }} color={Theme.colors.amberGlow}>2026 REFORM</Text
-                        ></HStack>
+                            <Text sx={{ fontSize: 10, fontWeight: '700' }} color={Theme.colors.amberGlow}>
+                                2026 REFORM
+                            </Text>
+                        </HStack>
                     </Box>
                 </HStack>
                 <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
-                    {t('principal.pulse.subtitle')}>
+                    {t('principal.pulse.subtitle')}
                 </Text>
             </VStack>
 
@@ -93,23 +95,29 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     <VStack key={item.grade} sx={{ gap: Theme.spacing.xs }}>
                         <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{item.grade}</Text
-                                >{item.is_reform && (
-                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={Theme.colors.amberGlow}>(Reform)</Text
-                                >)}
+                                <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>
+                                    {item.grade}
+                                </Text>
+                                {item.is_reform && (
+                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={Theme.colors.amberGlow}>
+                                        (Reform)
+                                    </Text>
+                                )}
                             </HStack>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>{item.coverage}%</Text
-                        ></HStack>
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
+                                {item.coverage}%
+                            </Text>
+                        </HStack>
                         <Progress value={item.coverage} sx={{ height: 8, width: '100%' }}>
-                            <ProgressFilledTrack/>
+                            <ProgressFilledTrack
                                 sx={{
-                                    backgroundColor: item.is_reform ? Theme.colors.amberGlow : colors.action
+                                    backgroundColor: item.is_reform ? Theme.colors.amberGlow : colors.action,
                                 }}
-                            /
-                        ></Progress>
+                            />
+                        </Progress>
                         <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center', marginTop: 2 }}>
                             <Clock size={10} color={colors.textTertiary} />
-                            ><Text sx={{ fontSize: 10 }} color={colors.textTertiary}
+                            <Text sx={{ fontSize: 10 }} color={colors.textTertiary}>
                                 Last update: {new Date(item.last_updated).toLocaleDateString()}
                             </Text>
                         </HStack>
@@ -117,7 +125,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                 ))}
             </VStack>
 
-            <Box>
+            <Box
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: colors.tertiary,
@@ -125,11 +133,11 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     borderWidth: 1,
                     borderColor: colors.border,
                 }}
-            
+            >
                 <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
                     <BookOpen size={16} color={colors.action} />
-                    ><Text sx={{ fontSize: Theme.typography.fontSize.xs, flex: 1 }} color={colors.textSecondary}
-                        {t('principal.pulse.insight')}>
+                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, flex: 1 }} color={colors.textSecondary}>
+                        {t('principal.pulse.insight')}
                     </Text>
                 </HStack>
             </Box>

@@ -331,7 +331,7 @@
     "quickActions": "Quick Actions",
     "actions": {
       "manageHierarchy": "🏫 Manage School Hierarchy",
-      "inviteStaff": "Γ£ë∩╕Å Invite Staff & Students"
+      "inviteStaff": "\u2709\ufe0f Invite Staff & Students"
     },
     "ia": {
       "scope": {
@@ -979,9 +979,9 @@
     "indexPlaceholder": "Enter index number",
     "optionalNotes": "Notes (Optional)",
     "notesPlaceholder": "Add any notes about this student...",
-    "previous": "ΓåÉ Previous",
-    "skip": "Skip ΓåÆ",
-    "saveNext": "Save & Next ΓåÆ",
+    "previous": "\u2190 Previous",
+    "skip": "Skip \u2192",
+    "saveNext": "Save & Next \u2192",
     "finishReview": "Finish & Review",
     "reviewAll": "Review All ({{count}})",
     "reviewTitle": "Review Students",
@@ -989,7 +989,7 @@
     "validCount": "{{count}} valid student(s)",
     "addOneMore": "Add One More",
     "addStudentsAction": "Add {{count}} Student(s)",
-    "backToEntry": "ΓåÉ Back to Entry",
+    "backToEntry": "\u2190 Back to Entry",
     "noName": "No name",
     "noIndex": "No index",
     "errors": {
@@ -1190,12 +1190,12 @@
     "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
     "errorTitle": "Something went wrong",
     "errorDesc": "We couldn't process this gift. Please try again or contact support.",
-    "flowerTitle": "α╢¡α╖öα╢¡α╖Æα╢╕α╢╜α╖è",
+    "flowerTitle": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
     "giftHeading": "A Flower of Gratitude",
     "giftFrom": "Your Pro subscription is a gift of gratitude from",
     "giftRecognition": "A recognition of your sacred work as an educator.",
     "proActive": "Pro is now active on your account",
-    "enterSanctuary": "Enter the Sanctuary Γ£ª",
+    "enterSanctuary": "Enter the Sanctuary \u2727",
     "goBack": "Go Back"
   },
   "qrHandler": {
@@ -1306,9 +1306,9 @@
   },
   "thuthimalBadge": {
     "title": "Thuthimal",
-    "sinhala": "α╢¡α╖öα╢¡α╖Æα╢╕α╢╜α╖è",
+    "sinhala": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
     "giftedBy": "Your Pro subscription is a gift of gratitude from:",
-    "meaning": "α╢¡α╖öα╢¡α╖Æα╢╕α╢╜α╖è (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
+    "meaning": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
     "giftedOn": "Gifted on {{date}}"
   },
   "socialSanctuary": {

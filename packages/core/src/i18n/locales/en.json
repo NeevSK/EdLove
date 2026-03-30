@@ -1190,7 +1190,7 @@
     "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
     "errorTitle": "Something went wrong",
     "errorDesc": "We couldn't process this gift. Please try again or contact support.",
-    "flowerTitle": "\uDAD4\uDD32\uDAD4\uDD32\uDA22\uDA14\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA36\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA12\uDAD3\uDCB8\uDAD3\uDCB8\uDA22\uDA12\uDAD3\uDCDD\uDAD3\uDCDD\uDA22\uDA3A\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA1A",
+    "flowerTitle": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
     "giftHeading": "A Flower of Gratitude",
     "giftFrom": "Your Pro subscription is a gift of gratitude from",
     "giftRecognition": "A recognition of your sacred work as an educator.",
@@ -1306,9 +1306,9 @@
   },
   "thuthimalBadge": {
     "title": "Thuthimal",
-    "sinhala": "\uDAD4\uDD32\uDAD4\uDD32\uDA22\uDA14\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA36\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA12\uDAD3\uDCB8\uDAD3\uDCB8\uDA22\uDA12\uDAD3\uDCDD\uDAD3\uDCDD\uDA22\uDA3A\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA1A",
+    "sinhala": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
     "giftedBy": "Your Pro subscription is a gift of gratitude from:",
-    "meaning": "\uDAD4\uDD32\uDAD4\uDD32\uDA22\uDA14\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA36\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA12\uDAD3\uDCB8\uDAD3\uDCB8\uDA22\uDA12\uDAD3\uDCDD\uDAD3\uDCDD\uDA22\uDA3A\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA1A (Thuthimal) means \"Flower of Gratitude\" \u2014 honoring the sacred work of teaching",
+    "meaning": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA (Thuthimal) means \"Flower of Gratitude\" \u2014 honoring the sacred work of teaching",
     "giftedOn": "Gifted on {{date}}"
   },
   "socialSanctuary": {
