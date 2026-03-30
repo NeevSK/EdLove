@@ -49,7 +49,8 @@ function ZoneIntro({
   copy: string;
 }) {
   return (
-    <VStack sx={{ gap: Theme.spacing.xs }}      <Text>
+    <VStack sx={{ gap: Theme.spacing.xs }}>
+      <Text
         sx={{
           fontSize: 12,
           fontWeight: '800',
@@ -57,13 +58,20 @@ function ZoneIntro({
           textTransform: 'uppercase',
           letterSpacing: 1.2,
         }}
-              {eyebrow}
-      </Text      ><Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.inkTruth }}>{title}</Heading      ><Text sx={{ fontSize: 13, lineHeight: 20, color: Theme.colors.bark }}>{copy}</Text    ></VStack  );
+      >
+        {eyebrow}
+      </Text>
+      <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.inkTruth }}>
+        {title}
+      </Heading>
+      <Text sx={{ fontSize: 13, lineHeight: 20, color: Theme.colors.bark }}>{copy}</Text>
+    </VStack>
+  );
 }
 
 function SnapshotTile({ label, value }: { label: string; value: number | string }) {
   return (
-    <Box>
+    <Box
       sx={{
         flex: 1,
         minWidth: '47%',
@@ -73,9 +81,23 @@ function SnapshotTile({ label, value }: { label: string; value: number | string 
         borderColor: Theme.colors.border,
         padding: Theme.spacing.md,
       }}
-          <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.bark, textTransform: 'uppercase', letterSpacing: 0.6 }}        {label}>
-      </Text      ><Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}        {value}>
-      </Text    ></Box  >);
+    >
+      <Text
+        sx={{
+          fontSize: 11,
+          fontWeight: '700',
+          color: Theme.colors.bark,
+          textTransform: 'uppercase',
+          letterSpacing: 0.6,
+        }}
+      >
+        {label}
+      </Text>
+      <Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}>
+        {value}
+      </Text>
+    </Box>
+  );
 }
 
 function InstitutionLinks({
@@ -104,7 +126,8 @@ function InstitutionLinks({
     hint: string;
     onPress: () => void;
   }) => (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85}      <Box>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+      <Box
         sx={{
           backgroundColor: Theme.colors.silk,
           borderRadius: Theme.corners.comfortable,
@@ -112,7 +135,9 @@ function InstitutionLinks({
           borderColor: colors.border,
           padding: Theme.spacing.md,
         }}
-              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}          <Box>
+      >
+        <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}>
+          <Box
             sx={{
               width: 36,
               height: 36,
@@ -121,10 +146,27 @@ function InstitutionLinks({
               alignItems: 'center',
               justifyContent: 'center',
             }}
-                      <Icon size={18} color={Theme.colors.gurudeviBlue} /          ></Box          ><VStack sx={{ flex: 1 }}            <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.text }}>{label}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>{hint}</Text          ></VStack        ></HStack      </Box    </TouchableOpacity  );
+          >
+            <Icon size={18} color={Theme.colors.gurudeviBlue} />
+          </Box>
+          <VStack sx={{ flex: 1 }}>
+            <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.text }}>{label}</Text>
+            <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{hint}</Text>
+          </VStack>
+        </HStack>
+      </Box>
+    </TouchableOpacity>
+  );
 
   return (
-    <VStack sx={{ gap: Theme.spacing.sm }}      <LinkRow icon={Building2} label="Institution profile" hint="Open the official school record." onPress={onOpenProfile} /      ><LinkRow icon={MessageSquare} label="Community commons" hint="Step into the culture and mission layer." onPress={onOpenCommons} /      ><LinkRow icon={QrCode} label="School QR" hint="Share the sanctuary entry point." onPress={onOpenQr} /      ><LinkRow icon={Wind} label="Leadership breathing" hint="Reset before the next decision." onPress={onOpenBreathing} /      ><LinkRow icon={NotebookPen} label="Edit school details" hint="Adjust name, handle, and institution basics." onPress={onEditSchool} /    ></VStack  );
+    <VStack sx={{ gap: Theme.spacing.sm }}>
+      <LinkRow icon={Building2} label="Institution profile" hint="Open the official school record." onPress={onOpenProfile} />
+      <LinkRow icon={MessageSquare} label="Community commons" hint="Step into the culture and mission layer." onPress={onOpenCommons} />
+      <LinkRow icon={QrCode} label="School QR" hint="Share the sanctuary entry point." onPress={onOpenQr} />
+      <LinkRow icon={Wind} label="Leadership breathing" hint="Reset before the next decision." onPress={onOpenBreathing} />
+      <LinkRow icon={NotebookPen} label="Edit school details" hint="Adjust name, handle, and institution basics." onPress={onEditSchool} />
+    </VStack>
+  );
 }
 
 export function usePrincipalWorkspaceShell({
@@ -138,7 +180,7 @@ export function usePrincipalWorkspaceShell({
   onOpenBreathing,
   onEditSchool,
   renderTodayContent,
-  renderOutlookContent,>
+  renderOutlookContent,
 }: PrincipalWorkspaceShellArgs) {
   const zoneCounts = useMemo(
     () => ({
@@ -157,8 +199,15 @@ export function usePrincipalWorkspaceShell({
         title: 'Run the school day clearly',
         copy: 'See the current pulse, unblock pending operations, and keep the day steady without turning the dashboard into surveillance.',
         content: (
-          <VStack sx={{ gap: Theme.spacing.lg }}            <ZoneIntro eyebrow="Today" title="Run the school day clearly" copy="See the current pulse, unblock pending operations, and keep the day steady without turning the dashboard into surveillance." /            >{renderTodayContent()}
-          </VStack        ),>
+          <VStack sx={{ gap: Theme.spacing.lg }}>
+            <ZoneIntro
+              eyebrow="Today"
+              title="Run the school day clearly"
+              copy="See the current pulse, unblock pending operations, and keep the day steady without turning the dashboard into surveillance."
+            />
+            {renderTodayContent()}
+          </VStack>
+        ),
       },
       institution: {
         id: 'institution',
@@ -166,13 +215,32 @@ export function usePrincipalWorkspaceShell({
         title: 'Shape the school as an institution',
         copy: 'Move from live coordination into hierarchy, invites, cycles, logbook work, and the official identity of the school.',
         content: (
-          <VStack sx={{ gap: Theme.spacing.lg }}            <ZoneIntro eyebrow="Institution" title="Shape the school as an institution" copy="Move from live coordination into hierarchy, invites, cycles, logbook work, and the official identity of the school." /            ><ManagementStation onAction={(view) => navigatePrincipalView(view as PrincipalWorkspaceView)} /            ><VStack sx={{ gap: Theme.spacing.sm }}              <Text sx={{ fontSize: 16, fontWeight: '700', color: Theme.colors.inkTruth }}>School snapshot</Text              ><HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                <SnapshotTile label="Students" value={stats?.total_students ?? 0} /                ><SnapshotTile label="Teachers" value={stats?.total_teachers ?? 0} /                ><SnapshotTile label="Classrooms" value={stats?.total_classrooms ?? 0} /                ><SnapshotTile label="Sections" value={stats?.total_sections ?? 0} /              ></HStack            </VStack            <InstitutionLinks
+          <VStack sx={{ gap: Theme.spacing.lg }}>
+            <ZoneIntro
+              eyebrow="Institution"
+              title="Shape the school as an institution"
+              copy="Move from live coordination into hierarchy, invites, cycles, logbook work, and the official identity of the school."
+            />
+            <ManagementStation onAction={(view) => navigatePrincipalView(view as PrincipalWorkspaceView)} />
+            <VStack sx={{ gap: Theme.spacing.sm }}>
+              <Text sx={{ fontSize: 16, fontWeight: '700', color: Theme.colors.inkTruth }}>School snapshot</Text>
+              <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
+                <SnapshotTile label="Students" value={stats?.total_students ?? 0} />
+                <SnapshotTile label="Teachers" value={stats?.total_teachers ?? 0} />
+                <SnapshotTile label="Classrooms" value={stats?.total_classrooms ?? 0} />
+                <SnapshotTile label="Sections" value={stats?.total_sections ?? 0} />
+              </HStack>
+            </VStack>
+            <InstitutionLinks
               onOpenProfile={onOpenProfile}
               onOpenCommons={onOpenCommons}
               onOpenQr={onOpenQr}
               onOpenBreathing={onOpenBreathing}
               onEditSchool={onEditSchool}
-            /            <PrincipalGovernanceTimeline schoolId={schoolId} principalId={principalId} /          ></VStack        ),
+            />
+            <PrincipalGovernanceTimeline schoolId={schoolId} principalId={principalId} />
+          </VStack>
+        ),
       },
       outlook: {
         id: 'outlook',
@@ -180,8 +248,16 @@ export function usePrincipalWorkspaceShell({
         title: 'Read patterns and prepare what comes next',
         copy: 'Watch aggregated climate and resource pressure now, while giving future ERP families a modular home instead of crowding the main cockpit.',
         content: (
-          <VStack sx={{ gap: Theme.spacing.lg }}            <ZoneIntro eyebrow="Outlook" title="Read patterns and prepare what comes next" copy="Watch aggregated climate and resource pressure now, while giving future ERP families a modular home instead of crowding the main cockpit." /            >{renderOutlookContent()}
-            <PrincipalModuleAtlas /          ></VStack        ),>
+          <VStack sx={{ gap: Theme.spacing.lg }}>
+            <ZoneIntro
+              eyebrow="Outlook"
+              title="Read patterns and prepare what comes next"
+              copy="Watch aggregated climate and resource pressure now, while giving future ERP families a modular home instead of crowding the main cockpit."
+            />
+            {renderOutlookContent()}
+            <PrincipalModuleAtlas />
+          </VStack>
+        ),
       },
     }),
     [schoolId, principalId, stats, navigatePrincipalView, onOpenProfile, onOpenCommons, onOpenQr, onOpenBreathing, onEditSchool, renderTodayContent, renderOutlookContent],
