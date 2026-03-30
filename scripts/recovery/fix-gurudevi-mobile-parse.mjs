@@ -26,10 +26,13 @@ function usageAndExit(code = 1) {
     [
       "Usage:",
       "  node scripts/recovery/fix-gurudevi-mobile-parse.mjs [--max-files 75] [--dry-run]",
+      "    [--only-files pathA,pathB] [--only-web] [--skip-regex <regex>]",
+      "    [--max-fixes-per-file 10] [--max-total-fixes 200]",
       "",
       "Notes:",
       "  - Runs `pnpm -C apps/gurudevi-mobile exec tsc --noEmit --pretty false --incremental false`.",
       "  - Edits only the files it chooses to fix in that pass.",
+      "  - Use --only-files to heal files one-by-one (recommended).",
     ].join("\n"),
   );
   process.exit(code);
@@ -52,6 +55,27 @@ if (!Number.isFinite(maxFiles) || maxFiles <= 0) {
   process.exit(1);
 }
 const dryRun = args.includes("--dry-run");
+const onlyWeb = args.includes("--only-web");
+const onlyFilesArg = getArgValue("--only-files", "");
+const onlyFiles = onlyFilesArg
+  ? onlyFilesArg
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  : null;
+const skipRegexRaw = getArgValue("--skip-regex", "");
+const skipRegex = skipRegexRaw ? new RegExp(skipRegexRaw) : null;
+
+const maxFixesPerFile = Number.parseInt(getArgValue("--max-fixes-per-file", "10"), 10);
+if (!Number.isFinite(maxFixesPerFile) || maxFixesPerFile <= 0) {
+  console.error(`Invalid --max-fixes-per-file: ${getArgValue("--max-fixes-per-file", "")}`);
+  process.exit(1);
+}
+const maxTotalFixes = Number.parseInt(getArgValue("--max-total-fixes", "200"), 10);
+if (!Number.isFinite(maxTotalFixes) || maxTotalFixes <= 0) {
+  console.error(`Invalid --max-total-fixes: ${getArgValue("--max-total-fixes", "")}`);
+  process.exit(1);
+}
 
 function runTsc() {
   const pnpmArgs = [
@@ -163,13 +187,15 @@ function mergeOrphanAngleLines(text) {
   return { text: lines.join("\n"), changed };
 }
 
-function fixMissingJsxAngles(text) {
+function fixMissingJsxAngles(text, maxOps = Number.POSITIVE_INFINITY) {
   const lines = text.split(/\r?\n/);
   let changed = false;
+  let ops = 0;
 
   // Remove clearly-stray `>` that got inserted into object-literal props lines.
   // Example: `maxWidth: 400>` should be `maxWidth: 400`
   for (let i = 0; i < lines.length; i++) {
+    if (ops >= maxOps) break;
     const line = lines[i];
     if (!line.trimEnd().endsWith(">")) continue;
     if (line.includes("<")) continue;
@@ -180,11 +206,13 @@ function fixMissingJsxAngles(text) {
     // only when the trailing `>` is the last non-space char
     lines[i] = trimmed.slice(0, -1);
     changed = true;
+    ops++;
   }
 
   // Remove stray `>` from lines that are clearly *not* JSX tags (common after naive token insertion).
   // Example: `}>` should usually be `}` inside JSX expressions.
   for (let i = 0; i < lines.length; i++) {
+    if (ops >= maxOps) break;
     const line = lines[i];
     const trimmed = line.trimEnd();
     if (!trimmed.endsWith(">")) continue;
@@ -192,6 +220,50 @@ function fixMissingJsxAngles(text) {
     if (!/^\s*[}\])]/.test(trimmed)) continue;
     lines[i] = trimmed.slice(0, -1);
     changed = true;
+    ops++;
+  }
+
+  // Fix *inline* split JSX tags on a single line where a `>` was stripped and two tags got jammed together.
+  // Example:
+  //   <Toast ... <ToastTitle>...</ToastTitle></Toast>
+  // becomes:
+  //   <Toast ...><ToastTitle>...</ToastTitle></Toast>
+  // Keep this conservative: only on lines that start with a JSX tag.
+  for (let i = 0; i < lines.length; i++) {
+    if (ops >= maxOps) break;
+    const line = lines[i];
+    const trimmed = line.trimStart();
+    if (!trimmed.startsWith("<")) continue;
+    if (!/[<][A-Za-z]/.test(trimmed)) continue;
+    if (trimmed.startsWith("</")) continue;
+
+    let nextLine = line;
+    let localOps = 0;
+    // Insert `>` before a subsequent `<` or `</` when the first tag hasn't closed yet.
+    // Limit repetitions to avoid runaway changes.
+    for (let k = 0; k < 4; k++) {
+      if (ops + localOps >= maxOps) break;
+      const before = nextLine;
+      nextLine = nextLine.replace(/(<[A-Za-z][\w.]*\b[^<>]*?)(\s+)(<\/*[A-Za-z])/g, "$1>$3");
+      if (nextLine === before) break;
+      localOps++;
+    }
+
+    // Close `</Tag` when it is immediately followed by punctuation and no `>`.
+    // Example: `</Toast                ),` -> `</Toast>),`
+    for (let k = 0; k < 4; k++) {
+      if (ops + localOps >= maxOps) break;
+      const before = nextLine;
+      nextLine = nextLine.replace(/(<\/[A-Za-z][\w.]*)(\s+)([),;\]])/g, "$1>$3");
+      if (nextLine === before) break;
+      localOps++;
+    }
+
+    if (localOps > 0) {
+      lines[i] = nextLine;
+      changed = true;
+      ops += localOps;
+    }
   }
 
   // Fix single-line opening JSX tags that are missing the closing `>`.
@@ -201,6 +273,7 @@ function fixMissingJsxAngles(text) {
   // becomes:
   //   <VStack space="sm">
   for (let i = 0; i < lines.length; i++) {
+    if (ops >= maxOps) break;
     const line = lines[i];
     const trimmed = line.trim();
     if (!/^\s*<[A-Za-z][\w.]*\b/.test(line)) continue;
@@ -229,10 +302,12 @@ function fixMissingJsxAngles(text) {
 
     lines[i] = line + ">";
     changed = true;
+    ops++;
   }
 
   // 1) Fix obvious closing tags missing `>`: `</Text` -> `</Text>`
   for (let i = 0; i < lines.length; i++) {
+    if (ops >= maxOps) break;
     const line = lines[i];
     const trimmed = line.trim();
     if (!trimmed.startsWith("</")) continue;
@@ -241,12 +316,14 @@ function fixMissingJsxAngles(text) {
     if (!/^\s*<\/[A-Za-z][\w.]*\s*$/.test(line)) continue;
     lines[i] = line + ">";
     changed = true;
+    ops++;
   }
 
   // 2) Fix multiline opening tags whose closing `>` has been stripped.
   // We only close when the *next non-empty line* looks like it starts JSX children/new JSX/return close.
   let inTag = false;
   for (let i = 0; i < lines.length; i++) {
+    if (ops >= maxOps) break;
     const line = lines[i];
     const trimmed = line.trim();
 
@@ -272,6 +349,7 @@ function fixMissingJsxAngles(text) {
     if (/^\s*}}[),]*\s*$/.test(line)) {
       lines[i] = line + ">";
       changed = true;
+      ops++;
       inTag = false;
       continue;
     }
@@ -295,11 +373,12 @@ function fixMissingJsxAngles(text) {
     if (!trimmed.endsWith(">") && !trimmed.endsWith("/>")) {
       lines[i] = line + ">";
       changed = true;
+      ops++;
     }
     inTag = false;
   }
 
-  return { text: lines.join("\n"), changed };
+  return { text: lines.join("\n"), changed, ops };
 }
 
 function insertAt(text, idx, insert) {
@@ -392,12 +471,24 @@ function applyFixesToFile(absPath, diagsForFile) {
     changed = true;
     fixCount++;
   }
+  if (fixCount >= maxFixesPerFile) {
+    if (!changed) return { changed: false, fixCount: 0 };
+    if (dryRun) return { changed: true, fixCount };
+    fs.writeFileSync(absPath, text, "utf8");
+    return { changed: true, fixCount };
+  }
 
-  const jsxAngles = fixMissingJsxAngles(text);
+  const jsxAngles = fixMissingJsxAngles(text, maxFixesPerFile - fixCount);
   if (jsxAngles.changed) {
     text = jsxAngles.text;
     changed = true;
-    fixCount++;
+    fixCount += jsxAngles.ops;
+  }
+  if (fixCount >= maxFixesPerFile) {
+    if (!changed) return { changed: false, fixCount: 0 };
+    if (dryRun) return { changed: true, fixCount };
+    fs.writeFileSync(absPath, text, "utf8");
+    return { changed: true, fixCount };
   }
 
   const merged = mergeOrphanAngleLines(text);
@@ -406,10 +497,17 @@ function applyFixesToFile(absPath, diagsForFile) {
     changed = true;
     fixCount++;
   }
+  if (fixCount >= maxFixesPerFile) {
+    if (!changed) return { changed: false, fixCount: 0 };
+    if (dryRun) return { changed: true, fixCount };
+    fs.writeFileSync(absPath, text, "utf8");
+    return { changed: true, fixCount };
+  }
 
   // Apply token insertions from bottom-to-top so earlier indices remain valid more often.
   const diagsSorted = [...diagsForFile].sort((a, b) => (b.line - a.line) || (b.col - a.col));
   for (const d of diagsSorted) {
+    if (fixCount >= maxFixesPerFile) break;
     const selfClose = tryFixJsxSelfClose(text, d);
     if (selfClose.changed) {
       text = selfClose.text;
@@ -418,6 +516,7 @@ function applyFixesToFile(absPath, diagsForFile) {
       continue;
     }
 
+    if (fixCount >= maxFixesPerFile) break;
     const tokenFix = tryFixMissingToken(text, d);
     if (tokenFix.changed) {
       text = tokenFix.text;
@@ -492,12 +591,26 @@ function main() {
   // Always prioritize fixing gurudevi-mobile app source files, even if they aren't top-ranked,
   // because a single broken app entrypoint can block bundling even when deps improve.
   const targets = [];
+  const candidates = onlyFiles
+    ? onlyFiles.map((p) => path.resolve(repoRoot, p))
+    : null;
+
+  function shouldConsiderFile(absPath) {
+    const rel = path.relative(repoRoot, absPath);
+    if (skipRegex && skipRegex.test(rel)) return false;
+    if (onlyWeb && !/\.web\.(t|j)sx?$/.test(rel)) return false;
+    if (candidates) return candidates.includes(absPath);
+    return true;
+  }
+
   for (const r of appRanked) {
     if (targets.length >= maxFiles) break;
+    if (!shouldConsiderFile(r.file)) continue;
     targets.push(r.file);
   }
   for (const r of ranked) {
     if (targets.length >= maxFiles) break;
+    if (!shouldConsiderFile(r.file)) continue;
     if (targets.includes(r.file)) continue;
     targets.push(r.file);
   }
@@ -509,6 +622,7 @@ function main() {
   let filesChanged = 0;
   let totalFixes = 0;
   for (const f of targets) {
+    if (totalFixes >= maxTotalFixes) break;
     if (!fs.existsSync(f)) continue;
     const fileDiags = grouped.get(f) ?? [];
     const res = applyFixesToFile(f, fileDiags);
