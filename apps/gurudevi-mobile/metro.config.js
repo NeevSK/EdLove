@@ -1,5 +1,6 @@
 const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 const path = require('path');
+const fs = require('fs');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
@@ -7,11 +8,10 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 // Note: babel.config.js sets `unstable_transformImportMeta: true` in
 // babel-preset-expo.  This is required because zustand@5 (and similar
 // packages) ship pre-compiled code that uses `import.meta.env.MODE` for
-// dev/prod detection.  Metro serves the web bundle as a classic <script>
-// (no type="module"), so any bare `import.meta` reference causes:
+// dev/prod detection.  Metro serves the web bundle as a classic <script// (no type="module"), so any bare `import.meta` reference causes:
 //   SyntaxError: Cannot use 'import.meta' outside a module
-// The babel option rewrites every `import.meta` → `globalThis.__ExpoImportMetaRegistry`,
-// which Expo's winter runtime initialises before the app boots.
+// The babel option rewrites every `import.meta` \u2192 `globalThis.__ExpoImportMetaRegistry`,
+// autumn Expo's winter runtime initialises before the app boots.
 const config = getSentryExpoConfig(projectRoot, { isCSSEnabled: true });
 
 // Add support for WASM files (required by expo-sqlite on web)
@@ -35,7 +35,7 @@ config.resolver.nodeModulesPaths = [
 //      - docs/migrations/metro-disable-hierarchical-lookup.md
 //    so that other developers understand why hierarchical lookup is disabled and
 //    how it impacts adding packages or debugging resolution issues.
-config.resolver.disableHierarchicalLookup = false;
+config.resolver.disableHierarchicalLookup = true;
 
 // 4. Aggressive blockList to ensure Metro NEVER follows paths into package-level React.
 config.resolver.blockList = [
@@ -48,10 +48,16 @@ config.resolver.blockList = [
 //    in the bundle resolves to exactly ONE file path in the app's node_modules.
 config.resolver.extraNodeModules = {
     'react': path.resolve(projectRoot, 'node_modules/react'),
-    'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
-    'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
     '@react-native-async-storage/async-storage': path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
 };
+
+// 5b. Platform-aware react-native alias
+// Note: On web, we MUST allow Expo's default aliasing to react-native-web.
+// On native, we force it to the app's node_modules to ensure singleton behavior.
+const isWeb = process.argv.find(arg => arg.includes('platform=web'));
+if (!isWeb) {
+    config.resolver.extraNodeModules['react-native'] = path.resolve(projectRoot, 'node_modules/react-native');
+}
 
 // 6. Web-only shims: redirect native-only packages to no-op web implementations
 //    when Metro is bundling for the 'web' platform.
@@ -61,23 +67,18 @@ config.resolver.extraNodeModules = {
 //    Shim files live in src/shims/ and mirror the subset of the API used in
 //    this codebase. If you add a new usage of a shimmed package, update the
 //    matching shim file in src/shims/.
+// 6. Platform-aware Shims
+//
+// Web-only shims redirect native-only packages to no-op web implementations.
+// Universal shims (The "Firewall") redirect Node.js built-ins or Node-only packages 
+// to safe implementations on ALL platforms (web and native).
 const WEB_SHIMS = {
     '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
     'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
     'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
     'react-native-url-polyfill/auto': path.resolve(projectRoot, 'src/shims/url-polyfill-web.js'),
-    // @react-native-ml-kit packages are native JSI modules. Their TypeScript-compiled
-    // output uses Object.defineProperty(exports, 'default', { get: () => X }) which
-    // Metro's web factory wrapper cannot overwrite, causing:
-    //   "Cannot set property default of #<object> which has only a getter"
-    // ScannerModal.web.tsx provides a manual-entry fallback, so these are never
-    // called in a browser context.
     '@react-native-ml-kit/text-recognition': path.resolve(projectRoot, 'src/shims/ml-kit-text-recognition-web.js'),
     '@react-native-ml-kit/barcode-scanning': path.resolve(projectRoot, 'src/shims/ml-kit-barcode-scanning-web.js'),
-    // expo-file-system and expo-sharing are native-only. PDFViewerScreen.web.tsx
-    // replaces the native screen entirely, so these modules are never called on web.
-    // The shims prevent build errors from any transitive import that Metro encounters
-    // while walking the dependency graph.
     'expo-file-system': path.resolve(projectRoot, 'src/shims/expo-file-system-web.js'),
     'expo-sharing': path.resolve(projectRoot, 'src/shims/expo-sharing-web.js'),
     'expo-sqlite': path.resolve(projectRoot, 'src/shims/expo-sqlite-web.js'),
@@ -91,28 +92,82 @@ const WEB_SHIMS = {
     'expo-secure-store': path.resolve(projectRoot, 'src/shims/expo-secure-store-web.js'),
     'expo-application': path.resolve(projectRoot, 'src/shims/expo-application-web.js'),
     'expo-updates': path.resolve(projectRoot, 'src/shims/expo-updates-web.js'),
+    'expo-image-manipulator': path.resolve(projectRoot, 'src/shims/expo-image-manipulator-web.js'),
     'react-native-mmkv': path.resolve(projectRoot, 'src/shims/mmkv-web.js'),
     'react-native-nitro-modules': path.resolve(projectRoot, 'src/shims/nitro-modules-web.js'),
-    '@react-native-community/netinfo': path.resolve(projectRoot, 'src/shims/netinfo-web.js'),
-    '@shopify/react-native-skia': path.resolve(projectRoot, 'src/shims/skia-web.js'),
+    'react-native-worklets': path.resolve(projectRoot, 'src/shims/worklets-web.js'),
+    'react-native-reanimated': path.resolve(projectRoot, 'src/shims/reanimated-web.js'),
     'react-native-gesture-handler': path.resolve(projectRoot, 'src/shims/gesture-handler-web.js'),
+    'react-native-screens': path.resolve(projectRoot, 'src/shims/screens-web.js'),
+    'react-native-svg': path.resolve(projectRoot, 'src/shims/svg-web.js'),
+    'lucide-react-native': path.resolve(projectRoot, 'src/shims/lucide-react-native-web.js'),
+    '@shopify/react-native-skia': path.resolve(projectRoot, 'src/shims/skia-web.js'),
+    'react-native-wgpu': path.resolve(projectRoot, 'src/shims/wgpu-web.js'),
+    'expo-camera': path.resolve(projectRoot, 'src/shims/expo-camera-web.js'),
+    '@maplibre/maplibre-react-native': path.resolve(projectRoot, 'src/shims/maplibre-web.js'),
+    // Internal Monorepo Shims
+    '@intuitui-labs/lk-edu-geo': path.resolve(projectRoot, 'src/shims/lk-edu-geo-web.js'),
+    'srilankan-postalcode-backend': path.resolve(projectRoot, 'src/shims/postalcode-backend-web.js'),
+    '@repo/scanner-kit': path.resolve(projectRoot, 'src/shims/mmkv-web.js'),
 };
 
+const UNIVERSAL_SHIMS = {
+    '@repo/database': path.resolve(projectRoot, 'src/shims/database-shim.js'),
+    '@nishansanjuka/srilanka_geographics': path.resolve(projectRoot, 'src/shims/srilanka-geographics-web.js'),
+    // Node.js Module Shims (Firewall against Node-only packages leaking into Native bundle)
+    'events': path.resolve(projectRoot, 'src/shims/events-web.js'),
+    'net': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'tls': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'dns': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'string_decoder': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'assert': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'zlib': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'http': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'https': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
+    'path': path.resolve(projectRoot, 'src/shims/path-web.js'),
+    'fs': path.resolve(projectRoot, 'src/shims/fs-web.js'),
+    'os': path.resolve(projectRoot, 'src/shims/os-web.js'),
+    'util': path.resolve(projectRoot, 'src/shims/util-web.js'),
+    'crypto': path.resolve(projectRoot, 'src/shims/crypto-web.js'),
+    'stream': path.resolve(projectRoot, 'src/shims/stream-web.js'),
+    'vm': path.resolve(projectRoot, 'src/shims/stream-web.js'),
+};
+
+// 7. Platform Firewall (Universal Resolver)
 const defaultResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-    if (platform === 'web' && moduleName in WEB_SHIMS) {
-        return { filePath: WEB_SHIMS[moduleName], type: 'sourceFile' };
+    // A. Metadata Protection: Never redirect internal package metadata (package.json) 
+    // to JavaScript shims. This prevents "JSON Parse error: Unexpected end of input".
+    if (moduleName.endsWith('.json') || moduleName.endsWith('.wasm')) {
+        if (defaultResolveRequest) return defaultResolveRequest(context, moduleName, platform);
+        return context.resolveRequest(context, moduleName, platform);
     }
-    // If a previous resolver was registered (e.g. by another Expo plugin), delegate
-    // to it first so its logic is preserved.
-    // Otherwise fall through to context.resolveRequest — Metro's own built-in resolver.
-    // NOTE: context.resolveRequest is NOT this function; it is Metro's internal default
-    // resolver so calling it here is safe and will NOT recurse.
+
+    // B. Universal Shims (Apply to all platforms including native)
+    for (const shimKey in UNIVERSAL_SHIMS) {
+        if (moduleName === shimKey || moduleName.startsWith(shimKey + '/')) {
+            console.log(`[Metro-Firewall] \uD83D\uDEE1\uFE0F UNIVERSAL Intercept: ${moduleName} -> ${shimKey}`);
+            return { filePath: UNIVERSAL_SHIMS[shimKey], type: 'sourceFile' };
+        }
+    }
+
+    // C. Web-Only Shims
+    if (platform === 'web') {
+        for (const shimKey in WEB_SHIMS) {
+            if (moduleName === shimKey || moduleName.startsWith(shimKey + '/')) {
+                console.log(`[Metro-Firewall] \uD83D\uDEE1\uFE0F WEB Intercept: ${moduleName} -> ${shimKey}`);
+                return { filePath: WEB_SHIMS[shimKey], type: 'sourceFile' };
+            }
+        }
+    }
+
+    // Delegate to original/default resolver
     if (defaultResolveRequest) {
         return defaultResolveRequest(context, moduleName, platform);
     }
     return context.resolveRequest(context, moduleName, platform);
 };
+
 
 // 7. ESM package exports resolution
 //
@@ -127,6 +182,8 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 // pick e.g. `i18next/dist/cjs/i18next.js` instead of the ESM entry, which is
 // a plain CJS file that Metro can wrap without hitting the getter conflict.
 config.resolver.unstable_enablePackageExports = true;
-config.resolver.unstable_conditionNames = ['browser', 'require', 'default'];
+config.resolver.unstable_conditionNames = isWeb 
+    ? ['browser', 'require', 'default'] 
+    : ['react-native', 'require', 'default'];
 
 module.exports = config;

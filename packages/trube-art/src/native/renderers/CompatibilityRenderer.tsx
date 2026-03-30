@@ -30,11 +30,7 @@ export function CompatibilityRenderer({ width, height, surface }: TrubeRendererP
           backgroundColor: surface.palette.base,
         },
       ]}
-    >
-      <View style={layerStyle(surface.palette.mist, 0.22, 0, radius)} />
-      <View style={layerStyle(surface.palette.secondary, 0.18, Math.round(width * 0.08), radius)} />
-      <View style={layerStyle(surface.palette.accent, 0.12, Math.round(width * 0.2), radius)} />
-      <View
+          <View style={layerStyle(surface.palette.mist, 0.22, 0, radius)} /      <View style={layerStyle(surface.palette.secondary, 0.18, Math.round(width * 0.08), radius)} /      <View style={layerStyle(surface.palette.accent, 0.12, Math.round(width * 0.2), radius)} /      <View
         style={[
           styles.highlight,
           {
@@ -45,9 +41,7 @@ export function CompatibilityRenderer({ width, height, surface }: TrubeRendererP
             opacity: 0.09,
           },
         ]}
-      />
-    </View>
-  );
+      /    </View  );
 }
 
 const styles = StyleSheet.create({

@@ -1,5 +1,5 @@
 /**
- * MLKitProvider — on-device text recognition via @react-native-ml-kit/text-recognition
+ * MLKitProvider \u2014 on-device text recognition via @react-native-ml-kit/text-recognition
  *
  * Free, offline, zero latency.
  * Default provider for all users regardless of Pro status.
@@ -21,9 +21,9 @@ export class MLKitProvider implements OCRProvider {
 
     const blocks: OCRBlock[] = [];
 
-    // MLKit types: TextBlock → lines: TextLine[]
+    // MLKit types: TextBlock \u2192 lines: TextLine[]
     // TextLine has: text, frame (top/left/width/height), recognizedLanguages: Language[]
-    // TextLine does NOT expose a confidence field — omit for type safety.
+    // TextLine does NOT expose a confidence field \u2014 omit for type safety.
     for (const block of result.blocks ?? []) {
       // Language hint from the block's recognized languages
       const langCode = block.recognizedLanguages?.[0]?.languageCode;

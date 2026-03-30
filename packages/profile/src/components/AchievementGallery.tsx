@@ -83,7 +83,7 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                     styles.itemContainer,
                     !achievement.unlocked && { opacity: 0.4 }
                 ]}
-            >
+            
                 <Box
                     style={{
                         padding: Theme.spacing.md,
@@ -94,27 +94,27 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                         borderWidth: achievement.unlocked ? 1 : 0,
                         borderColor: `${colors.action}40`,
                     }}
-                >
+                
                     <Icon
                         size={24}
                         color={achievement.unlocked ? colors.action : colors.textTertiary}
-                    />
-                </Box>
+                    /
+                </Box
                 <Text
                     size="xs"
                     bold={achievement.unlocked}
                     textAlign="center"
                     color={achievement.unlocked ? colors.text : colors.textTertiary}
                     numberOfLines={1}
-                >
+                
                     {achievement.title}
-                </Text>
-            </VStack>
+                </Text
+            </VStack
         );
     };
 
     return (
-        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
+        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}
             <Box
                 sx={{
                     backgroundColor: colors.secondary,
@@ -128,22 +128,22 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                     shadowRadius: 15,
                     elevation: 5,
                 }}
-            >
+            
                 <Heading
                     color={colors.textSecondary as any}
                     size="sm"
                     mt={Theme.spacing.sm}
                     mb={Theme.spacing.md}
-                >
+                
                     {t('achievements.title')}
-                </Heading>
-                <HStack style={styles.galleryGrid}>
+                </Heading
+                <HStack style={styles.galleryGrid}
                     {achievements.map((item) => (
-                        <AchievementItem key={item.id} achievement={item} />
+                        <AchievementItem key={item.id} achievement={item} /
                     ))}
-                </HStack>
-            </Box>
-        </VStack>
+                </HStack
+            </Box
+        </VStack
     );
 }
 

@@ -98,51 +98,9 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
 
     return (
         <ScreenWrapper scroll>
-            <Box
-                sx={{
-                    flex: 1,
-                    backgroundColor: colors.primary,
-                    paddingHorizontal: Theme.spacing.lg,
-                    paddingTop: Theme.spacing.xl,
-                    paddingBottom: Theme.spacing['2xl'],
-                }}
-            >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: -56,
-                        left: -36,
-                        width: 220,
-                        height: 220,
-                        borderRadius: 110,
-                        backgroundColor: `${colors.action}14`,
-                    }}
-                />
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        right: -44,
-                        top: 128,
-                        width: 180,
-                        height: 180,
-                        borderRadius: 90,
-                        backgroundColor: `${Theme.colors.gurudeviBlue}16`,
-                    }}
-                />
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        left: 28,
-                        bottom: 92,
-                        width: 140,
-                        height: 140,
-                        borderRadius: 70,
-                        backgroundColor: `${Theme.colors.gurudeviViolet}10`,
-                    }}
-                />
-
-                <Box sx={{ alignItems: 'flex-end', mb: Theme.spacing.lg }}>
-                    <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}>
+            {/* Language Selector */}
+            <Box sx={{ position: 'absolute', top: Theme.spacing.xl, right: Theme.spacing.lg, zIndex: 10 }}>
+                <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}>
                     {LANGUAGES.map(lang => (
                         <Pressable
                             key={lang.code}
@@ -166,134 +124,58 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                             </Text>
                         </Pressable>
                     ))}
-                    </HStack>
-                </Box>
+                </HStack>
+            </Box>
 
-                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}>
-                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}>
-                        <Box
-                            sx={{
-                                alignSelf: 'flex-start',
-                                px: Theme.spacing.md,
-                                py: Theme.spacing.xs,
-                                borderRadius: Theme.corners.full,
-                                backgroundColor: `${colors.action}14`,
-                                borderWidth: 1,
-                                borderColor: `${colors.action}30`,
-                            }}
-                        >
-                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.6 }}>
-                                SANCTUARY FOR TEACHERS
-                            </Text>
+            <Center sx={{ flex: 1, paddingVertical: Theme.spacing.xl, paddingHorizontal: 24 }}>
+                <VStack space="2xl" alignItems="center" sx={{ width: '100%', maxWidth: 400 }}>
+                    {/* Hero Section */}
+                    <VStack space="lg" alignItems="center">
+                        <Box sx={{
+                            width: 140,
+                            height: 140,
+                            borderRadius: 70,
+                            backgroundColor: colors.secondary,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            shadowColor: colors.shadow,
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 12,
+                            elevation: 8,
+                            mb: '$2'
+                        }}>
+                            <Image
+                                source={LOGO}
+                                style={{ width: 90, height: 90, borderRadius: 12 }}
+                                accessible={true}
+                                accessibilityLabel={t('accessibility.appLogo')}
+                            />
                         </Box>
-
-                        <VStack space="md">
-                            <Box
-                                sx={{
-                                    width: 156,
-                                    height: 156,
-                                    borderRadius: 40,
-                                    alignSelf: 'center',
-                                    backgroundColor: colors.secondary,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: colors.border,
-                                    shadowColor: Theme.colors.shadowViolet,
-                                    shadowOffset: { width: 0, height: 10 },
-                                    shadowOpacity: 0.18,
-                                    shadowRadius: 24,
-                                    elevation: 10,
-                                }}
+                        <VStack space="xs" alignItems="center">
+                            <Heading
+                                color={colors.action}
+                                size="4xl"
+                                textAlign="center"
+                                sx={{ letterSpacing: -1.5, fontWeight: '$bold' }}
                             >
-                                <Box
-                                    sx={{
-                                        position: 'absolute',
-                                        inset: 10,
-                                        borderRadius: 32,
-                                        backgroundColor: `${colors.action}08`,
-                                    }}
-                                />
-                                <Image
-                                    source={LOGO}
-                                    style={{ width: 96, height: 96, borderRadius: 18 }}
-                                    accessible={true}
-                                    accessibilityLabel={t('accessibility.appLogo')}
-                                />
-                            </Box>
-
-                            <VStack space="sm" alignItems="center">
-                                <Heading
-                                    color={colors.text}
-                                    size="4xl"
-                                    textAlign="center"
-                                    sx={{ letterSpacing: -1.8, fontWeight: '$bold' }}
-                                >
-                                    Gurudevi
-                                </Heading>
-                                <Text
-                                    color={colors.textSecondary}
-                                    size="lg"
-                                    textAlign="center"
-                                    sx={{ maxWidth: 320, lineHeight: '$lg' }}
-                                >
-                                    {t('welcome.subtitle')}
-                                </Text>
-                            </VStack>
+                                Gurudevi
+                            </Heading>
+                            <Text
+                                color={colors.textSecondary}
+                                size="lg"
+                                textAlign="center"
+                                sx={{ maxWidth: 280, lineHeight: '$lg' }}
+                            >
+                                {t('welcome.subtitle')}
+                            </Text>
                         </VStack>
-
-                        <HStack space="sm" justifyContent="center" sx={{ flexWrap: 'wrap' }}>
-                            {[
-                                { label: 'Self', tone: colors.action },
-                                { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
-                                { label: 'Community', tone: Theme.colors.gurudeviViolet },
-                                { label: 'Library', tone: Theme.colors.success },
-                            ].map((pillar) => (
-                                <Box
-                                    key={pillar.label}
-                                    sx={{
-                                        px: Theme.spacing.md,
-                                        py: Theme.spacing.xs,
-                                        borderRadius: Theme.corners.full,
-                                        backgroundColor: `${pillar.tone}12`,
-                                        borderWidth: 1,
-                                        borderColor: `${pillar.tone}30`,
-                                    }}
-                                >
-                                    <Text size="xs" color={pillar.tone} bold>
-                                        {pillar.label}
-                                    </Text>
-                                </Box>
-                            ))}
-                        </HStack>
                     </VStack>
 
-                    <Box
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            padding: Theme.spacing.lg,
-                            shadowColor: Theme.colors.shadowViolet,
-                            shadowOffset: { width: 0, height: 8 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 20,
-                            elevation: 4,
-                        }}
-                    >
-                        <VStack space="xl">
-                            <VStack space="sm">
-                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}>
-                                    BEGIN QUIETLY
-                                </Text>
-                                <Text color={colors.textSecondary} size="md">
-                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.
-                                </Text>
-                            </VStack>
-
-                            <VStack space="lg">
-                                <HStack space="md" alignItems="center" justifyContent="center">
+                    {/* Actions Area */}
+                    <VStack space="xl" sx={{ width: '100%', mt: '$4' }}>
+                        <VStack space="lg">
+                            <HStack space="md" alignItems="center" justifyContent="center" sx={{ px: '$4' }}>
                                 <Checkbox
                                     size="md"
                                     value="terms"
@@ -333,55 +215,54 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         </LinkText>
                                     </Link>
                                 </HStack>
-                                </HStack>
+                            </HStack>
 
-                                <Button
-                                    size="xl"
-                                    variant="solid"
-                                    onPress={handleStartExploring}
-                                    isDisabled={isConnecting || !acceptedTerms}
-                                    sx={{
-                                        backgroundColor: acceptedTerms ? colors.action : colors.textTertiary,
-                                        borderRadius: Theme.corners.comfortable,
-                                        height: 64,
-                                        elevation: 2,
-                                        width: '100%',
-                                        ':active': {
-                                            opacity: 0.8
-                                        }
-                                    }}
-                                >
-                                    <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">
-                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}
-                                    </ButtonText>
-                                </Button>
-
-                                <Button
-                                    size="lg"
-                                    variant="outline"
-                                    onPress={handleLogin}
-                                    sx={{
-                                        borderColor: colors.textTertiary,
-                                        borderRadius: Theme.corners.comfortable,
-                                        height: 54,
-                                        borderWidth: 1,
-                                        width: '100%',
-                                        backgroundColor: 'transparent',
-                                    }}
-                                >
-                                    <ButtonText color={colors.textSecondary} fontWeight="$medium">
-                                        {t('welcome.login')}
-                                    </ButtonText>
-                                </Button>
-                            </VStack>
-
-                            <Text color={colors.textTertiary} size="xs" textAlign="center">
-                                {t('welcome.footer')}
-                            </Text>
+                            <Button
+                                size="xl"
+                                variant="solid"
+                                onPress={handleStartExploring}
+                                isDisabled={isConnecting || !acceptedTerms}
+                                sx={{
+                                    backgroundColor: acceptedTerms ? colors.action : colors.textTertiary,
+                                    borderRadius: Theme.corners.comfortable,
+                                    height: 64,
+                                    elevation: 2,
+                                    width: '100%',
+                                    ':active': {
+                                        opacity: 0.8
+                                    }
+                                }}
+                            >
+                                <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
+                                    {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}
+                                </ButtonText>
+                            </Button>
                         </VStack>
-                    </Box>
+
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            onPress={handleLogin}
+                            sx={{
+                                borderColor: colors.textTertiary,
+                                borderRadius: Theme.corners.comfortable,
+                                height: 52,
+                                borderWidth: 1,
+                                width: '100%',
+                            }}
+                        >
+                            <ButtonText color={colors.textSecondary} fontWeight="$medium">
+                                {t('welcome.login')}
+                            </ButtonText>
+                        </Button>
+                    </VStack>
+
+                    {/* Footer */}
+                    <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$2">
+                        {t('welcome.footer')}
+                    </Text>
                 </VStack>
-            </Box>
+            </Center>
         </ScreenWrapper>
     );
 }

@@ -47,7 +47,7 @@ export function useCommunityProfile(communityId: string) {
             if (error) throw error;
             return { success: true };
         } catch (error) {
-            console.log('🔄 Sync pending for community:', field);
+            console.log('= Sync pending for community:', field);
             return { success: true, pending: true };
         }
     };

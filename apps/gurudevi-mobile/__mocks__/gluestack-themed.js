@@ -3,28 +3,28 @@
 // Use HOST STRING TYPES ('View', 'Text', etc.) instead of ReactNative.* components.
 //
 // Why: @testing-library/react-native v14 uses test-renderer@0.14.0, a custom React
-// reconciler. When jest-expo/web maps react-native → react-native-web, any call to
+// reconciler. When jest-expo/web maps react-native \u2192 react-native-web, any call to
 // ReactNative.View renders through react-native-web's function chain, eventually
 // producing a DOM 'div' host element. The test-renderer then sees 'div' as the parent
 // of text strings, violating its "text must be inside a Text host" invariant
 // (textComponentTypes = ['Text', 'RCTText']).
 //
 // By using literal strings 'View' and 'Text', the test-renderer treats them as opaque
-// host elements it manages directly—no react-native-web translation happens.
+// host elements it manages directly\u2014no react-native-web translation happens.
 const React = require('react');
 
-// Host element helpers — testID flows through for getAllByTestId / getByTestId queries
-const mkView = (extraProps) => ({ testID, children, style, ...rest }) =>
+// Host element helpers \u2014 testID flows through for getAllByTestId / getByTestId queries
+const mkView = (extraProps) => ({ testID, children, style, ...rest }) =
     React.createElement('View', { testID, ...(extraProps || {}) }, children);
 
-const mkText = () => ({ testID, children, ...rest }) =>
+const mkText = () => ({ testID, children, ...rest }) =
     React.createElement('Text', { testID }, children);
 
 const noop = () => null;
 
 const View = mkView();
 const Text = mkText();
-const TextInput = ({ testID, ...p }) =>
+const TextInput = ({ testID, ...p }) =
     React.createElement('TextInput', { testID });
 
 module.exports = {

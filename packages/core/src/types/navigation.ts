@@ -5,19 +5,24 @@ export type ClassroomStackParamList = {
     Attendance: { classroomId: string; classroomName?: string; date?: string };
     Gradebook: { classroomId: string; classroomName?: string };
     StudentProfile: { studentId: string; classroomId: string; studentName?: string; classroomStudentId: string };
-    SchoolCreation: undefined;
-    FounderDashboard: undefined;
-    FounderSchoolDashboard: { schoolId: string; userId: string };
     Timetable: { schoolId?: string };
-    SchoolForest: undefined;
     PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
     FormBuilder: undefined;
     PublicForm: { slug: string };
 };
 
+export type FounderStackParamList = {
+    FounderDashboard: undefined;
+    FounderSchoolDashboard: { schoolId: string; userId: string };
+    PrincipalDashboard: { schoolId: string; userId: string; forceDemo?: boolean; onRefresh?: () => void };
+    SchoolCreation: undefined;
+    SchoolForest: undefined;
+};
+
 /** Minimal profile shape passed to FullProfile screen.  Use proper fields instead of `any`. */
 export type FullProfileParams = {
-    userId: string;
+    id: string;
+    userId?: string;
     full_name: string;
     role?: string;
     school_name?: string;
@@ -32,6 +37,8 @@ export type ProfileStackParamList = {
     FullProfile: { profile: FullProfileParams };
     AppSettings: undefined;
     PrivacyLedger: undefined;
+    MuteHub: undefined;
+    TrubeLab: undefined;
     PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
 };
 export type CommunityStackParamList = {
@@ -39,7 +46,7 @@ export type CommunityStackParamList = {
     GroupDetails: { groupId: string; groupName?: string };
     GroupChat: { groupId: string; groupName: string };
     Announcements: undefined;
-    /** Public profile viewer — tapping any user avatar in community navigates here */
+    /** Public profile viewer  tapping any user avatar in community navigates here */
     UserProfile: { userId: string; userName: string };
     PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
     /** 1:1 Direct Messaging */
@@ -56,7 +63,7 @@ export type LibraryStackParamList = {
     LibraryHome: undefined;
     LibraryMap: undefined;
     CuratorReview: undefined;
-    /** Inline PDF viewer — resourceId is used to mark resource_read growth signal */
+    /** Inline PDF viewer  resourceId is used to mark resource_read growth signal */
     PDFViewer: { resourceId: string; title: string; url: string; creator?: string };
     /** Inline video player */
     VideoPlayer: { resourceId: string; title: string; url: string; creator?: string };

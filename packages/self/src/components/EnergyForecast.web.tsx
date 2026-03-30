@@ -7,7 +7,7 @@
  * Metro resolves this over EnergyForecast.tsx on the web platform.
  */
 import React, { useState, useEffect } from 'react';
-import { supabase, useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core';
 import { useEnergyForecast } from '../hooks/useEnergyForecast';
 import { ENERGY_COLORS } from '../constants/wellbeing';
 import { Battery } from 'lucide-react-native';
@@ -17,42 +17,39 @@ interface EnergyForecastProps {
 }
 
 const LEVEL_LABELS: Record<number, { label: string; emoji: string; desc: string }> = {
-    1: { label: 'Depleted',    emoji: '🪫', desc: 'Running on empty. Rest is medicine.' },
-    2: { label: 'Low',         emoji: '😔', desc: 'Conserve energy. Be gentle with yourself.' },
-    3: { label: 'Moderate',    emoji: '😐', desc: 'Steady and present. Enough to show up.' },
-    4: { label: 'Energised',   emoji: '🌟', desc: 'Clear and capable. Use this well.' },
-    5: { label: 'Flourishing', emoji: '⚡', desc: 'Full vitality. Channel this energy wisely.' },
+    1: { label: 'Depleted',    emoji: '\uD83E\uDEAB', desc: 'Running on empty. Rest is medicine.' },
+    2: { label: 'Low',         emoji: '\uD83D\uDE14', desc: 'Conserve energy. Be gentle with yourself.' },
+    3: { label: 'Moderate',    emoji: '\uD83D\uDE10', desc: 'Steady and present. Enough to show up.' },
+    4: { label: 'Energised',   emoji: '\uD83C\uDF1F', desc: 'Clear and capable. Use this well.' },
+    5: { label: 'Flourishing', emoji: '\u26A1', desc: 'Full vitality. Channel this energy wisely.' },
 };
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
-    const { forecasts, refreshData, isLoading } = useEnergyForecast(userId);
-    const isPastView = useTemporalStore(s => s.isPastView);
-    const today = new Date().toISOString().split('T')[0];
+    const { forecasts, refreshData, isLoading, saveForecast } = useEnergyForecast(userId);
+    const { isPastView, viewDate } = useTemporalStore();
 
-    const todayForecast = forecasts.find(f => f.forecast_date === today) ?? null;
-    const [selectedLevel, setSelectedLevel] = useState<number | null>(todayForecast?.energy_level ?? null);
+    const currentForecast = forecasts.find(f => f.forecast_date === viewDate) ?? null;
+    const [selectedLevel, setSelectedLevel] = useState<number | null>(currentForecast?.energy_level ?? null);
     const [notes, setNotes] = useState('');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
 
     useEffect(() => {
-        if (todayForecast) {
-            setSelectedLevel(todayForecast.energy_level);
-            setNotes(todayForecast.notes ?? '');
-        }
-    }, [todayForecast?.energy_level]);
+        setSelectedLevel(currentForecast?.energy_level ?? null);
+        setNotes(currentForecast?.notes ?? '');
+    }, [currentForecast?.energy_level, currentForecast?.notes]);
 
     const handleSave = async (level: number) => {
         if (!userId) return;
         setSelectedLevel(level);
         setSaving(true);
         try {
-            const existing = forecasts.find(f => f.forecast_date === today);
-            if (existing) {
-                await supabase.from('energy_forecasts').update({ energy_level: level, notes }).eq('id', existing.id);
-            } else {
-                await supabase.from('energy_forecasts').insert({ user_id: userId, energy_level: level, forecast_date: today, notes });
-            }
+            await saveForecast({
+                forecastDate: viewDate,
+                energyLevel: level as 1 | 2 | 3 | 4 | 5,
+                notes,
+                existingId: currentForecast?.id,
+            });
             await refreshData();
             setSaved(true);
             setTimeout(() => setSaved(false), 2000);
@@ -68,16 +65,16 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     const meta = selectedLevel ? LEVEL_LABELS[selectedLevel] : null;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Battery size={16} color="var(--sanctuary-saffron)" />
-                <span style={{ fontSize: '14px', fontWeight: '800' }}>Energy Forecast</span>
-                {saved && <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--moss)', fontWeight: '700' }}>✓ Logged</span>}
-            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                <Battery size={16} color="var(--sanctuary-saffron)" /
+                <span style={{ fontSize: '14px', fontWeight: '800' }}>Energy Forecast</span
+                {saved && <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--moss)', fontWeight: '700' }}>\u2713 Logged</span>}
+            </div
 
             {/* Level selector */}
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}
                 {[1, 2, 3, 4, 5].map(level => {
                     const m = LEVEL_LABELS[level];
                     const isSelected = selectedLevel === level;
@@ -103,34 +100,34 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                                 transform: isSelected ? 'scale(1.08)' : 'scale(1)',
                                 opacity: isPastView && !isSelected ? 0.4 : 1,
                             }}
-                        >
-                            <span style={{ fontSize: '20px' }}>{m!.emoji}</span>
-                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m!.label}</span>
-                        </button>
+                        
+                            <span style={{ fontSize: '20px' }}>{m!.emoji}</span
+                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m!.label}</span
+                        </button
                     );
                 })}
-            </div>
+            </div
 
             {/* Description */}
             {meta && (
-                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0, fontStyle: 'italic' }}>
+                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0, fontStyle: 'italic' }}
                     {meta.desc}
-                </p>
+                </p
             )}
 
             {/* Notes */}
             {selectedLevel && (
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px' }}
                     <input
                         value={notes}
                         onChange={e => setNotes(e.target.value)}
                         onBlur={() => !isPastView && selectedLevel && handleSave(selectedLevel)}
-                        placeholder={isPastView ? "Viewing historical context" : "Add context (optional)…"}
+                        placeholder={isPastView ? "Viewing historical context" : "Add context (optional)\u2026"}
                         disabled={isPastView}
                         style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', opacity: isPastView ? 0.7 : 1 }}
-                    />
-                </div>
+                    /
+                </div
             )}
-        </div>
+        </div
     );
 }

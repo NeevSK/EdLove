@@ -28,9 +28,9 @@ export const DailyResonanceCard = ({
     const colors = useThemedColors();
 
     return (
-        <GlassCard>
-            <VStack space="md">
-                <HStack space="sm" alignItems="center">
+        <GlassCard
+            <VStack space="md"
+                <HStack space="sm" alignItems="center"
                     <View
                         style={{
                             backgroundColor: type === 'motivation'
@@ -39,12 +39,12 @@ export const DailyResonanceCard = ({
                             padding: 8,
                             borderRadius: Theme.corners.comfortable
                         }}
-                    >
+                    
                         <Icon
                             size={20}
                             color={type === 'motivation' ? Theme.colors.sanctuarySaffron : colors.action}
-                        />
-                    </View>
+                        /
+                    </View
                     <Text
                         style={{
                             color: colors.textSecondary,
@@ -52,12 +52,12 @@ export const DailyResonanceCard = ({
                             fontFamily: 'Inter_600SemiBold',
                             letterSpacing: 0.5
                         }}
-                    >
+                    
                         {title.toUpperCase()}
-                    </Text>
-                </HStack>
+                    </Text
+                </HStack
 
-                <VStack space="xs">
+                <VStack space="xs"
                     <Text
                         style={{
                             color: colors.text,
@@ -65,9 +65,9 @@ export const DailyResonanceCard = ({
                             lineHeight: 26,
                             fontFamily: 'Inter_500Medium',
                         }}
-                    >
+                    
                         "{content}"
-                    </Text>
+                    </Text
                     {author && (
                         <Text
                             style={{
@@ -78,13 +78,13 @@ export const DailyResonanceCard = ({
                                 textAlign: 'right',
                                 marginTop: Theme.spacing.small
                             }}
-                        >
-                            — {author}
-                        </Text>
+                        
+                             {author}
+                        </Text
                     )}
-                </VStack>
-            </VStack>
-        </GlassCard>
+                </VStack
+            </VStack
+        </GlassCard
     );
 };
 

@@ -1,14 +1,14 @@
-// WelcomeScreen Tests — grounded in actual component behaviour
+// WelcomeScreen Tests \u2014 grounded in actual component behaviour
 //
 // Component facts (from reading WelcomeScreen.tsx):
 //   - Renders a hardcoded "Gurudevi" Heading (no welcome.title translation key)
 //   - Guest CTA uses t('welcome.exploreAsGuest')
 //   - Login CTA uses t('welcome.login')
-//   - Pressing Login sets showAuth=true → renders <AuthScreen> (not navigate('Auth'))
+//   - Pressing Login sets showAuth=true \u2192 renders <AuthScreen> (not navigate('Auth'))
 //   - Guest sign-in calls authAPI.signInAnonymously() from @repo/core (not supabase directly)
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import WelcomeScreen from '../../screens/WelcomeScreen';
+import { WelcomeScreen } from '@repo/ui';
 
 const mockSignInAnonymously = jest.fn();
 jest.mock('@repo/core', () => ({
@@ -17,7 +17,7 @@ jest.mock('@repo/core', () => ({
     supabase: { auth: { getUser: jest.fn() } },
 }));
 
-// AuthScreen is rendered inline when Login is pressed — provide a stub
+// AuthScreen is rendered inline when Login is pressed \u2014 provide a stub
 jest.mock('../../screens/AuthScreen', () => {
     const React = require('react');
     return () => React.createElement('View', { testID: 'auth-screen' });

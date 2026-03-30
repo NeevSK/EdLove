@@ -183,7 +183,7 @@ export const validators = {
  */
 export function validateForm<T extends Record<string, any>>(
     values: T,
-    rules: Partial<Record<keyof T, (value: any) => ValidationResult>>
+    rules: Partial<Record<keyof T, (value: any) => ValidationResult>
 ): { isValid: boolean; errors: Partial<Record<keyof T, string>> } {
     const errors: Partial<Record<keyof T, string>> = {};
     let isValid = true;
@@ -211,7 +211,7 @@ export function validateForm<T extends Record<string, any>>(
  */
 export function validateWithRules(
     value: any,
-    validators: Array<(value: any) => ValidationResult>
+    validators: Array<(value: any) => ValidationResult
 ): ValidationResult {
     for (const validator of validators) {
         const result = validator(value);

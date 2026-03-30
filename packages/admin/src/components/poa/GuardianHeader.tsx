@@ -10,8 +10,7 @@ interface GuardianHeaderProps {
 export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, isDesktop }) => {
   const theme = useTheme();
   return (
-    <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
-      <Text 
+    <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}      <Text 
         style={[
           styles.title,
           { 
@@ -20,10 +19,8 @@ export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, is
             fontSize: isDesktop ? 32 : 24
           }
         ]}
-      >
-        Guardian Dashboard
-      </Text>
-      <Text 
+              Guardian Dashboard
+      </Text      <Text 
         style={[
           styles.subtitle,
           { 
@@ -31,11 +28,8 @@ export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, is
             fontSize: isDesktop ? 16 : 14
           }
         ]}
-      >
-        {studentCount} {studentCount === 1 ? 'Student' : 'Students'}
-      </Text>
-    </View>
-  );
+              {studentCount} {studentCount === 1 ? 'Student' : 'Students'}
+      </Text    </View  );
 };
 
 const styles = StyleSheet.create({

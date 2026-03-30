@@ -3,10 +3,12 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "pnpm exec astro dev",
+    "build": "pnpm exec astro build",
+    "preview": "pnpm exec astro preview",
+    "astro": "pnpm exec astro",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec astro check\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.7",

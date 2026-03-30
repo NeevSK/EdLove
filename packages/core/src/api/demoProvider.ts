@@ -1,4 +1,4 @@
-﻿import { Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { isDemo } from './demo';
 import * as MOCK from './mockData';
 // hapticWarning removed to avoid core -> ui circular dependency

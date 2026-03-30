@@ -7,7 +7,7 @@ const filePath = 'c:\\Users\\Naween\\projects\\polymath-platform\\lka_admin_boun
 
 async function inspect() {
   try {
-    console.log(`🧐 Detailed Inspection: lka_admin4`);
+    console.log(`\uD83E\uDDD0 Detailed Inspection: lka_admin4`);
     const partialWorkbook = XLSX.readFile(filePath, { sheetRows: 5, sheets: ['lka_admin4'] });
     const worksheet = partialWorkbook.Sheets['lka_admin4'];
     const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -20,7 +20,7 @@ async function inspect() {
       console.log('Empty sheet or sheet not found.');
     }
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('\u274C Error:', error);
   }
 }
 

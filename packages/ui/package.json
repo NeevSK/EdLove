@@ -4,23 +4,31 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": "24.x"
+  },
   "exports": {
     ".": "./src/index.ts",
+    "./screens": "./src/screens/index.ts",
+    "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
+    "./screens/AppSettingsScreen.web": "./src/screens/AppSettingsScreen.web.tsx",
+    "./screens/NotificationsScreen.web": "./src/screens/NotificationsScreen.web.tsx",
     "./native": "./src/components-native/index.ts",
     "./svelte/*": "./src/svelte/*.svelte",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "build": "pnpm exec tsc",
+    "typecheck": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "check-types": "pnpm run typecheck",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\""
   },
   "dependencies": {
     "@gluestack-style/react": "^1.0.57",
     "@gluestack-ui/config": "^1.1.20",
     "@gluestack-ui/themed": "^1.1.73",
     "@repo/core": "workspace:*",
-    "@repo/scanner-kit": "workspace:*",
     "apca-w3": "^0.1.9",
     "culori": "^4.0.2",
     "lucide-react-native": "^0.563.0",

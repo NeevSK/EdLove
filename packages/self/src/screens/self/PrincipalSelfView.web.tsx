@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 import {
     usePermissions,
     useStore,
-    useResonanceStore,
+    useTemporalStore,
     useJourneyHistory,
 } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import {
     TemporalNavigator,
-    ResonanceProvider,
+    TemporalProvider,
     JourneyHistoryCard,
-    ResonanceShield,
+    TemporalShield,
 } from '@repo/ui';
 import { Activity, BookOpen } from 'lucide-react-native';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
@@ -39,7 +39,7 @@ export default function PrincipalSelfView() {
     const navigation = useNavigation<any>();
     const { can, context } = usePermissions();
     const userId = context.userId;
-    const { viewMode, viewScale, setScale } = useResonanceStore();
+    const { viewMode, viewScale, setScale } = useTemporalStore();
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
 
@@ -50,9 +50,7 @@ export default function PrincipalSelfView() {
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}>
-                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
                     <button
                         key={scale}
                         className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
@@ -67,29 +65,17 @@ export default function PrincipalSelfView() {
                             cursor: 'pointer',
                             textTransform: 'uppercase',
                         }}
-                    >
-                        {scale}
-                    </button>
-                ))}
-            </div>
-            <JourneyHistoryCard
+                                            {scale}
+                    </button                ))}
+            </div            <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
                 loading={journeyLoading}
                 scale={viewScale as any}
-            />
-            <ResonanceShield label="LEADERSHIP ENERGY">
-                <PrincipalPulse energy={forecasts[0]} decisions={decisions} loading={energyLoading || decisionLoading} />
-            </ResonanceShield>
-            <ResonanceShield label="STRATEGIC DECISIONS">
-                <DecisionSection decisions={decisions} loading={decisionLoading} />
-            </ResonanceShield>
-        </div>
-    );
+            /            <TemporalShield label="LEADERSHIP ENERGY"                <PrincipalPulse energy={forecasts[0]} decisions={decisions} loading={energyLoading || decisionLoading} /            </TemporalShield            <TemporalShield label="STRATEGIC DECISIONS"                <DecisionSection decisions={decisions} loading={decisionLoading} /            </TemporalShield        </div    );
 
     const sideBar = (
-        <>
-            <MoodPickerCard
+        <            <MoodPickerCard
                 isOpen={false}
                 onToggle={() => {}}
                 onSelect={async (mood, note) => {
@@ -100,31 +86,11 @@ export default function PrincipalSelfView() {
                 latestMood={moodLogs[0]}
                 isLoading={moodLoading}
                 accent="dark"
-            />
-            <div className="sanctuary-card" style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
-                    Leadership ecology
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
-                        <Activity size={16} /> <span>Systemic Health</span>
-                    </button>
-                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
-                        <BookOpen size={16} /> <span>Governance Ledger</span>
-                    </button>
-                </div>
-            </div>
-            <ImpactRipplesCard ripples={[]} />
-            <WarmMirrorCard text="Your clarity guides the entire ecosystem." />
-        </>
-    );
+            /            <div className="sanctuary-card" style={{ padding: '24px' }}                <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: '16px' }}                    Leadership ecology
+                </h3                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}                        <Activity size={16} /> <span>Systemic Health</span                    </button                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}                        <BookOpen size={16} /> <span>Governance Ledger</span                    </button                </div            </div            <ImpactRipplesCard ripples={[]} /            <WarmMirrorCard text="Your clarity guides the entire ecosystem." /        </    );
 
     return (
-        <ResonanceProvider>
-            <div style={{ padding: '20px 40px 0' }}>
-                <TemporalNavigator />
-            </div>
-            <BaseSelfView
+        <TemporalProvider            <div style={{ padding: '20px 40px 0' }}                <TemporalNavigator /            </div            <BaseSelfView
                 perspective="principal"
                 description={t('self.principalDesc', 'Orchestrate systemic harmony from a place of centered wisdom.')}
                 domains={[
@@ -158,11 +124,8 @@ export default function PrincipalSelfView() {
                     },
                 ]}
                 sideBar={sideBar}
-            />
-            <WelcomeModal
+            /            <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            />
-        </ResonanceProvider>
-    );
+            /        </TemporalProvider    );
 }

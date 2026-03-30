@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { VStack, HStack, WebScreenHeader, FeatureInfoIcon, TemporalNavigator } from '@repo/ui';
+import { VStack, HStack, FeatureInfoIcon, TemporalNavigator } from '@repo/ui';
+import { usePermissions } from '@repo/core';
 import { BaseSelfViewProps } from './BaseSelfView.types';
 import { FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
@@ -12,7 +13,7 @@ import { FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
  * This component implements the "Control Center" hub.
  */
 export function BaseSelfView({
-    role,
+    perspective,
     title = 'Inner Sanctuary',
     description,
     domains,
@@ -22,10 +23,14 @@ export function BaseSelfView({
     nightRitual,
     voiceJournal,
 }: BaseSelfViewProps) {
-    const surfaceBg = role === 'student' ? '#F5F3FF' : '#FFF7ED';
+    const { can } = usePermissions();
+    const surfaceBg = can('manage', 'StudentDashboard') ? '#F5F3FF' : '#FFF7ED';
+
+
+
     
     const allFeatures = React.useMemo(() => [
-        ...domains.flatMap((domain: any) =>
+        ...domains.flatMap((domain: any) =
             (domain.features || []).map((feature: any) => ({
                 ...feature,
                 domainId: domain.id,
@@ -66,15 +71,15 @@ export function BaseSelfView({
     };
 
     return (
-        <View style={[webStyles.container, { backgroundColor: surfaceBg }]}>
+        <View style={[webStyles.container, { backgroundColor: surfaceBg }]}
             {/* Fixed Control Panel (Top Hub) - Category Navigation */}
             {/* @ts-ignore - className is valid on web */}
-            <View style={webStyles.hubHeader} className="sanctuary-glass-hub">
+            <View style={webStyles.hubHeader} className="sanctuary-glass-hub"
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={webStyles.categoryTabs}
-                >
+                
                     {domains?.map((domain) => (
                         <Pressable
                             key={domain.id}
@@ -92,65 +97,65 @@ export function BaseSelfView({
                             ]}
                             // @ts-ignore - className is valid on web
                             className={activeCategoryId === domain.id ? "sanctuary-card interactive active" : "sanctuary-card interactive"}
-                        >
-                            <View style={[webStyles.categoryIndicator, { backgroundColor: domain.accentColor }]} />
+                        
+                            <View style={[webStyles.categoryIndicator, { backgroundColor: domain.accentColor }]} /
                             <Text style={[
                                 webStyles.categoryTitle,
                                 { color: activeCategoryId === domain.id ? domain.accentColor : 'var(--text-muted)' }
-                            ]}>
+                            ]}
                                 {domain.title}
-                            </Text>
-                        </Pressable>
+                            </Text
+                        </Pressable
                     ))}
-                </ScrollView>
-            </View>
+                </ScrollView
+            </View
             
-            <View style={{ paddingHorizontal: 40, marginTop: 24 }}>
-                <TemporalNavigator />
-            </View>
+            <View style={{ paddingHorizontal: 40, marginTop: 24 }}
+                <TemporalNavigator /
+            </View
 
             {/* Main Content Area - Multi-column based on active domain */}
-            <View style={webStyles.contentWrapper}>
+            <View style={webStyles.contentWrapper}
                 {/* Primary Focus Area */}
                 <ScrollView
                     style={webStyles.mainColumn}
                     contentContainerStyle={webStyles.scrollContent}
                     showsVerticalScrollIndicator={false}
-                >
+                
                     {/* Featured Detail View (Conditional) */}
                     {(focusedItemId || focusedHistoryId) && (
-                        <View style={[styles.card, { marginBottom: 48, backgroundColor: '#FFF', elevation: 8 }]}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
-                                <Text style={[styles.sectionHeading, { color: activeDomain?.accentColor || '#000' }]}>
+                        <View style={[styles.card, { marginBottom: 48, backgroundColor: '#FFF', elevation: 8 }]}
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}
+                                <Text style={[styles.sectionHeading, { color: activeDomain?.accentColor || '#000' }]}
                                     {focusedHistoryId ? 'Historical Context' : 'Focused Detail'}
-                                </Text>
+                                </Text
                                 <View 
                                     onPointerDown={() => {
                                         setFocusedItemId(null);
                                         setFocusedHistoryId(null);
                                     }} 
                                     style={{ cursor: 'pointer', padding: 4 }}
-                                >
-                                    <Text style={{ fontSize: 20 }}>✕</Text>
-                                </View>
-                            </View>
+                                
+                                    <Text style={{ fontSize: 20 }}>\u2715</Text
+                                </View
+                            </View
                             {/* Render the selected feature content or its history */}
                             {focusedHistoryId 
-                                ? activeDomain?.features?.find((f: any) => f.id === focusedHistoryId)?.historyContent || <Text>No history available for this feature.</Text>
+                                ? activeDomain?.features?.find((f: any) => f.id === focusedHistoryId)?.historyContent || <Text>No history available for this feature.</Text
                                 : activeDomain?.features?.find((f: any) => f.id === focusedItemId)?.content || null
                             }
-                        </View>
+                        </View
                     )}
 
                     {activeDomain?.content && !focusedItemId && !focusedHistoryId && (
-                        <View style={webStyles.activeDomainContainer}>
+                        <View style={webStyles.activeDomainContainer}
                             {activeDomain?.content}
-                        </View>
+                        </View
                     )}
 
                     {activeDomain?.features && !focusedItemId && !focusedHistoryId && !activeDomain.content && (
-                        <View style={webStyles.activeDomainContainer}>
-                            <VStack space="xl">
+                        <View style={webStyles.activeDomainContainer}
+                            <VStack space="xl"
                                 {sortedFeatures
                                     .filter((f: any) => f.domainId === activeCategoryId || (activeCategoryId === 'reflections' && f.id === 'mirrors'))
                                     .map((feature) => {
@@ -161,84 +166,84 @@ export function BaseSelfView({
                                                 style={[styles.card, { borderLeftWidth: 6, borderLeftColor: feature.domainColor, marginBottom: 24 }]}
                                                 // @ts-ignore - className is valid on web
                                                 className="sanctuary-card"
-                                            >
-                                                <View style={webStyles.featureCardHeader}>
-                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
-                                                        <Text style={{ fontSize: 24 }}>
-                                                            {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨'}
-                                                        </Text>
-                                                        <VStack>
-                                                            <Text style={[styles.sectionHeading, { color: feature.domainColor, marginBottom: 2, opacity: 1 }]}>
+                                            
+                                                <View style={webStyles.featureCardHeader}
+                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}
+                                                        <Text style={{ fontSize: 24 }}
+                                                            {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '\u2728'}
+                                                        </Text
+                                                        <VStack
+                                                            <Text style={[styles.sectionHeading, { color: feature.domainColor, marginBottom: 2, opacity: 1 }]}
                                                                 {feature.label}
-                                                            </Text>
-                                                        </VStack>
+                                                            </Text
+                                                        </VStack
                                                         <FeatureInfoIcon 
                                                             title={feature.label} 
                                                             discoveryInfo={FEATURE_DISCOVERY_DATA[feature.id as keyof typeof FEATURE_DISCOVERY_DATA]}
-                                                        />
-                                                    </HStack>
+                                                        /
+                                                    </HStack
                                                     
-                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
+                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}
                                                         {/* "Past" shortcut icon */}
                                                         {feature.historyContent && (
                                                             <Pressable 
                                                                 onPress={() => setFocusedHistoryId(feature.id)}
                                                                 style={{ padding: 4, marginRight: 8, opacity: 0.6 }}
-                                                            >
-                                                                <Text style={{ fontSize: 16 }}>⏳</Text>
-                                                            </Pressable>
+                                                            
+                                                                <Text style={{ fontSize: 16 }}>\u23F3</Text
+                                                            </Pressable
                                                         )}
 
                                                         <Pressable 
                                                             onPress={() => togglePin(feature.id)}
                                                             style={{ padding: 4 }}
-                                                        >
+                                                        
                                                             <Text style={{ 
                                                                 fontSize: 16, 
                                                                 color: isPinned ? feature.domainColor : 'rgba(0,0,0,0.1)' 
-                                                            }}>
-                                                                {isPinned ? '📌' : '📍'}
-                                                            </Text>
-                                                        </Pressable>
-                                                        <Pressable onPress={() => handleFeaturePress(feature.id)}>
-                                                            <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.2)', fontWeight: '700' }}>EXPAND</Text>
-                                                        </Pressable>
-                                                    </HStack>
-                                                </View>
+                                                            }}
+                                                                {isPinned ? '\uD83D\uDCCC' : '\uD83D\uDCCD'}
+                                                            </Text
+                                                        </Pressable
+                                                        <Pressable onPress={() => handleFeaturePress(feature.id)}
+                                                            <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.2)', fontWeight: '700' }}>EXPAND</Text
+                                                        </Pressable
+                                                    </HStack
+                                                </View
                                                 {feature.content}
-                                            </View>
+                                            </View
                                         );
                                     })}
-                            </VStack>
-                        </View>
+                            </VStack
+                        </View
                     )}
 
                     {(morningRitual || voiceJournal || nightRitual) && !focusedItemId && (
-                        <View style={webStyles.ritualSection}>
-                            <Text style={styles.sectionHeading}>Daily Rituals</Text>
-                            <View style={webStyles.ritualGrid}>
+                        <View style={webStyles.ritualSection}
+                            <Text style={styles.sectionHeading}>Daily Rituals</Text
+                            <View style={webStyles.ritualGrid}
                                 {voiceJournal && <View style={webStyles.ritualCard}>{voiceJournal}</View>}
                                 {morningRitual && <View style={webStyles.ritualCard}>{morningRitual}</View>}
                                 {nightRitual && <View style={webStyles.ritualCard}>{nightRitual}</View>}
-                            </View>
-                        </View>
+                            </View
+                        </View
                     )}
-                </ScrollView>
+                </ScrollView
 
                 {/* Support Sidebar (Unified Feedback) */}
                 {/* @ts-ignore - className is valid on web */}
-                <View style={webStyles.sideColumn} className="sanctuary-sidebar-glass">
+                <View style={webStyles.sideColumn} className="sanctuary-sidebar-glass"
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={webStyles.sideBarContent}
-                    >
-                        <Text style={styles.sectionHeading}>Mirrors & Ripples</Text>
+                    
+                        <Text style={styles.sectionHeading}>Mirrors & Ripples</Text
                         {sideBar}
                         {reminders}
-                    </ScrollView>
-                </View>
-            </View>
-        </View>
+                    </ScrollView
+                </View
+            </View
+        </View
     );
 }
 

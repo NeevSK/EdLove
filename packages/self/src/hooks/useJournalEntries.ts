@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, GuestDataManager, authAPI, identityAPI, growthSignalsAPI, useResonanceStore, applyResonanceFilter } from '@repo/core';
+import { supabase, GuestDataManager, authAPI, identityAPI, growthSignalsAPI, useTemporalStore, applyTemporalFilter } from '@repo/core';
 
 import { JournalEntry } from '../types';
 
@@ -7,7 +7,7 @@ export const useJournalEntries = () => {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAnonymous, setIsAnonymous] = useState(false);
-    const { resonanceDate, phase } = useResonanceStore();
+    const { viewDate, phase } = useTemporalStore();
 
 
     // Check anonymous status
@@ -43,7 +43,11 @@ export const useJournalEntries = () => {
                         .select('*')
                         .eq('user_id', internalId);
 
-                    query = applyResonanceFilter(query);
+                    query = applyTemporalFilter(query, {
+                        column: 'created_at',
+                        mode: 'event_time',
+                        capability: 'event_stream',
+                    });
                     query = query.order('created_at', { ascending: false }).limit(50);
 
                     const { data, error } = await query;
@@ -61,11 +65,11 @@ export const useJournalEntries = () => {
         };
 
         loadEntries();
-    }, [isAnonymous, resonanceDate, phase]);
+    }, [isAnonymous, viewDate, phase]);
 
 
     const addJournalEntry = useCallback(async (content: string) => {
-        // [Resonance Shield] Handled by resonantProxy, but keeping check for UI responsiveness
+                // Temporal mutation shielding is handled by the proxy, but we keep this check for UI responsiveness.
         if (phase === 'past') throw new Error("Cannot add entries to the past");
 
         try {
@@ -93,7 +97,7 @@ export const useJournalEntries = () => {
 
                 if (error) throw error;
                 setEntries(prev => [data, ...prev]);
-                // Growth signal — fire-and-forget (benefits mobile + web callers)
+                // Growth signal  fire-and-forget (benefits mobile + web callers)
                 void growthSignalsAPI.emitSignal(internalId, 'reflection_written', {}).catch(() => { });
                 return data;
             }

@@ -52,8 +52,8 @@ export default function ReportCard({
     }, [grades]);
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <VStack space="lg" sx={{ padding: Theme.spacing.md }}>
+        <ScrollView showsVerticalScrollIndicator={false}
+            <VStack space="lg" sx={{ padding: Theme.spacing.md }}
                 {/* Student Info Header */}
                 <Box
                     sx={{
@@ -62,44 +62,44 @@ export default function ReportCard({
                         borderRadius: Theme.corners.generous,
                         ...Theme.shadows.md,
                     }}
-                >
-                    <VStack space="sm">
-                        <Text size="sm" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}>
+                
+                    <VStack space="sm"
+                        <Text size="sm" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}
                             {t('grades.reportCard') || 'Report Card'}
-                        </Text>
-                        <Heading size="xl" sx={{ color: Theme.colors.sacredWhite }}>
+                        </Text
+                        <Heading size="xl" sx={{ color: Theme.colors.sacredWhite }}
                             {studentName}
-                        </Heading>
+                        </Heading
                         {grades.length > 0 && (
-                            <HStack space="lg" sx={{ marginTop: Theme.spacing.sm }}>
-                                <VStack space="xs">
-                                    <Text size="xs" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}>
+                            <HStack space="lg" sx={{ marginTop: Theme.spacing.sm }}
+                                <VStack space="xs"
+                                    <Text size="xs" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}
                                         {t('grades.averageMarks') || 'Avg Marks'}
-                                    </Text>
-                                    <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                                    </Text
+                                    <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}
                                         {averageMarks.toFixed(1)}
-                                    </Text>
-                                </VStack>
+                                    </Text
+                                </VStack
                                 {showGPA && (
-                                    <VStack space="xs">
-                                        <Text size="xs" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}>
+                                    <VStack space="xs"
+                                        <Text size="xs" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}
                                             {t('grades.overallGPA') || 'Overall GPA'}
-                                        </Text>
-                                        <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                                        </Text
+                                        <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}
                                             {overallGPA.toFixed(2)}
-                                        </Text>
-                                    </VStack>
+                                        </Text
+                                    </VStack
                                 )}
-                            </HStack>
+                            </HStack
                         )}
-                    </VStack>
-                </Box>
+                    </VStack
+                </Box
 
                 {/* Assignments List */}
-                <VStack space="md">
-                    <Heading size="md" color={Theme.colors.inkTruth}>
+                <VStack space="md"
+                    <Heading size="md" color={Theme.colors.inkTruth}
                         {t('grades.assignments') || 'Assignments'}
-                    </Heading>
+                    </Heading
 
                     {grades.length === 0 ? (
                         <Box
@@ -109,11 +109,11 @@ export default function ReportCard({
                                 borderRadius: Theme.corners.comfortable,
                                 alignItems: 'center',
                             }}
-                        >
-                            <Text color={Theme.colors.starlightGray} textAlign="center">
+                        
+                            <Text color={Theme.colors.starlightGray} textAlign="center"
                                 {t('grades.noAssignments') || 'No assignments recorded.'}
-                            </Text>
-                        </Box>
+                            </Text
+                        </Box
                     ) : (
                         grades.map((grade) => {
                             const { grade: letterGrade, gpa } = marksToGPA(grade.marks);
@@ -132,31 +132,31 @@ export default function ReportCard({
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.sanctuarySaffron,
                                     }}
-                                >
-                                    <VStack space="md">
+                                
+                                    <VStack space="md"
                                         {/* Assignment Header */}
-                                        <HStack space="md" sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <VStack space="xs" sx={{ flex: 1 }}>
-                                                <Text size="md" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}>
+                                        <HStack space="md" sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
+                                            <VStack space="xs" sx={{ flex: 1 }}
+                                                <Text size="md" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}
                                                     {assignmentName}
-                                                </Text>
-                                                <Text size="xs" color={Theme.colors.starlightGray}>
+                                                </Text
+                                                <Text size="xs" color={Theme.colors.starlightGray}
                                                     {new Date(grade.graded_at).toLocaleDateString()}
-                                                </Text>
-                                            </VStack>
+                                                </Text
+                                            </VStack
 
                                             {/* Grade Display */}
-                                            <VStack space="xs" sx={{ alignItems: 'flex-end' }}>
-                                                <HStack space="xs" sx={{ alignItems: 'center' }}>
-                                                    <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}>
+                                            <VStack space="xs" sx={{ alignItems: 'flex-end' }}
+                                                <HStack space="xs" sx={{ alignItems: 'center' }}
+                                                    <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}
                                                         {grade.marks}
-                                                    </Text>
-                                                    <Text size="sm" color={Theme.colors.starlightGray}>
+                                                    </Text
+                                                    <Text size="sm" color={Theme.colors.starlightGray}
                                                         /100
-                                                    </Text>
-                                                </HStack>
+                                                    </Text
+                                                </HStack
                                                 {showGPA && (
-                                                    <HStack space="xs" sx={{ alignItems: 'center' }}>
+                                                    <HStack space="xs" sx={{ alignItems: 'center' }}
                                                         <Box
                                                             sx={{
                                                                 paddingHorizontal: Theme.spacing.sm,
@@ -164,18 +164,18 @@ export default function ReportCard({
                                                                 backgroundColor: Theme.colors.sanctuarySaffron,
                                                                 borderRadius: Theme.corners.tight,
                                                             }}
-                                                        >
-                                                            <Text size="sm" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                                                        
+                                                            <Text size="sm" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}
                                                                 {letterGrade}
-                                                            </Text>
-                                                        </Box>
-                                                        <Text size="sm" color={Theme.colors.starlightGray}>
+                                                            </Text
+                                                        </Box
+                                                        <Text size="sm" color={Theme.colors.starlightGray}
                                                             {gpa.toFixed(1)} {t('grades.gpa') || 'GPA'}
-                                                        </Text>
-                                                    </HStack>
+                                                        </Text
+                                                    </HStack
                                                 )}
-                                            </VStack>
-                                        </HStack>
+                                            </VStack
+                                        </HStack
 
                                         {/* Rank Badge */}
                                         {showRanks && grade.rank && (
@@ -187,31 +187,31 @@ export default function ReportCard({
                                                     borderRadius: Theme.corners.tight,
                                                     alignSelf: 'flex-start',
                                                 }}
-                                            >
-                                                <Text size="sm" sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>
+                                            
+                                                <Text size="sm" sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}
                                                     {t('grades.rankInClass', { rank: grade.rank }) || `Rank: #${grade.rank}`}
-                                                </Text>
-                                            </Box>
+                                                </Text
+                                            </Box
                                         )}
 
                                         {/* Feedback */}
                                         {grade.feedback && (
-                                            <VStack space="xs">
-                                                <Text size="xs" sx={{ fontWeight: '700', color: Theme.colors.starlightGray }}>
+                                            <VStack space="xs"
+                                                <Text size="xs" sx={{ fontWeight: '700', color: Theme.colors.starlightGray }}
                                                     {t('grades.feedback') || 'Feedback'}:
-                                                </Text>
-                                                <Text size="sm" color={Theme.colors.inkTruth}>
+                                                </Text
+                                                <Text size="sm" color={Theme.colors.inkTruth}
                                                     {grade.feedback}
-                                                </Text>
-                                            </VStack>
+                                                </Text
+                                            </VStack
                                         )}
-                                    </VStack>
-                                </Box>
+                                    </VStack
+                                </Box
                             );
                         })
                     )}
-                </VStack>
-            </VStack>
-        </ScrollView>
+                </VStack
+            </VStack
+        </ScrollView
     );
 }

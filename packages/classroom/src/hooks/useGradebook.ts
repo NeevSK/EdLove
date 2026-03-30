@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { StudentGrade, ClassroomGradingSettings, api, ClassroomStudent } from '@repo/core';
+import { StudentGrade, ClassroomGradingSettings, api, ClassroomStudent, useStore } from '@repo/core';
 
 export type SortOption = 'name' | 'marks' | 'rank';
 
@@ -10,19 +10,20 @@ export const useGradebook = (classroomId: string) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<SortOption>('rank');
+    const currentUser = useStore((state) => state.user);
 
     const loadData = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const [gradesData, settingsData, studentsData] = await Promise.all([
-                api.grading.getClassroomGrades(classroomId),
-                api.grading.getGradingSettings(classroomId),
+            const viewDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
+            const [snapshot, studentsData] = await Promise.all([
+                api.grading.getGradebookSnapshot(classroomId, viewDate),
                 api.classroomStudents.getAll(classroomId)
             ]);
 
-            setGrades(gradesData);
-            setGradingSettings(settingsData);
+            setGrades(snapshot.grades);
+            setGradingSettings(snapshot.gradingSettings);
 
             const names: { [key: string]: string } = {};
             studentsData.forEach((student: ClassroomStudent) => {
@@ -58,7 +59,7 @@ export const useGradebook = (classroomId: string) => {
         const sorted = [...grades];
         switch (sortBy) {
             case 'name':
-                return sorted.sort((a, b) =>
+                return sorted.sort((a, b) =
                     (studentNames[a.student_id] || '').localeCompare(
                         studentNames[b.student_id] || ''
                     )
@@ -80,13 +81,17 @@ export const useGradebook = (classroomId: string) => {
         return { totalStudents: total, averageMarks: average };
     }, [grades]);
 
-    const submitGrade = async (
+    const saveDraftGrade = async (
         studentId: string,
         marks: number,
         feedback?: string,
         assignmentId?: string,
     ) => {
-        const saved = await api.grading.submitGrade(studentId, classroomId, marks, assignmentId, feedback);
+        const saved = await api.grading.saveGradeDraft(studentId, classroomId, marks, assignmentId, feedback, {
+            actorId: currentUser?.id,
+            reason: 'grade_draft',
+            accessKind: 'teacher_authoring',
+        });
         // Refresh grades so the table reflects the new entry
         setGrades(prev => {
             const idx = prev.findIndex(g => g.student_id === studentId && g.assignment_id === (assignmentId ?? null));
@@ -95,6 +100,16 @@ export const useGradebook = (classroomId: string) => {
                 : [saved, ...prev];
         });
         return saved;
+    };
+
+    const publishGrade = async (gradeId: string) => {
+        const published = await api.grading.publishGrade(gradeId, {
+            actorId: currentUser?.id,
+            reason: 'grade_publish',
+            accessKind: 'teacher_authoring',
+        });
+        setGrades(prev => prev.map((grade) => (grade.id === gradeId ? published : grade)));
+        return published;
     };
 
     return {
@@ -108,7 +123,9 @@ export const useGradebook = (classroomId: string) => {
         sortedGrades,
         stats,
         updateSettings,
-        submitGrade,
+        submitGrade: saveDraftGrade,
+        saveDraftGrade,
+        publishGrade,
         refreshData: loadData,
     };
 };

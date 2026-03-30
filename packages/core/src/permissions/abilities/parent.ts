@@ -1,13 +1,15 @@
 import { AbilityBuilder } from '@casl/ability';
 import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './student';
+import { AppAbility } from './base';
 
-export const defineParentAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
+export const defineParentAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
+  const { can } = builder;
   // Parents see their student's data
   can('read', 'StudentProfile', { parentId: user.userId } as any);
   can('read', 'Attendance', { studentParentId: user.userId } as any);
   can('read', 'Assignment', { studentParentId: user.userId } as any);
   can('read', 'AssignmentSubmission', { studentParentId: user.userId } as any);
+  can('read', 'Grade');
   
   can('read', 'School', { id: user.schoolId } as any);
   can('read', 'CommunityFeed');

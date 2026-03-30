@@ -10,7 +10,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * DharmaView — The "Path / Sequential" Perspective (Native).
+ * DharmaView  The "Path / Sequential" Perspective (Native).
  * 
  * Renders nodes in a scrollable vertical pathway (Kinnu/Duolingo style).
  * Features an SVG "spine" that connects the nodes visually.
@@ -36,11 +36,11 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
         const xOffset = isEven ? -40 : 40;
 
         return (
-            <Box sx={{ height: 160, alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{ height: 160, alignItems: 'center', justifyContent: 'center' }}
                 {/* Connecting Spine Segment */}
                 {!isLast && (
-                    <View style={styles.spineContainer}>
-                        <Svg width={windowWidth} height={160} viewBox={`0 0 ${windowWidth} 160`}>
+                    <View style={styles.spineContainer}
+                        <Svg width={windowWidth} height={160} viewBox={`0 0 ${windowWidth} 160`}
                             <Path
                                 d={`M ${windowWidth/2 + xOffset} 80 
                                    C ${windowWidth/2 + xOffset} 120, 
@@ -51,9 +51,9 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                 strokeDasharray="8 8"
                                 fill="none"
                                 opacity={0.3}
-                            />
-                        </Svg>
-                    </View>
+                            /
+                        </Svg
+                    </View
                 )}
 
                 {/* Node Button */}
@@ -62,7 +62,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                     style={{
                         transform: [{ translateX: xOffset }]
                     }}
-                >
+                
                     <TouchableOpacity 
                         onPress={() => onNodePress?.(item)}
                         style={[
@@ -73,36 +73,36 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                 shadowColor: colors.action
                             }
                         ]}
-                    >
-                        {item.type === 'topic' ? (
-                            <CheckCircle2 size={32} color={Theme.colors.sanctuarySaffron} />
-                        ) : (
-                            <Circle size={32} color={colors.textSecondary} />
-                        )}
-                    </TouchableOpacity>
                     
-                    <View style={[styles.labelContainer, { transform: [{ translateX: isEven ? 80 : -140 }] }]}>
-                        <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}>
+                        {item.type === 'topic' ? (
+                            <CheckCircle2 size={32} color={Theme.colors.sanctuarySaffron} /
+                        ) : (
+                            <Circle size={32} color={colors.textSecondary} /
+                        )}
+                    </TouchableOpacity
+                    
+                    <View style={[styles.labelContainer, { transform: [{ translateX: isEven ? 80 : -140 }] }]}
+                        <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}
                             {item.label}
-                        </Text>
-                        <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}>
+                        </Text
+                        <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}
                             {item.type.toUpperCase()}
-                        </Text>
-                    </View>
-                </Animated.View>
-            </Box>
+                        </Text
+                    </View
+                </Animated.View
+            </Box
         );
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}
             <SanctuaryFlashList
                 data={orderedNodes}
                 renderItem={renderItem}
                 estimatedItemSize={160}
                 contentContainerStyle={{ paddingTop: 120, paddingBottom: 150 }}
-            />
-        </View>
+            /
+        </View
     );
 };
 

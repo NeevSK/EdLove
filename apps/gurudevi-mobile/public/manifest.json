@@ -1,7 +1,7 @@
 {
-  "name": "Gurudevi — A Sanctuary for Teachers",
+  "name": "Gurudevi  A Sanctuary for Teachers",
   "short_name": "Gurudevi",
-  "description": "A sacred space for teachers — wellbeing, classroom tools, and community. Built for educators in Sri Lanka and beyond.",
+  "description": "A sacred space for teachers  wellbeing, classroom tools, and community. Built for educators in Sri Lanka and beyond.",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone"],

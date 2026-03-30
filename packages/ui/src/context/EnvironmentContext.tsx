@@ -60,7 +60,7 @@ interface EnvironmentProviderProps {
 export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     // Get authority and theme from global store
     const user = useStore((state: any) => state.user);
-    const role = (user as any)?.authority;
+    const authority = (user as any)?.authority;
     const themeMode = useStore((state: any) => state.themeMode);
     const setStoredThemeMode = useStore((state: any) => state.setThemeMode);
 
@@ -175,7 +175,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
             }));
 
             // Update global store
-            useStore.getState().setOnline(state.isConnected ?? false, quality);
+            useStore.getState().setIsOnline(state.isConnected ?? false);
         });
 
         return unsubscribe;
@@ -266,7 +266,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     // Construct the context value
     const value: EnvironmentContextValue = {
         // State
-        role,
+        authority,
         themeMode,
         temporalPhase,
         isDark,
@@ -288,9 +288,9 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     };
 
     return (
-        <EnvironmentContext.Provider value={value}>
+        <EnvironmentContext.Provider value={value}
             {children}
-        </EnvironmentContext.Provider>
+        </EnvironmentContext.Provider
     );
 }
 
@@ -302,7 +302,7 @@ export function useEnvironment(): EnvironmentContextValue {
     const context = useContext(EnvironmentContext);
 
     if (context === undefined) {
-        throw new Error('useEnvironment must be used within an EnvironmentProvider');
+        throw new Error('useEnvironment must be used within an EnvironmentProvider (or SanctuaryProvider)');
     }
 
     return context;

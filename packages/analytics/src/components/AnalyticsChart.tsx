@@ -28,8 +28,7 @@ export function AnalyticsChart({
           data={data}
           height={height}
           showValues={showValues}
-        />
-      );
+        /      );
     
     case 'line':
       return (
@@ -38,8 +37,7 @@ export function AnalyticsChart({
           data={data.map(d => ({ x: d.label, y: d.value }))}
           height={height}
           color={data[0]?.color}
-        />
-      );
+        /      );
     
     case 'pie':
       return (
@@ -47,27 +45,21 @@ export function AnalyticsChart({
           title={title}
           data={data}
           size={height}
-        />
-      );
+        /      );
     
     case 'progress':
       const progressValue = data[0]?.value || 0;
       const progressMax = maxValue || 100;
       return (
-        <View style={[styles.container, { height }]}>
-          {title && <Text style={styles.title}>{title}</Text>}
+        <View style={[styles.container, { height }]}          {title && <Text style={styles.title}>{title}</Text>}
           <ProgressRing
             value={progressValue}
             max={progressMax}
             size={Math.min(height, 150)}
             color={data[0]?.color}
             showLabel={true}
-          />
-          <Text style={styles.progressLabel}>
-            {data[0]?.label}: {progressValue}/{progressMax}
-          </Text>
-        </View>
-      );
+          /          <Text style={styles.progressLabel}            {data[0]?.label}: {progressValue}/{progressMax}
+          </Text        </View      );
     
     default:
       return null;
@@ -93,32 +85,22 @@ export function MultiSeriesChart({
   height = 250 
 }: MultiSeriesChartProps) {
   return (
-    <View style={[styles.container, { height }]}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.multiChartContainer}>
-        {series.map((s, index) => (
-          <View key={index} style={styles.seriesContainer}>
-            <Text style={[styles.seriesLabel, { color: s.color || Theme.colors.gurudeviBlue }]}>
-              {s.name}
-            </Text>
-            {type === 'line' ? (
+    <View style={[styles.container, { height }]}      {title && <Text style={styles.title}>{title}</Text>}
+      <View style={styles.multiChartContainer}        {series.map((s, index) => (
+          <View key={index} style={styles.seriesContainer}            <Text style={[styles.seriesLabel, { color: s.color || Theme.colors.gurudeviBlue }]}              {s.name}
+            </Text            {type === 'line' ? (
               <SimpleLineChart
                 data={s.data}
                 height={height - 60}
                 color={s.color}
-              />
-            ) : (
+              /            ) : (
               <SimpleBarChart
                 data={s.data.map(d => ({ label: d.x, value: d.y, color: s.color }))}
                 height={height - 60}
                 showValues={false}
-              />
-            )}
-          </View>
-        ))}
-      </View>
-    </View>
-  );
+              /            )}
+          </View        ))}
+      </View    </View  );
 }
 
 const styles = StyleSheet.create({

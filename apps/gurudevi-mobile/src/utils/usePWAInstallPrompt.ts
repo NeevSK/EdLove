@@ -1,5 +1,5 @@
 /**
- * usePWAInstallPrompt — Web-only hook
+ * usePWAInstallPrompt  Web-only hook
  *
  * Captures the browser's `beforeinstallprompt` event and exposes a stable
  * `prompt()` function that triggers the native "Add to Home Screen" dialog.
@@ -7,11 +7,11 @@
  * Usage:
  *   const { canInstall, promptInstall, isDismissed, dismiss } = usePWAInstallPrompt();
  *
- *   canInstall  — true when the browser's install criteria are met (HTTPS, manifest,
+ *   canInstall   true when the browser's install criteria are met (HTTPS, manifest,
  *                 service worker, not already installed)
- *   promptInstall — triggers the native install dialog (returns the user's choice)
- *   isDismissed — true after the user dismissed our banner (persisted for 30 days)
- *   dismiss     — call when the user taps "Maybe later" on our custom banner
+ *   promptInstall  triggers the native install dialog (returns the user's choice)
+ *   isDismissed  true after the user dismissed our banner (persisted for 30 days)
+ *   dismiss      call when the user taps "Maybe later" on our custom banner
  *
  * On iOS / Safari the event is never fired; instead `canInstall` stays false and
  * `isIOS` becomes true so callers can show manual instructions.

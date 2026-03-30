@@ -42,31 +42,31 @@ export default function NetworkStatusBanner() {
                 zIndex: Theme.zIndex.modal + 1,
                 paddingTop: Platform.OS !== 'web' ? insets.top : 0,
             }}
-        >
+        
             <Box sx={{
                 backgroundColor: backgroundColor,
                 paddingVertical: 8,
                 paddingHorizontal: 16,
                 alignItems: 'center',
-            }}>
-                <HStack space="sm" alignItems="center">
+            }}
+                <HStack space="sm" alignItems="center"
                     {isOffline ? (
-                        <>
-                            <WifiOff color={Theme.colors.white} size={16} />
-                            <Text color={Theme.colors.white} size="xs" bold>
+                        <
+                            <WifiOff color={Theme.colors.white} size={16} /
+                            <Text color={Theme.colors.white} size="xs" bold
                                 Offline Mode {queue.length > 0 ? `(${queue.length} pending actions)` : ''}
-                            </Text>
-                        </>
+                            </Text
+                        </
                     ) : (
-                        <>
-                            <Spinner color={Theme.colors.white} size="small" />
-                            <Text color={Theme.colors.white} size="xs" bold>
+                        <
+                            <Spinner color={Theme.colors.white} size="small" /
+                            <Text color={Theme.colors.white} size="xs" bold
                                 Syncing {queue.length} pending actions...
-                            </Text>
-                        </>
+                            </Text
+                        </
                     )}
-                </HStack>
-            </Box>
-        </Animated.View>
+                </HStack
+            </Box
+        </Animated.View
     );
 }

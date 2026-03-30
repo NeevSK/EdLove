@@ -1,6 +1,4 @@
-/// <reference types="apca-w3" />
-/// <reference types="culori" />
-
+/// <reference types="apca-w3" //// <reference types="culori" /
 declare module 'apca-w3' {
   export function APCAcontrast(txtY: number, bgY: number): string | number;
   export function sRGBtoY(rgb: number[]): number;

@@ -98,12 +98,12 @@ export default function SocialShieldModal({
             animationType="slide"
             transparent={true}
             onRequestClose={onClose}
-        >
+        
             <Box sx={{
                 flex: 1,
                 justifyContent: 'flex-end',
                 backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
-            }}>
+            }}
                 <Box
                     sx={{
                         backgroundColor: glass.modal.bg,
@@ -119,26 +119,26 @@ export default function SocialShieldModal({
                         shadowRadius: 16,
                         elevation: 8,
                     }}
-                >
-                    <VStack {...({ space: "xl" } as any)}>
-                        <HStack justifyContent="space-between" alignItems="center">
-                            <VStack {...({ space: "xs" } as any)}>
-                                <Heading {...({ color: text.primary, size: "lg" } as any)}>
+                
+                    <VStack {...({ space: "xl" } as any)}
+                        <HStack justifyContent="space-between" alignItems="center"
+                            <VStack {...({ space: "xs" } as any)}
+                                <Heading {...({ color: text.primary, size: "lg" } as any)}
                                     {step === 'reason' ? 'Shielding the Sanctuary' : 'Who should guide this?'}
-                                </Heading>
-                                <Text {...({ color: text.secondary, size: "sm" } as any)}>
+                                </Heading
+                                <Text {...({ color: text.secondary, size: "sm" } as any)}
                                     {step === 'reason' 
                                         ? `Help us understand the concern with ${targetUserName}.` 
                                         : 'Choose the appropriate guardian for this report.'}
-                                </Text>
-                            </VStack>
-                            <TouchableOpacity onPress={onClose}>
-                                <X color={text.muted} size={24} />
-                            </TouchableOpacity>
-                        </HStack>
+                                </Text
+                            </VStack
+                            <TouchableOpacity onPress={onClose}
+                                <X color={text.muted} size={24} /
+                            </TouchableOpacity
+                        </HStack
 
                         {step === 'reason' ? (
-                            <VStack {...({ space: "md" } as any)}>
+                            <VStack {...({ space: "md" } as any)}
                                 {REPORT_REASONS.map((item) => {
                                     const ItemIcon = item.icon;
                                     const isSelected = reason === item.value;
@@ -153,39 +153,39 @@ export default function SocialShieldModal({
                                                     backgroundColor: isSelected ? `${accent.action}18` : glass.interact.bg,
                                                 }
                                             ]}
-                                        >
-                                            <HStack {...({ space: "md", alignItems: "center" } as any)}>
-                                                <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}>
-                                                    <ItemIcon size={20} color={isSelected ? accent.action : text.muted} />
-                                                </Box>
-                                                <Text {...({ color: isSelected ? text.primary : text.secondary, bold: isSelected } as any)}>
+                                        
+                                            <HStack {...({ space: "md", alignItems: "center" } as any)}
+                                                <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}
+                                                    <ItemIcon size={20} color={isSelected ? accent.action : text.muted} /
+                                                </Box
+                                                <Text {...({ color: isSelected ? text.primary : text.secondary, bold: isSelected } as any)}
                                                     {item.label}
-                                                </Text>
-                                            </HStack>
-                                        </TouchableOpacity>
+                                                </Text
+                                            </HStack
+                                        </TouchableOpacity
                                     );
                                 })}
                                 
-                                <HStack space="md" alignItems="center" mt="$2">
+                                <HStack space="md" alignItems="center" mt="$2"
                                     <TouchableOpacity 
                                         onPress={() => setShouldBlock(!shouldBlock)}
                                         style={[styles.checkbox, { borderColor: shouldBlock ? accent.action : text.muted }]}
-                                    >
+                                    
                                         {shouldBlock && <Box sx={{ width: 12, height: 12, borderRadius: 2, backgroundColor: accent.action }} />}
-                                    </TouchableOpacity>
-                                    <Text size="sm" color={text.secondary}>Also block this user from interacting with me</Text>
-                                </HStack>
+                                    </TouchableOpacity
+                                    <Text size="sm" color={text.secondary}>Also block this user from interacting with me</Text
+                                </HStack
 
                                 <Button
                                     onPress={handleNext}
                                     isDisabled={!reason}
                                     sx={{ backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50, mt: '$2' }}
-                                >
-                                    <ButtonText {...({ color: text.inverse, bold: true } as any)}>Next: Choose Guardian</ButtonText>
-                                </Button>
-                            </VStack>
+                                
+                                    <ButtonText {...({ color: text.inverse, bold: true } as any)}>Next: Choose Guardian</ButtonText
+                                </Button
+                            </VStack
                         ) : (
-                            <VStack {...({ space: "md" } as any)}>
+                            <VStack {...({ space: "md" } as any)}
                                 {TARGET_OPTIONS.map((item) => {
                                     const ItemIcon = item.icon;
                                     const isSelected = target === item.value;
@@ -200,47 +200,47 @@ export default function SocialShieldModal({
                                                     backgroundColor: isSelected ? `${accent.action}18` : glass.interact.bg,
                                                 }
                                             ]}
-                                        >
-                                            <HStack {...({ space: "md", alignItems: "center" } as any)}>
-                                                <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}>
-                                                    <ItemIcon size={20} color={isSelected ? accent.action : text.muted} />
-                                                </Box>
-                                                <VStack flex={1}>
-                                                    <Text {...({ color: isSelected ? text.primary : text.secondary, bold: true } as any)}>
+                                        
+                                            <HStack {...({ space: "md", alignItems: "center" } as any)}
+                                                <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}
+                                                    <ItemIcon size={20} color={isSelected ? accent.action : text.muted} /
+                                                </Box
+                                                <VStack flex={1}
+                                                    <Text {...({ color: isSelected ? text.primary : text.secondary, bold: true } as any)}
                                                         {item.label}
-                                                    </Text>
-                                                    <Text size="xs" color={text.muted}>{item.description}</Text>
-                                                </VStack>
-                                            </HStack>
-                                        </TouchableOpacity>
+                                                    </Text
+                                                    <Text size="xs" color={text.muted}>{item.description}</Text
+                                                </VStack
+                                            </HStack
+                                        </TouchableOpacity
                                     );
                                 })}
 
-                                <HStack space="md" mt="$4">
+                                <HStack space="md" mt="$4"
                                     <Button
                                         onPress={() => setStep('reason')}
                                         variant="outline"
                                         sx={{ flex: 1, borderRadius: Theme.corners.comfortable, height: 50 }}
-                                    >
-                                        <ButtonText {...({ color: text.primary } as any)}>Back</ButtonText>
-                                    </Button>
+                                    
+                                        <ButtonText {...({ color: text.primary } as any)}>Back</ButtonText
+                                    </Button
                                     <Button
                                         onPress={handleSubmit}
                                         sx={{ flex: 2, backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50 }}
-                                    >
-                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>Submit Report</ButtonText>
-                                    </Button>
-                                </HStack>
+                                    
+                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>Submit Report</ButtonText
+                                    </Button
+                                </HStack
                                 
-                                <Text size="xs" color={text.muted} textAlign="center" sx={{ mt: '$2' }}>
+                                <Text size="xs" color={text.muted} textAlign="center" sx={{ mt: '$2' }}
                                     Need to manage your blocks later? Visit Privacy Settings.
-                                </Text>
-                            </VStack>
+                                </Text
+                            </VStack
                         )}
-                    </VStack>
-                </Box>
-            </Box>
-        </Modal>
+                    </VStack
+                </Box
+            </Box
+        </Modal
     );
 }
 

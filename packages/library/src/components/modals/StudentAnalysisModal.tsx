@@ -28,7 +28,7 @@ interface StudentAnalysisModalProps {
 }
 
 /**
- * StudentAnalysisModal — Shared modal for deep student potential mapping.
+ * StudentAnalysisModal  Shared modal for deep student potential mapping.
  * Now isomorphic and integrated with Vatya (Radar) layout brain.
  */
 export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
@@ -171,40 +171,40 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <Modal visible={visible} transparent animationType="fade">
-            <View style={styles.overlay}>
-                <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
-                <View style={styles.modalContent}>
+        <Modal visible={visible} transparent animationType="fade"
+            <View style={styles.overlay}
+                <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /
+                <View style={styles.modalContent}
                     {/* Header */}
-                    <View style={styles.header}>
-                        <View>
-                            <Text style={styles.title}>Potential Analysis</Text>
-                            <Text style={styles.subtitle}>{studentName}</Text>
-                        </View>
-                        <View style={styles.headerActions}>
+                    <View style={styles.header}
+                        <View
+                            <Text style={styles.title}>Potential Analysis</Text
+                            <Text style={styles.subtitle}>{studentName}</Text
+                        </View
+                        <View style={styles.headerActions}
                             <TouchableOpacity 
                                 onPress={handleExport} 
                                 style={[styles.actionIcon, isExporting && styles.disabledIcon]}
                                 disabled={isExporting}
-                            >
+                            
                                 {isExporting ? <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} /> : <FileCheck size={20} color={Theme.colors.sanctuarySaffron} />}
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                                <X size={24} color={colors.textSecondary} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                            </TouchableOpacity
+                            <TouchableOpacity onPress={onClose} style={styles.closeButton}
+                                <X size={24} color={colors.textSecondary} /
+                            </TouchableOpacity
+                        </View
+                    </View
 
                     {loading ? (
-                        <View style={styles.loaderContainer}>
-                            <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-                        </View>
+                        <View style={styles.loaderContainer}
+                            <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
+                        </View
                     ) : (
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}
                             {/* Analysis Visualization */}
-                            <View style={styles.chartSection}>
-                                <Svg width={layoutSize} height={layoutSize}>
-                                    <G>
+                            <View style={styles.chartSection}
+                                <Svg width={layoutSize} height={layoutSize}
+                                    <G
                                         {/* Scale levels */}
                                         {[0.2, 0.4, 0.6, 0.8, 1.0].map((scale) => (
                                             <Circle
@@ -216,12 +216,12 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                 stroke={colors.border}
                                                 strokeWidth={1}
                                                 opacity={0.2}
-                                            />
+                                            /
                                         ))}
                                         
                                         {/* Axes */}
                                         {layout.axes.map((axis, i) => (
-                                            <G key={`axis-${i}`}>
+                                            <G key={`axis-${i}`}
                                                 <Line
                                                     x1={layout.center.x}
                                                     y1={layout.center.y}
@@ -230,7 +230,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                     stroke={colors.border}
                                                     strokeWidth={1}
                                                     opacity={0.3}
-                                                />
+                                                /
                                                 <SvgText
                                                     x={axis.x}
                                                     y={axis.y + (axis.y > layout.center.y ? 15 : -8)}
@@ -238,10 +238,10 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                     fontSize="10"
                                                     fontWeight="bold"
                                                     textAnchor="middle"
-                                                >
+                                                
                                                     {axis.attribute}
-                                                </SvgText>
-                                            </G>
+                                                </SvgText
+                                            </G
                                         ))}
 
                                         {/* Data Polygon */}
@@ -250,7 +250,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                             fill={`${Theme.colors.sanctuarySaffron}40`}
                                             stroke={Theme.colors.sanctuarySaffron}
                                             strokeWidth={3}
-                                        />
+                                        /
 
                                         {/* Interaction Points */}
                                         {layout.points.map((p, i) => (
@@ -262,30 +262,30 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                 fill={Theme.colors.sanctuarySaffron}
                                                 stroke="white"
                                                 strokeWidth={1}
-                                            />
+                                            /
                                         ))}
-                                    </G>
-                                </Svg>
-                                <Text style={styles.chartHint}>Dynamic Resonance Radar</Text>
-                            </View>
+                                    </G
+                                </Svg
+                                <Text style={styles.chartHint}>Dynamic Resonance Radar</Text
+                            </View
 
                             {/* Stats Summary */}
-                            <GlassCard style={styles.slidersCard}>
-                                <View style={styles.sectionHeader}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
-                                        <Text style={styles.sectionTitle}>Nurturing Dimensions</Text>
-                                    </View>
+                            <GlassCard style={styles.slidersCard}
+                                <View style={styles.sectionHeader}
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} /
+                                        <Text style={styles.sectionTitle}>Nurturing Dimensions</Text
+                                    </View
                                     <TouchableOpacity 
                                         onPress={handleGetAIInsights}
                                         disabled={loadingAI}
                                         style={styles.aiScoutButton}
-                                    >
+                                    
                                         {loadingAI ? <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} /> : <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />}
-                                        <Text style={styles.aiScoutText}>AI Scout</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={styles.statsGrid}>
+                                        <Text style={styles.aiScoutText}>AI Scout</Text
+                                    </TouchableOpacity
+                                </View
+                                <View style={styles.statsGrid}
                                     {[
                                         { label: 'Cognitive', value: analysis.cognitive_flow, key: 'cognitive_flow' },
                                         { label: 'Emotional', value: analysis.emotional_resonance, key: 'emotional_resonance' },
@@ -293,12 +293,12 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         { label: 'Creative', value: analysis.creative_spark, key: 'creative_spark' },
                                         { label: 'Practical', value: analysis.practical_mastery, key: 'practical_mastery' },
                                     ].map(stat => (
-                                        <View key={stat.key} style={styles.statItem}>
-                                            <VStack sx={{ flex: 1, gap: 4 }}>
-                                                <HStack justifyContent="space-between">
-                                                    <Text style={styles.statLabel}>{stat.label}</Text>
-                                                    <Text style={styles.statValue}>{stat.value}%</Text>
-                                                </HStack>
+                                        <View key={stat.key} style={styles.statItem}
+                                            <VStack sx={{ flex: 1, gap: 4 }}
+                                                <HStack justifyContent="space-between"
+                                                    <Text style={styles.statLabel}>{stat.label}</Text
+                                                    <Text style={styles.statValue}>{stat.value}%</Text
+                                                </HStack
                                                 <Slider
                                                     minValue={0}
                                                     maxValue={100}
@@ -307,32 +307,32 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                         setAnalysis(prev => ({ ...prev, [stat.key]: val }));
                                                     }}
                                                     sx={{ height: 30 }}
-                                                >
-                                                    <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                                        <SliderFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} />
-                                                    </SliderTrack>
-                                                    <SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} />
-                                                </Slider>
-                                            </VStack>
-                                        </View>
+                                                
+                                                    <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                                        <SliderFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} /
+                                                    </SliderTrack
+                                                    <SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} /
+                                                </Slider
+                                            </VStack
+                                        </View
                                     ))}
-                                </View>
-                            </GlassCard>
+                                </View
+                            </GlassCard
 
                             {/* AI Insights Section */}
                             {aiInsights && (
-                                <GlassCard style={styles.aiInsightsCard}>
-                                    <View style={styles.sectionHeader}>
-                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
-                                        <Text style={styles.sectionTitle}>AI Potential Insights</Text>
-                                    </View>
-                                    <Text style={styles.aiInsightsText}>{aiInsights}</Text>
-                                </GlassCard>
+                                <GlassCard style={styles.aiInsightsCard}
+                                    <View style={styles.sectionHeader}
+                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} /
+                                        <Text style={styles.sectionTitle}>AI Potential Insights</Text
+                                    </View
+                                    <Text style={styles.aiInsightsText}>{aiInsights}</Text
+                                </GlassCard
                             )}
 
                             {/* Silver Lining Analysis */}
-                            <GlassCard style={styles.notesCard}>
-                                <Text style={styles.notesLabel}>Silver Lining & Potential</Text>
+                            <GlassCard style={styles.notesCard}
+                                <Text style={styles.notesLabel}>Silver Lining & Potential</Text
                                 <TextInput
                                     style={[styles.textInput, { color: colors.textPrimary }]}
                                     multiline
@@ -340,36 +340,36 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                     placeholderTextColor={colors.textSecondary}
                                     value={analysis.silver_lining || ''}
                                     onChangeText={(text) => setAnalysis(prev => ({ ...prev, silver_lining: text }))}
-                                />
-                            </GlassCard>
+                                /
+                            </GlassCard
 
-                            <View style={{ height: 120 }} />
-                        </ScrollView>
+                            <View style={{ height: 120 }} /
+                        </ScrollView
                     )}
 
                     {/* Footer Actions */}
-                    <View style={styles.footer}>
-                        <TouchableOpacity style={styles.cancelAction} onPress={onClose}>
-                            <Text style={styles.cancelText}>Cancel</Text>
-                        </TouchableOpacity>
+                    <View style={styles.footer}
+                        <TouchableOpacity style={styles.cancelAction} onPress={onClose}
+                            <Text style={styles.cancelText}>Cancel</Text
+                        </TouchableOpacity
                         <TouchableOpacity 
                             style={styles.saveAction} 
                             onPress={handleSave}
                             disabled={saving}
-                        >
+                        
                             {saving ? (
-                                <ActivityIndicator color="white" size="small" />
+                                <ActivityIndicator color="white" size="small" /
                             ) : (
-                                <>
-                                    <Save size={18} color="white" />
-                                    <Text style={styles.saveText}>Save Analysis</Text>
-                                </>
+                                <
+                                    <Save size={18} color="white" /
+                                    <Text style={styles.saveText}>Save Analysis</Text
+                                </
                             )}
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
+                        </TouchableOpacity
+                    </View
+                </View
+            </View
+        </Modal
     );
 };
 

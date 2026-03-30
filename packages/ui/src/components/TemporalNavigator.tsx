@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { ChevronLeft, ChevronRight, Calendar, RotateCcw } from 'lucide-react-native';
-import { useResonanceStore } from '@repo/core';
-import { useResonantHeatmap } from '@repo/core';
+import { useTemporalStore } from '@repo/core';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { Theme } from '../theme/Theme';
 
@@ -10,25 +9,21 @@ import { Theme } from '../theme/Theme';
  * TemporalNavigator
  * 
  * A premium UI component that allows users to travel through "Time".
- * Updates the global useResonanceStore which in turn refreshes data across the app.
+ * Updates the global useTemporalStore which in turn refreshes data across the app.
  */
 export const TemporalNavigator = () => {
     const { 
-        resonanceDate, 
-        setResonanceDate, 
-        resetPulse, 
+        viewDate, 
+        setViewDate, 
+        resetToToday, 
         phase,
-        viewMode,
-        setViewMode,
-        timelineFocus,
-        setTimelineFocus
-    } = useResonanceStore();
+    } = useTemporalStore();
 
     const adjustDate = (days: number) => {
-        const date = new Date(resonanceDate);
+        const date = new Date(viewDate);
         date.setDate(date.getDate() + days);
         const dateStr = date.toISOString().split('T')[0] || '';
-        setResonanceDate(dateStr);
+        setViewDate(dateStr);
     };
 
     const formatDate = (dateStr: string) => {
@@ -57,54 +52,49 @@ export const TemporalNavigator = () => {
             layout={Layout} 
             entering={FadeIn}
             style={styles.container}
-        >
-            <View style={styles.leftGroup}>
-                <TouchableOpacity 
+        
+            <View style={styles.leftGroup}
+                <TouchableOpacity accessibilityRole="button" 
                     style={styles.actionBtn} 
                     onPress={() => adjustDate(-1)}
                     activeOpacity={0.7}
-                >
-                    <ChevronLeft size={20} color={Theme.colors.textSecondary} />
-                </TouchableOpacity>
+                
+                    <ChevronLeft size={20} color={Theme.colors.textSecondary} /
+                </TouchableOpacity
                 
                 {!isToday && (
-                    <TouchableOpacity 
+                    <TouchableOpacity accessibilityRole="button" 
                         style={[styles.resetBtn]} 
-                        onPress={resetPulse}
+                        onPress={resetToToday}
                         activeOpacity={0.7}
-                    >
-                        <RotateCcw size={14} color={Theme.colors.gurudeviBlue} />
-                        <Text style={styles.resetText}>Today</Text>
-                    </TouchableOpacity>
+                    
+                        <RotateCcw size={14} color={Theme.colors.gurudeviBlue} /
+                        <Text style={styles.resetText}>Today</Text
+                    </TouchableOpacity
                 )}
-            </View>
+            </View
 
-            <TouchableOpacity 
+            <TouchableOpacity accessibilityRole="button" 
                 style={styles.dateDisplay}
                 onPress={() => {/* In a real app, this triggers a DatePicker modal */}}
                 activeOpacity={0.7}
-            >
-                <Calendar size={16} color={Theme.colors.gurudeviBlue} style={{ marginRight: 6 }} />
-                <View>
-                    <Text style={styles.dateText}>
-                        {formatDate(resonanceDate)}
-                    </Text>
-                    {/* Resonant Pulse (Phase 2 Delighter) */}
-                    <View style={styles.pulseDot} />
-                </View>
-            </TouchableOpacity>
-
-            <View style={styles.rightGroup}>
-                <TouchableOpacity 
+            
+                <Calendar size={16} color={Theme.colors.gurudeviBlue} style={{ marginRight: 6 }} /
+                <View
+                    <Text style={styles.dateText}                        {formatDate(viewDate)}
+                    </Text                    {/* Temporal pulse (Phase 2 delighter) */}
+                    <View style={styles.pulseDot} /                </View            </TouchableOpacity
+            <View style={styles.rightGroup}
+                <TouchableOpacity accessibilityRole="button" 
                     style={[styles.actionBtn, { opacity: isToday ? 0.2 : 1 }]} 
                     onPress={() => !isToday && adjustDate(1)}
                     disabled={isToday}
                     activeOpacity={0.7}
-                >
-                    <ChevronRight size={20} color={Theme.colors.textSecondary} />
-                </TouchableOpacity>
-            </View>
-        </Animated.View>
+                
+                    <ChevronRight size={20} color={Theme.colors.textSecondary} /
+                </TouchableOpacity
+            </View
+        </Animated.View
     );
 };
 

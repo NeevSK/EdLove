@@ -9,7 +9,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * TerraView — The "Geographical" Perspective (Native).
+ * TerraView  The "Geographical" Perspective (Native).
  * 
  * Renders nodes on a real-world map using a unified map component.
  * Features custom dark-mode styling for the "Sanctuary" aesthetic.
@@ -66,14 +66,14 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
     ];
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}
             <UnifiedMapView
                 ref={mapRef}
                 style={styles.map}
                 region={initialRegion}
                 customMapStyle={mapStyle}
                 rotateEnabled={false}
-            >
+            
                 {geoNodes.map((node) => (
                     <UnifiedMarker
                         key={node.id}
@@ -86,10 +86,10 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
                         description={node.type}
                         onPress={() => onNodePress?.(node)}
                         pinColor={node.type === 'school' ? Theme.colors.sanctuarySaffron : colors.action}
-                    />
+                    /
                 ))}
-            </UnifiedMapView>
-        </View>
+            </UnifiedMapView
+        </View
     );
 };
 

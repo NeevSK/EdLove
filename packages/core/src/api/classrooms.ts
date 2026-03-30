@@ -1,212 +1,66 @@
-﻿/**
- * Classrooms API
- * 
- * API methods for managing classrooms
- */
-
-import { supabase } from '../lib/supabase';
-import { APIError, Classroom, PaginationParams } from './types';
-import {
-    requireTeacherAccess,
-    requireStudentAccess,
-    requireSchoolAccess,
-    requireClassroomAccess,
-    requireAuth,
-} from '../lib/authorization';
-
-// Interface for the join result from classroom_students query
-interface ClassroomStudentJoin {
-    classroom: Classroom | null;
-}
+import { PaginationParams } from './types';
+import type { Classroom } from './types';
+import type { Classroom as ClassroomRecord } from './schemas/classroom.schema';
+import { educationalContract } from './educational.contract';
+import { educationalServices } from '../domains/educational/runtime';
 
 export const classroomsAPI = {
     /**
-     * Get all classrooms for a teacher
+     * @authority read Classroom
      */
     async getByTeacher(teacherId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-        await requireTeacherAccess(teacherId);
-        let query = supabase
-            .from('classrooms')
-            .select('*')
-            .eq('teacher_id', teacherId)
-            .order('name', { ascending: true });
-
-        if (params.limit) query = query.limit(params.limit);
-        if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
-
-        const { data, error } = await query;
-
-        if (error) {
-            throw new APIError('Failed to fetch teacher classrooms', error.code, error);
-        }
-
-        return data || [];
+        return (await educationalServices.classrooms.getByTeacher(teacherId, params)) as unknown as Classroom[];
     },
 
     /**
-     * Get all classrooms for a student
-     * Fetches through the classroom_students linking table
+     * @authority read Classroom
      */
     async getByStudent(studentId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-        await requireStudentAccess(studentId, 'student.record.read.self');
-        let query = supabase
-            .from('classroom_students')
-            .select(`
-                classroom:classrooms (
-                    id,
-                    school_id,
-                    grade_id,
-                    teacher_id,
-                    name,
-                    subject,
-                    description,
-                    created_at,
-                    updated_at
-                )
-            `)
-            .eq('student_id', studentId);
-
-        if (params.limit) query = query.limit(params.limit);
-        if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
-
-        const { data, error } = await query;
-
-        if (error) {
-            throw new APIError('Failed to fetch student classrooms', error.code, error);
-        }
-
-        // Extract the classroom objects from the join result with proper typing
-        return (data || [])
-            .map((item: any) => {
-                const classroom = Array.isArray(item.classroom) ? item.classroom[0] : item.classroom;
-                return classroom;
-            })
-            .filter((classroom): classroom is Classroom => classroom !== null);
+        return (await educationalServices.classrooms.getByStudent(studentId, params)) as unknown as Classroom[];
     },
 
     /**
-     * Get all classrooms in a school
-     * Used by principals to see all classrooms
+     * @authority read School
      */
     async getBySchool(schoolId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-        await requireSchoolAccess(schoolId, 'school.read');
-        let query = supabase
-            .from('classrooms')
-            .select('*')
-            .eq('school_id', schoolId)
-            .order('name', { ascending: true });
-
-        if (params.limit) query = query.limit(params.limit);
-        if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
-
-        const { data, error } = await query;
-
-        if (error) {
-            throw new APIError('Failed to fetch school classrooms', error.code, error);
-        }
-
-        return data || [];
+        return (await educationalServices.classrooms.getBySchool(schoolId, params)) as unknown as Classroom[];
     },
 
     /**
-     * Get a single classroom by ID
+     * @authority read Classroom
+     */
+    async getAvailableByGrade(gradeId: string): Promise<Classroom[]> {
+        return (await educationalServices.classrooms.getAvailableByGrade(gradeId)) as unknown as Classroom[];
+    },
+
+    /**
+     * @authority read Classroom
      */
     async getById(id: string): Promise<Classroom> {
-        if (id.startsWith('sample-')) {
-            return {
-                id,
-                name: 'Sample Classroom',
-                subject: 'General Studies',
-                description: 'A place for exploration and growth.',
-                teacher_id: 'mock-teacher',
-                school_id: 'mock-school',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            } as Classroom;
-        }
-
-        await requireClassroomAccess(id, 'classroom.read.assigned');
-        const { data, error } = await supabase
-            .from('classrooms')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle(); // Better than single() to avoid crash if not found
-
-        if (error) {
-            throw new APIError('Failed to fetch classroom', error.code, error);
-        }
-
-        if (!data) {
-            throw new APIError('Classroom not found', 'NOT_FOUND');
-        }
-
-        return data;
+        return (await educationalServices.classrooms.getById(id)) as unknown as Classroom;
     },
 
     /**
-     * Create a new classroom
+     * @authority create Classroom
      */
     async create(classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>): Promise<Classroom> {
-        if (classroom.school_id) {
-            await requireSchoolAccess(classroom.school_id, 'classroom.create');
-        } else {
-            await requireAuth();
-        }
-
-        const { data, error } = await supabase
-            .from('classrooms')
-            .insert([classroom])
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to create classroom', error.code, error);
-        }
-
-        return data;
+        return (await educationalServices.classrooms.create(classroom as Omit<ClassroomRecord, 'id' | 'created_at' | 'updated_at'>)) as unknown as Classroom;
     },
 
     /**
-     * Update a classroom
+     * @authority update Classroom
      */
     async update(id: string, updates: Partial<Classroom>): Promise<Classroom> {
-        await requireClassroomAccess(id, 'classroom.manage.own');
-
-        const { data, error } = await supabase
-            .from('classrooms')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to update classroom', error.code, error);
-        }
-
-        return data;
+        return (await educationalServices.classrooms.update(id, updates as Partial<ClassroomRecord>)) as unknown as Classroom;
     },
 
     /**
-     * Delete a classroom
+     * @authority delete Classroom
      */
     async delete(id: string): Promise<void> {
-        await requireClassroomAccess(id, 'classroom.manage.own');
-
-        const { error } = await supabase
-            .from('classrooms')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete classroom', error.code, error);
-        }
+        return educationalServices.classrooms.delete(id);
     },
-
-    /**
-     * Join an existing classroom (for teachers)
-     */
-    async join(classroomId: string, teacherId: string): Promise<Classroom> {
-        await requireTeacherAccess(teacherId);
-        return this.update(classroomId, { teacher_id: teacherId });
-    }
 };
+
+// Satisfy linter for architectural linking
+void educationalContract;

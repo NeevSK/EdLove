@@ -21,6 +21,8 @@ import {
     FadeInDown,
     openExternalURL,
     showExternalLinkOptions,
+    hapticLight,
+    hapticHeavy,
 } from '@repo/ui';
 import {
     Phone,
@@ -44,7 +46,6 @@ import * as Clipboard from 'expo-clipboard';
 import { AddSocialLinkModal } from './AddSocialLinkModal';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 import { InlineSocialLinkEditor } from './InlineSocialLinkEditor';
-import { hapticLight, hapticHeavy } from '@repo/ui';
 
 interface ContactLinktreeProps {
     links: SocialLink[];
@@ -57,9 +58,9 @@ interface ContactLinktreeProps {
 }
 
 const PRIVACY_ICONS: Record<string, string> = {
-    public: '🌍',
-    particulars: '👥',
-    private: '🔒',
+    public: '\uD83C\uDF10',      // 🌐
+    particulars: '\uD83D\uDC65', // 👥
+    private: '\uD83D\uDD12',     // 🔒
 };
 
 
@@ -186,9 +187,9 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
         if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
             try {
                 await navigator.share({ title: `${userName} on Gurudevi`, url });
-                return; // Share succeeded — no clipboard needed
+                return; // Share succeeded  no clipboard needed
             } catch {
-                // User cancelled or Share unavailable — fall through to clipboard
+                // User cancelled or Share unavailable  fall through to clipboard
             }
         }
         // Clipboard fallback (native path + web Share cancel/unavailable)
@@ -250,7 +251,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                         {bio}
                     </Text>
                 )}
-                {/* Copy/Share profile link — visible on web always, on native only for own profile */}
+                {/* Copy/Share profile link  visible on web always, on native only for own profile */}
                 <HStack space="sm">
                     {(Platform.OS === 'web' || isOwnProfile) && (
                         <SanctuaryButton
@@ -341,7 +342,6 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                             {link.url}
                                         </Text>
                                     </VStack>
-                                    
                                     {isEditing ? (
                                         <HStack space="sm">
                                             <TouchableOpacity onPress={() => handleEditLink(link)} style={{ padding: 4 }}>

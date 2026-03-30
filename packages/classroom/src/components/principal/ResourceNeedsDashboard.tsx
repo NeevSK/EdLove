@@ -9,7 +9,7 @@ import {
 } from '@repo/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
-import { adminInventoryAPI } from '@repo/admin';
+import { api } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useThemedColors } from '@repo/ui';
 
@@ -59,7 +59,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     const fetchResourceNeeds = async () => {
         try {
             setIsLoading(true);
-            const data = await adminInventoryAPI.getResourceNeeds(schoolId);
+            const data = await api.inventory.getSchoolResourceNeeds(schoolId);
             setNeeds(data || []);
         } catch (error) {
             console.error('Failed to fetch resource needs:', error);

@@ -1,10 +1,16 @@
-import React from 'react';
-import { Intent, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import { WebScreenHeader } from '@repo/ui';
+import { 
+    StudentSelfView, 
+    TeacherSelfView, 
+    PrincipalSelfView, 
+    FounderSelfView, 
+    AdminSelfView 
+} from './self';
 
 /**
- * SelfScreenWeb — declarative entry point for the user's sanctuary on Web.
- * Resolves to the correct Vow (Student/Teacher/etc.) via ProtocolRegistry.
+ * SelfScreenWeb  declarative entry point for the user's sanctuary on Web.
+ * Now capability-driven (POA) instead of registry-intent based.
  */
 export default function SelfScreenWeb() {
   const { can } = usePermissions();
@@ -16,26 +22,28 @@ export default function SelfScreenWeb() {
     if (can('manage', 'PrincipalDashboard')) {
        return { title: 'Sadhana', note: "Principal's Inner Sanctuary" };
     }
-    if (can('platform.observe.all')) {
+    if (can('manage', 'FounderDashboard')) {
        return { title: 'Sadhana', note: "Founder's Vision Lab" };
     }
     return { title: 'Sadhana', note: 'Personal Growth Stream' };
   };
 
+  const renderDashboard = () => {
+    if (can('manage', 'FounderDashboard')) return <FounderSelfView />;
+    if (can('manage', 'AdminDashboard')) return <AdminSelfView />;
+    if (can('manage', 'PrincipalDashboard')) return <PrincipalSelfView />;
+    if (can('manage', 'TeacherDashboard')) return <TeacherSelfView />;
+    if (can('manage', 'StudentDashboard')) return <StudentSelfView />;
+    return <StudentSelfView />;
+  };
+
   const { title, note } = getHeaderDetails();
 
   return (
-    <div className="sanctuary-screen">
-      <div className="sanctuary-container">
-        <WebScreenHeader
+    <div className="sanctuary-screen"      <div className="sanctuary-container"        <WebScreenHeader
           title={title}
           note={note}
           showPersonalizedGreeting
-        />
-        <div style={{ marginTop: 24 }}>
-            <Intent intent="identity.self.view" />
-        </div>
-      </div>
-    </div>
-  );
+        /        <div style={{ marginTop: 24 }}            {renderDashboard()}
+        </div      </div    </div  );
 }

@@ -3,7 +3,7 @@ import type { UserProfile } from '../types';
 
 export interface ProfileFieldConfig {
   key: keyof UserProfile;
-  weight: number;           // Relative — hook normalises to 100% automatically
+  weight: number;           // Relative  hook normalises to 100% automatically
   label: string;            // Used in "Add your {label} to complete" nudge
   onlyForRoles?: AuthorityTier[];
 }

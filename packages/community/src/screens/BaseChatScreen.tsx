@@ -97,7 +97,7 @@ export default function BaseChatScreen({
     const [sending, setSending] = useState(false);
     const listRef = useRef<FlatList>(null);
 
-    // ── Initial load ──────────────────────────────────────────
+    //  Initial load 
     const load = useCallback(async () => {
         try {
             const data = await fetchMessages();
@@ -111,7 +111,7 @@ export default function BaseChatScreen({
 
     useEffect(() => { load(); }, [load]);
 
-    // ── Real-time subscription ────────────────────────────────
+    //  Real-time subscription 
     useEffect(() => {
         const channel = supabase
             .channel(channelKey)
@@ -140,7 +140,7 @@ export default function BaseChatScreen({
         }
     }, [loading]);
 
-    // ── Send ──────────────────────────────────────────────────
+    //  Send 
     const handleSend = async () => {
         const content = draft.trim();
         if (!content || !user) return;
@@ -169,7 +169,7 @@ export default function BaseChatScreen({
         }
     };
 
-    // ── Message renderer ──────────────────────────────────────
+    //  Message renderer 
     const renderMessage = ({ item }: { item: ChatMessage }) => {
         const isOwn = item.author_id === user?.id;
         const authorName = item.author?.full_name || 'Unknown';
@@ -180,22 +180,22 @@ export default function BaseChatScreen({
             <TouchableOpacity
                 onPress={() => onPressAuthor?.(item.author_id, authorName)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-                <Avatar size="xs" sx={{ [side === 'left' ? 'marginRight' : 'marginLeft']: 8, marginTop: 4, backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.action }}>
+            
+                <Avatar size="xs" sx={{ [side === 'left' ? 'marginRight' : 'marginLeft']: 8, marginTop: 4, backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.action }}
                     {(isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)
-                        ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} />
-                        : <AvatarFallbackText>{initials}</AvatarFallbackText>
+                        ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} /
+                        : <AvatarFallbackText>{initials}</AvatarFallbackText
                     }
-                </Avatar>
-            </TouchableOpacity>
+                </Avatar
+            </TouchableOpacity
         );
 
         return (
-            <HStack sx={{ justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md }}>
+            <HStack sx={{ justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md }}
                 {!isOwn && avatar('left')}
-                <VStack sx={{ maxWidth: '72%', gap: 2 }}>
+                <VStack sx={{ maxWidth: '72%', gap: 2 }}
                     {!isOwn && (
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary, marginLeft: 2 }}>{authorName}</Text>
+                        <Text sx={{ fontSize: 11, color: colors.textTertiary, marginLeft: 2 }}>{authorName}</Text
                     )}
                     <Box sx={{
                         backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.secondary,
@@ -206,32 +206,32 @@ export default function BaseChatScreen({
                         paddingVertical: Theme.spacing.sm,
                         borderWidth: isOwn ? 0 : 1,
                         borderColor: colors.border,
-                    }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: isOwn ? Theme.colors.sacredWhite : colors.text, lineHeight: 20 }}>
+                    }}
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: isOwn ? Theme.colors.sacredWhite : colors.text, lineHeight: 20 }}
                             {item.content}
-                        </Text>
-                    </Box>
-                    <Text sx={{ fontSize: 10, color: colors.textTertiary, alignSelf: isOwn ? 'flex-end' : 'flex-start' }}>{time}</Text>
-                </VStack>
+                        </Text
+                    </Box
+                    <Text sx={{ fontSize: 10, color: colors.textTertiary, alignSelf: isOwn ? 'flex-end' : 'flex-start' }}>{time}</Text
+                </VStack
                 {isOwn && avatar('right')}
-            </HStack>
+            </HStack
         );
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true}
             <GlobalHeader
                 title={title}
                 subtitle={subtitle}
                 showBack
                 rightAction={headerRight}
-            />
+            /
 
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1 }}
                 {loading ? (
-                    <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-                    </Box>
+                    <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                        <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
+                    </Box
                 ) : (
                     <FlatList
                         ref={listRef}
@@ -241,53 +241,53 @@ export default function BaseChatScreen({
                         contentContainerStyle={{ paddingVertical: Theme.spacing.md, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
-                            <Text sx={{ textAlign: 'center', color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm }}>
-                                No messages yet. Say hello 👋
-                            </Text>
+                            <Text sx={{ textAlign: 'center', color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm }}
+                                No messages yet. Say hello =K
+                            </Text
                         }
-                    />
+                    /
                 )}
 
                 {/* Compose bar */}
-                <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}>
+                <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}
                     {isReadOnly ? (
-                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
-                            <Text color={colors.textTertiary} size="sm" italic>
+                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}
+                            <Text color={colors.textTertiary} size="sm" italic
                                 {t('chat.historicalView', 'Viewing historical sanctuary records.')}
-                            </Text>
-                        </Box>
+                            </Text
+                        </Box
                     ) : isBlocked ? (
-                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
-                            <Text color={colors.textSecondary} size="sm" italic>
+                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}
+                            <Text color={colors.textSecondary} size="sm" italic
                                 {blockedMessage || 'You cannot send messages to this sanctuary.'}
-                            </Text>
-                        </Box>
+                            </Text
+                        </Box
                     ) : (
-                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}>
+                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}
                             <TextInput
                                 value={draft}
                                 onChangeText={setDraft}
-                                placeholder="Write a message…"
+                                placeholder="Write a message&"
                                 placeholderTextColor={colors.textTertiary}
                                 multiline
                                 style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
                                 returnKeyType="default"
-                            />
+                            /
                             <TouchableOpacity
                                 onPress={handleSend}
                                 disabled={!draft.trim() || sending}
                                 style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}
-                            >
+                            
                                 {sending
-                                    ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
-                                    : <Send size={18} color={Theme.colors.sacredWhite} />
+                                    ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /
+                                    : <Send size={18} color={Theme.colors.sacredWhite} /
                                 }
-                            </TouchableOpacity>
-                        </HStack>
+                            </TouchableOpacity
+                        </HStack
                     )}
-                </Box>
-            </Box>
-        </ScreenWrapper>
+                </Box
+            </Box
+        </ScreenWrapper
     );
 }
 

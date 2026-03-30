@@ -3,7 +3,7 @@
  *
  * expo-file-system is a native-only module with no web implementation.
  * It is imported in PDFViewerScreen.tsx, but on web Metro resolves
- * PDFViewerScreen.web.tsx instead — so this module is never actually
+ * PDFViewerScreen.web.tsx instead  so this module is never actually
  * called in a browser context.
  *
  * However, Metro still resolves ALL imports in every file it encounters while
@@ -22,7 +22,7 @@ module.exports = {
     bundleDirectory: null,
     bundledAssets: null,
 
-    // Functions — all return safe default values
+    // Functions  all return safe default values
     getInfoAsync: async () => ({ exists: false, isDirectory: false, uri: '', size: 0, modificationTime: 0 }),
     readAsStringAsync: async () => '',
     writeAsStringAsync: async () => {},

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { GeographicPerspective } from './maps/GeographicPerspective';
+import { GeographicPerspective } from './GeographicPerspective';
 import { useGeoData } from '../../hooks/useGeoData';
 
 interface GeospatialStudioProps {
@@ -27,26 +27,15 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
   });
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}>
-        Thematic Insights Studio
-      </Text>
-      
+    <View style={{ flex: 1, padding: 20 }}      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}        Thematic Insights Studio
+      </Text      
       <GeographicPerspective 
-        dataset={districtData}
+        data={districtData}
         palette="socioeconomic"
         title="School Viability Analysis"
-        legendLabel="Score (0-1)"
-      />
-
-      <View style={{ marginTop: 20 }}>
-        <Text style={{ fontSize: 16, fontWeight: '600' }}>Dataset Features:</Text>
-        {data.map(f => (
-          <Text key={f.id} style={{ fontSize: 12 }}>
-            • {f.properties.school_name}: {f.properties.viability_score}
-          </Text>
-        ))}
-      </View>
-    </View>
-  );
+      /
+      <View style={{ marginTop: 20 }}        <Text style={{ fontSize: 16, fontWeight: '600' }}>Dataset Features:</Text        {data.map((f: any) => (
+          <Text key={f.id} style={{ fontSize: 12 }}            " {f.properties.school_name}: {f.properties.viability_score}
+          </Text        ))}
+      </View    </View  );
 }

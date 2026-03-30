@@ -15,7 +15,7 @@ export interface UserAvatarProps {
     authority?: string | null;
 }
 
-const DEFAULT_ICON = '🌿';
+const DEFAULT_ICON = '\uD83C\uDF3F';
 
 /** Deterministic background colour from user's name using theme palette */
 const AVATAR_COLORS = [
@@ -33,8 +33,8 @@ function getAvatarColor(name?: string | null): string {
 }
 
 /**
- * UserAvatar — display-only avatar component.
- * Fallback hierarchy: profile photo → initials → authority emoji → default emoji.
+ * UserAvatar \u2014 display-only avatar component.
+ * Fallback hierarchy: profile photo \u2192 initials \u2192 authority emoji \u2192 default emoji.
  * Lives in @repo/ui to be safely consumed by GlobalHeader without circular deps.
  */
 export const UserAvatar: React.FC<UserAvatarProps> = ({
@@ -64,7 +64,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                     style as any,
                 ]}
                 resizeMode="cover"
-            />
+            /
         );
     }
 
@@ -78,11 +78,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                 { width: size, height: size, borderRadius: radius, backgroundColor: bgColor },
                 style as any,
             ]}
-        >
-            <Text style={[styles.label, { fontSize: size * 0.35 }]}>
+        
+            <Text style={[styles.label, { fontSize: size * 0.35 }]}
                 {initials || finalFallback}
-            </Text>
-        </View>
+            </Text
+        </View
     );
 };
 

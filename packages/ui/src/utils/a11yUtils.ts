@@ -3,7 +3,7 @@ import { parse, formatHex, converter } from 'culori';
 import { getContrastRatio } from './colorUtils';
 
 /**
- * a11yUtils — Modern Accessibility Infrastructure for the Sanctuary.
+ * a11yUtils  Modern Accessibility Infrastructure for the Sanctuary.
  * 
  * Supports:
  * - WCAG 2.1 (Relative Luminance / Contrast Ratio) - Legacy AA/AAA

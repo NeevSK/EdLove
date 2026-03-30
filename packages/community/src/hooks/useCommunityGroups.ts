@@ -27,16 +27,13 @@ export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
     } = useCommunity(undefined, communityOptions);
 
     // Fix type conflicts by ensuring we check all possible type aliases
-    const classroomGroups = useMemo(() =>
-        (groups || []).filter((g: any) => g.type === 'class' || g.type === 'classroom'),
+    const classroomGroups = useMemo(() =        (groups || []).filter((g: any) => g.type === 'class' || g.type === 'classroom'),
         [groups]
     );
-    const clubGroups = useMemo(() =>
-        (groups || []).filter((g: any) => g.type === 'club'),
+    const clubGroups = useMemo(() =        (groups || []).filter((g: any) => g.type === 'club'),
         [groups]
     );
-    const interestGroups = useMemo(() =>
-        (groups || []).filter((g: any) => g.type === 'interest' || g.type === 'grade'),
+    const interestGroups = useMemo(() =        (groups || []).filter((g: any) => g.type === 'interest' || g.type === 'grade'),
         [groups]
     );
 

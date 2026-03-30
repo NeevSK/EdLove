@@ -40,8 +40,8 @@ export const colors = {
     silk: '#FAF7ED',                // The Surface (Secondary)
     linen: '#E8E2CF',               // The Depth (Tertiary)
     // Circadian gradient intermediates (dawn warm-white & evening warm-beige)
-    dawnWhite: '#FAF3E0',           // Dawn transition — between silk and vellum
-    eveningWarm: '#F0E8D0',         // Evening transition — between vellum and linen
+    dawnWhite: '#FAF3E0',           // Dawn transition \u2014 between silk and vellum
+    eveningWarm: '#F0E8D0',         // Evening transition \u2014 between vellum and linen
 
     // Backgrounds - The Dark World (Bioluminescence)
     ink: '#2A2318',                 // Midnight Ink (Deep Base)
@@ -51,7 +51,7 @@ export const colors = {
     // Text Colors - Light Mode
     inkTruth: '#2A2318',            // Deep Ink (Primary Text)
     bark: '#544A3D',                // Secondary Text
-    willow: '#72695E',              // The Shadow (Muted) — Adjusted from #72695E for WCAG AA
+    willow: '#72695E',              // The Shadow (Muted) \u2014 Adjusted from #72695E for WCAG AA
 
     // Text Colors - Dark Mode (higher contrast for accessibility)
     sacredWhite: '#FCF9F2',         // Bone/Sacred White
@@ -135,9 +135,9 @@ export const colors = {
 export const typography = {
     // Font Families (will be set after fonts load)
     fontFamily: {
-        sinhala: 'NotoSansSinhala',
-        tamil: 'NotoSansTamil',
-        english: 'System',              // Use system default for English
+        sinhala: 'Noto Sans Sinhala, -apple-system, sans-serif',
+        tamil: 'Noto Sans Tamil, -apple-system, sans-serif',
+        english: 'DM Sans, System',              // Use DM Sans as primary for English
     },
 
     // Font Sizes (minimum 14sp per accessibility guidelines)
@@ -294,19 +294,20 @@ const shadowDefinitions = {
 const isWeb = typeof window !== 'undefined';
 
 export const shadows: typeof shadowDefinitions = Object.entries(shadowDefinitions).reduce((acc, [key, value]) => {
-    // @ts-ignore
-    acc[key] = (isWeb && value.boxShadow) ? { boxShadow: value.boxShadow } : value;
+    const shadowKey = key as keyof typeof shadowDefinitions;
+    // @ts-expect-error - mapping properties dynamically for web/native
+    acc[shadowKey] = (isWeb && (value as any).boxShadow) ? { boxShadow: (value as any).boxShadow } : value;
     return acc;
-}, {} as any);
+}, { ...shadowDefinitions });
 
 /**
  * Filter shadow props for web to avoid deprecation warnings.
- * Usage: <View style={{ ...Theme.spacing.md, ...getShadowStyle(Theme.shadows.md) }} />
+ * Usage: <View style={{ ...Theme.spacing.md, ...getShadowStyle(Theme.shadows.md) }} /
  */
-export const getShadowStyle = (shadow: any) => {
-    if (typeof window !== 'undefined' || (typeof process !== 'undefined' && process.env.BROWSER)) {
+export const getShadowStyle = (shadow: typeof shadowDefinitions[keyof typeof shadowDefinitions] | { boxShadow: string }) => {
+    if (typeof window !== 'undefined') {
         // On web, just return boxShadow if it exists
-        if (shadow.boxShadow) {
+        if ('boxShadow' in shadow && shadow.boxShadow) {
             return { boxShadow: shadow.boxShadow };
         }
     }
@@ -433,7 +434,7 @@ export const Theme = {
 export default Theme;
 
 // ============================================================================
-// PHASE TOKEN MATRIX — The Living Theme System
+// PHASE TOKEN MATRIX \u2014 The Living Theme System
 // ============================================================================
 // These are the ONLY color values that phase-aware components should use.
 // Consume via useTheme() hook, never reference phases directly in components.
@@ -452,10 +453,12 @@ export interface GlowTokens {
 }
 
 export interface AccentTokens {
-    action: string;   // Primary interactive — buttons, links, active chips
+    action: string;   // Primary interactive \u2014 buttons, links, active chips
     reward: string;   // Achievements, celebrations, milestones
     danger: string;   // Destructive actions
     muted: string;   // Disabled / secondary states
+    templeGold: string; // Brand: Elevated moments
+    sageGreen: string; // Brand: Success & Growth
 }
 
 export interface TextTokens {
@@ -557,12 +560,12 @@ function enrichThemeTokens(
     };
 }
 
-/** Full matrix: phase → themeMode → resolved tokens */
+/** Full matrix: phase \u2192 themeMode \u2192 resolved tokens */
 export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: PhaseTokens }> = {
 
     predawn: {
         dark: {
-            gradientNodes: ['#11141B', '#171C27', '#232B3B'], // Obsidian → Ink → Shroud
+            gradientNodes: ['#11141B', '#171C27', '#232B3B'], // Obsidian \u2192 Ink \u2192 Shroud
             glass: {
                 surface: { bg: 'rgba(23, 28, 39, 0.94)', opacity: 0.94, blurAmount: 40, border: 'rgba(232,235,255,0.10)' },
                 modal: { bg: 'rgba(17, 20, 27, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(232,235,255,0.07)' },
@@ -574,11 +577,11 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.50 },
                 reward: { color: '#FDD925', radius: 24, opacity: 0.60 },
             },
-            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#394458' },
+            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#394458', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#FCF9F2', secondary: '#D3D8E3', inverse: '#11141B', muted: '#9AA3B5' },
         },
         light: {
-            gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
+            gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum \u2192 Silk \u2192 Linen
             glass: {
                 surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(42,35,24,0.05)' },
                 modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(42,35,24,0.04)' },
@@ -590,7 +593,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 14, opacity: 0.35 },
                 reward: { color: '#FDD925', radius: 20, opacity: 0.45 },
             },
-            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#72695E' },
+            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#72695E', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
@@ -609,7 +612,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.55 },
                 reward: { color: '#DA70D6', radius: 24, opacity: 0.60 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#3F4A61' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#3F4A61', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#FCF9F2', secondary: '#D3D8E3', inverse: '#151922', muted: '#9AA3B5' },
         },
         light: {
@@ -625,7 +628,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.40 },
                 reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#72695E' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#72695E', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
@@ -644,7 +647,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#8FBC8F', radius: 16, opacity: 0.55 },
                 reward: { color: '#F6BF8C', radius: 24, opacity: 0.65 },
             },
-            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#43506A' },
+            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#43506A', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#FCF9F2', secondary: '#D4DAE5', inverse: '#171C25', muted: '#A0A9BC' },
         },
         light: {
@@ -660,7 +663,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#8FBC8F', radius: 16, opacity: 0.38 },
                 reward: { color: '#F6BF8C', radius: 22, opacity: 0.50 },
             },
-            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#72695E' },
+            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#72695E', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#72695E' },
         },
     },
@@ -679,7 +682,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#3B82F6', radius: 16, opacity: 0.55 },
                 reward: { color: '#FDD925', radius: 24, opacity: 0.65 },
             },
-            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#3E4F71' },
+            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#3E4F71', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#FCF9F2', secondary: '#D4DAE5', inverse: '#151B26', muted: '#9FAABD' },
         },
         light: {
@@ -695,7 +698,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#3B82F6', radius: 14, opacity: 0.35 },
                 reward: { color: '#FDD925', radius: 20, opacity: 0.48 },
             },
-            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#72695E' },
+            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#72695E', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
@@ -714,7 +717,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 18, opacity: 0.60 },
                 reward: { color: '#DA70D6', radius: 26, opacity: 0.70 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#473E68' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#473E68', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#FCF9F2', secondary: '#D7DBE8', inverse: '#151822', muted: '#A39DBB' },
         },
         light: {
@@ -730,7 +733,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.40 },
                 reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#72695E' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#72695E', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
@@ -749,7 +752,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#FDD925', radius: 18, opacity: 0.58 },
                 reward: { color: '#8B5CF6', radius: 28, opacity: 0.70 },
             },
-            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#3E4C67' },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#3E4C67', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#FCF9F2', secondary: '#D8DDE9', inverse: '#0F131C', muted: '#A0A9BE' },
         },
         light: {
@@ -765,28 +768,28 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#FDD925', radius: 16, opacity: 0.45 },
                 reward: { color: '#8B5CF6', radius: 24, opacity: 0.55 },
             },
-            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#524A3F' },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#524A3F', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
             text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
 };
 
 /**
- * Classic static tokens — fallback when Living Theme System is disabled.
+ * Classic static tokens \u2014 fallback when Living Theme System is disabled.
  * Derived from the original Theme.colors palette.
  * Used by useTheme() when enableLivingTheme = false.
  *
  * Color sources from Theme.colors:
- *   accent.action  → gurudeviBlue   (#3B82F6)
- *   accent.reward  → sanctuarySaffron (#E67E22)
- *   gradient nodes → deepIndigo / midnightBlue / twilightBlue area (deep navy)
- *   text.primary   → sacredWhite    (#F8FAFC)
- *   text.secondary → pearlGray      (#94A3B8)  / starlightGray
- *   text.inverse   → deepIndigo     (#0F172A)  / charcoalTruth
- *   text.muted     → mistGray       (#64748B)
+ *   accent.action  \u2192 gurudeviBlue   (#3B82F6)
+ *   accent.reward  \u2192 sanctuarySaffron (#E67E22)
+ *   gradient nodes \u2192 deepIndigo / midnightBlue / twilightBlue area (deep navy)
+ *   text.primary   \u2192 sacredWhite    (#F8FAFC)
+ *   text.secondary \u2192 pearlGray      (#94A3B8)  / starlightGray
+ *   text.inverse   \u2192 deepIndigo     (#0F172A)  / charcoalTruth
+ *   text.muted     \u2192 mistGray       (#64748B)
  */
 const CLASSIC_BASE_TOKENS = {
-    gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
+    gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum \u2192 Silk \u2192 Linen
     glass: {
         surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(42,35,24,0.05)' },
         modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(42,35,24,0.04)' },
@@ -798,7 +801,7 @@ const CLASSIC_BASE_TOKENS = {
         action: { color: '#3A7A9A', radius: 14, opacity: 0.35 },
         reward: { color: '#FDD925', radius: 20, opacity: 0.45 },
     },
-    accent: { action: '#3A7A9A', reward: '#FDD925', danger: '#FF6347', muted: '#72695E' },
+    accent: { action: '#3A7A9A', reward: '#FDD925', danger: '#FF6347', muted: '#72695E', templeGold: '#FDD925', sageGreen: '#8BBF7A' },
     text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
 } as const satisfies PhaseTokens;
 
@@ -812,7 +815,7 @@ export function resolveClassicTokens(isDark: boolean): ResolvedThemeTokens {
     return CLASSIC_TOKENS;
 }
 
-/** The single resolver — this is what all components call via useTheme() */
+/** The single resolver \u2014 this is what all components call via useTheme() */
 export function resolvePhaseTokens(
     phase: TemporalPhase,
     isDark: boolean

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { mappingAPI, MappingTopology, supabase } from '@repo/core';
 
 /**
- * useMappingSync — Hook for real-time collaborative topology mapping.
+ * useMappingSync  Hook for real-time collaborative topology mapping.
  * Subscribes to changes in mapping_topologies for a specific ID.
  */
 export function useMappingSync(topologyId?: string) {

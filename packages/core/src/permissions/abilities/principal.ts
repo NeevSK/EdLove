@@ -1,8 +1,9 @@
 import { AbilityBuilder } from '@casl/ability';
 import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './student';
+import { AppAbility } from './base';
 
-export const definePrincipalAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
+export const definePrincipalAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
+  const { can } = builder;
   if (!user.schoolId) return;
 
   can('read', 'PrincipalPulse');
@@ -12,15 +13,21 @@ export const definePrincipalAbilities = (user: UserContext, { can }: AbilityBuil
   
   // Institutional management
   can('manage', 'School', { id: user.schoolId } as any);
-  can('manage', 'Classroom', { schoolId: user.schoolId } as any);
-  can('manage', 'Student', { schoolId: user.schoolId } as any);
-  can('manage', 'Staff', { schoolId: user.schoolId } as any);
-  can('manage', 'Inventory', { schoolId: user.schoolId } as any);
-  can('read', 'Report', { schoolId: user.schoolId } as any);
+  can('manage', 'Classroom', { school_id: user.schoolId } as any);
+  can('read', 'Lesson', { school_id: user.schoolId } as any);
+  can('read', 'Material', { school_id: user.schoolId } as any);
+  can('read', 'Grade');
+  can('grade', 'Grade');
+  can('manage', 'Student', { school_id: user.schoolId } as any);
+  can('manage', 'Staff', { school_id: user.schoolId } as any);
+  can('manage', 'Inventory', { school_id: user.schoolId } as any);
+  can('read', 'Report', { school_id: user.schoolId } as any);
 
   // Workforce & Leave
   can('manage', 'LeaveApproval');
   can('read', 'WorkforceRoster');
+  can('read', 'SchoolForest');
+  can('manage', 'SchoolForest');
 
   // Library POA refinement
   can('read', 'LibrarySearch');

@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useResonanceStore } from '../store/useResonanceStore';
-import { usePermissions } from './usePermissions';
+import { useTemporalStore } from '../store/useTemporalStore';
+import { usePermissions } from '../permissions/hooks/usePermissions';
 import { supabase } from '../lib/supabase';
+import { applyTemporalFilter } from '../utils/temporalUtils';
 
 export interface JourneyEvent {
     id: string;
     timestamp: string;
-    type: 'mood' | 'journal' | 'growth' | 'impact' | 'system';
+    type: 'mood' | 'journal' | 'growth' | 'reward' | 'moment' | 'impact' | 'system';
     title: string;
     description?: string;
     metadata?: any;
@@ -28,43 +29,24 @@ export interface HolisticView {
  */
 export function useJourneyHistory(section?: string, feature?: string) {
     const { context } = usePermissions();
-    const { userId } = context;
-    const { phase, resonanceDate, viewScale, timelineFocus } = useResonanceStore();
+    const { userId, authority } = context;
+    const { phase, viewDate, viewScale, timelineFocus } = useTemporalStore();
 
     // Fetch Mood Logs for the current context
     const { data: moodEvents = [], isLoading: moodLoading } = useQuery({
-        queryKey: ['journey_history_mood', userId, resonanceDate, viewScale],
+        queryKey: ['journey_history_mood', userId, viewDate, viewScale],
         queryFn: async () => {
             if (!userId) return [];
             
-            // Build query based on temporal context
             let query = supabase
                 .from('mood_logs')
                 .select('*')
                 .eq('user_id', userId);
-
-            if (viewScale === 'day') {
-                query = query.gte('created_at', `${resonanceDate}T00:00:00Z`)
-                             .lte('created_at', `${resonanceDate}T23:59:59Z`);
-            } else if (viewScale === 'week') {
-                const end = new Date(resonanceDate);
-                const start = new Date(end);
-                start.setDate(start.getDate() - 7);
-                query = query.gte('created_at', start.toISOString())
-                             .lte('created_at', end.toISOString());
-            } else if (viewScale === 'month') {
-                const date = new Date(resonanceDate);
-                const start = new Date(date.getFullYear(), date.getMonth(), 1);
-                const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
-                query = query.gte('created_at', start.toISOString())
-                             .lte('created_at', end.toISOString());
-            } else if (viewScale === 'year') {
-                const date = new Date(resonanceDate);
-                const start = new Date(date.getFullYear(), 0, 1);
-                const end = new Date(date.getFullYear(), 11, 31, 23, 59, 59);
-                query = query.gte('created_at', start.toISOString())
-                             .lte('created_at', end.toISOString());
-            }
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+            });
 
             const { data } = await query.order('created_at', { ascending: false });
             return (data || []).map(item => ({
@@ -81,36 +63,18 @@ export function useJourneyHistory(section?: string, feature?: string) {
 
     // Fetch Journal Entries
     const { data: journalEvents = [], isLoading: journalLoading } = useQuery({
-        queryKey: ['journey_history_journal', userId, resonanceDate, viewScale],
+        queryKey: ['journey_history_journal', userId, viewDate, viewScale],
         queryFn: async () => {
             if (!userId) return [];
             let query = supabase
                 .from('journal_entries')
                 .select('*')
                 .eq('user_id', userId);
-
-            if (viewScale === 'day') {
-                query = query.gte('created_at', `${resonanceDate}T00:00:00Z`)
-                             .lte('created_at', `${resonanceDate}T23:59:59Z`);
-            } else if (viewScale === 'week') {
-                const end = new Date(resonanceDate);
-                const start = new Date(end);
-                start.setDate(start.getDate() - 7);
-                query = query.gte('created_at', start.toISOString())
-                             .lte('created_at', end.toISOString());
-            } else if (viewScale === 'month') {
-                const date = new Date(resonanceDate);
-                const start = new Date(date.getFullYear(), date.getMonth(), 1);
-                const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
-                query = query.gte('created_at', start.toISOString())
-                             .lte('created_at', end.toISOString());
-            } else if (viewScale === 'year') {
-                const date = new Date(resonanceDate);
-                const start = new Date(date.getFullYear(), 0, 1);
-                const end = new Date(date.getFullYear(), 11, 31, 23, 59, 59);
-                query = query.gte('created_at', start.toISOString())
-                             .lte('created_at', end.toISOString());
-            }
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+            });
 
             const { data } = await query.order('created_at', { ascending: false });
             return (data || []).map(item => ({
@@ -125,30 +89,131 @@ export function useJourneyHistory(section?: string, feature?: string) {
         enabled: !!userId
     });
 
+    const { data: growthEvents = [], isLoading: growthLoading } = useQuery({
+        queryKey: ['journey_history_growth', userId, viewDate, viewScale],
+        queryFn: async () => {
+            if (!userId) return [];
+
+            let query = supabase
+                .from('user_growth_state_versions')
+                .select('id, operation, recorded_at, snapshot')
+                .eq('user_id', userId);
+
+            query = applyTemporalFilter(query, {
+                column: 'recorded_at',
+                mode: 'event_time',
+                capability: 'audit_history',
+            });
+
+            const { data } = await query.order('recorded_at', { ascending: false });
+            return (data || []).map(item => ({
+                id: item.id,
+                timestamp: item.recorded_at,
+                type: 'growth',
+                title: `Growth moved through ${(item.snapshot as any)?.bhumi_stage ?? 'journey'}`,
+                description: [
+                    (item.snapshot as any)?.banyan_stage ? `Banyan ${(item.snapshot as any).banyan_stage}` : null,
+                    (item.snapshot as any)?.river_stage ? `River ${(item.snapshot as any).river_stage}` : null,
+                    (item.snapshot as any)?.crystal_tier ? `Crystal ${(item.snapshot as any).crystal_tier}` : null,
+                ].filter(Boolean).join(' " ') || 'Growth state updated',
+                metadata: item.snapshot as any,
+                accentColor: '#D97706',
+            } as JourneyEvent));
+        },
+        enabled: !!userId,
+    });
+
+    const { data: rewardEvents = [], isLoading: rewardLoading } = useQuery({
+        queryKey: ['journey_history_rewards', userId, viewDate, viewScale],
+        queryFn: async () => {
+            if (!userId) return [];
+
+            let query = supabase
+                .from('user_rewards_versions')
+                .select('id, operation, recorded_at, snapshot')
+                .eq('user_id', userId);
+
+            query = applyTemporalFilter(query, {
+                column: 'recorded_at',
+                mode: 'event_time',
+                capability: 'audit_history',
+            });
+
+            const { data } = await query.order('recorded_at', { ascending: false });
+            return (data || []).map(item => ({
+                id: item.id,
+                timestamp: item.recorded_at,
+                type: 'reward',
+                title: `Rewards ${item.operation}`,
+                description: `${(item.snapshot as any)?.points ?? 0} growth points " ${Array.isArray((item.snapshot as any)?.badges) ? (item.snapshot as any).badges.length : 0} badges`,
+                metadata: item.snapshot as any,
+                accentColor: '#7C3AED',
+            } as JourneyEvent));
+        },
+        enabled: !!userId,
+    });
+
+    const { data: momentEvents = [], isLoading: momentLoading } = useQuery({
+        queryKey: ['journey_history_moments', userId, viewDate, viewScale],
+        queryFn: async () => {
+            if (!userId) return [];
+
+            let query = supabase
+                .from('whispered_moments')
+                .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
+                .eq('user_id', userId);
+
+            query = applyTemporalFilter(query, {
+                column: 'awarded_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+            });
+
+            const { data } = await query.order('awarded_at', { ascending: false });
+            return (data || []).map(item => ({
+                id: item.id,
+                timestamp: item.awarded_at,
+                type: 'moment',
+                title: item.moment_name_en || item.moment_key,
+                description: item.moment_name_si,
+                metadata: {
+                    key: item.moment_key,
+                    name_en: item.moment_name_en,
+                    name_si: item.moment_name_si,
+                },
+                accentColor: '#0EA5E9',
+            } as JourneyEvent));
+        },
+        enabled: !!userId,
+    });
+
     // Consolidate and Sort
     const events = useMemo(() => {
         const all: JourneyEvent[] = [];
         if (timelineFocus === 'all' || timelineFocus === 'mood') all.push(...moodEvents);
         if (timelineFocus === 'all' || timelineFocus === 'journal') all.push(...journalEvents);
+        if (timelineFocus === 'all' || timelineFocus === 'growth' || timelineFocus === 'journey') all.push(...growthEvents);
+        if (timelineFocus === 'all' || timelineFocus === 'reward' || timelineFocus === 'journey') all.push(...rewardEvents);
+        if (timelineFocus === 'all' || timelineFocus === 'moment' || timelineFocus === 'journey') all.push(...momentEvents);
         
         return all.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    }, [moodEvents, journalEvents, timelineFocus]);
+    }, [moodEvents, journalEvents, growthEvents, rewardEvents, momentEvents, timelineFocus]);
 
     // Holistic Aggregation
     const holisticView = useMemo(() => {
         if (viewScale === 'day') {
             return {
-                date: resonanceDate,
+                date: viewDate,
                 events,
                 summary: events.length > 0 
-                    ? `You recorded ${events.length} resonance points today.`
-                    : "No resonance points found for this day."
+                    ? `You recorded ${events.length} history points today.`
+                    : "No history points found for this day."
             };
         }
 
         if (viewScale === 'week') {
             return {
-                date: resonanceDate,
+                date: viewDate,
                 events,
                 summary: `Weekly overview: ${events.length} activities captured.`
             };
@@ -156,23 +221,23 @@ export function useJourneyHistory(section?: string, feature?: string) {
 
         if (viewScale === 'month') {
             return {
-                date: resonanceDate,
+                date: viewDate,
                 events,
-                summary: `Monthly resonance: ${events.length} milestones identified.`
+                summary: `Monthly history: ${events.length} milestones identified.`
             };
         }
 
         return {
-            date: resonanceDate,
+            date: viewDate,
             events,
-            summary: `Yearly journey: ${events.length} signature resonance points preserved.`
+            summary: `Yearly journey: ${events.length} signature history points preserved.`
         };
-    }, [events, viewScale, resonanceDate]);
+    }, [events, viewScale, viewDate]);
 
     return {
         events,
         holisticView,
-        isLoading: moodLoading || journalLoading,
+        isLoading: moodLoading || journalLoading || growthLoading || rewardLoading || momentLoading,
         authority,
         currentScale: viewScale,
         phase,

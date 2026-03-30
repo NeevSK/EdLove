@@ -24,7 +24,7 @@ const { BarChart, PieChart } = require('react-native-gifted-charts') as {
 };
 
 /**
- * JyotiView — The "Insight / Statistical" Perspective (Native).
+ * JyotiView  The "Insight / Statistical" Perspective (Native).
  * 
  * Provides a Power BI style dashboard with analytics on the topology.
  * Uses react-native-gifted-charts for high-fidelity data visualization.
@@ -72,8 +72,8 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
         <ScrollView 
             style={{ flex: 1 }} 
             contentContainerStyle={{ padding: 24, paddingTop: 100, paddingBottom: 100 }}
-        >
-            <VStack spacing={24}>
+        
+            <VStack spacing={24}
                 {/* Header Stats using Standard Sanctuary Component */}
                 <SanctuaryStatsCard 
                     title="Knowledge Resonance"
@@ -94,7 +94,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     ]}
                     progressLabel="Topology Density"
                     progressValue={Math.min(100, Math.round(Number(avgConnectivity) * 10))}
-                />
+                /
 
                 {/* Type Distribution - Bar Chart */}
                 <Box sx={{ 
@@ -103,11 +103,11 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     borderRadius: 24,
                     borderWidth: 1,
                     borderColor: 'rgba(255,255,255,0.05)'
-                }}>
-                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
-                        <Layers size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text>
-                    </HStack>
+                }}
+                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}
+                        <Layers size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} /
+                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text
+                    </HStack
                     
                     <BarChart
                         data={barData}
@@ -121,8 +121,8 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                         yAxisTextStyle={{ color: colors.textTertiary, fontSize: 10 }}
                         xAxisLabelTextStyle={{ color: colors.textSecondary, fontSize: 10 }}
                         width={windowWidth - 100}
-                    />
-                </Box>
+                    /
+                </Box
 
                 {/* Group Distribution - Pie Chart */}
                 <Box sx={{ 
@@ -131,38 +131,38 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     borderRadius: 24,
                     borderWidth: 1,
                     borderColor: 'rgba(255,255,255,0.05)'
-                }}>
-                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
-                        <TrendingUp size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Domain Resonance</Text>
-                    </HStack>
+                }}
+                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}
+                        <TrendingUp size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} /
+                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Domain Resonance</Text
+                    </HStack
 
-                    <View style={{ alignItems: 'center' }}>
+                    <View style={{ alignItems: 'center' }}
                         <PieChart
                             data={pieData}
                             donut
                             radius={80}
                             innerRadius={60}
                             centerLabelComponent={() => (
-                                <VStack {...({ alignItems: 'center', justifyContent: 'center' } as any)}>
-                                    <Text {...({ size: "xl", bold: true, color: colors.text } as any)}>{totalNodes}</Text>
-                                    <Text {...({ size: "xs", color: colors.textTertiary } as any)}>Total</Text>
-                                </VStack>
+                                <VStack {...({ alignItems: 'center', justifyContent: 'center' } as any)}
+                                    <Text {...({ size: "xl", bold: true, color: colors.text } as any)}>{totalNodes}</Text
+                                    <Text {...({ size: "xs", color: colors.textTertiary } as any)}>Total</Text
+                                </VStack
                             )}
-                        />
-                    </View>
+                        /
+                    </View
 
-                    <VStack spacing={8} sx={{ marginTop: 20 }}>
+                    <VStack spacing={8} sx={{ marginTop: 20 }}
                         {pieData.map((item, i) => (
-                            <HStack key={i} {...({ alignItems: 'center' } as any)}>
-                                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 8 }} />
-                                <Text {...({ size: "xs", color: colors.textSecondary, sx: { flex: 1 } } as any)}>{item.text}</Text>
-                                <Text {...({ size: "xs", bold: true, color: colors.text } as any)}>{item.value}</Text>
-                            </HStack>
+                            <HStack key={i} {...({ alignItems: 'center' } as any)}
+                                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 8 }} /
+                                <Text {...({ size: "xs", color: colors.textSecondary, sx: { flex: 1 } } as any)}>{item.text}</Text
+                                <Text {...({ size: "xs", bold: true, color: colors.text } as any)}>{item.value}</Text
+                            </HStack
                         ))}
-                    </VStack>
-                </Box>
-            </VStack>
-        </ScrollView>
+                    </VStack
+                </Box
+            </VStack
+        </ScrollView
     );
 };

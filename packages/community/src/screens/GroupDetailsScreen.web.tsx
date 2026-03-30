@@ -18,27 +18,19 @@ export default function GroupDetailsScreenWeb() {
 
     if (isLoading) {
         return (
-            <Center sx={{ height: '100vh' }}>
-                <Spinner size="large" />
-            </Center>
-        );
+            <Center sx={{ height: '100vh' }}                <Spinner size="large" /            </Center        );
     }
 
     if (error || !instance) {
         return (
-            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
-                Community Circle Not Found or Error Loading
-            </Box>
-        );
+            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                Community Circle Not Found or Error Loading
+            </Box        );
     }
 
     return (
-        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}>
-            <EntityView 
+        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}            <EntityView 
                 definition={instance.definition} 
                 instance={instance} 
                 mode="view" 
-            />
-        </Box>
-    );
+            /        </Box    );
 }

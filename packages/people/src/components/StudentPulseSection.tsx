@@ -46,11 +46,7 @@ export default function StudentPulseSection({
 
   if (loading) {
     return (
-      <VStack sx={{ gap: Theme.spacing.sm }}>
-        <SkeletonCard height={80} />
-        <SkeletonCard height={56} />
-      </VStack>
-    );
+      <VStack sx={{ gap: Theme.spacing.sm }}        <SkeletonCard height={80} /        <SkeletonCard height={56} /      </VStack    );
   }
 
   const delta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
@@ -58,9 +54,7 @@ export default function StudentPulseSection({
   const deltaColor = delta >= 0 ? colors.success : colors.error;
 
   return (
-    <VStack sx={{ gap: Theme.spacing.sm }}>
-      <HStack sx={{ gap: Theme.spacing.sm }}>
-        <Box
+    <VStack sx={{ gap: Theme.spacing.sm }}      <HStack sx={{ gap: Theme.spacing.sm }}        <Box
           sx={{
             flex: 1,
             backgroundColor: colors.primary,
@@ -69,20 +63,14 @@ export default function StudentPulseSection({
             borderWidth: 1,
             borderColor: colors.border,
           }}
-        >
-          <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Attendance Today</Text>
-          <Text
+                  <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Attendance Today</Text          <Text
             sx={{
               fontSize: 28,
               fontWeight: '700',
               color: pulse ? attendanceColor(pulse.todayRate) : colors.text,
             }}
-          >
-            {pulse ? `${pulse.todayRate}%` : '-'}
-          </Text>
-          <Text sx={{ fontSize: 11, color: deltaColor }}>{pulse ? deltaLabel : ''}</Text>
-        </Box>
-
+                      {pulse ? `${pulse.todayRate}%` : '-'}
+          </Text          <Text sx={{ fontSize: 11, color: deltaColor }}>{pulse ? deltaLabel : ''}</Text        </Box
         <Box
           sx={{
             flex: 1,
@@ -92,18 +80,9 @@ export default function StudentPulseSection({
             borderWidth: 1,
             borderColor: colors.border,
           }}
-        >
-          <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Submissions This Week</Text>
-          <Text sx={{ fontSize: 28, fontWeight: '700', color: colors.text }}>
-            {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined ? `${pulse.submissionRate}%` : '-'}
-          </Text>
-          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>of assignments</Text>
-        </Box>
-      </HStack>
-
-      <HStack sx={{ gap: Theme.spacing.sm }}>
-        <TouchableOpacity onPress={onViewAtRisk} activeOpacity={0.8} style={{ flex: 1 }}>
-          <Box
+                  <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Submissions This Week</Text          <Text sx={{ fontSize: 28, fontWeight: '700', color: colors.text }}            {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined ? `${pulse.submissionRate}%` : '-'}
+          </Text          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>of assignments</Text        </Box      </HStack
+      <HStack sx={{ gap: Theme.spacing.sm }}        <TouchableOpacity onPress={onViewAtRisk} activeOpacity={0.8} style={{ flex: 1 }}          <Box
             sx={{
               flex: 1,
               backgroundColor: colors.primary,
@@ -112,27 +91,17 @@ export default function StudentPulseSection({
               borderWidth: 1,
               borderColor: (pulse?.atRiskCount ?? 0) > 0 ? colors.error : colors.border,
             }}
-          >
-            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-              <Box
+                      <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}              <Box
                 sx={{
                   backgroundColor: colors.error,
                   borderRadius: 10,
                   paddingHorizontal: 8,
                   paddingVertical: 2,
                 }}
-              >
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.atRiskCount ?? 0}</Text>
-              </Box>
-              <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>At-risk students</Text>
-            </HStack>
-            {onViewAtRisk && <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text>}
-          </Box>
-        </TouchableOpacity>
-
+                              <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.atRiskCount ?? 0}</Text              </Box              <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>At-risk students</Text            </HStack            {onViewAtRisk && <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text>}
+          </Box        </TouchableOpacity
         {!classroomId && (
-          <TouchableOpacity onPress={onViewEnrollments} activeOpacity={0.8} style={{ flex: 1 }}>
-            <Box
+          <TouchableOpacity onPress={onViewEnrollments} activeOpacity={0.8} style={{ flex: 1 }}            <Box
               sx={{
                 flex: 1,
                 backgroundColor: colors.primary,
@@ -141,32 +110,19 @@ export default function StudentPulseSection({
                 borderWidth: 1,
                 borderColor: (pulse?.pendingEnrollments ?? 0) > 0 ? colors.warning : colors.border,
               }}
-            >
-              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-                <Box
+                          <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                <Box
                   sx={{
                     backgroundColor: colors.warning,
                     borderRadius: 10,
                     paddingHorizontal: 8,
                     paddingVertical: 2,
                   }}
-                >
-                  <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.pendingEnrollments ?? 0}</Text>
-                </Box>
-                <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text>
-                <ChevronRight size={16} color={colors.textTertiary} />
-              </HStack>
-              {onViewEnrollments && (
-                <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text>
-              )}
-            </Box>
-          </TouchableOpacity>
-        )}
-      </HStack>
-
+                                  <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.pendingEnrollments ?? 0}</Text                </Box                <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text                <ChevronRight size={16} color={colors.textTertiary} /              </HStack              {onViewEnrollments && (
+                <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text              )}
+            </Box          </TouchableOpacity        )}
+      </HStack
       {onViewFullReport && (
-        <TouchableOpacity onPress={onViewFullReport} activeOpacity={0.7}>
-          <HStack
+        <TouchableOpacity onPress={onViewFullReport} activeOpacity={0.7}          <HStack
             sx={{
               marginTop: Theme.spacing.sm,
               justifyContent: 'center',
@@ -176,12 +132,6 @@ export default function StudentPulseSection({
               borderTopWidth: 1,
               borderTopColor: colors.border,
             }}
-          >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.action }}>VIEW FULL ANALYTICS</Text>
-            <TrendingUp size={14} color={colors.action} />
-          </HStack>
-        </TouchableOpacity>
-      )}
-    </VStack>
-  );
+                      <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.action }}>VIEW FULL ANALYTICS</Text            <TrendingUp size={14} color={colors.action} /          </HStack        </TouchableOpacity      )}
+    </VStack  );
 }

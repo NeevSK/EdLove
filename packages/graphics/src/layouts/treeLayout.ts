@@ -1,6 +1,5 @@
 import { hierarchy, tree, type HierarchyNode } from 'd3-hierarchy';
-import type { GraphNode } from '../types/GraphNode';
-import type { KnowledgeTopology, LayoutResult } from '../types/KnowledgeTopology';
+import type { KnowledgeTopology, LayoutResult, GraphNode } from '@repo/core';
 
 export interface TreeLayoutOptions {
     width: number;
@@ -17,12 +16,12 @@ const DEFAULT_OPTIONS: Required<TreeLayoutOptions> = {
 };
 
 /**
- * treeLayout — D3 hierarchy layout for the Vastu (Mind Map) perspective.
+ * treeLayout  D3 hierarchy layout for the Vastu (Mind Map) perspective.
  *
  * Builds a proper tree from `parentId` references in nodes.
  * Nodes without a `parentId` are wired to a synthesized root.
  *
- * Returns static { x, y } positions — no live simulation needed.
+ * Returns static { x, y } positions  no live simulation needed.
  */
 export function treeLayout(
     topology: KnowledgeTopology,
@@ -40,7 +39,7 @@ export function treeLayout(
     // Determine the root
     const rootNode: GraphNode | undefined = rootId
         ? nodeMap.get(rootId)
-        : topology.nodes.find((n) => !n.parentId);
+        : topology.nodes.find((n: GraphNode) => !n.parentId);
 
     if (!rootNode) {
         // Fallback: return empty layout if no root
@@ -55,8 +54,8 @@ export function treeLayout(
 
     function buildTree(nodeId: string): TreeNode {
         const children = topology.nodes
-            .filter((n) => n.parentId === nodeId)
-            .map((n) => buildTree(n.id));
+            .filter((n: GraphNode) => n.parentId === nodeId)
+            .map((n: GraphNode) => buildTree(n.id));
         return { id: nodeId, children };
     }
 
@@ -70,7 +69,7 @@ export function treeLayout(
     const positions = new Map<string, { x: number; y: number }>();
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
-    root.each((d) => {
+    root.each((d: HierarchyNode<TreeNode>) => {
         if (d.x !== undefined && d.y !== undefined) {
             const x = opts.orientation === 'horizontal' ? d.y : d.x;
             const y = opts.orientation === 'horizontal' ? d.x : d.y;

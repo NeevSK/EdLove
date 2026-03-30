@@ -31,8 +31,8 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
   };
 
   return (
-    <>
-      <style>
+    <
+      <style
         {`
           @keyframes sanctuary-shimmer {
             0% { background-position: -200% 0; }
@@ -63,13 +63,13 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
             border: 1px solid rgba(252, 249, 242, 0.05);
           }
         `}
-      </style>
+      </style
       <div 
         className={`sanctuary-skeleton ${className}`} 
         style={baseStyle}
         aria-hidden="true"
-      />
-    </>
+      /
+    </
   );
 };
 

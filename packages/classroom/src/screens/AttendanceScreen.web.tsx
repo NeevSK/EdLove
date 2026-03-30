@@ -5,8 +5,7 @@ import { Check, X, Clock, ChevronLeft, Save } from 'lucide-react-native';
 
 type Status = 'present' | 'absent' | 'late';
 
-const STATUS_CONFIG: Record<
-  Status,
+const STATUS_CONFIG: Record  Status,
   { label: string; color: string; bg: string; Icon: React.ComponentType<{ size?: number; color?: string }> }
 > = {
   present: { label: 'Present', color: '#16a34a', bg: 'rgba(34,197,94,0.10)', Icon: Check },
@@ -31,14 +30,22 @@ export default function AttendanceScreenWeb() {
     void (async () => {
       setLoading(true);
       try {
-        const data = await api.classroomStudents.getAll(classroomId);
+        const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
+        const [data, snapshot] = await Promise.all([
+          api.classroomStudents.getAll(classroomId),
+          api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate)
+            .catch(() => ({ records: [] as StudentAttendance[] })),
+        ]);
+        const savedStatus = new Map(
+          snapshot.records.map((record) => [record.student_id, record.status]),
+        );
         setStudents(
           data.map((student) => ({
             id: student.id,
             student_id: student.student_id || student.id,
             full_name: student.full_name,
             roll_number: student.roll_number,
-            status: 'present' as Status,
+            status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
           })),
         );
       } catch (caughtError: any) {
@@ -50,8 +57,7 @@ export default function AttendanceScreenWeb() {
   }, [classroomId]);
 
   const toggle = (id: string) => {
-    setStudents((prev) =>
-      prev.map((student) => {
+    setStudents((prev) =      prev.map((student) => {
         if (student.id !== id) return student;
         const cycle: Status[] = ['present', 'late', 'absent'];
         const currentIndex = cycle.indexOf(student.status as Status);
@@ -79,6 +85,11 @@ export default function AttendanceScreenWeb() {
           status: student.status,
           date: attendanceDate,
         })),
+        {
+          actorId: user?.id,
+          reason: 'daily_roll_call',
+          accessKind: 'teacher_marking',
+        },
       );
       if (user?.id) {
         growthSignalsAPI.emitSignal(user.id, 'attendance_marked', { classroom_id: classroomId }).catch(() => {});
@@ -104,10 +115,7 @@ export default function AttendanceScreenWeb() {
   });
 
   return (
-    <div className="sanctuary-screen">
-      <div className="sanctuary-container" style={{ maxWidth: '700px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
-          <button
+    <div className="sanctuary-screen"      <div className="sanctuary-container" style={{ maxWidth: '700px' }}        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}          <button
             onClick={() => navigation.goBack()}
             style={{
               display: 'flex',
@@ -122,27 +130,16 @@ export default function AttendanceScreenWeb() {
               fontSize: '13px',
               color: 'var(--ink-ghost)',
             }}
-          >
-            <ChevronLeft size={14} /> Back
-          </button>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Attendance - {classroomName}</h2>
-            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--ink-ghost)' }}>{today}</p>
-          </div>
-        </div>
-
+                      <ChevronLeft size={14} /> Back
+          </button          <div            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Attendance - {classroomName}</h2            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--ink-ghost)' }}>{today}</p          </div        </div
         {loading && <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>Loading class list...</div>}
 
         {!loading && error && (
-          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}>
-            {error}
-          </div>
-        )}
+          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}            {error}
+          </div        )}
 
         {!loading && !error && (
-          <>
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => {
+          <            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => {
                 const Icon = STATUS_CONFIG[status].Icon;
                 return (
                   <div
@@ -156,24 +153,13 @@ export default function AttendanceScreenWeb() {
                       background: STATUS_CONFIG[status].bg,
                       border: `1px solid ${STATUS_CONFIG[status].color}33`,
                     }}
-                  >
-                    <Icon size={13} color={STATUS_CONFIG[status].color} />
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: STATUS_CONFIG[status].color }}>
-                      {counts[status] ?? 0} {STATUS_CONFIG[status].label}
-                    </span>
-                  </div>
-                );
+                                      <Icon size={13} color={STATUS_CONFIG[status].color} /                    <span style={{ fontSize: '13px', fontWeight: '700', color: STATUS_CONFIG[status].color }}                      {counts[status] ?? 0} {STATUS_CONFIG[status].label}
+                    </span                  </div                );
               })}
-              <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}>
-                {students.length} students total
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}>
-                Mark all:
-              </span>
-              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
+              <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}                {students.length} students total
+              </span            </div
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}                Mark all:
+              </span              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
                 <button
                   key={status}
                   onClick={() => setAll(status)}
@@ -188,14 +174,10 @@ export default function AttendanceScreenWeb() {
                     color: STATUS_CONFIG[status].color,
                     fontFamily: 'var(--font-body)',
                   }}
-                >
-                  {STATUS_CONFIG[status].label}
-                </button>
-              ))}
-            </div>
-
-            <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}>
-              {students.map((student, index) => {
+                                  {STATUS_CONFIG[status].label}
+                </button              ))}
+            </div
+            <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}              {students.map((student, index) => {
                 const config = STATUS_CONFIG[student.status as Status];
                 return (
                   <div
@@ -217,12 +199,8 @@ export default function AttendanceScreenWeb() {
                     onMouseOut={(event) => {
                       event.currentTarget.style.background = 'transparent';
                     }}
-                  >
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', minWidth: '32px' }}>
-                      {student.roll_number ?? index + 1}
-                    </span>
-                    <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}>{student.full_name}</span>
-                    <div
+                                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', minWidth: '32px' }}                      {student.roll_number ?? index + 1}
+                    </span                    <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}>{student.full_name}</span                    <div
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -234,15 +212,9 @@ export default function AttendanceScreenWeb() {
                         minWidth: '90px',
                         justifyContent: 'center',
                       }}
-                    >
-                      <config.Icon size={13} color={config.color} />
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: config.color }}>{config.label}</span>
-                    </div>
-                  </div>
-                );
+                                          <config.Icon size={13} color={config.color} /                      <span style={{ fontSize: '12px', fontWeight: '700', color: config.color }}>{config.label}</span                    </div                  </div                );
               })}
-            </div>
-
+            </div
             {saved ? (
               <div
                 style={{
@@ -257,10 +229,8 @@ export default function AttendanceScreenWeb() {
                   fontWeight: '700',
                   fontSize: '14px',
                 }}
-              >
-                <Check size={18} /> Attendance saved for today
-              </div>
-            ) : (
+                              <Check size={18} /> Attendance saved for today
+              </div            ) : (
               <button
                 className="premium-button"
                 style={{
@@ -274,13 +244,8 @@ export default function AttendanceScreenWeb() {
                 }}
                 onClick={handleSave}
                 disabled={saving}
-              >
-                {saving ? '... Saving...' : <><Save size={15} /> Complete Marking</>}
-              </button>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
+                              {saving ? '... Saving...' : <><Save size={15} /> Complete Marking</>}
+              </button            )}
+          </        )}
+      </div    </div  );
 }

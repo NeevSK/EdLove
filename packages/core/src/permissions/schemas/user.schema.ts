@@ -7,8 +7,14 @@ export const UserContextSchema = z.object({
   userId: z.string().uuid().nullable(),
   email: z.string().email().nullable(),
   schoolId: z.string().uuid().nullable(), // Null if 2nd class citizen
+  tenancyName: z.string().nullable().default(null),
+  tenancy: z.object({
+    kind: TenantKindSchema,
+    isPersonal: z.boolean(),
+  }).nullable().default(null),
   tenantKind: TenantKindSchema.default('customer'),
   roles: z.array(RoleSchema).default([]),
+  authority: RoleSchema.nullable().default(null),
   
   // Scoped context for 1st class citizens
   sectionId: z.string().uuid().nullable().optional(),

@@ -1,5 +1,5 @@
 
-import { QRPayload } from '@repo/scanner-kit';
+import { QRPayload } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { schoolAPI } from '../../api/school';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary, 
@@ -48,7 +48,7 @@ export class FlowResolver {
                     return await this.executeJoinGroup(payload.group_id, userId, payload.handle);
 
                 case 'claim_invite':
-                    return await this.executeClaimInvite(payload.invite_code, payload.school_id, payload.role as AuthorityTier, userId);
+                    return await this.executeClaimInvite(payload.invite_code, payload.school_id, payload.authority as AuthorityTier, userId);
 
                 case 'user_invite':
                     return {
@@ -152,7 +152,7 @@ export class FlowResolver {
             if (fetchError) throw fetchError;
 
             if (!classroom?.teacher_id) {
-                // Unclaimed classroom — claim atomically, only if still null
+                // Unclaimed classroom  claim atomically, only if still null
                 const { data: claimed, error: updateError } = await supabase
                     .from('classrooms')
                     .update({ teacher_id: userId })
@@ -160,7 +160,7 @@ export class FlowResolver {
                     .is('teacher_id', null)
                     .select('id');
                 if (updateError) throw updateError;
-                // If 0 rows were updated another teacher claimed it first — navigate as a visitor
+                // If 0 rows were updated another teacher claimed it first  navigate as a visitor
                 if (!claimed || claimed.length === 0) {
                     return {
                         outcome: 'success',
@@ -169,7 +169,7 @@ export class FlowResolver {
                     };
                 }
             }
-            // If classroom already has a teacher, just navigate — no ownership change.
+            // If classroom already has a teacher, just navigate  no ownership change.
         }
 
         return {
@@ -206,7 +206,9 @@ export class FlowResolver {
 
     private static async executeClaimInvite(inviteCode: string, schoolId: string, role: AuthorityTier, userId: string): Promise<FlowResult> {
         try {
-            console.log(`[FlowResolver] Executing transactional invite claim for code: ${inviteCode}`);
+            if (__DEV__) {
+                console.log(`[FlowResolver] Executing transactional invite claim for code: ${inviteCode}`);
+            }
 
             // Atomic RPC call
             const { data, error } = await supabase.rpc('claim_invite_code', {

@@ -9,7 +9,7 @@ import { hapticSuccess, hapticWarning } from '../utils/haptics';
  */
 export function useDemoBridge() {
     const { t } = useTranslation();
-    const { demoLogs, clearDemoLogs, setDemoMode } = useStore();
+    const { demoLogs, clearDemoLogs, setDemoMode } = useStore() as any;
 
     const exitDemoWithBridge = async () => {
         if (demoLogs.length === 0) {
@@ -18,24 +18,24 @@ export function useDemoBridge() {
         }
 
         // Get the name of the first item created for a personalized message
-        const firstLog = demoLogs.find(log => log.method.startsWith('create') || log.method.startsWith('add'));
-        const firstItemName = firstLog?.payload?.name || firstLog?.payload?.title || 'item';
+        const firstLog = demoLogs.find((log: any) => log.method.startsWith('create') || log.method.startsWith('add'));
+        const firstItemName = (firstLog?.payload as any)?.name || (firstLog?.payload as any)?.title || 'item';
 
         hapticWarning();
 
         if (Platform.OS === 'web') {
-            // Two-action demo bridge — window.confirm is acceptable for this destructive choice on web
+            // Two-action demo bridge - window.confirm is acceptable for this destructive choice on web
             const save = window.confirm(
                 t('demoMode.bridgeMessage', { count: demoLogs.length, firstName: firstItemName })
             );
             if (save) {
-                const { setIsBridging } = useStore.getState();
+                const { setBridging } = useStore.getState() as any;
                 try {
-                    setIsBridging(true);
+                    setBridging(true);
                     await processDemoLogs(demoLogs);
                     hapticSuccess();
                 } finally {
-                    setIsBridging(false);
+                    setBridging(false);
                     clearDemoLogs();
                     setDemoMode(false);
                 }
@@ -61,17 +61,17 @@ export function useDemoBridge() {
                 {
                     text: t('demoMode.bridgeSave'),
                     onPress: async () => {
-                        const { setIsBridging } = useStore.getState();
+                        const { setBridging } = useStore.getState() as any;
                         try {
                             // Enable bridging mode to bypass API interception
-                            setIsBridging(true);
+                            setBridging(true);
 
                             // Bridge the data to reality
                             await processDemoLogs(demoLogs);
 
                             hapticSuccess();
                         } finally {
-                            setIsBridging(false);
+                            setBridging(false);
                             clearDemoLogs();
                             setDemoMode(false);
                         }
@@ -92,10 +92,10 @@ export function useDemoBridge() {
                 const apiModule = (api as any)[log.module];
                 if (apiModule && typeof apiModule[log.method] === 'function') {
                     // Execute the REAL API call (no proxy interception because we'll be in production mode or we force it)
-                    // Note: Since isDemoMode is still true during this loop, 
+                    // Note: Since isDemoMode is still true during this loop,
                     // we need to make sure the proxy doesn't intercept these "bridging" calls.
-                    // A simple way is to pass a special flag in args or rely on the fact that 
-                    // we'll toggle demoMode AFTER this loop correctly. 
+                    // A simple way is to pass a special flag in args or rely on the fact that
+                    // we'll toggle demoMode AFTER this loop correctly.
                     // Actually, the Proxy checks useStore.getState().isDemoMode.
                     // We can temporarily set a "isBridging" flag or just toggle demoMode first.
 

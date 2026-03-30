@@ -111,21 +111,13 @@ export function InteractiveChat({
     const isEditing = editingMessageId === message.id;
     
     return (
-      <View key={message.id} style={styles.messageContainer}>
-        <HStack style={styles.messageHeader}>
-          <Text style={styles.senderText}>
-            {message.sender === 'user' ? 'You' : 
+      <View key={message.id} style={styles.messageContainer}        <HStack style={styles.messageHeader}          <Text style={styles.senderText}            {message.sender === 'user' ? 'You' : 
              message.sender === 'assistant' ? 'Assistant' : 'System'}
-          </Text>
-          {showTimestamps && (
-            <Text style={styles.timestampText}>
-              {formatTimestamp(message.timestamp)}
-            </Text>
-          )}
-        </HStack>
-        
-        <View style={styles.messageContent}>
-          {isEditing && allowEditing ? (
+          </Text          {showTimestamps && (
+            <Text style={styles.timestampText}              {formatTimestamp(message.timestamp)}
+            </Text          )}
+        </HStack        
+        <View style={styles.messageContent}          {isEditing && allowEditing ? (
             <TextInput
               style={styles.editInput}
               value={inputText}
@@ -133,69 +125,45 @@ export function InteractiveChat({
               multiline
               autoFocus
               placeholder="Edit message..."
-            />
-          ) : (
-            <Text style={getMessageStyle(message)}>
-              {message.text}
-            </Text>
-          )}
-        </View>
-        
+            /          ) : (
+            <Text style={getMessageStyle(message)}              {message.text}
+            </Text          )}
+        </View        
         {allowEditing && message.sender !== 'system' && (
-          <HStack style={styles.messageActions}>
-            {message.sender === 'user' && (
-              <>
-                <Text 
+          <HStack style={styles.messageActions}            {message.sender === 'user' && (
+              <                <Text 
                   style={styles.actionButton}
                   onPress={() => handleEdit(message.id, message.text)}
-                >
-                  Edit
-                </Text>
-                <Text 
+                                  Edit
+                </Text                <Text 
                   style={styles.actionButton}
                   onPress={() => handleDelete(message.id)}
-                >
-                  Delete
-                </Text>
-              </>
-            )}
-          </HStack>
-        )}
+                                  Delete
+                </Text              </            )}
+          </HStack        )}
         
         {isEditing && (
-          <HStack style={styles.editActions}>
-            <Text 
+          <HStack style={styles.editActions}            <Text 
               style={[styles.actionButton, styles.saveButton]}
               onPress={handleSaveEdit}
-            >
-              Save
-            </Text>
-            <Text 
+                          Save
+            </Text            <Text 
               style={[styles.actionButton, styles.cancelButton]}
               onPress={handleCancelEdit}
-            >
-              Cancel
-            </Text>
-          </HStack>
-        )}
-      </View>
-    );
+                          Cancel
+            </Text          </HStack        )}
+      </View    );
   };
 
   return (
-    <Card style={[styles.container, { height }]}>
-      <Text style={styles.title}>{title}</Text>
-      <ScrollView
+    <Card style={[styles.container, { height }]}      <Text style={styles.title}>{title}</Text      <ScrollView
         ref={scrollViewRef}
         style={styles.messagesContainer}
         showsVerticalScrollIndicator={false}
-      >
-        {messages.map(renderMessage)}
-      </ScrollView>
-      
+              {messages.map(renderMessage)}
+      </ScrollView      
       {/* Input Area */}
-      <View style={styles.inputContainer}>
-        <TextInput
+      <View style={styles.inputContainer}        <TextInput
           style={styles.textInput}
           value={inputText}
           onChangeText={setInputText}
@@ -204,19 +172,14 @@ export function InteractiveChat({
           maxLength={1000}
           editable={!editingMessageId}
           onSubmitEditing={handleSend}
-        />
-        <Text 
+        /        <Text 
           style={[
             styles.sendButton,
             { opacity: inputText.trim() ? 1 : 0.5 }
           ]}
           onPress={handleSend}
-        >
-          Send
-        </Text>
-      </View>
-    </Card>
-  );
+                  Send
+        </Text      </View    </Card  );
 }
 
 const styles = StyleSheet.create({

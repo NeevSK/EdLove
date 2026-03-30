@@ -29,9 +29,9 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
     // Determine greeting based on time of day (DRY from GlobalHeader)
     const getGreetingDetails = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return { text: t('goodMorning'), emoji: '🌅' };
-        if (hour < 18) return { text: t('goodAfternoon'), emoji: '☀️' };
-        return { text: t('goodEvening'), emoji: '🏮' };
+        if (hour < 12) return { text: t('goodMorning'), emoji: '\uD83C\uDF05' };
+        if (hour < 18) return { text: t('goodAfternoon'), emoji: '\u2600\uFE0F' };
+        return { text: t('goodEvening'), emoji: '\uD83C\uDFEE' };
     };
 
     const { text: greetingText, emoji } = getGreetingDetails();
@@ -59,19 +59,19 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
             alignItems: 'flex-end', 
             flexWrap: 'wrap', 
             gap: '16px' 
-        }}>
-            <div aria-live="polite" aria-atomic="true">
-                <div className="greeting-time" aria-label={`${displayTimeText} ${emoji}`}>
+        }}
+            <div aria-live="polite" aria-atomic="true"
+                <div className="greeting-time" aria-label={`${displayTimeText} ${emoji}`}
                     {displayTimeText} {emoji}
-                </div>
-                <h1 className="greeting-main">{title}</h1>
+                </div
+                <h1 className="greeting-main">{title}</h1
                 {note && <p className="greeting-note">{note}</p>}
-            </div>
+            </div
             {actions && (
-                <nav aria-label="Header Actions" style={{ display: 'flex', gap: '10px', paddingBottom: '4px' }}>
+                <nav aria-label="Header Actions" style={{ display: 'flex', gap: '10px', paddingBottom: '4px' }}
                     {actions}
-                </nav>
+                </nav
             )}
-        </header>
+        </header
     );
 };

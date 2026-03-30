@@ -1,7 +1,7 @@
 import { type HybridObject } from 'react-native-nitro-modules';
 
 /**
- * TrubeGPUDriver — Nitro JSI Bridge to TrubeCore C++ Engine
+ * TrubeGPUDriver \u2014 Nitro JSI Bridge to TrubeCore C++ Engine
  *
  * This interface defines the zero-overhead binding between the
  * Reanimated worklet (UI thread) and the TrubeCore native engine.
@@ -9,14 +9,14 @@ import { type HybridObject } from 'react-native-nitro-modules';
  * All methods are synchronous on the calling thread (UI thread worklet).
  * No serialization, no bridge hops between JS and native.
  *
- * Architecture: Tier 1 (API 31+) · Full-Metal · react-native-nitro-modules
+ * Architecture: Tier 1 (API 31+) \u00B7 Full-Metal \u00B7 react-native-nitro-modules
  */
 export interface TrubeGPUDriver extends HybridObject<{
   android: 'c++';
   ios: 'c++';
 }> {
   // ---------------------------------------------------------------------------
-  // Startup — called once per surface at app initialization.
+  // Startup \u2014 called once per surface at app initialization.
   // Each call compiles a WGSL shader and allocates all GPU objects.
   // Returns true if compilation succeeded, false if the surface is unavailable.
   // ---------------------------------------------------------------------------
@@ -40,13 +40,13 @@ export interface TrubeGPUDriver extends HybridObject<{
   recordFrame(name: string, targetView: any): void;
 
   // ---------------------------------------------------------------------------
-  // Per-Frame — called from Reanimated useFrameCallback worklet on UI thread.
+  // Per-Frame \u2014 called from Reanimated useFrameCallback worklet on UI thread.
   // Flushes uniform values to the GPU via wgpuQueueWriteBuffer.
   // Zero allocation. One GPU write per call.
   //
   // @param name      surface name (must be pre-warmed)
   // @param time      entropy-modulated time (use getEntropyTime())
-  // @param entropy   meta-noise signal value (47s period, ±0.015)
+  // @param entropy   meta-noise signal value (47s period, \u00B10.015)
   // @param intensity surface strength [0, 1]
   // @param resW      render-target width  (50% of screen width)
   // @param resH      render-target height (50% of screen height)
@@ -72,9 +72,9 @@ export interface TrubeGPUDriver extends HybridObject<{
   ): void;
 
   // ---------------------------------------------------------------------------
-  // Kells Time Protocol — entropy-modulated time.
-  // Returns: t + sin(t/47)·0.015 + cos(t/19.3)·0.007 + sin(t·0.1)·0.003
-  // This is the value that prevents any Trübe surface from ever looping.
+  // Kells Time Protocol \u2014 entropy-modulated time.
+  // Returns: t + sin(t/47)\u00B70.015 + cos(t/19.3)\u00B70.007 + sin(t\u00B70.1)\u00B70.003
+  // This is the value that prevents any Tr\u00FCbe surface from ever looping.
   // ---------------------------------------------------------------------------
   readonly entropyTime: number;
 
@@ -86,7 +86,7 @@ export interface TrubeGPUDriver extends HybridObject<{
   readonly isReady: boolean; // Global engine readiness (all critical pipelines compiled)
 
   // ---------------------------------------------------------------------------
-  // Telemetry — for performance monitoring
+  // Telemetry \u2014 for performance monitoring
   // ---------------------------------------------------------------------------
   readonly frameCount: number;
   readonly lastPrewarmMs: number;

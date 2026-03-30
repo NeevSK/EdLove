@@ -29,20 +29,20 @@ export default function EntityModal({
             onClose={onClose}
             title={displayTitle}
             size="md"
-        >
-            <VStack space="md">
+        
+            <VStack space="md"
                 {mode === 'view' ? (
-                    <Box>
-                        <Text>Web View for {definition.type}</Text>
+                    <Box
+                        <Text>Web View for {definition.type}</Text
                         {/* Web-optimized view component */}
-                    </Box>
+                    </Box
                 ) : (
-                    <Box>
-                        <Text>Web Form for {definition.type}</Text>
+                    <Box
+                        <Text>Web Form for {definition.type}</Text
                         {/* Web-optimized form component */}
-                    </Box>
+                    </Box
                 )}
-            </VStack>
-        </SanctuaryModal>
+            </VStack
+        </SanctuaryModal
     );
 }

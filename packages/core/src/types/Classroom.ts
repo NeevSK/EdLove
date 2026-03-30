@@ -5,14 +5,14 @@ export interface Classroom {
     teacher_id?: string | null;
     section_id?: string | null;
     name: string;
-    handle?: string;
+    handle?: string | null;
     subject?: string | null;
     description?: string | null;
-    color_theme?: string;
-    syllabus_version?: string;
-    is_archived?: boolean;
+    color_theme?: string | null;
+    syllabus_version?: string | null;
+    is_archived?: boolean | null;
     /** Academic year label, e.g. '2026'. Set automatically on creation; used for year-end rollover and historical queries. */
-    academic_year?: string;
+    academic_year?: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -40,4 +40,12 @@ export interface StudentAcademicRecord {
     teacher_note?: string | null;
     created_at: string;
     updated_at: string;
+}
+
+export interface ClassroomStudent {
+    id: string;
+    classroom_id: string;
+    student_id: string;
+    status: 'active' | 'left' | 'suspended';
+    joined_at: string;
 }

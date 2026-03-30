@@ -46,8 +46,8 @@ class RobustAsyncStorage implements StorageInterface {
 
     set(key: string, value: string | boolean | number) {
         this.cache.set(key, value);
-        AsyncStorage.setItem(key, String(value)).catch(e =>
-            console.error(`📦 Storage: Failed to persist ${key}`, e)
+        AsyncStorage.setItem(key, String(value)).catch(e =
+            console.error(`\uD83D\uDCE6 Storage: Failed to persist ${key}`, e)
         );
     }
 
@@ -91,7 +91,7 @@ import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 
 /**
- * Storage singleton — lazily initialized on first access.
+ * Storage singleton \u2014 lazily initialized on first access.
  *
  * WHY LAZY?
  * react-native-mmkv v4 uses NitroModules (JSI). The native C++ module is
@@ -101,13 +101,13 @@ import { Platform } from 'react-native';
  * actually happens, safely inside the React lifecycle.
  *
  * ENGINE SELECTION:
- *   Expo Go (storeClient)  → RobustAsyncStorage (MMKV can't link in Expo Go)
- *   Dev build / standalone → MMKV native via NitroModules (fast, synchronous)
+ *   Expo Go (storeClient)  \u2192 RobustAsyncStorage (MMKV can't link in Expo Go)
+ *   Dev build / standalone \u2192 MMKV native via NitroModules (fast, synchronous)
  *                            Falls back to RobustAsyncStorage if MMKV fails.
  *
  * MMKV BUILD REQUIREMENTS (dev build must have these):
- *   1. react-native-mmkv and react-native-nitro-modules in package.json  ✓
- *   2. newArchEnabled=true in android/gradle.properties                  ✓
+ *   1. react-native-mmkv and react-native-nitro-modules in package.json  \u2713
+ *   2. newArchEnabled=true in android/gradle.properties                  \u2713
  *   3. expo prebuild + expo run:android (NOT just expo start)
  *      The native module must be compiled into the dev client APK.
  *      Running `expo start --dev-client` against an OLD APK that predates
@@ -126,7 +126,7 @@ function createStorage(): StorageInterface {
     if (shouldUseAsyncStorage) {
         if (__DEV__) {
             const reason = isExpoGo ? 'Expo Go' : Platform.OS === 'web' ? 'Web' : 'Early Init (Deferring to AsyncStorage)';
-            console.log(`📦 Storage: ${reason} - using AsyncStorage fallback`);
+            console.log(`\uD83D\uDCE6 Storage: ${reason} - using AsyncStorage fallback`);
         }
         return new RobustAsyncStorage();
     }
@@ -143,7 +143,7 @@ function createStorage(): StorageInterface {
 
         if (probeResult !== '1') throw new Error('MMKV probe read/write mismatch');
 
-        if (__DEV__) console.log('📦 Storage: MMKV v4 (NitroModules) initialized ✓');
+        if (__DEV__) console.log('\uD83D\uDCE6 Storage: MMKV v4 (NitroModules) initialized \u2713');
 
         // Wrap native MMKV instance to satisfy StorageInterface fully.
         return {
@@ -159,7 +159,7 @@ function createStorage(): StorageInterface {
     } catch (e) {
         if (__DEV__) {
             console.warn(
-                '📦 Storage: MMKV init failed — falling back to AsyncStorage.\n' +
+                '\uD83D\uDCE6 Storage: MMKV init failed \u2014 falling back to AsyncStorage.\n' +
                 '  If this is unexpected, check:\n' +
                 '    1. expo prebuild && expo run:android was run after adding MMKV\n' +
                 '    2. newArchEnabled=true in android/gradle.properties\n' +
@@ -182,7 +182,7 @@ function getStorage(): StorageInterface {
     // RobustAsyncStorage but do NOT cache it. This forces the Proxy to keep 
     // checking until Runtime.isReady() enters the MMKV branch.
     if (!Runtime.isReady() && !isPermanentFallback) {
-        if (__DEV__) console.log('📦 Storage: Early access - providing temporary AsyncStorage');
+        if (__DEV__) console.log('\uD83D\uDCE6 Storage: Early access - providing temporary AsyncStorage');
         return new RobustAsyncStorage();
     }
 
@@ -194,7 +194,7 @@ function getStorage(): StorageInterface {
 }
 
 /**
- * storage — the app's unified KV store.
+ * storage \u2014 the app's unified KV store.
  *
  * Uses a Proxy so that all method calls go through lazy initialization,
  * meaning MMKV is never instantiated until the first actual read/write.
@@ -221,7 +221,7 @@ export const StorageKeys = {
     CACHED_GROUPS: 'cached_groups',
 };
 
-/** @internal — exposed only for testing. Resets the singleton so tests can inject a fresh instance. */
+/** @internal \u2014 exposed only for testing. Resets the singleton so tests can inject a fresh instance. */
 export function _resetStorageForTesting() {
     _storageInstance = null;
 }

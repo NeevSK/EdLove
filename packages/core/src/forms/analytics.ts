@@ -86,25 +86,25 @@ export const formAnalytics = {
             ];
         });
 
-        const xmlHeader = `<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>
+        const xmlHeader = `<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"
  xmlns:x="urn:schemas-microsoft-com:office:excel"
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
- xmlns:html="http://www.w3.org/TR/REC-html40">
- <Worksheet ss:Name="Form Responses">
+ xmlns:html="http://www.w3.org/TR/REC-html40"
+ <Worksheet ss:Name="Form Responses"
   <Table>`;
 
-        const xmlFooter = `  </Table>
- </Worksheet>
+        const xmlFooter = `  </Table
+ </Worksheet
 </Workbook>`;
 
-        const headerRow = `   <Row ss:StyleID="Header">
+        const headerRow = `   <Row ss:StyleID="Header"
 ${headers.map(h => `    <Cell><Data ss:Type="String">${h}</Data></Cell>`).join('\n')}
    </Row>`;
 
         const dataRows = rows.map(row => {
-            return `   <Row>
+            return `   <Row
 ${row.map(val => `    <Cell><Data ss:Type="${typeof val === 'number' ? 'Number' : 'String'}">${val}</Data></Cell>`).join('\n')}
    </Row>`;
         }).join('\n');

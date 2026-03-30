@@ -3,31 +3,31 @@
  *
  * Platform-agnostic interfaces for all OCR providers.
  * Providers (MLKit, Google Vision, OpenAI) implement OCRProvider
- * and return normalized OCRRawResult — the rest of the system
+ * and return normalized OCRRawResult  the rest of the system
  * never knows which backend produced the output.
  */
 
-// ── Core provider interface ────────────────────────────────────────────────
+//  Core provider interface 
 
 export interface OCRProvider {
   readonly name: 'mlkit' | 'google_vision' | 'openai_vision';
   recognize(imageUri: string): Promise<OCRRawResult>;
 }
 
-// ── Raw output (normalized across all providers) ───────────────────────────
+//  Raw output (normalized across all providers) 
 
 export interface OCRRawResult {
   /** Full concatenated text of the document */
   text: string;
   /** Structural blocks (paragraphs / lines / words depending on provider) */
   blocks: OCRBlock[];
-  /** Overall document confidence, 0–1. Not all providers supply this. */
+  /** Overall document confidence, 01. Not all providers supply this. */
   confidence?: number;
 }
 
 export interface OCRBlock {
   text: string;
-  /** Per-block confidence, 0–1. Used for uncertainty highlighting in review UI. */
+  /** Per-block confidence, 01. Used for uncertainty highlighting in review UI. */
   confidence?: number;
   /** Pixel-space position within the source image */
   boundingBox?: OCRBoundingBox;
@@ -45,7 +45,7 @@ export interface OCRBoundingBox {
   height: number;
 }
 
-// ── Table structure (from TableParser) ────────────────────────────────────
+//  Table structure (from TableParser) 
 
 export interface OCRTable {
   rows: OCRTableRow[];
@@ -55,7 +55,7 @@ export interface OCRTableRow {
   cells: string[];
 }
 
-// ── Pipeline options ───────────────────────────────────────────────────────
+//  Pipeline options 
 
 export type OCRProviderName = OCRProvider['name'];
 

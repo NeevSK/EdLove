@@ -54,7 +54,7 @@ export const useMutationAuditLog = create<MutationAuditLogState>()(
 
             updateEntry: (id, status, error) => {
                 set((state) => ({
-                    entries: state.entries.map((e) =>
+                    entries: state.entries.map((e) =
                         e.id === id
                             ? {
                                 ...e,

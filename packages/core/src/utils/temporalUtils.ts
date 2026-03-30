@@ -1,27 +1,24 @@
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
-
-
-import { useResonanceStore } from '../store/useResonanceStore';
-
-
-/**
- * Temporal Utilities
- * 
- * Provides standardized logic for day-based temporal filtering across the application.
- */
-
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, parseISO, formatISO } from 'date-fns';
+import { useTemporalStore, type TemporalCapability, type TemporalScale } from '../store/useTemporalStore';
 
 export interface TemporalRange {
     start: string; // ISO string 
     end: string;   // ISO string
 }
 
+export interface TemporalFilterSpec {
+    column: string;
+    mode: 'event_time' | 'business_date';
+    scale?: TemporalScale;
+    capability?: TemporalCapability;
+}
+
 /**
  * Generates ISO strings for a specific temporal scale.
  */
 
-export const getTemporalRange = (dateStr: string, scale: 'day' | 'week' | 'month' | 'year' = 'day'): TemporalRange => {
+export const getTemporalRange = (dateStr: string, scale: TemporalScale = 'day'): TemporalRange => {
     const date = parseISO(dateStr);
     
     let start: Date;
@@ -40,6 +37,7 @@ export const getTemporalRange = (dateStr: string, scale: 'day' | 'week' | 'month
             start = startOfYear(date);
             end = endOfYear(date);
             break;
+        case 'custom':
         case 'day':
         default:
             start = startOfDay(date);
@@ -55,29 +53,38 @@ export const getTemporalRange = (dateStr: string, scale: 'day' | 'week' | 'month
 
 
 /**
- * Higher-order utility to apply a resonance filter to any Supabase query.
- * 
- * Implements the "Temporal Lens" protocol:
- * 1. If in the past, filters by Valid Time (created_at).
- * 2. If in the present, returns latest data.
- * 3. Supports Transaction Time shielding.
+ * Higher-order utility to apply temporal filtering to a query builder.
+ *
+ * Important guardrail: timestamps alone are not equivalent to historical truth.
+ * Only event streams, business facts, and audit histories should be filtered here.
  */
-export function applyResonanceFilter<
-    Schema = any,
+export function applyTemporalFilter<Schema = any,
     Table = any,
     Result = any
 >(
     query: PostgrestFilterBuilder<any, any, any, any, any>,
-    column: string = 'created_at'
+    spec: TemporalFilterSpec
 ) {
-    const { resonanceDate, phase, viewScale } = useResonanceStore.getState();
-    
-    if (phase === 'present') return query;
+    const { viewDate, phase, viewScale } = useTemporalStore.getState();
 
-    const { start, end } = getTemporalRange(resonanceDate, viewScale === 'custom' ? 'day' : viewScale);
-    
-    // Valid Time filtering: Ensure we only see things that existed at the resonance point
-    return query.gte(column, start).lte(column, end);
+    if (phase === 'present' && spec.capability === 'snapshot') {
+        return query;
+    }
+
+    if (spec.capability && !['event_stream', 'business_fact', 'audit_history'].includes(spec.capability)) {
+        return query;
+    }
+
+    const scale = spec.scale ?? viewScale;
+    const { start, end } = getTemporalRange(viewDate, scale === 'custom' ? 'day' : scale);
+
+    if (spec.mode === 'business_date') {
+        const startDate = start.split('T')[0] || start;
+        const endDate = end.split('T')[0] || end;
+        return query.gte(spec.column, startDate).lte(spec.column, endDate);
+    }
+
+    return query.gte(spec.column, start).lte(spec.column, end);
 }
 
 /**

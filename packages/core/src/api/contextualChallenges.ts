@@ -1,11 +1,11 @@
 /**
- * Contextual Challenges API — Generative, Opt-In, Collective.
+ * Contextual Challenges API \u2014 Generative, Opt-In, Collective.
  *
  * This module implements the "Contextual Competition" layer described in
  * docs/Core/GROWTH_MODEL.md Section 14 "The Contextual Competition Question."
  *
  * PHILOSOPHY:
- *   Real classrooms have real competition — and that is healthy. The question is
+ *   Real classrooms have real competition \u2014 and that is healthy. The question is
  *   whether we design competition that creates losers (extractive) or competition
  *   that creates growth (generative).
  *
@@ -17,28 +17,27 @@
  *     - Grounded in real impact (actual lessons, actual journal entries, actual care)
  *
  * THREE CHALLENGE TYPES:
- *   1. ClassCollectivePulse  — class-wide challenge (teacher + students together)
- *   2. SchoolSeasonChallenge — school-wide challenge (all teachers, principal visible)
- *   3. PersonalCompass       — individual opt-in, user-defined, private
+ *   1. ClassCollectivePulse  \u2014 class-wide challenge (teacher + students together)
+ *   2. SchoolSeasonChallenge \u2014 school-wide challenge (all teachers, principal visible)
+ *   3. PersonalCompass       \u2014 individual opt-in, user-defined, private
  *
  * DESIGN BOUNDARIES (expressed through what this system does):
- *   - Progress is always collective or personal best — never individual comparative rankings
+ *   - Progress is always collective or personal best \u2014 never individual comparative rankings
  *   - Challenges are opt-in; the app offers; the user decides; there is no loss for declining
- *   - Challenge metrics reflect real impact — lessons taught, care given, community built
+ *   - Challenge metrics reflect real impact \u2014 lessons taught, care given, community built
  *   - Every challenge ends cleanly; the next one starts fresh with no accumulated shame
  *
- * See GROWTH_MODEL.md §14 for the full doctrine and Duolingo analysis.
+ * See GROWTH_MODEL.md \u00A714 for the full doctrine and Duolingo analysis.
  */
 
 import { supabase } from '../lib/supabase';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 /** What kind of collective growth signal counts toward a challenge. */
-export type ChallengeMetric =
-    | 'library_resources_opened'   // Students/teachers opening Library resources
+export type ChallengeMetric = 'library_resources_opened'   // Students/teachers opening Library resources
     | 'joy_jar_entries'            // Teacher wellbeing entries
     | 'assignments_submitted'      // Students submitting assignments
     | 'community_posts'            // Posts and discussions
@@ -53,8 +52,8 @@ export type ChallengeType =
     | 'personal_compass';         // Type 3: Individual, opt-in, private
 
 export type ChallengeStatus =
-    | 'active'     // In progress — accepting contributions
-    | 'completed'  // Target reached — celebration time
+    | 'active'     // In progress \u2014 accepting contributions
+    | 'completed'  // Target reached \u2014 celebration time
     | 'expired'    // Time window passed; not yet reached (no shame, just reset)
     | 'draft';     // Not yet started
 
@@ -95,7 +94,7 @@ export interface PersonalCompass {
 
 export interface ChallengeProgress {
     challenge_id: string;
-    /** Fraction 0–1 */
+    /** Fraction 0\u20131 */
     progress_fraction: number;
     /** Human-language description of current progress */
     progress_narrative_en: string;
@@ -105,9 +104,9 @@ export interface ChallengeProgress {
     nature_state: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // PROGRESS NARRATIVE GENERATION
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 /**
  * Generate a warm, collective-focused progress narrative.
@@ -136,26 +135,26 @@ function buildProgressNarrative(
     const label = current === 1 ? metricLabel[metric].singular : metricLabel[metric].plural;
 
     if (fraction >= 1) {
-        if (type === 'class_collective_pulse') return `Your class reached it together — ${current} ${label}. A river reaching the sea.`;
-        if (type === 'school_season_challenge') return `Your school's forest is bright — ${current} ${label} this season.`;
-        return `You reached your compass — ${current} ${label}. Well done.`;
+        if (type === 'class_collective_pulse') return `Your class reached it together \u2014 ${current} ${label}. A river reaching the sea.`;
+        if (type === 'school_season_challenge') return `Your school's forest is bright \u2014 ${current} ${label} this season.`;
+        return `You reached your compass \u2014 ${current} ${label}. Well done.`;
     }
 
     if (fraction >= 0.75) {
-        if (type === 'personal_compass') return `Almost there — ${current} ${label} so far. ${remaining} more to complete your compass.`;
-        return `The momentum is strong — ${current} ${label} together. ${remaining} more to reach the collective goal.`;
+        if (type === 'personal_compass') return `Almost there \u2014 ${current} ${label} so far. ${remaining} more to complete your compass.`;
+        return `The momentum is strong \u2014 ${current} ${label} together. ${remaining} more to reach the collective goal.`;
     }
 
     if (fraction >= 0.4) {
-        if (type === 'class_collective_pulse') return `Your class is flowing — ${current} ${label} together. The river is rising.`;
-        if (type === 'school_season_challenge') return `The forest is brightening — ${current} ${label} across the school.`;
-        return `You are on your way — ${current} ${label} so far.`;
+        if (type === 'class_collective_pulse') return `Your class is flowing \u2014 ${current} ${label} together. The river is rising.`;
+        if (type === 'school_season_challenge') return `The forest is brightening \u2014 ${current} ${label} across the school.`;
+        return `You are on your way \u2014 ${current} ${label} so far.`;
     }
 
     if (fraction > 0) {
-        if (type === 'class_collective_pulse') return `Your class has begun — ${current} ${label} together so far.`;
-        if (type === 'school_season_challenge') return `The first growth is here — ${current} ${label} across the school.`;
-        return `A beginning — ${current} ${label}. Every start matters.`;
+        if (type === 'class_collective_pulse') return `Your class has begun \u2014 ${current} ${label} together so far.`;
+        if (type === 'school_season_challenge') return `The first growth is here \u2014 ${current} ${label} across the school.`;
+        return `A beginning \u2014 ${current} ${label}. Every start matters.`;
     }
 
     return type === 'personal_compass'
@@ -174,12 +173,12 @@ function natureStateFromFraction(
     return `${metaphor}_ready`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // CONTEXTUAL CHALLENGES API
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export const contextualChallengesAPI = {
-    // ── TYPE 1: Class Collective Pulse ──────────────────────────────────────
+    // \u2500\u2500 TYPE 1: Class Collective Pulse \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     /**
      * Get the active Class Collective Pulse for a classroom.
@@ -218,14 +217,14 @@ export const contextualChallengesAPI = {
         const endsAt = new Date(now.getTime() + durationDays * 86400000);
 
         const celebrationMessages: Record<ChallengeMetric, string> = {
-            library_resources_opened: 'Your class opened their minds together — the river reached the sea. 🌊',
-            joy_jar_entries: 'The whole class has been holding joy. The jar is full. 🌟',
-            assignments_submitted: 'Every student showed up. The harvest is complete. 🌾',
-            community_posts: 'Your class found their voices together. The circle is alive. 🌿',
-            reflections_written: 'Every voice was heard in this class. The garden grew. 🌸',
-            lessons_completed: 'The river flowed from first lesson to last. A class in full flow. 🌊',
-            attendance_recorded: 'Everyone was counted, every day. The forest is full. 🌳',
-            feedback_given: 'Every student received care. The nourishing is complete. 🪷',
+            library_resources_opened: 'Your class opened their minds together \u2014 the river reached the sea. \uD83C\uDF0A',
+            joy_jar_entries: 'The whole class has been holding joy. The jar is full. \uD83C\uDF1F',
+            assignments_submitted: 'Every student showed up. The harvest is complete. \uD83C\uDF3E',
+            community_posts: 'Your class found their voices together. The circle is alive. \uD83C\uDF3F',
+            reflections_written: 'Every voice was heard in this class. The garden grew. \uD83C\uDF38',
+            lessons_completed: 'The river flowed from first lesson to last. A class in full flow. \uD83C\uDF0A',
+            attendance_recorded: 'Everyone was counted, every day. The forest is full. \uD83C\uDF33',
+            feedback_given: 'Every student received care. The nourishing is complete. \uD83E\uDEB7',
         };
 
         const { data, error } = await supabase
@@ -255,7 +254,7 @@ export const contextualChallengesAPI = {
         return data as Challenge;
     },
 
-    // ── TYPE 2: School Season Challenge ──────────────────────────────────────
+    // \u2500\u2500 TYPE 2: School Season Challenge \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     /**
      * Get the active School Season Challenge for a school.
@@ -304,7 +303,7 @@ export const contextualChallengesAPI = {
                 current_count: 0,
                 status: 'active',
                 nature_metaphor: 'forest_brightening',
-                completion_celebration_en: `Your school's forest reached full brightness this season. Every tree contributed. 🌲`,
+                completion_celebration_en: `Your school's forest reached full brightness this season. Every tree contributed. \uD83C\uDF32`,
                 starts_at: now.toISOString(),
                 ends_at: endsAt.toISOString(),
                 created_at: now.toISOString(),
@@ -317,7 +316,7 @@ export const contextualChallengesAPI = {
         return data as Challenge;
     },
 
-    // ── TYPE 3: Personal Compass ──────────────────────────────────────────────
+    // \u2500\u2500 TYPE 3: Personal Compass \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     /**
      * Get the user's active Personal Compass.
@@ -338,7 +337,7 @@ export const contextualChallengesAPI = {
 
     /**
      * Set a Personal Compass intention.
-     * The user defines their own challenge — the app does not assign one.
+     * The user defines their own challenge \u2014 the app does not assign one.
      * Expires any existing active compass for the same user.
      */
     async setPersonalCompass(
@@ -396,11 +395,11 @@ export const contextualChallengesAPI = {
         }
     },
 
-    // ── CONTRIBUTION + PROGRESS ───────────────────────────────────────────────
+    // \u2500\u2500 CONTRIBUTION + PROGRESS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     /**
      * Record a contribution to any active challenges for this user.
-     * Called by growthSignals.emitSignal — fire-and-forget.
+     * Called by growthSignals.emitSignal \u2014 fire-and-forget.
      *
      * Finds all active challenges where:
      *   - The metric matches the signal
@@ -415,7 +414,7 @@ export const contextualChallengesAPI = {
     ): Promise<void> {
         const updates: Promise<void>[] = [];
 
-        // Check class challenge — fetch current count, then increment
+        // Check class challenge \u2014 fetch current count, then increment
         if (classroomId) {
             updates.push((async () => {
                 const { data } = await supabase
@@ -442,7 +441,7 @@ export const contextualChallengesAPI = {
             })());
         }
 
-        // Check school challenge — fetch current count, then increment
+        // Check school challenge \u2014 fetch current count, then increment
         if (schoolId) {
             updates.push((async () => {
                 const { data } = await supabase

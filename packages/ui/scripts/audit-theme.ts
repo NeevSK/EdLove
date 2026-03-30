@@ -25,7 +25,7 @@ function report(label: string, fg: string, bg: string, requirement: { wcag?: num
     const { ratio, apca, apcaRating } = checkAccessibility(fgHex, bgHex);
     
     let failed = false;
-    let details = [];
+    const details = [];
 
     if (requirement.wcag && ratio < requirement.wcag) {
         failed = true;

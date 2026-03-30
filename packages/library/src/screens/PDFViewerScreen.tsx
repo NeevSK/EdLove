@@ -51,7 +51,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                 setDownloadState('ready');
             }
         } catch {
-            // not cached — that's fine
+            // not cached  that's fine
         }
     }, [localPath]);
 
@@ -83,7 +83,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
             if (result?.uri) {
                 setLocalUri(result.uri);
                 setDownloadState('ready');
-                // User taps "Open in Native Viewer" to open — do not auto-open
+                // User taps "Open in Native Viewer" to open  do not auto-open
             } else {
                 throw new Error('Download returned no URI');
             }
@@ -103,28 +103,28 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     }, [localUri]);
 
     return (
-        <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary }}>
+        <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary }}
             <GlobalHeader
                 title={title}
                 subtitle="Institutional Document"
                 showBack
                 onBack={() => (navigation as any).goBack()}
                 rightAction={
-                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}>
+                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}
                         <SanctuaryButton
                             variant="ghost"
                             size="sm"
                             leftIcon={Bookmark}
                             onPress={() => setIsBookmarked(b => !b)}
                             accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Bookmark document'}
-                        >
+                        
                             {''}
-                        </SanctuaryButton>
-                    </Box>
+                        </SanctuaryButton
+                    </Box
                 }
-            />
+            /
 
-            <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+            <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}
                 {/* Icon area */}
                 <Box
                     sx={{
@@ -138,33 +138,33 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                         borderWidth: 2,
                         borderColor: colors.border,
                     }}
-                >
-                    <Download size={48} color={colors.action} />
-                </Box>
+                
+                    <Download size={48} color={colors.action} /
+                </Box
 
-                <Text size="xl" bold color={colors.text} style={{ textAlign: 'center', marginBottom: Theme.spacing.sm }}>
+                <Text size="xl" bold color={colors.text} style={{ textAlign: 'center', marginBottom: Theme.spacing.sm }}
                     {title}
-                </Text>
-                <Text size="sm" color={colors.textSecondary} style={{ textAlign: 'center', marginBottom: Theme.spacing.xl }}>
+                </Text
+                <Text size="sm" color={colors.textSecondary} style={{ textAlign: 'center', marginBottom: Theme.spacing.xl }}
                     Open this document in your device's native PDF viewer.
-                </Text>
+                </Text
 
-                {/* Progress bar — shown while downloading */}
+                {/* Progress bar  shown while downloading */}
                 {downloadState === 'downloading' && (
-                    <Box sx={{ width: '100%', marginBottom: Theme.spacing.lg }}>
-                        <View style={styles.progressTrack}>
-                            <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: colors.action }]} />
-                        </View>
-                        <Text size="xs" color={colors.textSecondary} style={{ textAlign: 'center', marginTop: 6 }}>
-                            Downloading… {Math.round(progress * 100)}%
-                        </Text>
-                    </Box>
+                    <Box sx={{ width: '100%', marginBottom: Theme.spacing.lg }}
+                        <View style={styles.progressTrack}
+                            <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: colors.action }]} /
+                        </View
+                        <Text size="xs" color={colors.textSecondary} style={{ textAlign: 'center', marginTop: 6 }}
+                            Downloading& {Math.round(progress * 100)}%
+                        </Text
+                    </Box
                 )}
 
                 {errorMsg && (
-                    <Text size="sm" color={Theme.colors.error ?? '#E53E3E'} style={{ textAlign: 'center', marginBottom: Theme.spacing.md }}>
+                    <Text size="sm" color={Theme.colors.error ?? '#E53E3E'} style={{ textAlign: 'center', marginBottom: Theme.spacing.md }}
                         {errorMsg}
-                    </Text>
+                    </Text
                 )}
 
                 {/* Action buttons */}
@@ -173,30 +173,30 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                         onPress={startDownload}
                         leftIcon={Download}
                         accessibilityLabel="Download and open PDF"
-                    >
+                    
                         Download & Open
-                    </SanctuaryButton>
+                    </SanctuaryButton
                 ) : downloadState === 'ready' ? (
-                    <HStack space="md">
+                    <HStack space="md"
                         <SanctuaryButton
                             onPress={() => openNative()}
                             leftIcon={ExternalLink}
                             accessibilityLabel="Open in native viewer"
-                        >
+                        
                             Open in Native Viewer
-                        </SanctuaryButton>
+                        </SanctuaryButton
                         <SanctuaryButton
                             variant="outline"
                             onPress={startDownload}
                             leftIcon={Download}
                             accessibilityLabel="Re-download PDF"
-                        >
+                        
                             Re-download
-                        </SanctuaryButton>
-                    </HStack>
+                        </SanctuaryButton
+                    </HStack
                 ) : null}
-            </VStack>
-        </ScreenWrapper>
+            </VStack
+        </ScreenWrapper
     );
 }
 

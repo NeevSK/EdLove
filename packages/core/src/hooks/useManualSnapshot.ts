@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { usePermissions } from './usePermissions';
-import { useResonanceStore } from '../store/useResonanceStore';
+import { usePermissions } from '../permissions/hooks/usePermissions';
+import { useTemporalStore } from '../store/useTemporalStore';
 import { useTracking } from './useTracking';
 
 export interface SnapshotMoment {
     id: string;
     user_id: string;
-    resonance_date: string;
+    snapshot_date: string;
     label: string;
     metadata: any;
     created_at: string;
@@ -16,20 +16,20 @@ export interface SnapshotMoment {
 /**
  * useManualSnapshot
  * 
- * Capability to explicitly "Snapshot" the current state of resonance
- * into a persistent "Moment".
+ * Capability to explicitly snapshot the current temporal context
+ * into a persistent moment.
  */
 export function useManualSnapshot() {
     const { context } = usePermissions();
     const userId = context.userId;
-    const { resonanceDate } = useResonanceStore();
+    const { viewDate } = useTemporalStore();
     const { trackSnapshot } = useTracking();
     const [isSaving, setIsSaving] = useState(false);
 
     /**
      * Captures a snapshot of the current temporal state.
      */
-    const takeSnapshot = async (label: string = 'Resonant Moment', additionalMetadata: any = {}) => {
+    const takeSnapshot = async (label: string = 'Snapshot Moment', additionalMetadata: any = {}) => {
         if (!userId) return null;
         
         setIsSaving(true);
@@ -40,7 +40,8 @@ export function useManualSnapshot() {
                 .from('snapshot_moments')
                 .insert([{
                     user_id: userId,
-                    resonance_date: resonanceDate,
+                    // Keep database writes compatible with the current schema.
+                    resonance_date: viewDate,
                     label,
                     metadata: {
                         ...additionalMetadata,
@@ -53,9 +54,14 @@ export function useManualSnapshot() {
             if (error) throw error;
 
             // Analytics
-            trackSnapshot(label, resonanceDate);
+            trackSnapshot(label, viewDate);
 
-            return data;
+            if (!data) return null;
+
+            return {
+                ...data,
+                snapshot_date: data.resonance_date,
+            } as SnapshotMoment;
         } catch (error) {
             console.error('Failed to capture snapshot:', error);
             return null;

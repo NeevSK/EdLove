@@ -21,7 +21,7 @@ export interface HorizontalChipRowProps {
 }
 
 /**
- * HorizontalChipRow — scrollable row of SanctuaryChips backed by FlatList.
+ * HorizontalChipRow  scrollable row of SanctuaryChips backed by FlatList.
  * Safe to nest inside VirtualizedList/FlatList (different axis avoids RN warning).
  */
 export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
@@ -44,7 +44,7 @@ export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
                 onPress={() => onSelect(item.value)}
                 size={size}
                 variant={variant}
-            />
+            /
         )}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={[
@@ -52,7 +52,7 @@ export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
             { paddingHorizontal },
             center && styles.centeredContent
         ]}
-    />
+    /
 );
 
 const styles = StyleSheet.create({

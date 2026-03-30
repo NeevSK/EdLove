@@ -3,7 +3,6 @@ export * from './api/self';
 export * from './api/dailyContent';
 export * from './constants/wellbeing';
 export * from './constants/selfRegistry';
-export { registerSelfVows } from './lib/vows';
 
 // Hooks
 export * from './hooks/useTimetable';
@@ -30,7 +29,6 @@ export { EnergyBarChart } from './components/EnergyBarChart';
 export { WarmMirrorCard } from './components/WarmMirrorCard';
 export { ImpactRipplesCard } from './components/ImpactRipplesCard';
 export { MoodPickerCard } from './components/MoodPickerCard';
-export { default as CommunityPresence } from './components/CommunityPresence';
 export { default as BreathGuide } from './components/BreathGuide';
 export { default as DailyContentCard } from './components/DailyContentCard';
 export { default as DailyRhythm } from './components/DailyRhythm';
@@ -75,4 +73,5 @@ export { SpotlightEmpty } from './components/SpotlightEmpty';
 
 // Screens
 export { default as SelfScreen } from './screens/SelfScreen';
+export { default as SelfScreenWeb } from './screens/SelfScreen.web';
 export { default as PrivacyLedgerScreen } from './screens/PrivacyLedgerScreen';

@@ -1,6 +1,7 @@
-import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
+import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { EnergyForecast } from '../types';
+import { fetchEnergyForecastsForView, saveEnergyForecastForDate } from '../api/selfInsightsRepository';
 
 const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
 
@@ -41,21 +42,7 @@ export function useEnergyForecast(userId?: string) {
         if (!userId || !isOnline) return;
 
         try {
-            let query = supabase
-                .from('energy_forecasts')
-                .select('*')
-                .eq('user_id', userId);
-
-            if (isPastView) {
-                query = query.eq('forecast_date', viewDate);
-            } else {
-                query = query.order('forecast_date', { ascending: false }).limit(7);
-            }
-
-            const { data, error } = await query;
-
-            if (error) throw error;
-
+            const data = await fetchEnergyForecastsForView(userId, { viewDate, isPastView });
             if (data) {
                 setForecasts(data);
                 // Persist to cache
@@ -78,6 +65,15 @@ export function useEnergyForecast(userId?: string) {
         forecasts,
         isLoading,
         refreshData,
-        setForecasts
+        setForecasts,
+        saveForecast: async (payload: {
+            forecastDate: string;
+            energyLevel: EnergyForecast['energy_level'];
+            notes?: string;
+            existingId?: string;
+        }) => {
+            if (!userId) return;
+            await saveEnergyForecastForDate(userId, payload);
+        },
     };
 }

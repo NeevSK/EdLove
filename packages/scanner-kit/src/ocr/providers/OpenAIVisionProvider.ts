@@ -1,5 +1,5 @@
 /**
- * OpenAIVisionProvider — cloud OCR via GPT-4o Vision
+ * OpenAIVisionProvider  cloud OCR via GPT-4o Vision
  *
  * Best for: complex handwritten registers, mixed Sinhala/Tamil,
  * ambiguous table layouts, and degraded document quality.
@@ -31,10 +31,10 @@ export class OpenAIVisionProvider implements OCRProvider {
   }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+//  Helpers 
 
 async function uriToBase64(uri: string): Promise<string> {
-  // @ts-ignore — expo-file-system/legacy sub-path types may be absent in some package configs
+  // @ts-ignore  expo-file-system/legacy sub-path types may be absent in some package configs
   const { readAsStringAsync, EncodingType } = await import('expo-file-system/legacy');
   return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
 }

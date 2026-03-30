@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { Box, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -45,16 +45,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const getToastStyles = (type: ToastType) => {
         switch (type) {
-            // Use semantic theme tokens (Zero Fallback Rule â€” no raw hex values)
-            case 'success': return { bg: colors.success, icon: 'âœ¨' };
-            case 'error': return { bg: colors.error, icon: 'âš ï¸' };
-            case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: 'ðŸ™' };
-            default: return { bg: colors.tertiary, icon: 'â„¹ï¸' };
+            // Use semantic theme tokens (Zero Fallback Rule \u2014 no raw hex values)
+            case 'success': return { bg: colors.success, icon: '\u2728' };
+            case 'error': return { bg: colors.error, icon: '\u26A0\uFE0F' };
+            case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: '\uD83D\uDCAB' };
+            default: return { bg: colors.tertiary, icon: '\u2139\uFE0F' };
         }
     };
 
     return (
-        <ToastContext.Provider value={{ showToast }}>
+        <ToastContext.Provider value={{ showToast }}
             {children}
             {toast && (
                 <Animated.View
@@ -67,28 +67,28 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         right: 20,
                         zIndex: 1000,
                     }}
-                >
+                
                     <Box sx={{
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
                         backgroundColor: getToastStyles(toast.type!).bg,
                         ...Theme.shadows.md
-                    }}>
-                        <VStack sx={{ alignItems: 'center', gap: 4 }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}>
+                    }}
+                        <VStack sx={{ alignItems: 'center', gap: 4 }}
+                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}
                                 {getToastStyles(toast.type!).icon} {toast.message}
-                            </Text>
-                        </VStack>
-                    </Box>
-                </Animated.View>
+                            </Text
+                        </VStack
+                    </Box
+                </Animated.View
             )}
-        </ToastContext.Provider>
+        </ToastContext.Provider
     );
 };
 
 export const useLotusToast = () => {
     const context = useContext(ToastContext);
-    if (!context) throw new Error('useLotusToast must be used within ToastProvider');
+    if (!context) throw new Error('useLotusToast must be used within ToastProvider (or SanctuaryProvider)');
     return context;
 };
 

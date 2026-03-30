@@ -1,5 +1,5 @@
 /**
- * ScannerModal — Web fallback (Pattern A: platform file pair)
+ * ScannerModal \u2014 Web fallback (Pattern A: platform file pair)
  *
  * expo-camera is a native-only module. On web, Metro resolves this .web.tsx
  * file instead of ScannerModal.tsx, preventing the unconditional
@@ -11,7 +11,7 @@
  * than pointing a webcam at a printed page.
  *
  * Design tokens: colors below are intentionally hardcoded to match the
- * Vellum (#F5EDD6) · Ink (#2A2318) · Saffron (#D4843A) palette for this
+ * Vellum (#F5EDD6) \u00B7 Ink (#2A2318) \u00B7 Saffron (#D4843A) palette for this
  * isolated web fallback, keeping it free of any native theme/token utilities.
  */
 
@@ -73,41 +73,41 @@ export default function ScannerModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
-    >
-      <View style={styles.backdrop}>
+    
+      <View style={styles.backdrop}
         {/* The browser handles keyboard avoidance natively for web modals */}
-        <View style={styles.centeredView}>
-          <View style={styles.card}>
+        <View style={styles.centeredView}
+          <View style={styles.card}
             {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.titleText}>{modalTitle}</Text>
+            <View style={styles.header}
+              <Text style={styles.titleText}>{modalTitle}</Text
               <TouchableOpacity
                 onPress={onClose}
                 style={styles.closeButton}
                 accessibilityLabel={t("scanner.web.closeScanner")}
-              >
-                <Text style={styles.closeText}>✕</Text>
-              </TouchableOpacity>
-            </View>
+              
+                <Text style={styles.closeText}>\u2715</Text
+              </TouchableOpacity
+            </View
 
             {/* Icon + message */}
-            <View style={styles.iconArea}>
-              {/* Lotus / QR icon — inline SVG-style using text */}
+            <View style={styles.iconArea}
+              {/* Lotus / QR icon \u2014 inline SVG-style using text */}
               <View
                 style={[
                   styles.iconCircle,
                   { backgroundColor: accentColor + "1A" },
                 ]}
-              >
-                <Text style={[styles.iconGlyph, { color: accentColor }]}>
-                  ⊞
-                </Text>
-              </View>
-              <Text style={styles.messageText}>
+              
+                <Text style={[styles.iconGlyph, { color: accentColor }]}
+                  \u229E
+                </Text
+              </View
+              <Text style={styles.messageText}
                 {t("scanner.web.cameraMessage")}
-              </Text>
-              <Text style={styles.subText}>{t("scanner.web.desktopHint")}</Text>
-            </View>
+              </Text
+              <Text style={styles.subText}>{t("scanner.web.desktopHint")}</Text
+            </View
 
             {/* Input */}
             <TextInput
@@ -129,7 +129,7 @@ export default function ScannerModal({
               returnKeyType="go"
               autoCorrect={false}
               autoCapitalize="none"
-            />
+            /
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             {/* Submit */}
@@ -137,15 +137,15 @@ export default function ScannerModal({
               style={[styles.submitButton, { backgroundColor: accentColor }]}
               onPress={handleSubmit}
               activeOpacity={0.85}
-            >
-              <Text style={styles.submitText}>
+            
+              <Text style={styles.submitText}
                 {t("scanner.web.submitCode")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
+              </Text
+            </TouchableOpacity
+          </View
+        </View
+      </View
+    </Modal
   );
 }
 

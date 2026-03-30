@@ -14,11 +14,9 @@
 import React, { useEffect, useState } from 'react';
 import { X, Zap } from 'lucide-react-native';
 
-import { 
-    TeacherDashboard, 
-    StudentDashboard, 
-    PrincipalDashboard 
-} from '@repo/classroom';
+import TeacherDashboard from './TeacherDashboard';
+import StudentDashboard from './StudentDashboard';
+import PrincipalDashboard from './PrincipalDashboard';
 
 type DemoRole = 'teacher' | 'principal' | 'student';
 
@@ -64,8 +62,8 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 flexDirection: 'column',
                 overflow: 'hidden',
             }}
-        >
-            {/* ── Demo banner ─────────────────────────────────────────────── */}
+        
+            {/*  Demo banner  */}
             <div style={{
                 background: 'rgba(245,158,11,0.10)',
                 borderBottom: '1px solid rgba(245,158,11,0.25)',
@@ -76,13 +74,13 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 gap: '12px',
                 flexShrink: 0,
                 flexWrap: 'wrap',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Zap size={15} color="var(--amber-glow)" fill="var(--amber-glow)" />
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--amber-glow)' }}>
-                        Demo — {ROLE_LABEL[role]} view with simulated data
-                    </span>
-                </div>
+            }}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                    <Zap size={15} color="var(--amber-glow)" fill="var(--amber-glow)" /
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--amber-glow)' }}
+                        Demo  {ROLE_LABEL[role]} view with simulated data
+                    </span
+                </div
                 <button
                     onClick={onClose}
                     style={{
@@ -92,28 +90,28 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                         cursor: 'pointer', fontSize: '12px', fontWeight: '700',
                         color: 'var(--ink)', fontFamily: 'var(--font-body)',
                     }}
-                >
+                
                     <X size={13} /> Exit demo
-                </button>
-            </div>
+                </button
+            </div
 
-            {/* ── Scrollable demo content ──────────────────────────────────── */}
+            {/*  Scrollable demo content  */}
             <div
                 style={{
                     flex: 1,
                     overflowY: 'auto',
                     padding: '40px 48px 60px',
                 }}
-            >
+            
                 {role === 'teacher' && <TeacherDashboard />}
                 {role === 'principal' && (
                     <PrincipalDashboard
                         schoolId="mock-school"
                         userId="mock-principal"
-                    />
+                    /
                 )}
                 {role === 'student' && <StudentDashboard />}
-            </div>
-        </div>
+            </div
+        </div
     );
 }

@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, StyleSheet, Alert, Dimensions } from 'react-native';
+import React from 'react';
+import { View, ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
 import { useTheme } from '@repo/ui';
-import { Intent } from '@repo/core';
-import { guardianAPI, type GuardianDashboard, type StudentOverview } from '../guardian';
+import { type StudentOverview } from '../guardian';
+import { useGuardianWorkspaceData } from '../guardian/useGuardianWorkspaceData';
+import { GuardianHeader } from '../components/poa/GuardianHeader';
+import { GuardianChildrenList } from '../components/poa/GuardianChildrenList';
+import { GuardianNotifications } from '../components/guardian/GuardianNotifications';
+import { GuardianEvents } from '../components/guardian/GuardianEvents';
 
 interface GuardianDashboardScreenProps {
   guardianId: string;
@@ -26,55 +30,28 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
   onEventPress
 }) => {
   const theme = useTheme();
-  const [dashboard, setDashboard] = useState<GuardianDashboard | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { dashboard, isLoading, error } = useGuardianWorkspaceData(guardianId);
 
   const isDesktop = screenWidth > 1024;
 
-  useEffect(() => {
-    loadDashboard();
-  }, [guardianId]);
-
-  const loadDashboard = async () => {
-    try {
-      setIsLoading(true);
-      const dashboardData = await guardianAPI.getGuardianDashboard(guardianId);
-      setDashboard(dashboardData);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to load dashboard');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-          Loading dashboard...
-        </Text>
-      </View>
-    );
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading dashboard...
+        </Text      </View    );
   }
 
   if (!dashboard) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-        <Text style={[styles.errorText, { color: theme.accent.danger }]}>
-          Failed to load dashboard
-        </Text>
-      </View>
-    );
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.errorText, { color: theme.accent.danger }]}          {error || 'Failed to load dashboard'}
+        </Text      </View    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-      {/* Header Intent */}
-      <Intent 
-        intent="dashboard.guardian.header" 
-        props={{ studentCount: dashboard.students.length, isDesktop }} 
-      />
-
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header (Direct Component) */}
+      <GuardianHeader 
+        studentCount={dashboard.students.length} 
+        isDesktop={isDesktop} 
+      /
       <ScrollView 
         style={styles.content}
         contentContainerStyle={[
@@ -82,22 +59,15 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
           isDesktop && styles.contentContainerDesktop
         ]}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Students Section (POA Intent) */}
-        <Intent 
-          intent="dashboard.guardian.children_list" 
-          props={{ 
-            students: dashboard.students,
-            onStudentPress,
-            isDesktop
-          }} 
-        />
-
+              {/* Students Section (Direct Component) */}
+        <GuardianChildrenList 
+          students={dashboard.students}
+          onStudentPress={onStudentPress}
+          isDesktop={isDesktop}
+        /
         {/* Notifications and Events Row (POA) */}
         {isDesktop ? (
-          <View style={styles.desktopRow}>
-            <View style={[styles.desktopColumn, { flex: 1 }]}>
-              <Text 
+          <View style={styles.desktopRow}            <View style={[styles.desktopColumn, { flex: 1 }]}              <Text 
                 style={[
                   styles.sectionHeader,
                   { 
@@ -107,21 +77,13 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                     fontSize: 18
                   }
                 ]}
-              >
-                Recent Notifications
-              </Text>
-              <Intent 
-                intent="dashboard.guardian.notifications" 
-                props={{ 
-                  notifications: dashboard.notifications,
-                  onNotificationPress,
-                  limit: 5
-                }} 
-              />
-            </View>
-
-            <View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}>
-              <Text 
+                              Recent Notifications
+              </Text              <GuardianNotifications 
+                notifications={dashboard.notifications}
+                onNotificationPress={onNotificationPress}
+                limit={5}
+              /            </View
+            <View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}              <Text 
                 style={[
                   styles.sectionHeader,
                   { 
@@ -131,24 +93,14 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                     fontSize: 18
                   }
                 ]}
-              >
-                Upcoming Events
-              </Text>
-              <Intent 
-                intent="dashboard.guardian.events" 
-                props={{ 
-                  events: dashboard.upcomingEvents,
-                  onEventPress,
-                  limit: 5
-                }} 
-              />
-            </View>
-          </View>
-        ) : (
-          <>
-            {/* Mobile Notifications (POA) */}
-            <View style={styles.section}>
-              <Text 
+                              Upcoming Events
+              </Text              <GuardianEvents 
+                events={dashboard.upcomingEvents}
+                onEventPress={onEventPress}
+                limit={5}
+              /            </View          </View        ) : (
+          <            {/* Mobile Notifications (POA) */}
+            <View style={styles.section}              <Text 
                 style={[
                   styles.sectionHeader,
                   { 
@@ -158,22 +110,14 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                     fontSize: 16
                   }
                 ]}
-              >
-                Recent Notifications
-              </Text>
-              <Intent 
-                intent="dashboard.guardian.notifications" 
-                props={{ 
-                  notifications: dashboard.notifications,
-                  onNotificationPress,
-                  limit: 3
-                }} 
-              />
-            </View>
-
+                              Recent Notifications
+              </Text              <GuardianNotifications 
+                notifications={dashboard.notifications}
+                onNotificationPress={onNotificationPress}
+                limit={3}
+              /            </View
             {/* Mobile Events (POA) */}
-            <View style={styles.section}>
-              <Text 
+            <View style={styles.section}              <Text 
                 style={[
                   styles.sectionHeader,
                   { 
@@ -183,23 +127,13 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                     fontSize: 16
                   }
                 ]}
-              >
-                Upcoming Events
-              </Text>
-              <Intent 
-                intent="dashboard.guardian.events" 
-                props={{ 
-                  events: dashboard.upcomingEvents,
-                  onEventPress,
-                  limit: 3
-                }} 
-              />
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </View>
-  );
+                              Upcoming Events
+              </Text              <GuardianEvents 
+                events={dashboard.upcomingEvents}
+                onEventPress={onEventPress}
+                limit={3}
+              /            </View          </        )}
+      </ScrollView    </View  );
 };
 
 // Mobile-first responsive styles

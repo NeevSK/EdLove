@@ -40,13 +40,13 @@ export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(({
         styleURL={styleURL || (MapLibreGL as any).StyleURL?.Default}
         logoEnabled={false}
         attributionEnabled={false}
-      >
+      
         <MLCamera
           centerCoordinate={region ? [region.longitude, region.latitude] : undefined}
           zoomLevel={region ? 12 : undefined}
-        />
+        /
         {children}
-      </MLMapView>
+      </MLMapView
     );
   }
 
@@ -57,9 +57,9 @@ export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(({
       style={[styles.map, style]}
       initialRegion={region}
       {...props}
-    >
+    
       {children}
-    </MapViewRN>
+    </MapViewRN
   );
 });
 

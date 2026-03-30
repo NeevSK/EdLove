@@ -32,7 +32,7 @@ export function useMapPresence(channelName: string = 'presence:map:global') {
                 const flattened: MapPresence[] = Object.values(state).flat() as any;
 
                 // Only keep presences that have some coordinate data
-                setPresences(flattened.filter(p =>
+                setPresences(flattened.filter(p =
                     (p.latitude !== undefined && p.longitude !== undefined) ||
                     (p.map_x !== undefined && p.map_y !== undefined)
                 ));

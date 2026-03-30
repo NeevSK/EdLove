@@ -28,13 +28,10 @@ export const CollaborativeGrove: React.FC<{ tenantIds: string[] }> = ({ tenantId
   });
 
   return (
-    <SanctuaryCanvas style={styles.container}>
-      <View style={styles.groveContainer}>
-        {tenantIds.map((id, index) => {
+    <SanctuaryCanvas style={styles.container}      <View style={styles.groveContainer}        {tenantIds.map((id, index) => {
           const m = metrics?.[index] || { engagement: 0.5, growth: 0.5 };
           return (
-            <View key={id} style={styles.treeContainer}>
-              {/* Simple geometric tree that grows based on data */}
+            <View key={id} style={styles.treeContainer}              {/* Simple geometric tree that grows based on data */}
               <View 
                 style={[
                   styles.canopy, 
@@ -45,15 +42,9 @@ export const CollaborativeGrove: React.FC<{ tenantIds: string[] }> = ({ tenantId
                     opacity: 0.6 + (m.growth || 0) * 0.4
                   }
                 ]} 
-              />
-              <View style={styles.trunk} />
-            </View>
-          );
+              /              <View style={styles.trunk} /            </View          );
         })}
-      </View>
-      <Text style={styles.label}>Collaborative Knowledge Grove</Text>
-    </SanctuaryCanvas>
-  );
+      </View      <Text style={styles.label}>Collaborative Knowledge Grove</Text    </SanctuaryCanvas  );
 };
 
 const styles = StyleSheet.create({

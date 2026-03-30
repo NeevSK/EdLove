@@ -9,6 +9,10 @@ export interface StudentGrade {
   feedback?: string;
   rank?: number;
   graded_at: string;
+  publication_state?: 'draft' | 'published';
+  published_at?: string | null;
+  published_by?: string | null;
+  publication_action?: string | null;
 }
 
 export interface ClassroomGradingSettings {

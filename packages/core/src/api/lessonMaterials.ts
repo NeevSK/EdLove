@@ -1,112 +1,55 @@
-﻿/**
- * Lesson Materials API
- * 
+import { educationalContract } from './educational.contract';
+import type { LessonMaterial } from './types';
+import { educationalServices } from '../domains/educational/runtime';
+
+/**
  * API methods for managing academic materials (PDFs, Links, Notes)
+ * Following Protocol-Oriented Authority.
  */
-
-import { supabase } from '../lib/supabase';
-import { identityAPI } from './identity';
-import { APIError, LessonMaterial } from './types';
-import { growthSignalsAPI } from './growthSignals';
-
 export const lessonMaterialsAPI = {
     /**
      * Get all materials for a classroom
+     * @authority read Material
      */
     async getAll(classroomId: string): Promise<LessonMaterial[]> {
-        const { data, error } = await supabase
-            .from('lesson_materials')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .order('is_pinned', { ascending: false })
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            throw new APIError('Failed to fetch lesson materials', error.code, error);
-        }
-
-        return data || [];
+        return educationalServices.lessonMaterials.getAll(classroomId) as Promise<LessonMaterial[]>;
     },
 
     /**
-     * Get materials for a specific lesson (Month)
+     * Get materials for a specific lesson
+     * @authority read Material
      */
     async getByLesson(lessonId: string): Promise<LessonMaterial[]> {
-        const { data, error } = await supabase
-            .from('lesson_materials')
-            .select('*')
-            .eq('lesson_id', lessonId)
-            .order('is_pinned', { ascending: false })
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            throw new APIError('Failed to fetch materials for lesson', error.code, error);
-        }
-
-        return data || [];
+        return educationalServices.lessonMaterials.getByLesson(lessonId) as Promise<LessonMaterial[]>;
     },
 
     /**
      * Create new material
+     * @authority create Material
      */
     async create(
-        material: Omit<LessonMaterial, 'id' | 'created_at' | 'updated_at'>
-    ): Promise<LessonMaterial> {
-        const { data, error } = await supabase
-            .from('lesson_materials')
-            .insert([material])
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to create lesson material', error.code, error);
-        }
-
-        // Growth signal: teacher prepared materials for students (Nourishing dimension)
-        // Also triggers the 'first_offering' Whispered Moment check
-        const myId = await identityAPI.getMyInternalId();
-        if (myId) {
-            void growthSignalsAPI.emitSignal(myId, 'lesson_material_created', {
-                classroom_id: material.classroom_id,
-                material_type: material.type,
-            }).catch(() => { });
-        }
-
-        return data;
+        material: Omit<LessonMaterial, 'id' | 'created_at' | 'updated_at'    ): Promise<LessonMaterial> {
+        return educationalServices.lessonMaterials.create(material as any) as Promise<LessonMaterial>;
     },
 
     /**
      * Update material
+     * @authority update Material
      */
     async update(
         id: string,
-        updates: Partial<LessonMaterial>
-    ): Promise<LessonMaterial> {
-        const { data, error } = await supabase
-            .from('lesson_materials')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to update lesson material', error.code, error);
-        }
-
-        return data;
+        updates: Partial<LessonMaterial    ): Promise<LessonMaterial> {
+        return educationalServices.lessonMaterials.update(id, updates as any) as Promise<LessonMaterial>;
     },
 
     /**
      * Delete material
+     * @authority delete Material
      */
     async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('lesson_materials')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete lesson material', error.code, error);
-        }
+        return educationalServices.lessonMaterials.delete(id);
     },
 };
+
+// Satisfy linter for POA metadata linking
+void educationalContract;

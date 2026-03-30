@@ -54,8 +54,7 @@ function TeacherCard({
   const statusLabel = item.todayStatus ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus) : 'No data';
 
   return (
-    <TouchableOpacity onPress={onTap} activeOpacity={0.8}>
-      <Box
+    <TouchableOpacity onPress={onTap} activeOpacity={0.8}      <Box
         sx={{
           width: 160,
           minHeight: 200,
@@ -68,8 +67,7 @@ function TeacherCard({
           justifyContent: 'center',
           gap: Theme.spacing.sm,
         }}
-      >
-        <Box
+              <Box
           sx={{
             width: 56,
             height: 56,
@@ -79,16 +77,10 @@ function TeacherCard({
             justifyContent: 'center',
             marginBottom: 4,
           }}
-        >
-          <Text sx={{ fontSize: 20, fontWeight: '700', color: Theme.colors.amberGlow ?? colors.text }}>
-            {getInitialsFromName(item.fullName)}
-          </Text>
-        </Box>
-
-        <Text numberOfLines={1} sx={{ fontSize: 13, fontWeight: '700', color: colors.text, textAlign: 'center', maxWidth: 136 }}>
-          {item.fullName}
-        </Text>
-
+                  <Text sx={{ fontSize: 20, fontWeight: '700', color: Theme.colors.amberGlow ?? colors.text }}            {getInitialsFromName(item.fullName)}
+          </Text        </Box
+        <Text numberOfLines={1} sx={{ fontSize: 13, fontWeight: '700', color: colors.text, textAlign: 'center', maxWidth: 136 }}          {item.fullName}
+        </Text
         <Box
           sx={{
             backgroundColor: colors.secondary,
@@ -96,21 +88,10 @@ function TeacherCard({
             paddingHorizontal: 8,
             paddingVertical: 2,
           }}
-        >
-          <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{formatRole(item.role)}</Text>
-        </Box>
-
-        <HStack sx={{ alignItems: 'center', gap: 4 }}>
-          <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: statusColor }} />
-          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{statusLabel}</Text>
-        </HStack>
-
-        <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-          {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
-        </Text>
-      </Box>
-    </TouchableOpacity>
-  );
+                  <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{formatRole(item.role)}</Text        </Box
+        <HStack sx={{ alignItems: 'center', gap: 4 }}          <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: statusColor }} /          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{statusLabel}</Text        </HStack
+        <Text sx={{ fontSize: 11, color: colors.textSecondary }}          {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
+        </Text      </Box    </TouchableOpacity  );
 }
 
 export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarouselProps) {
@@ -135,30 +116,20 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
 
   if (loading) {
     return (
-      <HStack sx={{ gap: Theme.spacing.sm }}>
-        <SkeletonCard height={200} style={{ width: 160 }} />
-        <SkeletonCard height={200} style={{ width: 160 }} />
-        <SkeletonCard height={200} style={{ width: 160 }} />
-      </HStack>
-    );
+      <HStack sx={{ gap: Theme.spacing.sm }}        <SkeletonCard height={200} style={{ width: 160 }} /        <SkeletonCard height={200} style={{ width: 160 }} /        <SkeletonCard height={200} style={{ width: 160 }} /      </HStack    );
   }
 
   if (teachers.length === 0) return null;
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} sx={{ marginHorizontal: -Theme.spacing.lg }}>
-      <HStack
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} sx={{ marginHorizontal: -Theme.spacing.lg }}      <HStack
         sx={{
           gap: Theme.spacing.sm,
           paddingHorizontal: Theme.spacing.lg,
           paddingVertical: Theme.spacing.xs,
         }}
-      >
-        {teachers.map((teacher) => (
-          <TeacherCard key={teacher.userId} item={teacher} onTap={() => onTapTeacher?.(teacher.userId)} colors={colors} />
-        ))}
-      </HStack>
-    </ScrollView>
-  );
+              {teachers.map((teacher) => (
+          <TeacherCard key={teacher.userId} item={teacher} onTap={() => onTapTeacher?.(teacher.userId)} colors={colors} /        ))}
+      </HStack    </ScrollView  );
 }
 

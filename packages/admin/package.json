@@ -5,13 +5,20 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./founder": "./src/entrypoints/founder.ts",
+    "./screens/FounderDashboard": "./src/screens/FounderDashboard.tsx",
+    "./screens/FounderSchoolDashboard": "./src/screens/FounderSchoolDashboard.tsx",
+    "./screens/SchoolCreationScreen": "./src/screens/SchoolCreationScreen.tsx",
+    "./screens/SchoolForestScreen.web": "./src/screens/SchoolForestScreen.web.tsx",
+    "./components/CreateSchoolModal": "./src/components/school/CreateSchoolModal.tsx",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "eslint .",
-    "check-types": "tsc --noEmit"
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
+    "@repo/community": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/people": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
@@ -19,7 +26,8 @@
     "@repo/analytics": "workspace:*",
     "expo-clipboard": "~55.0.9",
     "lucide-react-native": "^0.563.0",
-    "react-i18next": "^16.5.4"
+    "react-i18next": "^16.5.4",
+    "@tanstack/react-query": "^5.90.20"
   },
   "devDependencies": {
     "@types/react": "~19.1.10",

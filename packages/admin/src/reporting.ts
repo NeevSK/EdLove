@@ -1,4 +1,4 @@
-import { staffManagementAPI, supabase, type AttendanceReport, type TenantKind } from '@repo/core';
+import { attendanceAPI, supabase, type AttendanceReport, type TenantKind } from '@repo/core';
 
 export interface ReportDefinition {
   id: string;
@@ -66,7 +66,7 @@ export const reportingAPI = {
     endDate: string,
     classroomId?: string,
   ): Promise<AttendanceReport> {
-    return staffManagementAPI.getAttendanceReport(schoolId, startDate, endDate, classroomId);
+    return attendanceAPI.getAttendanceReport(schoolId, startDate, endDate, classroomId);
   },
 
   async getOperationalSnapshot(

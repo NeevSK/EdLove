@@ -24,13 +24,7 @@ import { useFAB } from '../context/FABContext';
 // TYPES
 // ============================================================================
 
-export type TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile' | 'section' | 'grade' | 'principal' | 'founder';
-
-export interface ActionItem {
-    label: string;
-    onPress: () => void;
-    icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
-}
+import { TabType, ActionItem } from '../types/fab';
 
 interface LotusPetalFABProps {
     currentTab?: TabType;
@@ -57,15 +51,15 @@ const FAB_DRAG_THRESHOLD = 8;
 const FAB_WEB_STORAGE_KEY = 'gurudevi_lotus_fab_position_v1';
 
 const fabConfig: Record<TabType, { emoji: string; label: string }> = {
-    self: { emoji: '🪷', label: 'Reflection' },
-    classroom: { emoji: '➕', label: 'Add' },
-    community: { emoji: '💬', label: 'Community' },
-    library: { emoji: '📚', label: 'Library' },
-    profile: { emoji: '👤', label: 'Profile' },
-    section: { emoji: '🏢', label: 'Section' },
-    grade: { emoji: '🏫', label: 'Grade' },
-    principal: { emoji: '👑', label: 'Management' },
-    founder: { emoji: '🏛️', label: 'Founder' }
+    self: { emoji: '\uD83E\uDEB7', label: 'Reflection' },
+    classroom: { emoji: '\u2795', label: 'Add' },
+    community: { emoji: '\uD83D\uDCAC', label: 'Community' },
+    library: { emoji: '\uD83D\uDCDA', label: 'Library' },
+    profile: { emoji: '\uD83D\uDC64', label: 'Profile' },
+    section: { emoji: '\uD83C\uDFE2', label: 'Section' },
+    grade: { emoji: '\uD83C\uDFEB', label: 'Grade' },
+    principal: { emoji: '\uD83D\uDC51', label: 'Management' },
+    founder: { emoji: '\uD83C\uDFDB\uFE0F', label: 'Founder' }
 };
 
 // ============================================================================
@@ -276,13 +270,13 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     if (!isVisible) return null;
 
     return (
-        <View style={styles.overlayContainer}>
+        <View style={styles.overlayContainer}
             <Animated.View 
                 {...panResponder.panHandlers}
                 style={[styles.fabWrapper, containerStyle]}
-            >
+            
                 {/* Breathing Glow */}
-                <Animated.View style={[styles.glow, breathingStyle, hasActiveGaps && styles.glowActive]} />
+                <Animated.View style={[styles.glow, breathingStyle, hasActiveGaps && styles.glowActive]} /
 
                 {/* Simple Circle */}
                 <Box
@@ -305,27 +299,27 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         borderWidth: 1.5,
                         borderColor: isDark ? Theme.colors.glass.dark.border : Theme.colors.glass.light.border,
                     }}
-                >
+                
 
                     {hasActiveGaps ? (
-                        <Text style={styles.emojiText}>❗</Text>
+                        <Text style={styles.emojiText}>\u2757</Text
                     ) : icon ? (
                         icon
                     ) : (
-                        <Text style={styles.emojiText}>{config.emoji}</Text>
+                        <Text style={styles.emojiText}>{config.emoji}</Text
                     )}
-                </Box>
-            </Animated.View>
+                </Box
+            </Animated.View
 
             {/* Simple Action Drawer Integration */}
             <UniversalModal
                 isOpen={isDrawerVisible}
                 onClose={() => setIsDrawerVisible(false)}
-            >
-                <Pressable
+            
+                <Pressable accessibilityRole="button"
                     style={styles.modalOverlay}
                     onPress={() => setIsDrawerVisible(false)}
-                >
+                
                     <Box
                         sx={{
                             backgroundColor: Theme.colors.shroud,
@@ -336,7 +330,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             width: '100%',
                             marginTop: 'auto',
                         }}
-                    >
+                    
                         <Box sx={{
                             width: 40,
                             height: 4,
@@ -345,15 +339,15 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             alignSelf: 'center',
                             marginBottom: Theme.spacing.lg,
                             opacity: 0.3
-                        }} />
+                        }} /
 
-                        <VStack sx={{ gap: '$md' as any }}>
-                            <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$xl' as any, fontWeight: '600', marginBottom: '$2' as any }}>
+                        <VStack sx={{ gap: '$md' as any }}
+                            <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$xl' as any, fontWeight: '600', marginBottom: '$2' as any }}
                                 {config.label} Actions
-                            </Text>
+                            </Text
 
                             {onBreathingReset && (
-                                <Pressable
+                                <Pressable accessibilityRole="button"
                                     onPress={() => {
                                         setIsDrawerVisible(false);
                                         onBreathingReset();
@@ -363,14 +357,14 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                         { backgroundColor: `${Theme.colors.sageGreen}1A` }, // 10% opacity
                                         pressed && { backgroundColor: `${Theme.colors.sageGreen}33` } // 20% opacity
                                     ]}
-                                >
-                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}>
-                                        <Wind size={20} color={Theme.colors.sageGreen} strokeWidth={2} />
-                                        <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any, fontWeight: '600' }}>
+                                
+                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}
+                                        <Wind size={20} color={Theme.colors.sageGreen} strokeWidth={2} /
+                                        <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any, fontWeight: '600' }}
                                             Breathing Reset
-                                        </Text>
-                                    </HStack>
-                                </Pressable>
+                                        </Text
+                                    </HStack
+                                </Pressable
                             )}
 
                             {actions?.map((action, idx) => (
@@ -387,18 +381,18 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                         styles.actionItem,
                                         pressed && { backgroundColor: `${Theme.colors.sacredWhite}0D` } // 5% opacity
                                     ]}
-                                >
-                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}>
+                                
+                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}
                                         {action.icon && <action.icon size={20} color={Theme.colors.sanctuarySaffron} strokeWidth={2} />}
-                                        <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any }}>{action.label}</Text>
-                                    </HStack>
-                                </Pressable>
+                                        <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any }}>{action.label}</Text
+                                    </HStack
+                                </Pressable
                             ))}
-                        </VStack>
-                    </Box>
-                </Pressable>
-            </UniversalModal>
-        </View>
+                        </VStack
+                    </Box
+                </Pressable
+            </UniversalModal
+        </View
     );
 };
 

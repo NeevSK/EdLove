@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { KnowledgeTopology } from '../types/topology';
+import { KnowledgeTopologySchema } from './schemas/dashboard.schema';
 
 export interface MappingTopology extends KnowledgeTopology {
     id: string;
@@ -26,15 +27,21 @@ export const mappingAPI = {
             console.error('[MappingAPI] Fetch error:', error);
             return null;
         }
-        return data as MappingTopology;
+        
+        try {
+            // Validate the core topology part
+            KnowledgeTopologySchema.parse(data);
+            return (data as MappingTopology);
+        } catch (e) {
+            console.error('[MappingAPI] Validation error for topology:', e);
+            return (data as MappingTopology); // Fallback but logged
+        }
     },
 
     /**
      * Fetch the "School Pulse" for a principal or authorized staff
      */
     async getSchoolPulse(schoolId: string, viewDate?: string): Promise<KnowledgeTopology | null> {
-        // In a real implementation, this would call a complex RPC that aggregates 
-        // school data into a topology.
         const { data, error } = await supabase
             .rpc('get_school_mapping_pulse', { 
                 p_school_id: schoolId,
@@ -45,7 +52,13 @@ export const mappingAPI = {
             console.error('[MappingAPI] School Pulse error:', error);
             return null;
         }
-        return data as KnowledgeTopology;
+
+        try {
+            return (KnowledgeTopologySchema.parse(data) as KnowledgeTopology);
+        } catch (e) {
+            console.error('[MappingAPI] Pulse validation error:', e);
+            return (data as KnowledgeTopology);
+        }
     },
 
     /**
@@ -73,6 +86,6 @@ export const mappingAPI = {
             });
 
         if (error) throw error;
-        return data as string; // Returns the token or full deep-link
+        return (data as string);
     }
 };

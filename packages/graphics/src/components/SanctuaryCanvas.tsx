@@ -29,18 +29,14 @@ export const SanctuaryCanvas: React.FC<SanctuaryCanvasProps> = ({
   
   if (Platform.OS === 'web') {
     return (
-      <View style={[{ width, height, overflow: 'hidden' }, style]}>
-        {standardContent}
+      <View style={[{ width, height, overflow: 'hidden' }, style]}        {standardContent}
         {children}
-      </View>
-    );
+      </View    );
   }
 
   // On native, we'll eventually wrap this with Skia Canvas if skia render is provided
   return (
-    <View style={[{ width, height }, style]}>
-      {standardContent}
+    <View style={[{ width, height }, style]}      {standardContent}
       {children}
-    </View>
-  );
+    </View  );
 };

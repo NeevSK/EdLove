@@ -19,7 +19,7 @@ export interface CoordinationGap {
  * ReliefCoordinator Agent
  *
  * Reads real data from Supabase to surface operational gaps:
- *  - Staff leaves approved for today → which classrooms may be uncovered?
+ *  - Staff leaves approved for today \u2192 which classrooms may be uncovered?
  *  - Cross-references with timetable/classroom assignments to propose relief.
  *
  * All reads are best-effort and non-fatal. Falls back to empty array on error.
@@ -74,7 +74,7 @@ export const ReliefCoordinator = {
                 const absentTeacher = matchingLeave ? (matchingLeave as any).users?.full_name ?? 'Absent teacher' : 'Absent teacher';
                 const suggestion = (allTeachers as any[])?.[0]?.full_name
                     ? `Assign ${(allTeachers as any[])[0].full_name} (available)`
-                    : 'No free teacher found — check timetable';
+                    : 'No free teacher found \u2014 check timetable';
 
                 gaps.push({
                     id: `relief-${classroom.id}-${today}`,
@@ -110,7 +110,7 @@ export const ReliefCoordinator = {
  * Logic for annual timetable generation and conflict resolution.
  *
  * generateDraft uses real classroom + teacher data from Supabase.
- * Constraint-solving is client-side (greedy allocation) — production upgrade
+ * Constraint-solving is client-side (greedy allocation) \u2014 production upgrade
  * path is a Supabase edge function with full LP/CP solver.
  */
 export const TimetableScheduler = {
@@ -163,8 +163,8 @@ export const TimetableScheduler = {
                 schedule,
                 classroom_names: Object.fromEntries((classrooms ?? []).map(c => [c.id, c.name])),
                 recommendations: [
-                    (classrooms ?? []).length === 0 ? 'No classrooms found — add classrooms first.' : null,
-                    (teachers ?? []).length === 0 ? 'No teachers found — invite teachers first.' : null,
+                    (classrooms ?? []).length === 0 ? 'No classrooms found \u2014 add classrooms first.' : null,
+                    (teachers ?? []).length === 0 ? 'No teachers found \u2014 invite teachers first.' : null,
                 ].filter(Boolean),
                 generated_at: new Date().toISOString(),
             };

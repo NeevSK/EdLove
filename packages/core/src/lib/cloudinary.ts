@@ -59,15 +59,21 @@ export async function uploadToCloudinary(
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('📦 Cloudinary Upload Error Details:', errorData);
+            if (__DEV__) {
+                console.error('\uD83D\uDCE6 Cloudinary Upload Error Details:', errorData);
+            }
             throw new Error(errorData.error?.message || 'Cloudinary upload failed');
         }
 
         const data: CloudinaryUploadResponse = await response.json();
-        console.log(`✅ Asset uploaded successfully to Cloudinary: ${data.secure_url}`);
+        if (__DEV__) {
+            console.log(`\u2705 Asset uploaded successfully to Cloudinary: ${data.secure_url}`);
+        }
         return data.secure_url;
     } catch (error) {
-        console.error('📦 Cloudinary Upload Exception:', error);
+        if (__DEV__) {
+            console.error('\uD83D\uDCE6 Cloudinary Upload Exception:', error);
+        }
         throw error;
     }
 }

@@ -16,7 +16,7 @@ export type SyncProgressCallback = (progress: SyncProgress) => void;
  * Guest Data Sync Service
  * 
  * Handles migration of locally stored guest data to Supabase when a user creates an account.
- * This service ensures seamless data continuity during the guest → authenticated user transition.
+ * This service ensures seamless data continuity during the guest \u2192 authenticated user transition.
  */
 export class GuestDataSync {
     /**
@@ -75,7 +75,7 @@ export class GuestDataSync {
                 }
             };
 
-            // 1. Sync Timetable — batch insert for all periods
+            // 1. Sync Timetable \u2014 batch insert for all periods
             updateProgress('Syncing timetable periods...');
             if (guestData.timetable.length > 0) {
                 const timetableRows = guestData.timetable.map(period => ({
@@ -98,7 +98,7 @@ export class GuestDataSync {
                 updateProgress('Syncing timetable periods...');
             }
 
-            // 2. Sync Mood Logs — batch insert
+            // 2. Sync Mood Logs \u2014 batch insert
             updateProgress('Syncing mood logs...');
             const moodMap = ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'];
             if (guestData.moodLogs.length > 0) {
@@ -118,7 +118,7 @@ export class GuestDataSync {
                 updateProgress('Syncing mood logs...');
             }
 
-            // 3. Sync Journal Entries — batch insert
+            // 3. Sync Journal Entries \u2014 batch insert
             updateProgress('Syncing journal entries...');
             if (guestData.journalEntries.length > 0) {
                 const journalRows = guestData.journalEntries.map(entry => ({
@@ -136,7 +136,7 @@ export class GuestDataSync {
                 updateProgress('Syncing journal entries...');
             }
 
-            // 4. Sync Students — batch insert (teachers only)
+            // 4. Sync Students \u2014 batch insert (teachers only)
             updateProgress('Syncing students...');
             if (guestData.students.length > 0) {
                 const studentRows = guestData.students.map(student => ({

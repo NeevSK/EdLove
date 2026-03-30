@@ -98,8 +98,7 @@ export function TrubeCanvas({
 
   const handleLayout = React.useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
-    setBounds((current) =>
-      current.width === width && current.height === height ? current : { width, height },
+    setBounds((current) =      current.width === width && current.height === height ? current : { width, height },
     );
   }, []);
 
@@ -117,23 +116,16 @@ export function TrubeCanvas({
         },
         style,
       ]}
-    >
-      {bounds.width > 0 && bounds.height > 0 && stageSpec && plan && prewarmStatus !== 'warming' && (
-        <>
-          <UnifiedRenderer
+          {bounds.width > 0 && bounds.height > 0 && stageSpec && plan && prewarmStatus !== 'warming' && (
+        <          <UnifiedRenderer
             height={bounds.height}
             plan={plan}
             stage={stageSpec}
             surface={resolvedSurface!}
             width={bounds.width}
-          />
-          {debugOverlay && (
-            <View style={StyleSheet.absoluteFill} pointerEvents="none">
-              {/* Performance Metrics Placeholder */}
-            </View>
-          )}
-        </>
-      )}
-    </View>
-  );
+          /          {debugOverlay && (
+            <View style={StyleSheet.absoluteFill} pointerEvents="none"              {/* Performance Metrics Placeholder */}
+            </View          )}
+        </      )}
+    </View  );
 }

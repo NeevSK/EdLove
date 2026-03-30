@@ -1,6 +1,7 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { SleepLog } from '../types';
+import { createSleepLog, fetchSleepLogs } from '../api/selfFeatureRepository';
 
 const SLEEP_CACHE_KEY = 'gurudevi-sleep-cache';
 
@@ -40,15 +41,7 @@ export function useSleepTracker(userId?: string) {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
-                .from('sleep_logs')
-                .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(7); // Last week
-
-            if (error) throw error;
-
+            const data = await fetchSleepLogs(userId);
             if (data) {
                 setSleepLogs(data);
                 // Persist to cache
@@ -71,6 +64,10 @@ export function useSleepTracker(userId?: string) {
         sleepLogs,
         isLoading,
         refreshData,
-        setSleepLogs
+        setSleepLogs,
+        addSleepLog: async (quality: SleepLog['quality']) => {
+            if (!userId) return null;
+            return createSleepLog(userId, quality);
+        },
     };
 }

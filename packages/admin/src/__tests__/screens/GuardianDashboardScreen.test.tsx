@@ -126,8 +126,8 @@ describe('GuardianDashboardScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('John Doe')).toBeTruthy();
         expect(screen.getByText('Jane Doe')).toBeTruthy();
-        expect(screen.getByText('Grade 5 • Class A')).toBeTruthy();
-        expect(screen.getByText('Grade 3 • Class B')).toBeTruthy();
+        expect(screen.getByText('Grade 5 " Class A')).toBeTruthy();
+        expect(screen.getByText('Grade 3 " Class B')).toBeTruthy();
       });
     });
 
@@ -153,7 +153,7 @@ describe('GuardianDashboardScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('85.7%')).toBeTruthy(); // John's attendance
         expect(screen.getByText('95.2%')).toBeTruthy(); // Jane's attendance
-        expect(screen.getByText('18 present • 2 absent • 1 late')).toBeTruthy();
+        expect(screen.getByText('18 present " 2 absent " 1 late')).toBeTruthy();
       });
     });
 
@@ -234,7 +234,7 @@ describe('GuardianDashboardScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('Upcoming Events')).toBeTruthy();
         expect(screen.getByText('Parent-Teacher Conference')).toBeTruthy();
-        expect(screen.getByText('15:00 • Classroom A')).toBeTruthy();
+        expect(screen.getByText('15:00 " Classroom A')).toBeTruthy();
       });
     });
 

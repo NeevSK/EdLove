@@ -15,7 +15,7 @@ import { SanctuaryManifesto } from '../api/sacredMissions';
 import { Star, Sparkles, Megaphone, Users } from 'lucide-react-native';
 import { ScrollView, useWindowDimensions, NativeSyntheticEvent, NativeScrollEvent, Pressable, Platform } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
-import { Post } from '../index';
+import { Post } from '../types';
 import { CommunityPresence } from '@repo/self';
 
 
@@ -59,27 +59,27 @@ export default function CommunityHearth({
         slides.push({
             key: 'welcome',
             content: (
-                <VStack space="sm">
-                    <HStack space="xs" alignItems="center">
-                        <Sparkles size={14} color={Theme.colors.sanctuarySaffron} />
-                        <Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}>
+                <VStack space="sm"
+                    <HStack space="xs" alignItems="center"
+                        <Sparkles size={14} color={Theme.colors.sanctuarySaffron} /
+                        <Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}
                             Welcome to the Circle
-                        </Text>
-                    </HStack>
-                    <Heading size="md" color={colors.text}>
+                        </Text
+                    </HStack
+                    <Heading size="md" color={colors.text}
                         Feel the School's Pulse
-                    </Heading>
-                    <Text size="sm" color={colors.textSecondary}>
+                    </Heading
+                    <Text size="sm" color={colors.textSecondary}
                         The Hearth is where we share wisdom, celebrate growth, and align our visions. Explore what's blooming today.
-                    </Text>
-                </VStack>
+                    </Text
+                </VStack
             )
         });
     }
 
     slides.push({
         key: 'presence',
-        content: <CommunityPresence compact={false} hidePadding={true} userVibe={userVibe} userId={userId} />
+        content: <CommunityPresence compact={false} hidePadding={true} userVibe={userVibe} userId={userId} /
     });
 
     if (manifestos && manifestos.length > 0) {
@@ -87,30 +87,30 @@ export default function CommunityHearth({
             slides.push({
                 key: `manifesto-${manifesto.id}`,
                 content: (
-                    <VStack space="sm">
-                        <HStack space="xs" alignItems="center">
-                            <Star size={14} color={Theme.colors.sanctuarySaffron} />
-                            <Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}>
+                    <VStack space="sm"
+                        <HStack space="xs" alignItems="center"
+                            <Star size={14} color={Theme.colors.sanctuarySaffron} /
+                            <Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}
                                 {manifesto.vibe || 'Vision'} Manifesto
-                            </Text>
-                        </HStack>
-                        <Heading size="md" color={colors.text}>
+                            </Text
+                        </HStack
+                        <Heading size="md" color={colors.text}
                             {manifesto.title}
-                        </Heading>
-                        <Text size="sm" color={colors.textSecondary} numberOfLines={3} sx={{ lineHeight: 22 }}>
+                        </Heading
+                        <Text size="sm" color={colors.textSecondary} numberOfLines={3} sx={{ lineHeight: 22 }}
                             {manifesto.content}
-                        </Text>
+                        </Text
                         {onEndorseManifesto && (
-                            <Pressable onPress={() => onEndorseManifesto(manifesto.id)}>
-                                <HStack space="xs" alignItems="center" mt="$2">
-                                    <Sparkles size={14} color={Theme.colors.sanctuarySaffron} />
-                                    <Text size="xs" color={Theme.colors.sanctuarySaffron} bold>
-                                        Align with Vision →
-                                    </Text>
-                                </HStack>
-                            </Pressable>
+                            <Pressable onPress={() => onEndorseManifesto(manifesto.id)}
+                                <HStack space="xs" alignItems="center" mt="$2"
+                                    <Sparkles size={14} color={Theme.colors.sanctuarySaffron} /
+                                    <Text size="xs" color={Theme.colors.sanctuarySaffron} bold
+                                        Align with Vision \u2192
+                                    </Text
+                                </HStack
+                            </Pressable
                         )}
-                    </VStack>
+                    </VStack
                 )
             });
         });
@@ -120,25 +120,25 @@ export default function CommunityHearth({
         slides.push({
             key: 'spotlight',
             content: (
-                <VStack space="sm">
-                    <HStack space="xs" alignItems="center">
-                        <Megaphone size={14} color={Theme.colors.gurudeviViolet} />
-                        <Text size="xs" color={Theme.colors.gurudeviViolet} bold sx={{ textTransform: 'uppercase' }}>
+                <VStack space="sm"
+                    <HStack space="xs" alignItems="center"
+                        <Megaphone size={14} color={Theme.colors.gurudeviViolet} /
+                        <Text size="xs" color={Theme.colors.gurudeviViolet} bold sx={{ textTransform: 'uppercase' }}
                             Community Spotlight
-                        </Text>
-                    </HStack>
-                    <Heading size="md" color={colors.text}>
+                        </Text
+                    </HStack
+                    <Heading size="md" color={colors.text}
                         {spotlightPost.content.substring(0, 40)}...
-                    </Heading>
-                    <Text size="sm" color={colors.textSecondary} numberOfLines={2}>
+                    </Heading
+                    <Text size="sm" color={colors.textSecondary} numberOfLines={2}
                         {spotlightPost.content}
-                    </Text>
+                    </Text
                     {spotlightPost.author_name && (
-                        <Text size="xs" color={colors.textTertiary}>
+                        <Text size="xs" color={colors.textTertiary}
                             Shared by {spotlightPost.author_name}
-                        </Text>
+                        </Text
                     )}
-                </VStack>
+                </VStack
             )
         });
     }
@@ -180,12 +180,12 @@ export default function CommunityHearth({
     };
 
     return (
-        <VStack space="sm" sx={{ marginBottom: Theme.spacing.lg }}>
-            <HStack justifyContent="space-between" alignItems="center" px="$4">
-                <Text size="sm" color={Theme.colors.mistGray} bold>
+        <VStack space="sm" sx={{ marginBottom: Theme.spacing.lg }}
+            <HStack justifyContent="space-between" alignItems="center" px="$4"
+                <Text size="sm" color={Theme.colors.mistGray} bold
                     The Community Hearth
-                </Text>
-                <HStack space="xs">
+                </Text
+                <HStack space="xs"
                     {slides.map((_, i) => (
                         <Box
                             key={i}
@@ -195,10 +195,10 @@ export default function CommunityHearth({
                                 borderRadius: 3,
                                 backgroundColor: i === activeIndex ? colors.action : colors.border,
                             }}
-                        />
+                        /
                     ))}
-                </HStack>
-            </HStack>
+                </HStack
+            </HStack
 
             <ScrollView
                 ref={scrollRef}
@@ -212,7 +212,7 @@ export default function CommunityHearth({
                 snapToInterval={SNAP_INTERVAL}
                 decelerationRate="fast"
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md }}
-            >
+            
                 {slides.map((slide, index) => (
                     <Box
                         key={slide.key}
@@ -220,22 +220,22 @@ export default function CommunityHearth({
                             width: CARD_WIDTH,
                             marginRight: index === slides.length - 1 ? 0 : Theme.spacing.md,
                         }}
-                    >
+                    
                         <SanctuaryCard
                             onPress={slide.key === 'spotlight' ? () => onPressSpotlight?.(spotlightPost!.id) : undefined}
                             elevated={false} // Disable elevation to fix perceived glow layer issues
                             variant="glass"
                             style={{ minHeight: 180 }} // Dynamic minHeight
-                        >
-                            <Box sx={{ flex: 1, justifyContent: 'center' }}>
-                                <Animated.View layout={LinearTransition}>
+                        
+                            <Box sx={{ flex: 1, justifyContent: 'center' }}
+                                <Animated.View layout={LinearTransition}
                                     {slide.content}
-                                </Animated.View>
-                            </Box>
-                        </SanctuaryCard>
-                    </Box>
+                                </Animated.View
+                            </Box
+                        </SanctuaryCard
+                    </Box
                 ))}
-            </ScrollView>
-        </VStack>
+            </ScrollView
+        </VStack
     );
 }

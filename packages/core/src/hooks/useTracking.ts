@@ -58,12 +58,12 @@ export function useTracking() {
     /**
      * Tracks a manual snapshot event.
      */
-    const trackSnapshot = async (label: string, resonanceDate: string) => {
+    const trackSnapshot = async (label: string, viewDate: string) => {
         if (!userId) return;
 
         trackEvent('manual_snapshot_captured', {
             label,
-            resonance_date: resonanceDate,
+            snapshot_date: viewDate,
             user_id: userId
         });
     };

@@ -1,7 +1,7 @@
 /**
- * LibraryThumbnailCard — Netflix-Style Cover-Art Card for Individual Resources
+ * LibraryThumbnailCard \u2014 Netflix-Style Cover-Art Card for Individual Resources
  *
- * A 140 × 180 visual card used inside horizontal SmartShelf rows.
+ * A 140 \u00C3\u2014 180 visual card used inside horizontal SmartShelf rows.
  * Each resource type gets a distinct accent colour and icon.
  * Shows title, type badge, endorsement count, and an optional thumbnail image.
  *
@@ -16,6 +16,7 @@ import {
     Text,
     StyleSheet,
     ImageBackground,
+    TouchableOpacity,
     Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -33,9 +34,9 @@ import {
     StickyNote,
     ThumbsUp,
     BadgeCheck,
+    Bookmark,
 } from 'lucide-react-native';
-import { Theme } from '../../theme/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { Theme, useThemedColors } from '@repo/ui';
 
 // ============================================================================
 // CONFIG
@@ -49,7 +50,7 @@ type ThumbnailType =
     | 'video' | 'link' | 'pdf' | 'doc' | 'note' | 'other'
     | 'map' | 'infographic' | 'story' | 'circular' | 'movie_trailer' | 'tech_guide';
 
-const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<any>; color: string; label: string }> = {
+const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<{ size?: number; color?: string; fill?: string }>; color: string; label: string }> = {
     lesson: { icon: BookOpen, color: Theme.colors.sanctuarySaffron, label: 'Lesson' },
     worksheet: { icon: FileText, color: Theme.colors.templeGold, label: 'Worksheet' },
     guide: { icon: BookMarked, color: Theme.colors.gurudeviBlue, label: 'Guide' },
@@ -87,7 +88,7 @@ export interface LibraryThumbnailCardProps {
     verified?: boolean;
     isLocked?: boolean;
     has_bookmarked?: boolean;
-    /** Copyright/usage notice – shown as a subtle footer badge on externally-sourced content */
+    /** Copyright/usage notice \u2013 shown as a subtle footer badge on externally-sourced content */
     copyrightNotice?: string;
     onPress: () => void;
     onLongPress?: () => void;
@@ -108,6 +109,8 @@ export function LibraryThumbnailCard({
     endorsements = 0,
     verified = false,
     copyrightNotice,
+    has_bookmarked = false,
+    onBookmarkToggle,
     onPress,
     onLongPress,
     href,
@@ -197,78 +200,56 @@ export function LibraryThumbnailCard({
     ];
 
     const overlay = (
-        <View style={styles.overlay}>
-            {/* Top: type badge + verified */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <View style={styles.typeBadge}>
-                    <Text style={styles.typeText}>{cfg.label}</Text>
-                </View>
-                {verified && (
-                    <View style={{ margin: 8 }}>
-                        <BadgeCheck color={Theme.colors.sageGreen} size={14} />
-                    </View>
-                )}
-            </View>
-
+        <View style={styles.overlay}            {/* Top: type badge + bookmark + verified */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                </View                <View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
+                        <TouchableOpacity 
+                            onPress={(e) => {
+                                if (Platform.OS === 'web') (e as unknown as { stopPropagation: () => void }).stopPropagation();
+                                onBookmarkToggle();
+                            }}
+                            style={{ margin: 8, padding: 4 }}
+                            accessibilityRole="button"
+                            accessibilityLabel={has_bookmarked ? "Unbookmark" : "Bookmark"}
+                            accessibilityHint={has_bookmarked ? "Removes this resource from your bookmarks" : "Adds this resource to your bookmarks"}
+                                                    <Bookmark 
+                                size={16} 
+                                color={has_bookmarked ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.8)'}
+                                fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
+                            /                        </TouchableOpacity                    )}
+                    {verified && (
+                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}                            <BadgeCheck color={Theme.colors.sageGreen} size={14} /                        </View                    )}
+                </View            </View
             {/* Bottom: gradient + title + meta */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}>
-                <Text style={styles.title} numberOfLines={2}>{title}</Text>
-                <View style={styles.meta}>
-                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
+            <LinearGradient colors={gradientColors} style={styles.gradient}                <Text style={styles.title} numberOfLines={2}>{title}</Text                <View style={styles.meta}                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
                     {endorsements > 0 && (
-                        <>
-                            {subject && <Text style={styles.metaText}>·</Text>}
-                            <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
-                            <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}>
-                                {endorsements}
-                            </Text>
-                        </>
-                    )}
-                </View>
-                {copyrightNotice && (
-                    <View style={styles.copyrightBadge}>
-                        <Text style={styles.copyrightText} numberOfLines={1}>© {copyrightNotice}</Text>
-                    </View>
-                )}
-            </LinearGradient>
-        </View>
-    );
+                        <                            {subject && <Text style={styles.metaText}>\u00C2\u00B7</Text>}
+                            <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} /                            <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}                                {endorsements}
+                            </Text                        </                    )}
+                </View                {copyrightNotice && (
+                    <View style={styles.copyrightBadge}                        <Text style={styles.copyrightText} numberOfLines={1}>\u00C2\u00A9 {copyrightNotice}</Text                    </View                )}
+            </LinearGradient        </View    );
 
-    const PressableAny = Pressable as any;
     return (
-        <PressableAny
+        <Pressable
             onPress={onPress}
             onLongPress={onLongPress}
-            style={({ hovered }: any) => [
+            style={(state: { hovered?: boolean; pressed?: boolean }) => [
                 styles.pressable,
-                Platform.OS === 'web' && hovered && { opacity: 0.9, cursor: 'pointer' }
+                Platform.OS === 'web' && state.hovered && { opacity: 0.9, cursor: 'pointer' }
             ]}
-            // @ts-ignore
             accessibilityRole={href ? 'link' : 'button'}
-            // @ts-ignore
+            // @ts-expect-error: href is web-only for Pressable (react-native-web)
             href={href}
-            // @ts-ignore
             hrefAttrs={{
                 target: target,
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,
             }}
-        >
-            <View style={styles.card}>
-                {thumbnailUrl ? (
-                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">
-                        {overlay}
-                    </ImageBackground>
-                ) : (
-                    <>
-                        <View style={styles.fallback}>
-                            <Icon color={cfg.color} size={36} />
-                        </View>
-                        {overlay}
-                    </>
-                )}
-            </View>
-        </PressableAny>
-    );
+                    <View style={styles.card}                {thumbnailUrl ? (
+                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}
+                    </ImageBackground                ) : (
+                    <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        </View                        {overlay}
+                    </                )}
+            </View        </Pressable    );
 }
 
 export default LibraryThumbnailCard;

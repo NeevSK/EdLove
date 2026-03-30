@@ -4,7 +4,7 @@ import { useJournalEntries } from './useJournalEntries';
 import { useEnergyForecast } from './useEnergyForecast';
 import { useDecisionJournal } from './useDecisionJournal';
 import { useWisdom } from './useWisdom';
-import { useResonanceStore, usePermissions, useNaturePaths, useBanyanGrowth } from '@repo/core';
+import { useTemporalStore, usePermissions, useNaturePaths, useBanyanGrowth } from '@repo/core';
 
 export interface JourneyEvent {
     id: string;
@@ -27,7 +27,7 @@ export interface JourneyEvent {
  * Student, Teacher, Principal, or Founder.
  */
 export const useJourneyData = () => {
-    const { resonanceDate, viewMode, timelineFocus } = useResonanceStore();
+    const { viewDate, viewMode, timelineFocus } = useTemporalStore();
     const { can, context } = usePermissions();
     const { userId } = context;
     
@@ -78,7 +78,7 @@ export const useJourneyData = () => {
             events.push({
                 id: `river-${studentPaths.river_stage}`,
                 type: 'path',
-                timestamp: resonanceDate,
+                timestamp: viewDate,
                 title: `River Flow: ${studentPaths.river_stage}`,
                 content: `Your learning has reached the ${studentPaths.river_stage} stage.`,
                 intensity: 0.9,
@@ -91,7 +91,7 @@ export const useJourneyData = () => {
             events.push({
                 id: `banyan-${banyanGrowth.banyan_stage}`,
                 type: 'growth',
-                timestamp: resonanceDate,
+                timestamp: viewDate,
                 title: `Banyan Growth: ${banyanGrowth.banyan_stage}`,
                 content: `Your mentorship impact is in the ${banyanGrowth.banyan_stage} phase.`,
                 intensity: 0.9,
@@ -152,7 +152,7 @@ export const useJourneyData = () => {
             sorted.push({
                 id: 'genesis',
                 type: 'path',
-                timestamp: resonanceDate,
+                timestamp: viewDate,
                 title: 'JOURNEY STARTS HERE',
                 content: 'The first pulse of your intentional resonance.',
                 intensity: 1.0
@@ -162,7 +162,7 @@ export const useJourneyData = () => {
         // --- Focus Filter ---
         if (timelineFocus === 'all') return sorted;
         return sorted.filter(event => event.type === timelineFocus);
-    }, [moodLogs, journalEntries, studentPaths, banyanGrowth, energyForecasts, decisions, wisdomNotes, viewMode, resonanceDate, timelineFocus, can]);
+    }, [moodLogs, journalEntries, studentPaths, banyanGrowth, energyForecasts, decisions, wisdomNotes, viewMode, viewDate, timelineFocus, can]);
 
     return {
         journey,

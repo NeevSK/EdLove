@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, HStack, Text, Pressable } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -28,16 +28,16 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
                 alignItems: 'center',
                 zIndex: Theme.zIndex.sticky + 1,
             }}
-        >
-            <HStack space="xs" alignItems="center">
-                <Zap color="white" size={16} fill="white" />
-                <Text color="white" bold size="xs">
+        
+            <HStack space="xs" alignItems="center"
+                <Zap color="white" size={16} fill="white" /
+                <Text color="white" bold size="xs"
                     {t('demoMode.simulationAlert') || 'Exploring Sample Sanctuary'}
-                </Text>
-            </HStack>
+                </Text
+            </HStack
 
             {onExit && (
-                <Pressable
+                <Pressable accessibilityRole="button"
                     onPress={async () => {
                         hapticLight();
                         onExit();
@@ -50,14 +50,14 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
                         borderRadius: Theme.corners.comfortable,
                         paddingHorizontal: Theme.spacing.sm
                     }}
-                >
-                    <HStack space="xs" alignItems="center">
-                        <Text color="white" bold size="xs">{t('common.exit') || 'Exit'}</Text>
-                        <X color="white" size={14} />
-                    </HStack>
-                </Pressable>
+                
+                    <HStack space="xs" alignItems="center"
+                        <Text color="white" bold size="xs">{t('common.exit') || 'Exit'}</Text
+                        <X color="white" size={14} /
+                    </HStack
+                </Pressable
             )}
-        </Box>
+        </Box
     );
 };
 

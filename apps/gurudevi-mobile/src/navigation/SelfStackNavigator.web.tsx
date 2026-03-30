@@ -4,10 +4,11 @@ import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { SelfStackParamList } from '@repo/core';
 
-// Web-specific screens — lazy loaded for code splitting
-const SelfScreenWeb = React.lazy(() => import('../screens/SelfScreen.web'));
-// AI Assistant screen — web override with CSS message list (no FlatList)
-const AIAssistantScreen = React.lazy(() => import('../screens/AIAssistantScreen.web'));
+// Web-specific screens  lazy loaded for code splitting
+const SelfScreenWeb = React.lazy(() => import('@repo/self/screens/SelfScreen.web'));
+// AI Assistant screen  web override with CSS message list (no FlatList)
+const AIAssistantScreen = React.lazy(() =    import('@repo/ai').then(m => ({ default: m.AIAssistantScreenWeb }))
+);
 
 const Stack = createNativeStackNavigator<SelfStackParamList>();
 
@@ -19,7 +20,7 @@ export default function SelfStackNavigatorWeb() {
     const { scene } = useTheme();
 
     return (
-        <React.Suspense fallback={<ScreenFallback />}>
+        <React.Suspense fallback={<ScreenFallback />}
         <Stack.Navigator
             id="SelfStack"
             screenOptions={{
@@ -30,8 +31,8 @@ export default function SelfStackNavigatorWeb() {
                     minHeight: '100%',
                 },
             }}
-        >
-            <Stack.Screen name="SelfMain" component={SelfScreenWeb} />
+        
+            <Stack.Screen name="SelfMain" component={SelfScreenWeb} /
             <Stack.Screen
                 name="AIAssistant"
                 component={AIAssistantScreen}
@@ -39,8 +40,8 @@ export default function SelfStackNavigatorWeb() {
                     presentation: 'modal',
                     animation: 'slide_from_bottom',
                 }}
-            />
-        </Stack.Navigator>
-        </React.Suspense>
+            /
+        </Stack.Navigator
+        </React.Suspense
     );
 }

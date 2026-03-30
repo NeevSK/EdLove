@@ -1,11 +1,13 @@
 import { AbilityBuilder } from '@casl/ability';
 import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './student';
+import { AppAbility } from './base';
 
-export const defineAdminAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
+export const defineAdminAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
+  const { can } = builder;
   if (user.hasGlobalAccess) {
     can('manage', 'all');
     can('manage', 'PrincipalDashboard');
+    can('manage', 'AdminDashboard');
     can('read', 'ClassroomList');
     return;
   }

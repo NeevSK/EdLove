@@ -1,6 +1,6 @@
 import { AbilityBuilder } from '@casl/ability';
 import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './student';
+import { AppAbility } from './base';
 import { defineTeacherAbilities } from './teacher';
 
 export const defineGradeHeadAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {

@@ -37,7 +37,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                 animation: 'fadeIn 0.25s ease',
             }}
             onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-        >
+        
             <div
                 role="dialog"
                 aria-modal="true"
@@ -53,31 +53,31 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                     textAlign: 'center',
                     animation: 'slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)',
                 }}
-            >
+            
                 {/* Lotus Icon */}
-                <div style={{ fontSize: '56px', marginBottom: '24px', lineHeight: 1 }}>🌸</div>
+                <div style={{ fontSize: '56px', marginBottom: '24px', lineHeight: 1 }}>{'=O'}</div
 
                 <h2 style={{
                     fontSize: '26px', fontWeight: '800',
                     color: 'var(--ink, #1a1a2e)', marginBottom: '16px',
                     fontFamily: 'var(--font-heading, serif)',
-                }}>
+                }}
                     {t('welcome.title')}
-                </h2>
+                </h2
 
                 <p style={{
                     fontSize: '16px', lineHeight: '1.7',
                     color: 'var(--ink-soft, #4a4a6a)', marginBottom: '12px',
-                }}>
+                }}
                     {t('welcome.message')}
-                </p>
+                </p
 
                 <p style={{
                     fontSize: '14px', lineHeight: '1.6',
                     color: 'var(--ink-ghost, #8a8aaa)', marginBottom: '36px',
-                }}>
+                }}
                     {t('welcome.description')}
-                </p>
+                </p
 
                 <button
                     onClick={onClose}
@@ -97,15 +97,15 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                     }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                >
+                
                     {t('welcome.start')}
-                </button>
-            </div>
+                </button
+            </div
 
             <style>{`
                 @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(32px) scale(0.96) } to { opacity: 1; transform: translateY(0) scale(1) } }
-            `}</style>
-        </div>
+            `}</style
+        </div
     );
 }

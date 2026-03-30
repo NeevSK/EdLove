@@ -6,11 +6,11 @@ import { posthogAnalytics } from '../engine/PostHogAnalytics';
 // Use the existing singleton for convenience, but we'll prefer the provider-based approach where possible
 const posthogNative = posthogAnalytics;
 
-import { useResonance } from '@repo/core';
+import { useActivityPulse } from '@repo/core';
 
 export function useAnalytics() {
   const posthog = usePostHog();
-  const { registerPulse } = useResonance();
+  const { registerPulse } = useActivityPulse();
 
   const track = (event: string, properties?: Record<string, any>) => {
     registerPulse(0.15); // Trigger a pulse for any track event
@@ -76,9 +76,10 @@ import { StudentPerformanceMetrics, ClassAnalytics } from '../types/AnalyticsTyp
 import { PerformanceAnalyzer } from '../engine/PerformanceAnalyzer';
 import { Predictor } from '../ml/Predictor';
 import { InsightGenerator } from '../ml/InsightGenerator';
+import { supabase } from '@repo/core';
 
-const performanceAnalyzer = new PerformanceAnalyzer();
-const predictor = new Predictor();
+const performanceAnalyzer = new PerformanceAnalyzer(supabase);
+const predictor = new Predictor(supabase);
 const insightGenerator = new InsightGenerator();
 
 export function useStudentPerformance(

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BREATHING LOADER - Pulsing Circle Animation
  *
  * A simple loader component with a breathing animation:
@@ -68,7 +68,7 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
             accessible={true}
             accessibilityRole="progressbar"
             accessibilityLabel={t('accessibility.loading')}
-        >
+        
             <Animated.View
                 style={[
                     styles.circle,
@@ -80,8 +80,8 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
                     },
                     animatedStyle,
                 ]}
-            />
-        </View>
+            /
+        </View
     );
 };
 

@@ -4,38 +4,38 @@
  * Shown to authenticated users who have no school_id yet.
  * Each role sees exactly the right flow:
  *
- *  PRINCIPAL → Create School (2-step wizard)
+ *  PRINCIPAL \u2192 Create School (2-step wizard)
  *
- *  TEACHER   → Three options in a tab bar:
+ *  TEACHER   \u2192 Three options in a tab bar:
  *               1. Join a School (invite code or name search)
- *                  → after joining, create or join a classroom under that school
+ *                  \u2192 after joining, create or join a classroom under that school
  *               2. Create standalone personal classroom (no school needed)
  *
- *  STUDENT   → Join Classroom via 8-char teacher invite code (claimStudent)
+ *  STUDENT   \u2192 Join Classroom via 8-char teacher invite code (claimStudent)
  */
 
 import React, { useState, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     schoolAPI, onboardingAPI, validateInviteCode, incrementInviteCodeUsage,
-    communityAPI, api, useStore, usePermissions, supabase,
+    communityAPI, api, useStore, usePermissions,
 } from '@repo/core';
 import {
     Building2, BookOpen, Users, Search, Key, CheckCircle2,
     ArrowRight, ChevronRight,
 } from 'lucide-react-native';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // Tiny helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function Spin({ size = 16 }: { size?: number }) {
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-            style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}>
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-        </svg>
+            style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" /
+        </svg
     );
 }
 
@@ -44,16 +44,16 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
         <p style={{
             margin: '0 0 8px', fontSize: '11px', fontWeight: '800',
             textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'
-        }}>
+        }}
             {children}
-        </p>
+        </p
     );
 }
 
 function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string }) {
     const { label, error, ...rest } = props;
     return (
-        <div>
+        <div
             {label && <SectionLabel>{label}</SectionLabel>}
             <input
                 {...rest}
@@ -65,49 +65,49 @@ function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement> & { label
                     fontFamily: 'var(--font-body)', fontSize: '14px',
                     ...rest.style,
                 }}
-            />
+            /
             {error && <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--ember)' }}>{error}</p>}
-        </div>
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SUCCESS CARD — reused across flows
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// SUCCESS CARD \u2014 reused across flows
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function SuccessCard({ emoji, title, body, cta, onCta }: {
     emoji: string; title: string; body: string; cta: string; onCta: () => void;
 }) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}
             <div style={{
                 width: '64px', height: '64px', borderRadius: '50%',
                 background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-                <CheckCircle2 size={32} color="var(--moss)" />
-            </div>
-            <div style={{ fontSize: '28px' }}>{emoji}</div>
-            <div>
-                <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3>
-                <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p>
-            </div>
+            }}
+                <CheckCircle2 size={32} color="var(--moss)" /
+            </div
+            <div style={{ fontSize: '28px' }}>{emoji}</div
+            <div
+                <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3
+                <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p
+            </div
             <button className="premium-button"
                 style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}
-                onClick={onCta}>
-                {cta} <ArrowRight size={14} />
-            </button>
-        </div>
+                onClick={onCta}
+                {cta} <ArrowRight size={14} /
+            </button
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PRINCIPAL — Create School
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// PRINCIPAL \u2014 Create School
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const SCHOOL_TYPES = [
-    { value: 'primary', label: 'Primary School', emoji: '🏫', desc: 'Grades 1–5' },
-    { value: 'secondary', label: 'Secondary School', emoji: '🎓', desc: 'Grades 6–13' },
-    { value: 'mixed', label: 'Mixed / All Grades', emoji: '🌿', desc: 'All grade levels' },
+    { value: 'primary', label: 'Primary School', emoji: '\uD83C\uDFEB', desc: 'Grades 1\u20135' },
+    { value: 'secondary', label: 'Secondary School', emoji: '\uD83C\uDF93', desc: 'Grades 6\u201313' },
+    { value: 'mixed', label: 'Mixed / All Grades', emoji: '\uD83C\uDF3F', desc: 'All grade levels' },
 ] as const;
 
 function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
@@ -146,71 +146,71 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
 
     if (step === 'done') return (
         <SuccessCard
-            emoji="🏛️"
+            emoji="\uD83C\uDFDB\uFE0F"
             title={`${schoolName} is live!`}
             body="Your school sanctuary is ready. Invite teachers, create classrooms and start your journey."
             cta="Set up my school"
             onCta={onSuccess}
-        />
+        /
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
             {step === 'details' && (
-                <>
-                    <FieldInput label="School Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Gurudevi Life School" />
+                <
+                    <FieldInput label="School Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Gurudevi Life School" /
                     <button className="premium-button"
                         style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                        onClick={() => setStep('type')} disabled={!name.trim()}>
-                        Next — Choose school type <ChevronRight size={14} />
-                    </button>
-                </>
+                        onClick={() => setStep('type')} disabled={!name.trim()}
+                        Next \u2014 Choose school type <ChevronRight size={14} /
+                    </button
+                </
             )}
 
             {step === 'type' && (
-                <>
-                    <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px' }}>
+                <
+                    <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px' }}
                         What kind of school is <strong style={{ color: 'var(--ink)' }}>{name}</strong>?
-                    </p>
+                    </p
                     {SCHOOL_TYPES.map(t => (
                         <button key={t.value} onClick={() => setType(t.value)} style={{
                             display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px',
                             borderRadius: '12px', border: `2px solid ${type === t.value ? 'var(--sanctuary-saffron)' : 'var(--border)'}`,
                             background: type === t.value ? 'rgba(212,132,58,0.06)' : 'var(--background-alt)',
                             cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' as const,
-                        }}>
-                            <span style={{ fontSize: '22px' }}>{t.emoji}</span>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--ink)' }}>{t.label}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{t.desc}</div>
-                            </div>
+                        }}
+                            <span style={{ fontSize: '22px' }}>{t.emoji}</span
+                            <div style={{ flex: 1 }}
+                                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--ink)' }}>{t.label}</div
+                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{t.desc}</div
+                            </div
                             {type === t.value && <CheckCircle2 size={16} color="var(--sanctuary-saffron)" />}
-                        </button>
+                        </button
                     ))}
                     {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="secondary-button" onClick={() => setStep('details')} style={{ flex: 1 }}>← Back</button>
+                    <div style={{ display: 'flex', gap: '10px' }}
+                        <button className="secondary-button" onClick={() => setStep('details')} style={{ flex: 1 }}>\u2190 Back</button
                         <button className="premium-button"
                             style={{ flex: 2, background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                            onClick={handleCreate} disabled={loading}>
-                            {loading ? <><Spin /> Creating…</> : <><Building2 size={14} /> Create School</>}
-                        </button>
-                    </div>
-                </>
+                            onClick={handleCreate} disabled={loading}
+                            {loading ? <><Spin /> Creating\u2026</> : <><Building2 size={14} /> Create School</>}
+                        </button
+                    </div
+                </
             )}
-        </div>
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEACHER — Join School (invite code or name search)
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// TEACHER \u2014 Join School (invite code or name search)
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void }) {
     const { user } = useStore();
     const [method, setMethod] = useState<'code' | 'search'>('code');
 
-    // ── invite code path ──
+    // \u2500\u2500 invite code path \u2500\u2500
     const [code, setCode] = useState('');
     const [codeErr, setCodeErr] = useState('');
     const [codeLoading, setCodeLoading] = useState(false);
@@ -231,10 +231,11 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
             if (!res.valid || !res.data) { setCodeErr(res.error || 'Invalid code'); return; }
             await onboardingAPI.requestSchoolJoin(user.id, res.data.school_id, context.roles[0] || 'teacher');
             await incrementInviteCodeUsage(code.trim());
-            const { data: p } = await supabase.from('users').select('school_id').eq('id', user.id).single();
-            if (p?.school_id) {
-                useStore.getState().setUser({ ...user, school_id: p.school_id });
-                onJoined(p.school_id);
+            const roleSummary = await api.identity.getClassroomRoleSummary(user.id);
+            const schoolId = roleSummary.schoolId || roleSummary.profile.school_id || null;
+            if (schoolId) {
+                useStore.getState().setUser({ ...user, school_id: schoolId });
+                onJoined(schoolId);
             }
         } catch (e: any) {
             setCodeErr(e?.message || 'Something went wrong');
@@ -243,7 +244,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
         }
     };
 
-    // ── search path ──
+    // \u2500\u2500 search path \u2500\u2500
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [searching, setSearching] = useState(false);
@@ -268,32 +269,32 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
 
     if (reqSent) return (
         <SuccessCard
-            emoji="📬"
+            emoji="\uD83D\uDCEC"
             title="Request Sent!"
             body="Your join request has been sent to the Principal. You'll be notified once approved."
             cta="OK, I'll wait"
             onCta={() => setReqSent(false)}
-        />
+        /
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             {/* Method tabs */}
-            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '10px' }}>
-                {([{ id: 'code', label: '🔑 Invite Code' }, { id: 'search', label: '🔍 Search School' }] as const).map(m => (
+            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '10px' }}
+                {([{ id: 'code', label: '\uD83D\uDD11 Invite Code' }, { id: 'search', label: '\uD83D\uDD0D Search School' }] as const).map(m => (
                     <button key={m.id} onClick={() => setMethod(m.id)} style={{
                         flex: 1, padding: '8px 12px', borderRadius: '8px', border: 'none',
                         fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
                         background: method === m.id ? 'var(--background)' : 'transparent',
                         color: method === m.id ? 'var(--ink)' : 'var(--ink-ghost)',
                         boxShadow: method === m.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                    }}>{m.label}</button>
+                    }}>{m.label}</button
                 ))}
-            </div>
+            </div
 
             {/* Invite code */}
             {method === 'code' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
                     <FieldInput
                         label="Invite Code from Principal"
                         value={code} onChange={e => setCode(fmtCode(e.target.value))}
@@ -301,55 +302,55 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                         error={codeErr}
                         style={{ fontFamily: 'var(--font-mono, monospace)', letterSpacing: '2px', textTransform: 'uppercase' as const, fontWeight: '700' }}
                         onKeyDown={(e: any) => e.key === 'Enter' && code.length >= 15 && handleCode()}
-                    />
+                    /
                     <button className="premium-button"
                         style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                        onClick={handleCode} disabled={code.length < 15 || codeLoading}>
+                        onClick={handleCode} disabled={code.length < 15 || codeLoading}
                         {codeLoading ? <Spin /> : <Key size={14} />}
-                        {codeLoading ? 'Joining…' : 'Join with Code'}
-                    </button>
-                </div>
+                        {codeLoading ? 'Joining\u2026' : 'Join with Code'}
+                    </button
+                </div
             )}
 
             {/* Search */}
             {method === 'search' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+                    <div style={{ display: 'flex', gap: '8px' }}
                         <input value={query} onChange={e => setQuery(e.target.value)}
                             onKeyDown={(e: any) => e.key === 'Enter' && handleSearch()}
-                            placeholder="Type school name…"
-                            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px' }} />
+                            placeholder="Type school name\u2026"
+                            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px' }} /
                         <button className="secondary-button" onClick={handleSearch} disabled={query.length < 3 || searching}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                             {searching ? <Spin size={13} /> : <Search size={13} />} Search
-                        </button>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
+                        </button
+                    </div
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}
                         {results.map(s => (
-                            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}>
-                                <div>
-                                    <div style={{ fontSize: '14px', fontWeight: '700' }}>{s.name}</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.type}</div>
-                                </div>
+                            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}
+                                <div
+                                    <div style={{ fontSize: '14px', fontWeight: '700' }}>{s.name}</div
+                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.type}</div
+                                </div
                                 <button className="secondary-button" style={{ fontSize: '12px', padding: '6px 12px' }}
-                                    onClick={() => handleRequest(s.id)} disabled={requesting === s.id}>
+                                    onClick={() => handleRequest(s.id)} disabled={requesting === s.id}
                                     {requesting === s.id ? <Spin size={12} /> : 'Request Join'}
-                                </button>
-                            </div>
+                                </button
+                            </div
                         ))}
                         {!searching && query.length >= 3 && results.length === 0 && (
-                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', textAlign: 'center', margin: 0 }}>No schools found. Try a different name or get an invite code.</p>
+                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', textAlign: 'center', margin: 0 }}>No schools found. Try a different name or get an invite code.</p
                         )}
-                    </div>
-                </div>
+                    </div
+                </div
             )}
-        </div>
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEACHER — Create standalone classroom (no school needed)
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// TEACHER \u2014 Create standalone classroom (no school needed)
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void }) {
     const { user } = useStore();
@@ -369,7 +370,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
                 name: name.trim(),
                 subject: subject.trim() || undefined,
                 teacher_id: userId,
-                school_id: null as any,   // standalone — no school
+                school_id: null as any,   // standalone \u2014 no school
                 is_archived: false,
             } as any);
             setCreated({ name: name.trim() });
@@ -382,35 +383,35 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
 
     if (created) return (
         <SuccessCard
-            emoji="📚"
+            emoji="\uD83D\uDCDA"
             title={`"${created.name}" is ready!`}
             body="Your personal classroom is live. Start adding students and lessons."
             cta="Go to my classroom"
             onCta={onSuccess}
-        />
+        /
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ padding: '12px 16px', background: 'rgba(212,132,58,0.06)', borderRadius: '10px', border: '1px solid rgba(212,132,58,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
-                💡 A <strong style={{ color: 'var(--ink)' }}>standalone classroom</strong> is personal — it's not linked to any school.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+            <div style={{ padding: '12px 16px', background: 'rgba(212,132,58,0.06)', borderRadius: '10px', border: '1px solid rgba(212,132,58,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}
+                \uD83D\uDCA1 A <strong style={{ color: 'var(--ink)' }}>standalone classroom</strong> is personal \u2014 it's not linked to any school.
                 You can join a school later and move classrooms under it.
-            </div>
-            <FieldInput label="Classroom Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grade 10B Science" />
-            <FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" />
+            </div
+            <FieldInput label="Classroom Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grade 10B Science" /
+            <FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" /
             {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
             <button className="premium-button"
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                onClick={handleCreate} disabled={!name.trim() || loading}>
-                {loading ? <><Spin /> Creating…</> : <><BookOpen size={14} /> Create Classroom</>}
-            </button>
-        </div>
+                onClick={handleCreate} disabled={!name.trim() || loading}
+                {loading ? <><Spin /> Creating\u2026</> : <><BookOpen size={14} /> Create Classroom</>}
+            </button
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEACHER — top-level: 3 tabs
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// TEACHER \u2014 top-level: 3 tabs
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 type TeacherTab = 'join_school' | 'standalone';
 
@@ -424,9 +425,9 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
             {/* Tab bar */}
-            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '12px' }}
                 {TABS.map(t => (
                     <button key={t.id} onClick={() => setTab(t.id)} style={{
                         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
@@ -436,34 +437,34 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
                         color: tab === t.id ? 'var(--sanctuary-saffron)' : 'var(--ink-ghost)',
                         boxShadow: tab === t.id ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
                         transition: 'all 0.15s',
-                    }}>
+                    }}
                         {t.icon} {t.label}
-                    </button>
+                    </button
                 ))}
-            </div>
+            </div
 
             {tab === 'join_school' && (
                 joinedSchoolId
                     ? <SuccessCard
-                        emoji="🎉"
+                        emoji="\uD83C\uDF89"
                         title="Joined!"
                         body="You've been added to the school. Go ahead and create your classroom."
                         cta="Continue"
                         onCta={onSuccess}
-                    />
-                    : <TeacherJoinSchool onJoined={id => { setJoinedSchoolId(id); onSuccess(); }} />
+                    /
+                    : <TeacherJoinSchool onJoined={id => { setJoinedSchoolId(id); onSuccess(); }} /
             )}
 
             {tab === 'standalone' && (
-                <TeacherCreateStandaloneClassroom onSuccess={onSuccess} />
+                <TeacherCreateStandaloneClassroom onSuccess={onSuccess} /
             )}
-        </div>
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STUDENT — Join classroom via 8-char teacher invite code (claimStudent)
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// STUDENT \u2014 Join classroom via 8-char teacher invite code (claimStudent)
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
     const [code, setCode] = useState('');
@@ -486,24 +487,24 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 
     if (done) return (
         <SuccessCard
-            emoji="🌱"
+            emoji="\uD83C\uDF31"
             title="Enrolled!"
             body="You've been linked to your classroom. Your teacher will see you in the roll."
             cta="Go to my classes"
             onCta={onSuccess}
-        />
+        /
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
-                <Users size={13} color="var(--water)" style={{ marginRight: 6 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+            <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}
+                <Users size={13} color="var(--water)" style={{ marginRight: 6 }} /
                 Ask your teacher for your classroom invite code.
                 It's typically 8 characters, like <code style={{ fontWeight: '800', letterSpacing: '1px' }}>a1b2c3d4</code>.
-            </div>
+            </div
 
-            <div>
-                <SectionLabel>Your Classroom Code</SectionLabel>
+            <div
+                <SectionLabel>Your Classroom Code</SectionLabel
                 <input
                     value={code}
                     onChange={e => setCode(e.target.value.toLowerCase().slice(0, 12))}
@@ -517,22 +518,22 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
                         fontFamily: 'var(--font-mono, monospace)', fontSize: '24px',
                         fontWeight: '800', letterSpacing: '4px', textAlign: 'center' as const,
                     }}
-                />
+                /
                 {error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-            </div>
+            </div
 
             <button className="premium-button"
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                onClick={handleClaim} disabled={code.length < 6 || loading}>
-                {loading ? <><Spin /> Joining…</> : <><BookOpen size={14} /> Join Classroom</>}
-            </button>
-        </div>
+                onClick={handleClaim} disabled={code.length < 6 || loading}
+                {loading ? <><Spin /> Joining\u2026</> : <><BookOpen size={14} /> Join Classroom</>}
+            </button
+        </div
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // ROOT EXPORT
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export default function NoSchoolView() {
     const { can, context } = usePermissions();
@@ -547,26 +548,26 @@ export default function NoSchoolView() {
     };
 
     const META = canCreateSchool
-        ? { emoji: '🏛️', heading: 'Create your school', sub: 'Set up your school sanctuary. Invite teachers and students once ready.' }
+        ? { emoji: '\uD83C\uDFDB\uFE0F', heading: 'Create your school', sub: 'Set up your school sanctuary. Invite teachers and students once ready.' }
         : canCreateClassroom
-            ? { emoji: '📚', heading: 'Set up your classroom', sub: 'Join a school, or create a standalone personal classroom right away.' }
-            : { emoji: '🌱', heading: 'Join your classroom', sub: 'Enter the invite code your teacher gave you to link your account.' };
+            ? { emoji: '\uD83D\uDCDA', heading: 'Set up your classroom', sub: 'Join a school, or create a standalone personal classroom right away.' }
+            : { emoji: '\uD83C\uDF31', heading: 'Join your classroom', sub: 'Enter the invite code your teacher gave you to link your account.' };
 
     return (
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '10px' }}>{META.emoji}</div>
-                <h1 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '800' }}>{META.heading}</h1>
-                <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px', lineHeight: '1.6', maxWidth: '380px', marginInline: 'auto' as any }}>
+        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}
+                <div style={{ fontSize: '48px', marginBottom: '10px' }}>{META.emoji}</div
+                <h1 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '800' }}>{META.heading}</h1
+                <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px', lineHeight: '1.6', maxWidth: '380px', marginInline: 'auto' as any }}
                     {META.sub}
-                </p>
-            </div>
+                </p
+            </div
 
-            <div className="sanctuary-card" style={{ padding: '28px 32px' }}>
+            <div className="sanctuary-card" style={{ padding: '28px 32px' }}
                 {canCreateSchool && <PrincipalCreateSchool onSuccess={handleSuccess} />}
                 {canCreateClassroom && <TeacherFlow onSuccess={handleSuccess} />}
                 {canJoinClassroom && !canCreateClassroom && <StudentJoinClassroom onSuccess={handleSuccess} />}
-            </div>
-        </div>
+            </div
+        </div
     );
 }

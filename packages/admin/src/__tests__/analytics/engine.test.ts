@@ -336,8 +336,7 @@ describe('MultiTenantAnalyticsEngine', () => {
         endDate: '2024-03-31'
       };
 
-      const promises = tenantIds.map(tenantId =>
-        multiTenantAnalyticsEngine.aggregateTenantMetrics([tenantId], timeRange)
+      const promises = tenantIds.map(tenantId =        multiTenantAnalyticsEngine.aggregateTenantMetrics([tenantId], timeRange)
       );
 
       const startTime = performance.now();

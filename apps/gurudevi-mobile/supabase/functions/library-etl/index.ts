@@ -6,10 +6,10 @@ const corsHeaders = {
 };
 
 /**
- * library-etl — The Enrichment Protocol
+ * library-etl  The Enrichment Protocol
  *
  * Actions:
- *   enrich — Extract topics via AI + generate vector embedding + store in library_resources.
+ *   enrich  Extract topics via AI + generate vector embedding + store in library_resources.
  *
  * Secrets required:
  *   OPENAI_API_KEY                      (for embeddings + topic extraction)
@@ -39,7 +39,7 @@ Deno.serve(async (req: Request) => {
 
             if (fetchError || !resource) throw new Error('Resource not found');
 
-            // 2. Build text for embedding — title + description + subjects + existing topics
+            // 2. Build text for embedding  title + description + subjects + existing topics
             // Include localized strings for better semantic density
             const textForEmbedding = [
                 resource.title,

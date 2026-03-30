@@ -16,7 +16,7 @@ export function useAttendance(initialStudents: StudentAttendance[] = []) {
     };
 
     const filteredStudents = useMemo(() => {
-        return students.filter(s =>
+        return students.filter(s =
             s.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             s.roll_number?.toString().toLowerCase().includes(searchQuery.toLowerCase())
         );

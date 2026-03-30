@@ -1,7 +1,6 @@
 export * from './useTracking';
 export * from './useAccountDeletion';
 export * from './useFeatureAccess';
-export * from './useCapabilities';
 export * from './useTenantContext';
 export * from './useRewards';
 export * from './useAuthorityFeatures';
@@ -18,5 +17,7 @@ export * from './useBanyanGrowth';
 export * from './useStudentGoals';
 export * from './useJourneyHistory';
 export * from './useManualSnapshot';
-export * from './useResonantHeatmap';
+export * from './useTemporalHeatmap';
 export * from './useForm';
+export * from './useGuardedNavigation';
+export * from './useTeacherClassroom';

@@ -43,7 +43,7 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     const handleSaveSettings = async (
-        settings: Omit<ClassroomGradingSettings, 'classroom_id'>
+        settings: Omit<ClassroomGradingSettings, 'classroom_id'
     ) => {
         try {
             await updateSettings(settings);
@@ -60,17 +60,17 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                     currentSettings={gradingSettings}
                     onSave={handleSaveSettings}
                     onCancel={() => setShowSettings(false)}
-                />
+                /
             )
         );
     }
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}>
-                <VStack sx={{ gap: Theme.spacing.lg }}>
+        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}
+            <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}
+                <VStack sx={{ gap: Theme.spacing.lg }}
                     {/* Header Stats & Controls */}
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack sx={{ gap: Theme.spacing.md }}
                         {/* Stats Summary */}
                         <HStack
                             sx={{
@@ -82,24 +82,24 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                 borderColor: colors.border,
                                 ...Theme.shadows.sm,
                             }}
-                        >
-                            <VStack sx={{ flex: 1 }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                        
+                            <VStack sx={{ flex: 1 }}
+                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}
                                     {t('grading.gradebook.totalStudents') || 'Total Students'}
-                                </Text>
-                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}>
+                                </Text
+                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}
                                     {grades.length}
-                                </Text>
-                            </VStack>
+                                </Text
+                            </VStack
 
-                            <VStack sx={{ flex: 1 }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                            <VStack sx={{ flex: 1 }}
+                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}
                                     {t('grading.gradebook.averageMarks') || 'Average'}
-                                </Text>
-                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}>
+                                </Text
+                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}
                                     {stats.averageMarks}
-                                </Text>
-                            </VStack>
+                                </Text
+                            </VStack
 
                             <Button
                                 variant="outline"
@@ -109,24 +109,24 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                     setShowSettings(true);
                                 }}
                                 sx={{ alignSelf: 'center', height: 36, borderRadius: Theme.corners.full }}
-                            >
-                                <ButtonText sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
+                            
+                                <ButtonText sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}
                                     {t('grading.settings.button') || 'Settings'}
-                                </ButtonText>
-                            </Button>
-                        </HStack>
+                                </ButtonText
+                            </Button
+                        </HStack
 
                         {/* Sort Options */}
-                        <HStack sx={{ flexWrap: 'wrap', gap: Theme.spacing.sm, alignItems: 'center' }}>
-                            <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                        <HStack sx={{ flexWrap: 'wrap', gap: Theme.spacing.sm, alignItems: 'center' }}
+                            <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}
                                 {t('grading.gradebook.sortBy') || 'Sort by:'}
-                            </Text>
+                            </Text
 
                             {(['rank', 'marks', 'name'] as const).map((option) => (
                                 <TouchableOpacity key={option} onPress={() => {
                                     hapticLight();
                                     setSortBy(option);
-                                }}>
+                                }}
                                     <Box
                                         sx={{
                                             paddingVertical: Theme.spacing.xs,
@@ -136,31 +136,31 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                             borderWidth: 1,
                                             borderColor: sortBy === option ? Theme.colors.sanctuarySaffron : colors.border,
                                         }}
-                                    >
+                                    
                                         <Text
                                             color={sortBy === option ? Theme.colors.sacredWhite : colors.textSecondary}
                                             sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: sortBy === option ? '700' : '400' }}
-                                        >
+                                        
                                             {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
-                                        </Text>
-                                    </Box>
-                                </TouchableOpacity>
+                                        </Text
+                                    </Box
+                                </TouchableOpacity
                             ))}
-                        </HStack>
-                    </VStack>
+                        </HStack
+                    </VStack
 
                     {/* Content Area */}
-                    <Box sx={{ flex: 1 }}>
+                    <Box sx={{ flex: 1 }}
                         {isLoading && (
-                            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                                <Spinner color={Theme.colors.sanctuarySaffron} />
-                            </Box>
+                            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}
+                                <Spinner color={Theme.colors.sanctuarySaffron} /
+                            </Box
                         )}
 
                         {error && !isLoading && (
-                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.errorBackground, borderRadius: Theme.corners.comfortable }}>
-                                <Text color={Theme.colors.errorText} sx={{ fontSize: Theme.typography.fontSize.sm }}>{error}</Text>
-                            </Box>
+                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.errorBackground, borderRadius: Theme.corners.comfortable }}
+                                <Text color={Theme.colors.errorText} sx={{ fontSize: Theme.typography.fontSize.sm }}>{error}</Text
+                            </Box
                         )}
 
                         {!isLoading && !error && grades.length > 0 && gradingSettings && (
@@ -168,20 +168,20 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                 grades={sortedGrades}
                                 gradingSettings={gradingSettings}
                                 studentNames={studentNames}
-                            />
+                            /
                         )}
 
                         {!isLoading && !error && grades.length === 0 && (
-                            <Box sx={{ padding: Theme.spacing['2xl'], alignItems: 'center', marginTop: 40 }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}>
+                            <Box sx={{ padding: Theme.spacing['2xl'], alignItems: 'center', marginTop: 40 }}
+                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}
                                     {t('grading.gradebook.noGrades') || 'No grades recorded yet'}
-                                </Text>
-                            </Box>
+                                </Text
+                            </Box
                         )}
-                    </Box>
-                </VStack>
-            </ScrollView>
-        </VStack>
+                    </Box
+                </VStack
+            </ScrollView
+        </VStack
     );
 }
 

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '@repo/core';
@@ -34,7 +34,16 @@ export default function AttendanceScreen() {
     const fetchStudents = async () => {
         setIsLoading(true);
         try {
-            const data = await api.classroomStudents.getAll(classroomId);
+            const today = new Date().toISOString().split('T')[0] || '';
+            const [data, snapshot] = await Promise.all([
+                api.classroomStudents.getAll(classroomId),
+                api.attendance.getClassroomAttendanceSnapshot(classroomId, today)
+                    .catch(() => ({ records: [] as StudentAttendance[] })),
+            ]);
+
+            const savedStatus = new Map(
+                snapshot.records.map((record) => [record.student_id, record.status])
+            );
 
             // Transform to Attendance format and set default status
             const attendanceData: StudentAttendance[] = data.map((student: ClassroomStudent) => ({
@@ -42,7 +51,7 @@ export default function AttendanceScreen() {
                 student_id: student.student_id || student.id, // Use enrollment ID if student_id is null (shadow student)
                 full_name: student.full_name,
                 roll_number: student.roll_number,
-                status: 'present', // Default to present as per BDD
+                status: savedStatus.get(student.student_id || student.id) ?? 'present',
             }));
 
             setStudents(attendanceData);
@@ -65,13 +74,17 @@ export default function AttendanceScreen() {
                 status: s.status,
                 date: new Date().toISOString().split('T')[0] || '',
             }));
-            return api.attendance.batchRecord(records);
+            return api.attendance.batchRecord(records, {
+                actorId: currentUser?.id,
+                reason: 'daily_roll_call',
+                accessKind: 'teacher_marking',
+            });
         },
         {
             onSuccess: () => {
                 hapticSuccess();
                 showToast('Attendance saved successfully', 'success');
-                // Growth signal — fire-and-forget
+                // Growth signal  fire-and-forget
                 if (currentUser?.id) {
                     growthSignalsAPI.emitSignal(currentUser.id, 'attendance_marked', { classroom_id: classroomId })
                         .catch((err) => console.warn('[AttendanceScreen] growth signal failed:', err));
@@ -93,29 +106,29 @@ export default function AttendanceScreen() {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
-                <Spinner color={Theme.colors.sanctuarySaffron} />
-                <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text>
-            </Box>
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}
+                <Spinner color={Theme.colors.sanctuarySaffron} /
+                <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text
+            </Box
         );
     }
 
     if (error) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
-                <Text color={Theme.colors.emberRed}>{error}</Text>
-            </Box>
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}
+                <Text color={Theme.colors.emberRed}>{error}</Text
+            </Box
         );
     }
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
+        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}
             <AttendanceSheet
                 classroomId={classroomId}
                 initialStudents={students}
                 onAttendanceChange={handleAttendanceChange}
-            />
-            <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}>
+            /
+            <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}
                 <Button
                     onPress={handleSave}
                     disabled={saveMutation.isLoading}
@@ -126,12 +139,12 @@ export default function AttendanceScreen() {
                         minHeight: 56,
                         justifyContent: 'center'
                     }}
-                >
-                    <ButtonText color="white" sx={{ fontWeight: '700' }}>
+                
+                    <ButtonText color="white" sx={{ fontWeight: '700' }}
                         {saveMutation.isLoading ? 'Syncing...' : 'Complete Marking'}
-                    </ButtonText>
-                </Button>
-            </Box>
-        </VStack>
+                    </ButtonText
+                </Button
+            </Box
+        </VStack
     );
 }

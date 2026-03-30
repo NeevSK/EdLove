@@ -26,8 +26,8 @@ export function useAIAgent() {
     const [isThinking, setIsThinking] = useState(false);
     const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
     const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
-    const { can, context } = usePermissions();
-    const userRole = context.roles[0];
+    const { can } = usePermissions();
+    const userRole = useStore(state => state.userRole);
     const user = useStore((state) => state.user);
 
     /**
@@ -51,7 +51,7 @@ export function useAIAgent() {
      * Checks for real operational gaps from Supabase:
      * - Attendance not yet marked today
      * - Overdue assignments with ungraded submissions
-     * Falls back to empty array on any error — non-fatal.
+     * Falls back to empty array on any error  non-fatal.
      */
     const refreshStatus = useCallback(async () => {
         const myId = await identityAPI.getMyInternalId().catch(() => null);
@@ -136,7 +136,7 @@ export function useAIAgent() {
                 }
             }
         } catch {
-            // Non-fatal — AI context enrichment is best-effort
+            // Non-fatal  AI context enrichment is best-effort
         }
 
         setActiveGaps(gaps);
@@ -185,7 +185,7 @@ export function useAIAgent() {
 
         try {
             // getSession() here is correct: we only need the JWT access_token to call
-            // the edge function — NOT session.user.id for any DB query.
+            // the edge function  NOT session.user.id for any DB query.
             const session = await authAPI.getSession();
             const token = session?.access_token;
 
@@ -221,8 +221,8 @@ export function useAIAgent() {
             throw new Error('Empty reply from edge function');
         } catch (err) {
             console.warn('[useAIAgent] edge function error, falling back to local:', err);
-            // Local fallback — still Socratic, just not LLM-powered
-            const fallback = generateLocalFallback(content, userRole);
+            // Local fallback  still Socratic, just not LLM-powered
+            const fallback = generateLocalFallback(content, userRole, can);
             setMessages((prev) => [...prev, {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
@@ -256,13 +256,13 @@ export function useAIAgent() {
 }
 
 /**
- * Local Socratic fallback — used when the edge function is unreachable.
+ * Local Socratic fallback  used when the edge function is unreachable.
  * Keeps the AI feeling present even without network.
  */
-function generateLocalFallback(input: string, role: string | null): string {
+function generateLocalFallback(input: string, role: string | null, can: any): string {
     const lowerInput = input.toLowerCase();
     if (lowerInput.includes('lesson') || lowerInput.includes('class')) {
-        return 'Lessons are more than delivery — they are shared experiences. How was the energy in the room?';
+        return 'Lessons are more than delivery  they are shared experiences. How was the energy in the room?';
     }
     if (lowerInput.includes('tired') || lowerInput.includes('stress')) {
         return 'Rest is not a luxury; it is a vital part of the cycle. How can you find a moment of stillness today?';

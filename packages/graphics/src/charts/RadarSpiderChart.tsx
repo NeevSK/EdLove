@@ -42,14 +42,11 @@ export function RadarChart({
   });
 
   return (
-    <Card style={[styles.container, { width: size, height: size }]}>
-      {title && <Text style={styles.title}>{title}</Text>}
+    <Card style={[styles.container, { width: size, height: size }]}      {title && <Text style={styles.title}>{title}</Text>}
       
-      <View style={[styles.chartContainer, { width: size, height: size }]}>
-        {/* Grid lines */}
+      <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Grid lines */}
         {showGrid && (
-          <>
-            {/* Circular grid */}
+          <            {/* Circular grid */}
             {Array.from({ length: 5 }, (_, i) => {
               const gridAngle = (i * Math.PI) / 2.5;
               return (
@@ -66,8 +63,7 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                />
-              );
+                /              );
             })}
             
             {/* Radial grid lines */}
@@ -91,11 +87,9 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                />
-              );
+                /              );
             })}
-          </>
-        )}
+          </        )}
         
         {/* Data polygon */}
         <View style={[
@@ -109,15 +103,13 @@ export function RadarChart({
               { translateY: centerY }
             ]
           }
-        ]}>
-          {points.map((point, index) => {
+        ]}          {points.map((point, index) => {
             const nextPoint = points[(index + 1) % points.length];
             const angle = index * angleStep;
             const nextAngle = (index + 1) * angleStep;
             
             return (
-              <View key={index} style={styles.dataSlice}>
-                {/* Slice from center to point */}
+              <View key={index} style={styles.dataSlice}                {/* Slice from center to point */}
                 <View
                   style={[
                     styles.dataSlice,
@@ -134,8 +126,7 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                />
-                
+                /                
                 {/* Slice from point to next point */}
                 <View
                   style={[
@@ -153,20 +144,16 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                />
-              </View>
-            );
+                /              </View            );
           })}
-        </View>
-        
+        </View        
         {/* Center point */}
         <View style={[styles.centerPoint, { 
           left: centerX - 4, 
           top: centerY - 4,
           width: 8,
           height: 8
-        }]} />
-        
+        }]} /        
         {/* Labels */}
         {showLabels && data.map((point, index) => {
           const angle = index * angleStep;
@@ -187,19 +174,11 @@ export function RadarChart({
                   ]
                 }
               ]}
-            >
-              <Text style={styles.labelText}>
-                {point.label}
-              </Text>
-              <Text style={styles.labelValue}>
-                {point.value}
-              </Text>
-            </View>
-          );
+                          <Text style={styles.labelText}                {point.label}
+              </Text              <Text style={styles.labelValue}                {point.value}
+              </Text            </View          );
         })}
-      </View>
-    </Card>
-  );
+      </View    </Card  );
 }
 
 // Spider Chart (similar to radar but with connected points)
@@ -226,11 +205,9 @@ export function SpiderChart({
   const radius = size / 2 - 40;
   
   return (
-    <Card style={[styles.container, { width: size, height: size }]}>
-      {title && <Text style={styles.title}>{title}</Text>}
+    <Card style={[styles.container, { width: size, height: size }]}      {title && <Text style={styles.title}>{title}</Text>}
       
-      <View style={[styles.chartContainer, { width: size, height: size }]}>
-        {/* Connection lines */}
+      <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Connection lines */}
         {data.map((point, index) => {
           const angle = (index * 2 * Math.PI) / data.length - Math.PI / 2;
           return (
@@ -251,8 +228,7 @@ export function SpiderChart({
                   ]
                 }
               ]}
-            />
-          );
+            /          );
         })}
         
         {/* Data points and connections */}
@@ -262,8 +238,7 @@ export function SpiderChart({
           const y = centerY + radius * Math.sin(angle);
           
           return (
-            <View key={index}>
-              {/* Connection lines to other points */}
+            <View key={index}              {/* Connection lines to other points */}
               {connections.filter(c => c[0] === point.label).map((connection, connIndex) => {
                 const targetIndex = data.findIndex(p => p.label === connection[1]);
                 if (targetIndex !== -1) {
@@ -289,8 +264,7 @@ export function SpiderChart({
                           ]
                         }
                       ]}
-                    />
-                  );
+                    /                  );
                 }
                 return null;
               })}
@@ -307,16 +281,9 @@ export function SpiderChart({
                     ]
                   }
                 ]}
-              >
-                <Text style={styles.pointLabel}>
-                  {point.label}
-                </Text>
-                <Text style={styles.pointValue}>
-                  {point.value}
-                </Text>
-              </View>
-            </View>
-          );
+                              <Text style={styles.pointLabel}                  {point.label}
+                </Text                <Text style={styles.pointValue}                  {point.value}
+                </Text              </View            </View          );
         })}
         
         {/* Center point */}
@@ -325,10 +292,7 @@ export function SpiderChart({
           top: centerY - 4,
           width: 8,
           height: 8
-        }]} />
-      </View>
-    </Card>
-  );
+        }]} /      </View    </Card  );
 }
 
 const styles = StyleSheet.create({

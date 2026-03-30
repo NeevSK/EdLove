@@ -1,6 +1,7 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { JoyMoment } from '../types';
+import { createJoyMoment, fetchJoyMoments } from '../api/selfFeatureRepository';
 
 const JOY_CACHE_KEY = 'gurudevi-joy-cache';
 
@@ -40,15 +41,7 @@ export function useJoyJar(userId?: string) {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
-                .from('joy_moments')
-                .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(20);
-
-            if (error) throw error;
-
+            const data = await fetchJoyMoments(userId);
             if (data) {
                 setJoyMoments(data);
                 // Persist to cache
@@ -71,6 +64,10 @@ export function useJoyJar(userId?: string) {
         joyMoments,
         isLoading,
         refreshData,
-        setJoyMoments
+        setJoyMoments,
+        addJoyMoment: async (input: Pick<JoyMoment, 'student_name' | 'moment_description' | 'category'>) => {
+            if (!userId) return null;
+            return createJoyMoment(userId, input);
+        },
     };
 }

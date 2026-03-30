@@ -8,7 +8,7 @@ export interface Student {
     notes?: string | null;
     parent_phone?: string | null;
     guardian_name?: string | null;
-    is_claimed?: boolean;
+    is_claimed?: boolean | null;
     invite_code?: string | null;
     created_at: string;
     updated_at: string;
@@ -20,4 +20,4 @@ export interface BulkStudent {
     notes: string;
 }
 
-export type ClassroomStudent = Student;
+

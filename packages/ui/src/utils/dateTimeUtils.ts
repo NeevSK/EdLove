@@ -1,12 +1,12 @@
 /**
- * dateTimeUtils.ts — Shared date/time formatting helpers.
+ * dateTimeUtils.ts \u2014 Shared date/time formatting helpers.
  *
  * These utilities were previously copy-pasted in 8+ separate files with
  * slightly inconsistent signatures. Single source of truth: import from `@repo/ui`.
  */
 
 /**
- * Format a native video duration (milliseconds → "M:SS").
+ * Format a native video duration (milliseconds \u2192 "M:SS").
  * Used by expo-video VideoPlayerScreen (native).
  *
  * @example formatTimeMs(90500) // "1:30"
@@ -19,7 +19,7 @@ export function formatTimeMs(ms: number): string {
 }
 
 /**
- * Format an HTML5 video duration (seconds → "M:SS").
+ * Format an HTML5 video duration (seconds \u2192 "M:SS").
  * Used by <video> element VideoPlayerScreen.web.tsx.
  *
  * @example formatTimeSecs(90) // "1:30"

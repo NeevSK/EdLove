@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import {
     VStack,
@@ -27,7 +27,7 @@ export interface SanctuaryModalProps {
 }
 
 /**
- * SanctuaryModal.web â€” Optimized overlay for Desktop/Web.
+ * SanctuaryModal.web  Optimized overlay for Desktop/Web.
  */
 export default function SanctuaryModal({
     isOpen,
@@ -55,7 +55,7 @@ export default function SanctuaryModal({
     };
 
     return (
-        <UniversalModal isOpen={isOpen} onClose={onClose}>
+        <UniversalModal isOpen={isOpen} onClose={onClose}
             {/* Backdrop styling handled by UniversalModal, but we can wrap content here */}
             <Box
                 sx={{
@@ -72,7 +72,7 @@ export default function SanctuaryModal({
                     elevation: 10,
                     overflow: 'hidden',
                 }}
-            >
+            
                 {/* Header */}
                 <HStack
                     sx={{
@@ -82,23 +82,23 @@ export default function SanctuaryModal({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                     }}
-                >
-                    <HStack sx={{ space: 'sm', alignItems: 'center', flex: 1 } as any}>
+                
+                    <HStack sx={{ space: 'sm', alignItems: 'center', flex: 1 } as any}
                         {icon && icon}
-                        <VStack sx={{ flex: 1 } as any}>
-                            <Heading size="md" sx={{ color: text.onElevated } as any}>
+                        <VStack sx={{ flex: 1 } as any}
+                            <Heading size="md" sx={{ color: text.onElevated } as any}
                                 {title}
-                            </Heading>
+                            </Heading
                             {subtitle && (
-                                <Text sx={{ size: 'xs', color: text.secondary } as any}>
+                                <Text sx={{ size: 'xs', color: text.secondary } as any}
                                     {subtitle}
-                                </Text>
+                                </Text
                             )}
-                        </VStack>
-                    </HStack>
+                        </VStack
+                    </HStack
 
                     {showCloseButton && (
-                        <TouchableOpacity
+                        <TouchableOpacity accessibilityRole="button"
                             onPress={onClose}
                             style={[
                                 styles.closeBtn,
@@ -107,16 +107,16 @@ export default function SanctuaryModal({
                                     borderColor: scene.interactive.border,
                                 },
                             ]}
-                        >
-                            <Icon as={CloseIcon} sx={{ color: text.onElevated, size: 'xl' } as any} />
-                        </TouchableOpacity>
+                        
+                            <Icon as={CloseIcon} sx={{ color: text.onElevated, size: 'xl' } as any} /
+                        </TouchableOpacity
                     )}
-                </HStack>
+                </HStack
 
                 {/* Body */}
-                <Box sx={{ p: 24, maxHeight: Dimensions.get('window').height * 0.7 }}>
+                <Box sx={{ p: 24, maxHeight: Dimensions.get('window').height * 0.7 }}
                     {children}
-                </Box>
+                </Box
 
                 {/* Footer */}
                 {footer && (
@@ -127,12 +127,12 @@ export default function SanctuaryModal({
                             borderTopWidth: 1,
                             borderColor: scene.interactive.border,
                         }}
-                    >
+                    
                         {footer}
-                    </Box>
+                    </Box
                 )}
-            </Box>
-        </UniversalModal>
+            </Box
+        </UniversalModal
     );
 }
 

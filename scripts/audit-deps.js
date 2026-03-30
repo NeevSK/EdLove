@@ -57,14 +57,14 @@ duplicates.sort((a, b) => b[1].length - a[1].length).forEach(([name, consumers])
     
     if (versions.size > 1) {
         foundIssues = true;
-        console.log(`## ⚠️ VERSION MISMATCH: ${name}`);
+        console.log(`## \u26A0\uFE0F VERSION MISMATCH: ${name}`);
         consumers.forEach(c => {
             console.log(`- **${c.version}** in \`${c.consumer}\` (${c.path})`);
         });
         console.log("");
     } else if (consumers.length > 3) {
         // High frequency - maybe a candidate for a shared config or @repo/core?
-        console.log(`## ℹ️ HIGH FREQUENCY: ${name}`);
+        console.log(`## \u2139\uFE0F HIGH FREQUENCY: ${name}`);
         console.log(`Used by ${consumers.length} packages at version **${[...versions][0]}**`);
         console.log("");
     }

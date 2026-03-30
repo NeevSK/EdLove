@@ -1,5 +1,5 @@
 /**
- * VoiceJournaling.web.tsx — Pattern A: web fallback
+ * VoiceJournaling.web.tsx \u2014 Pattern A: web fallback
  *
  * On native, VoiceJournaling uses `expo-audio` (useAudioRecorder, useAudioPlayer,
  * AudioModule, RecordingPresets) which are JSI-bridged native modules.
@@ -33,8 +33,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Mic, Square, Play, Trash2, Check } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
-import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
+import { saveVoiceJournalRecord } from '../api/selfFeatureRepository';
 
 interface VoiceJournalingProps {
     userId?: string;
@@ -167,19 +167,14 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         try {
             const response = await fetch(audioUrl);
             const blob = await response.blob();
-            const fileName = `voice_${userId}_${Date.now()}.webm`;
-            const { error } = await supabase.storage
-                .from('voice-journals')
-                .upload(fileName, blob, { contentType: 'audio/webm', upsert: false });
-            if (error) {
-                await supabase.from('voice_journals').insert({
-                    user_id: userId,
-                    duration_seconds: recordingDuration,
-                    created_at: new Date().toISOString(),
-                });
-            }
+            await saveVoiceJournalRecord(userId, {
+                durationSeconds: recordingDuration,
+                blob,
+                extension: 'webm',
+                contentType: 'audio/webm',
+            });
         } catch {
-            // fire-and-forget — primary value is the recording itself
+            // fire-and-forget \u2014 primary value is the recording itself
         }
         discardRecording();
         onComplete?.();
@@ -191,28 +186,28 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     };
 
-    // ── Unsupported ───────────────────────────────────────────────────
+    // \u2500\u2500 Unsupported \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     if (recordingState === 'unsupported') {
         return (
-            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center', gap: Theme.spacing.md }}>
-                <Text style={{ fontSize: 36 }}>🎤</Text>
-                <Heading size="md" style={{ textAlign: 'center', color: Theme.colors.inkTruth }}>
+            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center', gap: Theme.spacing.md }}
+                <Text style={{ fontSize: 36 }}>\uD83C\uDFA4</Text
+                <Heading size="md" style={{ textAlign: 'center', color: Theme.colors.inkTruth }}
                     Voice Journaling
-                </Heading>
-                <Text style={{ textAlign: 'center', color: Theme.colors.willow, lineHeight: 22 }}>
+                </Heading
+                <Text style={{ textAlign: 'center', color: Theme.colors.willow, lineHeight: 22 }}
                     Your browser doesn't support microphone access, or permission was denied.
                     {'\n\n'}Try Chrome, Firefox, or Safari 14.1+ and allow microphone access when prompted.
-                </Text>
+                </Text
                 {onComplete && (
-                    <Button variant="outline" onPress={onComplete}>
-                        <ButtonText>Close</ButtonText>
-                    </Button>
+                    <Button variant="outline" onPress={onComplete}
+                        <ButtonText>Close</ButtonText
+                    </Button
                 )}
-            </Box>
+            </Box
         );
     }
 
-    // ── Main UI ───────────────────────────────────────────────────────
+    // \u2500\u2500 Main UI \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     return (
         <VStack
             sx={{
@@ -221,21 +216,21 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                 alignItems: 'center',
                 backgroundColor: Theme.colors.vellum,
             }}
-        >
-            <Heading size="lg" style={{ color: Theme.colors.inkTruth, textAlign: 'center' }}>
+        
+            <Heading size="lg" style={{ color: Theme.colors.inkTruth, textAlign: 'center' }}
                 Voice Journal
-            </Heading>
-            <Text style={{ color: Theme.colors.willow, textAlign: 'center', lineHeight: 22, maxWidth: 320 }}>
+            </Heading
+            <Text style={{ color: Theme.colors.willow, textAlign: 'center', lineHeight: 22, maxWidth: 320 }}
                 {recordingState === 'idle' && 'Tap the mic to start. Speak for up to 2 minutes.'}
-                {recordingState === 'recording' && `Recording… ${formatDuration(recordingDuration)}`}
+                {recordingState === 'recording' && `Recording\u2026 ${formatDuration(recordingDuration)}`}
                 {recordingState === 'recorded' && `Recording saved (${formatDuration(recordingDuration)}). Play back or save it.`}
-                {recordingState === 'playing' && 'Playing back…'}
-            </Text>
+                {recordingState === 'playing' && 'Playing back\u2026'}
+            </Text
 
             {/* Animated mic / wave */}
-            <View style={styles.visualizerContainer}>
+            <View style={styles.visualizerContainer}
                 {(recordingState === 'recording' || recordingState === 'playing') ? (
-                    <Animated.View style={[styles.waveBar, waveStyle, { backgroundColor: Theme.colors.sanctuarySaffron }]} />
+                    <Animated.View style={[styles.waveBar, waveStyle, { backgroundColor: Theme.colors.sanctuarySaffron }]} /
                 ) : null}
 
                 <Animated.View style={[
@@ -246,48 +241,48 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             : Theme.colors.sanctuarySaffron,
                     },
                     pulseStyle,
-                ]}>
+                ]}
                     <Pressable
                         onPress={recordingState === 'recording' ? stopRecording : startRecording}
                         style={styles.micInner}
                         accessibilityRole="button"
                         accessibilityLabel={recordingState === 'recording' ? 'Stop recording' : 'Start recording'}
-                    >
+                    
                         {recordingState === 'recording'
-                            ? <Square size={28} color="#fff" fill="#fff" />
-                            : <Mic size={28} color="#fff" />
+                            ? <Square size={28} color="#fff" fill="#fff" /
+                            : <Mic size={28} color="#fff" /
                         }
-                    </Pressable>
-                </Animated.View>
-            </View>
+                    </Pressable
+                </Animated.View
+            </View
 
-            {/* Playback / save controls — shown when recording is ready */}
+            {/* Playback / save controls \u2014 shown when recording is ready */}
             {(recordingState === 'recorded' || recordingState === 'playing') && (
-                <HStack sx={{ gap: Theme.spacing.md }}>
+                <HStack sx={{ gap: Theme.spacing.md }}
                     <Pressable
                         onPress={discardRecording}
                         style={[styles.actionBtn, { borderColor: Theme.colors.border }]}
                         accessibilityLabel="Discard recording"
-                    >
-                        <Trash2 size={20} color={Theme.colors.willow} />
-                    </Pressable>
+                    
+                        <Trash2 size={20} color={Theme.colors.willow} /
+                    </Pressable
                     <Pressable
                         onPress={recordingState === 'playing' ? undefined : playRecording}
                         style={[styles.actionBtn, { borderColor: Theme.colors.sanctuarySaffron + '50', opacity: recordingState === 'playing' ? 0.5 : 1 }]}
                         accessibilityLabel="Play recording"
-                    >
-                        <Play size={20} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />
-                    </Pressable>
+                    
+                        <Play size={20} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} /
+                    </Pressable
                     <Pressable
                         onPress={saveRecording}
                         style={[styles.actionBtn, { backgroundColor: Theme.colors.sanctuarySaffron, borderColor: Theme.colors.sanctuarySaffron }]}
                         accessibilityLabel="Save recording"
-                    >
-                        <Check size={20} color="#fff" />
-                    </Pressable>
-                </HStack>
+                    
+                        <Check size={20} color="#fff" /
+                    </Pressable
+                </HStack
             )}
-        </VStack>
+        </VStack
     );
 }
 

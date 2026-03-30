@@ -10,7 +10,14 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, TextInput } from 'react-native';
 import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { observationsAPI, type PrincipalObservation } from '@repo/admin';
+import { supabase } from '@repo/core';
+
+interface Observation {
+  id: string;
+  type: string;
+  content: string;
+  created_at: string;
+}
 
 interface PrincipalObservationsSectionProps {
   schoolId: string;
@@ -36,16 +43,22 @@ export default function PrincipalObservationsSection({
 }: PrincipalObservationsSectionProps) {
   const colors = useThemedColors();
   const [loading, setLoading] = useState(true);
-  const [observations, setObservations] = useState<PrincipalObservation[]>([]);
+  const [observations, setObservations] = useState<Observation[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Form state
   const [content, setContent] = useState('');
   const [obsType, setObsType] = useState('note');
 
   async function fetchObservations() {
-    const data = await observationsAPI.listRecent(principalId, 5);
-    setObservations(data);
+    const { data } = await supabase
+      .from('principal_observations')
+      .select('*')
+      .eq('principal_id', principalId)
+      .order('created_at', { ascending: false })
+      .limit(5);
+    setObservations((data ?? []) as Observation[]);
     setLoading(false);
   }
 
@@ -57,20 +70,14 @@ export default function PrincipalObservationsSection({
   async function handleSave() {
     if (!content.trim()) return;
     setSaving(true);
-    let saveError: unknown = null;
-    try {
-      await observationsAPI.create({
-        schoolId,
-        principalId,
-        type: obsType,
-        content: content.trim(),
-      });
-    } catch (error) {
-      saveError = error;
-    }
+    const { error } = await supabase.from('principal_observations').insert({
+      school_id: schoolId,
+      principal_id: principalId,
+      type: obsType,
+      content: content.trim(),
+    });
     setSaving(false);
-
-    if (!saveError) {
+    if (!error) {
       setContent('');
       setObsType('note');
       setShowForm(false);
@@ -101,9 +108,10 @@ export default function PrincipalObservationsSection({
         padding: Theme.spacing.md,
       }}
     >
+      {/* Header */}
       <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
         <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
-          Observation Notes
+          📝 Observation Notes
         </Text>
         <TouchableOpacity onPress={() => setShowForm(!showForm)} activeOpacity={0.8}>
           <Box
@@ -119,14 +127,17 @@ export default function PrincipalObservationsSection({
         </TouchableOpacity>
       </HStack>
 
+      {/* Loading */}
       {loading && <SkeletonCard height={60} />}
 
+      {/* Empty state */}
       {!loading && observations.length === 0 && (
         <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
           No observations yet. Start your first classroom walkthrough note.
         </Text>
       )}
 
+      {/* Observation rows */}
       {!loading && observations.map((obs) => (
         <VStack
           key={obs.id}
@@ -155,10 +166,11 @@ export default function PrincipalObservationsSection({
         </VStack>
       ))}
 
+      {/* Inline new observation form */}
       {showForm && (
         <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}>
           <TextInput
-            placeholder="Write your observation..."
+            placeholder="Write your observation…"
             placeholderTextColor={colors.textSecondary}
             value={content}
             onChangeText={setContent}
@@ -167,26 +179,27 @@ export default function PrincipalObservationsSection({
             style={inputStyle}
           />
 
+          {/* Type chips */}
           <HStack sx={{ gap: Theme.spacing.xs, marginBottom: Theme.spacing.sm, flexWrap: 'wrap' }}>
-            {OBS_TYPE_OPTIONS.map((type) => (
-              <TouchableOpacity key={type} onPress={() => setObsType(type)} activeOpacity={0.8}>
+            {OBS_TYPE_OPTIONS.map((t) => (
+              <TouchableOpacity key={t} onPress={() => setObsType(t)} activeOpacity={0.8}>
                 <Box
                   sx={{
                     borderRadius: 14,
                     paddingHorizontal: 10,
                     paddingVertical: 4,
-                    backgroundColor: obsType === type ? obsBadgeColor(type) : colors.border,
+                    backgroundColor: obsType === t ? obsBadgeColor(t) : colors.border,
                   }}
                 >
                   <Text
                     sx={{
                       fontSize: 12,
                       fontWeight: '600',
-                      color: obsType === type ? '#fff' : colors.textSecondary,
+                      color: obsType === t ? '#fff' : colors.textSecondary,
                       textTransform: 'capitalize',
                     }}
                   >
-                    {type}
+                    {t}
                   </Text>
                 </Box>
               </TouchableOpacity>
@@ -204,7 +217,7 @@ export default function PrincipalObservationsSection({
               }}
             >
               <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}>
-                {saving ? 'Saving...' : 'Save'}
+                {saving ? 'Saving…' : 'Save'}
               </Text>
             </Box>
           </TouchableOpacity>
@@ -213,4 +226,3 @@ export default function PrincipalObservationsSection({
     </Box>
   );
 }
-

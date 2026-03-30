@@ -25,10 +25,10 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
     const getRoleBasedContent = () => {
         switch (role) {
             case 'teacher':
-            case 'section_head':
-            case 'grade_head':
+            case 'sectionHead':
+            case 'gradeHead':
             case 'principal':
-            case 'developer': // Developer still falls through to teacher content
+            case 'developer':
                 return {
                     title: t('profile.impact.teacher'),
                     items: [
@@ -56,12 +56,12 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
                     items: [
                         { label: t('profile.stats.ecology'), value: stats?.attendanceStreak ? t('common.yes') : t('common.no'), icon: Globe, color: colors.action },
                         { label: t('profile.stats.platformVision'), value: 'Global', icon: Users, color: colors.success },
-                        { label: t('profile.stats.guardianImpact'), value: stats?.guruPoints || '∞', icon: Star, color: colors.warning },
+                        { label: t('profile.stats.guardianImpact'), value: stats?.guruPoints || '', icon: Star, color: colors.warning },
                     ],
                     progressLabel: t('profile.stats.foundingSpirit'),
                     progressValue: 100
                 };
-            case 'platform_admin':
+            case 'admin':
                 return {
                     title: t('profile.impact.admin'),
                     items: [
@@ -90,6 +90,6 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
             items={content.items}
             progressLabel={content.progressLabel}
             progressValue={content.progressValue}
-        />
+        /
     );
 }

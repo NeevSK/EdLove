@@ -1,1 +1,1 @@
-export { SelfScreen as default } from '@repo/self';
+export { SelfScreenWeb as default } from '@repo/self';

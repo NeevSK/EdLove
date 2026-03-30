@@ -25,9 +25,7 @@ export default function TeacherAdminPortalModal({
       animationType="slide"
       presentationStyle="pageSheet"
       onRequestClose={onClose}
-    >
-      <Box flex={1} sx={{ backgroundColor: colors.primary }}>
-        <Box
+          <Box flex={1} sx={{ backgroundColor: colors.primary }}        <Box
           sx={{
             paddingTop: 50,
             paddingBottom: Theme.spacing.md,
@@ -35,12 +33,8 @@ export default function TeacherAdminPortalModal({
             borderBottomWidth: 1,
             borderBottomColor: colors.border,
           }}
-        >
-          <HStack justifyContent="space-between" alignItems="center">
-            <Heading size="lg" color={colors.text}>
-              {title}
-            </Heading>
-            <TouchableOpacity
+                  <HStack justifyContent="space-between" alignItems="center"            <Heading size="lg" color={colors.text}              {title}
+            </Heading            <TouchableOpacity
               onPress={() => {
                 hapticLight();
                 onClose();
@@ -52,15 +46,5 @@ export default function TeacherAdminPortalModal({
                 borderColor: colors.border,
                 borderWidth: 1,
               }}
-            >
-              <X size={24} color={colors.text} />
-            </TouchableOpacity>
-          </HStack>
-        </Box>
-        <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
-          <TeacherAdminWidget onAction={onAction} />
-        </ScrollView>
-      </Box>
-    </Modal>
-  );
+                          <X size={24} color={colors.text} /            </TouchableOpacity          </HStack        </Box        <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}          <TeacherAdminWidget onAction={onAction} /        </ScrollView      </Box    </Modal  );
 }

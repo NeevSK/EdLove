@@ -24,17 +24,17 @@ const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export function EnergyBarChart({ bars, colors = ENERGY_COLORS, height = 100 }: EnergyBarChartProps) {
     if (!bars.length) {
         return (
-            <p style={{ color: 'var(--ink-ghost)', fontSize: '14px', margin: 0 }}>
+            <p style={{ color: 'var(--ink-ghost)', fontSize: '14px', margin: 0 }}
                 No energy logs yet. Log your first energy reading to see your pulse.
-            </p>
+            </p
         );
     }
 
     return (
-        <div style={{ width: '100%' }}>
-            <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', marginBottom: '20px', marginTop: 0 }}>
+        <div style={{ width: '100%' }}
+            <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', marginBottom: '20px', marginTop: 0 }}
                 Your energy over the last {bars.length} recorded day{bars.length !== 1 ? 's' : ''}.
-            </p>
+            </p
 
             {/* Bar chart */}
             <div style={{
@@ -42,7 +42,7 @@ export function EnergyBarChart({ bars, colors = ENERGY_COLORS, height = 100 }: E
                 alignItems: 'flex-end',
                 gap: '6px',
                 height: `${height}px`,
-            }}>
+            }}
                 {bars.map((f, i) => {
                     const level = Math.max(0, Math.min(5, f.energy_level ?? 3));
                     const barColor = colors[level] ?? colors[3] ?? '#8B5CF6';
@@ -56,7 +56,7 @@ export function EnergyBarChart({ bars, colors = ENERGY_COLORS, height = 100 }: E
                         : String(i + 1);
 
                     return (
-                        <div key={f.id ?? i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', height: '100%', justifyContent: 'flex-end' }}>
+                        <div key={f.id ?? i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', height: '100%', justifyContent: 'flex-end' }}
                             <div
                                 title={`${level}/5`}
                                 style={{
@@ -68,20 +68,20 @@ export function EnergyBarChart({ bars, colors = ENERGY_COLORS, height = 100 }: E
                                     transition: 'height 0.4s ease',
                                     minHeight: '4px',
                                 }}
-                            />
-                            <span style={{ fontSize: '9px', color: 'var(--ink-ghost)', fontWeight: '600', letterSpacing: '0.5px' }}>
+                            /
+                            <span style={{ fontSize: '9px', color: 'var(--ink-ghost)', fontWeight: '600', letterSpacing: '0.5px' }}
                                 {label}
-                            </span>
-                        </div>
+                            </span
+                        </div
                     );
                 })}
-            </div>
+            </div
 
             {/* Footer */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-                <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>Oldest</span>
-                <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>Today</span>
-            </div>
-        </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}
+                <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>Oldest</span
+                <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>Today</span
+            </div
+        </div
     );
 }

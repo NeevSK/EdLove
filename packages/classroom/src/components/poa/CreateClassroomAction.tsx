@@ -7,9 +7,6 @@ export function CreateClassroomAction({ onCreateClassroom }: { onCreateClassroom
             className="premium-button" 
             style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} 
             onClick={onCreateClassroom}
-        >
-            <Plus size={18} />
-            Create Classroom
-        </button>
-    );
+                    <Plus size={18} /            Create Classroom
+        </button    );
 }

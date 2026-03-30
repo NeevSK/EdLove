@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Text, HStack, VStack, Box } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -29,9 +29,9 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     const colors = useThemedColors();
 
     return (
-        <VStack space="md" alignItems="center" style={{ width: '100%' }}>
+        <VStack space="md" alignItems="center" style={{ width: '100%' }}
             {/* Dot Indicators */}
-            <HStack space="xs" alignItems="center" justifyContent="center">
+            <HStack space="xs" alignItems="center" justifyContent="center"
                 {Array.from({ length: totalSteps }).map((_, index) => {
                     const isActive = index === currentStep;
                     const isPast = index < currentStep;
@@ -54,10 +54,10 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                                 // Organic transition (breathing effect)
                                 transition: 'all 300ms ease-in-out',
                             }}
-                        />
+                        /
                     );
                 })}
-            </HStack>
+            </HStack
 
             {/* Step Count Text */}
             {showStepCount && (
@@ -65,11 +65,11 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                     size="sm"
                     color={colors.textSecondary}
                     sx={{ fontWeight: '$medium' }}
-                >
+                
                     Step {currentStep + 1} of {totalSteps}
-                </Text>
+                </Text
             )}
-        </VStack>
+        </VStack
     );
 };
 

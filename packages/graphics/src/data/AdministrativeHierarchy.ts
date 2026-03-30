@@ -1,5 +1,6 @@
-import * as SLGeo from '@nishansanjuka/srilanka_geographics';
 import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
+import * as LKEduGeo from '@intuitui-labs/lk-edu-geo';
+import type { DSDivision, GNDivision } from '@intuitui-labs/lk-edu-geo';
 
 export interface AdminUnit {
     id: string;
@@ -9,7 +10,10 @@ export interface AdminUnit {
 }
 
 /**
- * Enhanced Drilling Utility using @nishansanjuka/srilanka_geographics
+ * Universal Drilling Utility using @repo/lk-edu-geo.
+ * 
+ * This replaces the previous Node-only @nishansanjuka/srilanka_geographics 
+ * implementation which crashed on native due to fs/path dependencies.
  */
 export const Drilldown = {
     getProvinces: () => SRI_LANKAN_PROVINCES,
@@ -19,21 +23,40 @@ export const Drilldown = {
     
     /**
      * Retrieves cities for a given district. 
-     * In the context of Sri Lankan administration, Cities/Towns are often 
-     * used as proxy for DS/GN divisions in lighter UX flows.
      */
-    getCities: async (districtName: string) => {
-        // @nishansanjuka uses names for lookup
-        return SLGeo.GetCities(districtName);
+    getCities: async (districtId: string) => {
+        // We use district ID for lookups in lk-edu-geo
+        return LKEduGeo.getPostalUnitsByDistrict(districtId).map((p) => ({
+            id: p.id,
+            en: p.city || '',
+            si: '', // No city_si in PostalUnit yet
+            ta: '', // No city_ta in PostalUnit yet
+        }));
     },
 
     /**
-     * Retrives all provinces with full detail
+     * Retrieves all provinces with full detail
      */
     getAllProvincesDetailed: async () => {
-        return SLGeo.GetAllProvinces();
+        return LKEduGeo.getProvinces().map((p) => ({
+            id: p.id,
+            en: p.name,
+            si: p.name_si || '',
+            ta: p.name_ta || '',
+        }));
+    },
+
+    /**
+     * Synchronous stubs for UI-layer drilling.
+     */
+    getDSDivisions: (districtId: string): DSDivision[] => {
+        return LKEduGeo.getDSDivisionsByDistrict(districtId);
+    },
+    getGNDivisions: (dsDivisionId: string): GNDivision[] => {
+        return LKEduGeo.getGNDivisionsByDSDivision(dsDivisionId);
     }
 };
+
 
 export const DISTRICT_TO_DS_DIVISIONS = {}; // Placeholder for custom DS logic if needed
 export const DS_TO_GN_DIVISIONS = {}; // Placeholder

@@ -1,3 +1,4 @@
+import './src/shims/node-globals-shim';
 import 'react-native-reanimated';
 import 'react-native-worklets';
 import 'react-native-get-random-values';

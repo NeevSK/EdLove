@@ -80,70 +80,70 @@ export default function GuestDataSyncModal({
     };
 
     const footer = !completed ? (
-        <HStack {...({ space: "md", width: "100%" } as any)}>
+        <HStack {...({ space: "md", width: "100%" } as any)}
             <SanctuaryButton
                 variant="ghost"
                 action="secondary"
                 onPress={handleSkip}
                 isDisabled={syncing}
-            >
+            
                 {t('common.skip') || 'Skip'}
-            </SanctuaryButton>
+            </SanctuaryButton
             <SanctuaryButton
                 action="primary"
                 onPress={handleSync}
                 isLoading={syncing}
-            >
-                {syncing ? (t('sync.syncing') || 'Syncing…') : (t('sync.syncButton') || 'Sync Data')}
-            </SanctuaryButton>
-        </HStack>
+            
+                {syncing ? (t('sync.syncing') || 'Syncing&') : (t('sync.syncButton') || 'Sync Data')}
+            </SanctuaryButton
+        </HStack
     ) : undefined;
 
     return (
         <SanctuaryModal
             isOpen={isOpen}
             onClose={handleSkip}
-            title={completed ? '✨ ' + (t('sync.completeTitle') || 'Sync Complete!') : '☁️ ' + (t('sync.title') || 'Sync Your Data')}
+            title={completed ? '( ' + (t('sync.completeTitle') || 'Sync Complete!') : ' ' + (t('sync.title') || 'Sync Your Data')}
             footer={footer}
-        >
-            <VStack {...({ space: "lg" } as any)}>
-                {/* Confirm-skip warning — shown when user tries to skip with unsaved data */}
+        
+            <VStack {...({ space: "lg" } as any)}
+                {/* Confirm-skip warning  shown when user tries to skip with unsaved data */}
                 {confirmSkip && !completed && (
-                    <VStack {...({ space: "md" } as any)}>
-                        <HStack {...({ space: "sm" } as any)} style={{ alignItems: 'center' }}>
-                            <AlertTriangle size={18} color={Theme.colors.amberGlow} />
-                            <Text {...({ bold: true } as any)}>
+                    <VStack {...({ space: "md" } as any)}
+                        <HStack {...({ space: "sm" } as any)} style={{ alignItems: 'center' }}
+                            <AlertTriangle size={18} color={Theme.colors.amberGlow} /
+                            <Text {...({ bold: true } as any)}
                                 {t('sync.skipWarningTitle') || 'Your data will be lost'}
-                            </Text>
-                        </HStack>
-                        <Text {...({ color: text.secondary, size: "sm" } as any)}>
+                            </Text
+                        </HStack
+                        <Text {...({ color: text.secondary, size: "sm" } as any)}
                             {t('sync.skipWarningBody') || `Skipping will permanently discard ${summary.total} item${summary.total !== 1 ? 's' : ''} from your guest session. This cannot be undone.`}
-                        </Text>
-                        <HStack {...({ space: "sm" } as any)}>
+                        </Text
+                        <HStack {...({ space: "sm" } as any)}
                             <SanctuaryButton
                                 variant="ghost"
                                 action="secondary"
                                 onPress={() => setConfirmSkip(false)}
                                 style={{ flex: 1 }}
-                            >
+                            
                                 {t('common.back') || 'Back'}
-                            </SanctuaryButton>
+                            </SanctuaryButton
                             <SanctuaryButton
                                 variant="solid"
                                 action="negative"
                                 onPress={onClose}
                                 style={{ flex: 1 }}
-                            >
+                            
                                 {t('sync.discardButton') || 'Discard data'}
-                            </SanctuaryButton>
-                        </HStack>
-                    </VStack>
+                            </SanctuaryButton
+                        </HStack
+                    </VStack
                 )}
                 {!confirmSkip && !completed && !syncing && (
-                    <>
-                        <Text {...({ color: text.secondary, size: "sm" } as any)}>
+                    <
+                        <Text {...({ color: text.secondary, size: "sm" } as any)}
                             {t('sync.description') || 'We found data from your guest session. Would you like to sync it to your new account?'}
-                        </Text>
+                        </Text
 
                         {/* Data Summary */}
                         <Box
@@ -154,51 +154,51 @@ export default function GuestDataSyncModal({
                                 borderColor: glass.interact.border,
                                 padding: Theme.spacing.md
                             }}
-                        >
-                            <VStack {...({ space: "sm" } as any)}>
+                        
+                            <VStack {...({ space: "sm" } as any)}
                                 {summary.timetablePeriods > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Timetable Periods</Text>
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.timetablePeriods}</Text>
-                                    </HStack>
+                                    <HStack justifyContent="space-between"
+                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Timetable Periods</Text
+                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.timetablePeriods}</Text
+                                    </HStack
                                 )}
                                 {summary.moodLogs > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Mood Logs</Text>
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.moodLogs}</Text>
-                                    </HStack>
+                                    <HStack justifyContent="space-between"
+                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Mood Logs</Text
+                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.moodLogs}</Text
+                                    </HStack
                                 )}
                                 {summary.journalEntries > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Journal Entries</Text>
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.journalEntries}</Text>
-                                    </HStack>
+                                    <HStack justifyContent="space-between"
+                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Journal Entries</Text
+                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.journalEntries}</Text
+                                    </HStack
                                 )}
                                 {summary.students > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Students</Text>
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.students}</Text>
-                                    </HStack>
+                                    <HStack justifyContent="space-between"
+                                        <Text {...({ color: text.secondary, size: "sm" } as any)}>Students</Text
+                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.students}</Text
+                                    </HStack
                                 )}
-                                <Box sx={{ height: 1, backgroundColor: glass.interact.border, marginVertical: 4 }} />
-                                <HStack justifyContent="space-between">
-                                    <Text {...({ color: text.primary, bold: true, size: "sm" } as any)}>Total Items</Text>
-                                    <Text {...({ color: accent.action, bold: true } as any)}>{summary.total}</Text>
-                                </HStack>
-                            </VStack>
-                        </Box>
-                    </>
+                                <Box sx={{ height: 1, backgroundColor: glass.interact.border, marginVertical: 4 }} /
+                                <HStack justifyContent="space-between"
+                                    <Text {...({ color: text.primary, bold: true, size: "sm" } as any)}>Total Items</Text
+                                    <Text {...({ color: accent.action, bold: true } as any)}>{summary.total}</Text
+                                </HStack
+                            </VStack
+                        </Box
+                    </
                 )}
 
                 {syncing && (
-                    <VStack {...({ space: "md", alignItems: "center" } as any)}>
-                        <Spinner {...({ size: "large", color: accent.action } as any)} />
-                        <Text {...({ color: text.primary, textAlign: "center" } as any)}>
+                    <VStack {...({ space: "md", alignItems: "center" } as any)}
+                        <Spinner {...({ size: "large", color: accent.action } as any)} /
+                        <Text {...({ color: text.primary, textAlign: "center" } as any)}
                             {progress.step}
-                        </Text>
-                        <Text {...({ color: text.secondary, size: "xs" } as any)}>
+                        </Text
+                        <Text {...({ color: text.secondary, size: "xs" } as any)}
                             {progress.current} / {progress.total} items synced
-                        </Text>
+                        </Text
                         <Box
                             sx={{
                                 width: '100%',
@@ -207,7 +207,7 @@ export default function GuestDataSyncModal({
                                 borderRadius: 4,
                                 overflow: 'hidden'
                             }}
-                        >
+                        
                             <Box
                                 sx={{
                                     // Guard against division by zero when total is 0
@@ -217,13 +217,13 @@ export default function GuestDataSyncModal({
                                     height: '100%',
                                     backgroundColor: accent.action
                                 }}
-                            />
-                        </Box>
-                    </VStack>
+                            /
+                        </Box
+                    </VStack
                 )}
 
                 {completed && (
-                    <VStack {...({ space: "md", alignItems: "center" } as any)}>
+                    <VStack {...({ space: "md", alignItems: "center" } as any)}
                         <Box
                             sx={{
                                 width: 64,
@@ -233,16 +233,16 @@ export default function GuestDataSyncModal({
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}
-                        >
-                            <Check size={32} color={accent.action} />
-                        </Box>
-                        <Text {...({ color: text.primary, textAlign: "center", bold: true } as any)}>
+                        
+                            <Check size={32} color={accent.action} /
+                        </Box
+                        <Text {...({ color: text.primary, textAlign: "center", bold: true } as any)}
                             {t('sync.successMessage') || 'All your data has been synced successfully!'}
-                        </Text>
-                        <Text {...({ color: text.secondary, size: "xs", textAlign: "center" } as any)}>
+                        </Text
+                        <Text {...({ color: text.secondary, size: "xs", textAlign: "center" } as any)}
                             {t('sync.successDescription') || 'You can now access your data from any device.'}
-                        </Text>
-                    </VStack>
+                        </Text
+                    </VStack
                 )}
 
                 {error && (
@@ -254,17 +254,17 @@ export default function GuestDataSyncModal({
                             borderWidth: 1,
                             borderColor: accent.danger
                         }}
-                    >
-                        <HStack {...({ space: "sm" } as any)}>
-                            <AlertCircle size={20} color={accent.danger} />
-                            <Text {...({ color: accent.danger, size: "sm", flex: 1 } as any)}>
+                    
+                        <HStack {...({ space: "sm" } as any)}
+                            <AlertCircle size={20} color={accent.danger} /
+                            <Text {...({ color: accent.danger, size: "sm", flex: 1 } as any)}
                                 {error}
-                            </Text>
-                        </HStack>
-                    </Box>
+                            </Text
+                        </HStack
+                    </Box
                 )}
-            </VStack>
-        </SanctuaryModal>
+            </VStack
+        </SanctuaryModal
     );
 }
 

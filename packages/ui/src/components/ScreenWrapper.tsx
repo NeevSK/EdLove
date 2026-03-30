@@ -50,13 +50,13 @@ export default function ScreenWrapper({
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={{ flex: 1 }}
-        >
+        
             <StatusBar
                 barStyle={isDark ? 'light-content' : 'dark-content'}
                 backgroundColor={resolvedBackground}
-            />
+            /
 
-            <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}>
+            <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}
                 {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}
@@ -67,16 +67,16 @@ export default function ScreenWrapper({
                         ]}
                         showsVerticalScrollIndicator={false}
                         refreshControl={refreshControl}
-                    >
+                    
                         {children}
-                    </ScrollView>
+                    </ScrollView
                 ) : (
-                    <View style={[styles.contentContainer, { flex: 1 }, style]}>
+                    <View style={[styles.contentContainer, { flex: 1 }, style]}
                         {children}
-                    </View>
+                    </View
                 )}
-            </View>
-        </KeyboardAvoidingView>
+            </View
+        </KeyboardAvoidingView
     );
 }
 

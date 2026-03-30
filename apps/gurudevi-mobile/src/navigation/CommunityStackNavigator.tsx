@@ -1,7 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
-import { CommunityScreen } from '../screens';
+import { CommunityScreen, GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
 import { useTheme } from '@repo/ui';
 
 import { CommunityStackParamList } from '@repo/core';
@@ -18,28 +17,28 @@ export default function CommunityStackNavigator() {
                 headerShown: false,
                 contentStyle: { backgroundColor: scene.canvas.bg },
             }}
-        >
-            <Stack.Screen name="CommunityMain" component={CommunityScreen} />
+        
+            <Stack.Screen name="CommunityMain" component={CommunityScreen} /
             <Stack.Screen
                 name="GroupDetails"
                 component={GroupDetailsScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            />
+            /
             <Stack.Screen
                 name="GroupChat"
                 component={GroupChatScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            />
+            /
             <Stack.Screen
                 name="UserProfile"
                 component={UserPublicProfileScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            />
+            /
             <Stack.Screen
                 name="PublicProfile"
                 component={UserPublicProfileScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            />
-        </Stack.Navigator>
+            /
+        </Stack.Navigator
     );
 }

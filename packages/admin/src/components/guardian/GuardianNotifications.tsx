@@ -30,9 +30,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
         }
       ]}
       onPress={() => onNotificationPress(notification)}
-    >
-      <View style={styles.notificationContent}>
-        <Text 
+          <View style={styles.notificationContent}        <Text 
           style={[
             styles.notificationTitle,
             { 
@@ -42,10 +40,8 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
               fontSize: isDesktop ? 14 : 12
             }
           ]}
-        >
-          {notification.title}
-        </Text>
-        <Text 
+                  {notification.title}
+        </Text        <Text 
           style={[
             styles.notificationMessage,
             { 
@@ -54,10 +50,8 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
               fontSize: isDesktop ? 12 : 10
             }
           ]}
-        >
-          {notification.message}
-        </Text>
-        <Text 
+                  {notification.message}
+        </Text        <Text 
           style={[
             styles.notificationTime,
             { 
@@ -66,18 +60,12 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
               fontSize: isDesktop ? 10 : 8
             }
           ]}
-        >
-          {new Date(notification.createdAt).toLocaleString()}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+                  {new Date(notification.createdAt).toLocaleString()}
+        </Text      </View    </TouchableOpacity  );
 
   return (
-    <View style={styles.notificationsList}>
-      {notifications.slice(0, limit).map(renderNotificationItem)}
-    </View>
-  );
+    <View style={styles.notificationsList}      {notifications.slice(0, limit).map(renderNotificationItem)}
+    </View  );
 };
 
 const styles = StyleSheet.create({

@@ -1,7 +1,7 @@
 /**
- * OCRStudentImport — OCR-powered bulk student creation
+ * OCRStudentImport \u2014 OCR-powered bulk student creation
  *
- * Renders OCRScanner → student review table → confirm → bulk create.
+ * Renders OCRScanner \u2192 student review table \u2192 confirm \u2192 bulk create.
  * Used in AddStudentModal's "Scan Register" tab.
  *
  * Supports all OCR providers (mlkit default, cloud Pro-gated).
@@ -47,7 +47,7 @@ export default function OCRStudentImport({
   const [phase, setPhase] = useState<Phase>('scan');
   const [students, setStudents] = useState<ReviewStudent[]>([]);
 
-  // ── Scanner callback ──────────────────────────────────────────────────────
+  // \u2500\u2500 Scanner callback \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
   const handleScanned = (scanned: ScannedStudent[]) => {
     const review: ReviewStudent[] = scanned.map(s => ({
@@ -59,15 +59,15 @@ export default function OCRStudentImport({
     setPhase('review');
   };
 
-  // ── Toggle individual student selection ───────────────────────────────────
+  // \u2500\u2500 Toggle individual student selection \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
   const toggleStudent = (index: number) => {
-    setStudents(prev =>
+    setStudents(prev =
       prev.map((s, i) => (i === index ? { ...s, selected: !s.selected } : s)),
     );
   };
 
-  // ── Bulk create ───────────────────────────────────────────────────────────
+  // \u2500\u2500 Bulk create \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
   const handleConfirm = async () => {
     const selected = students.filter(s => s.selected);
@@ -80,7 +80,7 @@ export default function OCRStudentImport({
             type="info"
             visible
             onHide={() => toast.close(id)}
-          />
+          /
         ),
       });
       return;
@@ -89,7 +89,7 @@ export default function OCRStudentImport({
     setPhase('importing');
     try {
       await Promise.all(
-        selected.map(s =>
+        selected.map(s =
           studentsAPI.create({
             full_name: s.name,
             roll_number: s.index_number,
@@ -109,14 +109,14 @@ export default function OCRStudentImport({
             type="error"
             visible
             onHide={() => toast.close(id)}
-          />
+          /
         ),
       });
       setPhase('review');
     }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // \u2500\u2500 Render \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
   if (phase === 'scan') {
     return (
@@ -133,18 +133,18 @@ export default function OCRStudentImport({
           accent: Theme.colors.sanctuarySaffron,
           success: Theme.colors.sageGreen,
         }}
-      />
+      /
     );
   }
 
   if (phase === 'importing') {
     return (
-      <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}>
-        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>⏳</Text>
-        <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
+      <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}
+        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>\u23F3</Text
+        <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}
           Importing students...
-        </Text>
-      </VStack>
+        </Text
+      </VStack
     );
   }
 
@@ -152,23 +152,23 @@ export default function OCRStudentImport({
   const selectedCount = students.filter(s => s.selected).length;
 
   return (
-    <VStack sx={{ flex: 1, gap: Theme.spacing.md }}>
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}>
+    <VStack sx={{ flex: 1, gap: Theme.spacing.md }}
+      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+        <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}
           Review Students ({students.length} found)
-        </Heading>
-        <TouchableOpacity onPress={() => setPhase('scan')}>
-          <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 13 }}>Rescan</Text>
-        </TouchableOpacity>
-      </HStack>
+        </Heading
+        <TouchableOpacity onPress={() => setPhase('scan')}
+          <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 13 }}>Rescan</Text
+        </TouchableOpacity
+      </HStack
 
-      <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
+      <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}
         Tap a student to toggle selection. Amber items have low OCR confidence.
-      </Text>
+      </Text
 
-      <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
+      <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}
         {students.map((student, index) => (
-          <TouchableOpacity key={index} onPress={() => toggleStudent(index)}>
+          <TouchableOpacity key={index} onPress={() => toggleStudent(index)}
             <View
               style={{
                 backgroundColor: Theme.colors.ink,
@@ -188,21 +188,21 @@ export default function OCRStudentImport({
                 padding: Theme.spacing.md,
                 opacity: student.selected ? 1 : 0.5,
               }}
-            >
-              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <VStack sx={{ gap: 2, flex: 1 }}>
-                  <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
+            
+              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                <VStack sx={{ gap: 2, flex: 1 }}
+                  <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}
                     {student.name}
-                  </Text>
-                  <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}>
+                  </Text
+                  <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}
                     Index: {student.index_number}
-                  </Text>
+                  </Text
                   {student.uncertain && student.selected && (
-                    <Text style={{ color: '#f59e0b', fontSize: 11 }}>
-                      ⚠ Low confidence — verify before importing
-                    </Text>
+                    <Text style={{ color: '#f59e0b', fontSize: 11 }}
+                      \u26A0 Low confidence \u2014 verify before importing
+                    </Text
                   )}
-                </VStack>
+                </VStack
                 <Text
                   style={{
                     fontSize: 20,
@@ -212,16 +212,16 @@ export default function OCRStudentImport({
                         : Theme.colors.sageGreen
                       : Theme.colors.mistGray,
                   }}
-                >
-                  {student.selected ? (student.uncertain ? '?' : '✓') : '○'}
-                </Text>
-              </HStack>
-            </View>
-          </TouchableOpacity>
+                
+                  {student.selected ? (student.uncertain ? '?' : '\u2713') : '\u25CB'}
+                </Text
+              </HStack
+            </View
+          </TouchableOpacity
         ))}
-      </VStack>
+      </VStack
 
-      <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}>
+      <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}
         <TouchableOpacity
           onPress={onCancel}
           style={{
@@ -232,9 +232,9 @@ export default function OCRStudentImport({
             paddingVertical: 14,
             alignItems: 'center',
           }}
-        >
-          <Text sx={{ color: Theme.colors.sacredWhite }}>Cancel</Text>
-        </TouchableOpacity>
+        
+          <Text sx={{ color: Theme.colors.sacredWhite }}>Cancel</Text
+        </TouchableOpacity
         <TouchableOpacity
           onPress={handleConfirm}
           style={{
@@ -245,12 +245,12 @@ export default function OCRStudentImport({
             paddingVertical: 14,
             alignItems: 'center',
           }}
-        >
-          <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}>
+        
+          <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}
             Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
-          </Text>
-        </TouchableOpacity>
-      </HStack>
-    </VStack>
+          </Text
+        </TouchableOpacity
+      </HStack
+    </VStack
   );
 }

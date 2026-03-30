@@ -7,7 +7,7 @@
  *  - Fonts: Cache-first (long TTL)
  *  - Images: Cache-first
  *
- * This file is intentionally minimal — Expo handles the heavy lifting.
+ * This file is intentionally minimal  Expo handles the heavy lifting.
  */
 
 const CACHE_VERSION = 'gurudevi-v1';
@@ -21,19 +21,19 @@ const SHELL_ASSETS = [
   '/favicon.ico',
 ];
 
-// ── INSTALL ──────────────────────────────────────────────────────────────────
+//  INSTALL 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL_ASSETS))
   );
-  // Activate immediately — don't wait for old SW to die
+  // Activate immediately  don't wait for old SW to die
   self.skipWaiting();
 });
 
-// ── ACTIVATE ─────────────────────────────────────────────────────────────────
+//  ACTIVATE 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
+    caches.keys().then(keys =
       Promise.all(
         keys.filter(k => k.startsWith('gurudevi-') && k !== SHELL_CACHE && k !== FONT_CACHE && k !== IMAGE_CACHE)
           .map(k => caches.delete(k))
@@ -43,7 +43,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// ── FETCH ─────────────────────────────────────────────────────────────────────
+//  FETCH 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -80,7 +80,7 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// ── STRATEGIES ────────────────────────────────────────────────────────────────
+//  STRATEGIES 
 
 async function cacheFirst(cacheName, request) {
   const cached = await caches.match(request);

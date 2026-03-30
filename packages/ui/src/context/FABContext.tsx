@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { ActionItem, TabType } from '../components/LotusPetalFAB';
+import { ActionItem, TabType } from '../types/fab';
+export type { ActionItem, TabType };
 
 interface FABState {
     actions: ActionItem[];
@@ -43,16 +44,16 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }, []);
 
     return (
-        <FABContext.Provider value={{ state, registerFAB, unregisterFAB, setVisibility }}>
+        <FABContext.Provider value={{ state, registerFAB, unregisterFAB, setVisibility }}
             {children}
-        </FABContext.Provider>
+        </FABContext.Provider
     );
 };
 
 export const useFAB = () => {
     const context = useContext(FABContext);
     if (!context) {
-        throw new Error('useFAB must be used within a FABProvider');
+        throw new Error('useFAB must be used within a FABProvider (or SanctuaryProvider)');
     }
     return context;
 };

@@ -2,42 +2,63 @@
   "name": "polymath-platform",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "start": "turbo run start",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "check-all": "pnpm run lint && pnpm run check-types && pnpm run test",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "build": "pnpm exec turbo run build",
+    "dev": "pnpm exec turbo run dev",
+    "start": "pnpm exec turbo run start",
+    "lint": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"pnpm turbo run lint\" -Log \"reports/lint.txt\"",
+    "format": "pnpm exec prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"pnpm turbo run check-types\" -Log \"reports/check-types.txt\"",
+    "check-all": "pnpm run lint && pnpm run check-types && pnpm run check:circular && pnpm run check:unused",
+    "android": "pnpm exec expo run:android",
+    "ios": "pnpm exec expo run:ios",
     "i18n:audit": "node scripts/i18n/audit-keys.mjs",
     "i18n:no-inline-fallbacks": "node scripts/i18n/check-inline-fallbacks.js",
     "i18n:check": "pnpm run i18n:audit && pnpm run i18n:no-inline-fallbacks",
-    "identity:check": "node scripts/check-identity-alignment.mjs",
+    "identity:check": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"node scripts/check-identity-alignment.mjs\" -Log \"reports/identity_check.txt\"",
     "migration:web:inventory": "node scripts/refactor/generate-web-migration-manifest.mjs",
     "migration:web:imports": "node scripts/refactor/find-app-domain-imports.mjs",
     "migration:web:codemod": "node scripts/refactor/apply-web-migration-codemod.mjs",
     "migration:web:check": "node scripts/refactor/check-web-boundaries.mjs",
     "migration:web:barrels": "node scripts/refactor/generate-barrels.mjs",
     "ai:fix": "node scripts/ts-fix.mjs",
-    "prepare": "husky"
+    "prepare": "pnpm exec husky",
+    "check:circular": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"pnpm exec madge --circular --extensions ts,tsx .\" -Log \"reports/circular_deps.txt\"",
+    "check:unused": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"pnpm exec knip\" -Log \"reports/unused_code.txt\"",
+    "check:architecture": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"pnpm exec depcruise packages apps --config .dependency-cruiser.cjs\" -Log \"reports/architecture.txt\"",
+    "check:hygiene": "powershell -ExecutionPolicy Bypass -File ./scripts/check-hygiene.ps1",
+    "check:self-boundaries": "node scripts/check-self-boundaries.mjs",
+    "check:classroom-boundaries": "node scripts/check-classroom-boundaries.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@repo/types-shim": "workspace:*",
     "@testing-library/react-native": "14.0.0-beta.0",
+    "@types/node": "^25.5.0",
+    "@zenstackhq/cli": "3.5.1",
+    "@zenstackhq/language": "3.5.1",
+    "@zenstackhq/orm": "3.5.1",
+    "@zenstackhq/sdk": "3.5.1",
+    "dependency-cruiser": "^17.3.9",
     "husky": "^9.1.7",
     "jest": "~29.7.0",
     "jest-expo": "55.0.9",
+    "knip": "^6.0.6",
     "lint-staged": "^16.3.2",
+    "madge": "^8.0.0",
     "prettier": "^3.6.2",
     "turbo": "^2.6.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "typescript-eslint-parser": "^22.0.0"
   },
   "pnpm": {
     "packageExtensions": {},
     "overrides": {
+      "@zenstackhq/cli": "3.5.1",
+      "@zenstackhq/orm": "3.5.1",
+      "@zenstackhq/language": "3.5.1",
+      "@zenstackhq/sdk": "3.5.1",
+      "@zenstackhq/server": "3.5.1",
+      "zod": "^3.23.8",
       "react": "19.2.0",
       "react-dom": "19.2.0",
       "react-native": "0.83.2",
@@ -73,20 +94,32 @@
       "expo-video": "55.0.11"
     },
     "onlyBuiltDependencies": [
-      "@sentry/cli",
-      "@parcel/watcher",
-      "esbuild",
       "@img/sharp-win32-x64",
-      "sharp",
-      "turbo",
-      "supabase",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "@sentry/cli",
       "@shopify/react-native-skia",
-      "react-native-nitro-modules"
-    ]
+      "esbuild",
+      "prisma",
+      "react-native-nitro-modules",
+      "sharp",
+      "supabase",
+      "turbo",
+      "@zenstackhq/cli"
+    ],
+    "patchedDependencies": {
+      "@noble/hashes@1.8.0": "patches/@noble__hashes@1.8.0.patch",
+      "react-native-web@0.21.2": "patches/react-native-web@0.21.2.patch"
+    }
   },
   "packageManager": "pnpm@10.30.2",
   "engines": {
-    "node": ">=18"
+    "node": "24.x"
+  },
+  "volta": {
+    "node": "24.11.0",
+    "pnpm": "10.30.2"
   },
   "workspaces": [
     "apps/*",
@@ -95,7 +128,9 @@
   "version": "1.0.0",
   "dependencies": {
     "@shopify/react-native-skia": "2.4.18",
+    "@ts-rest/core": "^3.52.1",
     "expo": "~55.0.8",
+    "package.json": "^2.0.1",
     "react": "19.2.0",
     "react-native": "0.83.2",
     "react-native-gesture-handler": "2.30.0",

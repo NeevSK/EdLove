@@ -1,40 +1,40 @@
 /**
- * Growth Signals API — the complete wiring layer of the Bhumi Growth Model.
+ * Growth Signals API \u2014 the complete wiring layer of the Bhumi Growth Model.
  *
- * ─────────────────────────────────────────────────────────────────────────────
+ * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  * THE PRESENCE INFERENCE MODEL: Work as Witness
- * (see docs/Core/GROWTH_MODEL.md v2.0 — Section 3, Dimension 1)
- * ─────────────────────────────────────────────────────────────────────────────
+ * (see docs/Core/GROWTH_MODEL.md v2.0 \u2014 Section 3, Dimension 1)
+ * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  *
  * We do not ask teachers "were you present today?"
  * We observe the natural residue of their work.
  *
  * Signal tiers (from highest to lowest confidence of presence):
- *   Tier 1 — Work Signals: attendance_recorded, assignment_graded,
+ *   Tier 1 \u2014 Work Signals: attendance_recorded, assignment_graded,
  *             lesson_material_created, assignment_created
- *             → Teacher was actively doing their job.
- *   Tier 2 — Care Signals: mood_checkin, fire_journal_entry,
+ *             \u2192 Teacher was actively doing their job.
+ *   Tier 2 \u2014 Care Signals: mood_checkin, fire_journal_entry,
  *             breathing_exercise_complete
- *             → Teacher chose to prioritise their own wellbeing.
- *   Tier 3 — Context Signals: app_opened (with section metadata)
- *             → Teacher was in the app thinking about their work.
+ *             \u2192 Teacher chose to prioritise their own wellbeing.
+ *   Tier 3 \u2014 Context Signals: app_opened (with section metadata)
+ *             \u2192 Teacher was in the app thinking about their work.
  *
  * All three tiers contribute to the Presence dimension.
  * None require any extra action from the teacher beyond their normal work.
  *
- * ─────────────────────────────────────────────────────────────────────────────
+ * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  * USAGE
- * ─────────────────────────────────────────────────────────────────────────────
+ * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  *
  * After any meaningful user action, call fire-and-forget:
  *   void growthSignalsAPI.emitSignal(userId, 'mood_checkin').catch(() => {});
  *
  * Rules:
- *   ✅ Always call AFTER the primary operation succeeds.
- *   ✅ Always fire-and-forget — the primary action completes first; the signal follows silently.
- *   ✅ Growth signal errors are silently absorbed — the primary feature always succeeds independently.
- *   ✅ Signal counts and event types are internal to the growth system — expressed only through the lotus visual.
- *   ✅ The primary feature succeeds on its own terms; growth observation rides alongside it.
+ *   \u2705 Always call AFTER the primary operation succeeds.
+ *   \u2705 Always fire-and-forget \u2014 the primary action completes first; the signal follows silently.
+ *   \u2705 Growth signal errors are silently absorbed \u2014 the primary feature always succeeds independently.
+ *   \u2705 Signal counts and event types are internal to the growth system \u2014 expressed only through the lotus visual.
+ *   \u2705 The primary feature succeeds on its own terms; growth observation rides alongside it.
  */
 
 import { supabase } from '../lib/supabase';
@@ -42,17 +42,17 @@ import { userGrowthStateAPI, GrowthDimension } from './userGrowthState';
 import { naturePathsAPI } from './naturePaths';
 import { contextualChallengesAPI, ChallengeMetric } from './contextualChallenges';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 import { GrowthSignalType, GROWTH_SIGNAL_MAP } from './growthSignals.generated';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SIGNAL → CHALLENGE METRIC MAP
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// SIGNAL \u2192 CHALLENGE METRIC MAP
 // Maps growth signal types to the ChallengeMetric that they contribute to.
 // Used by emitSignal to wire challenge progress automatically.
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const SIGNAL_TO_CHALLENGE_METRIC: Partial<Record<GrowthSignalType, ChallengeMetric>> = {
     resource_read: 'library_resources_opened',
@@ -67,9 +67,9 @@ const SIGNAL_TO_CHALLENGE_METRIC: Partial<Record<GrowthSignalType, ChallengeMetr
     group_message_sent: 'community_posts',
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // SIGNALS THAT ADVANCE NATURE PATHS (in addition to Bhumi)
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 /** Signals that also advance the Banyan path (teacher mentorship/ecosystem dimension). */
 const BANYAN_SIGNALS = new Set<GrowthSignalType>([
@@ -95,10 +95,10 @@ const CRYSTAL_SIGNALS = new Set<GrowthSignalType>([
     'knowledge_connected',
 ]);
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // WHISPERED MOMENT DEFINITIONS
 // (See GROWTH_MODEL.md Section 4 for full catalog and design specification.)
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 type WhisperedMomentKey =
     | 'still_water'       // 5 mood check-ins (any mood, no pressure)
@@ -121,65 +121,65 @@ interface WhisperedMomentSpec {
 const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
     {
         key: 'still_water',
-        name_si: 'නිශ්චල දිය',
+        name_si: '\u0DB1\u0DD2\u0DC1\u0DCA\u0DA0\u0DBD \u0DAF\u0DD2\u0DBA',
         name_en: 'Still Water',
         triggerSignals: ['mood_checkin'],
     },
     {
         key: 'storm_holder',
-        name_si: 'කුළු ගෙන සිටින්නා',
+        name_si: '\u0D9A\u0DD4\u0DC5\u0DD4 \u0D9C\u0DD9\u0DB1 \u0DC3\u0DD2\u0DA7\u0DD2\u0DB1\u0DCA\u0DB1\u0DCF',
         name_en: 'Storm Holder',
         triggerSignals: ['fire_journal_entry'],
     },
     {
         key: 'first_offering',
-        name_si: 'ප්‍රථම දානය',
+        name_si: '\u0DB4\u0DCA\u200D\u0DBB\u0DAE\u0DB8 \u0DAF\u0DCF\u0DB1\u0DBA',
         name_en: 'First Offering',
         triggerSignals: ['lesson_material_created', 'resource_uploaded'],
     },
     {
         key: 'caring_teacher',
-        name_si: 'සැලකිලිමත් ගුරුවරිය',
+        name_si: '\u0DC3\u0DD0\u0DBD\u0D9A\u0DD2\u0DBD\u0DD2\u0DB8\u0DAD\u0DCA \u0D9C\u0DD4\u0DBB\u0DD4\u0DC0\u0DBB\u0DD2\u0DBA',
         name_en: 'The Caring Teacher',
         triggerSignals: ['assignment_graded'],
     },
     {
         key: 'the_seeker',
-        name_si: 'සොයන්නා',
+        name_si: '\u0DC3\u0DDC\u0DBA\u0DB1\u0DCA\u0DB1\u0DCF',
         name_en: 'The Seeker',
         triggerSignals: ['app_opened'],
     },
     // Banyan Path moments
     {
         key: 'first_branch',
-        name_si: 'පළමු අතු',           // pending native review
+        name_si: '\u0DB4\u0DC5\u0DB8\u0DD4 \u0D85\u0DAD\u0DD4',           // pending native review
         name_en: 'First Branch',
         triggerSignals: ['peer_mentored', 'circle_facilitated', 'resource_gifted'],
     },
     {
         key: 'the_companion',
-        name_si: 'සහකරු ගුරුවරයා',     // pending native review
+        name_si: '\u0DC3\u0DC4\u0D9A\u0DBB\u0DD4 \u0D9C\u0DD4\u0DBB\u0DD4\u0DC0\u0DBB\u0DBA\u0DCF',     // pending native review
         name_en: 'The Companion',
         triggerSignals: ['peer_mentored', 'circle_facilitated'],
     },
     // River/Crystal Path moments (student-specific)
     {
         key: 'river_meets_sea',
-        name_si: 'ගංගාව මුහුදට හමු වේ', // pending native review
+        name_si: '\u0D9C\u0D82\u0D9C\u0DCF\u0DC0 \u0DB8\u0DD4\u0DC4\u0DD4\u0DAF\u0DA7 \u0DC4\u0DB8\u0DD4 \u0DC0\u0DDA', // pending native review
         name_en: 'River Meets Sea',
         triggerSignals: ['reflection_submitted', 'knowledge_connected'],
     },
     {
         key: 'fractal_vision',
-        name_si: 'භාගික දෘෂ්ටිය',       // pending native review
+        name_si: '\u0DB7\u0DCF\u0D9C\u0DD2\u0D9A \u0DAF\u0DD8\u0DC2\u0DCA\u0DA7\u0DD2\u0DBA',       // pending native review
         name_en: 'Fractal Vision',
         triggerSignals: ['fractal_moment', 'knowledge_connected'],
     },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // GROWTH SIGNALS API
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export const growthSignalsAPI = {
     /**
@@ -187,7 +187,7 @@ export const growthSignalsAPI = {
      *
      * This is the single call site for wiring growth signals into existing APIs.
      * Every call:
-     *   1. Writes a `growth_events` record (internal analytics — expressed through the lotus visual, not as raw data)
+     *   1. Writes a `growth_events` record (internal analytics \u2014 expressed through the lotus visual, not as raw data)
      *   2. Increments the user's dimension counter in `user_growth_state`
      *   3. Checks and awards any triggered Whispered Moments
      *   4. Checks and advances the user's Bhumi stage if criteria are met
@@ -197,7 +197,7 @@ export const growthSignalsAPI = {
      * @param userId     The user performing the action.
      * @param signalType Semantic type of the signal (see GrowthSignalType).
      * @param metadata   Optional context stored in event_metadata (entity IDs, section names, etc.)
-     *                   Never surfaced to the user — analytics only.
+     *                   Never surfaced to the user \u2014 analytics only.
      */
     async emitSignal(
         userId: string,
@@ -206,7 +206,7 @@ export const growthSignalsAPI = {
     ): Promise<void> {
         const dimension = GROWTH_SIGNAL_MAP[signalType];
 
-        // 1. Record the growth event (internal analytics — feeds the lotus, stays out of the teacher's hands)
+        // 1. Record the growth event (internal analytics \u2014 feeds the lotus, stays out of the teacher's hands)
         const { error: eventError } = await supabase.from('growth_events').insert({
             user_id: userId,
             dimension,
@@ -215,7 +215,7 @@ export const growthSignalsAPI = {
         });
 
         if (eventError) {
-            // Non-fatal — log only; growth observations absorb their own errors
+            // Non-fatal \u2014 log only; growth observations absorb their own errors
             console.warn('[GrowthSignals] Failed to record event:', eventError.message);
             return;
         }
@@ -259,8 +259,8 @@ export const growthSignalsAPI = {
                 [subjectArea],
                 isFractal ? 'A Fractal Moment' : 'A New Discovery',
                 isFractal
-                    ? 'You connected ideas across domains — the crystal found its fractal.'
-                    : 'Something clicked — a new crystal formed in your collection.',
+                    ? 'You connected ideas across domains \u2014 the crystal found its fractal.'
+                    : 'Something clicked \u2014 a new crystal formed in your collection.',
                 isFractal,
                 metadata.entity_id as string | undefined,
             ).catch(() => { });
@@ -298,16 +298,16 @@ export const growthSignalsAPI = {
     },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // INTERNAL: Whispered Moment evaluation
-// (Private — not exported. Only triggered from within emitSignal.)
-// ─────────────────────────────────────────────────────────────────────────────
+// (Private \u2014 not exported. Only triggered from within emitSignal.)
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 async function checkWhisperedMoments(
     userId: string,
     signalType: GrowthSignalType
 ): Promise<void> {
-    const relevantMoments = WHISPERED_MOMENT_SPECS.filter(m =>
+    const relevantMoments = WHISPERED_MOMENT_SPECS.filter(m =
         m.triggerSignals.includes(signalType)
     );
     if (relevantMoments.length === 0) return;
@@ -355,7 +355,7 @@ async function evaluateMomentCondition(
 ): Promise<boolean> {
     switch (momentKey) {
         case 'still_water': {
-            // Any 5 mood check-ins — any mood, no pressure
+            // Any 5 mood check-ins \u2014 any mood, no pressure
             const { count } = await supabase
                 .from('growth_events')
                 .select('id', { count: 'exact', head: true })
@@ -419,7 +419,7 @@ async function evaluateMomentCondition(
         }
 
         case 'first_branch': {
-            // First time helping a colleague — the banyan's first branch reaches out
+            // First time helping a colleague \u2014 the banyan's first branch reaches out
             const { count } = await supabase
                 .from('growth_events')
                 .select('id', { count: 'exact', head: true })
@@ -429,7 +429,7 @@ async function evaluateMomentCondition(
         }
 
         case 'the_companion': {
-            // 3+ peer mentoring interactions — the banyan is real
+            // 3+ peer mentoring interactions \u2014 the banyan is real
             const { count } = await supabase
                 .from('growth_events')
                 .select('id', { count: 'exact', head: true })
@@ -439,7 +439,7 @@ async function evaluateMomentCondition(
         }
 
         case 'river_meets_sea': {
-            // 5+ reflections submitted — the river is flowing with depth and direction
+            // 5+ reflections submitted \u2014 the river is flowing with depth and direction
             const { count } = await supabase
                 .from('growth_events')
                 .select('id', { count: 'exact', head: true })
@@ -449,7 +449,7 @@ async function evaluateMomentCondition(
         }
 
         case 'fractal_vision': {
-            // First fractal moment — a cross-domain connection recognized
+            // First fractal moment \u2014 a cross-domain connection recognized
             const { count } = await supabase
                 .from('growth_events')
                 .select('id', { count: 'exact', head: true })

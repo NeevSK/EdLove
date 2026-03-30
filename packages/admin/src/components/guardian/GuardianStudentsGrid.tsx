@@ -43,9 +43,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
         }
       ]}
       onPress={() => onStudentPress(student)}
-    >
-      <View style={styles.studentHeader}>
-        <Text 
+          <View style={styles.studentHeader}        <Text 
           style={[
             styles.studentName,
             { 
@@ -55,10 +53,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
               fontSize: isDesktop ? 18 : 16
             }
           ]}
-        >
-          {student.name}
-        </Text>
-        <Text 
+                  {student.name}
+        </Text        <Text 
           style={[
             styles.studentInfo,
             { 
@@ -67,14 +63,10 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
               fontSize: isDesktop ? 14 : 12
             }
           ]}
-        >
-          Grade {student.grade} • {student.classroom}
-        </Text>
-      </View>
-
+                  Grade {student.grade} " {student.classroom}
+        </Text      </View
       {/* Attendance Summary */}
-      <View style={styles.section}>
-        <Text 
+      <View style={styles.section}        <Text 
           style={[
             styles.sectionTitle,
             { 
@@ -84,12 +76,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
               fontSize: isDesktop ? 14 : 12
             }
           ]}
-        >
-          Attendance
-        </Text>
-        <div style={styles.attendanceStats}>
-          <View style={styles.attendanceItem}>
-            <Text 
+                  Attendance
+        </Text        <div style={styles.attendanceStats}          <View style={styles.attendanceItem}            <Text 
               style={[
                 styles.attendanceNumber,
                 { 
@@ -99,10 +87,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                   fontSize: isDesktop ? 20 : 16
                 }
               ]}
-            >
-              {student.attendance.percentage.toFixed(1)}%
-            </Text>
-            <Text 
+                          {student.attendance.percentage.toFixed(1)}%
+            </Text            <Text 
               style={[
                 styles.attendanceLabel,
                 { 
@@ -111,12 +97,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                   fontSize: isDesktop ? 12 : 10
                 }
               ]}
-            >
-              Present
-            </Text>
-          </View>
-          <View style={styles.attendanceBreakdown}>
-            <Text 
+                          Present
+            </Text          </View          <View style={styles.attendanceBreakdown}            <Text 
               style={[
                 styles.attendanceDetail,
                 { 
@@ -125,16 +107,10 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                   fontSize: isDesktop ? 11 : 9
                 }
               ]}
-            >
-              {student.attendance.present} present • {student.attendance.absent} absent • {student.attendance.late} late
-            </Text>
-          </View>
-        </div>
-      </View>
-
+                          {student.attendance.present} present " {student.attendance.absent} absent " {student.attendance.late} late
+            </Text          </View        </div      </View
       {/* Recent Grades */}
-      <View style={styles.section}>
-        <Text 
+      <View style={styles.section}        <Text 
           style={[
             styles.sectionTitle,
             { 
@@ -144,12 +120,9 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
               fontSize: isDesktop ? 14 : 12
             }
           ]}
-        >
-          Recent Grades
-        </Text>
-        {student.grades.latest.slice(0, 3).map((grade, index) => (
-          <View key={index} style={styles.gradeItem}>
-            <Text 
+                  Recent Grades
+        </Text        {student.grades.latest.slice(0, 3).map((grade, index) => (
+          <View key={index} style={styles.gradeItem}            <Text 
               style={[
                 styles.gradeSubject,
                 { 
@@ -158,10 +131,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                   fontSize: isDesktop ? 12 : 10
                 }
               ]}
-            >
-              {grade.subject}
-            </Text>
-            <Text 
+                          {grade.subject}
+            </Text            <Text 
               style={[
                 styles.gradeValue,
                 { 
@@ -171,11 +142,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                   fontSize: isDesktop ? 14 : 12
                 }
               ]}
-            >
-              {grade.grade}
-            </Text>
-          </View>
-        ))}
+                          {grade.grade}
+            </Text          </View        ))}
         <Text 
           style={[
             styles.averageGrade,
@@ -185,15 +153,11 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
               fontSize: isDesktop ? 11 : 9
             }
           ]}
-        >
-          Average: {student.grades.average.toFixed(1)}%
-        </Text>
-      </View>
-
+                  Average: {student.grades.average.toFixed(1)}%
+        </Text      </View
       {/* Upcoming Assignments */}
       {student.upcomingAssignments.length > 0 && (
-        <View style={styles.section}>
-          <Text 
+        <View style={styles.section}          <Text 
             style={[
               styles.sectionTitle,
               { 
@@ -203,12 +167,9 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                 fontSize: isDesktop ? 14 : 12
               }
             ]}
-          >
-            Upcoming Assignments
-          </Text>
-          {student.upcomingAssignments.slice(0, 2).map((assignment) => (
-            <View key={assignment.id} style={styles.assignmentItem}>
-              <Text 
+                      Upcoming Assignments
+          </Text          {student.upcomingAssignments.slice(0, 2).map((assignment) => (
+            <View key={assignment.id} style={styles.assignmentItem}              <Text 
                 style={[
                   styles.assignmentTitle,
                   { 
@@ -217,10 +178,8 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                     fontSize: isDesktop ? 12 : 10
                   }
                 ]}
-              >
-                {assignment.title}
-              </Text>
-              <Text 
+                              {assignment.title}
+              </Text              <Text 
                 style={[
                   styles.assignmentDue,
                   { 
@@ -229,24 +188,17 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
                     fontSize: isDesktop ? 10 : 8
                   }
                 ]}
-              >
-                Due: {new Date(assignment.dueDate).toLocaleDateString()}
-              </Text>
-            </View>
-          ))}
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+                              Due: {new Date(assignment.dueDate).toLocaleDateString()}
+              </Text            </View          ))}
+        </View      )}
+    </TouchableOpacity  );
 
   return (
     <View style={[
       styles.studentsGrid,
       isDesktop && styles.studentsGridDesktop
-    ]}>
-      {students.map(renderStudentCard)}
-    </View>
-  );
+    ]}      {students.map(renderStudentCard)}
+    </View  );
 };
 
 const styles = StyleSheet.create({

@@ -1,9 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Box, VStack, Text, Heading, Center } from '../gluestack';
+import { Box, VStack, Text, Heading, Center, Button, ButtonText, ButtonIcon } from '../gluestack';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import { Theme } from '../theme/Theme';
-import SanctuaryButton from './SanctuaryButton';
 
 interface Props {
     children: ReactNode;
@@ -55,33 +53,39 @@ export default class ErrorBoundary extends Component<Props, State> {
             }
 
             return (
-                <Box sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
-                    <Center sx={{ flex: 1, padding: Theme.spacing.xl }}>
-                        <VStack space="xl" alignItems="center" maxWidth={300}>
+                <Box sx={{ flex: 1, backgroundColor: Theme.colors.ink }}
+                    <Center sx={{ flex: 1, padding: Theme.spacing.xl }}
+                        <VStack space="xl" alignItems="center" maxWidth={300}
                             <Box sx={{
                                 padding: Theme.spacing.xl,
                                 backgroundColor: 'rgba(255, 99, 71, 0.1)', // Ember red, low opacity
                                 borderRadius: Theme.corners.full,
-                            }}>
-                                <AlertTriangle size={64} color={Theme.colors.emberRed} />
-                            </Box>
+                            }}
+                                <AlertTriangle size={64} color={Theme.colors.emberRed} /
+                            </Box
 
-                            <Heading color={Theme.colors.sacredWhite} textAlign="center" size="2xl">
+                            <Heading color={Theme.colors.sacredWhite} textAlign="center" size="2xl"
                                 Something went wrong
-                            </Heading>
+                            </Heading
 
-                            <Text color={Theme.colors.starlightGray} textAlign="center">
-                                We've encountered an unexpected issue. The sanctuary is momentarily disrupted.
-                            </Text>
+                            <Text color={Theme.colors.starlightGray} textAlign="center"
+                                We&apos;ve encountered an unexpected issue. The sanctuary is momentarily disrupted.
+                            </Text
 
-                            <SanctuaryButton
+                            <Button
                                 onPress={this.handleReset}
-                                leftIcon={RefreshCw}
                                 size="lg"
                                 action="primary"
-                            >
-                                Try Again
-                            </SanctuaryButton>
+                                sx={{
+                                    backgroundColor: Theme.colors.emberRed,
+                                    borderRadius: Theme.corners.comfortable,
+                                }}
+                            
+                                <ButtonIcon as={RefreshCw} color={Theme.colors.sacredWhite} /
+                                <ButtonText color={Theme.colors.sacredWhite}
+                                    Try Again
+                                </ButtonText
+                            </Button
 
                             {/* Dev-only error details */}
                             {__DEV__ && this.state.error && (
@@ -91,18 +95,18 @@ export default class ErrorBoundary extends Component<Props, State> {
                                     borderRadius: Theme.corners.comfortable,
                                     marginTop: Theme.spacing.lg,
                                     width: '100%'
-                                }}>
-                                    <Text color={Theme.colors.dimGray} size="xs" mb="$1">
+                                }}
+                                    <Text color={Theme.colors.dimGray} size="xs" mb="$1"
                                         Boundary: {this.props.name}
-                                    </Text>
-                                    <Text color={Theme.colors.emberRed} size="xs" fontFamily="monospace">
+                                    </Text
+                                    <Text color={Theme.colors.emberRed} size="xs" fontFamily="monospace"
                                         {this.state.error.toString()}
-                                    </Text>
-                                </Box>
+                                    </Text
+                                </Box
                             )}
-                        </VStack>
-                    </Center>
-                </Box>
+                        </VStack
+                    </Center
+                </Box
             );
         }
 

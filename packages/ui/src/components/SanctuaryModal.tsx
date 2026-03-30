@@ -1,17 +1,17 @@
-﻿/**
- * SanctuaryModal â€” Phase-aware base modal for the Gurudevi ecosystem.
+/**
+ * SanctuaryModal  Phase-aware base modal for the Gurudevi ecosystem.
  *
  * Design laws enforced here:
- * - Backdrop uses Shadow Violet rgba(107,100,128,x) â€” NEVER black
+ * - Backdrop uses Shadow Violet rgba(107,100,128,x)  NEVER black
  * - Background resolves from glass.modal tokens (phase + world aware)
- * - All text uses token-resolved colors â€” no hardcoded hex
- * - Border radius: Theme.corners.generous (24) â€” organic, never sharp
+ * - All text uses token-resolved colors  no hardcoded hex
+ * - Border radius: Theme.corners.generous (24)  organic, never sharp
  * - Shadow: Shadow Violet only
  *
  * Usage:
- *   <SanctuaryModal isOpen={open} onClose={close} title="Confirm">
- *     <Text>Your content</Text>
- *   </SanctuaryModal>
+ *   <SanctuaryModal isOpen={open} onClose={close} title="Confirm"
+ *     <Text>Your content</Text
+ *   </SanctuaryModal
  */
 
 import React from 'react';
@@ -38,7 +38,7 @@ export interface SanctuaryModalProps {
     isOpen: boolean;
     /** Called when the modal requests to close */
     onClose: () => void;
-    /** Modal title â€” shown in header */
+    /** Modal title  shown in header */
     title: string;
     /** Optional subtitle below the title */
     subtitle?: string;
@@ -72,15 +72,15 @@ export default function SanctuaryModal({
             isOpen={isOpen}
             onClose={onClose}
             {...({ size } as any)}
-        >
-            {/* Backdrop: Shadow Violet â€” NEVER black */}
+        
+            {/* Backdrop: Shadow Violet  NEVER black */}
             <ModalBackdrop
                 sx={{
                     backgroundColor: isDark
                         ? 'rgba(107,100,128,0.65)'
                         : 'rgba(107,100,128,0.45)',
                 }}
-            />
+            /
 
             <ModalContent
                 sx={{
@@ -89,51 +89,51 @@ export default function SanctuaryModal({
                     borderColor: scene.elevated.border,
                     borderWidth: 1,
                     borderRadius: Theme.corners.generous,
-                    // Shadow Violet only â€” never black
+                    // Shadow Violet only  never black
                     shadowColor: Theme.colors.shadowViolet,
                     shadowOffset: { width: 0, height: isDark ? 0 : 4 },
                     shadowOpacity: isDark ? 0.28 : 0.10,
                     shadowRadius: isDark ? 20 : 12,
                     elevation: 8,
                 }}
-            >
-                <ModalHeader>
+            
+                <ModalHeader
                     <HStack
                         {...({ space: 'sm', alignItems: 'center', flex: 1 } as any)}
-                    >
+                    
                         {icon && icon}
-                        <VStack {...({ flex: 1 } as any)}>
+                        <VStack {...({ flex: 1 } as any)}
                             <Heading
                                 size="md"
                                 {...({ color: text.onElevated } as any)}
-                            >
+                            
                                 {title}
-                            </Heading>
+                            </Heading
                             {subtitle ? (
                                 <Text
                                     {...({ size: 'xs', color: text.secondary } as any)}
-                                >
+                                
                                     {subtitle}
-                                </Text>
+                                </Text
                             ) : null}
-                        </VStack>
-                    </HStack>
+                        </VStack
+                    </HStack
 
                     {showCloseButton && (
-                        <ModalCloseButton>
+                        <ModalCloseButton
                             <Icon
                                 as={CloseIcon}
                                 {...({ color: text.onElevated } as any)}
-                            />
-                        </ModalCloseButton>
+                            /
+                        </ModalCloseButton
                     )}
-                </ModalHeader>
+                </ModalHeader
 
-                <ModalBody>{children}</ModalBody>
+                <ModalBody>{children}</ModalBody
 
                 {footer ? <ModalFooter>{footer}</ModalFooter> : null}
-            </ModalContent>
-        </Modal>
+            </ModalContent
+        </Modal
     );
 }
 

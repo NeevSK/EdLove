@@ -33,27 +33,27 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ tableName, rec
     if (history.length === 0) return <Text style={styles.empty}>No history found for this item.</Text>;
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container}
             {history.map((entry, index) => (
-                <View key={entry.id} style={styles.entry}>
-                    <View style={styles.line} />
-                    <View style={styles.dot} />
-                    <View style={styles.content}>
-                        <Text style={styles.action}>
+                <View key={entry.id} style={styles.entry}
+                    <View style={styles.line} /
+                    <View style={styles.dot} /
+                    <View style={styles.content}
+                        <Text style={styles.action}
                             {entry.action} by {entry.author?.full_name || 'System'}
-                        </Text>
-                        <Text style={styles.date}>
+                        </Text
+                        <Text style={styles.date}
                             {new Date(entry.changed_at).toLocaleString()}
-                        </Text>
+                        </Text
                         {entry.action === 'UPDATE' && (
-                            <Text style={styles.changes}>
+                            <Text style={styles.changes}
                                 Content changed
-                            </Text>
+                            </Text
                         )}
-                    </View>
-                </View>
+                    </View
+                </View
             ))}
-        </ScrollView>
+        </ScrollView
     );
 };
 

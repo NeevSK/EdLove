@@ -10,28 +10,28 @@ import { Theme } from '@repo/ui';
  */
 export const GenesisNode: React.FC<{ timestamp: string }> = ({ timestamp }) => {
     return (
-        <View style={styles.container}>
-            <View style={styles.pathContainer}>
-                <View style={styles.node}>
-                    <Rocket size={16} color="#F6BF8C" />
-                </View>
-                <View style={styles.line} />
-            </View>
+        <View style={styles.container}
+            <View style={styles.pathContainer}
+                <View style={styles.node}
+                    <Rocket size={16} color="#F6BF8C" /
+                </View
+                <View style={styles.line} /
+            </View
 
-            <View style={styles.content}>
-                <Text style={styles.title}>JOURNEY STARTS HERE</Text>
-                <Text style={styles.subtitle}>
+            <View style={styles.content}
+                <Text style={styles.title}>JOURNEY STARTS HERE</Text
+                <Text style={styles.subtitle}
                     {new Date(timestamp).toLocaleDateString(undefined, { 
                         month: 'long', 
                         day: 'numeric', 
                         year: 'numeric' 
                     })}
-                </Text>
-                <Text style={styles.body}>
+                </Text
+                <Text style={styles.body}
                     The first pulse of your temporal resonance. Every step from here builds your story.
-                </Text>
-            </View>
-        </View>
+                </Text
+            </View
+        </View
     );
 };
 

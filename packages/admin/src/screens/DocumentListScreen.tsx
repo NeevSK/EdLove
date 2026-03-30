@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useTheme } from '@repo/ui';
-import { FadeInDown } from 'react-native-reanimated';
+import { usePermissions } from '@repo/core';
 import { documentWorkflowAPI, type DocumentWorkflow, type DocumentStatus } from '../document-workflow/api';
 
 interface DocumentListScreenProps {
   schoolId: string;
-  userId: string;
-  userRole: string;
   onDocumentPress: (document: DocumentWorkflow) => void;
   onCreateNew: () => void;
 }
 
 const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   schoolId,
-  userId,
-  userRole,
   onDocumentPress,
   onCreateNew
 }) => {
   const theme = useTheme();
+  const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<DocumentStatus | 'all'>('all');
@@ -27,37 +24,38 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   const statusFilters: (DocumentStatus | 'all')[] = ['all', 'draft', 'review', 'approved', 'published', 'archived'];
 
-  useEffect(() => {
-    loadDocuments();
-  }, [schoolId]);
-
-  useEffect(() => {
-    filterDocuments();
-  }, [documents, selectedStatus]);
-
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
-      const userDocuments = await documentWorkflowAPI.getDocuments(schoolId, undefined, userId);
-      const reviewDocuments = userRole === 'admin' || userRole === 'principal' 
-        ? await documentWorkflowAPI.getDocumentsForReview(schoolId, userId)
+      const userDocuments = await documentWorkflowAPI.getDocuments(schoolId, undefined, user.userId || '');
+      const reviewDocuments = (can('manage', 'AdminDashboard') || can('manage', 'PrincipalDashboard')) 
+        ? await documentWorkflowAPI.getDocumentsForReview(schoolId, user.userId || '')
         : [];
       
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
+      console.error('Failed to load documents:', error);
       Alert.alert('Error', 'Failed to load documents');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [schoolId, user.userId, can]);
 
-  const filterDocuments = () => {
+  const filterDocuments = useCallback(() => {
     if (selectedStatus === 'all') {
       setFilteredDocuments(documents);
     } else {
       setFilteredDocuments(documents.filter(doc => doc.status === selectedStatus));
     }
-  };
+  }, [documents, selectedStatus]);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
+
+  useEffect(() => {
+    filterDocuments();
+  }, [filterDocuments]);
 
   const getStatusColor = (status: DocumentStatus) => {
     switch (status) {
@@ -86,52 +84,36 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
         }
       ]}
       onPress={() => onDocumentPress(document)}
-    >
-      <View style={styles.documentHeader}>
-        <Text 
+          <View style={styles.documentHeader}        <Text 
           style={[
             styles.documentTitle, 
             { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
           ]}
           numberOfLines={2}
-        >
-          {document.title}
-        </Text>
-        <View 
+                  {document.title}
+        </Text        <View 
           style={[
             styles.statusBadge,
             { backgroundColor: getStatusColor(document.status) }
           ]}
-        >
-          <Text 
+                  <Text 
             style={[
               styles.statusText,
               { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
             ]}
-          >
-            {document.status.toUpperCase()}
-          </Text>
-        </View>
-      </View>
-      
+                      {document.status.toUpperCase()}
+          </Text        </View      </View      
       <Text 
         style={[
           styles.documentMeta,
           { color: theme.text.secondary, fontFamily: 'System' }
         ]}
-      >
-        Version {document.version} • Updated {formatDate(document.updatedAt)}
-      </Text>
-      
-      {document.status === 'review' && document.authorId !== userId && (
-        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
-          <Text style={[styles.reviewText, { color: theme.accent.action }]}>
-            Pending Review
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+              Version {document.version} " Updated {formatDate(document.updatedAt)}
+      </Text      
+      {document.status === 'review' && document.authorId !== user.userId && (
+        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}          <Text style={[styles.reviewText, { color: theme.accent.action }]}            Pending Review
+          </Text        </View      )}
+    </TouchableOpacity  );
 
   const renderStatusFilter = (status: DocumentStatus | 'all') => {
     const isActive = selectedStatus === status;
@@ -150,8 +132,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           }
         ]}
         onPress={() => setSelectedStatus(status)}
-      >
-        <Text 
+              <Text 
           style={[
             styles.filterText,
             { 
@@ -159,72 +140,47 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
               fontFamily: 'System', fontWeight: '500'
             }
           ]}
-        >
-          {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+                  {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
-        </Text>
-      </TouchableOpacity>
-    );
+        </Text      </TouchableOpacity    );
   };
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-          Loading documents...
-        </Text>
-      </View>
-    );
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...
+        </Text      </View    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
-        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}>
-          Documents
-        </Text>
-        <TouchableOpacity
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}
+      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}          Documents
+        </Text        <TouchableOpacity
           style={[styles.createButton, { backgroundColor: theme.accent.action }]}
           onPress={onCreateNew}
-        >
-          <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
-            + New
-          </Text>
-        </TouchableOpacity>
-      </View>
-
+                  <Text style={[styles.createButtonText, { color: theme.text.inverse }]}            + New
+          </Text        </TouchableOpacity      </View
       {/* Status Filters */}
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
         contentContainerStyle={styles.filterContent}
-      >
-        {statusFilters.map(renderStatusFilter)}
-      </ScrollView>
-
+              {statusFilters.map(renderStatusFilter)}
+      </ScrollView
       {/* Documents List */}
       <ScrollView 
         style={styles.documentsContainer}
         contentContainerStyle={styles.documentsContent}
         showsVerticalScrollIndicator={false}
-      >
-        {filteredDocuments.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
-              {selectedStatus === 'all' 
+              {filteredDocuments.length === 0 ? (
+          <View style={styles.emptyState}            <Text style={[styles.emptyText, { color: theme.text.secondary }]}              {selectedStatus === 'all' 
                 ? 'No documents yet. Create your first document to get started.'
                 : `No ${selectedStatus} documents found.`
               }
-            </Text>
-          </View>
-        ) : (
+            </Text          </View        ) : (
           filteredDocuments.map(renderDocumentItem)
         )}
-      </ScrollView>
-    </View>
-  );
+      </ScrollView    </View  );
 };
 
 export default DocumentListScreen;

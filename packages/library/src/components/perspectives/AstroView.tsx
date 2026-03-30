@@ -15,7 +15,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * AstroView — The "Knowledge Cosmos" Perspective (Native).
+ * AstroView  The "Knowledge Cosmos" Perspective (Native).
  * 
  * Renders a force-directed graph using react-native-svg.
  * Receives pre-computed layout positions from @repo/graphics.
@@ -67,14 +67,11 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
     }));
 
     return (
-        <GestureDetector gesture={combinedGesture}>
-            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
-                <Svg 
+        <GestureDetector gesture={combinedGesture}            <Animated.View style={[{ flex: 1 }, animatedStyle]}                <Svg 
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 
                     viewBox={`${layout.bounds.minX - 500} ${layout.bounds.minY - 500} ${layout.bounds.width + 1000} ${layout.bounds.height + 1000}`}
-                >
-                    {/* Render Links */}
+                                    {/* Render Links */}
                     {data.links.map((link, i) => {
                         const sourceId = typeof link.source === 'string' ? link.source : (link.source as GraphNode).id;
                         const targetId = typeof link.target === 'string' ? link.target : (link.target as GraphNode).id;
@@ -95,8 +92,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                                 strokeOpacity={link.isPathway ? 0.6 : 0.15}
                                 strokeWidth={link.isPathway ? 3 : 1}
                                 strokeDasharray={link.relationship === 'prerequisite' ? "4,4" : undefined}
-                            />
-                        );
+                            /                        );
                     })}
 
                     {/* Render Nodes */}
@@ -110,30 +106,22 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                             <G 
                                 key={`node-${node.id}`} 
                                 onPress={() => onNodePress?.(node)}
-                            >
-                                <Circle
+                                                            <Circle
                                     cx={pos.x}
                                     cy={pos.y}
                                     r={isSelected ? 10 : 6}
                                     fill={isSelected ? Theme.colors.sanctuarySaffron : colors.gurudeviBlue}
                                     stroke={colors.card}
                                     strokeWidth={2}
-                                />
-                                <SvgText
+                                /                                <SvgText
                                     x={pos.x}
                                     y={pos.y + 20}
                                     fontSize="12"
                                     fill={colors.text}
                                     textAnchor="middle"
                                     fontWeight={isSelected ? "bold" : "normal"}
-                                >
-                                    {node.label}
-                                </SvgText>
-                            </G>
-                        );
+                                                                    {node.label}
+                                </SvgText                            </G                        );
                     })}
-                </Svg>
-            </Animated.View>
-        </GestureDetector>
-    );
+                </Svg            </Animated.View        </GestureDetector    );
 };

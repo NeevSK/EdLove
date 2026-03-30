@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { usePermissions } from './usePermissions';
+import { usePermissions } from '../permissions/hooks/usePermissions';
 import { useFeatureAccess } from './useFeatureAccess';
 import { type AuthorityTier } from '../types/Authority';
 
@@ -32,6 +32,7 @@ export function useAuthorityFeatures(): AuthorityFeatures {
     
     // Combining store anonymity with feature-level guest status
     const isAnonymous = isUserAnonymous || isGuest;
+    const authority = context.authority;
 
     const features = useMemo(() => {
         // Base features for everyone

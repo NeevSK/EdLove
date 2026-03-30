@@ -12,16 +12,16 @@ import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 
 /**
- * ScannerModal — QR code scanner for Gurudevi
+ * ScannerModal \u2014 QR code scanner for Gurudevi
  *
- * Live camera:  expo-camera → CameraView.onBarcodeScanned
- *               ↳ Android: Google ML Kit Barcode API (on-device, free, fast)
- *                  The "Scanned by Google" OS toast is expected — it is ML Kit's attribution.
- *               ↳ iOS:     Apple Vision / AVFoundation
+ * Live camera:  expo-camera \u2192 CameraView.onBarcodeScanned
+ *               \u21B3 Android: Google ML Kit Barcode API (on-device, free, fast)
+ *                  The "Scanned by Google" OS toast is expected \u2014 it is ML Kit's attribution.
+ *               \u21B3 iOS:     Apple Vision / AVFoundation
  *
  * Gallery pick: @react-native-ml-kit/barcode-scanning
- *               ↳ Same ML Kit quality for static images (replaces jsQR + jpeg-js)
- *               ↳ On-device, free, handles curved/damaged QR codes well
+ *               \u21B3 Same ML Kit quality for static images (replaces jsQR + jpeg-js)
+ *               \u21B3 On-device, free, handles curved/damaged QR codes well
  *
  * No API keys. No network calls. No billing. Works offline.
  */
@@ -40,7 +40,7 @@ try {
   BarcodeScanning = require("@react-native-ml-kit/barcode-scanning")
     .default as any;
 } catch {
-  // Not installed or not linked — will fall back gracefully
+  // Not installed or not linked \u2014 will fall back gracefully
   BarcodeScanning = null;
 }
 
@@ -77,7 +77,7 @@ export default function ScannerModal({
   }, [visible]);
 
   /**
-   * Gallery scan — uses ML Kit barcode scanning (same engine as live camera).
+   * Gallery scan \u2014 uses ML Kit barcode scanning (same engine as live camera).
    * Falls back to a clear error message if the native module is not linked.
    */
   const processImage = async (uri: string) => {
@@ -143,28 +143,28 @@ export default function ScannerModal({
 
   if (!permission.granted) {
     return (
-      <Modal visible={visible} animationType="slide" transparent>
-        <View style={styles.container}>
-          <View style={styles.permissionContainer}>
-            <View style={{ gap: 10, alignItems: "center" }}>
-              <Text style={{ textAlign: "center", color: "#fff" }}>
+      <Modal visible={visible} animationType="slide" transparent
+        <View style={styles.container}
+          <View style={styles.permissionContainer}
+            <View style={{ gap: 10, alignItems: "center" }}
+              <Text style={{ textAlign: "center", color: "#fff" }}
                 {t("scanner.permission.message")}
-              </Text>
+              </Text
               <TouchableOpacity
                 onPress={requestPermission}
                 style={[styles.button, { backgroundColor: accentColor }]}
-              >
-                <Text style={styles.buttonText}>
+              
+                <Text style={styles.buttonText}
                   {t("scanner.permission.grant")}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={onClose}>
-                <Text style={{ color: "#888" }}>{t("common.cancel")}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+                </Text
+              </TouchableOpacity
+              <TouchableOpacity onPress={onClose}
+                <Text style={{ color: "#888" }}>{t("common.cancel")}</Text
+              </TouchableOpacity
+            </View
+          </View
+        </View
+      </Modal
     );
   }
 
@@ -174,23 +174,23 @@ export default function ScannerModal({
       animationType="slide"
       onRequestClose={onClose}
       presentationStyle="pageSheet"
-    >
-      <View style={styles.container}>
+    
+      <View style={styles.container}
         <CameraView
           style={styles.camera}
           facing={facing}
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
           barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-        >
-          <View style={styles.overlay}>
-            <View style={styles.header}>
-              <Text style={styles.heading}>{modalTitle}</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Text style={{ color: "white", fontSize: 20 }}>✕</Text>
-              </TouchableOpacity>
-            </View>
+        
+          <View style={styles.overlay}
+            <View style={styles.header}
+              <Text style={styles.heading}>{modalTitle}</Text
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}
+                <Text style={{ color: "white", fontSize: 20 }}>\u2715</Text
+              </TouchableOpacity
+            </View
 
-            <View style={styles.scannerArea}>
+            <View style={styles.scannerArea}
               {processing ? (
                 <View
                   style={{
@@ -199,12 +199,12 @@ export default function ScannerModal({
                     borderRadius: 10,
                     alignItems: "center",
                   }}
-                >
-                  <ActivityIndicator size="large" color={accentColor} />
-                  <Text style={{ color: "white", marginTop: 10 }}>
+                
+                  <ActivityIndicator size="large" color={accentColor} /
+                  <Text style={{ color: "white", marginTop: 10 }}
                     {t("scanner.status.mlKit")}
-                  </Text>
-                </View>
+                  </Text
+                </View
               ) : galleryError ? (
                 <View
                   style={{
@@ -213,69 +213,69 @@ export default function ScannerModal({
                     borderRadius: 10,
                     maxWidth: 260,
                   }}
-                >
+                
                   <Text
                     style={{
                       color: "white",
                       textAlign: "center",
                       fontSize: 13,
                     }}
-                  >
+                  
                     {galleryError}
-                  </Text>
+                  </Text
                   <TouchableOpacity
                     onPress={() => setGalleryError(null)}
                     style={{ marginTop: 8, alignSelf: "center" }}
-                  >
+                  
                     <Text
                       style={{
                         color: "white",
                         textDecorationLine: "underline",
                         fontSize: 12,
                       }}
-                    >
+                    
                       {t("scanner.dismiss")}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                    </Text
+                  </TouchableOpacity
+                </View
               ) : (
-                <Text style={styles.instructionText}>
+                <Text style={styles.instructionText}
                   {t("scanner.instructions")}
-                </Text>
+                </Text
               )}
-            </View>
+            </View
 
-            <View style={styles.controls}>
+            <View style={styles.controls}
               <TouchableOpacity
                 onPress={pickImage}
                 style={[styles.controlButton, { marginRight: 20 }]}
                 disabled={processing}
-              >
-                <Text style={{ fontSize: 24 }}>🖼</Text>
+              
+                <Text style={{ fontSize: 24 }}>\uD83D\uDDBC</Text
                 <Text
                   style={[styles.controlLabel, processing && { color: "gray" }]}
-                >
+                
                   {t("scanner.controls.gallery")}
-                </Text>
-              </TouchableOpacity>
+                </Text
+              </TouchableOpacity
 
               <TouchableOpacity
                 onPress={toggleCameraFacing}
                 style={styles.controlButton}
                 disabled={processing}
-              >
-                <Text style={{ fontSize: 24 }}>🔄</Text>
+              
+                <Text style={{ fontSize: 24 }}>\uD83D\uDD04</Text
                 <Text
                   style={[styles.controlLabel, processing && { color: "gray" }]}
-                >
+                
                   {t("scanner.controls.flip")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </CameraView>
-      </View>
-    </Modal>
+                </Text
+              </TouchableOpacity
+            </View
+          </View
+        </CameraView
+      </View
+    </Modal
   );
 }
 

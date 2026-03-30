@@ -20,8 +20,7 @@ import {
     useThemedColors,
     Theme,
     Icon,
-    SandboxBanner,
-    FounderGlow
+    SandboxBanner
 } from '@repo/ui';
 import {
     Globe,
@@ -98,14 +97,12 @@ export default function FounderDashboard() {
                             <Heading sx={{ fontSize: 18, fontWeight: '700' }} color={colors.text}>
                                 Ecosystem Pulse
                             </Heading>
-                            <FounderGlow active={true} intensity="subtle">
-                                <HStack sx={{ gap: 4, alignItems: 'center', backgroundColor: colors.secondary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
-                                    <HeartPulse size={16} color={colors.success} />
-                                    <Text sx={{ fontSize: 12, fontWeight: '800' }} color={colors.success}>
-                                        Health: {stats?.ecosystem_health || 0}%
-                                    </Text>
-                                </HStack>
-                            </FounderGlow>
+                            <HStack sx={{ gap: 4, alignItems: 'center' }}>
+                                <HeartPulse size={16} color={colors.success} />
+                                <Text sx={{ fontSize: 12, fontWeight: '600' }} color={colors.success}>
+                                    Health: {stats?.ecosystem_health || 0}%
+                                </Text>
+                            </HStack>
                         </HStack>
 
                         {/* Quick Access to Main School */}
@@ -115,7 +112,7 @@ export default function FounderDashboard() {
                                     const schoolId = user?.school_id || schools.find(s => s.id === user?.school_id)?.id;
 
                                     if (schoolId) {
-                                        navigation.navigate('FounderSchoolDashboard', {
+                                        navigation.navigate('FounderSchoolView', {
                                             schoolId: schoolId,
                                             userId: user?.id || 'founder-id'
                                         });
@@ -232,9 +229,9 @@ export default function FounderDashboard() {
                                         key={school.id}
                                         school={school}
                                         onPress={() => {
-                                            navigation.navigate('FounderSchoolDashboard', {
+                                            navigation.navigate('FounderSchoolView', {
                                                 schoolId: school.id,
-                                                userId: stats?.total_users ? 'founder-id' : 'founder-id'
+                                                userId: stats?.total_users ? 'founder-id' : 'founder-id' // Ideally pass real user id from store
                                             });
                                         }}
                                     />

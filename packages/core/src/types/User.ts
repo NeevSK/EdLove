@@ -29,12 +29,16 @@ export interface User {
     school_memberships?: Membership[];
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
-    public_profile?: boolean;      // Visibility flag for community profile (optional — defaults to false if absent)
+    public_profile?: boolean;      // Visibility flag for community profile (optional  defaults to false if absent)
+    roles?: AuthorityTier[];
+    section_id?: string | null;
+    grade_id?: string | null;
+    classroom_id?: string | null;
     /**
-     * Private orientation fingerprint — 4-dimensional learning tendency vector.
+     * Private orientation fingerprint  4-dimensional learning tendency vector.
      * Set during onboarding orientation step and updated via behavioral inference.
      * Never surfaced as a type label; used only for silent UX personalisation.
-     * Keys: depth_breadth | reflect_act | solo_social | steady_surge (all 0–100).
+     * Keys: depth_breadth | reflect_act | solo_social | steady_surge (all 0100).
      */
     orientation_seeds?: {
         depth_breadth: number;

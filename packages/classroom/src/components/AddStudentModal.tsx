@@ -75,7 +75,7 @@ export const AddStudentModal = ({
                         type="error"
                         visible={true}
                         onHide={() => toast.close(id)}
-                    />
+                    /
                 ),
             });
             return;
@@ -97,7 +97,7 @@ export const AddStudentModal = ({
                             type="success"
                             visible={true}
                             onHide={() => toast.close(id)}
-                        />
+                        /
                     ),
                 });
             } else {
@@ -115,7 +115,7 @@ export const AddStudentModal = ({
                             type="success"
                             visible={true}
                             onHide={() => toast.close(id)}
-                        />
+                        /
                     ),
                 });
             }
@@ -130,7 +130,7 @@ export const AddStudentModal = ({
                         type="error"
                         visible={true}
                         onHide={() => toast.close(id)}
-                    />
+                    /
                 ),
             });
         } finally {
@@ -139,7 +139,7 @@ export const AddStudentModal = ({
     };
 
     const footer = (
-        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}
             <Button
                 onPress={onClose}
                 sx={{
@@ -149,11 +149,11 @@ export const AddStudentModal = ({
                     borderWidth: 1,
                     borderRadius: Theme.corners.comfortable
                 }}
-            >
-                <ButtonText {...({ color: text.secondary } as any)}>
+            
+                <ButtonText {...({ color: text.secondary } as any)}
                     {t('common.cancel') || 'Cancel'}
-                </ButtonText>
-            </Button>
+                </ButtonText
+            </Button
             <Button
                 onPress={handleSave}
                 disabled={isLoading}
@@ -163,12 +163,12 @@ export const AddStudentModal = ({
                     borderRadius: Theme.corners.comfortable,
                     opacity: isLoading ? 0.6 : 1
                 }}
-            >
-                <ButtonText {...({ color: text.inverse } as any)}>
+            
+                <ButtonText {...({ color: text.inverse } as any)}
                     {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}
-                </ButtonText>
-            </Button>
-        </HStack>
+                </ButtonText
+            </Button
+        </HStack
     );
 
     return (
@@ -177,10 +177,10 @@ export const AddStudentModal = ({
             onClose={onClose}
             title={studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
             footer={footer}
-        >
-            {/* Tab switcher — only shown when adding (not editing) */}
+        
+            {/* Tab switcher \u2014 only shown when adding (not editing) */}
             {!studentToEdit && (
-                <HStack sx={{ gap: 0, marginBottom: Theme.spacing.md, borderRadius: Theme.corners.comfortable, overflow: 'hidden', borderWidth: 1, borderColor: glass.interact.border }}>
+                <HStack sx={{ gap: 0, marginBottom: Theme.spacing.md, borderRadius: Theme.corners.comfortable, overflow: 'hidden', borderWidth: 1, borderColor: glass.interact.border }}
                     {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
                         <TouchableOpacity
                             key={tab}
@@ -191,17 +191,17 @@ export const AddStudentModal = ({
                                 alignItems: 'center',
                                 backgroundColor: activeTab === tab ? accent.action : 'transparent',
                             }}
-                        >
+                        
                             <Text style={{
                                 color: activeTab === tab ? text.inverse : text.secondary,
                                 fontWeight: activeTab === tab ? '700' : '400',
                                 fontSize: 14,
-                            }}>
-                                {tab === 'manual' ? '✏️ Manual' : '📷 Scan Register'}
-                            </Text>
-                        </TouchableOpacity>
+                            }}
+                                {tab === 'manual' ? '\u270F\uFE0F Manual' : '\uD83D\uDCF7 Scan Register'}
+                            </Text
+                        </TouchableOpacity
                     ))}
-                </HStack>
+                </HStack
             )}
 
             {/* Scan Register tab */}
@@ -217,65 +217,65 @@ export const AddStudentModal = ({
                                     type="success"
                                     visible
                                     onHide={() => toast.close(id)}
-                                />
+                                /
                             ),
                         });
                         onSuccess();
                     }}
                     onCancel={onClose}
-                />
+                /
             )}
 
             {/* Manual entry tab */}
             {(activeTab === 'manual' || studentToEdit) && (
-                <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
-                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}
+                    <VStack sx={{ gap: Theme.spacing.xs }}
                         <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}>
+                            {...({ color: text.primary } as any)}
                             {t('students.fullName') || 'Full Name'} *
-                        </Text>
+                        </Text
                         <Input
                             sx={{
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable
                             }}
-                        >
+                        
                             <InputField
                                 placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
                                 value={fullName}
                                 onChangeText={setFullName}
                                 {...({ color: text.primary } as any)}
-                            />
-                        </Input>
-                    </VStack>
+                            /
+                        </Input
+                    </VStack
 
-                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                    <VStack sx={{ gap: Theme.spacing.xs }}
                         <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}>
+                            {...({ color: text.primary } as any)}
                             {t('students.rollNumber') || 'Roll Number / ID'}
-                        </Text>
+                        </Text
                         <Input
                             sx={{
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable
                             }}
-                        >
+                        
                             <InputField
                                 placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
                                 value={rollNumber}
                                 onChangeText={setRollNumber}
                                 {...({ color: text.primary } as any)}
-                            />
-                        </Input>
-                    </VStack>
+                            /
+                        </Input
+                    </VStack
 
-                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                    <VStack sx={{ gap: Theme.spacing.xs }}
                         <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}>
+                            {...({ color: text.primary } as any)}
                             {t('students.notes') || 'Notes'}
-                        </Text>
+                        </Text
                         <Input
                             sx={{
                                 backgroundColor: glass.interact.bg,
@@ -283,18 +283,18 @@ export const AddStudentModal = ({
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 80
                             }}
-                        >
+                        
                             <InputField
                                 placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
                                 value={notes}
                                 onChangeText={setNotes}
                                 multiline
                                 {...({ color: text.primary, textAlignVertical: 'top' } as any)}
-                            />
-                        </Input>
-                    </VStack>
-                </VStack>
+                            /
+                        </Input
+                    </VStack
+                </VStack
             )}
-        </SanctuaryModal>
+        </SanctuaryModal
     );
 };

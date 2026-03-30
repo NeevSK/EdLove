@@ -13,7 +13,7 @@ export interface SanctuaryCarouselProps<T> {
 }
 
 /**
- * SanctuaryCarousel — generic horizontal card scroller backed by FlatList.
+ * SanctuaryCarousel  generic horizontal card scroller backed by FlatList.
  * Use as a DRY alternative to ad-hoc horizontal ScrollViews containing card lists.
  */
 export function SanctuaryCarousel<T>({
@@ -29,16 +29,16 @@ export function SanctuaryCarousel<T>({
             data={data}
             keyExtractor={(item, index) => keyExtractor(item, index)}
             renderItem={({ item, index }) => (
-                <View style={{ marginRight: index < data.length - 1 ? gap : 0 }}>
+                <View style={{ marginRight: index < data.length - 1 ? gap : 0 }}
                     {renderItem(item, index)}
-                </View>
+                </View
             )}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
                 styles.container,
                 { paddingHorizontal },
             ]}
-        />
+        /
     );
 }
 

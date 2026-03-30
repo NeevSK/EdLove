@@ -3,7 +3,7 @@ import { KnowledgeTopology } from '@repo/graphics';
 import { mappingAPI } from '@repo/core';
 
 /**
- * useTopologyPulse — Hook for Principal-level bird's-eye mapping.
+ * useTopologyPulse  Hook for Principal-level bird's-eye mapping.
  * Fetches aggregated "Pulse" data for an entire school or department.
  */
 export function useTopologyPulse(schoolId?: string) {

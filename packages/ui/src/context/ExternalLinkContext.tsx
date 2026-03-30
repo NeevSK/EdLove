@@ -138,8 +138,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
     };
 
     return (
-        <>
-            {children}
+        <            {children}
             <SanctuaryModal
                 isOpen={!!pendingRequest}
                 onClose={() => closeRequest(null)}
@@ -148,20 +147,14 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                 icon={<ExternalLink size={18} color={accent.action} />}
                 size="md"
                 footer={pendingRequest ? (
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
-                            <SanctuaryButton
+                    <VStack sx={{ gap: Theme.spacing.sm }}                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                            <SanctuaryButton
                                 onPress={() => closeRequest({
                                     method: selectedMethod,
                                     persistPreference: rememberChoice,
                                 })}
                                 fullWidth
-                            >
-                                Open Now
-                            </SanctuaryButton>
-                        </HStack>
-                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
-                            <SanctuaryButton
+                                                            Open Now
+                            </SanctuaryButton                        </HStack                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}                            <SanctuaryButton
                                 variant="outline"
                                 action="secondary"
                                 onPress={() => closeRequest({
@@ -169,11 +162,8 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                     persistPreference: true,
                                 })}
                                 fullWidth
-                            >
-                                Set as Default
-                            </SanctuaryButton>
-                        </HStack>
-                        {pendingRequest.currentPreference && (
+                                                            Set as Default
+                            </SanctuaryButton                        </HStack                        {pendingRequest.currentPreference && (
                             <SanctuaryButton
                                 variant="ghost"
                                 action="secondary"
@@ -185,16 +175,11 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                     });
                                 }}
                                 leftIcon={ArrowLeftRight}
-                            >
-                                Reset Saved Preference
-                            </SanctuaryButton>
-                        )}
-                    </VStack>
-                ) : null}
-            >
-                {pendingRequest && (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <Box
+                                                            Reset Saved Preference
+                            </SanctuaryButton                        )}
+                    </VStack                ) : null}
+                            {pendingRequest && (
+                    <VStack sx={{ gap: Theme.spacing.md }}                        <Box
                             sx={{
                                 backgroundColor: glass.surface.bg,
                                 borderColor: glass.surface.border,
@@ -202,36 +187,20 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                 borderRadius: Theme.corners.comfortable,
                                 padding: Theme.spacing.md,
                             }}
-                        >
-                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', marginBottom: Theme.spacing.xs }}>
-                                <TrustIcon size={16} color={trustCopy.label === 'Broken or unverified' ? accent.danger : accent.action} />
-                                <Text sx={{ color: text.primary, fontWeight: '700' }}>
-                                    {trustCopy.label}
-                                </Text>
-                            </HStack>
-                            <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}>
-                                {trustCopy.note}
-                            </Text>
-                            <Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}>
-                                Destination: {pendingRequest.domain}
-                            </Text>
-                            {pendingRequest.options.sourceBadge ? (
-                                <Text sx={{ color: accent.action, fontSize: 12, marginTop: 4, fontWeight: '700' }}>
-                                    {pendingRequest.options.sourceBadge}
-                                </Text>
-                            ) : null}
+                                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', marginBottom: Theme.spacing.xs }}                                <TrustIcon size={16} color={trustCopy.label === 'Broken or unverified' ? accent.danger : accent.action} /                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                    {trustCopy.label}
+                                </Text                            </HStack                            <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                {trustCopy.note}
+                            </Text                            <Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}                                Destination: {pendingRequest.domain}
+                            </Text                            {pendingRequest.options.sourceBadge ? (
+                                <Text sx={{ color: accent.action, fontSize: 12, marginTop: 4, fontWeight: '700' }}                                    {pendingRequest.options.sourceBadge}
+                                </Text                            ) : null}
                             {pendingRequest.overrideCount >= 2 && !pendingRequest.currentPreference ? (
-                                <Text sx={{ color: text.secondary, fontSize: 12, marginTop: Theme.spacing.sm }}>
-                                    You often choose a different link method. Saving a default may reduce friction.
-                                </Text>
-                            ) : null}
-                        </Box>
-
-                        <VStack sx={{ gap: Theme.spacing.sm }}>
-                            {methods.map((method) => {
+                                <Text sx={{ color: text.secondary, fontSize: 12, marginTop: Theme.spacing.sm }}                                    You often choose a different link method. Saving a default may reduce friction.
+                                </Text                            ) : null}
+                        </Box
+                        <VStack sx={{ gap: Theme.spacing.sm }}                            {methods.map((method) => {
                                 const isSelected = selectedMethod === method.id;
                                 return (
-                                    <Pressable
+                                    <Pressable accessibilityRole="button"
                                         key={method.id}
                                         onPress={() => setSelectedMethod(method.id)}
                                         style={[
@@ -241,9 +210,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                                 backgroundColor: isSelected ? `${accent.action}14` : glass.surface.bg,
                                             },
                                         ]}
-                                    >
-                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                            <View
+                                                                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                            <View
                                                 style={[
                                                     styles.selectionDot,
                                                     {
@@ -251,31 +218,19 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                                         backgroundColor: isSelected ? accent.action : 'transparent',
                                                     },
                                                 ]}
-                                            >
-                                                {isSelected ? <Check size={10} color={Theme.colors.sacredWhite} /> : null}
-                                            </View>
-                                            <VStack sx={{ flex: 1 }}>
-                                                <Text sx={{ color: text.primary, fontWeight: '700' }}>
-                                                    {method.title}
-                                                </Text>
-                                                <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}>
-                                                    {method.description}
-                                                </Text>
-                                            </VStack>
-                                        </HStack>
-                                    </Pressable>
-                                );
+                                                                                            {isSelected ? <Check size={10} color={Theme.colors.sacredWhite} /> : null}
+                                            </View                                            <VStack sx={{ flex: 1 }}                                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                                    {method.title}
+                                                </Text                                                <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                                    {method.description}
+                                                </Text                                            </VStack                                        </HStack                                    </Pressable                                );
                             })}
-                        </VStack>
-
-                        <Pressable
+                        </VStack
+                        <Pressable accessibilityRole="button"
                             onPress={() => setRememberChoice((current) => !current)}
                             style={[
                                 styles.rememberRow,
                                 { borderColor: glass.surface.border },
                             ]}
-                        >
-                            <View
+                                                    <View
                                 style={[
                                     styles.checkbox,
                                     {
@@ -283,23 +238,11 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                         backgroundColor: rememberChoice ? accent.action : 'transparent',
                                     },
                                 ]}
-                            >
-                                {rememberChoice ? <Check size={12} color={Theme.colors.sacredWhite} /> : null}
-                            </View>
-                            <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: text.primary, fontWeight: '700' }}>
-                                    Remember my choice on this {pendingRequest.platform === 'web' ? 'browser' : 'device'}
-                                </Text>
-                                <Text sx={{ color: text.secondary, fontSize: 12 }}>
-                                    You can still choose another method whenever you need to.
-                                </Text>
-                            </VStack>
-                        </Pressable>
-                    </VStack>
-                )}
-            </SanctuaryModal>
-        </>
-    );
+                                                            {rememberChoice ? <Check size={12} color={Theme.colors.sacredWhite} /> : null}
+                            </View                            <VStack sx={{ flex: 1 }}                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                    Remember my choice on this {pendingRequest.platform === 'web' ? 'browser' : 'device'}
+                                </Text                                <Text sx={{ color: text.secondary, fontSize: 12 }}                                    You can still choose another method whenever you need to.
+                                </Text                            </VStack                        </Pressable                    </VStack                )}
+            </SanctuaryModal        </    );
 }
 
 const styles = StyleSheet.create({

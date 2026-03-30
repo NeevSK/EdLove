@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@repo/ui';
+import { Theme, useTheme } from '@repo/ui';
 
 interface Assignment {
   id: string;
@@ -20,30 +20,44 @@ export const TeacherAssignmentsSidebar: React.FC<TeacherAssignmentsSidebarProps>
 }) => {
   const theme = useTheme();
 
+  if (assignments.length === 0) {
+    return (
+      <div
+        className="rounded-[22px] border p-5"
+        style={{
+          background: 'rgba(255, 249, 242, 0.9)',
+          borderColor: theme.glass.surface.border,
+        }}
+              <p className="text-sm font-medium" style={{ color: theme.text.primary }}          No active assignments need attention.
+        </p        <p className="mt-2 text-xs leading-5" style={{ color: theme.text.secondary }}          This sidebar stays ready for submissions and due-date pressure when the rhythm changes.
+        </p      </div    );
+  }
+
   return (
-    <div className="space-y-4">
-      {assignments.map((assignment) => (
-        <div
-          key={assignment.id}
-          onClick={() => onAssignmentPress(assignment)}
-          className="p-4 rounded-xl cursor-pointer group hover:bg-white/5 transition-colors"
-          style={{ border: `1px solid ${theme.glass.surface.border}` }}
-        >
-          <h4 className="text-sm font-bold mb-2 truncate group-hover:text-amber-400 transition-colors">
-            {assignment.title}
-          </h4>
-          <div className="flex justify-between items-center text-[10px] uppercase tracking-wider opacity-60">
-            <span>Due {new Date(assignment.dueDate).toLocaleDateString()}</span>
-            <span>{assignment.submittedCount}/{assignment.totalCount} Turned In</span>
-          </div>
-          <div className="mt-2 h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-amber-500/50"
-              style={{ width: `${(assignment.submittedCount / assignment.totalCount) * 100}%` }}
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+    <div className="space-y-3"      {assignments.map((assignment) => {
+        const totalCount = assignment.totalCount || 0;
+        const ratio = totalCount > 0 ? (assignment.submittedCount / totalCount) * 100 : 0;
+
+        return (
+          <button
+            key={assignment.id}
+            onClick={() => onAssignmentPress(assignment)}
+            className="w-full rounded-[20px] border p-4 text-left transition-colors duration-150 hover:bg-[rgba(250,247,237,0.96)]"
+            style={{
+              borderColor: theme.glass.surface.border,
+              backgroundColor: 'rgba(250, 247, 237, 0.82)',
+            }}
+                      <h4 className="text-sm font-bold leading-5" style={{ color: theme.text.primary }}              {assignment.title}
+            </h4            <div className="mt-3 flex items-center justify-between gap-2 text-[11px] font-medium uppercase tracking-[0.14em]" style={{ color: theme.text.secondary }}              <span>Due {new Date(assignment.dueDate).toLocaleDateString()}</span              <span>{assignment.submittedCount}/{assignment.totalCount} turned in</span            </div            <div
+              className="mt-3 h-1.5 overflow-hidden rounded-full"
+              style={{ backgroundColor: 'rgba(84, 74, 61, 0.08)' }}
+                          <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${ratio}%`,
+                  background: `linear-gradient(90deg, ${Theme.colors.sanctuarySaffron} 0%, ${Theme.colors.gurudeviBlue} 100%)`,
+                }}
+              /            </div          </button        );
+      })}
+    </div  );
 };

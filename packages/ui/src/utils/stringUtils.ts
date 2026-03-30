@@ -1,5 +1,5 @@
 /**
- * stringUtils.ts — Shared string manipulation helpers.
+ * stringUtils.ts \u2014 Shared string manipulation helpers.
  *
  * These utilities are used across packages (ui, profile, community, classroom)
  * and were previously copy-pasted verbatim in 6 separate files.
@@ -10,9 +10,9 @@
  * Returns up to `maxChars` initials from a display name.
  *
  * Behavior:
- *  - Single word  → up to 2 chars of that word, uppercased
- *  - Multiple words → first char of first word + first char of last word, uppercased
- *  - Null / empty  → '?'
+ *  - Single word  \u2192 up to 2 chars of that word, uppercased
+ *  - Multiple words \u2192 first char of first word + first char of last word, uppercased
+ *  - Null / empty  \u2192 '?'
  *
  * @example
  * getInitialsFromName('Amara Perera') // 'AP'

@@ -26,35 +26,20 @@ function AnalyticsWidget({
   const gradeInfo = showGrade && marks ? marksToGPA(marks) : null;
 
   return (
-    <Card style={styles.widget}>
-      <VStack space="xs">
-        <HStack style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-          {trend && (
+    <Card style={styles.widget}      <VStack space="xs"        <HStack style={styles.header}          <Text style={styles.title}>{title}</Text          {trend && (
             <Text style={[
               styles.trend,
               { color: trend === 'up' ? Theme.colors.success : trend === 'down' ? Theme.colors.error : Theme.colors.warning }
-            ]}>
-              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
-            </Text>
-          )}
-        </HStack>
-        
-        <Text style={[styles.value, { color }]}>{value}</Text>
-        
+            ]}              {trend === 'up' ? '\u2191' : trend === 'down' ? '\u2193' : '\u2192'}
+            </Text          )}
+        </HStack        
+        <Text style={[styles.value, { color }]}>{value}</Text        
         {subtitle && (
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        )}
+          <Text style={styles.subtitle}>{subtitle}</Text        )}
         
         {gradeInfo && (
-          <HStack style={styles.gradeRow}>
-            <Text style={styles.gradeText}>Grade: {gradeInfo.grade}</Text>
-            <Text style={styles.gpaText}>GPA: {gradeInfo.gpa.toFixed(2)}</Text>
-          </HStack>
-        )}
-      </VStack>
-    </Card>
-  );
+          <HStack style={styles.gradeRow}            <Text style={styles.gradeText}>Grade: {gradeInfo.grade}</Text            <Text style={styles.gpaText}>GPA: {gradeInfo.gpa.toFixed(2)}</Text          </HStack        )}
+      </VStack    </Card  );
 }
 
 interface QuickAnalyticsProps {
@@ -77,91 +62,55 @@ export default function QuickAnalytics({
   const currentGrade = marks ? marksToGPA(marks) : null;
   
   return (
-    <ScrollView style={styles.container}>
-      <VStack space="md">
-        {/* Header */}
-        <Text style={styles.headerTitle}>📊 Quick Analytics</Text>
-        
+    <ScrollView style={styles.container}      <VStack space="md"        {/* Header */}
+        <Text style={styles.headerTitle}>\uD83D\uDCCA Quick Analytics</Text        
         {/* Main Stats */}
-        <VStack space="sm">
-          <AnalyticsWidget
+        <VStack space="sm"          <AnalyticsWidget
             title="Current Grade"
             value={currentGrade ? `${currentGrade.grade} (${marks}%)` : 'N/A'}
             showGrade={true}
             marks={marks || 0}
             color={currentGrade ? getGradeColor(currentGrade.grade) : Theme.colors.textSecondary}
-          />
-          
+          /          
           <AnalyticsWidget
             title="Average GPA"
             value={averageGPA.toFixed(2)}
             subtitle="This semester"
             trend={averageGPA > 3.0 ? 'up' : averageGPA < 2.0 ? 'down' : 'stable'}
             color={averageGPA >= 3.0 ? Theme.colors.success : averageGPA < 2.0 ? Theme.colors.error : Theme.colors.warning}
-          />
-          
+          /          
           <AnalyticsWidget
             title="Class Rank"
             value={`#${rank}`}
             subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
             color={Theme.colors.gurudeviBlue}
-          />
-          
+          /          
           <AnalyticsWidget
             title="Attendance Rate"
             value={`${(attendanceRate * 100).toFixed(1)}%`}
             subtitle="This month"
             trend={attendanceRate > 0.9 ? 'up' : attendanceRate < 0.7 ? 'down' : 'stable'}
             color={attendanceRate > 0.9 ? Theme.colors.success : attendanceRate < 0.7 ? Theme.colors.error : Theme.colors.warning}
-          />
-        </VStack>
-        
+          /        </VStack        
         {/* Progress Visualization */}
-        <Card>
-          <Text style={styles.sectionTitle}>📈 Progress Overview</Text>
-          <VStack space="sm" style={styles.progressContainer}>
-            <ProgressRing
+        <Card          <Text style={styles.sectionTitle}>\uD83D\uDCC8 Progress Overview</Text          <VStack space="sm" style={styles.progressContainer}            <ProgressRing
               value={averageGPA}
               max={4.0}
               size={120}
               color={averageGPA >= 3.0 ? Theme.colors.success : averageGPA < 2.0 ? Theme.colors.error : Theme.colors.warning}
-            />
-            <Text style={styles.progressLabel}>GPA Progress: {((averageGPA / 4.0) * 100).toFixed(0)}%</Text>
-          </VStack>
-        </Card>
-        
+            /            <Text style={styles.progressLabel}>GPA Progress: {((averageGPA / 4.0) * 100).toFixed(0)}%</Text          </VStack        </Card        
         {/* Quick Actions */}
-        <Card>
-          <Text style={styles.sectionTitle}>🚀 Quick Actions</Text>
-          <VStack space="sm">
-            <Text style={styles.actionText}>📤 View detailed gradebook</Text>
-            <Text style={styles.actionText}>📈 Track performance trends</Text>
-            <Text style={styles.actionText}>🎯 Set GPA goals</Text>
-            <Text style={styles.actionText}>📤 Download progress report</Text>
-          </VStack>
-        </Card>
-        
+        <Card          <Text style={styles.sectionTitle}>\uD83D\uDE80 Quick Actions</Text          <VStack space="sm"            <Text style={styles.actionText}>\uD83D\uDCE4 View detailed gradebook</Text            <Text style={styles.actionText}>\uD83D\uDCC8 Track performance trends</Text            <Text style={styles.actionText}>\uD83C\uDFAF Set GPA goals</Text            <Text style={styles.actionText}>\uD83D\uDCE4 Download progress report</Text          </VStack        </Card        
         {/* Performance Tips */}
-        <Card>
-          <Text style={styles.sectionTitle}>💡 Performance Tips</Text>
-          <VStack space="xs">
-            {averageGPA < 2.0 && (
-              <Text style={styles.tipText}>• Focus on improving attendance and assignment completion</Text>
-            )}
+        <Card          <Text style={styles.sectionTitle}>\uD83D\uDCA1 Performance Tips</Text          <VStack space="xs"            {averageGPA < 2.0 && (
+              <Text style={styles.tipText}>\u2022 Focus on improving attendance and assignment completion</Text            )}
             {attendanceRate < 0.8 && (
-              <Text style={styles.tipText}>• Better attendance strongly correlates with higher grades</Text>
-            )}
+              <Text style={styles.tipText}>\u2022 Better attendance strongly correlates with higher grades</Text            )}
             {rank <= 5 && (
-              <Text style={styles.tipText}>• Great job! You're in top 25% of class</Text>
-            )}
+              <Text style={styles.tipText}>\u2022 Great job! You're in top 25% of class</Text            )}
             {averageGPA >= 3.5 && (
-              <Text style={styles.tipText}>• Excellent performance! Consider advanced coursework</Text>
-            )}
-          </VStack>
-        </Card>
-      </VStack>
-    </ScrollView>
-  );
+              <Text style={styles.tipText}>\u2022 Excellent performance! Consider advanced coursework</Text            )}
+          </VStack        </Card      </VStack    </ScrollView  );
 }
 
 function getGradeColor(grade: string): string {

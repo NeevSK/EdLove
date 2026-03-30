@@ -96,8 +96,8 @@ export default function DirectMessageScreen() {
                     conversationId={conversationId}
                     targetUserName={userName}
                     targetUserId={targetUserId}
-                />
+                /
             }
-        />
+        /
     );
 }

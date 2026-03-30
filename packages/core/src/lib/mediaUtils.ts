@@ -27,7 +27,7 @@ export function getMediaThumbnail(media: MediaAsset | undefined): string | undef
 
 /**
  * Format a byte count into a human-readable file size string.
- * e.g. 1_234_567 → "1.2 MB"
+ * e.g. 1_234_567 \u2192 "1.2 MB"
  */
 export function formatFileSize(bytes: number | undefined): string {
     if (bytes === undefined || bytes < 0) return '';
@@ -40,7 +40,7 @@ export function formatFileSize(bytes: number | undefined): string {
 
 /**
  * Format a duration in seconds into a human-readable string.
- * e.g. 3661 → "1h 1m"  |  90 → "1m 30s"
+ * e.g. 3661 \u2192 "1h 1m"  |  90 \u2192 "1m 30s"
  */
 export function formatDuration(seconds: number | undefined): string {
     if (seconds === undefined || seconds < 0) return '';

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, ViewProps, LayoutChangeEvent, StyleSheet } from 'react-native';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
@@ -38,20 +38,20 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
             ]}
             onLayout={handleLayout}
             {...props}
-        >
+        
             {dimensions.width > 0 && (
-                <View style={StyleSheet.absoluteFill}>
+                <View style={StyleSheet.absoluteFill}
                     <LivingCardAny
                         width={dimensions.width}
                         height={dimensions.height}
                         {...({ phase } as any)}
                         cornerRadius={Theme.corners.generous}
-                    >
+                    
                         {null}
-                    </LivingCardAny>
-                </View>
+                    </LivingCardAny
+                </View
             )}
             {children}
-        </View>
+        </View
     );
 };

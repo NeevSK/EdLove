@@ -5,7 +5,7 @@
  * Uses the TimetableScheduler agent to generate a draft from real school data.
  * Renders a CSS grid weekly view with period slots.
  *
- * Navigation: ClassroomStack → Timetable
+ * Navigation: ClassroomStack \u2192 Timetable
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -67,57 +67,57 @@ export default function TimetableScreen() {
     const currentSchedule = selectedClassroomId ? draft?.schedule?.[selectedClassroomId] ?? {} : {};
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--background)', fontFamily: 'var(--font-body)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--background)', fontFamily: 'var(--font-body)' }}
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--border-light)', background: 'var(--surface)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--border-light)', background: 'var(--surface)' }}
                 <button
                     onClick={() => navigation.goBack()}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: '600', padding: '4px 8px', borderRadius: '8px' }}
-                >
-                    ← Back
-                </button>
-                <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)' }}>
-                        📅 Weekly Timetable
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>
+                
+                    \u2190 Back
+                </button
+                <div style={{ flex: 1 }}
+                    <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)' }}
+                        \uD83D\uDCC5 Weekly Timetable
+                    </div
+                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}
                         {draft?.status === 'draft'
-                            ? `Draft — ${draft.total_classrooms ?? 0} classroom${draft.total_classrooms !== 1 ? 's' : ''}, ${draft.total_teachers ?? 0} teacher${draft.total_teachers !== 1 ? 's' : ''}`
+                            ? `Draft \u2014 ${draft.total_classrooms ?? 0} classroom${draft.total_classrooms !== 1 ? 's' : ''}, ${draft.total_teachers ?? 0} teacher${draft.total_teachers !== 1 ? 's' : ''}`
                             : 'Generate a timetable from your school data'}
-                    </div>
-                </div>
+                    </div
+                </div
                 <button
                     className="premium-button"
                     onClick={generate}
                     disabled={loading || !schoolId}
                     style={{ fontSize: '13px' }}
-                >
-                    {loading ? '⏳ Generating…' : '🔄 Regenerate'}
-                </button>
-            </div>
+                
+                    {loading ? '\u23F3 Generating\u2026' : '\uD83D\uDD04 Regenerate'}
+                </button
+            </div
 
             {error && (
-                <div style={{ padding: '16px 24px', background: 'rgba(231,76,60,0.08)', borderBottom: '1px solid rgba(231,76,60,0.2)', color: '#c0392b', fontSize: '13px' }}>
+                <div style={{ padding: '16px 24px', background: 'rgba(231,76,60,0.08)', borderBottom: '1px solid rgba(231,76,60,0.2)', color: '#c0392b', fontSize: '13px' }}
                     {error}
-                </div>
+                </div
             )}
 
             {/* Recommendations */}
             {draft?.recommendations?.length > 0 && (
-                <div style={{ padding: '12px 24px', background: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)' }}>
+                <div style={{ padding: '12px 24px', background: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)' }}
                     {draft.recommendations.map((rec: string, i: number) => (
-                        <div key={i} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>⚠ {rec}</div>
+                        <div key={i} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>\u26A0 {rec}</div
                     ))}
-                </div>
+                </div
             )}
 
-            <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+            <div style={{ display: 'flex', flex: 1, minHeight: 0 }}
                 {/* Classroom selector sidebar */}
                 {classroomIds.length > 1 && (
-                    <div style={{ width: '200px', flexShrink: 0, borderRight: '1px solid var(--border-light)', overflowY: 'auto', padding: '16px 12px' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>
+                    <div style={{ width: '200px', flexShrink: 0, borderRight: '1px solid var(--border-light)', overflowY: 'auto', padding: '16px 12px' }}
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}
                             Classrooms
-                        </div>
+                        </div
                         {classroomIds.map(id => (
                             <button
                                 key={id}
@@ -128,47 +128,47 @@ export default function TimetableScreen() {
                                     color: selectedClassroomId === id ? 'white' : 'var(--ink)', cursor: 'pointer',
                                     fontSize: '13px', fontFamily: 'var(--font-body)', marginBottom: '4px', fontWeight: selectedClassroomId === id ? '700' : '400',
                                 }}
-                            >
-                                {draft?.classroom_names?.[id] ?? id.slice(0, 12) + '…'}
-                            </button>
+                            
+                                {draft?.classroom_names?.[id] ?? id.slice(0, 12) + '\u2026'}
+                            </button
                         ))}
-                    </div>
+                    </div
                 )}
 
                 {/* Timetable grid */}
-                <div style={{ flex: 1, overflowX: 'auto', overflowY: 'auto', padding: '24px' }}>
+                <div style={{ flex: 1, overflowX: 'auto', overflowY: 'auto', padding: '24px' }}
                     {loading ? (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: 'var(--ink-ghost)', fontSize: '14px' }}>
-                            ⏳ Reading classrooms and teachers…
-                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: 'var(--ink-ghost)', fontSize: '14px' }}
+                            \u23F3 Reading classrooms and teachers\u2026
+                        </div
                     ) : !draft ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', gap: '12px' }}>
-                            <div style={{ fontSize: '40px' }}>📅</div>
-                            <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>No timetable yet</div>
-                            <button className="premium-button" onClick={generate}>Generate Timetable</button>
-                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', gap: '12px' }}
+                            <div style={{ fontSize: '40px' }}>\uD83D\uDCC5</div
+                            <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>No timetable yet</div
+                            <button className="premium-button" onClick={generate}>Generate Timetable</button
+                        </div
                     ) : classroomIds.length === 0 ? (
-                        <div style={{ color: 'var(--ink-ghost)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}>
+                        <div style={{ color: 'var(--ink-ghost)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}
                             No classrooms found. Add classrooms in your school settings first.
-                        </div>
+                        </div
                     ) : (
-                        <div style={{ minWidth: '700px' }}>
+                        <div style={{ minWidth: '700px' }}
                             {/* Grid header */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}>
-                                <div />
+                            <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}
+                                <div /
                                 {DAYS.map(day => (
-                                    <div key={day} style={{ textAlign: 'center', fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', padding: '8px 4px' }}>
+                                    <div key={day} style={{ textAlign: 'center', fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', padding: '8px 4px' }}
                                         {DAY_SHORT[day]}
-                                    </div>
+                                    </div
                                 ))}
-                            </div>
+                            </div
 
                             {/* Period rows */}
                             {PERIODS.map(p => (
-                                <div key={p} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', background: 'var(--background-alt)', borderRadius: '8px', padding: '4px' }}>
+                                <div key={p} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', background: 'var(--background-alt)', borderRadius: '8px', padding: '4px' }}
                                         P{p}
-                                    </div>
+                                    </div
                                     {DAYS.map(day => {
                                         const slot = (currentSchedule[day] ?? []).find((s: any) => s.period === p);
                                         return (
@@ -178,28 +178,28 @@ export default function TimetableScreen() {
                                                     padding: '8px 10px', borderRadius: '8px', background: slot ? 'var(--surface)' : 'var(--background-alt)',
                                                     border: '1px solid var(--border-light)', minHeight: '60px', display: 'flex', flexDirection: 'column', gap: '2px',
                                                 }}
-                                            >
+                                            
                                                 {slot ? (
-                                                    <>
-                                                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink)' }}>{slot.subject}</div>
-                                                        <div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{slot.teacher_name}</div>
-                                                    </>
+                                                    <
+                                                        <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink)' }}>{slot.subject}</div
+                                                        <div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{slot.teacher_name}</div
+                                                    </
                                                 ) : (
-                                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', opacity: 0.5 }}>—</div>
+                                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', opacity: 0.5 }}>\u2014</div
                                                 )}
-                                            </div>
+                                            </div
                                         );
                                     })}
-                                </div>
+                                </div
                             ))}
 
-                            <div style={{ marginTop: '20px', fontSize: '11px', color: 'var(--ink-ghost)', textAlign: 'right' }}>
+                            <div style={{ marginTop: '20px', fontSize: '11px', color: 'var(--ink-ghost)', textAlign: 'right' }}
                                 Draft generated {draft.generated_at ? new Date(draft.generated_at).toLocaleString() : 'just now'}
-                            </div>
-                        </div>
+                            </div
+                        </div
                     )}
-                </div>
-            </div>
-        </div>
+                </div
+            </div
+        </div
     );
 }

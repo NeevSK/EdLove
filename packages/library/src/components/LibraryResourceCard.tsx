@@ -1,13 +1,8 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HStack, Box, Text } from '../../gluestack';
+import { HStack, Box, Text, Theme, useThemedColors, SanctuaryCard, SanctuaryButton } from '@repo/ui';
 import { FileText, Video, Link, File, Heart, Plus } from 'lucide-react-native';
-import SanctuaryCard from '../SanctuaryCard';
-import SanctuaryButton from '../SanctuaryButton';
-import { Theme } from '../../theme/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
-
-export type ResourceType = 'pdf' | 'video' | 'link' | 'text' | 'doc' | 'note';
+import { ResourceType } from '../types';
 
 interface LibraryResourceCardProps {
     title: string;
@@ -21,13 +16,14 @@ interface LibraryResourceCardProps {
     isLiked?: boolean;
 }
 
-const TYPE_CONFIG: Record<ResourceType, { icon: any, color: keyof typeof Theme.colors, label: string }> = {
+const TYPE_CONFIG: Partial<Record<ResourceType, { icon: any, color: keyof typeof Theme.colors, label: string }>> = {
     pdf: { icon: File, color: 'emberRed', label: 'PDF' },
     video: { icon: Video, color: 'skyBlue', label: 'Video' },
     link: { icon: Link, color: 'sanctuarySaffron', label: 'Link' },
-    text: { icon: FileText, color: 'sageGreen', label: 'Article' },
+    reading: { icon: FileText, color: 'sageGreen', label: 'Article' },
     doc: { icon: FileText, color: 'sanctuarySaffron', label: 'Document' },
     note: { icon: FileText, color: 'sageGreen', label: 'Note' },
+    lesson: { icon: FileText, color: 'sanctuarySaffron', label: 'Lesson' },
 };
 
 export function LibraryResourceCard({
@@ -42,7 +38,7 @@ export function LibraryResourceCard({
     isLiked
 }: LibraryResourceCardProps) {
     const colors = useThemedColors();
-    const config = TYPE_CONFIG[type] || TYPE_CONFIG.text;
+    const config = TYPE_CONFIG[type] || { icon: FileText, color: 'sageGreen' as const, label: 'Resource' };
     const Icon = config.icon;
 
     const styles = useMemo(() => StyleSheet.create({
@@ -61,7 +57,7 @@ export function LibraryResourceCard({
             marginTop: 4,
             fontSize: 10,
             fontWeight: '700',
-            color: colors.text, // Better resonance with adaptive text
+            color: colors.text,
             textAlign: 'center',
         },
         badge: {
@@ -72,19 +68,15 @@ export function LibraryResourceCard({
     }), [colors]);
 
     const renderFooter = () => (
-        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.small }}>
-            <HStack sx={{ gap: Theme.spacing.small }}>
-                {onLike && (
+        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.sm }}            <HStack sx={{ gap: Theme.spacing.sm }}                {onLike && (
                     <SanctuaryButton
                         onPress={onLike}
                         variant="ghost"
                         size="xs"
                         leftIcon={Heart}
                         action={isLiked ? 'negative' : 'secondary'}
-                    >
-                        {isLiked ? 'Liked' : 'Like'}
-                    </SanctuaryButton>
-                )}
+                                            {isLiked ? 'Liked' : 'Like'}
+                    </SanctuaryButton                )}
                 {onaddToDesk && (
                     <SanctuaryButton
                         onPress={onaddToDesk}
@@ -92,13 +84,9 @@ export function LibraryResourceCard({
                         size="xs"
                         leftIcon={Plus}
                         action="primary"
-                    >
-                        Add to Desk
-                    </SanctuaryButton>
-                )}
-            </HStack>
-        </HStack>
-    );
+                                            Add to Desk
+                    </SanctuaryButton                )}
+            </HStack        </HStack    );
 
     return (
         <SanctuaryCard
@@ -106,34 +94,21 @@ export function LibraryResourceCard({
             href={href}
             footer={renderFooter()}
             elevated
-        >
-            <HStack sx={{ gap: Theme.spacing.small, alignItems: 'center' }}>
-                {/* Icon Box - Using SanctuaryCard-like depth for consistency */}
-                <Box
+                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                <Box
                     sx={{
-                        backgroundColor: colors.secondary, // Phase-aware background
+                        backgroundColor: colors.secondary,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
                         alignItems: 'center',
                         justifyContent: 'center',
                         borderWidth: 1,
-                        borderColor: colors.border // Phase-aware border
+                        borderColor: colors.border
                     }}
-                >
-                    <Icon color={colors.action} size={24} />
-                    <Text style={styles.typeLabel}>{config.label}</Text>
-                </Box>
-
-                {/* Content */}
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.title} numberOfLines={2}>
-                        {title}
-                    </Text>
-                    {description && (
-                        <Text style={styles.description} numberOfLines={2}>
-                            {description}
-                        </Text>
-                    )}
+                                    <Icon color={colors.action} size={24} /                    <Text style={styles.typeLabel}>{config.label}</Text                </Box
+                <View style={{ flex: 1 }}                    <Text style={styles.title} numberOfLines={2}                        {title}
+                    </Text                    {description && (
+                        <Text style={styles.description} numberOfLines={2}                            {description}
+                        </Text                    )}
                     {isPublic && (
                         <Box sx={{
                             alignSelf: 'flex-start',
@@ -144,12 +119,8 @@ export function LibraryResourceCard({
                             marginTop: 4,
                             borderWidth: 0.5,
                             borderColor: colors.border
-                        }}>
-                            <Text style={styles.badge}>Public Resource</Text>
-                        </Box>
-                    )}
-                </View>
-            </HStack>
-        </SanctuaryCard>
-    );
+                        }}                            <Text style={styles.badge}>Public Resource</Text                        </Box                    )}
+                </View            </HStack        </SanctuaryCard    );
 }
+
+export default LibraryResourceCard;

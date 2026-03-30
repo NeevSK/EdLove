@@ -8,7 +8,7 @@
 
 const React = require('react');
 
-// No-op PostHog class — mirrors the subset of the API used in posthog.ts
+// No-op PostHog class  mirrors the subset of the API used in posthog.ts
 class PostHog {
     constructor() {}
     capture() { return this; }

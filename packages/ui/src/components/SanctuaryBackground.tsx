@@ -1,11 +1,11 @@
-﻿/**
+/**
  * SanctuaryBackground
  *
  * The living backdrop of the app. Rendered ONCE at TabNavigator level,
  * behind all tab screens (which are transparent over it).
  *
- * High/Mid: Animated gradient mesh â€” 2 LinearGradient layers crossfading.
- * Low/Battery: Static LinearGradient snapshot â€” same palette, zero animation cost.
+ * High/Mid: Animated gradient mesh  2 LinearGradient layers crossfading.
+ * Low/Battery: Static LinearGradient snapshot  same palette, zero animation cost.
  *
  * Phase transitions: 2s crossfade between palettes.
  */
@@ -24,7 +24,7 @@ export function SanctuaryBackground() {
 
     useEffect(() => {
         if (!animationsEnabled) {
-            // Static â€” just update immediately
+            // Static  just update immediately
             prevNodes.current = gradientNodes;
             currentNodes.current = gradientNodes;
             fadeAnim.setValue(1);
@@ -49,27 +49,27 @@ export function SanctuaryBackground() {
     }, [phase, isDark]); // Re-run when phase OR theme mode changes.
 
     return (
-        <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="none"
             {/* Layer 0: Previous phase (fades out) */}
             <LinearGradient
                 colors={prevNodes.current}
                 start={{ x: 0.1, y: 0 }}
                 end={{ x: 0.9, y: 1 }}
                 style={StyleSheet.absoluteFillObject}
-            />
+            /
             {/* Layer 1: Current phase (fades in) */}
             <Animated.View
                 style={[StyleSheet.absoluteFillObject, { opacity: fadeAnim }]}
                 pointerEvents="none"
-            >
+            
                 <LinearGradient
                     colors={currentNodes.current}
                     start={{ x: 0.2, y: 0 }}
                     end={{ x: 0.8, y: 1 }}
                     style={StyleSheet.absoluteFillObject}
-                />
-            </Animated.View>
-        </View>
+                /
+            </Animated.View
+        </View
     );
 }
 

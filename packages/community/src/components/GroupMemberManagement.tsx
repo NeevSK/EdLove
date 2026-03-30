@@ -82,68 +82,68 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     if (!group) return <LoadingOverlay visible={true} />;
 
     return (
-        <ScreenWrapper>
-            <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}>
+        <ScreenWrapper
+            <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}
                 {/* Header & Settings */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <VStack>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xl, fontWeight: '700' }}>{group.name}</Text>
-                            <Text sx={{ color: colors.textSecondary }}>Member Management</Text>
-                        </VStack>
+                <VStack sx={{ gap: Theme.spacing.md }}
+                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                        <VStack
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xl, fontWeight: '700' }}>{group.name}</Text
+                            <Text sx={{ color: colors.textSecondary }}>Member Management</Text
+                        </VStack
                         <Pressable 
                             onPress={() => setIsEditModalOpen(true)}
                             sx={{ padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, backgroundColor: colors.tertiary }}
-                        >
-                            <Settings size={20} color={colors.textPrimary} />
-                        </Pressable>
-                    </HStack>
+                        
+                            <Settings size={20} color={colors.textPrimary} /
+                        </Pressable
+                    </HStack
 
-                    <Box sx={{ padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable, backgroundColor: colors.tertiary + '40', borderWidth: 1, borderColor: colors.border }}>
-                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                            <Info size={16} color={Theme.colors.sanctuarySaffron} />
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
-                                Current Policy: <Text sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>{policy.toUpperCase()}</Text>
-                            </Text>
-                        </HStack>
-                    </Box>
+                    <Box sx={{ padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable, backgroundColor: colors.tertiary + '40', borderWidth: 1, borderColor: colors.border }}
+                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}
+                            <Info size={16} color={Theme.colors.sanctuarySaffron} /
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}
+                                Current Policy: <Text sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>{policy.toUpperCase()}</Text
+                            </Text
+                        </HStack
+                    </Box
 
-                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                    <HStack sx={{ gap: Theme.spacing.sm }}
                         <Button
                             label="No Verification"
                             onPress={() => handlePolicyChange('open')}
                             variant={policy === 'open' ? 'primary' : 'secondary'}
                             sx={{ flex: 1 }}
-                        />
+                        /
                         <Button
                             label="Need Verification"
                             onPress={() => handlePolicyChange('restricted')}
                             variant={policy === 'restricted' ? 'primary' : 'secondary'}
                             sx={{ flex: 1 }}
-                        />
-                    </HStack>
-                </VStack>
+                        /
+                    </HStack
+                </VStack
 
                 {/* Pending Requests */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text sx={{ fontWeight: '700' }}>Pending Requests ({pendingMembers.length})</Text>
+                <VStack sx={{ gap: Theme.spacing.md }}
+                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                        <Text sx={{ fontWeight: '700' }}>Pending Requests ({pendingMembers.length})</Text
                         {pendingMembers.length > 0 && (
                             <Pressable
-                                onPress={() =>
+                                onPress={() =
                                     communityAPI.approveAllPending(groupId)
                                         .then(loadData)
-                                        .catch(() => { /* non-fatal — individual approve buttons remain available */ })
+                                        .catch(() => { /* non-fatal  individual approve buttons remain available */ })
                                 }
                                 accessibilityLabel="Approve all pending requests"
-                            >
-                                <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>Approve All</Text>
-                            </Pressable>
+                            
+                                <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>Approve All</Text
+                            </Pressable
                         )}
-                    </HStack>
+                    </HStack
 
                     {pendingMembers.length === 0 ? (
-                        <Text sx={{ textAlign: 'center', color: colors.textSecondary, py: 20 }}>No pending requests at the moment.</Text>
+                        <Text sx={{ textAlign: 'center', color: colors.textSecondary, py: 20 }}>No pending requests at the moment.</Text
                     ) : (
                         pendingMembers.map((request: any) => (
                             <Box
@@ -155,52 +155,52 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                     borderWidth: 1,
                                     borderColor: colors.border
                                 }}
-                            >
-                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <VStack sx={{ gap: 2 }}>
-                                        <Text sx={{ fontWeight: '600' }}>{request.user?.full_name}</Text>
-                                        <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                            <Shield size={12} color={colors.textSecondary} />
-                                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{request.user?.authority.toUpperCase()}</Text>
-                                        </HStack>
-                                        <HStack space="md" alignItems="center" mt="$1">
+                            
+                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                                    <VStack sx={{ gap: 2 }}
+                                        <Text sx={{ fontWeight: '600' }}>{request.user?.full_name}</Text
+                                        <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}
+                                            <Shield size={12} color={colors.textSecondary} /
+                                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{request.user?.authority.toUpperCase()}</Text
+                                        </HStack
+                                        <HStack space="md" alignItems="center" mt="$1"
                                             {request.user?.index_number && (
-                                                <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}>
-                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>INDEX: {request.user.index_number}</Text>
-                                                </Box>
+                                                <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}
+                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>INDEX: {request.user.index_number}</Text
+                                                </Box
                                             )}
                                             {request.user?.nic_number && (
-                                                <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}>
-                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>NIC: {request.user.nic_number}</Text>
-                                                </Box>
+                                                <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}
+                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>NIC: {request.user.nic_number}</Text
+                                                </Box
                                             )}
-                                        </HStack>
-                                    </VStack>
-                                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                                        </HStack
+                                    </VStack
+                                    <HStack sx={{ gap: Theme.spacing.sm }}
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'rejected')}
                                             accessibilityLabel={`Reject ${request.user?.full_name ?? 'member'}`}
                                             sx={{ padding: 10, borderRadius: 50, backgroundColor: `${colors.error}20` }}
-                                        >
-                                            <UserX size={20} color={colors.error} />
-                                        </Pressable>
+                                        
+                                            <UserX size={20} color={colors.error} /
+                                        </Pressable
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'active')}
                                             accessibilityLabel={`Approve ${request.user?.full_name ?? 'member'}`}
                                             sx={{ padding: 10, borderRadius: 50, backgroundColor: `${colors.success}20` }}
-                                        >
-                                            <UserCheck size={20} color={colors.success} />
-                                        </Pressable>
-                                    </HStack>
-                                </HStack>
-                            </Box>
+                                        
+                                            <UserCheck size={20} color={colors.success} /
+                                        </Pressable
+                                    </HStack
+                                </HStack
+                            </Box
                         ))
                     )}
-                </VStack>
+                </VStack
 
                 {/* Active Members & Capacity Management */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <Text sx={{ fontWeight: '700' }}>Active Members ({activeMembers.length})</Text>
+                <VStack sx={{ gap: Theme.spacing.md }}
+                    <Text sx={{ fontWeight: '700' }}>Active Members ({activeMembers.length})</Text
                     {activeMembers.map((member) => {
                         const isOwner = member.capacity === 'owner';
                         const isAdmin = member.capacity === 'admin';
@@ -214,7 +214,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                     id: member.user_id,
                                     type: 'user'
                                 })}
-                            >
+                            
                                 <Box
                                     sx={{
                                         padding: Theme.spacing.md,
@@ -223,45 +223,45 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         borderWidth: 1,
                                         borderColor: isOwner ? Theme.colors.sanctuarySaffron : colors.border
                                     }}
-                                >
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                            <Box sx={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.secondary, alignItems: 'center', justifyContent: 'center' }}>
-                                                <Text sx={{ fontWeight: '700' }}>{member.user?.full_name?.charAt(0) || '?'}</Text>
-                                            </Box>
-                                            <VStack sx={{ gap: 2 }}>
-                                                <Text sx={{ fontWeight: '600' }}>{member.user?.full_name} {isMe ? '(You)' : ''}</Text>
-                                                <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                                    <Shield size={12} color={isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? colors.textPrimary : colors.textSecondary)} />
+                                
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}
+                                            <Box sx={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.secondary, alignItems: 'center', justifyContent: 'center' }}
+                                                <Text sx={{ fontWeight: '700' }}>{member.user?.full_name?.charAt(0) || '?'}</Text
+                                            </Box
+                                            <VStack sx={{ gap: 2 }}
+                                                <Text sx={{ fontWeight: '600' }}>{member.user?.full_name} {isMe ? '(You)' : ''}</Text
+                                                <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}
+                                                    <Shield size={12} color={isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? colors.textPrimary : colors.textSecondary)} /
                                                     <Text sx={{
                                                         fontSize: 12,
                                                         fontWeight: (isOwner || isAdmin) ? '700' : '400',
                                                         color: isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? colors.textPrimary : colors.textSecondary)
-                                                    }}>
+                                                    }}
                                                         {member.capacity.toUpperCase()}
-                                                    </Text>
-                                                </HStack>
-                                            </VStack>
-                                        </HStack>
+                                                    </Text
+                                                </HStack
+                                            </VStack
+                                        </HStack
 
                                         {canManage && (
-                                            <HStack sx={{ gap: Theme.spacing.sm }}>
+                                            <HStack sx={{ gap: Theme.spacing.sm }}
                                                 <Button
                                                     label={isAdmin ? "Demote" : "Promote"}
                                                     onPress={() => handleCapacityChange(member.user_id, isAdmin ? 'member' : 'admin')}
                                                     variant="outline"
                                                     sx={{ height: 32, paddingHorizontal: 12 }}
-                                                />
-                                            </HStack>
+                                                /
+                                            </HStack
                                         )}
-                                    </HStack>
-                                </Box>
-                            </Pressable>
+                                    </HStack
+                                </Box
+                            </Pressable
                         );
                     })}
-                </VStack>
-            </VStack>
-            <LoadingOverlay visible={loading} />
+                </VStack
+            </VStack
+            <LoadingOverlay visible={loading} /
             
             <CreateGroupModal
                 isOpen={isEditModalOpen}
@@ -280,8 +280,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     setGroup(updatedGroup);
                     setPolicy(updatedGroup.join_policy);
                 }}
-            />
-        </ScreenWrapper>
+            /
+        </ScreenWrapper
     );
 
     async function handleCapacityChange(targetUserId: string, newCapacity: 'admin' | 'member') {

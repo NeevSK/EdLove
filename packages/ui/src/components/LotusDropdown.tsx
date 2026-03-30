@@ -27,7 +27,7 @@
  *       value={category}
  *       options={options}
  *       onChange={setCategory}
- *     />
+ *     /
  *   );
  * }
  * ```
@@ -120,57 +120,57 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
     }), []);
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}
             {/* Label */}
-            <Text style={styles.label}>{label}</Text>
+            <Text style={styles.label}>{label}</Text
 
             {/* Select Dropdown */}
             <Select
                 selectedValue={value}
                 onValueChange={onChange}
-            >
+            
                 <SelectTrigger
                     style={[
                         styles.trigger,
                         error && styles.triggerError,
                     ]}
-                >
+                
                     <SelectInput
                         placeholder="Select an option"
                         style={styles.input}
-                    />
+                    /
                     {/* @ts-ignore */}
-                    <SelectIcon style={styles.icon}>
-                        <View>
+                    <SelectIcon style={styles.icon}
+                        <View
                             {/* @ts-ignore */}
                             <ChevronDown
                                 size={20}
                                 color={Theme.colors.sacredWhite}
-                            />
-                        </View>
-                    </SelectIcon>
-                </SelectTrigger>
+                            /
+                        </View
+                    </SelectIcon
+                </SelectTrigger
 
-                <SelectPortal>
-                    <SelectBackdrop />
-                    <SelectContent style={styles.content}>
+                <SelectPortal
+                    <SelectBackdrop /
+                    <SelectContent style={styles.content}
                         {options.map((option) => (
                             <SelectItem
                                 key={option.value}
                                 label={option.label}
                                 value={option.value}
                                 style={styles.item}
-                            />
+                            /
                         ))}
-                    </SelectContent>
-                </SelectPortal>
-            </Select>
+                    </SelectContent
+                </SelectPortal
+            </Select
 
             {/* Error Message */}
             {error && (
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={styles.errorText}>{error}</Text
             )}
-        </View>
+        </View
     );
 };
 

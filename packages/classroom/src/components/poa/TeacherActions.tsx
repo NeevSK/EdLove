@@ -8,8 +8,7 @@ interface ActionProps {
 }
 
 export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateClassroom }) => (
-    <FeatureGuard action="create" subject="Classroom">
-        <Box 
+    <FeatureGuard action="create" subject="Classroom"        <Box 
             as="button" 
             onClick={onCreateClassroom}
             sx={{ 
@@ -21,15 +20,11 @@ export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateCl
                 backgroundColor: '$primary',
                 color: 'white'
             }}
-        >
-            <Plus size={16} /> Create Sanctuary
-        </Box>
-    </FeatureGuard>
-);
+                    <Plus size={16} /> Create Sanctuary
+        </Box    </FeatureGuard);
 
 export const TeacherScanQRAction: React.FC = () => (
-    <FeatureGuard action="manage" subject="Attendance">
-        <Box 
+    <FeatureGuard action="manage" subject="Attendance"        <Box 
             as="button" 
             sx={{ 
                 flexDirection: 'row', 
@@ -41,15 +36,11 @@ export const TeacherScanQRAction: React.FC = () => (
                 borderWidth: 1,
                 borderColor: '$border'
             }}
-        >
-            <QrCode size={16} /> Scan Resonance
-        </Box>
-    </FeatureGuard>
-);
+                    <QrCode size={16} /> Scan Resonance
+        </Box    </FeatureGuard);
 
 export const TeacherPrincipalEchoAction: React.FC = () => (
-    <FeatureGuard action="read" subject="Announcement">
-        <Box 
+    <FeatureGuard action="read" subject="Announcement"        <Box 
             as="button" 
             sx={{ 
                 flexDirection: 'row', 
@@ -61,15 +52,11 @@ export const TeacherPrincipalEchoAction: React.FC = () => (
                 borderWidth: 1,
                 borderColor: '$border'
             }}
-        >
-            <MessageSquare size={16} /> Principal's Echo
-        </Box>
-    </FeatureGuard>
-);
+                    <MessageSquare size={16} /> Principal's Echo
+        </Box    </FeatureGuard);
 
 export const TeacherMyEchoesAction: React.FC = () => (
-    <FeatureGuard action="manage" subject="Announcement">
-        <Box 
+    <FeatureGuard action="manage" subject="Announcement"        <Box 
             as="button" 
             sx={{ 
                 flexDirection: 'row', 
@@ -81,8 +68,5 @@ export const TeacherMyEchoesAction: React.FC = () => (
                 borderWidth: 1,
                 borderColor: '$border'
             }}
-        >
-            <History size={16} /> My Echoes
-        </Box>
-    </FeatureGuard>
-);
+                    <History size={16} /> My Echoes
+        </Box    </FeatureGuard);

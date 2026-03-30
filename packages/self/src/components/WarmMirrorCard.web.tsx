@@ -22,26 +22,25 @@ export function WarmMirrorCard({ text }: WarmMirrorCardProps) {
             backgroundColor: 'rgba(139, 92, 246, 0.08)',
             borderRadius: '16px',
             border: '1px solid rgba(139, 92, 246, 0.18)',
-        }}>
+        }}
             <div style={{
-                fontSize: '10px',
-                fontWeight: '900',
-                letterSpacing: '2px',
+                fontSize: '12px',
+                fontWeight: '800',
                 color: '#8B5CF6',
                 marginBottom: '12px',
                 textTransform: 'uppercase',
-            }}>
-                🌸 YOUR WEEK AS A STORY
-            </div>
+            }}
+                {'\uD83D\uDCD6'} YOUR WEEK AS A STORY
+            </div
             <p style={{
                 fontSize: '14px',
                 lineHeight: '1.7',
                 color: 'var(--ink-soft)',
                 fontStyle: 'italic',
                 margin: 0,
-            }}>
+            }}
                 {text}
-            </p>
-        </div>
+            </p
+        </div
     );
 }

@@ -61,8 +61,10 @@ export function handleAPIError(error: any, silent = false) {
         status: error?.status
     };
 
-    console.error('🛑 API Error Intercepted:', error); // Log original for debugging
-    console.log('✨ Friendly Message:', apiError.message);
+    if (__DEV__) {
+        console.error('\uD83D\uDED1 API Error Intercepted:', error); // Log original for debugging
+        console.log('\u2728 Friendly Message:', apiError.message);
+    }
 
     // TODO: Track with Sentry
     // Sentry.captureException(error);

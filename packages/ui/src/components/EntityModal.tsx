@@ -38,20 +38,20 @@ export default function EntityModal({
                     onAction={(action: string) => {
                         if (action === 'complete' || action === 'close') onClose();
                     }}
-                />
+                /
             );
         }
 
         // Fallback to standard views/forms
         if (mode === 'create' || mode === 'edit') {
             return (
-                <VStack space="md">
-                    <Text>{mode === 'create' ? 'Creating' : 'Editing'} {definition.type}</Text>
+                <VStack space="md"
+                    <Text>{mode === 'create' ? 'Creating' : 'Editing'} {definition.type}</Text
                     {/* Default FormManager-powered form or generic FormBuilder */}
-                    <Box bg="$backgroundLight100" p={20} rounded="$md">
-                        <Text color="$textLight500">Standard Form for {definition.type}</Text>
-                    </Box>
-                </VStack>
+                    <Box bg="$backgroundLight100" p={20} rounded="$md"
+                        <Text color="$textLight500">Standard Form for {definition.type}</Text
+                    </Box
+                </VStack
             );
         }
 
@@ -60,7 +60,7 @@ export default function EntityModal({
                 definition={definition} 
                 instance={instance} 
                 mode={mode} 
-            />
+            /
         );
     };
 
@@ -69,10 +69,10 @@ export default function EntityModal({
             isOpen={isOpen}
             onClose={onClose}
             title={displayTitle}
-        >
-            <Box p={16}>
+        
+            <Box p={16}
                 {renderContent()}
-            </Box>
-        </SanctuaryModal>
+            </Box
+        </SanctuaryModal
     );
 }

@@ -65,14 +65,11 @@ export function SankeyDiagram({
   };
 
   return (
-    <Card style={[styles.container, { width: actualWidth, height }]}>
-      {title && <Text style={styles.title}>{title}</Text>}
+    <Card style={[styles.container, { width: actualWidth, height }]}      {title && <Text style={styles.title}>{title}</Text>}
       
-      <View style={styles.diagramContainer}>
-        {/* Links */}
+      <View style={styles.diagramContainer}        {/* Links */}
         {links.map((link, index) => (
-          <View key={index} style={styles.linkContainer}>
-            <View
+          <View key={index} style={styles.linkContainer}            <View
               style={[
                 styles.linkPath,
                 {
@@ -81,16 +78,12 @@ export function SankeyDiagram({
                   width: Math.sqrt(Math.pow((nodePositions[link.target]?.x ?? 0) - ((nodePositions[link.source]?.x ?? 0) + nodeWidth), 2) + Math.pow((nodePositions[link.target]?.y ?? 0) - (nodePositions[link.source]?.y ?? 0), 2))
                 }
               ]}
-            />
-            
+            /            
             {/* Link value label */}
             {showLabels && (
-              <Text style={styles.linkLabel}>
-                {link.value}
-              </Text>
-            )}
-          </View>
-        ))}
+              <Text style={styles.linkLabel}                {link.value}
+              </Text            )}
+          </View        ))}
         
         {/* Nodes */}
         {nodes.map((node, index) => (
@@ -105,15 +98,9 @@ export function SankeyDiagram({
                 width: nodeWidth,
               }
             ]}
-          >
-            <Text style={styles.nodeLabel}>
-              {showLabels ? node.label : ''}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </Card>
-  );
+                      <Text style={styles.nodeLabel}              {showLabels ? node.label : ''}
+            </Text          </View        ))}
+      </View    </Card  );
 }
 
 const styles = StyleSheet.create({

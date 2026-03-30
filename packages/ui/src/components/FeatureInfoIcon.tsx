@@ -13,7 +13,7 @@ export interface FeatureInfoIconProps {
 }
 
 /**
- * FeatureInfoIcon — A subtle info icon that triggers the discovery modal.
+ * FeatureInfoIcon  A subtle info icon that triggers the discovery modal.
  * Uses a soft ripple effect and identity-aware coloring.
  */
 export default function FeatureInfoIcon({
@@ -26,8 +26,7 @@ export default function FeatureInfoIcon({
     if (!discoveryInfo) return null;
 
     return (
-        <>
-            <Pressable
+        <            <Pressable accessibilityRole="button"
                 onPress={() => setIsOpen(true)}
                 sx={{
                     padding: 4,
@@ -39,17 +38,12 @@ export default function FeatureInfoIcon({
                         transform: [{ scale: 0.92 }],
                     }
                 }}
-            >
-                <Icon as={InfoIcon} color={color} size="sm" />
-            </Pressable>
-
+                            <Icon as={InfoIcon} color={color} size="sm" /            </Pressable
             <FeatureDiscoveryModal
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 title={title}
                 whatIsIt={discoveryInfo.whatIsIt}
                 whereToFind={discoveryInfo.whereToFind}
-            />
-        </>
-    );
+            /        </    );
 }

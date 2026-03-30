@@ -4,7 +4,7 @@
  * Generic pill-style horizontal tab bar used across SelfView panels
  * (PrincipalSelfView, FounderSelfView) and any future panel-based screen.
  *
- * Replaces the copy-pasted `TABS.map(tab => <button …>)` block that appeared
+ * Replaces the copy-pasted `TABS.map(tab => <button &>)` block that appeared
  * identically in PrincipalSelfView.web.tsx and FounderSelfView.web.tsx.
  */
 import React from 'react';
@@ -49,7 +49,7 @@ export function SanctuaryTabBar<T extends string>({
                 marginBottom: '32px',
                 ...style,
             }}
-        >
+        
             {tabs.map(tab => {
                 const isActive = tab.id === activeId;
                 const activeBg = tab.activeColor ?? 'var(--moss)';
@@ -73,12 +73,12 @@ export function SanctuaryTabBar<T extends string>({
                             background: isActive ? activeBg : 'var(--background-alt)',
                             color: isActive ? activeText : 'var(--ink)',
                         }}
-                    >
-                        <tab.icon size={15} />
+                    
+                        <tab.icon size={15} /
                         {tab.label}
-                    </button>
+                    </button
                 );
             })}
-        </div>
+        </div
     );
 }

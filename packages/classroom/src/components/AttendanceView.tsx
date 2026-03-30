@@ -24,15 +24,15 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
             const today = new Date().toISOString().split('T')[0];
 
             // Load student roster and any already-saved attendance for today in parallel
-            const [roster, todayRecords] = await Promise.all([
+            const [roster, snapshot] = await Promise.all([
                 api.classroomStudents.getAll(classroomId),
-                api.attendance.getByDate(classroomId, today || '')
-                    .catch(() => [] as { student_id: string; status: AttendanceStatus }[]),
+                api.attendance.getClassroomAttendanceSnapshot(classroomId, today || '')
+                    .catch(() => ({ records: [] as { student_id: string; status: AttendanceStatus }[] })),
             ]);
 
-            // Build a lookup map: student_id → saved status
+            // Build a lookup map: student_id \u2192 saved status
             const savedStatus = new Map<string, AttendanceStatus>(
-                (todayRecords as { student_id: string; status: AttendanceStatus }[])
+                (snapshot.records as { student_id: string; status: AttendanceStatus }[])
                     .map(r => [r.student_id, r.status])
             );
 
@@ -59,18 +59,18 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}>
-                <Spinner color={Theme.colors.sanctuarySaffron} />
-                <Text color={Theme.colors.textSecondary} sx={{ marginTop: 16 }}>Loading class list...</Text>
-            </Box>
+            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}
+                <Spinner color={Theme.colors.sanctuarySaffron} /
+                <Text color={Theme.colors.textSecondary} sx={{ marginTop: 16 }}>Loading class list...</Text
+            </Box
         );
     }
 
     if (error) {
         return (
-            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}>
-                <Text color={Theme.colors.errorText}>{error}</Text>
-            </Box>
+            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}
+                <Text color={Theme.colors.errorText}>{error}</Text
+            </Box
         );
     }
 
@@ -79,6 +79,6 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
             classroomId={classroomId}
             initialStudents={students}
             onAttendanceChange={handleAttendanceChange}
-        />
+        /
     );
 }

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { observationsAPI } from '@repo/admin';
+import { observationsAPI, type PrincipalObservation } from '@repo/admin';
 
 export function usePrincipalObservations(userId: string, schoolId: string, viewDate: string) {
-    const [observations, setObservations] = useState<any[]>([]);
+    const [observations, setObservations] = useState<PrincipalObservation[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
 

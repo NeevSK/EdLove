@@ -1,7 +1,7 @@
 /**
- * Thuthimal API — Flower of Gratitude gift economy
+ * Thuthimal API \u2014 Flower of Gratitude gift economy
  *
- * Thuthimal (තුතිමල්) transforms subscription economics into a gratitude economy.
+ * Thuthimal (\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA) transforms subscription economics into a gratitude economy.
  * Anyone (past students, alumni, communities) can gift Pro to a teacher/principal.
  * The gift is encoded as a one-time QR token and claimed by the recipient.
  *
@@ -83,9 +83,9 @@ export const thuthimalAPI = {
 
     const result = data as ClaimResult;
 
-    // Growth signal: receiving a Thuthimal is the apex Blooming event —
+    // Growth signal: receiving a Thuthimal is the apex Blooming event \u2014
     // a past student honoring their teacher years later.
-    // This can advance the teacher to Pūrṇa Kamala (Full Lotus).
+    // This can advance the teacher to P\u016Br\u1E47a Kamala (Full Lotus).
     if (result.success) {
       void growthSignalsAPI.emitSignal(recipientId, 'thuthimal_received', {
         gifter_name: result.gifter_name,

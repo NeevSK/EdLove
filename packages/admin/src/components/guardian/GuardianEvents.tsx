@@ -30,9 +30,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
         }
       ]}
       onPress={() => onEventPress(event)}
-    >
-      <View style={styles.eventDate}>
-        <Text 
+          <View style={styles.eventDate}        <Text 
           style={[
             styles.eventDateDay,
             { 
@@ -42,10 +40,8 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
               fontSize: isDesktop ? 18 : 14
             }
           ]}
-        >
-          {new Date(event.date).getDate()}
-        </Text>
-        <Text 
+                  {new Date(event.date).getDate()}
+        </Text        <Text 
           style={[
             styles.eventDateMonth,
             { 
@@ -54,12 +50,8 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
               fontSize: isDesktop ? 10 : 8
             }
           ]}
-        >
-          {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
-        </Text>
-      </View>
-      <View style={styles.eventDetails}>
-        <Text 
+                  {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
+        </Text      </View      <View style={styles.eventDetails}        <Text 
           style={[
             styles.eventTitle,
             { 
@@ -69,10 +61,8 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
               fontSize: isDesktop ? 14 : 12
             }
           ]}
-        >
-          {event.title}
-        </Text>
-        <Text 
+                  {event.title}
+        </Text        <Text 
           style={[
             styles.eventTime,
             { 
@@ -81,33 +71,23 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
               fontSize: isDesktop ? 12 : 10
             }
           ]}
-        >
-          {event.time} • {event.location}
-        </Text>
-      </View>
-      {event.requiresRsvp && (
+                  {event.time} " {event.location}
+        </Text      </View      {event.requiresRsvp && (
         <View style={[
           styles.rsvpBadge,
           { backgroundColor: theme.accent.action + '20' }
-        ]}>
-          <Text 
+        ]}          <Text 
             style={[
               styles.rsvpText,
               { color: theme.accent.action }
             ]}
-          >
-            RSVP
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+                      RSVP
+          </Text        </View      )}
+    </TouchableOpacity  );
 
   return (
-    <View style={styles.eventsList}>
-      {events.slice(0, limit).map(renderEventItem)}
-    </View>
-  );
+    <View style={styles.eventsList}      {events.slice(0, limit).map(renderEventItem)}
+    </View  );
 };
 
 const styles = StyleSheet.create({

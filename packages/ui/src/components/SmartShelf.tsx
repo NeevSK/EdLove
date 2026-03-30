@@ -6,9 +6,9 @@
  * - Horizontal ScrollView for child card components
  *
  * Usage:
- *   <SmartShelf title="Featured Collections" onSeeAll={() => navigate('collections')}>
+ *   <SmartShelf title="Featured Collections" onSeeAll={() => navigate('collections')}
  *     {collections.map(c => <CollectionCard key={c.id} {...c} />)}
- *   </SmartShelf>
+ *   </SmartShelf
  */
 
 import React from 'react';
@@ -81,30 +81,30 @@ export function SmartShelf({
     });
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.title}>{title}</Text>
+            <View style={styles.header}
+                <Text style={styles.title}>{title}</Text
                 {onSeeAll && (
-                    <Pressable onPress={onSeeAll} style={styles.seeAllRow} hitSlop={8}>
-                        <Text style={styles.seeAllText}>See All</Text>
+                    <Pressable accessibilityRole="button" onPress={onSeeAll} style={styles.seeAllRow} hitSlop={8}
+                        <Text style={styles.seeAllText}>See All</Text
                         <ChevronRight
                             color={Theme.colors.sanctuarySaffron}
                             size={16}
-                        />
-                    </Pressable>
+                        /
+                    </Pressable
                 )}
-            </View>
+            </View
 
             {/* Horizontal Scroll */}
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
-            >
+            
                 {children}
-            </ScrollView>
-        </View>
+            </ScrollView
+        </View
     );
 }
 

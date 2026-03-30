@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ViewProps } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -63,9 +63,9 @@ export function LivingGlow({
     }));
 
     return (
-        <Animated.View style={[animatedStyle, style]} {...props}>
+        <Animated.View style={[animatedStyle, style]} {...props}
             {children || (size ? <Box sx={{ width: size, height: size, borderRadius: size / 2, backgroundColor: glowColor || colors.glow }} /> : null)}
-        </Animated.View>
+        </Animated.View
     );
 }
 

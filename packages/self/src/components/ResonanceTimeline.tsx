@@ -4,7 +4,7 @@ import { useJourneyData } from '../hooks/useJourneyData';
 import { TimelineEvent } from './TimelineEvent';
 import { GenesisNode } from './GenesisNode';
 
-import { useResonanceStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core';
 import { Theme } from '@repo/ui';
 
 
@@ -16,22 +16,22 @@ import { Theme } from '@repo/ui';
  */
 export const ResonanceTimeline: React.FC = () => {
     const { journey, loading } = useJourneyData();
-    const { viewScale, resonanceDate } = useResonanceStore();
+    const { viewScale, viewDate } = useTemporalStore();
 
     if (loading) {
         return (
-            <View style={styles.center}>
-                <ActivityIndicator color={Theme.colors.resonance.present} />
-                <Text style={styles.loadingText}>Synthesizing Journey Path...</Text>
-            </View>
+            <View style={styles.center}
+                <ActivityIndicator color={Theme.colors.resonance.present} /
+                <Text style={styles.loadingText}>Synthesizing Journey Path...</Text
+            </View
         );
     }
 
     if (journey.length === 0) {
         return (
-            <View style={styles.center}>
-                <Text style={styles.emptyText}>No resonance data found for this period.</Text>
-            </View>
+            <View style={styles.center}
+                <Text style={styles.emptyText}>No resonance data found for this period.</Text
+            </View
         );
     }
 
@@ -40,15 +40,15 @@ export const ResonanceTimeline: React.FC = () => {
             style={styles.container} 
             contentContainerStyle={styles.contentContainer}
             showsVerticalScrollIndicator={false}
-        >
-            <View style={styles.header}>
-                <Text style={styles.dateLabel}>{resonanceDate}</Text>
-                <Text style={styles.scaleLabel}>{viewScale.toUpperCase()} JOURNEY</Text>
-            </View>
+        
+            <View style={styles.header}
+                <Text style={styles.dateLabel}>{viewDate}</Text
+                <Text style={styles.scaleLabel}>{viewScale.toUpperCase()} JOURNEY</Text
+            </View
 
             {journey.map((event, index: number) => (
                 event.type === 'path' ? (
-                    <GenesisNode key={event.id} timestamp={event.timestamp} />
+                    <GenesisNode key={event.id} timestamp={event.timestamp} /
                 ) : (
                     <TimelineEvent
                         key={event.id}
@@ -58,11 +58,11 @@ export const ResonanceTimeline: React.FC = () => {
                         timestamp={event.timestamp}
                         intensity={event.intensity}
                         isLast={index === journey.length - 1}
-                    />
+                    /
                 )
             ))}
 
-        </ScrollView>
+        </ScrollView
     );
 };
 

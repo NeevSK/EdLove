@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, HStack, Text, Theme } from "@repo/ui";
 import { BreathGuide } from "@repo/self";
-import { useUserRole, useRewards, useNotifications, useStore } from "@repo/core";
+import { usePermissions, useRewards, useNotifications, useStore } from "@repo/core";
 import {
   User,
   School,
@@ -19,11 +19,11 @@ import {
 } from "lucide-react-native";
 import { StackFallback } from "../components/web/WebScreenShimmer";
 
-// ── Preload helper ──────────────────────────────────────────────────────────
+// \u2500\u2500 Preload helper \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // Kicks off the dynamic import for each chunk immediately after the main
 // bundle executes (i.e. before the user taps any tab).  Uses
 // requestIdleCallback so it doesn't compete with first-paint work.
-// The promises are thrown away — React.lazy() caches the result internally
+// The promises are thrown away \u2014 React.lazy() caches the result internally
 // once the import resolves, so Suspense renders instantly on first navigation.
 const schedulePreload = (importFn: () => Promise<unknown>) => {
   if (typeof requestIdleCallback !== 'undefined') {
@@ -34,11 +34,16 @@ const schedulePreload = (importFn: () => Promise<unknown>) => {
 };
 
 // Screens / stacks
-// Tab stacks — lazy loaded (major code split boundary)
+// Tab stacks \u2014 lazy loaded (major code split boundary)
 const ClassroomStackNavigatorWeb = React.lazy(
   () => import("./ClassroomStackNavigator.web"),
 );
 schedulePreload(() => import("./ClassroomStackNavigator.web"));
+
+const FounderStackNavigatorWeb = React.lazy(
+  () => import("./FounderStackNavigator.web"),
+);
+schedulePreload(() => import("./FounderStackNavigator.web"));
 
 const ProfileStackNavigatorWeb = React.lazy(
   () => import("./ProfileStackNavigator.web"),
@@ -60,22 +65,22 @@ const LibraryStackNavigatorWeb = React.lazy(
 );
 schedulePreload(() => import("./LibraryStackNavigator.web"));
 
-// In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
+// In-shell panel screens \u2014 lazy loaded (rendered as Tab.Screen for URL-native navigation)
 const NotificationsScreenWeb = React.lazy(
-  () => import("../screens/NotificationsScreen.web"),
+  () => import("@repo/ui/screens/NotificationsScreen.web"),
 );
-schedulePreload(() => import("../screens/NotificationsScreen.web"));
+schedulePreload(() => import("@repo/ui/screens/NotificationsScreen.web"));
 
 const AppSettingsScreenWeb = React.lazy(
-  () => import("../screens/AppSettingsScreen.web"),
+  () => import("@repo/ui/screens/AppSettingsScreen.web"),
 );
-schedulePreload(() => import("../screens/AppSettingsScreen.web"));
+schedulePreload(() => import("@repo/ui/screens/AppSettingsScreen.web"));
 
-// ── Tab navigator ────────────────────────────────────────────────────────────
+// \u2500\u2500 Tab navigator \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const Tab = createBottomTabNavigator();
 
-// ─── NAV HELPERS ──────────────────────────────────────────────────────────
+// \u2500\u2500\u2500 NAV HELPERS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const TAB_CONFIG = [
   {
@@ -110,7 +115,7 @@ const TAB_CONFIG = [
   },
 ];
 
-// ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
+// \u2500\u2500\u2500 MAIN NAVIGATOR (Overlay Architecture) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 /** Reusable notification badge dot for Bell icons */
 function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' | 'md' }) {
@@ -136,9 +141,9 @@ function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' 
       top: dim.top, 
       right: dim.right,
       zIndex: 1
-    }}>
+    }}
       {count > 99 ? '99+' : String(count)}
-    </div>
+    </div
   );
 }
 
@@ -148,7 +153,10 @@ export default function TabNavigator({
   onTabChange?: (tab: string) => void;
 }) {
   const { t } = useTranslation();
-  const { role, userId } = useUserRole();
+  const { context, can } = usePermissions();
+  const userId = context.userId;
+  const role = context.authority;
+  const isFounderLane = can("read", "FounderDashboard");
   const { scene, text } = useTheme();
   const { newAchievements } = useRewards();
   const { unreadCount } = useNotifications(userId);
@@ -157,14 +165,14 @@ export default function TabNavigator({
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
   // Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
   const [isMobileView, setIsMobileView] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState("Self");
+  const [activeTab, setActiveTab] = React.useState<string>("Self");
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
   const { isBreathingOpen, setBreathingOpen } = useStore();
 
-  // Ref to the sidebar element — used for focus trap
+  // Ref to the sidebar element \u2014 used for focus trap
   const sidebarRef = React.useRef<HTMLElement>(null);
-  // Last focused element before sidebar opened — returned on close
+  // Last focused element before sidebar opened \u2014 returned on close
   const preSidebarFocusRef = React.useRef<HTMLElement | null>(null);
 
   // Define closeSidebar before the useEffects that reference it
@@ -189,7 +197,7 @@ export default function TabNavigator({
     }
   }, [newAchievements]);
 
-  // ── FOCUS TRAP: mobile sidebar ──────────────────────────────────────────
+  // \u2500\u2500 FOCUS TRAP: mobile sidebar \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   // When the overlay sidebar opens, move keyboard focus inside and prevent
   // Tab from escaping to page content behind the backdrop.
   React.useEffect(() => {
@@ -206,7 +214,7 @@ export default function TabNavigator({
     );
     if (focusable.length > 0) focusable[0].focus();
 
-    // Tab key handler — cycle inside the sidebar only
+    // Tab key handler \u2014 cycle inside the sidebar only
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         closeSidebar();
@@ -242,15 +250,15 @@ export default function TabNavigator({
     };
   }, [isMobileView, isSidebarExpanded, closeSidebar]);
 
-  // ── DOCUMENT TITLE: update on tab change ───────────────────────────────
+  // \u2500\u2500 DOCUMENT TITLE: update on tab change \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   React.useEffect(() => {
     const base = t("webNav.brandName");
     if (activeTab === "NotificationsPanel") {
-      document.title = `${t("webNav.notifications")} — ${base}`;
+      document.title = `${t("webNav.notifications")} \u2014 ${base}`;
     } else if (activeTab === "SettingsPanel") {
-      document.title = `${t("webNav.settings")} — ${base}`;
+      document.title = `${t("webNav.settings")} \u2014 ${base}`;
     } else {
-      document.title = activeTab ? `${activeTab} — ${base}` : base;
+      document.title = activeTab ? `${activeTab} \u2014 ${base}` : base;
     }
   }, [activeTab, t]);
 
@@ -266,10 +274,11 @@ export default function TabNavigator({
   }, [activeTab, onTabChange]);
 
   const getClassroomLabel = () => {
+    if (isFounderLane) return t("tabs.founder") || "Founder Dashboard";
     if (role === "principal") return t("tabs.mySchool");
-    if (role === "founder") return t("tabs.school");
-    if (role === "section_head") return t("tabs.section");
-    if (role === "grade_head") return t("tabs.grade");
+    if (role === "assistantPrincipal") return t("tabs.school");
+    if (role === "sectionHead") return t("tabs.section");
+    if (role === "gradeHead") return t("tabs.grade");
     return t("tabs.classroom");
   };
 
@@ -288,11 +297,11 @@ export default function TabNavigator({
   };
 
   return (
-    <div className="vellum-app-shell">
-      <div className="world-bg" aria-hidden="true" />
+    <div className="vellum-app-shell"
+      <div className="world-bg" aria-hidden="true" /
 
-      {/* ── TOP BAR ── */}
-      <header className="top-bar">
+      {/* \u2500\u2500 TOP BAR \u2500\u2500 */}
+      <header className="top-bar"
         <div
           className="top-bar-left"
           style={{
@@ -301,7 +310,7 @@ export default function TabNavigator({
             alignItems: "center",
             gap: "16px",
           }}
-        >
+        
           {isMobileView && (
             <button
               className="mobile-menu-toggle"
@@ -316,27 +325,27 @@ export default function TabNavigator({
                 alignItems: "center",
                 justifyContent: "center",
               }}
-            >
-              <Menu size={24} />
-            </button>
+            
+              <Menu size={24} /
+            </button
           )}
-          <span className="brand-lotus">🪷</span>
-          <span className="brand-name">{t("webNav.brandName")}</span>
-        </div>
-        <div className="top-bar-right" />
-      </header>
+          <span className="brand-lotus">\uD83E\uDEB7</span
+          <span className="brand-name">{t("webNav.brandName")}</span
+        </div
+        <div className="top-bar-right" /
+      </header
 
-      <div className="shell-body-core">
-        {/* ── MOBILE SIDEBAR OVERLAY ── */}
+      <div className="shell-body-core"
+        {/* \u2500\u2500 MOBILE SIDEBAR OVERLAY \u2500\u2500 */}
         {isMobileView && isSidebarExpanded && (
           <div
             className="sidebar-overlay visible"
             onClick={closeSidebar}
             aria-hidden="true"
-          />
+          /
         )}
 
-        {/* ── SIDEBAR ── */}
+        {/* \u2500\u2500 SIDEBAR \u2500\u2500 */}
         <aside
           ref={sidebarRef}
           className={`sidebar ${isSidebarExpanded ? "open expanded" : "collapsed"}`}
@@ -357,21 +366,21 @@ export default function TabNavigator({
                 ? "4px 0 40px rgba(107,100,128,0.2)"
                 : "none",
           }}
-        >
+        
           <div className="sidebar-header" style={{ 
             display: "flex", 
             justifyContent: isSidebarExpanded ? 'space-between' : 'center', 
             alignItems: 'center', 
             padding: isSidebarExpanded ? '0 16px' : '0',
             height: '60px'
-          }}>
+          }}
             {(isSidebarExpanded || isMobileView) && (
               <span
                 className="sidebar-group-label"
                 style={{ marginLeft: "0", fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', opacity: 0.6 }}
-              >
+              
                 {t("webNav.menu") || "MENU"}
-              </span>
+              </span
             )}
             <button
               className="sidebar-toggle"
@@ -387,16 +396,16 @@ export default function TabNavigator({
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
-            >
+            
               {isSidebarExpanded ? (
-                <ChevronLeft size={16} />
+                <ChevronLeft size={16} /
               ) : (
-                <Menu size={16} />
+                <Menu size={16} /
               )}
-            </button>
-          </div>
+            </button
+          </div
 
-          <nav className="sidebar-nav" aria-label="Main navigation">
+          <nav className="sidebar-nav" aria-label="Main navigation"
             {TAB_CONFIG.map((conf) => {
               const isActive = activeTab === conf.name;
               const Icon = conf.icon;
@@ -405,41 +414,43 @@ export default function TabNavigator({
                   key={conf.name}
                   className={`sidebar-item ${isActive ? "active" : ""}`}
                   onClick={() => {
-                    (navigation.navigate as any)("Main", { screen: conf.name });
+                    // @ts-expect-error - Main and screen are valid but not in local type
+                    navigation.navigate("Main", { screen: conf.name });
                     if (isMobileView) closeSidebar();
                   }}
                   title={getLabel(conf.name, conf.labelKey)}
                   aria-current={isActive ? "page" : undefined}
                   style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
-                >
+                
                   <Icon
                     size={20}
                     color={isActive ? "var(--water)" : "var(--ink-ghost)"}
-                  />
+                  /
                   {(isSidebarExpanded || isMobileView) && (
-                    <span className="sidebar-label">
+                    <span className="sidebar-label"
                       {getLabel(conf.name, conf.labelKey)}
-                    </span>
+                    </span
                   )}
-                </button>
+                </button
               );
             })}
-          </nav>
+          </nav
 
-          <div className="sidebar-footer">
-            <div className="sidebar-divider" />
+          <div className="sidebar-footer"
+            <div className="sidebar-divider" /
             <button
               className={`sidebar-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
               title={t("common.notifications")}
               onClick={() => {
-                (navigation.navigate as any)("Main", {
+                // @ts-expect-error - Main and screen are valid but not in local type
+                navigation.navigate("Main", {
                   screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
                 });
                 if (isMobileView) closeSidebar();
               }}
               style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
-            >
-              <div style={{ position: "relative" }}>
+            
+              <div style={{ position: "relative" }}
                 <Bell
                   size={20}
                   color={
@@ -447,49 +458,50 @@ export default function TabNavigator({
                       ? "var(--water)"
                       : "var(--ink-ghost)"
                   }
-                />
-                <NotificationBadge count={unreadCount} />
-              </div>
+                /
+                <NotificationBadge count={unreadCount} /
+              </div
               {(isSidebarExpanded || isMobileView) && (
-                <span className="sidebar-label">Notifications</span>
+                <span className="sidebar-label">Notifications</span
               )}
-            </button>
+            </button
 
             <button
               className={`sidebar-profile-btn ${activeTab === "SettingsPanel" ? "active" : ""}`}
               title={t("common.settings")}
               onClick={() => {
-                (navigation.navigate as any)("Main", {
+                // @ts-expect-error - Main and screen are valid but not in local type
+                navigation.navigate("Main", {
                   screen: activeTab === "SettingsPanel" ? "Self" : "SettingsPanel",
                 });
                 if (isMobileView) closeSidebar();
               }}
               style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
-            >
-              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Settings size={20} color="var(--ink-ghost)" />
-              </div>
+            
+              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                <Settings size={20} color="var(--ink-ghost)" /
+              </div
               {(isSidebarExpanded || isMobileView) && (
-                <div className="profile-info" style={{ marginLeft: '12px' }}>
-                  <span className="profile-nm" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}>
+                <div className="profile-info" style={{ marginLeft: '12px' }}
+                  <span className="profile-nm" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}
                     {role?.split("_").join(" ") || "Guest"}
-                  </span>
-                  <span className="profile-status" style={{ fontSize: '11px', opacity: 0.6 }}>
+                  </span
+                  <span className="profile-status" style={{ fontSize: '11px', opacity: 0.6 }}
                     {t("common.settings")}
-                  </span>
-                </div>
+                  </span
+                </div
               )}
-            </button>
-          </div>
-        </aside>
+            </button
+          </div
+        </aside
 
-        {/* ── MAIN CONTENT CANVAS ── */}
-        <main className="main-content-canvas">
+        {/* \u2500\u2500 MAIN CONTENT CANVAS \u2500\u2500 */}
+        <main className="main-content-canvas"
             <Tab.Navigator
               id="MainTabs"
               initialRouteName="Self"
               tabBar={() => null}
-              // @ts-ignore
+              // @ts-expect-error - sceneContainerStyle has web-specific properties
               sceneContainerStyle={{
                 backgroundColor: "transparent",
                 minHeight: "100%",
@@ -497,108 +509,112 @@ export default function TabNavigator({
               }}
               screenListeners={{
                 state: (e) => {
-                  const s = (e.data as any)?.state;
+                  const s = (e.data as { state: import("@react-navigation/native").NavigationState })?.state;
                   if (!s || s.index === undefined || !s.routes) return;
                   const routeName = s.routes[s.index]?.name;
                   if (routeName && routeName !== activeTab) {
-                    // Update local tab state — the useEffect above handles notifying parent
+                    // Update local tab state \u2014 the useEffect above handles notifying parent
                     setActiveTab(routeName);
                   }
                 },
               }}
               screenOptions={{ headerShown: false }}
-            >
-              <Tab.Screen name="Self">
+            
+              <Tab.Screen name="Self"
                 {() => (
-                  <ErrorBoundary name="Self">
+                  <ErrorBoundary name="Self"
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <SelfStackNavigatorWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      <SelfStackNavigatorWeb /
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-              <Tab.Screen name="Community">
+              </Tab.Screen
+              <Tab.Screen name="Community"
                 {() => (
-                  <ErrorBoundary name="Community">
+                  <ErrorBoundary name="Community"
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <CommunityStackNavigatorWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      <CommunityStackNavigatorWeb /
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-              <Tab.Screen name="Classroom">
+              </Tab.Screen
+              <Tab.Screen name="Classroom"
                 {() => (
-                  <ErrorBoundary name="Classroom">
+                  <ErrorBoundary name={isFounderLane ? "Founder" : "Classroom"}
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <ClassroomStackNavigatorWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      {isFounderLane ? (
+                        <FounderStackNavigatorWeb /
+                      ) : (
+                        <ClassroomStackNavigatorWeb /
+                      )}
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-              <Tab.Screen name="Library">
+              </Tab.Screen
+              <Tab.Screen name="Library"
                 {() => (
-                  <ErrorBoundary name="Library">
+                  <ErrorBoundary name="Library"
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <LibraryStackNavigatorWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      <LibraryStackNavigatorWeb /
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-              <Tab.Screen name="Profile">
+              </Tab.Screen
+              <Tab.Screen name="Profile"
                 {() => (
-                  <ErrorBoundary name="Profile">
+                  <ErrorBoundary name="Profile"
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <ProfileStackNavigatorWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      <ProfileStackNavigatorWeb /
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-              {/* Panel screens — rendered within shell, URL-native via React Navigation */}
-              <Tab.Screen name="NotificationsPanel">
+              </Tab.Screen
+              {/* Panel screens \u2014 rendered within shell, URL-native via React Navigation */}
+              <Tab.Screen name="NotificationsPanel"
                 {() => (
-                  <ErrorBoundary name="Notifications">
+                  <ErrorBoundary name="Notifications"
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <NotificationsScreenWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      <NotificationsScreenWeb /
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-              <Tab.Screen name="SettingsPanel">
+              </Tab.Screen
+              <Tab.Screen name="SettingsPanel"
                 {() => (
-                  <ErrorBoundary name="Settings">
+                  <ErrorBoundary name="Settings"
                     <React.Suspense
                       fallback={<StackFallback />}
-                    >
-                      <AppSettingsScreenWeb />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                    
+                      <AppSettingsScreenWeb /
+                    </React.Suspense
+                  </ErrorBoundary
                 )}
-              </Tab.Screen>
-            </Tab.Navigator>
-        </main>
-      </div>
+              </Tab.Screen
+            </Tab.Navigator
+        </main
+      </div
 
-      {/* ── MOBILE BOTTOM NAV (< 1024px) ── */}
-      {/* Always visible on mobile — even in notifications/settings subviews so
+      {/* \u2500\u2500 MOBILE BOTTOM NAV (< 1024px) \u2500\u2500 */}
+      {/* Always visible on mobile \u2014 even in notifications/settings subviews so
                 users always have a path back. Tab buttons return to 'none' subview
                 first; Alerts button toggles notifications. */}
       {isMobileView && !isSidebarExpanded && (
         <nav
           className="mobile-bottom-nav"
           aria-label={t("webNav.tabNavigation")}
-        >
+        
           {TAB_CONFIG.map((conf) => {
             const isActive = activeTab === conf.name;
             const Icon = conf.icon;
@@ -607,30 +623,32 @@ export default function TabNavigator({
                 key={conf.name}
                 className={`mobile-nav-item ${isActive ? "active" : ""}`}
                 onClick={() => {
-                  (navigation.navigate as any)("Main", { screen: conf.name });
+                  // @ts-expect-error - Main and screen are valid but not in local type
+                  navigation.navigate("Main", { screen: conf.name });
                 }}
                 aria-current={isActive ? "page" : undefined}
-              >
+              
                 <Icon
                   size={22}
                   color={isActive ? "var(--water)" : "var(--ink-ghost)"}
-                />
-                <span className="mobile-nav-label">
+                /
+                <span className="mobile-nav-label"
                   {getMobileLabel(conf.name)}
-                </span>
-              </button>
+                </span
+              </button
             );
           })}
           <button
             className={`mobile-nav-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
-            onClick={() =>
-              (navigation.navigate as any)("Main", {
+            onClick={() =
+              // @ts-expect-error - Main and screen are valid but not in local type
+              navigation.navigate("Main", {
                 screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
               })
             }
             aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}
-          >
-            <div style={{ position: "relative" }}>
+          
+            <div style={{ position: "relative" }}
               <Bell
                 size={22}
                 color={
@@ -638,39 +656,39 @@ export default function TabNavigator({
                     ? "var(--water)"
                     : "var(--ink-ghost)"
                 }
-              />
-              <NotificationBadge count={unreadCount} size="sm" />
-            </div>
-            <span className="mobile-nav-label">{t("webNav.alerts")}</span>
-          </button>
-        </nav>
+              /
+              <NotificationBadge count={unreadCount} size="sm" /
+            </div
+            <span className="mobile-nav-label">{t("webNav.alerts")}</span
+          </button
+        </nav
       )}
 
       <AchievementUnlockOverlay
         title={currentAchievement}
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
-      />
+      /
 
 
       <UniversalModal
         isOpen={isBreathingOpen}
         onClose={() => setBreathingOpen(false)}
-      >
+      
         <Box sx={{ 
           backgroundColor: scene.elevated.bg,
           borderColor: scene.elevated.border,
           borderWidth: 1,
-          borderRadius: '$xl' as any,
+          borderRadius: '$xl' as string,
           padding: Theme.spacing.xl, 
           alignItems: 'center',
           maxWidth: 600,
           width: '90%'
-        }}>
-          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}>
-            <Text color={text.onElevated} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+        }}
+          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}
+            <Text color={text.onElevated} sx={{ fontSize: '$lg' as string, fontWeight: '700' }}
               {t('self.breathingReset') || 'Breathing Reset'}
-            </Text>
+            </Text
             <button 
               onClick={() => setBreathingOpen(false)}
               style={{
@@ -684,13 +702,13 @@ export default function TabNavigator({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-            >
-              <X size={24} />
-            </button>
-          </HStack>
-          <BreathGuide onComplete={() => setBreathingOpen(false)} />
-        </Box>
-      </UniversalModal>
-    </div>
+            
+              <X size={24} /
+            </button
+          </HStack
+          <BreathGuide onComplete={() => setBreathingOpen(false)} /
+        </Box
+      </UniversalModal
+    </div
   );
 }

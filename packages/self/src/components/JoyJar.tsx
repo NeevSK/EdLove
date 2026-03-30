@@ -82,19 +82,19 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
   };
 
   const categories = [
-    { id: 'breakthrough', label: t('self.breakthrough'), emoji: '🎉' },
-    { id: 'question', label: t('self.question'), emoji: '❓' },
-    { id: 'connection', label: t('self.connection'), emoji: '💫' },
-    { id: 'other', label: t('self.other'), emoji: '✨' }
+    { id: 'breakthrough', label: t('self.breakthrough'), emoji: '\uD83C\uDF89' },
+    { id: 'question', label: t('self.question'), emoji: '\u2753' },
+    { id: 'connection', label: t('self.connection'), emoji: '\uD83D\uDCAB' },
+    { id: 'other', label: t('self.other'), emoji: '\u2728' }
   ];
 
   if (isLoading && activeUserId) {
     return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
-        <SkeletonCard height={48} />
-        <SkeletonCard height={80} />
-        <SkeletonCard height={80} />
-      </VStack>
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
+        <SkeletonCard height={48} /
+        <SkeletonCard height={80} /
+        <SkeletonCard height={80} /
+      </VStack
     );
   }
 
@@ -103,26 +103,26 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
       <PositiveInvitation
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
-      />
+      /
     );
   }
 
   return (
-    <VStack space="lg" sx={{ flex: 1 }}>
-      <VStack space="xs">
-        <HStack space="sm" alignItems="center">
-          <Sparkles color={Theme.colors.sanctuarySaffron} size={24} />
-          <Heading color={Theme.colors.sacredWhite} size="lg">
+    <VStack space="lg" sx={{ flex: 1 }}
+      <VStack space="xs"
+        <HStack space="sm" alignItems="center"
+          <Sparkles color={Theme.colors.sanctuarySaffron} size={24} /
+          <Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.joyJar')}
-          </Heading>
-        </HStack>
-        <Text color={Theme.colors.mistGray} size="sm">
+          </Heading
+        </HStack
+        <Text color={Theme.colors.mistGray} size="sm"
           {t('self.joyJarDesc')}
-        </Text>
-      </VStack>
+        </Text
+      </VStack
 
       {!showForm ? (
-        <>
+        <
           <Button
             size="md"
             action="primary"
@@ -137,13 +137,13 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
               borderRadius: Theme.corners.comfortable,
               opacity: disabled ? 0.6 : 1
             }}
-          >
-            <Plus color={Theme.colors.sacredWhite} size={20} />
-            <ButtonText ml="$2">{t('self.captureJoy')}</ButtonText>
-          </Button>
+          
+            <Plus color={Theme.colors.sacredWhite} size={20} /
+            <ButtonText ml="$2">{t('self.captureJoy')}</ButtonText
+          </Button
 
-          <ScrollView sx={{ flex: 1, maxHeight: 400 }}>
-            <VStack space="md">
+          <ScrollView sx={{ flex: 1, maxHeight: 400 }}
+            <VStack space="md"
               {joyMoments.map((moment) => (
                 <Box
                   key={moment.id}
@@ -154,48 +154,48 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
                   }}
-                >
-                  <HStack justifyContent="space-between" alignItems="flex-start">
-                    <VStack space="xs" sx={{ flex: 1 }}>
+                
+                  <HStack justifyContent="space-between" alignItems="flex-start"
+                    <VStack space="xs" sx={{ flex: 1 }}
                       {moment.student_name && (
                         <Text
                           color={Theme.colors.sanctuarySaffron}
                           size="sm"
                           bold
-                        >
+                        
                           {moment.student_name}
-                        </Text>
+                        </Text
                       )}
-                      <Text color={Theme.colors.sacredWhite} size="md">
+                      <Text color={Theme.colors.sacredWhite} size="md"
                         {moment.moment_description}
-                      </Text>
-                      <Text color={Theme.colors.dimGray} size="xs">
+                      </Text
+                      <Text color={Theme.colors.dimGray} size="xs"
                         {new Date(moment.created_at).toLocaleDateString()}
-                      </Text>
-                    </VStack>
-                    <Text fontSize="$2xl">
-                      {categories.find(c => c.id === moment.category)?.emoji || '✨'}
-                    </Text>
-                  </HStack>
-                </Box>
+                      </Text
+                    </VStack
+                    <Text fontSize="$2xl"
+                      {categories.find(c => c.id === moment.category)?.emoji || '\u2728'}
+                    </Text
+                  </HStack
+                </Box
               ))}
 
               {joyMoments.length === 0 && (
                 <PositiveInvitation
                   icon={Sparkles}
                   title={t('self.startCapturing')}
-                />
+                /
               )}
-            </VStack>
-          </ScrollView>
-        </>
+            </VStack
+          </ScrollView
+        </
       ) : (
-        <VStack space="md">
+        <VStack space="md"
           {/* Student Name */}
-          <Box>
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
+          <Box
+            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.studentName')}
-            </Text>
+            </Text
             <Input
               variant="outline"
               size="md"
@@ -204,23 +204,23 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent
               }}
-            >
+            
               <InputField
                 placeholder={t('self.exampleStudent')}
                 value={studentName}
                 onChangeText={setStudentName}
                 color={Theme.colors.sacredWhite}
                 placeholderTextColor={Theme.colors.dimGray}
-              />
-            </Input>
-          </Box>
+              /
+            </Input
+          </Box
 
           {/* Category Selection */}
-          <Box>
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
+          <Box
+            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.category')}
-            </Text>
-            <HStack space="sm" flexWrap="wrap">
+            </Text
+            <HStack space="sm" flexWrap="wrap"
               {categories.map((cat) => (
                 <Pressable
                   key={cat.id}
@@ -228,7 +228,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                     hapticLight();
                     setCategory(cat.id as any);
                   }}
-                >
+                
                   <HStack
                     space="xs"
                     alignItems="center"
@@ -241,8 +241,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                           : Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable
                     }}
-                  >
-                    <Text fontSize="$md">{cat.emoji}</Text>
+                  
+                    <Text fontSize="$md">{cat.emoji}</Text
                     <Text
                       color={
                         category === cat.id
@@ -250,20 +250,20 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                           : Theme.colors.mistGray
                       }
                       size="sm"
-                    >
+                    
                       {cat.label}
-                    </Text>
-                  </HStack>
-                </Pressable>
+                    </Text
+                  </HStack
+                </Pressable
               ))}
-            </HStack>
-          </Box>
+            </HStack
+          </Box
 
           {/* Moment Description */}
-          <Box>
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
+          <Box
+            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.momentDescription')}
-            </Text>
+            </Text
             <Input
               variant="outline"
               size="md"
@@ -273,7 +273,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 borderColor: Theme.colors.transparent,
                 minHeight: 100
               }}
-            >
+            
               <InputField
                 placeholder={t('self.momentDescriptionPlaceholder')}
                 value={momentDescription}
@@ -282,12 +282,12 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 color={Theme.colors.sacredWhite}
                 placeholderTextColor={Theme.colors.dimGray}
                 sx={{ textAlignVertical: 'top' }}
-              />
-            </Input>
-          </Box>
+              /
+            </Input
+          </Box
 
           {/* Actions */}
-          <HStack space="md" justifyContent="flex-end">
+          <HStack space="md" justifyContent="flex-end"
             <Button
               size="md"
               variant="outline"
@@ -301,11 +301,11 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 borderColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable
               }}
-            >
-              <ButtonText color={Theme.colors.mistGray}>
+            
+              <ButtonText color={Theme.colors.mistGray}
                 {t('common.cancel')}
-              </ButtonText>
-            </Button>
+              </ButtonText
+            </Button
             <Button
               size="md"
               action="primary"
@@ -315,12 +315,12 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable
               }}
-            >
-              <ButtonText>{t('common.save')}</ButtonText>
-            </Button>
-          </HStack>
-        </VStack>
+            
+              <ButtonText>{t('common.save')}</ButtonText
+            </Button
+          </HStack
+        </VStack
       )}
-    </VStack>
+    </VStack
   );
 }

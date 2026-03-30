@@ -16,7 +16,7 @@
  * Layout:
  *   - Pinned notes always float to the top
  *   - Notes grouped by relative date label (Today, Yesterday, This Week, Earlier)
- *   - Infinite scroll backward in time — old notes are never deleted
+ *   - Infinite scroll backward in time \u2014 old notes are never deleted
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -58,7 +58,7 @@ import {
 import { api } from '@repo/core';
 import type { ClassroomNote } from '@repo/core';
 
-// ── Types ────────────────────────────────────────────────────
+// \u2500\u2500 Types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface ClassroomNotesProps {
     classroomId: string;
@@ -70,7 +70,7 @@ type NoteGroup = {
     data: ClassroomNote[];
 };
 
-// ── Helpers ──────────────────────────────────────────────────
+// \u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function getRelativeDateLabel(dateStr: string): string {
     const now = new Date();
@@ -101,7 +101,7 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
     }
 
     const result: NoteGroup[] = [];
-    if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
+    if (pinned.length > 0) result.push({ label: '\uD83D\uDCCC Pinned', data: pinned });
 
     // Explicitly handle noUncheckedIndexedAccess: true from base.json
     for (const label of Object.keys(groups)) {
@@ -113,9 +113,9 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
     return result;
 }
 
-// ── Note type metadata ────────────────────────────────────────
+// \u2500\u2500 Note type metadata \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
-const NOTE_TYPE_META: Record<
+const NOTE_TYPE_META: Record
     ClassroomNote['note_type'],
     { label: string; icon: any; color: string; teacherOnly: boolean }
 > = {
@@ -151,7 +151,7 @@ const NOTE_TYPE_META: Record<
     },
 };
 
-// ── Main Component ───────────────────────────────────────────
+// \u2500\u2500 Main Component \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNotesProps) {
     const colors = useThemedColors();
@@ -237,17 +237,17 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         }
     };
 
-    // ── Compose sheet available note types ───────────────────
+    // \u2500\u2500 Compose sheet available note types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     const availableTypes = useMemo(
-        () =>
+        () =
             (Object.entries(NOTE_TYPE_META) as [ClassroomNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][])
                 .filter(([, meta]) => isTeacher || !meta.teacherOnly)
                 .map(([type]) => type),
         [isTeacher]
     );
 
-    // ── Render helpers ───────────────────────────────────────
+    // \u2500\u2500 Render helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     const renderNoteCard = ({ item: note }: { item: ClassroomNote }) => {
         const meta = NOTE_TYPE_META[note.note_type];
@@ -271,11 +271,11 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     padding: Theme.spacing.md,
                     marginBottom: Theme.spacing.sm,
                 }}
-            >
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            
+                <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
                     {/* Type badge */}
-                    <HStack sx={{ gap: 6, alignItems: 'center', flex: 1 }}>
-                        <NoteIcon size={14} color={meta.color} />
+                    <HStack sx={{ gap: 6, alignItems: 'center', flex: 1 }}
+                        <NoteIcon size={14} color={meta.color} /
                         <Text
                             sx={{
                                 fontSize: Theme.typography.fontSize.xs,
@@ -284,42 +284,42 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                 textTransform: 'uppercase',
                                 letterSpacing: 0.5,
                             }}
-                        >
+                        
                             {meta.label}
-                        </Text>
+                        </Text
                         {isClassVisible && (
-                            <Globe size={12} color={colors.textTertiary} />
+                            <Globe size={12} color={colors.textTertiary} /
                         )}
                         {!isClassVisible && (
-                            <Lock size={12} color={colors.textTertiary} />
+                            <Lock size={12} color={colors.textTertiary} /
                         )}
-                    </HStack>
+                    </HStack
 
                     {/* Actions (own notes only) */}
-                    <HStack sx={{ gap: 10, alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text>
+                    <HStack sx={{ gap: 10, alignItems: 'center' }}
+                        <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text
                         {isTeacher && (
-                            <>
-                                <TouchableOpacity onPress={() => handleTogglePin(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                            <
+                                <TouchableOpacity onPress={() => handleTogglePin(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                                     <Pin
                                         size={14}
                                         color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
                                         fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                                    /
+                                </TouchableOpacity
+                                <TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                                     {isClassVisible
-                                        ? <Globe size={14} color={Theme.colors.gurudeviViolet} />
-                                        : <Lock size={14} color={colors.textTertiary} />
+                                        ? <Globe size={14} color={Theme.colors.gurudeviViolet} /
+                                        : <Lock size={14} color={colors.textTertiary} /
                                     }
-                                </TouchableOpacity>
-                            </>
+                                </TouchableOpacity
+                            </
                         )}
-                        <TouchableOpacity onPress={() => handleDelete(note.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                            <X size={14} color={colors.textTertiary} />
-                        </TouchableOpacity>
-                    </HStack>
-                </HStack>
+                        <TouchableOpacity onPress={() => handleDelete(note.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            <X size={14} color={colors.textTertiary} /
+                        </TouchableOpacity
+                    </HStack
+                </HStack
 
                 <Text
                     sx={{
@@ -328,22 +328,22 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                         marginTop: Theme.spacing.xs,
                         lineHeight: 20,
                     }}
-                >
+                
                     {note.content}
-                </Text>
+                </Text
 
                 {/* Author line for class-visible notes (shows who wrote it) */}
                 {isClassVisible && note.author && (
-                    <Text sx={{ fontSize: 11, color: colors.textTertiary, marginTop: 4 }}>
-                        — {note.author.full_name}
-                    </Text>
+                    <Text sx={{ fontSize: 11, color: colors.textTertiary, marginTop: 4 }}
+                        \u2014 {note.author.full_name}
+                    </Text
                 )}
-            </Box>
+            </Box
         );
     };
 
     const renderGroup = ({ item: group }: { item: NoteGroup }) => (
-        <VStack sx={{ marginBottom: Theme.spacing.md }}>
+        <VStack sx={{ marginBottom: Theme.spacing.md }}
             <Text
                 sx={{
                     fontSize: Theme.typography.fontSize.xs,
@@ -354,20 +354,20 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     marginBottom: Theme.spacing.sm,
                     paddingHorizontal: Theme.spacing.lg,
                 }}
-            >
+            
                 {group.label}
-            </Text>
-            <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}>
+            </Text
+            <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}
                 {group.data.map((note) => renderNoteCard({ item: note }))}
-            </VStack>
-        </VStack>
+            </VStack
+        </VStack
     );
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 40 }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-            </Box>
+            <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 40 }}
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
+            </Box
         );
     }
 
@@ -376,20 +376,20 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={120}
-        >
-            <VStack sx={{ flex: 1 }}>
+        
+            <VStack sx={{ flex: 1 }}
                 {/* Note list */}
                 {grouped.length === 0 ? (
-                    <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
+                    <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}
                         <PositiveInvitation
                             title="No notes yet"
                             description={
                                 isTeacher
-                                    ? "Tap the button below to add your first note — recap today's lesson, pin an announcement, or jot a private reminder."
+                                    ? "Tap the button below to add your first note \u2014 recap today's lesson, pin an announcement, or jot a private reminder."
                                     : "Tap the button below to add personal study notes for this class. Teacher announcements will appear here too."
                             }
-                        />
-                    </Box>
+                        /
+                    </Box
                 ) : (
                     <FlatList
                         data={grouped}
@@ -400,7 +400,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             paddingBottom: composing ? 0 : 100,
                         }}
                         showsVerticalScrollIndicator={false}
-                    />
+                    /
                 )}
 
                 {/* Compose sheet */}
@@ -412,7 +412,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             borderTopColor: colors.border,
                             padding: Theme.spacing.md,
                         }}
-                    >
+                    
                         {/* Type selector (teacher only: all types; student: personal only) */}
                         {isTeacher && (
                             <ScrollableTypeSelector
@@ -420,31 +420,31 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                 selected={draftType}
                                 onSelect={setDraftType}
                                 colors={colors}
-                            />
+                            /
                         )}
 
                         {/* Visibility toggle (teacher only) */}
                         {isTeacher && (
                             <TouchableOpacity
-                                onPress={() =>
-                                    setDraftVisibility((v) =>
+                                onPress={() =
+                                    setDraftVisibility((v) =
                                         v === 'private' ? 'class' : 'private'
                                     )
                                 }
                                 style={styles.visibilityToggle}
-                            >
-                                <HStack sx={{ gap: 6, alignItems: 'center' }}>
+                            
+                                <HStack sx={{ gap: 6, alignItems: 'center' }}
                                     {draftVisibility === 'class' ? (
-                                        <Globe size={14} color={Theme.colors.gurudeviViolet} />
+                                        <Globe size={14} color={Theme.colors.gurudeviViolet} /
                                     ) : (
-                                        <Lock size={14} color={colors.textTertiary} />
+                                        <Lock size={14} color={colors.textTertiary} /
                                     )}
-                                    <Text sx={{ fontSize: 12, color: draftVisibility === 'class' ? Theme.colors.gurudeviViolet : colors.textTertiary }}>
+                                    <Text sx={{ fontSize: 12, color: draftVisibility === 'class' ? Theme.colors.gurudeviViolet : colors.textTertiary }}
                                         {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
-                                    </Text>
-                                    <ChevronDown size={12} color={colors.textTertiary} />
-                                </HStack>
-                            </TouchableOpacity>
+                                    </Text
+                                    <ChevronDown size={12} color={colors.textTertiary} /
+                                </HStack
+                            </TouchableOpacity
                         )}
 
                         {/* Text input */}
@@ -453,14 +453,14 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             onChangeText={setDraft}
                             placeholder={
                                 draftType === 'announcement'
-                                    ? "Write an announcement for the class…"
+                                    ? "Write an announcement for the class\u2026"
                                     : draftType === 'lesson_recap'
-                                        ? "What did you cover today?…"
+                                        ? "What did you cover today?\u2026"
                                         : draftType === 'reminder'
-                                            ? "What do you need to remember?…"
+                                            ? "What do you need to remember?\u2026"
                                             : draftType === 'personal'
-                                                ? "Write your study note…"
-                                                : "Write your note…"
+                                                ? "Write your study note\u2026"
+                                                : "Write your note\u2026"
                             }
                             placeholderTextColor={colors.textTertiary}
                             multiline
@@ -473,21 +473,21 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                     borderColor: colors.border,
                                 },
                             ]}
-                        />
+                        /
 
                         {/* Action row */}
-                        <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}>
+                        <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}
                             <TouchableOpacity
                                 onPress={() => {
                                     setComposing(false);
                                     setDraft('');
                                 }}
                                 style={styles.cancelBtn}
-                            >
-                                <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>
+                            
+                                <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}
                                     Cancel
-                                </Text>
-                            </TouchableOpacity>
+                                </Text
+                            </TouchableOpacity
                             <TouchableOpacity
                                 onPress={handleSave}
                                 disabled={!draft.trim() || saving}
@@ -499,9 +499,9 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                             : colors.tertiary,
                                     },
                                 ]}
-                            >
+                            
                                 {saving ? (
-                                    <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
+                                    <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /
                                 ) : (
                                     <Text
                                         sx={{
@@ -511,13 +511,13 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                                 ? Theme.colors.sacredWhite
                                                 : colors.textTertiary,
                                         }}
-                                    >
+                                    
                                         Save
-                                    </Text>
+                                    </Text
                                 )}
-                            </TouchableOpacity>
-                        </HStack>
-                    </Box>
+                            </TouchableOpacity
+                        </HStack
+                    </Box
                 ) : (
                     /* Floating add button */
                     <Box
@@ -526,22 +526,22 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             bottom: 24,
                             right: 20,
                         }}
-                    >
+                    
                         <TouchableOpacity
                             onPress={() => setComposing(true)}
                             style={[styles.fabButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                             activeOpacity={0.85}
-                        >
-                            <NotebookPen size={20} color={Theme.colors.sacredWhite} />
-                        </TouchableOpacity>
-                    </Box>
+                        
+                            <NotebookPen size={20} color={Theme.colors.sacredWhite} /
+                        </TouchableOpacity
+                    </Box
                 )}
-            </VStack>
-        </KeyboardAvoidingView>
+            </VStack
+        </KeyboardAvoidingView
     );
 }
 
-// ── Scrollable type chip row ─────────────────────────────────
+// \u2500\u2500 Scrollable type chip row \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function ScrollableTypeSelector({
     types,
@@ -555,7 +555,7 @@ function ScrollableTypeSelector({
     colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
-        <View style={styles.typeRow}>
+        <View style={styles.typeRow}
             {types.map((type) => {
                 const meta = NOTE_TYPE_META[type];
                 const isActive = selected === type;
@@ -571,8 +571,8 @@ function ScrollableTypeSelector({
                                 borderColor: isActive ? meta.color : colors.border,
                             },
                         ]}
-                    >
-                        <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} />
+                    
+                        <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} /
                         <Text
                             style={{
                                 fontSize: 11,
@@ -580,17 +580,17 @@ function ScrollableTypeSelector({
                                 color: isActive ? Theme.colors.sacredWhite : colors.textSecondary,
                                 marginLeft: 4,
                             }}
-                        >
+                        
                             {meta.label}
-                        </Text>
-                    </TouchableOpacity>
+                        </Text
+                    </TouchableOpacity
                 );
             })}
-        </View>
+        </View
     );
 }
 
-// ── Styles ───────────────────────────────────────────────────
+// \u2500\u2500 Styles \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const styles = StyleSheet.create({
     textInput: {

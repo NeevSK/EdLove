@@ -41,8 +41,8 @@ const GroupCard = React.memo(function GroupCard({
                 borderWidth: 1,
                 borderColor: 'rgba(255, 255, 255, 0.05)',
             }}
-        >
-            <HStack space="md" alignItems="center">
+        
+            <HStack space="md" alignItems="center"
                 {/* Avatar with Modern Gradient/Placeholder */}
                 <Box
                     sx={{
@@ -55,7 +55,7 @@ const GroupCard = React.memo(function GroupCard({
                         borderWidth: 2,
                         borderColor: 'rgba(255, 255, 255, 0.1)',
                     }}
-                >
+                
                     <Text 
                         sx={{ 
                             fontSize: 22, 
@@ -63,13 +63,13 @@ const GroupCard = React.memo(function GroupCard({
                             color: type === 'public' ? Theme.colors.gurudeviViolet : Theme.colors.sanctuarySaffron,
                             textShadow: '0 2px 4px rgba(0,0,0,0.2)'
                         }}
-                    >
+                    
                         {(name || 'G').charAt(0).toUpperCase()}
-                    </Text>
-                </Box>
+                    </Text
+                </Box
 
-                <VStack flex={1}>
-                    <HStack justifyContent="space-between" alignItems="center">
+                <VStack flex={1}
+                    <HStack justifyContent="space-between" alignItems="center"
                         <Text 
                             sx={{ 
                                 color: Theme.colors.sacredWhite, 
@@ -77,13 +77,13 @@ const GroupCard = React.memo(function GroupCard({
                                 fontSize: 17 
                             }} 
                             numberOfLines={1}
-                        >
+                        
                             {name}
-                        </Text>
-                        <HStack space="xs" alignItems="center">
+                        </Text
+                        <HStack space="xs" alignItems="center"
                             {getIcon()}
-                        </HStack>
-                    </HStack>
+                        </HStack
+                    </HStack
 
                     {description ? (
                         <Text 
@@ -94,9 +94,9 @@ const GroupCard = React.memo(function GroupCard({
                                 lineHeight: 18
                             }} 
                             numberOfLines={1}
-                        >
+                        
                             {description}
-                        </Text>
+                        </Text
                     ) : (
                         <Text 
                             sx={{ 
@@ -105,26 +105,26 @@ const GroupCard = React.memo(function GroupCard({
                                 marginTop: 2,
                                 fontStyle: 'italic'
                             }}
-                        >
+                        
                             No description available
-                        </Text>
+                        </Text
                     )}
 
-                    <HStack space="sm" alignItems="center" mt={6}>
-                        <HStack space="xs" alignItems="center">
-                            <Users size={12} color={Theme.colors.dimGray} />
-                            <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                    <HStack space="sm" alignItems="center" mt={6}
+                        <HStack space="xs" alignItems="center"
+                            <Users size={12} color={Theme.colors.dimGray} /
+                            <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}
                                 {memberCount} members
-                            </Text>
-                        </HStack>
-                        <Text sx={{ color: 'rgba(255,255,255,0.15)', fontSize: 12 }}>•</Text>
-                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            </Text
+                        </HStack
+                        <Text sx={{ color: 'rgba(255,255,255,0.15)', fontSize: 12 }}>"</Text
+                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 }}
                             {type}
-                        </Text>
-                    </HStack>
-                </VStack>
-            </HStack>
-        </SanctuaryCard>
+                        </Text
+                    </HStack
+                </VStack
+            </HStack
+        </SanctuaryCard
     );
 });
 

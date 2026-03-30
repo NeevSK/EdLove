@@ -18,7 +18,7 @@ export interface ScoreDefinition {
 }
 
 /**
- * ScoreComposer — Orchestrates the "Performance" of light and form.
+ * ScoreComposer \u2014 Orchestrates the "Performance" of light and form.
  * Combines a base surface soul with generative motif and structural ornament.
  */
 export const ScoreComposer = {
@@ -46,7 +46,7 @@ export const ScoreComposer = {
     }
 
     if (def.rationale) {
-       console.log(`[Trübe-Art] [Rationale] ${def.rationale}`);
+       console.log(`[Tr\u00FCbe-Art] [Rationale] ${def.rationale}`);
     }
 
     return result;

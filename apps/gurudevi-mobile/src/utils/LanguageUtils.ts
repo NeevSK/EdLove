@@ -55,8 +55,8 @@ export const LanguageUtils = {
      */
     getNativeName(lang: string) {
         switch (lang) {
-            case 'si': return 'සිංහල';
-            case 'ta': return 'தமிழ்';
+            case 'si': return '\u0DC3\u0DD2\u0D82\u0DC4\u0DBD';
+            case 'ta': return '\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD';
             case 'en': return 'English';
             default: return lang;
         }

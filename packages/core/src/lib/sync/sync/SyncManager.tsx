@@ -1,4 +1,4 @@
-﻿
+
 import React, { useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
 import { useMutationQueue } from '../useMutationQueue';
@@ -33,7 +33,9 @@ export default function SyncManager() {
 
     const processQueue = async () => {
         setSyncing(true);
-        console.log(`[ResonantSync] Analyzing outbox: ${queue.length} items pending.`);
+        if (__DEV__) {
+            console.log(`[ResonantSync] Analyzing outbox: ${queue.length} items pending.`);
+        }
 
         const currentQueue = [...queue];
         let processedCount = 0;
@@ -69,7 +71,9 @@ export default function SyncManager() {
                 if (errorType === 'PERMANENT' || retryCount >= MAX_RETRIES) {
                     // Terminal State: Permanent Failure or Max Retries
                     const exitReason = errorType === 'PERMANENT' ? 'PERMANENT_FAILURE' : 'MAX_RETRIES_EXCEEDED';
-                    console.error(`[SyncManager] Terminal: ${item.name} – reason=${exitReason}`, error);
+                    if (__DEV__) {
+                        console.error(`[SyncManager] Terminal: ${item.name}  reason=${exitReason}`, error);
+                    }
 
                     moveToDeadLetter(item.id, error.message);
                     updateEntry(item.id, 'dead_letter', error.message);
@@ -80,7 +84,9 @@ export default function SyncManager() {
                     const backoffMs = Math.min(Math.pow(2, retryCount) * 1000, 30000);
                     const backoffUntil = Date.now() + backoffMs;
 
-                    console.log(`[SyncManager] Backoff: ${item.name} retrying in ${backoffMs}ms`);
+                    if (__DEV__) {
+                        console.log(`[SyncManager] Backoff: ${item.name} retrying in ${backoffMs}ms`);
+                    }
                     updateMutation(item.id, {
                         retryCount,
                         backoffUntil,

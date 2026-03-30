@@ -20,9 +20,9 @@ interface EnvironmentGuardProps {
  * 
  * Usage:
  * ```tsx
- * <EnvironmentGuard lowFidelityFallback={<SolidBackground />}>
- *   <GlassmorphismBackground />
- * </EnvironmentGuard>
+ * <EnvironmentGuard lowFidelityFallback={<SolidBackground />}
+ *   <GlassmorphismBackground /
+ * </EnvironmentGuard
  * ```
  */
 export function EnvironmentGuard({

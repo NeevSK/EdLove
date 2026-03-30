@@ -1,20 +1,25 @@
-import { supabase, APIError, requireAuth, growthSignalsAPI } from '@repo/core';
+import {
+    APIError,
+    assertContractCoverage,
+    createPOAProxy,
+    defineContractCoverage,
+    growthSignalsAPI,
+    selfContract,
+    supabase,
+} from '@repo/core';
 import { MoodLog, FireJournalEntry } from '../types';
 
 // ============================================================================
 // SELF API (Wellbeing & Reflection)
 // ============================================================================
 
-export const selfAPI = {
+const rawSelfAPI = {
     /**
-     * Log a mood entry for the current user
+     * @authority create Wellbeing
      */
-    async logMood(userId: string, score: number, note?: string): Promise<MoodLog> {
-        const user = await requireAuth();
-        if (user.id !== userId) {
-            throw new APIError('Unauthorized: Cannot log mood for another user', 'FORBIDDEN');
-        }
-
+    async logMood(userId: string, score: number, note?: string, mood?: MoodLog['mood']): Promise<MoodLog> {
+        // AuthorityInterceptor handles authentication and authorization check
+        
         // Validate mood score (1-5)
         if (score < 1 || score > 5) {
             throw new APIError('Mood score must be between 1 and 5', 'INVALID_SCORE');
@@ -26,6 +31,7 @@ export const selfAPI = {
                 {
                     user_id: userId,
                     mood_score: score,
+                    mood,
                     note,
                 },
             ])
@@ -37,8 +43,7 @@ export const selfAPI = {
             throw new APIError('Failed to log mood', error.code, error);
         }
 
-        // Growth signal: teacher chose to check in with themselves (Presence — Tier 2 Care Signal)
-        // Also contributes to the 'still_water' Whispered Moment check after 5 mood check-ins
+        // Growth signal: teacher chose to check in with themselves (Presence  Tier 2 Care Signal)
         void growthSignalsAPI.emitSignal(userId, 'mood_checkin', {
             mood_score: score,
         }).catch(() => {});
@@ -47,14 +52,9 @@ export const selfAPI = {
     },
 
     /**
-     * Get mood history for a user
+     * @authority read Wellbeing
      */
     async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
-        const user = await requireAuth();
-        if (user.id !== userId) {
-            throw new APIError('Unauthorized: Cannot view another user\'s mood history', 'FORBIDDEN');
-        }
-
         const { data, error } = await supabase
             .from('mood_logs')
             .select('*')
@@ -70,15 +70,9 @@ export const selfAPI = {
     },
 
     /**
-     * Burn a journal entry (save with is_burned = true)
-     * Content is stored with only a preview for privacy
+     * @authority create Wellbeing
      */
     async burnJournal(userId: string, content: string): Promise<FireJournalEntry> {
-        const user = await requireAuth();
-        if (user.id !== userId) {
-            throw new APIError('Unauthorized: Cannot burn journal for another user', 'FORBIDDEN');
-        }
-
         // Only store preview (first 50 characters) for privacy
         const contentPreview = content.substring(0, 50);
 
@@ -98,22 +92,16 @@ export const selfAPI = {
             throw new APIError('Failed to burn journal entry', error.code, error);
         }
 
-        // Growth signal: teacher processed difficult emotions (Presence — Tier 2 Care Signal)
-        // Also triggers the 'storm_holder' Whispered Moment check after 3+ entries in a week
+        // Growth signal: teacher processed difficult emotions (Presence  Tier 2 Care Signal)
         void growthSignalsAPI.emitSignal(userId, 'fire_journal_entry', {}).catch(() => {});
 
         return data;
     },
 
     /**
-     * Get burned journal history (for statistics, not content)
+     * @authority read Wellbeing
      */
     async getBurnedHistory(userId: string, limit: number = 10): Promise<FireJournalEntry[]> {
-        const user = await requireAuth();
-        if (user.id !== userId) {
-            throw new APIError('Unauthorized: Cannot view another user\'s journal history', 'FORBIDDEN');
-        }
-
         const { data, error } = await supabase
             .from('fire_journal')
             .select('id, user_id, content_preview, is_burned, created_at')
@@ -131,14 +119,9 @@ export const selfAPI = {
     },
 
     /**
-     * Get today's mood (if logged)
+     * @authority read Wellbeing
      */
     async getTodayMood(userId: string): Promise<MoodLog | null> {
-        const user = await requireAuth();
-        if (user.id !== userId) {
-            throw new APIError('Unauthorized: Cannot view another user\'s today mood', 'FORBIDDEN');
-        }
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -161,3 +144,21 @@ export const selfAPI = {
         return data;
     },
 };
+
+const selfCoverage = assertContractCoverage(rawSelfAPI, defineContractCoverage({
+    moduleName: 'self',
+    contract: selfContract,
+    methodMapping: {
+        getBurnedHistory: 'getJournalHistory',
+    },
+}));
+
+export const selfAPI = createPOAProxy(
+    'self',
+    rawSelfAPI,
+    selfCoverage.contract,
+    selfCoverage.methodMapping,
+    { strictUnmappedMethods: true }
+);
+
+void [selfContract];

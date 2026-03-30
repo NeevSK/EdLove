@@ -42,9 +42,9 @@ const AnimatedContent = ({ children, delay, duration, direction }: AnimatedConte
     }));
 
     return (
-        <Animated.View style={animatedStyle}>
+        <Animated.View style={animatedStyle}
             {children}
-        </Animated.View>
+        </Animated.View
     );
 };
 
@@ -73,8 +73,8 @@ export const BreathAnimation = ({
     }
 
     return (
-        <AnimatedContent delay={delay} duration={duration} direction={direction}>
+        <AnimatedContent delay={delay} duration={duration} direction={direction}
             {children}
-        </AnimatedContent>
+        </AnimatedContent
     );
 };

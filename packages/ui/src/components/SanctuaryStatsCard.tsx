@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
     Box,
     VStack,
@@ -53,22 +53,22 @@ export default function SanctuaryStatsCard({
                 shadowRadius: 15,
                 elevation: 5,
             }}
-        >
+        
             <HStack {...({
                 space: "sm",
                 alignItems: "center",
                 mt: Theme.spacing.sm,
                 mb: Theme.spacing.md
-            } as any)}>
+            } as any)}
                 {showTrophy && <Trophy size={18} color={Theme.colors.sanctuarySaffron} />}
-                <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>
+                <Text {...({ color: colors.text, bold: true, size: "md" } as any)}
                     {title}
-                </Text>
-            </HStack>
+                </Text
+            </HStack
 
-            <HStack {...({ justifyContent: "space-between", mb: Theme.spacing.md } as any)}>
+            <HStack {...({ justifyContent: "space-between", mb: Theme.spacing.md } as any)}
                 {items.map((item, index) => (
-                    <VStack key={index} {...({ alignItems: "center", justifyContent: "center", space: "xs", sx: { flex: 1 } } as any)}>
+                    <VStack key={index} {...({ alignItems: "center", justifyContent: "center", space: "xs", sx: { flex: 1 } } as any)}
                         <Box
                             sx={{
                                 backgroundColor: `${item.color}20`,
@@ -76,38 +76,38 @@ export default function SanctuaryStatsCard({
                                 borderRadius: Theme.corners.comfortable,
                                 marginBottom: Theme.spacing.xs
                             }}
-                        >
-                            <item.icon size={20} color={item.color} />
-                        </Box>
-                        <VStack alignItems="center" space={0}>
-                            <Text {...({ color: colors.text, bold: true, size: "lg", textAlign: "center" } as any)}>
+                        
+                            <item.icon size={20} color={item.color} /
+                        </Box
+                        <VStack alignItems="center" space={0}
+                            <Text {...({ color: colors.text, bold: true, size: "lg", textAlign: "center" } as any)}
                                 {item.value}
-                            </Text>
-                            <Text {...({ color: colors.textTertiary, size: "xxs", textAlign: "center" } as any)}>
+                            </Text
+                            <Text {...({ color: colors.textTertiary, size: "xxs", textAlign: "center" } as any)}
                                 {item.label}
-                            </Text>
-                        </VStack>
-                    </VStack>
+                            </Text
+                        </VStack
+                    </VStack
                 ))}
-            </HStack>
+            </HStack
 
             {/* Progress Section */}
             {(progressLabel || progressValue > 0) && (
-                <VStack {...({ space: "xs" } as any)}>
-                    <HStack {...({ justifyContent: "space-between" } as any)}>
-                        <Text {...({ color: colors.textTertiary, size: "xs" } as any)}>
+                <VStack {...({ space: "xs" } as any)}
+                    <HStack {...({ justifyContent: "space-between" } as any)}
+                        <Text {...({ color: colors.textTertiary, size: "xs" } as any)}
                             {progressLabel}
-                        </Text>
-                        <Text {...({ color: colors.action, size: "xs", bold: true } as any)}>
+                        </Text
+                        <Text {...({ color: colors.action, size: "xs", bold: true } as any)}
                             {progressValue}%
-                        </Text>
-                    </HStack>
-                    <Progress value={progressValue} {...({ w: "100%", h: 6, bg: colors.tertiary } as any)}>
-                        <ProgressFilledTrack {...({ bg: colors.action } as any)} />
-                    </Progress>
-                </VStack>
+                        </Text
+                    </HStack
+                    <Progress value={progressValue} {...({ w: "100%", h: 6, bg: colors.tertiary } as any)}
+                        <ProgressFilledTrack {...({ bg: colors.action } as any)} /
+                    </Progress
+                </VStack
             )}
-        </Box>
+        </Box
     );
 }
 

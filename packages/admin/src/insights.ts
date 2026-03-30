@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core';
+import { supabase, getTemporalRange } from '@repo/core';
 
 export interface GradeProgress {
   grade: string;
@@ -40,7 +40,8 @@ export const insightsAPI = {
       .eq('school_id', schoolId);
 
     if (viewDate) {
-      query = query.lte('created_at', `${viewDate}T23:59:59.999Z`);
+      const range = getTemporalRange(viewDate, 'day');
+      query = query.lte('created_at', range.end);
     }
 
     const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);

@@ -38,10 +38,10 @@ export function useWellbeingEnrichment(userId: string | null | undefined): Wellb
                 if (!pending.length) return;
                 setRipples(pending);
                 deliveryTimer = setTimeout(() => {
-                    pending.forEach(r =>
+                    pending.forEach(r =
                         void impactRipplesAPI
                             .markDelivered(r.id)
-                            .catch(err =>
+                            .catch(err =
                                 console.warn('[useWellbeingEnrichment] markDelivered failed:', err),
                             ),
                     );

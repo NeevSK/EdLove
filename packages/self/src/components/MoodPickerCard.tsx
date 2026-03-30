@@ -19,11 +19,11 @@ interface MoodPickerCardProps {
     isLoading: boolean;
     /**
      * Optional card accent.
-     * - 'dark'  → #111827 background
-     * - 'water' → #3B82F6 background
-     * - 'light' → Soft lavender/sky for students
-     * - 'earth' → Grounding terracotta/sage for admins
-     * - 'fire'  → Dynamic saffron/ruby for founders
+     * - 'dark'  \u2192 #111827 background
+     * - 'water' \u2192 #3B82F6 background
+     * - 'light' \u2192 Soft lavender/sky for students
+     * - 'earth' \u2192 Grounding terracotta/sage for admins
+     * - 'fire'  \u2192 Dynamic saffron/ruby for founders
      * Defaults to 'dark'.
      */
     accent?: 'dark' | 'water' | 'light' | 'earth' | 'fire';
@@ -67,10 +67,10 @@ export function MoodPickerCard({
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: bg }]}>
+        <View style={[styles.container, { backgroundColor: bg }]}
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.title}>Mood Resonance</Text>
+            <View style={styles.header}
+                <Text style={styles.title}>Mood Resonance</Text
                 <TouchableOpacity
                     onPress={onToggle}
                     disabled={isDisabled}
@@ -78,71 +78,71 @@ export function MoodPickerCard({
                         styles.toggleButton,
                         { backgroundColor: isOpen ? '#8B5CF6' : 'rgba(255,255,255,0.15)', opacity: isDisabled ? 0.5 : 1 }
                     ]}
-                >
-                    <Text style={styles.toggleButtonText}>
+                
+                    <Text style={styles.toggleButtonText}
                         {isDisabled ? 'Viewing History' : (isOpen ? 'Cancel' : '+ Log Mood')}
-                    </Text>
-                </TouchableOpacity>
-            </View>
+                    </Text
+                </TouchableOpacity
+            </View
 
             {/* Picker overlay */}
             {isOpen && (
-                <View style={[styles.overlay, { backgroundColor: overlayBg }]}>
-                    <Text style={styles.overlayTitle}>How are you feeling right now?</Text>
-                    <View style={styles.pickerGrid}>
+                <View style={[styles.overlay, { backgroundColor: overlayBg }]}
+                    <Text style={styles.overlayTitle}>How are you feeling right now?</Text
+                    <View style={styles.pickerGrid}
                         {MOOD_OPTIONS.map(opt => (
                             <TouchableOpacity
                                 key={opt.value}
                                 disabled={isSaving}
                                 onPress={() => void handleSelect(opt.value)}
                                 style={styles.moodOption}
-                            >
-                                <Text style={styles.emoji}>{opt.emoji}</Text>
-                                <Text style={styles.moodLabel}>{opt.label}</Text>
-                            </TouchableOpacity>
+                            
+                                <Text style={styles.emoji}>{opt.emoji}</Text
+                                <Text style={styles.moodLabel}>{opt.label}</Text
+                            </TouchableOpacity
                         ))}
-                    </View>
+                    </View
                     <TextInput
                         value={note}
                         onChangeText={setNote}
-                        placeholder="Optional note…"
+                        placeholder="Optional note\u2026"
                         placeholderTextColor="rgba(255,255,255,0.4)"
                         style={styles.input}
-                    />
-                </View>
+                    /
+                </View
             )}
 
             {/* Latest mood display */}
             {isLoading ? (
-                <ActivityIndicator color="white" style={styles.loader} />
+                <ActivityIndicator color="white" style={styles.loader} /
             ) : latestMood ? (
-                <View style={styles.latestContainer}>
+                <View style={styles.latestContainer}
                     <Text
                         style={[
                             styles.moodScore,
                             { color: MOOD_COLORS[latestMood.mood_score] ?? '#8B5CF6' }
                         ]}
-                    >
+                    
                         {latestMood.mood_score}/5
-                    </Text>
-                    <Text style={styles.moodText}>
+                    </Text
+                    <Text style={styles.moodText}
                         {latestMood.mood
                             ? latestMood.mood.charAt(0).toUpperCase() + latestMood.mood.slice(1)
                             : MOOD_LABELS[latestMood.mood_score]}
-                    </Text>
+                    </Text
                     {latestMood.note && (
-                        <Text style={styles.noteText}>"{latestMood.note}"</Text>
+                        <Text style={styles.noteText}>"{latestMood.note}"</Text
                     )}
-                    <Text style={styles.timeText}>
+                    <Text style={styles.timeText}
                         {formatDistanceToNow(new Date(latestMood.created_at), { addSuffix: true })}
-                    </Text>
-                </View>
+                    </Text
+                </View
             ) : (
-                <Text style={styles.emptyText}>
+                <Text style={styles.emptyText}
                     No mood logs yet. Tap "+ Log Mood" above to begin.
-                </Text>
+                </Text
             )}
-        </View>
+        </View
     );
 }
 

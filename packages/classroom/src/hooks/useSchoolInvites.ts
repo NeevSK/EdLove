@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { invitesAPI } from '@repo/admin';
+import { invitesAPI, type InviteCode } from '@repo/admin';
 
 export function useSchoolInvites(schoolId: string) {
-    const [inviteCodes, setInviteCodes] = useState<any[]>([]);
+    const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
 

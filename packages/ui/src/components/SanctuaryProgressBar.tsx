@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, ViewStyle } from 'react-native';
 import Reanimated, {
   useSharedValue,
@@ -11,8 +11,8 @@ import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
 
 export interface SanctuaryProgressBarProps {
-  percentage: number;        // 0â€“100
-  isComplete?: boolean;      // true â†’ gold/reward state
+  percentage: number;        // 0\u2013100
+  isComplete?: boolean;      // true \u00E2\u2020\u2019 gold/reward state
   nextHint?: string;         // text shown below bar
   showPercentage?: boolean;  // default true
   compact?: boolean;         // 4px bar instead of 8px
@@ -29,7 +29,7 @@ export function SanctuaryProgressBar({
 }: SanctuaryProgressBarProps) {
   const { accent, glow, glass, text } = useTheme();
 
-  // Animated.Value for fill width â€” useNativeDriver must be false (width interpolation)
+  // Animated.Value for fill width \u2014 useNativeDriver must be false (width interpolation)
   const fillAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -70,21 +70,21 @@ export function SanctuaryProgressBar({
   const barHeight = compact ? 4 : 8;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, style]}
       {/* Header row: label + percentage */}
       {showPercentage && (
-        <View style={styles.headerRow}>
-          <Text style={[styles.label, { color: text.secondary }]}>
+        <View style={styles.headerRow}
+          <Text style={[styles.label, { color: text.secondary }]}
             Profile Completion
-          </Text>
-          <Text style={[styles.percentage, { color: isComplete ? accent.reward : text.primary }]}>
+          </Text
+          <Text style={[styles.percentage, { color: isComplete ? accent.reward : text.primary }]}
             {percentage}%
-          </Text>
-        </View>
+          </Text
+        </View
       )}
 
       {/* Track */}
-      <View style={[styles.track, { height: barHeight, backgroundColor: glass.surface.bg }]}>
+      <View style={[styles.track, { height: barHeight, backgroundColor: glass.surface.bg }]}
         {/* Animated fill */}
         <Animated.View
           style={[
@@ -98,7 +98,7 @@ export function SanctuaryProgressBar({
               borderRadius: barHeight / 2,
             },
           ]}
-        />
+        /
         {/* Reanimated glow overlay on completion */}
         {isComplete && (
           <Reanimated.View
@@ -107,21 +107,21 @@ export function SanctuaryProgressBar({
               { backgroundColor: glowColor, borderRadius: barHeight / 2 },
               glowAnimStyle,
             ]}
-          />
+          /
         )}
-      </View>
+      </View
 
       {/* Hint / complete text */}
       {!isComplete && nextHint ? (
-        <Text style={[styles.hint, { color: text.secondary }]} numberOfLines={1}>
+        <Text style={[styles.hint, { color: text.secondary }]} numberOfLines={1}
           {nextHint}
-        </Text>
+        </Text
       ) : isComplete ? (
-        <Text style={[styles.hint, { color: accent.reward }]}>
-          ðŸŽ‰ Profile complete!
-        </Text>
+        <Text style={[styles.hint, { color: accent.reward }]}
+          \uD83D\u017D\u2030 Profile complete!
+        </Text
       ) : null}
-    </View>
+    </View
   );
 }
 

@@ -1,17 +1,12 @@
-/**
- * Resources API
- * 
- * API methods for managing classroom resources
- */
-
 import { supabase } from '../lib/supabase';
 import { resolveResourceOwnerContext } from '../lib/inventoryScope';
 import { APIError } from './types';
+import { educationalContract } from './educational.contract';
 import type { ClassroomResource, ResourceOwnerContext } from './types';
 
 export const resourcesAPI = {
     /**
-     * Get all resources for a classroom
+     * @authority read Material
      */
     async getAll(classroomId: string): Promise<ClassroomResource[]> {
         const { data, error } = await supabase
@@ -29,7 +24,7 @@ export const resourcesAPI = {
     },
 
     /**
-     * Create a new resource
+     * @authority create Material
      */
     async create(
         resource: Omit<ClassroomResource, 'id' | 'created_at' | 'updated_at'> & { owner_context?: ResourceOwnerContext }
@@ -61,12 +56,11 @@ export const resourcesAPI = {
     },
 
     /**
-     * Update a resource
+     * @authority update Material
      */
     async update(
         id: string,
-        updates: Partial<ClassroomResource>
-    ): Promise<ClassroomResource> {
+        updates: Partial<ClassroomResource    ): Promise<ClassroomResource> {
         const { data, error } = await supabase
             .from('classroom_resources')
             .update(updates)
@@ -89,7 +83,7 @@ export const resourcesAPI = {
     },
 
     /**
-     * Delete a resource
+     * @authority delete Material
      */
     async delete(id: string): Promise<void> {
         const { error } = await supabase
@@ -102,3 +96,5 @@ export const resourcesAPI = {
         }
     },
 };
+
+void [educationalContract];

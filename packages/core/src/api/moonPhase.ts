@@ -1,8 +1,8 @@
 /**
- * Moon Phase API — Chandra Kala (चन्द्र कला)
+ * Moon Phase API \u2014 Chandra Kala (\u091A\u0928\u094D\u0926\u094D\u0930 \u0915\u0932\u093E)
  *
  * The Moon Path is different from all other nature paths in this system:
- * it is CYCLICAL, not progressive. The full moon becomes new again — not as
+ * it is CYCLICAL, not progressive. The full moon becomes new again \u2014 not as
  * failure, but as the completion of one cycle and the beginning of the next.
  *
  * Every "new moon" is a new breath.
@@ -10,7 +10,7 @@
  * This module:
  *   1. Computes the real current lunar phase (Jean Meeus algorithm)
  *   2. Maps moon phases to Sri Lankan calendar events (Poya days, New Year, seasons)
- *   3. Returns the "school season context" — what the app should feel like right now
+ *   3. Returns the "school season context" \u2014 what the app should feel like right now
  *   4. Provides the moon calendar for a given month
  *
  * USAGE:
@@ -19,15 +19,15 @@
  *   - What prompts are offered (waxing = building energy, waning = reflection)
  *   - What seasonal markers appear (Vesak, New Year, etc.)
  *
- *   There is NO database table for moon phase — it is computed from the date alone.
+ *   There is NO database table for moon phase \u2014 it is computed from the date alone.
  *   The moon is the same for everyone at any given moment; it needs no per-user record.
  *
- * See: docs/Core/GROWTH_MODEL.md v3.0 — Section 2B "The Moon Path"
+ * See: docs/Core/GROWTH_MODEL.md v3.0 \u2014 Section 2B "The Moon Path"
  */
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export type MoonPhaseName =
     | 'new_moon'
@@ -41,15 +41,15 @@ export type MoonPhaseName =
 
 export interface MoonPhase {
     name: MoonPhaseName;
-    /** Illumination fraction 0–1 (0 = new, 1 = full) */
+    /** Illumination fraction 0\u20131 (0 = new, 1 = full) */
     illumination: number;
-    /** Age in days since last new moon (0–29.53) */
+    /** Age in days since last new moon (0\u201329.53) */
     age: number;
     /** Emoji glyph for display */
     emoji: string;
     /** What kind of energy this phase invites */
     invitation_en: string;
-    /** Whether this phase qualifies as a Sri Lankan Poya day (within ±1 day of full moon) */
+    /** Whether this phase qualifies as a Sri Lankan Poya day (within \u00B11 day of full moon) */
     is_poya: boolean;
 }
 
@@ -70,11 +70,11 @@ export interface SchoolSeasonContext {
     seasonal_invitation_en: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // LUNAR PHASE CALCULATION
 // Based on the Jean Meeus algorithm (Astronomical Algorithms, 2nd ed.)
-// Accurate to within ±0.5 days across the modern era.
-// ─────────────────────────────────────────────────────────────────────────────
+// Accurate to within \u00B10.5 days across the modern era.
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const LUNAR_CYCLE_DAYS = 29.530588853;
 
@@ -107,7 +107,7 @@ function getLunarAge(date: Date): number {
 const MOON_PHASE_INVITATIONS: Record<MoonPhaseName, string> = {
     new_moon: 'A new cycle begins. What is quietly beginning in you?',
     waxing_crescent: 'First steps carry their own energy. What small thing can you start?',
-    first_quarter: 'Effort and decision. The path is clear — what needs your attention today?',
+    first_quarter: 'Effort and decision. The path is clear \u2014 what needs your attention today?',
     waxing_gibbous: 'Building toward fullness. What are you close to completing?',
     full_moon: 'Everything is visible. Share what you have been holding.',
     waning_gibbous: 'The harvest begins. What wisdom from this cycle is worth keeping?',
@@ -116,14 +116,14 @@ const MOON_PHASE_INVITATIONS: Record<MoonPhaseName, string> = {
 };
 
 const MOON_EMOJIS: Record<MoonPhaseName, string> = {
-    new_moon: '🌑',
-    waxing_crescent: '🌒',
-    first_quarter: '🌓',
-    waxing_gibbous: '🌔',
-    full_moon: '🌕',
-    waning_gibbous: '🌖',
-    last_quarter: '🌗',
-    waning_crescent: '🌘',
+    new_moon: '\uD83C\uDF11',
+    waxing_crescent: '\uD83C\uDF12',
+    first_quarter: '\uD83C\uDF13',
+    waxing_gibbous: '\uD83C\uDF14',
+    full_moon: '\uD83C\uDF15',
+    waning_gibbous: '\uD83C\uDF16',
+    last_quarter: '\uD83C\uDF17',
+    waning_crescent: '\uD83C\uDF18',
 };
 
 function ageToPhase(age: number): MoonPhaseName {
@@ -143,32 +143,32 @@ function ageToIllumination(age: number): number {
     return (1 - Math.cos((2 * Math.PI * age) / LUNAR_CYCLE_DAYS)) / 2;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // SRI LANKAN CALENDAR EVENTS
 // Poya days: always the full moon of each month.
 // Fixed events: Sinhala/Tamil New Year (April 13-14), school terms (approximate).
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 /**
  * Named Sri Lankan Poya days (full moon observances).
- * The date varies yearly — this is a lookup for the name only.
+ * The date varies yearly \u2014 this is a lookup for the name only.
  */
 const POYA_NAMES: Record<number, { name_en: string; name_si: string }> = {
-    1: { name_en: 'Duruthu Poya', name_si: 'දුරුතු පෝය' },
-    2: { name_en: 'Navam Poya', name_si: 'නවම් පෝය' },
-    3: { name_en: 'Medin Poya', name_si: 'මැදින් පෝය' },
-    4: { name_en: 'Bak Poya', name_si: 'බක් පෝය' },
-    5: { name_en: 'Vesak Poya', name_si: 'වෙසක් පෝය' },
-    6: { name_en: 'Poson Poya', name_si: 'පොසොන් පෝය' },
-    7: { name_en: 'Esala Poya', name_si: 'ඇසල පෝය' },
-    8: { name_en: 'Nikini Poya', name_si: 'නිකිනි පෝය' },
-    9: { name_en: 'Binara Poya', name_si: 'බිනර පෝය' },
-    10: { name_en: 'Vap Poya', name_si: 'වප් පෝය' },
-    11: { name_en: 'Il Poya', name_si: 'ඉල් පෝය' },
-    12: { name_en: 'Unduvap Poya', name_si: 'උඳුවප් පෝය' },
+    1: { name_en: 'Duruthu Poya', name_si: '\u0DAF\u0DD4\u0DBB\u0DD4\u0DAD\u0DD4 \u0DB4\u0DDD\u0DBA' },
+    2: { name_en: 'Navam Poya', name_si: '\u0DB1\u0DC0\u0DB8\u0DCA \u0DB4\u0DDD\u0DBA' },
+    3: { name_en: 'Medin Poya', name_si: '\u0DB8\u0DD0\u0DAF\u0DD2\u0DB1\u0DCA \u0DB4\u0DDD\u0DBA' },
+    4: { name_en: 'Bak Poya', name_si: '\u0DB6\u0D9A\u0DCA \u0DB4\u0DDD\u0DBA' },
+    5: { name_en: 'Vesak Poya', name_si: '\u0DC0\u0DD9\u0DC3\u0D9A\u0DCA \u0DB4\u0DDD\u0DBA' },
+    6: { name_en: 'Poson Poya', name_si: '\u0DB4\u0DDC\u0DC3\u0DDC\u0DB1\u0DCA \u0DB4\u0DDD\u0DBA' },
+    7: { name_en: 'Esala Poya', name_si: '\u0D87\u0DC3\u0DBD \u0DB4\u0DDD\u0DBA' },
+    8: { name_en: 'Nikini Poya', name_si: '\u0DB1\u0DD2\u0D9A\u0DD2\u0DB1\u0DD2 \u0DB4\u0DDD\u0DBA' },
+    9: { name_en: 'Binara Poya', name_si: '\u0DB6\u0DD2\u0DB1\u0DBB \u0DB4\u0DDD\u0DBA' },
+    10: { name_en: 'Vap Poya', name_si: '\u0DC0\u0DB4\u0DCA \u0DB4\u0DDD\u0DBA' },
+    11: { name_en: 'Il Poya', name_si: '\u0D89\u0DBD\u0DCA \u0DB4\u0DDD\u0DBA' },
+    12: { name_en: 'Unduvap Poya', name_si: '\u0D8B\u0DB3\u0DD4\u0DC0\u0DB4\u0DCA \u0DB4\u0DDD\u0DBA' },
 };
 
-/** Sri Lankan school terms (approximate — actual dates vary by MoE circular each year). */
+/** Sri Lankan school terms (approximate \u2014 actual dates vary by MoE circular each year). */
 const SCHOOL_TERM_WINDOWS = [
     { term: 1, start_approx: '01-07', end_approx: '04-12' },
     { term: 2, start_approx: '04-21', end_approx: '08-18' },
@@ -186,20 +186,20 @@ function getSriLankanSeason(
 }
 
 const SEASONAL_INVITATIONS: Record<string, string> = {
-    yala: 'The rains are here — a time of deep green and inward nourishment.',
+    yala: 'The rains are here \u2014 a time of deep green and inward nourishment.',
     maha: 'The cool season settles. A good time for reflection and deep roots.',
     inter_monsoon_spring: 'The air is warm and transitional. New beginnings stir.',
-    inter_monsoon_autumn: 'Between seasons — a threshold moment. Rest and readiness at once.',
+    inter_monsoon_autumn: 'Between seasons \u2014 a threshold moment. Rest and readiness at once.',
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // MOON PHASE API
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export const moonPhaseAPI = {
     /**
      * Get the current moon phase.
-     * Pure computation — no database access, instant.
+     * Pure computation \u2014 no database access, instant.
      */
     getCurrentMoonPhase(now = new Date()): MoonPhase {
         const age = getLunarAge(now);
@@ -229,11 +229,11 @@ export const moonPhaseAPI = {
         // Check for upcoming calendar event (within 3 days)
         let upcoming_event: SriLankanCalendarEvent | null = null;
 
-        // Vesak Poya (May full moon) — special treatment
+        // Vesak Poya (May full moon) \u2014 special treatment
         if (month === 5 && moon.is_poya) {
             upcoming_event = {
                 name_en: 'Vesak Poya',
-                name_si: 'වෙසක් පෝය',
+                name_si: '\u0DC0\u0DD9\u0DC3\u0D9A\u0DCA \u0DB4\u0DDD\u0DBA',
                 date: now.toISOString().slice(0, 10),
                 type: 'poya',
                 app_theme: 'vesak',
@@ -243,7 +243,7 @@ export const moonPhaseAPI = {
         else if (month === 4 && (now.getDate() === 13 || now.getDate() === 14)) {
             upcoming_event = {
                 name_en: 'Sinhala and Tamil New Year',
-                name_si: 'සිංහල හා දෙමළ අලුත් අවුරුද්ද',
+                name_si: '\u0DC3\u0DD2\u0D82\u0DC4\u0DBD \u0DC4\u0DCF \u0DAF\u0DD9\u0DB8\u0DC5 \u0D85\u0DBD\u0DD4\u0DAD\u0DCA \u0D85\u0DC0\u0DD4\u0DBB\u0DD4\u0DAF\u0DCA\u0DAF',
                 date: `${now.getUTCFullYear()}-04-14`,
                 type: 'new_year',
                 app_theme: 'new_year',
@@ -263,7 +263,7 @@ export const moonPhaseAPI = {
 
         // Combine moon + season invitation
         const seasonal_invitation_en = upcoming_event
-            ? `${upcoming_event.name_en} — ${moon.invitation_en.toLowerCase()}`
+            ? `${upcoming_event.name_en} \u2014 ${moon.invitation_en.toLowerCase()}`
             : `${SEASONAL_INVITATIONS[season]} ${moon.invitation_en}`;
 
         return {

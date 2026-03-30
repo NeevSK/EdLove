@@ -12,7 +12,7 @@ export interface PrincipalNote {
      */
     note_type: 'todo' | 'observation' | 'decision' | 'reminder' | 'note';
     is_pinned: boolean;
-    /** For todo items: checked off but never deleted — the history stays */
+    /** For todo items: checked off but never deleted  the history stays */
     is_done: boolean;
     /** Optional: tag this note to a specific teacher */
     context_teacher_id: string | null;

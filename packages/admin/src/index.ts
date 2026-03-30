@@ -32,17 +32,30 @@ export { default as DocumentListScreen } from './screens/DocumentListScreen';
 export { default as DocumentListScreenWeb } from './screens/DocumentListScreen.web';
 export { GuardianDashboardScreen as default } from './screens/GuardianDashboardScreen';
 export { default as AnalyticsDashboardScreen } from './screens/AnalyticsDashboardScreen';
+export { default as FounderDashboard } from './screens/FounderDashboard';
+export { default as FounderDashboardWeb } from './screens/FounderDashboard.web';
+export { default as FounderSchoolDashboard } from './screens/FounderSchoolDashboard';
+export {
+  PrincipalDashboardWeb,
+  PrincipalNativeWorkspace,
+  PrincipalWorkspaceContainer,
+} from './screens';
+export { default as SchoolCreationScreen } from './screens/SchoolCreationScreen';
 export * from './sections';
 export * from './structure';
 export * from './document-workflow/api';
 export * from './document-workflow/types';
+export * from './bridge/PrincipalNativeDashboardShell';
+export * from './bridge/principalWorkspaceShell';
+export * from './bridge/founderWorkspace';
 export * from './guardian/api';
 export * from './guardian/types';
+export * from './guardian/useGuardianWorkspaceData';
 export * from './analytics/api';
 export * from './analytics/engine';
 export * from './analytics/types';
-export * from './lib/vows';
-export { registerAdminCapabilities } from './lib/capabilities';
+export * from './principal/workspace';
+export * from './screens';
 
 export const adminAPI = {
   approvals: approvalsAPI,

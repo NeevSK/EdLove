@@ -4,9 +4,9 @@
  * CRUD for qualitative teacher observations about students.
  */
 
-import { supabase } from '../lib/supabase';
 import { identityAPI } from './identity';
 import { APIError } from './types';
+import { teacherInsightsAPI } from './teacherInsights';
 
 export interface StudentObservation {
     id: string;
@@ -28,70 +28,29 @@ export interface StudentObservation {
 
 export const studentObservationsAPI = {
     /**
-     * Get all observations for a specific enrollment
+     * Get all observations for a specific enrollment.
+     * Routed through the teacherInsights seam to preserve private-by-default handling.
      */
     async getForEnrollment(classroomStudentId: string): Promise<StudentObservation[]> {
-        const { data, error } = await supabase
-            .from('student_observations')
-            .select(`
-                *,
-                author:users!author_id (
-                    full_name
-                )
-            `)
-            .eq('classroom_student_id', classroomStudentId)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            throw new APIError('Failed to fetch student observations', error.code, error);
-        }
-
-        return data || [];
+        const data = await teacherInsightsAPI.listStudentObservationsForEnrollment(classroomStudentId);
+        return data.map(({ audit, ...observation }) => observation as StudentObservation);
     },
 
     /**
-     * Get all observations for a classroom
+     * Get all observations for a classroom.
      */
     async getForClassroom(classroomId: string): Promise<StudentObservation[]> {
-        const { data, error } = await supabase
-            .from('student_observations')
-            .select(`
-                *,
-                author:users!author_id (
-                    full_name
-                )
-            `)
-            .eq('classroom_id', classroomId)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            throw new APIError('Failed to fetch classroom observations', error.code, error);
-        }
-
-        return data || [];
+        const data = await teacherInsightsAPI.listStudentObservations(classroomId);
+        return data.map(({ audit, ...observation }) => observation as StudentObservation);
     },
 
     /**
      * Get all observations for a global student profile
+     * @deprecated Prefer teacherInsights.listStudentObservationsForStudent directly in new code.
      */
     async getForStudent(studentId: string): Promise<StudentObservation[]> {
-        const { data, error } = await supabase
-            .from('student_observations')
-            .select(`
-                *,
-                author:users!author_id (
-                    full_name
-                ),
-                classroom:classrooms(name)
-            `)
-            .eq('student_id', studentId)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            throw new APIError('Failed to fetch global student observations', error.code, error);
-        }
-
-        return data || [];
+        const data = await teacherInsightsAPI.listStudentObservationsForStudent(studentId);
+        return data.map(({ audit, ...observation }) => observation as StudentObservation);
     },
 
     /**
@@ -100,59 +59,25 @@ export const studentObservationsAPI = {
     async create(observation: Omit<StudentObservation, 'id' | 'created_at' | 'updated_at' | 'author_id'>): Promise<StudentObservation> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new APIError('Authentication required');
-
-        const { data, error } = await supabase
-            .from('student_observations')
-            .insert([
-                {
-                    ...observation,
-                    author_id: myId
-                }
-            ])
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to create observation', error.code, error);
-        }
-
-        return data;
+        const data = await teacherInsightsAPI.createStudentObservation(observation);
+        const { audit, ...result } = data;
+        return result as StudentObservation;
     },
 
     /**
      * Finalize an observation and accept the honesty declaration
      */
     async finalize(id: string, acceptDeclaration: boolean): Promise<StudentObservation> {
-        if (!acceptDeclaration) throw new APIError('Honesty declaration must be accepted to finalize');
-
-        const { data, error } = await supabase
-            .from('student_observations')
-            .update({
-                is_finalized: true,
-                honesty_declaration_accepted: true
-            })
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to finalize observation', error.code, error);
-        }
-
-        return data;
+        const data = await teacherInsightsAPI.finalizeStudentObservation(id, acceptDeclaration);
+        const { audit, ...result } = data;
+        return result as StudentObservation;
     },
 
     /**
      * Delete an observation
+     * @deprecated Prefer teacherInsights.deleteStudentObservation directly in new code.
      */
     async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('student_observations')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete observation', error.code, error);
-        }
+        await teacherInsightsAPI.deleteStudentObservation(id);
     }
 };

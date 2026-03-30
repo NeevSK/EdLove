@@ -27,15 +27,13 @@ interface Props {
     };
 }
 
-import { ResonanceProvider } from '../context/ResonanceContext';
+import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 
 export function AnalyticsProvider({ children, apiKey, options }: Props) {
     if (!apiKey) {
         return (
-            <ResonanceProvider>
-                {children}
-            </ResonanceProvider>
-        );
+            <ActivityPulseProvider                {children}
+            </ActivityPulseProvider        );
     }
 
     return (
@@ -45,10 +43,6 @@ export function AnalyticsProvider({ children, apiKey, options }: Props) {
                 host: options?.host,
             }}
             autocapture={false}
-        >
-            <ResonanceProvider>
-                {children}
-            </ResonanceProvider>
-        </NativePostHogProvider>
-    );
+                    <ActivityPulseProvider                {children}
+            </ActivityPulseProvider        </NativePostHogProvider    );
 }

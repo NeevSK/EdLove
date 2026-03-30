@@ -1,5 +1,5 @@
 /**
- * useTheme — Primary interface for phase-aware design tokens.
+ * useTheme  Primary interface for phase-aware design tokens.
  *
  * Returns resolved tokens for the current temporal phase + theme mode.
  * This is the ONLY way components should access phase-specific colors.
@@ -18,7 +18,7 @@ export interface AdaptiveTokens {
     /**
      * WCAG-safe text color to place ON TOP of `accent.action` backgrounds.
      * Automatically switches between Ink (#2A2318) and Sacred White (#FCF9F2)
-     * based on the accent's luminance — e.g. Temple Gold needs dark ink text.
+     * based on the accent's luminance  e.g. Temple Gold needs dark ink text.
      */
     textOnAccent: string;
     /**
@@ -26,7 +26,7 @@ export interface AdaptiveTokens {
      */
     textOnReward: string;
     /**
-     * RGB components of `accent.action` as `"r,g,b"` — used in CSS
+     * RGB components of `accent.action` as `"r,g,b"`  used in CSS
      * `rgba(var(--action-rgb), 0.15)` patterns without needing a full CSS
      * variable per opacity level.
      */
@@ -43,6 +43,8 @@ export interface AdaptiveTokens {
 }
 
 export interface UseThemeReturn extends ResolvedThemeTokens, AdaptiveTokens {
+    templeGold: string;
+    sageGreen: string;
     isDark: boolean;
     phase: TemporalPhase;
     /** Whether animations should run (based on device tier + fidelity) */
@@ -84,6 +86,8 @@ export function useTheme(): UseThemeReturn {
 
     return {
         ...tokens,
+        templeGold: tokens.accent.templeGold,
+        sageGreen: tokens.accent.sageGreen,
         isDark,
         phase: temporalPhase,
         animationsEnabled,

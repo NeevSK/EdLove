@@ -19,19 +19,22 @@ import { Center as BaseCenter } from '@gluestack-ui/themed/build/components/Cent
 import { HStack as BaseHStack } from '@gluestack-ui/themed/build/components/HStack';
 import { VStack as BaseVStack } from '@gluestack-ui/themed/build/components/VStack';
 import { View as BaseView } from '@gluestack-ui/themed/build/components/View';
+import { ScrollView as BaseScrollView } from '@gluestack-ui/themed/build/components/ScrollView';
+import { Pressable as BasePressable } from '@gluestack-ui/themed/build/components/Pressable';
 
 export const Box = BaseBox as any;
 export const Center = BaseCenter as any;
 export const HStack = BaseHStack as any;
 export const VStack = BaseVStack as any;
 export const View = BaseView as any;
-export { ScrollView } from '@gluestack-ui/themed/build/components/ScrollView';
-export { Pressable } from '@gluestack-ui/themed/build/components/Pressable';
+export const ScrollView = BaseScrollView as any;
+export const Pressable = BasePressable as any;
 
 // ============================================================================
 // Loading States
 // ============================================================================
-export { Spinner } from '@gluestack-ui/themed/build/components/Spinner';
+import { Spinner as BaseSpinner } from '@gluestack-ui/themed/build/components/Spinner';
+export const Spinner = BaseSpinner as any;
 
 // ============================================================================
 // Toast & Notifications
@@ -109,23 +112,35 @@ export const SelectDragIndicatorWrapper = BaseSelectDragIndicatorWrapper as any;
 export const SelectDragIndicator = BaseSelectDragIndicator as any;
 export const SelectItem = BaseSelectItem as any;
 
-export {
-    FormControl,
-    FormControlError,
-    FormControlErrorIcon,
-    FormControlErrorText,
-    FormControlHelper,
-    FormControlHelperText,
-    FormControlLabel,
-    FormControlLabelText
+import {
+    FormControl as BaseFormControl,
+    FormControlError as BaseFormControlError,
+    FormControlErrorIcon as BaseFormControlErrorIcon,
+    FormControlErrorText as BaseFormControlErrorText,
+    FormControlHelper as BaseFormControlHelper,
+    FormControlHelperText as BaseFormControlHelperText,
+    FormControlLabel as BaseFormControlLabel,
+    FormControlLabelText as BaseFormControlLabelText
 } from '@gluestack-ui/themed/build/components/FormControl';
 
-export {
-    Textarea,
-    TextareaInput
-} from '@gluestack-ui/themed/build/components/Textarea';
+export const FormControl = BaseFormControl as any;
+export const FormControlError = BaseFormControlError as any;
+export const FormControlErrorIcon = BaseFormControlErrorIcon as any;
+export const FormControlErrorText = BaseFormControlErrorText as any;
+export const FormControlHelper = BaseFormControlHelper as any;
+export const FormControlHelperText = BaseFormControlHelperText as any;
+export const FormControlLabel = BaseFormControlLabel as any;
+export const FormControlLabelText = BaseFormControlLabelText as any;
 
-export { Switch } from '@gluestack-ui/themed/build/components/Switch';
+import {
+    Textarea as BaseTextarea,
+    TextareaInput as BaseTextareaInput
+} from '@gluestack-ui/themed/build/components/Textarea';
+export const Textarea = BaseTextarea as any;
+export const TextareaInput = BaseTextareaInput as any;
+
+import { Switch as BaseSwitch } from '@gluestack-ui/themed/build/components/Switch';
+export const Switch = BaseSwitch as any;
 
 // ============================================================================
 // Avatar Components
@@ -195,19 +210,27 @@ export const InfoIcon = Info;
 
 import { Image as BaseImage } from '@gluestack-ui/themed/build/components/Image';
 export const Image = BaseImage as any;
-export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
-export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
+import { FlatList as BaseFlatList } from '@gluestack-ui/themed/build/components/FlatList';
+export const FlatList = BaseFlatList as any;
+import { SectionList as BaseSectionList } from '@gluestack-ui/themed/build/components/SectionList';
+export const SectionList = BaseSectionList as any;
 
 // Animations
 export { FadeInDown, FadeInUp, FadeInRight, FadeInLeft } from 'react-native-reanimated';
 
-export {
-    Checkbox,
-    CheckboxIndicator,
-    CheckboxIcon,
-    CheckboxLabel,
-    CheckboxGroup,
+import {
+    Checkbox as BaseCheckbox,
+    CheckboxIndicator as BaseCheckboxIndicator,
+    CheckboxIcon as BaseCheckboxIcon,
+    CheckboxLabel as BaseCheckboxLabel,
+    CheckboxGroup as BaseCheckboxGroup,
 } from '@gluestack-ui/themed/build/components/Checkbox';
+
+export const Checkbox = BaseCheckbox as any;
+export const CheckboxIndicator = BaseCheckboxIndicator as any;
+export const CheckboxIcon = BaseCheckboxIcon as any;
+export const CheckboxLabel = BaseCheckboxLabel as any;
+export const CheckboxGroup = BaseCheckboxGroup as any;
 
 import {
     Link as BaseLink,

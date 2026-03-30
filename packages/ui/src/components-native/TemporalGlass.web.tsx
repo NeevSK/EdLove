@@ -22,7 +22,7 @@ const PHASE_EDGES = {
     night: { top: 'rgba(184,169,224,0.35)', bottom: 'rgba(125,212,192,0.08)' },
 };
 
-import { useResonance } from '@repo/core';
+import { useActivityPulse } from '@repo/core';
 
 export const TemporalGlass: React.FC<TemporalGlassProps> = ({
     children,
@@ -33,7 +33,7 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
     cornerRadius = 20,
 }) => {
     const edges = PHASE_EDGES[phase] || PHASE_EDGES.midday;
-    const { state } = useResonance();
+    const { state } = useActivityPulse();
     const resonanceShift = state.pulse * 0.5;
 
     return (
@@ -51,10 +51,10 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                 } as any,
                 style,
             ]}
-        >
-            <View style={StyleSheet.absoluteFill}>
+        
+            <View style={StyleSheet.absoluteFill}
                 {children}
-            </View>
-        </View>
+            </View
+        </View
     );
 };

@@ -1,10 +1,10 @@
 /**
- * PerspectiveId — The distinct 4D-6D visualization modes supported by the platform.
+ * PerspectiveId  The distinct 4D-6D visualization modes supported by the platform.
  */
 export type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 
 /**
- * LinkRelationship — Semantic meaning of the edge between two nodes.
+ * LinkRelationship  Semantic meaning of the edge between two nodes.
  */
 export type LinkRelationship =
     | 'prerequisite'   // Must complete source before target
@@ -16,7 +16,7 @@ export type LinkRelationship =
     | 'topic_association'; // Loose semantic grouping
 
 /**
- * GraphNode — Canonical, perspective-agnostic knowledge node.
+ * GraphNode  Canonical, perspective-agnostic knowledge node.
  */
 export interface GraphNode {
     id: string;
@@ -24,7 +24,7 @@ export interface GraphNode {
     type: 'topic' | 'resource' | 'persona' | 'collection' | 'school';
     group: string;
 
-    // Populated by layout algorithms — NOT set by data layer
+    // Populated by layout algorithms  NOT set by data layer
     x?: number;
     y?: number;
 
@@ -72,7 +72,7 @@ export interface GraphNode {
 }
 
 /**
- * GraphLink — A directed edge between two GraphNodes.
+ * GraphLink  A directed edge between two GraphNodes.
  */
 export interface GraphLink {
     source: string | GraphNode;
@@ -83,7 +83,7 @@ export interface GraphLink {
 }
 
 /**
- * KnowledgeTopology — The complete data envelope for any visualization.
+ * KnowledgeTopology  The complete data envelope for any visualization.
  */
 export interface KnowledgeTopology {
     nodes: GraphNode[];
@@ -97,7 +97,7 @@ export interface KnowledgeTopology {
 }
 
 /**
- * LayoutResult — The output of any layout algorithm.
+ * LayoutResult  The output of any layout algorithm.
  */
 export interface LayoutResult {
     positions: Map<string, { x: number; y: number }>;

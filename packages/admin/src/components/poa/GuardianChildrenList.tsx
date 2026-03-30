@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui';
-import { Intent } from '@repo/core';
+import { GuardianStudentsGrid } from '../guardian/GuardianStudentsGrid';
 import { StudentOverview } from '../../guardian';
 
 interface GuardianChildrenListProps {
@@ -13,8 +13,7 @@ interface GuardianChildrenListProps {
 export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ students, onStudentPress, isDesktop }) => {
   const theme = useTheme();
   return (
-    <View style={styles.section}>
-      <Text 
+    <View style={styles.section}      <Text 
         style={[
           styles.sectionHeader,
           { 
@@ -23,18 +22,11 @@ export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ stud
             fontSize: isDesktop ? 20 : 16
           }
         ]}
-      >
-        Your Students
-      </Text>
-      <Intent 
-        intent="dashboard.guardian.students_grid" 
-        props={{ 
-          students,
-          onStudentPress 
-        }} 
-      />
-    </View>
-  );
+              Your Students
+      </Text      <GuardianStudentsGrid 
+        students={students}
+        onStudentPress={onStudentPress} 
+      /    </View  );
 };
 
 const styles = StyleSheet.create({

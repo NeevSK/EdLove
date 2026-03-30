@@ -177,9 +177,9 @@ export function validateForm<T extends Record<string, any>>(
 /**
  * Validates a single field with multiple validators
  */
-export function validateWithRules(
-    value: any,
-    validators: Array<(value: any) => ValidationResult>
+export function validateWithRules<T>(
+    value: T,
+    validators: Array<(value: T) => ValidationResult>
 ): ValidationResult {
     for (const validator of validators) {
         const result = validator(value);

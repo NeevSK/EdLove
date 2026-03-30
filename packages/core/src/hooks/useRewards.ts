@@ -1,32 +1,38 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { rewardsAPI } from '../api/rewards';
-import { supabase } from '../lib/supabase';
 import { identityAPI } from '../api/identity';
 import { useEffect, useState } from 'react';
+import { useTemporalStore } from '../store/useTemporalStore';
 
 /**
  * Hook for managing user rewards, points, and milestones.
  * Provides real-time updates and mutations for adding points.
  */
-export function useRewards() {
+export function useRewards(options: { userId?: string; includeHistory?: boolean; historyLimit?: number } = {}) {
     const queryClient = useQueryClient();
     const [userId, setUserId] = useState<string | null>(null);
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
+    const phase = useTemporalStore(state => state.phase);
 
     useEffect(() => {
         const getUserId = async () => {
-            const internalId = await identityAPI.getMyInternalId();
+            const internalId = options.userId || await identityAPI.getMyInternalId();
             if (internalId) setUserId(internalId);
         };
         getUserId();
-    }, []);
+    }, [options.userId]);
 
     // Fetch rewards data
     const { data: rewards, isLoading, error } = useQuery({
-        queryKey: ['rewards', userId],
+        queryKey: ['rewards', userId, phase, viewDate, viewScale],
         queryFn: async () => {
             if (!userId) return null;
-            const data = await rewardsAPI.getRewards(userId);
-            if (!data) {
+            const data = phase === 'past'
+                ? await rewardsAPI.getRewardsAsOf(userId, viewDate)
+                : await rewardsAPI.getRewards(userId);
+
+            if (!data && !options.userId && phase === 'present') {
                 return await rewardsAPI.initializeRewards(userId);
             }
             return data;
@@ -34,10 +40,23 @@ export function useRewards() {
         enabled: !!userId,
     });
 
+    const { data: history = [] } = useQuery({
+        queryKey: ['rewards_history', userId, viewDate, viewScale, options.historyLimit],
+        queryFn: async () => {
+            if (!userId) return [];
+            if (phase === 'past') {
+                return rewardsAPI.getRewardsRangeHistory(userId, viewDate, viewScale);
+            }
+            return rewardsAPI.getRewardsHistory(userId, options.historyLimit ?? 50);
+        },
+        enabled: !!userId && !!options.includeHistory,
+    });
+
     // Mutation to add points
     const addPointsMutation = useMutation({
         mutationFn: ({ points }: { points: number }) => {
             if (!userId) throw new Error('User not authenticated');
+            if (phase === 'past') throw new Error('Rewards are read-only in past view');
             return rewardsAPI.addPoints(userId, points);
         },
         onSuccess: () => {
@@ -49,6 +68,7 @@ export function useRewards() {
     const awardBadgeMutation = useMutation({
         mutationFn: ({ badge }: { badge: string }) => {
             if (!userId) throw new Error('User not authenticated');
+            if (phase === 'past') throw new Error('Rewards are read-only in past view');
             return rewardsAPI.awardBadge(userId, badge);
         },
         onSuccess: () => {
@@ -58,7 +78,12 @@ export function useRewards() {
 
     // Check achievements mutation
     const checkAchievementsMutation = useMutation({
-        mutationFn: () => (userId ? rewardsAPI.checkAndAwardAchievements(userId) : Promise.resolve({ updatedRewards: null, newAchievements: [] })),
+        mutationFn: () => {
+            if (phase === 'past') {
+                return Promise.resolve({ updatedRewards: null, newAchievements: [] });
+            }
+            return userId ? rewardsAPI.checkAndAwardAchievements(userId) : Promise.resolve({ updatedRewards: null, newAchievements: [] });
+        },
         onSuccess: (data) => {
             if (data.updatedRewards) {
                 queryClient.setQueryData(['rewards', userId], data.updatedRewards);
@@ -88,6 +113,7 @@ export function useRewards() {
 
     return {
         rewards: rewards || { points: 0, badges: [] },
+        history,
         isLoading,
         error,
         addPoints: (points: number) => addPointsMutation.mutateAsync({ points }),

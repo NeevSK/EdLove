@@ -29,8 +29,11 @@ export const useMutationQueue = create<MutationQueueState>()(
                 );
 
                 // Dedup: If mutation with same idempotency key is already in queue, skip
-                if (get().queue.some(m => m.idempotencyKey === idempotencyKey)) {
-                    console.log(`[MutationQueue] Skipping duplicate intent: ${mutation.name}`);
+                const isDuplicate = get().queue.some(m => m.idempotencyKey === idempotencyKey);
+                if (isDuplicate) {
+                    if (__DEV__) {
+                        console.log(`[MutationQueue] Skipping duplicate intent: ${mutation.name}`);
+                    }
                     return;
                 }
 

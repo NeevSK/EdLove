@@ -17,20 +17,20 @@
  * <ErrorMessage 
  *   message="Your progress has been saved" 
  *   type="gentle"
- * />
+ * /
  * 
  * // Warning message with dismiss
  * <ErrorMessage 
  *   message="Please review your entries" 
  *   type="warning"
  *   onDismiss={() => console.log('dismissed')}
- * />
+ * /
  * 
  * // Severe error message
  * <ErrorMessage 
  *   message="Connection failed. Please try again." 
  *   type="severe"
- * />
+ * /
  * ```
  */
 
@@ -112,24 +112,24 @@ const ErrorMessage: FC<ErrorMessageProps> = ({
     // ============================================================================
 
     return (
-        <View style={[styles.container, { backgroundColor }]}>
-            <HStack space="md" style={styles.hstack}>
+        <View style={[styles.container, { backgroundColor }]}
+            <HStack space="md" style={styles.hstack}
                 {/* Icon */}
-                <Icon color={textColor} size={20} />
+                <Icon color={textColor} size={20} /
 
                 {/* Message Text */}
-                <Text style={[styles.message, { color: textColor }]}>
+                <Text style={[styles.message, { color: textColor }]}
                     {message}
-                </Text>
+                </Text
 
                 {/* Dismiss Button (X) */}
                 {onDismiss && (
-                    <Pressable onPress={onDismiss} style={styles.dismissButton}>
-                        <X color={textColor} size={20} />
-                    </Pressable>
+                    <Pressable accessibilityRole="button" onPress={onDismiss} style={styles.dismissButton}
+                        <X color={textColor} size={20} /
+                    </Pressable
                 )}
-            </HStack>
-        </View>
+            </HStack
+        </View
     );
 };
 

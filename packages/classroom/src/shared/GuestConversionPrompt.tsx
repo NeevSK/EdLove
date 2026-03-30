@@ -73,23 +73,23 @@ export default function GuestConversionPrompt({
     const IconComponent = config.icon;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalBackdrop />
+        <Modal isOpen={isOpen} onClose={onClose}
+            <ModalBackdrop /
             <ModalContent
                 sx={{
                     backgroundColor: colors.primary,
                     borderRadius: Theme.corners.comfortable,
                     maxWidth: 400
                 }}
-            >
-                <ModalHeader>
-                    <ModalCloseButton>
-                        <CloseIcon color={colors.textSecondary} />
-                    </ModalCloseButton>
-                </ModalHeader>
+            
+                <ModalHeader
+                    <ModalCloseButton
+                        <CloseIcon color={colors.textSecondary} /
+                    </ModalCloseButton
+                </ModalHeader
 
-                <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
-                    <VStack space="lg" alignItems="center">
+                <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}
+                    <VStack space="lg" alignItems="center"
                         {/* Icon */}
                         <Box
                             sx={{
@@ -105,27 +105,27 @@ export default function GuestConversionPrompt({
                                 shadowRadius: 8,
                                 elevation: 4
                             }}
-                        >
-                            <IconComponent size={40} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
+                        
+                            <IconComponent size={40} color={Theme.colors.sanctuarySaffron} /
+                        </Box
 
                         {/* Title */}
                         <Heading
                             size="xl"
                             color={Theme.colors.sanctuarySaffron}
                             textAlign="center"
-                        >
+                        
                             {t(config.title)}
-                        </Heading>
+                        </Heading
 
                         {/* Description */}
                         <Text
                             size="md"
                             color={colors.textSecondary}
                             textAlign="center"
-                        >
+                        
                             {t(config.description)}
-                        </Text>
+                        </Text
 
                         {/* Local Data Count */}
                         {itemCount !== undefined && itemCount > 0 && (
@@ -137,11 +137,11 @@ export default function GuestConversionPrompt({
                                     borderLeftWidth: 4,
                                     borderLeftColor: Theme.colors.sageGreen
                                 }}
-                            >
-                                <Text size="sm" color={colors.text} textAlign="center">
-                                    💾 {t('guest.dataSavedLocally', { count: itemCount })}
-                                </Text>
-                            </Box>
+                            
+                                <Text size="sm" color={colors.text} textAlign="center"
+                                    \uD83D\uDCBE {t('guest.dataSavedLocally', { count: itemCount })}
+                                </Text
+                            </Box
                         )}
 
                         {/* Benefit */}
@@ -153,19 +153,19 @@ export default function GuestConversionPrompt({
                                 borderWidth: 1,
                                 borderColor: Theme.colors.amberGlow
                             }}
-                        >
+                        
                             <Text
                                 size="sm"
                                 color={Theme.colors.amberGlow}
                                 textAlign="center"
                                 fontWeight="$semibold"
-                            >
-                                ✨ {t(config.benefit)}
-                            </Text>
-                        </Box>
+                            
+                                \u2728 {t(config.benefit)}
+                            </Text
+                        </Box
 
                         {/* Actions */}
-                        <VStack space="sm" sx={{ width: '100%' }}>
+                        <VStack space="sm" sx={{ width: '100%' }}
                             <Button
                                 size="lg"
                                 onPress={onCreateAccount}
@@ -173,25 +173,25 @@ export default function GuestConversionPrompt({
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                     borderRadius: Theme.corners.comfortable
                                 }}
-                            >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                            
+                                <ButtonText color={Theme.colors.sacredWhite}
                                     {t('guest.createAccount')}
-                                </ButtonText>
-                            </Button>
+                                </ButtonText
+                            </Button
 
                             <Button
                                 size="md"
                                 variant="link"
                                 onPress={onClose}
-                            >
-                                <ButtonText color={colors.textSecondary}>
+                            
+                                <ButtonText color={colors.textSecondary}
                                     {t('guest.continueBrowsing')}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    </VStack>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+                                </ButtonText
+                            </Button
+                        </VStack
+                    </VStack
+                </ModalBody
+            </ModalContent
+        </Modal
     );
 }

@@ -1,131 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import { usePermissions, useStore, supabase, useRewards, FeatureGuard, useTemporalStore } from '@repo/core';
-import { Classroom } from '@repo/core';
-import { SandboxBanner, TemporalNavigator } from '@repo/ui';
-import { Star } from 'lucide-react-native';
-import { SubmissionModal } from '../components';
+import React from 'react';
+import { ScrollView, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Box, SandboxBanner, Text, Theme, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors } from '@repo/ui';
+import { ClassroomStackParamList, useFeatureAccess, useStore, useTemporalStore, useWorkspaceLayoutSync } from '@repo/core';
+import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
+import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';
 
-// Sub-components
-import { 
-    StudentHeader,
-    StudentStats,
-    StudentClassroomList,
-    StudentUpcomingAssignments,
-    StudentGoals,
-    StudentGrowthPoints,
-    StudentStudySuite
-} from '../components/student';
+interface StudentDashboardProps {
+    onRefresh?: () => void;
+    schoolId?: string;
+    userId?: string;
+    forceDemo?: boolean;
+}
 
-export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean } = {}) {
-    const { user } = useStore();
-    const { context } = usePermissions();
-    const { userId } = context;
-    const isDemo = forceDemo === true;
-    const { rewards, isLoading: rewardsLoading } = useRewards();
+export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashboardProps) {
+    const { t } = useTranslation();
+    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
+    const showToast = useStore((state: any) => state.showToast);
+    const { isGuest } = useFeatureAccess();
     const { isPastView } = useTemporalStore();
+    const colors = useThemedColors();
+    const { isDemoExperience, stats } = useStudentWorkspaceData(forceDemo);
 
-    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-    const [assignments, setAssignments] = useState<any[]>([]);
-    const [submissionModal, setSubmissionModal] = useState<{ open: boolean; assignment: any | null }>({ open: false, assignment: null });
-    const [classroomsLoading, setClassroomsLoading] = useState(true);
+    useRegisterFAB({
+        tabType: 'classroom',
+        visible: false,
+    });
 
-    useEffect(() => {
-        if (isDemo) {
-            setClassroomsLoading(false);
-            return;
-        }
-        const fetchClassrooms = async () => {
-            if (!userId) { setClassroomsLoading(false); return; }
-            setClassroomsLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('classroom_students')
-                    .select('classroom_id, classrooms(id, name, subject, teacher_id, created_at, updated_at, color_theme)')
-                    .eq('student_id', userId);
+    const dashboardSurfaces = useStudentDashboardSurfaces({
+        colors,
+        isGuest,
+        isPastView,
+        isDemoExperience,
+        stats,
+        onOpenLibrary: () => navigation.navigate('Library' as any),
+        onOpenCommunity: () => navigation.navigate('Community' as any),
+        onOpenRewards: () => {
+            hapticLight();
+            showToast(t('common.comingSoon') || 'Rewards are blossoming soon!', 'info');
+        },
+        onOpenTimetable: () => {
+            hapticLight();
+            navigation.navigate('Self' as any);
+        },
+        onOpenBreathing: () => {
+            hapticLight();
+            const { setBreathingOpen } = useStore.getState();
+            setBreathingOpen(true);
+        },
+        onOpenClassroom: (classroom) => {
+            hapticLight();
+            navigation.navigate('Classroom' as any, {
+                screen: 'StudentClassroomDashboard',
+                params: {
+                    classroomId: classroom.id,
+                    classroomName: classroom.name,
+                },
+            });
+        },
+        onOpenGuestAuth: () => {
+            hapticLight();
+            navigation.navigate('Auth' as any);
+        },
+    });
 
-                if (!error && data) {
-                    const cls = data.map((row: any) => row.classrooms).filter(Boolean) as Classroom[];
-                    setClassrooms(cls);
+    const { layout, surfaces, setSurfaceHidden, setSurfacePinned, setSurfaceZone } = useWorkspaceLayoutSync({
+        workspaceId: 'student-dashboard',
+        userId: userId || 'student-dashboard-web-guest',
+        surfaces: dashboardSurfaces,
+        enableRemoteSync: false,
+    });
 
-                    if (cls.length > 0) {
-                        const today = new Date().toISOString().split('T')[0];
-                        const { data: asgn } = await supabase
-                            .from('assignments')
-                            .select('id, title, classroom_id, due_date, classrooms(name)')
-                            .in('classroom_id', cls.map((c: any) => c.id))
-                            .gte('due_date', today)
-                            .order('due_date', { ascending: true })
-                            .limit(6);
-                        setAssignments(asgn ?? []);
-                    }
-                }
-            } catch (err) {
-                console.error('[StudentDashboard] Error fetching classrooms:', err);
-            } finally {
-                setClassroomsLoading(false);
-            }
-        };
-        fetchClassrooms();
-    }, [userId, user?.school_id, isDemo]);
+    const findSurfaceDefinition = (surfaceId: string) =        dashboardSurfaces.find((candidate) => candidate.surfaceId === surfaceId);
 
-    const growthPoints = isDemo ? 340 : (rewards?.points ?? 0);
-    const stats = [
-        { label: 'Active Sanctuaries', value: classroomsLoading ? '—' : String(classrooms.length), icon: Star, color: 'var(--water)' },
-        { label: 'Goals Set', value: '3', icon: Star, color: 'var(--amber-glow)' },
-        { label: 'Growth Points', value: rewardsLoading && !isDemo ? '—' : String(growthPoints), icon: Star, color: 'var(--sanctuary-saffron)' },
-    ];
+    if (!layout) {
+        return <Box sx={{ flex: 1, backgroundColor: colors.primary }} />;
+    }
 
     return (
-        <>
-            {isDemo && <SandboxBanner />}
-            <div className="sub-view-container" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '32px', padding: '24px' }}>
-                {/* 1. Main Content Area */}
-                <div className="content-scroll-area">
-                    <StudentHeader isDemo={isDemo} />
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}            {isDemoExperience ? <SandboxBanner /> : null}
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ padding: Theme.spacing.lg }}
+                            <Animated.View entering={FadeInDown.duration(400)}                    <WorkspaceCanvas
+                        surfaces={dashboardSurfaces}
+                        layout={layout}
+                        title={t('classroom.studentDashboardHeading') || 'Your Learning Journey'}
+                        subtitle={t('classroom.studentDashboardIntro') || 'Step into your sanctuaries and grow with love.'}
+                        renderSurfaceContent={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.content ?? null
+                        }
+                        getSurfaceSubtitle={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.subtitle
+                        }
+                        getSurfaceSummary={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.summary
+                        }
+                        getSurfaceTemporalLabel={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.temporalLabel
+                        }
+                        getSurfaceMetadata={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.metadata
+                        }
+                        onToggleHidden={(surface) => setSurfaceHidden(surface.surfaceId, !surface.hidden)}
+                        renderSurfaceActions={(surface) => {
+                            const resolved = surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId);
+                            if (!resolved) return null;
 
-                    <div style={{ marginBottom: '32px', maxWidth: '400px' }}>
-                        <TemporalNavigator />
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-                        <StudentStats stats={stats} isDemo={isDemo} />
-                    </div>
-                    
-                    <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '24px' }}>Active Sanctuaries</h2>
-                    <StudentClassroomList classrooms={classrooms} loading={classroomsLoading} isDemo={isDemo} />
-                    
-                    <StudentUpcomingAssignments 
-                        assignments={assignments} 
-                        isPastView={isPastView} 
-                        onOpenSubmission={(a: any) => setSubmissionModal({ open: true, assignment: a })} 
-                    />
-                </div>
-
-                {/* 2. Side Panel Area */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    <StudentGoals goals={[]} loading={false} />
-                    <StudentGrowthPoints points={growthPoints} isDemo={isDemo} />
-                    <StudentStudySuite />
-                </div>
-            </div>
-
-            {submissionModal.assignment && (
-                <SubmissionModal
-                    isOpen={submissionModal.open}
-                    assignmentTitle={submissionModal.assignment.title}
-                    onClose={() => setSubmissionModal({ open: false, assignment: null })}
-                    onSubmit={async (content, photoUri) => {
-                        if (!userId || !submissionModal.assignment) return;
-                        await supabase.from('submissions').insert({
-                            assignment_id: submissionModal.assignment.id,
-                            student_id: userId,
-                            content,
-                            photo_url: photoUri ?? null,
-                            submitted_at: new Date().toISOString(),
-                        });
-                    }}
-                />
-            )}
-        </>
-    );
+                            return (
+                                <Box sx={{ flexDirection: 'row', gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    <TouchableOpacity
+                                        onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
+                                        style={{
+                                            paddingHorizontal: Theme.spacing.md,
+                                            paddingVertical: Theme.spacing.sm,
+                                            borderRadius: Theme.corners.full,
+                                            backgroundColor: 'rgba(42, 35, 24, 0.06)',
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(42, 35, 24, 0.08)',
+                                        }}
+                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}
+                                        </Text                                    </TouchableOpacity                                    <TouchableOpacity
+                                        onPress={() =                                            setSurfaceZone(
+                                                resolved.surfaceId,
+                                                resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'private' : 'work'
+                                            )
+                                        }
+                                        style={{
+                                            paddingHorizontal: Theme.spacing.md,
+                                            paddingVertical: Theme.spacing.sm,
+                                            borderRadius: Theme.corners.full,
+                                            backgroundColor: 'rgba(42, 35, 24, 0.06)',
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(42, 35, 24, 0.08)',
+                                        }}
+                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone
+                                        </Text                                    </TouchableOpacity                                </Box                            );
+                        }}
+                    /                </Animated.View            </ScrollView        </Box    );
 }

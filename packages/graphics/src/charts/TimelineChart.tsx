@@ -66,70 +66,48 @@ export function TimelineChart({
   const getEventIcon = (type: TimelineEvent['type'], icon?: string) => {
     if (icon) return icon;
     switch (type) {
-      case 'milestone': return '🏆';
-      case 'warning': return '⚠️';
-      case 'success': return '✅';
-      case 'info': return 'ℹ️';
-      case 'error': return '❌';
-      default: return '📅';
+      case 'milestone': return '\uD83C\uDFC6';
+      case 'warning': return '\u26A0\uFE0F';
+      case 'success': return '\u2705';
+      case 'info': return '\u2139\uFE0F';
+      case 'error': return '\u274C';
+      default: return '\uD83D\uDCC5';
     }
   };
 
   return (
-    <Card style={styles.container}>
-      {title && <Text style={styles.title}>{title}</Text>}
+    <Card style={styles.container}      {title && <Text style={styles.title}>{title}</Text>}
       
       <ScrollView 
         style={[styles.timelineContainer, { maxHeight }]}
         showsVerticalScrollIndicator={false}
-      >
-        <VStack space="md">
-          {events.map((event, index) => (
-            <View key={event.id} style={styles.eventContainer}>
-              {/* Timeline line */}
+              <VStack space="md"          {events.map((event, index) => (
+            <View key={event.id} style={styles.eventContainer}              {/* Timeline line */}
               {index < events.length - 1 && (
-                <View style={styles.timelineLine} />
-              )}
+                <View style={styles.timelineLine} /              )}
               
               {/* Event dot */}
-              <View style={styles.eventDot}>
-                <View 
+              <View style={styles.eventDot}                <View 
                   style={[
                     styles.dotInner,
                     { backgroundColor: event.color || getEventColor(event.type) }
                   ]}
-                />
-                {showIcons && (
-                  <Text style={styles.eventIcon}>
-                    {getEventIcon(event.type, event.icon)}
-                  </Text>
-                )}
-              </View>
-              
+                /                {showIcons && (
+                  <Text style={styles.eventIcon}                    {getEventIcon(event.type, event.icon)}
+                  </Text                )}
+              </View              
               {/* Event content */}
-              <View style={styles.eventContent}>
-                <Text style={styles.eventTitle}>
-                  {event.title}
-                </Text>
-                
+              <View style={styles.eventContent}                <Text style={styles.eventTitle}                  {event.title}
+                </Text                
                 {event.description && (
-                  <Text style={styles.eventDescription}>
-                    {event.description}
-                  </Text>
-                )}
+                  <Text style={styles.eventDescription}                    {event.description}
+                  </Text                )}
                 
                 {showDates && (
-                  <Text style={styles.eventDate}>
-                    {formatTime(event.date)}
-                  </Text>
-                )}
-              </View>
-            </View>
-          ))}
-        </VStack>
-      </ScrollView>
-    </Card>
-  );
+                  <Text style={styles.eventDate}                    {formatTime(event.date)}
+                  </Text                )}
+              </View            </View          ))}
+        </VStack      </ScrollView    </Card  );
 }
 
 const styles = StyleSheet.create({

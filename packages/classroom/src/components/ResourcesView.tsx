@@ -162,14 +162,14 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
     };
 
     return (
-        <VStack sx={{ flex: 1 }}>
+        <VStack sx={{ flex: 1 }}
             {/* Filters */}
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 sx={{ maxHeight: 60 }}
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 8, paddingBottom: Theme.spacing.md }}
-            >
+            
                 {(['all', 'link', 'pdf', 'note'] as const).map(ft => (
                     <Pressable
                         key={ft}
@@ -184,21 +184,21 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                             height: 32,
                             justifyContent: 'center'
                         }}
-                    >
-                        <Text color={filterType === ft ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13, textTransform: 'capitalize' }}>
+                    
+                        <Text color={filterType === ft ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13, textTransform: 'capitalize' }}
                             {ft}
-                        </Text>
-                    </Pressable>
+                        </Text
+                    </Pressable
                 ))}
-            </ScrollView>
+            </ScrollView
 
             {/* Content List */}
-            <ScrollView>
-                <VStack sx={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100, gap: Theme.spacing.md }}>
+            <ScrollView
+                <VStack sx={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100, gap: Theme.spacing.md }}
                     {filteredResources.length === 0 && !isLoading && (
-                        <Box sx={{ alignItems: 'center', paddingVertical: 32 }}>
-                            <Text color={colors.textTertiary}>No resources found.</Text>
-                        </Box>
+                        <Box sx={{ alignItems: 'center', paddingVertical: 32 }}
+                            <Text color={colors.textTertiary}>No resources found.</Text
+                        </Box
                     )}
 
                     {filteredResources.map(resource => (
@@ -213,69 +213,69 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                 borderLeftWidth: resource.is_pinned ? 3 : 0,
                                 borderLeftColor: Theme.colors.sanctuarySaffron
                             }}
-                        >
-                            <HStack justifyContent="space-between" alignItems="flex-start">
-                                <HStack sx={{ alignItems: 'flex-start', flex: 1, gap: Theme.spacing.md }}>
+                        
+                            <HStack justifyContent="space-between" alignItems="flex-start"
+                                <HStack sx={{ alignItems: 'flex-start', flex: 1, gap: Theme.spacing.md }}
                                     <Box
                                         sx={{
                                             padding: 8,
                                             borderRadius: Theme.corners.comfortable,
                                             backgroundColor: colors.tertiary
                                         }}
-                                    >
-                                        <Icon as={getIcon(resource.type)} sx={{ color: colors.text, width: 20, height: 20 }} />
-                                    </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <HStack sx={{ alignItems: 'center', gap: 4 }}>
-                                            <Text color={colors.text} sx={{ fontWeight: 'bold' }} numberOfLines={1}>
+                                    
+                                        <Icon as={getIcon(resource.type)} sx={{ color: colors.text, width: 20, height: 20 }} /
+                                    </Box
+                                    <VStack sx={{ flex: 1 }}
+                                        <HStack sx={{ alignItems: 'center', gap: 4 }}
+                                            <Text color={colors.text} sx={{ fontWeight: 'bold' }} numberOfLines={1}
                                                 {resource.title}
-                                            </Text>
+                                            </Text
                                             {resource.is_pinned && <Icon as={Pin} sx={{ width: 12, height: 12, color: Theme.colors.sanctuarySaffron }} />}
-                                        </HStack>
+                                        </HStack
 
                                         {resource.type === 'note' && resource.content ? (
-                                            <Text color={colors.textSecondary} sx={{ fontSize: 13 }} numberOfLines={2}>
+                                            <Text color={colors.textSecondary} sx={{ fontSize: 13 }} numberOfLines={2}
                                                 {resource.content}
-                                            </Text>
+                                            </Text
                                         ) : (
-                                            <Text color={colors.textTertiary} sx={{ fontSize: 12 }} numberOfLines={1}>
+                                            <Text color={colors.textTertiary} sx={{ fontSize: 12 }} numberOfLines={1}
                                                 {resource.url || 'No content'}
-                                            </Text>
+                                            </Text
                                         )}
-                                    </VStack>
-                                </HStack>
+                                    </VStack
+                                </HStack
 
                                 {isTeacher && (
-                                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                                    <HStack sx={{ gap: Theme.spacing.sm }}
                                         <Pressable
                                             sx={{ padding: 8 }}
                                             onPress={(e) => {
                                                 e.stopPropagation();
                                                 togglePinMutation.mutate({ id: resource.id, isPinned: !resource.is_pinned });
                                             }}
-                                        >
+                                        
                                             <Icon
                                                 as={Pin}
                                                 fill={resource.is_pinned ? Theme.colors.sanctuarySaffron : 'none'}
                                                 sx={{ width: 16, height: 16, color: resource.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary }}
-                                            />
-                                        </Pressable>
+                                            /
+                                        </Pressable
                                         <Pressable
                                             sx={{ padding: 8 }}
                                             onPress={(e) => {
                                                 e.stopPropagation();
                                                 deleteMutation.mutate(resource.id);
                                             }}
-                                        >
-                                            <Icon as={Trash2} sx={{ width: 16, height: 16, color: Theme.colors.emberRed }} />
-                                        </Pressable>
-                                    </HStack>
+                                        
+                                            <Icon as={Trash2} sx={{ width: 16, height: 16, color: Theme.colors.emberRed }} /
+                                        </Pressable
+                                    </HStack
                                 )}
-                            </HStack>
-                        </Pressable>
+                            </HStack
+                        </Pressable
                     ))}
-                </VStack>
-            </ScrollView>
+                </VStack
+            </ScrollView
 
             {/* Add Resource FAB */}
             {isTeacher && (
@@ -297,44 +297,44 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         flexDirection: 'row',
                         paddingHorizontal: 16,
                     }}
-                >
-                    <ButtonText sx={{ color: Theme.colors.sacredWhite, marginRight: Theme.spacing.sm }}>
+                
+                    <ButtonText sx={{ color: Theme.colors.sacredWhite, marginRight: Theme.spacing.sm }}
                         {t('classroom.resources.addResource') || 'Add Resource'}
-                    </ButtonText>
-                    <Plus color={Theme.colors.sacredWhite} size={20} />
-                </Button>
+                    </ButtonText
+                    <Plus color={Theme.colors.sacredWhite} size={20} /
+                </Button
             )}
 
             {/* Add Resource Modal */}
             <Modal
                 isOpen={showAddModal}
                 onClose={() => setShowAddModal(false)}
-            >
-                <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.primary }}>
-                    <ModalHeader>
-                        <Heading sx={{ fontSize: 18, color: colors.text }}>{t('classroom.resources.addModalTitle') || 'Add Classroom Resource'}</Heading>
-                        <ModalCloseButton>
-                            <Icon as={CloseIcon} sx={{ color: colors.textTertiary }} />
-                        </ModalCloseButton>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <VStack sx={{ gap: 4 }}>
-                                <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.titleLabel') || 'Title'}</Text>
-                                <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
+            
+                <ModalBackdrop /
+                <ModalContent sx={{ backgroundColor: colors.primary }}
+                    <ModalHeader
+                        <Heading sx={{ fontSize: 18, color: colors.text }}>{t('classroom.resources.addModalTitle') || 'Add Classroom Resource'}</Heading
+                        <ModalCloseButton
+                            <Icon as={CloseIcon} sx={{ color: colors.textTertiary }} /
+                        </ModalCloseButton
+                    </ModalHeader
+                    <ModalBody
+                        <VStack sx={{ gap: Theme.spacing.md }}
+                            <VStack sx={{ gap: 4 }}
+                                <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.titleLabel') || 'Title'}</Text
+                                <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}
                                     <InputField
                                         placeholder={t('classroom.resources.titlePlaceholder') || "e.g. Science Syllabus, Lab Safety Video"}
                                         sx={{ color: colors.text }}
                                         value={title}
                                         onChangeText={setTitle}
-                                    />
-                                </Input>
-                            </VStack>
+                                    /
+                                </Input
+                            </VStack
 
-                            <VStack sx={{ gap: 4 }}>
-                                <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.typeLabel') || 'Type'}</Text>
-                                <HStack sx={{ gap: Theme.spacing.sm }}>
+                            <VStack sx={{ gap: 4 }}
+                                <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.typeLabel') || 'Type'}</Text
+                                <HStack sx={{ gap: Theme.spacing.sm }}
                                     {(['link', 'pdf', 'note'] as const).map(t => (
                                         <Pressable
                                             key={t}
@@ -346,30 +346,30 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                                 borderRadius: Theme.corners.comfortable,
                                                 backgroundColor: type === t ? Theme.colors.sanctuarySaffron : colors.tertiary,
                                             }}
-                                        >
-                                            <Text sx={{ color: type === t ? 'white' : colors.text, textTransform: 'capitalize', fontWeight: type === t ? 'bold' : 'normal' }}>
+                                        
+                                            <Text sx={{ color: type === t ? 'white' : colors.text, textTransform: 'capitalize', fontWeight: type === t ? 'bold' : 'normal' }}
                                                 {t}
-                                            </Text>
-                                        </Pressable>
+                                            </Text
+                                        </Pressable
                                     ))}
-                                </HStack>
-                            </VStack>
+                                </HStack
+                            </VStack
 
-                            <VStack sx={{ gap: 4 }}>
-                                <Text sx={{ color: colors.text, fontSize: 13 }}>
+                            <VStack sx={{ gap: 4 }}
+                                <Text sx={{ color: colors.text, fontSize: 13 }}
                                     {type === 'note' ? (t('classroom.resources.contentLabel') || 'Content') : (t('classroom.resources.urlLabel') || 'URL')}
-                                </Text>
+                                </Text
                                 {type === 'note' ? (
-                                    <Textarea sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
+                                    <Textarea sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}
                                         <TextareaInput
                                             placeholder={t('classroom.resources.contentPlaceholder') || "Enter note content..."}
                                             sx={{ color: colors.text }}
                                             value={content}
                                             onChangeText={setContent}
-                                        />
-                                    </Textarea>
+                                        /
+                                    </Textarea
                                 ) : (
-                                    <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
+                                    <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}
                                         <InputField
                                             placeholder="https://..."
                                             keyboardType="url"
@@ -377,13 +377,13 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                             sx={{ color: colors.text }}
                                             value={content}
                                             onChangeText={setContent}
-                                        />
-                                    </Input>
+                                        /
+                                    </Input
                                 )}
-                            </VStack>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter sx={{ gap: Theme.spacing.sm }}>
+                            </VStack
+                        </VStack
+                    </ModalBody
+                    <ModalFooter sx={{ gap: Theme.spacing.sm }}
                         <Button
                             variant="outline"
                             onPress={() => setShowAddModal(false)}
@@ -391,9 +391,9 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                 flex: 1,
                                 borderColor: colors.border
                             }}
-                        >
-                            <ButtonText sx={{ color: colors.textSecondary }}>{t('common.cancel') || 'Cancel'}</ButtonText>
-                        </Button>
+                        
+                            <ButtonText sx={{ color: colors.textSecondary }}>{t('common.cancel') || 'Cancel'}</ButtonText
+                        </Button
                         <Button
                             onPress={() => {
                                 addResourceMutation.mutate({ title, type, content });
@@ -404,14 +404,14 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                 borderRadius: Theme.corners.comfortable
                             }}
                             disabled={!title || !content || addResourceMutation.isLoading}
-                        >
-                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                        
+                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}
                                 {addResourceMutation.isLoading ? (t('common.adding') || 'Adding...') : (t('classroom.resources.addResource') || 'Add Resource')}
-                            </ButtonText>
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </VStack>
+                            </ButtonText
+                        </Button
+                    </ModalFooter
+                </ModalContent
+            </Modal
+        </VStack
     );
 }

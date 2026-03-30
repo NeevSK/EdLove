@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { usePermissions } from '../permissions/hooks/usePermissions';
 
 export interface FeatureAccess {
@@ -21,7 +22,9 @@ export function useFeatureAccess(): FeatureAccess {
     const promptAccountCreation = useCallback((feature: 'classroom' | 'community' | 'library' | 'self' | 'general') => {
         // This will be handled by the component using GuestConversionPrompt
         // The component should pass a navigation callback
-        console.log(`Account creation prompted for feature: ${feature}`);
+        if (__DEV__) {
+            console.log(`Account creation prompted for feature: ${feature}`);
+        }
     }, []);
 
     const getFeatureMessage = useCallback((feature: string): string => {

@@ -82,7 +82,7 @@ export default function SanctuaryToast({
     if (!visible) return null;
 
     return (
-        <Animated.View style={[styles.container, animatedStyle]}>
+        <Animated.View style={[styles.container, animatedStyle]}
             <Box sx={{
                 borderRadius: Theme.corners.medium,
                 backgroundColor: Theme.colors.shroud,
@@ -99,21 +99,21 @@ export default function SanctuaryToast({
                 elevation: 10,
                 width: '100%',
                 maxWidth: 400
-            }}>
-                <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}>
-                    <Icon color={color} size={24} />
+            }}
+                <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}
+                    <Icon color={color} size={24} /
                     <Text
                         color={Theme.colors.sacredWhite}
                         sx={{ fontSize: '$sm' as any, flex: 1, fontWeight: '500' }}
-                    >
+                    
                         {message}
-                    </Text>
-                    <TouchableOpacity onPress={hide}>
-                        <X color={Theme.colors.mistGray} size={18} />
-                    </TouchableOpacity>
-                </HStack>
-            </Box>
-        </Animated.View>
+                    </Text
+                    <TouchableOpacity accessibilityRole="button" onPress={hide}
+                        <X color={Theme.colors.mistGray} size={18} /
+                    </TouchableOpacity
+                </HStack
+            </Box
+        </Animated.View
     );
 }
 

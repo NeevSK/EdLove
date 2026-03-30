@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { naturePathsAPI, BanyanStage } from '../api/naturePaths';
-import { usePermissions } from './usePermissions';
+import { usePermissions } from '../permissions/hooks/usePermissions';
 
 /**
  * useBanyanGrowth

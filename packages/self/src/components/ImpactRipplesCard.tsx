@@ -15,18 +15,18 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
     if (!ripples.length) return null;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.tag}>💧 IMPACT RIPPLES</Text>
-            <View style={styles.list}>
+        <View style={styles.container}
+            <Text style={styles.tag}>\uD83D\uDCA7 IMPACT RIPPLES</Text
+            <View style={styles.list}
                 {ripples.map(r => (
-                    <View key={r.id} style={styles.rippleItem}>
-                        <Text style={styles.message}>
+                    <View key={r.id} style={styles.rippleItem}
+                        <Text style={styles.message}
                             {r.warm_message_en ?? r.ripple_type}
-                        </Text>
-                    </View>
+                        </Text
+                    </View
                 ))}
-            </View>
-        </View>
+            </View
+        </View
     );
 }
 

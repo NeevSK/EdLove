@@ -63,7 +63,7 @@ export default function AdminSelfView() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true}
             <BaseSelfView
                 perspective="admin"
                 description={t('self.adminDescription', 'Operational clarity from a source of inner stillness.')}
@@ -76,12 +76,12 @@ export default function AdminSelfView() {
                             {
                                 id: 'pulse',
                                 label: 'Daily Pulse',
-                                content: <PulseDashboard onEnterDetails={() => { }} />
+                                content: <PulseDashboard onEnterDetails={() => { }} /
                             },
                             {
                                 id: 'voice',
                                 label: 'Voice Journal',
-                                content: <VoiceJournaling userId={userId ?? undefined} />
+                                content: <VoiceJournaling userId={userId ?? undefined} /
                             },
                         ]
                     },
@@ -102,25 +102,25 @@ export default function AdminSelfView() {
                                         latestMood={latestMood}
                                         isLoading={loadingMoods}
                                         accent="earth"
-                                    />
+                                    /
                                 )
                             },
                             {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
-                                        />
-                                    </Box>
+                                        /
+                                    </Box
                                 )
                             },
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} />
+                                content: <MoodLotus userId={userId ?? undefined} /
                             }
                         ]
                     },
@@ -137,25 +137,25 @@ export default function AdminSelfView() {
                                         orientationSeeds={(user as any).orientation_seeds}
                                         moodLogs={moodHistory}
                                         energyForecasts={forecasts}
-                                    />
+                                    /
                                 ) : null
                             }
                         ]
                     }
                 ]}
                 sideBar={
-                    <VStack space="lg">
-                        <WarmMirrorCard text={warmMirrorText} />
-                        <ImpactRipplesCard ripples={ripples} />
-                    </VStack>
+                    <VStack space="lg"
+                        <WarmMirrorCard text={warmMirrorText} /
+                        <ImpactRipplesCard ripples={ripples} /
+                    </VStack
                 }
-            />
+            /
 
 
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            />
-        </ScreenWrapper>
+            /
+        </ScreenWrapper
     );
 }

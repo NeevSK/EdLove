@@ -1,41 +1,29 @@
-/**
- * Classroom Notes API
- *
- * Persistent, date-stamped logbook per classroom.
- * Teachers can write private notes or class-wide announcements.
- * Students can write personal study notes and read teacher announcements.
- * Nothing is ever deleted — old notes scroll back in time.
- */
-
-import { supabase } from '../lib/supabase';
 import { identityAPI } from './identity';
 import { APIError } from './types';
 import type { ClassroomNote } from '../types/ClassroomNote';
+import { classroomNotesContract } from './classroomNotes.contract';
+import { classroomNotesServices } from '../domains/classroomNotes/runtime';
+import type { ClassroomNoteLifecycleEvent } from './schemas/classroom-note.schema';
 
 export type { ClassroomNote };
 
 export const classroomNotesAPI = {
     /**
-     * Fetch notes for a classroom visible to the current user.
-     * Returns: own private notes + all class-visible notes, newest first.
+     * @authority read ClassroomNote
      */
     async getAll(classroomId: string): Promise<ClassroomNote[]> {
-        const myId = await identityAPI.getMyInternalId();
-        if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-
-        const { data, error } = await supabase
-            .from('classroom_notes')
-            .select('*, author:users(full_name, role)')
-            .eq('classroom_id', classroomId)
-            .order('is_pinned', { ascending: false })
-            .order('created_at', { ascending: false });
-
-        if (error) throw new APIError('Failed to fetch classroom notes', error.code, error);
-        return (data || []) as ClassroomNote[];
+        return classroomNotesServices.listVisibleNotes(classroomId);
     },
 
     /**
-     * Create a new note in a classroom.
+     * @authority read ClassroomNote
+     */
+    async getSnapshotAsOf(classroomId: string, viewDate: string): Promise<ClassroomNote[]> {
+        return classroomNotesServices.listVisibleNotesAsOf(classroomId, viewDate);
+    },
+
+    /**
+     * @authority create ClassroomNote
      */
     async create(note: {
         classroom_id: string;
@@ -45,45 +33,31 @@ export const classroomNotesAPI = {
     }): Promise<ClassroomNote> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-
-        const { data, error } = await supabase
-            .from('classroom_notes')
-            .insert([{ ...note, author_id: myId, is_pinned: false }])
-            .select('*, author:users(full_name, role)')
-            .single();
-
-        if (error) throw new APIError('Failed to create classroom note', error.code, error);
-        return data as ClassroomNote;
+        return classroomNotesServices.createNote(myId, note);
     },
 
     /**
-     * Update a note's content, pinned state, or visibility.
-     * Only the author can update their own notes (enforced by RLS).
+     * @authority update ClassroomNote
      */
     async update(
         id: string,
-        updates: Partial<Pick<ClassroomNote, 'content' | 'is_pinned' | 'visibility'>>
-    ): Promise<ClassroomNote> {
-        const { data, error } = await supabase
-            .from('classroom_notes')
-            .update({ ...updates, updated_at: new Date().toISOString() })
-            .eq('id', id)
-            .select('*, author:users(full_name, role)')
-            .single();
-
-        if (error) throw new APIError('Failed to update classroom note', error.code, error);
-        return data as ClassroomNote;
+        updates: Partial<Pick<ClassroomNote, 'content' | 'is_pinned' | 'visibility'>    ): Promise<ClassroomNote> {
+        return classroomNotesServices.updateNote(id, updates);
     },
 
     /**
-     * Delete a note. Only the author can delete (enforced by RLS).
+     * @authority delete ClassroomNote
      */
     async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('classroom_notes')
-            .delete()
-            .eq('id', id);
+        await classroomNotesServices.deleteNote(id);
+    },
 
-        if (error) throw new APIError('Failed to delete classroom note', error.code, error);
+    /**
+     * @authority read ClassroomNote
+     */
+    async getTimeline(id: string): Promise<ClassroomNoteLifecycleEvent[]> {
+        return classroomNotesServices.getNoteTimeline(id);
     },
 };
+
+void classroomNotesContract;

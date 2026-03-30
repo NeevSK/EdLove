@@ -19,8 +19,8 @@ import {
 import { Box, Text, Heading, VStack, HStack } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap, Trash2, Edit2 } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
-import { api, Classroom, MOCK_CLASSROOMS, identityAPI } from '@repo/core';
-import { useStore, supabase, usePermissions } from '@repo/core';
+import { api, MOCK_CLASSROOMS, identityAPI } from '@repo/core';
+import { useStore, usePermissions } from '@repo/core';
 import { useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
@@ -32,11 +32,22 @@ import { PositiveInvitation } from '@repo/ui';
 import { SkeletonCard } from '@repo/ui';
 
 interface ClassroomListProps {
-    onClassroomPress?: (classroom: Classroom) => void;
-    onDataLoaded?: (classrooms: Classroom[]) => void;
+    onClassroomPress?: (classroom: WorkspaceClassroom) => void;
+    onDataLoaded?: (classrooms: WorkspaceClassroom[]) => void;
     isNested?: boolean;
     refreshTrigger?: number;
     emptyContent?: React.ReactNode;
+}
+
+type WorkspaceClassroom = Awaited<ReturnType<typeof api.classrooms.getByTeacher>>[number];
+
+async function getSchoolScopedClassroomsForPrincipal(userId: string, pagination: { limit: number; offset: number }) {
+    const summary = await api.identity.getClassroomRoleSummary(userId);
+    if (!summary.schoolId) {
+        return [];
+    }
+
+    return api.classrooms.getBySchool(summary.schoolId, pagination);
 }
 
 export default function ClassroomList({
@@ -52,7 +63,7 @@ export default function ClassroomList({
     
     // Capability-based check for classroom creation
     const canCreateClassroom = can('create', 'Classroom');
-    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+    const [classrooms, setClassrooms] = useState<WorkspaceClassroom[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
     const colors = useThemedColors();
@@ -114,7 +125,7 @@ export default function ClassroomList({
                     setError(null);
                 }
 
-                let data: Classroom[] = [];
+                let data: WorkspaceClassroom[] = [];
 
                 if (isGuest) {
                     if (can('manage', 'TeacherDashboard')) {
@@ -147,24 +158,14 @@ export default function ClassroomList({
                     }
 
                     const pagination = { limit: PAGE_SIZE, offset: 0 };
-                    let realData: Classroom[] = [];
+                    let realData: WorkspaceClassroom[] = [];
 
                     if (can('manage', 'TeacherDashboard')) {
                         realData = await api.classrooms.getByTeacher(userId, pagination);
                     } else if (can('manage', 'StudentDashboard')) {
                         realData = await api.classrooms.getByStudent(userId, pagination);
                     } else if (can('manage', 'PrincipalDashboard')) {
-                        // Principals check their school_id from their own user record in 'users' table
-                        const { data: userData } = await supabase
-                            .from('users')
-                            .select('school_id')
-                            .eq('id', userId)
-                            .single();
-                        
-                        const schoolId = userData?.school_id;
-                        if (schoolId) {
-                            realData = await api.classrooms.getBySchool(schoolId, pagination);
-                        }
+                        realData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
                     }
 
                     // If real data exists, use it and ignore samples
@@ -226,23 +227,14 @@ export default function ClassroomList({
             if (!userId) return;
 
             const pagination = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
-            let newData: Classroom[] = [];
+            let newData: WorkspaceClassroom[] = [];
 
             if (can('manage', 'TeacherDashboard')) {
                 newData = await api.classrooms.getByTeacher(userId, pagination);
             } else if (can('manage', 'StudentDashboard')) {
                 newData = await api.classrooms.getByStudent(userId, pagination);
             } else if (can('manage', 'PrincipalDashboard')) {
-                const { data: userData } = await supabase
-                    .from('users')
-                    .select('school_id')
-                    .eq('id', userId)
-                    .single();
-
-                const schoolId = userData?.school_id;
-                if (schoolId) {
-                    newData = await api.classrooms.getBySchool(schoolId, pagination);
-                }
+                newData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
             }
 
             if (newData.length > 0) {
@@ -257,13 +249,13 @@ export default function ClassroomList({
         }
     };
 
-    const handleClassroomPress = useCallback((classroom: Classroom) => {
+    const handleClassroomPress = useCallback((classroom: WorkspaceClassroom) => {
         if (onClassroomPress) {
             onClassroomPress(classroom);
         }
     }, [onClassroomPress]);
 
-    const renderClassroomCard = useCallback(({ item: classroom }: ListRenderItemInfo<Classroom>) => {
+    const renderClassroomCard = useCallback(({ item: classroom }: ListRenderItemInfo<WorkspaceClassroom>) => {
         const studentCount = (classroom as any).student_count || 0;
 
         return (
@@ -277,40 +269,40 @@ export default function ClassroomList({
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 toast={toast}
                 t={t}
-            />
+            /
         );
     }, [handleClassroomPress, onClassroomPress, colors, toast, t]);
 
-    const keyExtractor = useCallback((item: Classroom) => item.id, []);
+    const keyExtractor = useCallback((item: WorkspaceClassroom) => item.id, []);
     const ItemSeparator = useCallback(() => <View style={{ height: Theme.spacing.md }} />, []);
 
     if (loading) {
         return (
-            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
-                <SkeletonCard height={80} />
-                <SkeletonCard height={80} />
-                <SkeletonCard height={80} />
-            </VStack>
+            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}
+                <SkeletonCard height={80} /
+                <SkeletonCard height={80} /
+                <SkeletonCard height={80} /
+            </VStack
         );
     }
 
     if (error) {
         return (
-            <View style={styles.centerContainer}>
-                <Text style={styles.errorText}>⚠️ {error}</Text>
+            <View style={styles.centerContainer}
+                <Text style={styles.errorText}>\u26A0\uFE0F {error}</Text
                 <TouchableOpacity
                     style={styles.retryButton}
                     onPress={handleRetry}
-                >
-                    <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text>
-                </TouchableOpacity>
-            </View>
+                
+                    <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text
+                </TouchableOpacity
+            </View
         );
     }
 
     if (isNested) {
         return (
-            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
+            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}
                 {classrooms.length === 0 ? (
                     emptyContent || (
                         <PositiveInvitation
@@ -322,7 +314,7 @@ export default function ClassroomList({
                                     setIsCreateModalOpen(true);
                                 }
                             }}
-                        />
+                        /
                     )
                 ) : (
                     classrooms.map((classroom) => (
@@ -337,7 +329,7 @@ export default function ClassroomList({
                             setIsCreateModalOpen={setIsCreateModalOpen}
                             toast={toast}
                             t={t}
-                        />
+                        /
                     ))
                 )}
 
@@ -352,13 +344,13 @@ export default function ClassroomList({
                         hapticSuccess();
                         setInternalRefreshTrigger(prev => prev + 1);
                     }}
-                />
-            </VStack>
+                /
+            </VStack
         );
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}
             {classrooms.length === 0 ? (
                 <PositiveInvitation
                     context="classroom"
@@ -369,9 +361,9 @@ export default function ClassroomList({
                             setIsCreateModalOpen(true);
                         }
                     }}
-                />
+                /
             ) : (
-                <>
+                <
                     <FlatList
                         data={classrooms}
                         renderItem={renderClassroomCard}
@@ -387,7 +379,7 @@ export default function ClassroomList({
                         maxToRenderPerBatch={10}
                         windowSize={5}
                         removeClippedSubviews={true}
-                    />
+                    /
 
                     {canCreateClassroom && (
                         <TouchableOpacity
@@ -409,11 +401,11 @@ export default function ClassroomList({
                                 ...Theme.shadows.md,
                                 zIndex: 10
                             }}
-                        >
-                            <Plus size={24} color="white" />
-                        </TouchableOpacity>
+                        
+                            <Plus size={24} color="white" /
+                        </TouchableOpacity
                     )}
-                </>
+                </
             )}
 
             <CreateClassroomModal
@@ -427,16 +419,16 @@ export default function ClassroomList({
                     hapticSuccess();
                     setInternalRefreshTrigger(prev => prev + 1);
                 }}
-            />
-        </Box>
+            /
+        </Box
     );
 }
 
 // Memoized ClassroomCard component
 interface ClassroomCardProps {
-    classroom: Classroom;
-    onPress: (classroom: Classroom) => void;
-    onClassroomPress?: (classroom: Classroom) => void;
+    classroom: WorkspaceClassroom;
+    onPress: (classroom: WorkspaceClassroom) => void;
+    onClassroomPress?: (classroom: WorkspaceClassroom) => void;
     studentCount: number;
     colors: any;
     setPendingInitialData: (data: any) => void;
@@ -467,14 +459,14 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
         toast.show({
             placement: "top",
             render: ({ id }: { id: string }) => (
-                <Toast nativeID={"toast-" + id}>
-                    <VStack sx={{ gap: 4 }}>
-                        <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle>
-                        <ToastDescription>
+                <Toast nativeID={"toast-" + id}
+                    <VStack sx={{ gap: 4 }}
+                        <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle
+                        <ToastDescription
                             {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}
-                        </ToastDescription>
-                    </VStack>
-                </Toast>
+                        </ToastDescription
+                    </VStack
+                </Toast
             ),
         });
     }, [classroom.id, dismissSample, toast, t]);
@@ -483,7 +475,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
         <TouchableOpacity
             onPress={handlePress}
             activeOpacity={0.7}
-        >
+        
             <Box
                 sx={{
                     borderRadius: Theme.corners.generous,
@@ -492,8 +484,8 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                     backgroundColor: colors.secondary,
                     borderColor: colors.border,
                 }}
-            >
-                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}>
+            
+                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}
                     <Box sx={{
                         width: 50,
                         height: 50,
@@ -501,18 +493,18 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                         justifyContent: 'center',
                         alignItems: 'center',
                         backgroundColor: colors.tertiary
-                    }}>
+                    }}
                         <BookOpen
                             size={24}
                             color={Theme.colors.sanctuarySaffron}
-                        />
-                    </Box>
+                        /
+                    </Box
 
-                    <VStack sx={{ flex: 1, gap: 4 }}>
-                        <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
+                    <VStack sx={{ flex: 1, gap: 4 }}
+                        <HStack alignItems="center" sx={{ gap: 8 }}
+                            <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}
                                 {classroom.name}
-                            </Text>
+                            </Text
                             {(classroom as any).is_sample && (
                                 <Box sx={{
                                     backgroundColor: Theme.colors.amberGlow + '22',
@@ -524,16 +516,16 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     gap: 2
-                                }}>
-                                    <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                                    <Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text>
-                                </Box>
+                                }}
+                                    <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} /
+                                    <Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text
+                                </Box
                             )}
-                        </HStack>
-                        <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}>
+                        </HStack
+                        <HStack alignItems="center" sx={{ gap: 8 }}
+                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}
                                 {classroom.subject || t('classroom.noSubject')}
-                            </Text>
+                            </Text
                             <Box
                                 sx={{
                                     width: 4,
@@ -541,33 +533,33 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                                     borderRadius: 2,
                                     backgroundColor: colors.textTertiary,
                                 }}
-                            />
-                            <HStack alignItems="center" sx={{ gap: 4 }}>
-                                <Users size={14} color={colors.textSecondary} />
-                                <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
+                            /
+                            <HStack alignItems="center" sx={{ gap: 4 }}
+                                <Users size={14} color={colors.textSecondary} /
+                                <Text color={colors.textSecondary} sx={{ fontSize: 14 }}
                                     {studentCount}
-                                </Text>
-                            </HStack>
-                        </HStack>
-                    </VStack>
+                                </Text
+                            </HStack
+                        </HStack
+                    </VStack
 
-                    <TouchableOpacity onPress={handleAttendancePress}>
+                    <TouchableOpacity onPress={handleAttendancePress}
                         <Box sx={{
                             padding: Theme.spacing.sm,
                             borderRadius: Theme.corners.comfortable,
                             backgroundColor: colors.tertiary,
-                        }}>
-                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
-                        </Box>
-                    </TouchableOpacity>
+                        }}
+                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} /
+                        </Box
+                    </TouchableOpacity
 
                     <ChevronRight
                         size={20}
                         color={colors.textSecondary}
-                    />
-                </HStack>
-            </Box>
-        </TouchableOpacity>
+                    /
+                </HStack
+            </Box
+        </TouchableOpacity
     );
 }, (prevProps, nextProps) => {
     return (

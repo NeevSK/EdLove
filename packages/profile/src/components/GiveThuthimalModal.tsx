@@ -20,7 +20,7 @@ interface GiveThuthimalModalProps {
     onClose: () => void;
     recipientId: string;
     recipientName: string;
-    /** Role of the recipient — used to attribute the gift correctly. Defaults to 'teacher'. */
+    /** Role of the recipient - used to attribute the gift correctly. Defaults to 'teacher'. */
     recipientTier?: string;
     /** ID of the giver. */
     giverId: string;
@@ -53,7 +53,7 @@ export function GiveThuthimalModal({
                 message: message.trim() || undefined,
             });
             hapticSuccess();
-            showToast({ message: 'Your gift of gratitude has been sent 🌸', type: 'sanctuary' });
+            showToast({ message: 'Your gift of gratitude has been sent =O', type: 'sanctuary' });
             setMessage('');
             onClose();
         } catch (e: any) {
@@ -70,14 +70,14 @@ export function GiveThuthimalModal({
             transparent
             animationType="slide"
             onRequestClose={onClose}
-        >
+        
             <Box
                 sx={{
                     flex: 1,
                     backgroundColor: 'rgba(38,26,69,0.7)',
                     justifyContent: 'flex-end',
                 }}
-            >
+            
                 <Box
                     sx={{
                         backgroundColor: colors.secondary,
@@ -88,20 +88,20 @@ export function GiveThuthimalModal({
                         borderTopWidth: 1,
                         borderColor: colors.border,
                     }}
-                >
-                    <VStack space="lg">
-                        <HStack justifyContent="space-between" alignItems="center">
-                            <Heading size="md" color={colors.text}>
-                                🌸 Give Gratitude
-                            </Heading>
-                            <SanctuaryButton variant="ghost" size="sm" onPress={onClose} accessibilityLabel="Close">
-                                ✕
-                            </SanctuaryButton>
-                        </HStack>
+                
+                    <VStack space="lg"
+                        <HStack justifyContent="space-between" alignItems="center"
+                            <Heading size="md" color={colors.text}
+                                {'=O'} Give Gratitude
+                            </Heading
+                            <SanctuaryButton variant="ghost" size="sm" onPress={onClose} accessibilityLabel="Close"
+                                {''}
+                            </SanctuaryButton
+                        </HStack
 
-                        <Text size="sm" color={colors.textSecondary}>
+                        <Text size="sm" color={colors.textSecondary}
                             Send a Thuthimal gift to {recipientName}. They will receive a notification when the gift is claimed.
-                        </Text>
+                        </Text
 
                         {/* Optional personal message */}
                         <TextInput
@@ -121,19 +121,19 @@ export function GiveThuthimalModal({
                                 },
                             ]}
                             accessibilityLabel="Personal message"
-                        />
+                        /
 
                         <SanctuaryButton
                             onPress={handleSend}
                             isLoading={isSending}
                             accessibilityLabel="Send gift of gratitude"
-                        >
+                        
                             Send Gift of Gratitude
-                        </SanctuaryButton>
-                    </VStack>
-                </Box>
-            </Box>
-        </Modal>
+                        </SanctuaryButton
+                    </VStack
+                </Box
+            </Box
+        </Modal
     );
 }
 

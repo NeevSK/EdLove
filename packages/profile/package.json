@@ -5,15 +5,15 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./components/*": "./src/components/*.tsx",
-    "./types": "./src/types/index.ts",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
+    "@repo/database": "workspace:*",
     "@eslint/eslintrc": "^3.3.5",
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",

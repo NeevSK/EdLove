@@ -102,11 +102,9 @@ export const tsl = {
   fbm: (p: TSLExpression, octaves: number) => 
     new CallExpression('fbm', [p, new LiteralExpression(octaves, 'float')], 'float'),
 
-  warp: (p: TSLExpression, strength: TSLExpression) =>
-    new CallExpression('domainWarp', [p, strength], 'vec2'),
+  warp: (p: TSLExpression, strength: TSLExpression) =    new CallExpression('domainWarp', [p, strength], 'vec2'),
 
-  kelvin: (k: TSLExpression) =>
-    new CallExpression('kelvinToRGB', [k], 'vec3'),
+  kelvin: (k: TSLExpression) =    new CallExpression('kelvinToRGB', [k], 'vec3'),
 
   length: (a: TSLExpression) => new CallExpression('length', [a], 'float'),
   normalize: (a: TSLExpression) => new CallExpression('normalize', [a], a.type),

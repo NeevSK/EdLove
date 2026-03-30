@@ -1,6 +1,6 @@
 import React from 'react';
 import { usePermissions } from '../hooks/usePermissions';
-import { Actions, Subjects } from '../abilities/student';
+import { Actions, Subjects } from '../abilities/base';
 
 interface RouteGuardProps {
   action: Actions;

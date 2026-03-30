@@ -34,17 +34,17 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
                 id={id || `marker-${coordinate.latitude}-${coordinate.longitude}`}
                 coordinate={[coordinate.longitude, coordinate.latitude]}
                 onSelected={onPress}
-            >
+            
                 {(children as React.ReactElement) || (
-                    <View style={[styles.dot, { backgroundColor: pinColor || '#FF0000' }]} />
+                    <View style={[styles.dot, { backgroundColor: pinColor || '#FF0000' }]} /
                 )}
-                <MapLibreGL.Callout>
-                    <View style={styles.callout}>
-                        <Text style={styles.calloutTitle}>{title}</Text>
+                <MapLibreGL.Callout
+                    <View style={styles.callout}
+                        <Text style={styles.calloutTitle}>{title}</Text
                         {description && <Text style={styles.calloutDesc}>{description}</Text>}
-                    </View>
-                </MapLibreGL.Callout>
-            </MapLibreGL.PointAnnotation>
+                    </View
+                </MapLibreGL.Callout
+            </MapLibreGL.PointAnnotation
         );
     }
 
@@ -55,9 +55,9 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
             description={description}
             onPress={onPress}
             pinColor={pinColor}
-        >
+        
             {children}
-        </Marker>
+        </Marker
     );
 };
 

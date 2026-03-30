@@ -1,13 +1,13 @@
 /**
- * User Growth State API — All nature path stage management.
+ * User Growth State API \u2014 All nature path stage management.
  *
  * Manages the `user_growth_state` table which tracks each user's position across
  * all four nature paths of the Gurudevi Growth Model (see docs/Core/GROWTH_MODEL.md Section 2B).
  *
- *   🌸 Bhumi (Lotus) — Bijam → Mūla → Nāla → Patra → Kamala → Pūrṇa Kamala  (all users)
- *   🌳 Banyan (Vata)  — Sapling → Roots → Canopy → Shade Giver → Forest Maker (teachers/principals)
- *   🌊 River (Ganga)  — Trickle → Stream → River → Delta                       (students/teachers)
- *   💎 Crystal        — Spark → Cluster → Cave → Fractal                        (students)
+ *   \uD83C\uDF38 Bhumi (Lotus) \u2014 Bijam \u2192 M\u016Bla \u2192 N\u0101la \u2192 Patra \u2192 Kamala \u2192 P\u016Br\u1E47a Kamala  (all users)
+ *   \uD83C\uDF33 Banyan (Vata)  \u2014 Sapling \u2192 Roots \u2192 Canopy \u2192 Shade Giver \u2192 Forest Maker (teachers/principals)
+ *   \uD83C\uDF0A River (Ganga)  \u2014 Trickle \u2192 Stream \u2192 River \u2192 Delta                       (students/teachers)
+ *   \uD83D\uDC8E Crystal        \u2014 Spark \u2192 Cluster \u2192 Cave \u2192 Fractal                        (students)
  *
  * Stages advance naturally when the app notices genuine engagement over time.
  *
@@ -15,11 +15,14 @@
  *   - Import from '@repo/core' in any downstream package.
  *   - growthSignalsAPI calls incrementDimension automatically after every signal.
  *   - UI reads getBhumiStage to render the Lotus Life Stage visualization (Self tab only).
- *   - Show only the living lotus visual — the stage name lives in the database, the lotus speaks for itself.
+ *   - Show only the living lotus visual \u2014 the stage name lives in the database, the lotus speaks for itself.
  */
 
+import { identityAPI } from './identity';
+import { composeUserAbilities } from '../permissions/composer';
+import { APIError } from './types';
 import { supabase } from '../lib/supabase';
-import { requireAuth } from '../lib/authorization';
+import { getTemporalRange } from '../utils/temporalUtils';
 import type { BanyanStage, RiverStage, CrystalTier } from './naturePaths';
 
 export type BhumiStage =
@@ -47,15 +50,15 @@ export interface UserGrowthState {
     witnessing_signals: number;
     weaving_signals: number;
     blooming_signals: number;
-    // Banyan (Vata) path — teachers & principals
+    // Banyan (Vata) path \u2014 teachers & principals
     banyan_stage: BanyanStage;
     peer_mentored_count: number;
     circles_facilitated_count: number;
-    // River (Ganga) path — students & teachers' curricular contribution
+    // River (Ganga) path \u2014 students & teachers' curricular contribution
     river_stage: RiverStage;
     lessons_completed_count: number;
     reflections_submitted_count: number;
-    // Crystal (Spatika) path — students
+    // Crystal (Spatika) path \u2014 students
     crystal_tier: CrystalTier;
     crystals_found_count: number;
     fractal_moments_count: number;
@@ -75,7 +78,7 @@ const DIMENSION_COLUMN: Record<GrowthDimension, keyof UserGrowthState> = {
 
 /**
  * Bhumi stage transition criteria.
- * Intentionally approximate and lenient — natural engagement, not metric grind.
+ * Intentionally approximate and lenient \u2014 natural engagement, not metric grind.
  * (See GROWTH_MODEL.md Section 5 for the full design specification.)
  */
 function meetsTransitionCriteria(
@@ -84,25 +87,25 @@ function meetsTransitionCriteria(
 ): BhumiStage | null {
     switch (currentStage) {
         case 'bijam':
-            // Bijam → Mūla: First meaningful presence signal — just showing up
+            // Bijam \u2192 M\u016Bla: First meaningful presence signal \u2014 just showing up
             return state.presence_signals >= 1 ? 'mula' : null;
 
         case 'mula':
-            // Mūla → Nāla: Present on 5+ occasions AND engaged with at least one other dimension
+            // M\u016Bla \u2192 N\u0101la: Present on 5+ occasions AND engaged with at least one other dimension
             return state.presence_signals >= 5 &&
                 (state.nourishing_signals + state.witnessing_signals + state.weaving_signals) >= 1
                 ? 'nala'
                 : null;
 
         case 'nala':
-            // Nāla → Patra: Outward contribution required — either weaving (community) OR nourishing (sharing).
-            // Intentional: mula→nala only requires any ONE of (nourishing + witnessing + weaving) >= 1,
+            // N\u0101la \u2192 Patra: Outward contribution required \u2014 either weaving (community) OR nourishing (sharing).
+            // Intentional: mula\u2192nala only requires any ONE of (nourishing + witnessing + weaving) >= 1,
             // so a teacher could advance via witnessing alone (e.g., reading resources). This gate
             // ensures at least one act of outward contribution before reaching Patra.
             return (state.weaving_signals >= 1 || state.nourishing_signals >= 1) ? 'patra' : null;
 
         case 'patra': {
-            // Patra → Kamala: Active across at least 3 aliveness dimensions
+            // Patra \u2192 Kamala: Active across at least 3 aliveness dimensions
             const activeDimensions = (
                 [
                     state.presence_signals,
@@ -116,18 +119,18 @@ function meetsTransitionCriteria(
         }
 
         case 'kamala':
-            // Kamala → Pūrṇa: Received a Thuthimal or other blooming signal
+            // Kamala \u2192 P\u016Br\u1E47a: Received a Thuthimal or other blooming signal
             return state.blooming_signals >= 1 ? 'purna_kamala' : null;
 
         case 'purna_kamala':
-            return null; // Already at full bloom — no further advancement
+            return null; // Already at full bloom \u2014 no further advancement
     }
 }
 
 export const userGrowthStateAPI = {
     /**
      * Get the growth state for a user, creating a new seed record if none exists.
-     * Every user starts as Bijam — a seed in the mud.
+     * Every user starts as Bijam \u2014 a seed in the mud.
      */
     async getOrCreate(userId: string): Promise<UserGrowthState> {
         const { data: existing } = await supabase
@@ -150,7 +153,7 @@ export const userGrowthStateAPI = {
 
     /**
      * Get the current Bhumi life stage for a user.
-     * Returns 'bijam' for new users (seed in the mud — never empty, seeds are beautiful).
+     * Returns 'bijam' for new users (seed in the mud \u2014 never empty, seeds are beautiful).
      * Non-throwing: returns 'bijam' on any error.
      */
     async getBhumiStage(userId: string): Promise<BhumiStage> {
@@ -173,6 +176,32 @@ export const userGrowthStateAPI = {
             .eq('user_id', userId)
             .maybeSingle();
         return (data as UserGrowthState | null) ?? null;
+    },
+
+    async getStateAsOf(userId: string, asOf: string): Promise<UserGrowthState | null> {
+        const { data, error } = await supabase
+            .from('user_growth_state_versions')
+            .select('snapshot')
+            .eq('user_id', userId)
+            .lte('recorded_at', asOf)
+            .order('recorded_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) throw error;
+        return (data?.snapshot as UserGrowthState | undefined) ?? null;
+    },
+
+    async getStateHistory(userId: string, limit = 50) {
+        const { data, error } = await supabase
+            .from('user_growth_state_versions')
+            .select('id, operation, recorded_at, recorded_by, snapshot')
+            .eq('user_id', userId)
+            .order('recorded_at', { ascending: false })
+            .limit(limit);
+
+        if (error) throw error;
+        return data || [];
     },
 
     /**
@@ -220,7 +249,7 @@ export const userGrowthStateAPI = {
                         .from('user_growth_state')
                         .update({ bhumi_stage: nextStageFallback, updated_at: new Date().toISOString() })
                         .eq('user_id', userId);
-                } catch (e) {
+                } catch {
                     // ignore
                 }
             }
@@ -236,22 +265,24 @@ export const userGrowthStateAPI = {
                     .from('user_growth_state')
                     .update({ bhumi_stage: nextStage, updated_at: new Date().toISOString() })
                     .eq('user_id', userId);
-            } catch (e) {
+            } catch {
                 // ignore
             }
         }
     },
 
     /**
-     * Alias for getOrCreate — used by the LivingJourneyPanel UI component.
+     * Alias for getOrCreate \u2014 used by the LivingJourneyPanel UI component.
      * Returns the full growth state (all paths) for a user.
      *
      * Security: ensures the caller is authenticated and can only access their own state.
      */
     async getOrCreateState(userId: string): Promise<UserGrowthState> {
-        const user = await requireAuth();
-        if (user.id !== userId) {
-            throw new Error('Forbidden');
+        const loggedInId = await identityAPI.getMyInternalId();
+        const ability = composeUserAbilities({ userId: loggedInId });
+
+        if (loggedInId !== userId && !ability.can('manage', 'Wellbeing')) {
+            throw new APIError('Unauthorized access to growth state', 'FORBIDDEN');
         }
         return this.getOrCreate(userId);
     },
@@ -261,23 +292,37 @@ export const userGrowthStateAPI = {
      * Used by the LivingJourneyPanel to display memory tiles.
      * Returns an empty array on any error or unauthorized access.
      */
-    async getWhisperedMoments(userId: string): Promise<Array<{
+    async getWhisperedMoments(userId: string, options: {
+        asOf?: string;
+        viewDate?: string;
+        viewScale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+    } = {}): Promise<Array<{
         key: string;
         name_en: string;
         name_si: string;
         awarded_at: string;
     }>> {
-        // Ensure the caller is authenticated and can only access their own moments
-        const user = await requireAuth().catch(() => null);
-        if (!user || user.id !== userId) {
+        const loggedInId = await identityAPI.getMyInternalId();
+        if (!loggedInId) return [];
+
+        const ability = composeUserAbilities({ userId: loggedInId });
+        if (loggedInId !== userId && !ability.can('manage', 'Wellbeing')) {
             return [];
         }
 
-        const { data } = await supabase
+        let query = supabase
             .from('whispered_moments')
             .select('moment_key, moment_name_en, moment_name_si, awarded_at')
-            .eq('user_id', userId)
-            .order('awarded_at', { ascending: false });
+            .eq('user_id', userId);
+
+        if (options.asOf) {
+            query = query.lte('awarded_at', options.asOf);
+        } else if (options.viewDate) {
+            const { end } = getTemporalRange(options.viewDate, options.viewScale === 'custom' ? 'day' : (options.viewScale ?? 'day'));
+            query = query.lte('awarded_at', end);
+        }
+
+        const { data } = await query.order('awarded_at', { ascending: false });
 
         if (!data) return [];
 

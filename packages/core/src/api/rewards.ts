@@ -1,19 +1,20 @@
 import { supabase } from '../lib/supabase';
+import { getTemporalRange } from '../utils/temporalUtils';
 
 /**
- * Growth Signals API — internal tracking of aliveness dimensions.
+ * Growth Signals API \u2014 internal tracking of aliveness dimensions.
  *
- * ⚠️  PHILOSOPHY ALIGNMENT NOTE (see docs/Core/GROWTH_MODEL.md v2.0):
+ * \u26A0\uFE0F  PHILOSOPHY ALIGNMENT NOTE (see docs/Core/GROWTH_MODEL.md v2.0):
  * This module was originally scaffolded as a conventional "points + badges" system.
  * It is being repurposed toward the Bhumi Nature-Inspired Growth Model (v2.0):
- *   - `points`  → internal growth_score (NEVER displayed to user as a number)
- *   - `badges`  → signals fed into Whispered Moments (never a browsable badge collection)
+ *   - `points`  \u2192 internal growth_score (NEVER displayed to user as a number)
+ *   - `badges`  \u2192 signals fed into Whispered Moments (never a browsable badge collection)
  *   - NEW v2.0: `impact_ripples` table handles Relatedness (Impact Ripple mechanism)
  *   - NEW v2.0: `WarmMirrorDataPoints` aggregation handles Competence (Warm Mirror narrative)
- *   - NEW v2.0: `user_growth_state` table tracks Bhumi life stages (Bijam → Purna Kamala)
+ *   - NEW v2.0: `user_growth_state` table tracks Bhumi life stages (Bijam \u2192 Purna Kamala)
  *
  * The Gurudevi North Star explicitly prohibits extractive gamification (points/rankings/streaks).
- * The golden mean (v2.0): genuine human-sourced impact feedback IS healthy (relatedness ≠ gamification).
+ * The golden mean (v2.0): genuine human-sourced impact feedback IS healthy (relatedness \u2260 gamification).
  * Do NOT expose points or badge counts in any UI component.
  * Use `user_growth_state` for the Lotus Life Stage visualization.
  * Use `impact_ripples` for warm human connection signals.
@@ -36,6 +37,55 @@ export const rewardsAPI = {
             throw error;
         }
         return data;
+    },
+
+    async getRewardsAsOf(userId: string, asOf: string) {
+        const { data, error } = await supabase
+            .from('user_rewards_versions')
+            .select('snapshot')
+            .eq('user_id', userId)
+            .lte('recorded_at', asOf)
+            .order('recorded_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) {
+            console.error('Error fetching historical rewards:', error);
+            throw error;
+        }
+        return (data?.snapshot as any) ?? null;
+    },
+
+    async getRewardsHistory(userId: string, limit = 50) {
+        const { data, error } = await supabase
+            .from('user_rewards_versions')
+            .select('id, operation, recorded_at, recorded_by, snapshot')
+            .eq('user_id', userId)
+            .order('recorded_at', { ascending: false })
+            .limit(limit);
+
+        if (error) {
+            console.error('Error fetching rewards history:', error);
+            throw error;
+        }
+        return data || [];
+    },
+
+    async getRewardsRangeHistory(userId: string, viewDate: string, viewScale: 'day' | 'week' | 'month' | 'year' | 'custom' = 'day') {
+        const { start, end } = getTemporalRange(viewDate, viewScale === 'custom' ? 'day' : viewScale);
+        const { data, error } = await supabase
+            .from('user_rewards_versions')
+            .select('id, operation, recorded_at, recorded_by, snapshot')
+            .eq('user_id', userId)
+            .gte('recorded_at', start)
+            .lte('recorded_at', end)
+            .order('recorded_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching rewards range history:', error);
+            throw error;
+        }
+        return data || [];
     },
 
     /**
@@ -137,11 +187,11 @@ export const rewardsAPI = {
     /**
      * Checks if user qualifies for any new Whispered Moments or Bhumi stage transitions.
      *
-     * ⚠️  MIGRATION PENDING (see GROWTH_MODEL.md Phase 1):
+     * \u26A0\uFE0F  MIGRATION PENDING (see GROWTH_MODEL.md Phase 1):
      * Current implementation awards generic badge strings.
      * Target implementation: check `user_growth_state` + emit `whispered_moments` events.
      * The "Sanctuary Seeker" string badge should be migrated to the
-     * `whispered_moments` table with key 'the_seeker' and Sinhala name 'සොයන්නා'.
+     * `whispered_moments` table with key 'the_seeker' and Sinhala name '\u0DC3\u0DDC\u0DBA\u0DB1\u0DCA\u0DB1\u0DCF'.
      */
     async checkAndAwardAchievements(userId: string) {
         // Fetch feature usage

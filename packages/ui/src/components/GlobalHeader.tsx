@@ -63,8 +63,8 @@ export default function GlobalHeader({
     avatarUrl
 }: GlobalHeaderProps) {
     const { t } = useTranslation();
-    const { context, can } = usePermissions();
-    const { userId } = context;
+    const { can } = usePermissions();
+    // userId is available from context if needed
 
     const user = useStore((state: any) => state.user); // Get user details
     const navigation = useNavigation<any>();
@@ -90,26 +90,35 @@ export default function GlobalHeader({
 
     // Get role icon and label (Capability-driven)
     const getRoleContext = () => {
+        if (can('manage', 'AdminDashboard')) {
+            return { icon: Crown, emoji: '\u26A1', label: t('roles.admin') || 'Admin' };
+        }
         if (can('manage', 'PrincipalDashboard')) {
-            return { icon: Crown, emoji: '🏛️', label: t('roles.principal') || 'Principal' };
+            return { icon: Crown, emoji: '\uD83C\uDFDB\uFE0F', label: t('roles.principal') || 'Principal' };
+        }
+        if (can('manage', 'SectionHeadDashboard')) {
+            return { icon: GraduationCap, emoji: '\uD83C\uDFD4\uFE0F', label: t('roles.sectionHead') || 'Section Head' };
+        }
+        if (can('manage', 'GradeHeadDashboard')) {
+            return { icon: GraduationCap, emoji: '\uD83C\uDF32', label: t('roles.gradeHead') || 'Grade Head' };
         }
         if (can('manage', 'TeacherDashboard')) {
-            return { icon: GraduationCap, emoji: '🌱', label: t('roles.teacher') || 'Teacher' };
+            return { icon: GraduationCap, emoji: '\uD83C\uDF31', label: t('roles.teacher') || 'Teacher' };
         }
         if (can('manage', 'StudentDashboard')) {
-            return { icon: School, emoji: '📚', label: t('roles.student') || 'Student' };
+            return { icon: School, emoji: '\uD83D\uDCDA', label: t('roles.student') || 'Student' };
         }
-        return { icon: School, emoji: '🌿', label: t('roles.member') || 'Member' };
+        return { icon: School, emoji: '\uD83C\uDF3F', label: t('roles.member') || 'Member' };
     };
 
-    const { icon: RoleIcon, emoji: RoleEmoji, label: RoleLabel } = getRoleContext();
+    const { emoji: RoleEmoji, label: RoleLabel } = getRoleContext();
 
     // Determine greeting based on time of day
     const getGreetingDetails = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return { text: t('goodMorning'), emoji: '🌅' };
-        if (hour < 18) return { text: t('goodAfternoon'), emoji: '☀️' };
-        return { text: t('goodEvening'), emoji: '🏮' };
+        if (hour < 12) return { text: t('goodMorning'), emoji: '\uD83C\uDF05' };
+        if (hour < 18) return { text: t('goodAfternoon'), emoji: '\u2600\uFE0F' };
+        return { text: t('goodEvening'), emoji: '\uD83C\uDFEE' };
     };
 
     const { text: greetingText, emoji } = getGreetingDetails();
@@ -124,7 +133,7 @@ export default function GlobalHeader({
             width: '100%',
             height: headerHeight,
             position: 'relative',
-        }}>
+        }}
             {/* GLASS BACKDROP */}
             <Box sx={{
                 position: 'absolute',
@@ -133,22 +142,22 @@ export default function GlobalHeader({
                 right: 0,
                 bottom: 0,
                 overflow: 'hidden',
-            }}>
+            }}
                 <BlurView
                     intensity={blurEnabled ? 36 : 0}
                     tint={isDark ? 'dark' : 'light'}
                     style={{ flex: 1, backgroundColor: scene.chrome.bg }}
-                />
+                /
                 <TemporalGlass
                     width={Dimensions.get('window').width}
                     height={headerHeight}
                     phase={phase}
                     cornerRadius={0}
                     style={{ position: 'absolute', top: 0, left: 0 }}
-                >
-                    <></>
-                </TemporalGlass>
-            </Box>
+                
+                    <></
+                </TemporalGlass
+            </Box
 
             <VStack sx={{
                 flex: 1,
@@ -156,46 +165,46 @@ export default function GlobalHeader({
                 paddingHorizontal: '$4' as any,
                 paddingTop: insets.top + 14,
                 paddingBottom: '$4' as any,
-            }}>
-                <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}>
+            }}
+                <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}
                     {/* LEFT: Greeting or Title */}
-                    <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
+                    <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}
                         {/* Only show Profile Icon/Menu if specifically requested */}
                         {showBack ? (
-                            <Pressable onPress={onBack || (() => navigation.goBack())}>
+                            <Pressable accessibilityRole="button" onPress={onBack || (() => navigation.goBack())}
                                 <Box sx={{
                                     backgroundColor: glass.interact.bg,
                                     padding: 8,
                                     borderRadius: 12,
-                                }}>
-                                    <ChevronLeft size={24} color={text.onChrome} />
-                                </Box>
-                            </Pressable>
+                                }}
+                                    <ChevronLeft size={24} color={text.onChrome} /
+                                </Box
+                            </Pressable
                         ) : showMenu && (
-                            <Pressable onPress={() => navigation.openDrawer && navigation.openDrawer()}>
-                                <Menu color={text.onChrome} size={24} />
-                            </Pressable>
+                            <Pressable accessibilityRole="button" onPress={() => navigation.openDrawer && navigation.openDrawer()}
+                                <Menu color={text.onChrome} size={24} /
+                            </Pressable
                         )}
 
                         {isSelfView && (
-                            <Pressable
+                            <Pressable accessibilityRole="button"
                                 onPress={() => navigation.navigate('Profile')}
-                            >
-                                <Box sx={{ marginRight: '$4' }}>
+                            
+                                <Box sx={{ marginRight: '$4' }}
                                     <UserAvatar
                                         avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
                                         fullName={userFullName}
                                         fallbackEmoji={RoleEmoji}
                                         size={32}
                                         borderRadius={12}
-                                    />
-                                </Box>
-                            </Pressable>
+                                    /
+                                </Box
+                            </Pressable
                         )}
 
-                        <VStack>
+                        <VStack
                             {(subtitle || (!title && greetingText)) && (
-                                <HStack sx={{ gap: 4, alignItems: 'center' }}>
+                                <HStack sx={{ gap: 4, alignItems: 'center' }}
                                 <Text
                                         color={text.secondary}
                                         sx={{
@@ -205,15 +214,15 @@ export default function GlobalHeader({
                                             paddingBottom: 2, // Added to prevent clipping of descenders
                                             fontFamily: Theme.typography.fontFamily.english
                                         }}
-                                    >
+                                    
                                         {title ? subtitle : greetingText}
-                                    </Text>
+                                    </Text
                                     {!title && (
-                                        <Text sx={{ fontSize: 14, marginTop: -2 }}>
+                                        <Text sx={{ fontSize: 14, marginTop: -2 }}
                                             {emoji}
-                                        </Text>
+                                        </Text
                                     )}
-                                </HStack>
+                                </HStack
                             )}
                             <Text
                                 color={text.onChrome}
@@ -222,42 +231,42 @@ export default function GlobalHeader({
                                     fontFamily: Theme.typography.fontFamily.english,
                                     fontWeight: 'bold'
                                 }}
-                            >
+                            
                                 {title ? title : (isSelfView ? (showFullNameAsPrimary ? userFullName : RoleLabel) : displayName)}
-                            </Text>
-                        </VStack>
-                    </HStack>
+                            </Text
+                        </VStack
+                    </HStack
 
                     {/* RIGHT: Actions */}
-                    <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}>
+                    <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}
                         {showSearch && (
-                            <TouchableOpacity
+                            <TouchableOpacity accessibilityRole="button"
                                 onPress={() => {
                                     hapticLight();
                                     setIsSearchActive(!isSearchActive);
                                 }}
-                            >
+                            
                                 <Box sx={{
                                     padding: 8,
                                     borderRadius: 20,
                                     backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'
-                                }}>
+                                }}
                                     {isSearchActive ? (
-                                        <X size={22} color={text.onChrome} />
+                                        <X size={22} color={text.onChrome} /
                                     ) : (
-                                        <Search size={22} color={text.onChrome} />
+                                        <Search size={22} color={text.onChrome} /
                                     )}
-                                </Box>
-                            </TouchableOpacity>
+                                </Box
+                            </TouchableOpacity
                         )}
 
                         {rightAction ? rightAction : (
-                            <TouchableOpacity onPress={() => {
+                            <TouchableOpacity accessibilityRole="button" onPress={() => {
                                 hapticLight();
                                 setShowNotifications(true);
-                            }}>
-                                <Box sx={{ position: 'relative' }}>
-                                    <Bell size={24} color={text.onChrome} />
+                            }}
+                                <Box sx={{ position: 'relative' }}
+                                    <Bell size={24} color={text.onChrome} /
                                     {/* Notification Dot */}
                                     {unreadCount > 0 && (
                                         <Box sx={{
@@ -270,27 +279,27 @@ export default function GlobalHeader({
                                             backgroundColor: accent.action,
                                             borderWidth: 1.5,
                                             borderColor: scene.chrome.bg
-                                        }} />
+                                        }} /
                                     )}
-                                </Box>
-                            </TouchableOpacity>
+                                </Box
+                            </TouchableOpacity
                         )}
-                    </HStack>
-                </HStack>
+                    </HStack
+                </HStack
 
                 {/* EXPANDABLE SEARCH BAR */}
                 {isSearchActive && (
                     <Box sx={{
                         marginTop: Theme.spacing.sm,
-                    }}>
+                    }}
                         <SanctuaryInput
                             value={searchQuery}
                             onChangeText={setSearchQuery}
                             placeholder={searchProps?.placeholder ?? t('searchPlaceholder')}
                             leftIcon={Search}
                             autoFocus
-                        />
-                    </Box>
+                        /
+                    </Box
                 )}
 
                 <NotificationDrawer
@@ -301,9 +310,9 @@ export default function GlobalHeader({
                     isLoading={notifLoading}
                     onMarkRead={markAsRead}
                     onMarkAllRead={markAllRead}
-                />
-            </VStack>
-        </Box>
+                /
+            </VStack
+        </Box
     );
 }
 

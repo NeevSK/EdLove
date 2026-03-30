@@ -2,15 +2,21 @@
   "name": "@repo/scanner-kit",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "check-types": "tsc --noEmit",
-    "lint": "eslint ."
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\""
   },
   "dependencies": {
-    "@repo/core": "workspace:*"
+    "@repo/core": "workspace:*",
+    "@repo/ui": "workspace:*"
   },
   "peerDependencies": {
     "@react-native-ml-kit/text-recognition": "*",

@@ -1,4 +1,4 @@
-import { AuthorityTier } from '../permissions/schemas/role.schema';
+import { Role as AuthorityTier } from '../permissions/schemas/role.schema';
 import type { TenantKind } from './Tenancy';
 
 export interface School {
@@ -16,7 +16,7 @@ export interface School {
     student_type?: string;
     religious_affiliation?: string;
     student_count?: number;
-    created_at: string;
+    created_at?: string;
 }
 
 export interface Section {

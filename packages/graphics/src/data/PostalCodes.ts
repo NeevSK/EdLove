@@ -30,5 +30,6 @@ export function inferFromPostalCode(code: string) {
     return {
         isValid: true,
         districtId: prefixMap[regionPrefix] || '',
+        city: '', // Placeholder as exact city requires full lookup
     };
 }

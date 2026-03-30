@@ -1,17 +1,17 @@
 /**
- * colorUtils — WCAG-compliant color math for the adaptive Sanctuary theme.
+ * colorUtils \u2014 WCAG-compliant color math for the adaptive Sanctuary theme.
  *
  * Used by useTheme() to compute text colors that automatically adapt when
- * the phase accent changes (Saffron → Sage → Blue → Gold → etc.) so that
+ * the phase accent changes (Saffron \u2192 Sage \u2192 Blue \u2192 Gold \u2192 etc.) so that
  * text is always legible regardless of which accent is active.
  *
  * WCAG 2.1 contrast requirements:
- *   AA  — normal text  : 4.5 : 1
- *   AA  — large text   : 3.0 : 1
- *   AAA — normal text  : 7.0 : 1
+ *   AA  \u2014 normal text  : 4.5 : 1
+ *   AA  \u2014 large text   : 3.0 : 1
+ *   AAA \u2014 normal text  : 7.0 : 1
  */
 
-/** Parse hex (#RGB / #RRGGBB / #RGBA / #RRGGBBAA) → [r, g, b] in 0-255 */
+/** Parse hex (#RGB / #RRGGBB / #RGBA / #RRGGBBAA) \u2192 [r, g, b] in 0-255 */
 export function hexToRgb(hex: string): [number, number, number] {
   if (!hex || typeof hex !== 'string') {
     throw new Error(`colorUtils.hexToRgb: expected a hex string, got ${typeof hex} (${String(hex)})`);
@@ -34,7 +34,7 @@ export function hexToRgb(hex: string): [number, number, number] {
   ];
 }
 
-/** Convert hex + alpha → `rgba(r,g,b,a)` string */
+/** Convert hex + alpha \u2192 `rgba(r,g,b,a)` string */
 export function hexToRgba(hex: string, alpha: number): string {
   const [r, g, b] = hexToRgb(hex);
   return `rgba(${r},${g},${b},${alpha})`;
@@ -108,7 +108,7 @@ export function compositeColorOverBackground(foreground: string, background: str
 }
 
 /**
- * Extract `r,g,b` components as a bare string — for use inside CSS
+ * Extract `r,g,b` components as a bare string \u2014 for use inside CSS
  * `rgba(var(--action-rgb), 0.15)` patterns.
  */
 export function hexToRgbComponents(hex: string): string {
@@ -145,7 +145,7 @@ export function getContrastRatio(hex1: string, hex2: string): number {
  * given background color.  Tries three candidates:
  *   1. Ink Truth   #2A2318  (rich warm dark)
  *   2. Sacred White #FCF9F2 (warm off-white)
- *   3. Pure White  #FFFFFF  (brighter fallback — helps with mid-luminance
+ *   3. Pure White  #FFFFFF  (brighter fallback \u2014 helps with mid-luminance
  *                            accents like Gurudevi Blue #3B82F6 and Violet
  *                            #8B5CF6 where neither ink nor vellum passes AA)
  *
@@ -153,9 +153,9 @@ export function getContrastRatio(hex1: string, hex2: string): number {
  * This always picks the best available option even when no colour passes
  * the WCAG AA threshold of 4.5:1 (e.g. the afternoon phase's blue accent).
  *
- * @param bgHex     — background / surface hex color
- * @param darkText  — dark candidate (default: Ink Truth #2A2318)
- * @param lightText — warm-light candidate (default: Sacred White #FCF9F2)
+ * @param bgHex     \u2014 background / surface hex color
+ * @param darkText  \u2014 dark candidate (default: Ink Truth #2A2318)
+ * @param lightText \u2014 warm-light candidate (default: Sacred White #FCF9F2)
  */
 export function getTextOnBackground(
   bgHex: string,
@@ -165,7 +165,7 @@ export function getTextOnBackground(
   try {
     // Include pure black as a 4th candidate so mid-luminance accents like
     // gurudeviBlue (#3B82F6) and gurudeviViolet (#8B5CF6) resolve to an
-    // AA-passing foreground (≥4.5:1) instead of Ink at ~4.2.
+    // AA-passing foreground (\u22654.5:1) instead of Ink at ~4.2.
     const candidates = [darkText, lightText, '#FFFFFF', '#000000'];
     let best = darkText;
     let bestRatio = 0;
@@ -237,17 +237,17 @@ export function isWcagAAA(fgHex: string, bgHex: string): boolean {
 
 /**
  * Produce a "soft tint" of a hex color suitable for card backgrounds:
- * mixes the accent color with the current surface — white in light mode,
- * near-black (#111218) in dark mode — at a low ratio so it tints without
+ * mixes the accent color with the current surface \u2014 white in light mode,
+ * near-black (#111218) in dark mode \u2014 at a low ratio so it tints without
  * overwhelming.
  *
  * In light mode this returns the accent with `alpha` opacity (visually blends
  * against a white surface). In dark mode the same alpha would look far more
  * saturated, so we blend toward the dark surface color instead.
  *
- * @param accentHex  — the dominant accent color
- * @param isDark     — whether we're in dark mode
- * @param alpha      — opacity / blend weight (default 0.08 for subtle tint)
+ * @param accentHex  \u2014 the dominant accent color
+ * @param isDark     \u2014 whether we're in dark mode
+ * @param alpha      \u2014 opacity / blend weight (default 0.08 for subtle tint)
  */
 export function accentSoftTint(
   accentHex: string,

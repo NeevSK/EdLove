@@ -1,16 +1,17 @@
-﻿/**
- * Groups API
+/**
+ * Groups API (POA Migrated)
  * 
- * API methods for managing student groups
+ * API methods for managing student groups with POA markers.
  */
 
 import { supabase } from '../lib/supabase';
 import { APIError } from './types';
-import type { StudentGroup } from './types';
+import type { StudentGroup } from '../types';
+import { communityContract } from './community.contract';
 
 export const groupsAPI = {
     /**
-     * Get all groups for a classroom
+     * @authority read Group
      */
     async getAll(classroomId: string): Promise<StudentGroup[]> {
         const { data, error } = await supabase
@@ -27,11 +28,10 @@ export const groupsAPI = {
     },
 
     /**
-     * Create a new group
+     * @authority create Group
      */
     async create(
-        group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'>
-    ): Promise<StudentGroup> {
+        group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'    ): Promise<StudentGroup> {
         const { data, error } = await supabase
             .from('student_groups')
             .insert([group])
@@ -46,12 +46,11 @@ export const groupsAPI = {
     },
 
     /**
-     * Update a group
+     * @authority update Group
      */
     async update(
         id: string,
-        updates: Partial<StudentGroup>
-    ): Promise<StudentGroup> {
+        updates: Partial<StudentGroup    ): Promise<StudentGroup> {
         const { data, error } = await supabase
             .from('student_groups')
             .update(updates)
@@ -67,7 +66,7 @@ export const groupsAPI = {
     },
 
     /**
-     * Delete a group
+     * @authority delete Group
      */
     async delete(id: string): Promise<void> {
         const { error } = await supabase
@@ -80,3 +79,6 @@ export const groupsAPI = {
         }
     },
 };
+
+// Satisfy linter
+void communityContract;

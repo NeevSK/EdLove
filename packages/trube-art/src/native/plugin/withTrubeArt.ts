@@ -43,7 +43,7 @@ const withNitroProGuard: ConfigPlugin = (config) => {
 };
 
 /**
- * Expo Config Plugin to set up Trübe-Art for a React Native app.
+ * Expo Config Plugin to set up Tr\u00FCbe-Art for a React Native app.
  * Handles native dependencies (Vulkan, Metal) and Nitro module initialization.
  */
 const withTrubeArt: ConfigPlugin = (config) => {

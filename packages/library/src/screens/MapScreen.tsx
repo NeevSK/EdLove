@@ -77,8 +77,7 @@ const getAvailablePerspectives = (topology: any) => {
 
 export default function MapScreen() {
     const colors = useThemedColors();
-    const { context } = usePermissions();
-    const role = context.roles[0];
+    const { can } = usePermissions();
     const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
     
@@ -188,9 +187,9 @@ export default function MapScreen() {
     const renderContent = () => {
         if (loading) {
             return (
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
-                </Box>
+                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} /
+                </Box
             );
         }
 
@@ -203,7 +202,7 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -214,7 +213,7 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -225,7 +224,7 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -236,7 +235,7 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -249,19 +248,19 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-            </Box>
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
+            </Box
         );
     };
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false}
             <GlobalHeader
                 title="Knowledge Cosmos"
                 subtitle="Isomorphic Visualization Engine"
@@ -281,19 +280,19 @@ export default function MapScreen() {
                             opacity: isExporting ? 0.5 : 1,
                             marginRight: 12
                         }}
-                    >
-                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} />
-                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
+                    
+                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} /
+                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}
                             {isExporting ? '...' : 'EXPORT'}
-                        </Text>
-                    </TouchableOpacity>
+                        </Text
+                    </TouchableOpacity
                 }
-            />
+            /
 
-            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}>
-                <View style={styles.perspectiveSwitcherContainer}>
-                    <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
+            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
+                <View style={styles.perspectiveSwitcherContainer}
+                    <BlurView intensity={30} tint="dark" style={styles.blurContainer}
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}
                             {getAvailablePerspectives(data).map((p) => {
                                 const isActive = activePerspective === p.id;
                                 const isDisabled = p.disabled;
@@ -308,60 +307,60 @@ export default function MapScreen() {
                                             isActive && styles.activePerspectiveButton,
                                             isDisabled && { opacity: 0.3 }
                                         ]}
-                                    >
+                                    
                                         <Icon 
                                             size={18} 
                                             color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
-                                        />
+                                        /
                                         <Text style={[
                                             styles.perspectiveLabel,
                                             isActive && styles.activePerspectiveLabel
-                                        ]}>
+                                        ]}
                                             {p.label}
-                                        </Text>
-                                    </TouchableOpacity>
+                                        </Text
+                                    </TouchableOpacity
                                 );
                             })}
-                        </ScrollView>
-                    </BlurView>
-                </View>
-            </Box>
+                        </ScrollView
+                    </BlurView
+                </View
+            </Box
 
-            <GestureHandlerRootView style={{ flex: 1 }}>
+            <GestureHandlerRootView style={{ flex: 1 }}
                 <Box sx={{ 
                     flex: 1, 
                     backgroundColor: colors.obsidian || colors.black,
                     overflow: 'hidden'
-                }}>
+                }}
                     {renderContent()}
 
                     {selectedNode && (
                         <Animated.View 
                             entering={FadeInDown}
                             style={styles.nodeSheetContainer}
-                        >
-                            <BlurView intensity={30} tint="dark" style={styles.blurSheet}>
-                                <VStack spacing={12}>
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <VStack>
-                                            <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
+                        
+                            <BlurView intensity={30} tint="dark" style={styles.blurSheet}
+                                <VStack spacing={12}
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                                        <VStack
+                                            <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}
                                                 {selectedNode.label}
-                                            </Text>
-                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
-                                                {selectedNode.type} • {selectedNode.group}
-                                            </Text>
-                                        </VStack>
-                                        <TouchableOpacity onPress={() => setSelectedNode(null)}>
-                                            <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                                <X size={20} color={colors.textPrimary} />
-                                            </Box>
-                                        </TouchableOpacity>
-                                    </HStack>
+                                            </Text
+                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}
+                                                {selectedNode.type} " {selectedNode.group}
+                                            </Text
+                                        </VStack
+                                        <TouchableOpacity onPress={() => setSelectedNode(null)}
+                                            <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                                <X size={20} color={colors.textPrimary} /
+                                            </Box
+                                        </TouchableOpacity
+                                    </HStack
 
                                     {selectedNode.metadata?.description && (
-                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
+                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}
                                             {selectedNode.metadata.description}
-                                        </Text>
+                                        </Text
                                     )}
 
                                     <TouchableOpacity 
@@ -373,18 +372,18 @@ export default function MapScreen() {
                                                 navigation.navigate('ResourceDetail', { id: selectedNode.id });
                                             }
                                         }}
-                                    >
-                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                    
+                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}
                                             {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
-                                        </Text>
-                                    </TouchableOpacity>
-                                </VStack>
-                            </BlurView>
-                        </Animated.View>
+                                        </Text
+                                    </TouchableOpacity
+                                </VStack
+                            </BlurView
+                        </Animated.View
                     )}
-                </Box>
-            </GestureHandlerRootView>
-        </ScreenWrapper>
+                </Box
+            </GestureHandlerRootView
+        </ScreenWrapper
     );
 }
 
@@ -453,13 +452,13 @@ function StatCardNative({ label, value, icon: Icon }: { label: string; value: nu
             flexDirection: 'row',
             alignItems: 'center',
             gap: 12
-        }}>
-            <Icon size={20} color={Theme.colors.sanctuarySaffron} />
-            <VStack>
-                <Text sx={{ fontSize: 10, color: Theme.colors.starlightGray }}>{label}</Text>
-                <Text sx={{ fontSize: 18, fontWeight: '900', color: Theme.colors.sacredWhite }}>{value}</Text>
-            </VStack>
-        </Box>
+        }}
+            <Icon size={20} color={Theme.colors.sanctuarySaffron} /
+            <VStack
+                <Text sx={{ fontSize: 10, color: Theme.colors.starlightGray }}>{label}</Text
+                <Text sx={{ fontSize: 18, fontWeight: '900', color: Theme.colors.sacredWhite }}>{value}</Text
+            </VStack
+        </Box
     );
 }
 

@@ -1,15 +1,15 @@
 /**
- * Nature Paths API — The Extended Nature Metaphor Growth System.
+ * Nature Paths API \u2014 The Extended Nature Metaphor Growth System.
  *
- * The Bhumi (Lotus) path — personal inner growth — is the foundation for every user.
+ * The Bhumi (Lotus) path \u2014 personal inner growth \u2014 is the foundation for every user.
  * These additional paths illuminate different qualities of growth that the lotus alone
  * cannot fully express:
  *
- *   🌳 BANYAN (Vata Vriksha)    — Mentorship and ecosystem-building (teachers, principals)
- *   🌊 RIVER  (Ganga Pravaham)  — Learning flow (students, teachers' curricular contribution)
- *   💎 CRYSTAL (Spatika)        — Knowledge discovery collection (students)
+ *   \uD83C\uDF33 BANYAN (Vata Vriksha)    \u2014 Mentorship and ecosystem-building (teachers, principals)
+ *   \uD83C\uDF0A RIVER  (Ganga Pravaham)  \u2014 Learning flow (students, teachers' curricular contribution)
+ *   \uD83D\uDC8E CRYSTAL (Spatika)        \u2014 Knowledge discovery collection (students)
  *
- * See: docs/Core/GROWTH_MODEL.md v3.0 — Section 2B "The Four Nature Paths"
+ * See: docs/Core/GROWTH_MODEL.md v3.0 \u2014 Section 2B "The Four Nature Paths"
  *
  * USAGE:
  *   After any banyan/river/crystal signal, call:
@@ -20,12 +20,12 @@
 
 import { supabase } from '../lib/supabase';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 /**
- * Banyan Path stages — the tree that becomes a forest.
+ * Banyan Path stages \u2014 the tree that becomes a forest.
  * For teachers who mentor; for principals as their primary path.
  */
 export type BanyanStage =
@@ -36,7 +36,7 @@ export type BanyanStage =
     | 'forest_maker';    // Multiple teachers have grown with your support
 
 /**
- * River Path stages — learning that flows and shapes what it touches.
+ * River Path stages \u2014 learning that flows and shapes what it touches.
  * For students (primary) and teachers' curricular contribution.
  */
 export type RiverStage =
@@ -46,11 +46,11 @@ export type RiverStage =
     | 'delta';    // Knowledge branching and nourishing many
 
 /**
- * Crystal Tier — student knowledge as discovered crystals and fractals.
+ * Crystal Tier \u2014 student knowledge as discovered crystals and fractals.
  * Each tier represents increasingly rich patterns of discovery.
  */
 export type CrystalTier =
-    | 'spark'    // First genuine discovery — a single glowing crystal
+    | 'spark'    // First genuine discovery \u2014 a single glowing crystal
     | 'cluster'  // Multiple discoveries in a subject (depth)
     | 'cave'     // Rich exploration across multiple subjects (breadth)
     | 'fractal'; // Concepts connecting across domains (the highest insight)
@@ -67,9 +67,9 @@ export interface CrystalDiscovery {
     created_at: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // BANYAN PATH TRANSITION CRITERIA
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function nextBanyanStage(
     current: BanyanStage,
@@ -91,13 +91,13 @@ function nextBanyanStage(
             // 5+ peer mentored + 3+ circles facilitated = forest maker
             return (peerMentoredCount >= 5 && circlesFacilitatedCount >= 3) ? 'forest_maker' : null;
         case 'forest_maker':
-            return null; // The forest is complete — and still growing
+            return null; // The forest is complete \u2014 and still growing
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // RIVER PATH TRANSITION CRITERIA
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function nextRiverStage(
     current: RiverStage,
@@ -115,13 +115,13 @@ function nextRiverStage(
             // Contributing back: helping peers or teaching others
             return (reflectionsSubmitted >= 5 && weavingSignals >= 1) ? 'delta' : null;
         case 'delta':
-            return null; // The river has found the ocean — all knowledge flows from here
+            return null; // The river has found the ocean \u2014 all knowledge flows from here
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // CRYSTAL TIER TRANSITION CRITERIA
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function nextCrystalTier(
     current: CrystalTier,
@@ -137,19 +137,19 @@ function nextCrystalTier(
             // At least one fractal moment (cross-domain connection)
             return fractalMoments >= 1 ? 'fractal' : null;
         case 'fractal':
-            return null; // The fractal network sees all the connections — and more are forming
+            return null; // The fractal network sees all the connections \u2014 and more are forming
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // NATURE PATHS API
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export const naturePathsAPI = {
     /**
      * Check and advance the Banyan stage if conditions are met.
      * Called after peer_mentored or circle_facilitated signals.
-     * Fire-and-forget — errors are silently absorbed.
+     * Fire-and-forget \u2014 errors are silently absorbed.
      */
     async advanceBanyan(userId: string, state: {
         banyan_stage: BanyanStage;
@@ -178,7 +178,7 @@ export const naturePathsAPI = {
     /**
      * Check and advance the River stage if conditions are met.
      * Called after lesson_completed or reflection_submitted signals.
-     * Fire-and-forget — errors are silently absorbed.
+     * Fire-and-forget \u2014 errors are silently absorbed.
      */
     async advanceRiver(userId: string, state: {
         river_stage: RiverStage;

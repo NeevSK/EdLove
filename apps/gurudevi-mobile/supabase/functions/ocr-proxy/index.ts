@@ -1,8 +1,8 @@
 /**
- * ocr-proxy — Supabase Edge Function (Deno)
+ * ocr-proxy  Supabase Edge Function (Deno)
  *
  * Routes cloud OCR requests to Google Vision or OpenAI GPT-4o Vision.
- * API keys are stored as Supabase Edge Function secrets — never in the app bundle.
+ * API keys are stored as Supabase Edge Function secrets  never in the app bundle.
  *
  * Pro-gate: verifies the requesting user has is_pro = true.
  * If not Pro, returns 403. This is a server-enforced gate (client-side
@@ -24,7 +24,7 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// ── Types (mirrors packages/scanner-kit/src/ocr/types.ts) ─────────────────
+//  Types (mirrors packages/scanner-kit/src/ocr/types.ts) 
 
 interface OCRBoundingBox {
   x: number;
@@ -46,7 +46,7 @@ interface OCRRawResult {
   confidence?: number;
 }
 
-// ── Server ─────────────────────────────────────────────────────────────────
+//  Server 
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -60,7 +60,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    // ── Auth: verify JWT ────────────────────────────────────────────────
+    //  Auth: verify JWT 
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return json({ error: 'Unauthorized' }, 401);
@@ -79,7 +79,7 @@ serve(async (req: Request) => {
       return json({ error: 'Unauthorized' }, 401);
     }
 
-    // ── Pro gate ────────────────────────────────────────────────────────
+    //  Pro gate 
     const { data: profile } = await supabase
       .from('users')
       .select('is_pro')
@@ -90,7 +90,7 @@ serve(async (req: Request) => {
       return json({ error: 'Pro subscription required for cloud OCR' }, 403);
     }
 
-    // ── Request parsing ─────────────────────────────────────────────────
+    //  Request parsing 
     const body = await req.json();
     const { provider, imageBase64 } = body as {
       provider: 'google_vision' | 'openai_vision';
@@ -101,7 +101,7 @@ serve(async (req: Request) => {
       return json({ error: 'provider and imageBase64 are required' }, 400);
     }
 
-    // Guard against oversized payloads — base64 of a 5 MB image ≈ 6.7 MB of characters.
+    // Guard against oversized payloads  base64 of a 5 MB image H 6.7 MB of characters.
     // Anything larger risks extremely high API costs and Deno memory pressure.
     const MAX_BASE64_CHARS = 7_000_000; // ~5 MB raw image
     if (typeof imageBase64 !== 'string' || imageBase64.length > MAX_BASE64_CHARS) {
@@ -113,7 +113,7 @@ serve(async (req: Request) => {
       return json({ error: `Unknown provider: ${provider}` }, 400);
     }
 
-    // ── Route to provider ───────────────────────────────────────────────
+    //  Route to provider 
     let result: OCRRawResult;
 
     if (provider === 'google_vision') {
@@ -129,7 +129,7 @@ serve(async (req: Request) => {
   }
 });
 
-// ── Google Cloud Vision ────────────────────────────────────────────────────
+//  Google Cloud Vision 
 
 async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
   const apiKey = Deno.env.get('GOOGLE_VISION_API_KEY');
@@ -189,7 +189,7 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
   };
 }
 
-// ── OpenAI GPT-4o Vision ───────────────────────────────────────────────────
+//  OpenAI GPT-4o Vision 
 
 async function callOpenAIVision(imageBase64: string): Promise<OCRRawResult> {
   const apiKey = Deno.env.get('OPENAI_API_KEY');
@@ -250,7 +250,7 @@ Return ONLY the JSON object, no markdown, no explanation.`;
   }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+//  Helpers 
 
 function json(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {

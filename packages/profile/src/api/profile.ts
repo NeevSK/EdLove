@@ -1,52 +1,69 @@
-import { supabase } from '@repo/core';
-import { APIError } from '@repo/core';
+import { assertContractCoverage, createTemporalPOAProxy, defineContractCoverage, profileContract, type TemporalScale } from '@repo/core';
+import { profileServices } from '../domains/profile/runtime';
 
-export const profileAPI = {
-    /**
-     * Get user profile from public.users table
-     */
+const rawProfileAPI = {
     async getUserProfile(userId: string) {
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', userId)
-            .maybeSingle();
-
-        if (error) {
-            throw new APIError('Failed to fetch user profile', error.code, error);
-        }
-
-        return data; // Can be null for new guests
+        return profileServices.getUserProfile(userId);
     },
 
-    /**
-     * Update user profile
-     */
-    async updateProfile(userId: string, updates: any) {
-        const { data, error } = await supabase
-            .from('users')
-            .update(updates)
-            .eq('id', userId)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to update profile', error.code, error);
-        }
-
-        return data;
+    async getUserProfileAsOf(userId: string, asOf: string) {
+        return profileServices.getUserProfileAsOf(userId, asOf);
     },
 
-    /**
-     * Check if current user is anonymous based on profile flag
-     */
+    async getUserProfileHistory(userId: string, limit?: number) {
+        return profileServices.getUserProfileHistory(userId, limit);
+    },
+
+    async getJourneySnapshot(userId: string, options?: { asOf?: string; viewDate?: string; viewScale?: TemporalScale }) {
+        return profileServices.getJourneySnapshot(userId, options);
+    },
+
+    async getJourneyHistory(userId: string, options?: { viewDate?: string; viewScale?: TemporalScale; limit?: number }) {
+        return profileServices.getJourneyHistory(userId, options);
+    },
+
+    async updateProfile(userId: string, updates: Record<string, any>) {
+        return profileServices.updateProfile(userId, updates);
+    },
+
     async isAnonymous(userId: string): Promise<boolean> {
-        const { data: profile } = await supabase
-            .from('users')
-            .select('is_anonymous')
-            .eq('id', userId)
-            .single();
+        return profileServices.isAnonymous(userId);
+    },
 
-        return profile?.is_anonymous ?? false;
-    }
+    async uploadAvatar(userId: string, localUri: string) {
+        return profileServices.uploadAvatar(userId, localUri);
+    },
+
+    async getCommunityProfile(communityId: string) {
+        return profileServices.getCommunityProfile(communityId);
+    },
+
+    async getCommunityProfileAsOf(communityId: string, asOf: string) {
+        return profileServices.getCommunityProfileAsOf(communityId, asOf);
+    },
+
+    async getCommunityProfileHistory(communityId: string, limit?: number) {
+        return profileServices.getCommunityProfileHistory(communityId, limit);
+    },
+
+    async updateCommunityProfile(communityId: string, field: 'name' | 'description', value: string) {
+        return profileServices.updateCommunityProfile(communityId, field, value);
+    },
+
+    async getSchoolPulse(schoolId: string, options: { viewDate: string; viewScale?: TemporalScale }) {
+        return profileServices.getSchoolPulse(schoolId, options);
+    },
 };
+
+const profileCoverage = assertContractCoverage(rawProfileAPI, defineContractCoverage({
+    moduleName: 'profile',
+    contract: profileContract,
+}));
+
+export const profileAPI = createTemporalPOAProxy(
+    'profile',
+    rawProfileAPI,
+    profileCoverage.contract,
+    profileCoverage.methodMapping,
+    { strictUnmappedMethods: true }
+);

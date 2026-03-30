@@ -31,7 +31,7 @@ import { api } from '@/lib/api';
 
 // Use any API module
 const tasks = await api.tasks.getAll(teacherId);
-const attendance = await api.attendance.getByDate(classroomId, date);
+const attendance = await api.attendance.getClassroomAttendanceSnapshot(classroomId, date);
 ```
 
 ### Direct Module Import (For Specific Needs)
@@ -75,6 +75,22 @@ import type { Task, Lesson, AttendanceRecord } from '@/lib/api';
 - Old imports from `@/lib/api` still work
 - No breaking changes for existing code
 - Gradual migration possible
+
+## Temporal Canon
+
+For temporal school data, prefer the canonical routes:
+
+- attendance workspace reads: `api.attendance.getClassroomAttendanceSnapshot(...)`
+- attendance student history: `api.attendance.getStudentAttendanceTimeline(...)`
+- attendance reporting: `api.attendance.getAttendanceReport(...)`
+- grading teacher work: `api.grading.saveGradeDraft(...)` then `api.grading.publishGrade(...)`
+- grading workspace reads: `api.grading.getGradebookSnapshot(...)`
+- grading published reads: `api.grading.getPublishedStudentGrades(...)`
+- longitudinal history: `api.longitudinal.getStudentTimeline(...)`
+
+For overlap cleanup and safe retirement sequencing, see:
+
+- `docs/architecture/CANONICAL_API_MAP.md`
 
 ## File Size Comparison
 

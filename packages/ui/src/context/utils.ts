@@ -31,7 +31,7 @@ export function getTemporalPhase(): TemporalPhase {
  */
 export function shouldUseDarkTheme(phase: TemporalPhase): boolean {
     return phase === 'predawn' || phase === 'dusk' || phase === 'night';
-    // dawn, morning, afternoon → light world
+    // dawn, morning, afternoon \u2192 light world
 }
 
 /**

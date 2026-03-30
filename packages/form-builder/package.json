@@ -2,7 +2,15 @@
   "name": "@repo/form-builder",
   "version": "1.0.0",
   "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
   "license": "MIT",
+  "scripts": {
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
+  },
   "dependencies": {
     "@repo/ui": "workspace:*",
     "@repo/core": "workspace:*",

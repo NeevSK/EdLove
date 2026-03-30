@@ -1,32 +1,28 @@
-/// <reference path="./types/apca-w3.d.ts" />
-/// <reference path="./types/culori.d.ts" />
+import './types/apca-w3.d.ts';
+import './types/culori.d.ts';
 
+// Theme & Styling
 export * from './theme/Theme';
+
+// Context & Providers
 export * from './context';
+export * from './providers/ToastProvider';
+export { SanctuaryProvider } from './providers/SanctuaryProvider';
+
+// Hooks
 export * from './hooks/useTheme';
 export * from './hooks/useThemedColors';
+export * from './hooks/useAccessibility';
+export * from './hooks/useDemoBridge';
+
+// Fundamental Components (Gluestack & Basic UI)
 export * from './gluestack';
-export { default as AppSettingsScreenWeb } from './screens/AppSettingsScreen.web';
 
-export * from './components/BreathAnimation';
-export * from './components/DailyResonanceCard';
-export * from './components/GlassCard';
-export { default as SanctuaryFlashList } from './components/SanctuaryFlashList';
-export type { SanctuaryFlashListProps } from './components/SanctuaryFlashList';
-export * from './components/InteractiveRadarChart';
-export * from './components/ResonanceProvider';
-export * from './components/TemporalScrubber';
-export * from './components/TemporalPilot';
-export * from './components/ResonanceShield';
-export * from './theme/Theme';
+// Advanced Components
 export * from './components';
+export * from './screens';
 
-
-
-
-
-
-
+// Utilities
 export * from './utils/DeviceUtils';
 export * from './utils/haptics';
 export * from './utils/themeColors';
@@ -36,8 +32,3 @@ export * from './utils/colorUtils';
 export * from './utils/stringUtils';
 export * from './utils/dateTimeUtils';
 export * from './utils/a11yUtils';
-export * from './hooks/useAccessibility';
-export * from './hooks/useDemoBridge';
-export * from './hooks/useQRDeepLink';
-export * from './providers/ToastProvider';
-

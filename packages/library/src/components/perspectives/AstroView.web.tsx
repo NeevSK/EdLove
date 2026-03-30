@@ -8,7 +8,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * AstroView.web — The "Cosmos" Perspective (Web).
+ * AstroView.web  The "Cosmos" Perspective (Web).
  * 
  * Uses standard SVG but leverages d3-selection for high-performance 
  * live physics if needed, or static rendering from our engine.
@@ -23,13 +23,13 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
     const { width, height } = useWindowDimensions();
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}
             <svg 
                 width="100%" 
                 height="100%" 
                 viewBox={`0 0 ${width} ${height}`}
                 style={{ backgroundColor: 'transparent' }}
-            >
+            
                 {/* Links */}
                 {data.links.map((link, i) => {
                     const sourcePos = typeof link.source === 'string' ? layout.positions.get(link.source) : (link.source as any);
@@ -47,7 +47,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                             stroke={colors.action}
                             strokeWidth={1}
                             opacity={0.2}
-                        />
+                        /
                     );
                 })}
 
@@ -63,7 +63,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                             key={node.id} 
                             onClick={() => onNodePress?.(node)}
                             style={{ cursor: 'pointer' }}
-                        >
+                        
                             <circle
                                 cx={pos.x}
                                 cy={pos.y}
@@ -71,7 +71,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                                 fill={isSelected ? colors.action : colors.secondary}
                                 stroke={colors.action}
                                 strokeWidth={2}
-                            />
+                            /
                             <text
                                 x={pos.x}
                                 y={pos.y + 20}
@@ -79,14 +79,14 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                                 fill={colors.text}
                                 fontSize="10"
                                 style={{ pointerEvents: 'none', userSelect: 'none' }}
-                            >
+                            
                                 {node.label}
-                            </text>
-                        </g>
+                            </text
+                        </g
                     );
                 })}
-            </svg>
-        </View>
+            </svg
+        </View
     );
 };
 

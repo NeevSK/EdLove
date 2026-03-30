@@ -56,7 +56,7 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                     actionType: 'create',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
-                        { id: 's1', title: "Sample: Grade 10 Math", subtitle: "32 Students • 4 Lessons", icon: BookOpen },
+                        { id: 's1', title: "Sample: Grade 10 Math", subtitle: "32 Students, 4 Lessons", icon: BookOpen },
                         { id: 's2', title: "How to Invite Students", subtitle: "Quick Guide", icon: Users, color: Theme.colors.amberGlow },
                     ]
                 };
@@ -142,7 +142,7 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                     actionType: 'create',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
-                        { id: 's1', title: "Sample: Grade 10 Math", subtitle: "32 Students • 4 Lessons", icon: BookOpen },
+                        { id: 's1', title: "Sample: Grade 10 Math", subtitle: "32 Students, 4 Lessons", icon: BookOpen },
                         { id: 's2', title: "How to Invite Students", subtitle: "Quick Guide", icon: Users, color: Theme.colors.amberGlow },
                     ]
                 };
@@ -152,8 +152,8 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
     const content = getRoleContent();
 
     return (
-        <VStack sx={{ flex: 1, padding: Theme.spacing.lg, gap: 32 }}>
-            <Center sx={{ padding: 32 }}>
+        <VStack sx={{ flex: 1, padding: Theme.spacing.lg, gap: 32 }}
+            <Center sx={{ padding: 32 }}
                 <Box
                     sx={{
                         padding: Theme.spacing.xl,
@@ -161,12 +161,12 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                         backgroundColor: colors.tertiary,
                         marginBottom: Theme.spacing.lg
                     }}
-                >
-                    <content.icon size={48} color={Theme.colors.sanctuarySaffron} />
-                </Box>
-                <Heading color={colors.text} sx={{ textAlign: 'center', fontSize: 24 }}>{content.title}</Heading>
-                <Text color={colors.textSecondary} sx={{ textAlign: 'center', marginTop: 8 }}>{content.description}</Text>
-            </Center>
+                
+                    <content.icon size={48} color={Theme.colors.sanctuarySaffron} /
+                </Box
+                <Heading color={colors.text} sx={{ textAlign: 'center', fontSize: 24 }}>{content.title}</Heading
+                <Text color={colors.textSecondary} sx={{ textAlign: 'center', marginTop: 8 }}>{content.description}</Text
+            </Center
 
             <Button
                 size="lg"
@@ -185,18 +185,18 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                     backgroundColor: Theme.colors.sanctuarySaffron,
                     borderRadius: Theme.corners.comfortable
                 }}
-            >
-                <HStack alignItems="center" justifyContent="center" sx={{ height: 48, gap: 8 }}>
-                    <Plus size={20} color="white" />
-                    <ButtonText color="white" sx={{ fontWeight: '600' }}>{content.primaryAction}</ButtonText>
-                </HStack>
-            </Button>
+            
+                <HStack alignItems="center" justifyContent="center" sx={{ height: 48, gap: 8 }}
+                    <Plus size={20} color="white" /
+                    <ButtonText color="white" sx={{ fontWeight: '600' }}>{content.primaryAction}</ButtonText
+                </HStack
+            </Button
 
             {content.samples.length > 0 && (
-                <VStack sx={{ gap: 16, marginTop: 16 }}>
-                    <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>
+                <VStack sx={{ gap: 16, marginTop: 16 }}
+                    <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}
                         {t('common.guidesAndSamples') || "Guides & Samples"}
-                    </Text>
+                    </Text
                     {content.samples.map((item) => (
                         <Pressable
                             key={item.id}
@@ -208,7 +208,7 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                                     onSamplePress?.(item);
                                 }
                             }}
-                        >
+                        
                             <Box
                                 sx={{
                                     padding: Theme.spacing.md,
@@ -217,29 +217,29 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                                     borderWidth: 1,
                                     borderColor: colors.border
                                 }}
-                            >
-                                <HStack alignItems="center" sx={{ gap: 16 }}>
+                            
+                                <HStack alignItems="center" sx={{ gap: 16 }}
                                     <Box
                                         sx={{
                                             padding: Theme.spacing.sm,
                                             borderRadius: Theme.corners.comfortable,
                                             backgroundColor: colors.tertiary
                                         }}
-                                    >
-                                        <item.icon size={20} color={item.color || colors.action} />
-                                    </Box>
-                                    <VStack flex={1}>
-                                        <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 14 }}>{item.title}</Text>
-                                        <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{item.subtitle}</Text>
-                                    </VStack>
-                                    <ArrowRight size={16} color={colors.textTertiary} />
-                                </HStack>
-                            </Box>
-                        </Pressable>
+                                    
+                                        <item.icon size={20} color={item.color || colors.action} /
+                                    </Box
+                                    <VStack flex={1}
+                                        <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 14 }}>{item.title}</Text
+                                        <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{item.subtitle}</Text
+                                    </VStack
+                                    <ArrowRight size={16} color={colors.textTertiary} /
+                                </HStack
+                            </Box
+                        </Pressable
                     ))}
-                </VStack>
+                </VStack
             )
             }
-        </VStack >
+        </VStack 
     );
 }

@@ -63,7 +63,7 @@ const getAvailablePerspectives = (topology: any) => {
 };
 
 /**
- * MapScreen.web.tsx — The Unified Vision
+ * MapScreen.web.tsx  The Unified Vision
  * 
  * Refactored to use the @repo/graphics layout engine.
  * Achieves parity with native while optimizing for browser-native SVG/div rendering.
@@ -146,9 +146,9 @@ export default function MapScreen() {
     const renderContent = () => {
         if (loading) {
             return (
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
-                </Box>
+                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} /
+                </Box
             );
         }
 
@@ -161,7 +161,7 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -172,7 +172,7 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -183,7 +183,7 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -194,7 +194,7 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -206,7 +206,7 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
@@ -219,19 +219,19 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                />
+                /
             );
         }
 
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-            </Box>
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
+            </Box
         );
     };
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false}
             <GlobalHeader
                 title="Knowledge Cosmos"
                 subtitle="Isomorphic Visualization Engine"
@@ -251,18 +251,18 @@ export default function MapScreen() {
                             opacity: isExporting ? 0.5 : 1,
                             marginRight: 12
                         }}
-                    >
-                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} />
-                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
+                    
+                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} /
+                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}
                             {isExporting ? 'CAPTURING...' : 'EXPORT'}
-                        </Text>
-                    </TouchableOpacity>
+                        </Text
+                    </TouchableOpacity
                 }
-            />
+            /
 
-            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}>
-                <View style={styles.perspectiveSwitcherContainer}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
+            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
+                <View style={styles.perspectiveSwitcherContainer}
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}
                         {getAvailablePerspectives(activeData).map((p) => {
                             const isActive = activePerspective === p.id;
                             const isDisabled = p.disabled;
@@ -277,30 +277,30 @@ export default function MapScreen() {
                                         isActive && styles.activePerspectiveButton,
                                         isDisabled && { opacity: 0.3 }
                                     ]}
-                                >
+                                
                                     <Icon 
                                         size={18} 
                                         color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
-                                    />
+                                    /
                                     <Text style={[
                                         styles.perspectiveLabel,
                                         isActive && styles.activePerspectiveLabel
-                                    ]}>
+                                    ]}
                                         {p.label}
-                                    </Text>
-                                </TouchableOpacity>
+                                    </Text
+                                </TouchableOpacity
                             );
                         })}
-                    </ScrollView>
-                </View>
-            </Box>
+                    </ScrollView
+                </View
+            </Box
 
             <Box sx={{ 
                 flex: 1, 
                 backgroundColor: colors.obsidian || colors.black,
                 overflow: 'hidden',
                 position: 'relative'
-            }}>
+            }}
                 {renderContent()}
 
                 {selectedNode && (
@@ -314,28 +314,28 @@ export default function MapScreen() {
                         padding: 24,
                         borderWidth: 1,
                         borderColor: 'rgba(255, 255, 255, 0.1)',
-                    } as any}>
-                        <VStack spacing={12}>
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <VStack>
-                                    <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
+                    } as any}
+                        <VStack spacing={12}
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                                <VStack
+                                    <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}
                                         {selectedNode.label}
-                                    </Text>
-                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
-                                        {selectedNode.type} • {selectedNode.group}
-                                    </Text>
-                                </VStack>
-                                <TouchableOpacity onPress={() => setSelectedNode(null)}>
-                                    <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                        <X size={20} color={Theme.colors.sacredWhite} />
-                                    </Box>
-                                </TouchableOpacity>
-                            </HStack>
+                                    </Text
+                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}
+                                        {selectedNode.type} " {selectedNode.group}
+                                    </Text
+                                </VStack
+                                <TouchableOpacity onPress={() => setSelectedNode(null)}
+                                    <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                        <X size={20} color={Theme.colors.sacredWhite} /
+                                    </Box
+                                </TouchableOpacity
+                            </HStack
 
                             {selectedNode.metadata?.description && (
-                                <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
+                                <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}
                                     {selectedNode.metadata.description}
-                                </Text>
+                                </Text
                             )}
 
                             <TouchableOpacity 
@@ -346,16 +346,16 @@ export default function MapScreen() {
                                         navigation.navigate('ResourceDetail', { id: selectedNode.id });
                                     }
                                 }}
-                            >
-                                <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                            
+                                <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}
                                     {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
-                                </Text>
-                            </TouchableOpacity>
-                        </VStack>
-                    </Box>
+                                </Text
+                            </TouchableOpacity
+                        </VStack
+                    </Box
                 )}
-            </Box>
-        </ScreenWrapper>
+            </Box
+        </ScreenWrapper
     );
 }
 

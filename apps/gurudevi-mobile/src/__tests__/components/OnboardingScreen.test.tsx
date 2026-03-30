@@ -12,11 +12,11 @@ jest.mock('expo-image-picker', () => ({
 // TDD Unit Tests for OnboardingScreen Component
 // Component facts (from reading OnboardingScreen.tsx):
 //   - totalSteps = 9: steps 0-Name, 1-Role, 2-Orientation, 3-7 Tour, 8-Auth
-//   - fireEvent.press / changeText are async in RTLRN v14 — must be awaited
-//   - isDisabled lives on Button (View), not ButtonText (Text) — test via behaviour
+//   - fireEvent.press / changeText are async in RTLRN v14  must be awaited
+//   - isDisabled lives on Button (View), not ButtonText (Text)  test via behaviour
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import OnboardingScreen from '../../screens/OnboardingScreen';
+import { OnboardingScreen } from '@repo/ui';
 
 jest.mock('@react-navigation/native', () => ({
     useNavigation: () => ({ navigate: jest.fn() }),
@@ -116,7 +116,7 @@ describe('OnboardingScreen Component', () => {
     describe('Name Step Validation', () => {
         it('Continue does not advance step when name is empty (disabled behaviour)', async () => {
             const { getByText } = await render(<OnboardingScreen onComplete={mockOnComplete} />);
-            // Press Continue with no name — component guards: if (!canProceed) return
+            // Press Continue with no name  component guards: if (!canProceed) return
             await fireEvent.press(getByText('Continue'));
             // Step must remain at 1 of 9 (not advance)
             expect(getByText('Step 1 of 9')).toBeTruthy();

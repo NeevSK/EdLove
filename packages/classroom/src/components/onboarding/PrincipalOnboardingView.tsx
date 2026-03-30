@@ -51,34 +51,22 @@ export default function PrincipalOnboardingView({
                 alignSelf: 'center',
                 width: '100%' 
             }}
-        >
-            <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}>
-                {/* Welcome Header */}
-                <VStack sx={{ gap: 8, alignItems: 'center' }}>
-                    <Box sx={{ 
+                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}
+                <VStack sx={{ gap: 8, alignItems: 'center' }}                    <Box sx={{ 
                         padding: 16, 
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
                         marginBottom: 12
-                    }}>
-                        <Icon as={Building2} color={Theme.colors.sanctuarySaffron} size={40} />
-                    </Box>
-                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}>
-                        Welcome, Principal
-                    </Heading>
-                    <Text sx={{ 
+                    }}                        <Icon as={Building2} color={Theme.colors.sanctuarySaffron} size={40} /                    </Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Principal
+                    </Heading                    <Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
                         fontSize: 16,
                         maxWidth: 500 
-                    }}>
-                        Your journey to digitize and empower your institution begins here. Choose how you'd like to proceed.
-                    </Text>
-                </VStack>
-
+                    }}                        Your journey to digitize and empower your institution begins here. Choose how you'd like to proceed.
+                    </Text                </VStack
                 {/* Primary Actions Grid */}
-                <VStack sx={{ gap: Theme.spacing.lg }}>
-                    
+                <VStack sx={{ gap: Theme.spacing.lg }}                    
                     {/* Establish Sanctuary Card */}
                     <TouchableOpacity 
                         onPress={() => {
@@ -87,45 +75,25 @@ export default function PrincipalOnboardingView({
                         }}
                         activeOpacity={0.8}
                         style={{ width: '100%' }}
-                    >
-                        <Box sx={{ 
+                                            <Box sx={{ 
                             padding: 24, 
                             borderRadius: 24, 
                             backgroundColor: 'white',
                             borderWidth: 1,
                             borderColor: colors.border,
                             ...Theme.shadows.md
-                        }}>
-                            <HStack sx={{ gap: 20, alignItems: 'center' }}>
-                                <Box sx={{ 
+                        }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
                                     borderRadius: 20, 
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}>
-                                    <Icon as={Building} color="white" size={32} />
-                                </Box>
-                                <VStack sx={{ flex: 1, gap: 4 }}>
-                                    <Heading size="md" color={colors.text}>Found New Sanctuary</Heading>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
-                                        Establish a digital presence for your school, manage staff, and track student progress.
-                                    </Text>
-                                    {isGuest && (
-                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}>
-                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} />
-                                            <Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>
-                                                Requires Signup
-                                            </Text>
-                                        </HStack>
-                                    )}
-                                </VStack>
-                                <Icon as={ChevronRight} color={colors.textTertiary} />
-                            </HStack>
-                        </Box>
-                    </TouchableOpacity>
-
+                                }}                                    <Icon as={Building} color="white" size={32} /                                </Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="md" color={colors.text}>Found New Sanctuary</Heading                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Establish a digital presence for your school, manage staff, and track student progress.
+                                    </Text                                    {isGuest && (
+                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} /                                            <Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}                                                Requires Signup
+                                            </Text                                        </HStack                                    )}
+                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            </HStack                        </Box                    </TouchableOpacity
                     {/* Join School Card */}
                     <TouchableOpacity 
                         onPress={() => {
@@ -134,36 +102,21 @@ export default function PrincipalOnboardingView({
                         }}
                         activeOpacity={0.8}
                         style={{ width: '100%' }}
-                    >
-                        <Box sx={{ 
+                                            <Box sx={{ 
                             padding: 24, 
                             borderRadius: 24, 
                             backgroundColor: colors.tertiary,
                             borderWidth: 1,
                             borderColor: colors.border
-                        }}>
-                            <HStack sx={{ gap: 20, alignItems: 'center' }}>
-                                <Box sx={{ 
+                        }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
                                     borderRadius: 20, 
                                     backgroundColor: colors.border,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}>
-                                    <Icon as={Search} color={colors.textSecondary} size={32} />
-                                </Box>
-                                <VStack sx={{ flex: 1, gap: 4 }}>
-                                    <Heading size="sm" color={colors.text}>Join Existing Institution</Heading>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
-                                        Search for your school and request administrative access.
-                                    </Text>
-                                </VStack>
-                                <Icon as={ChevronRight} color={colors.textTertiary} />
-                            </HStack>
-                        </Box>
-                    </TouchableOpacity>
-
+                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                </Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Join Existing Institution</Heading                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Search for your school and request administrative access.
+                                    </Text                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            </HStack                        </Box                    </TouchableOpacity
                     {/* Try Demo Banner */}
                     <Box sx={{ 
                         marginTop: Theme.spacing.xl,
@@ -172,8 +125,7 @@ export default function PrincipalOnboardingView({
                         backgroundColor: '#1A1A1A', // Dark premium look for demo
                         overflow: 'hidden',
                         position: 'relative'
-                    }}>
-                        {/* Decorative background element */}
+                    }}                        {/* Decorative background element */}
                         <Box sx={{
                             position: 'absolute',
                             right: -20,
@@ -183,30 +135,19 @@ export default function PrincipalOnboardingView({
                             borderRadius: 75,
                             backgroundColor: 'rgba(212,132,58,0.15)',
                             zIndex: 0
-                        }} />
-
-                        <VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}>
-                            <Box sx={{ 
+                        }} /
+                        <VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}                            <Box sx={{ 
                                 padding: 12, 
                                 borderRadius: 16, 
                                 backgroundColor: 'rgba(255,255,255,0.1)'
-                            }}>
-                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} />
-                            </Box>
-                            <VStack sx={{ gap: 8, alignItems: 'center' }}>
-                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}>
-                                    Experience the Future
-                                </Heading>
-                                <Text sx={{ 
+                            }}                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} /                            </Box                            <VStack sx={{ gap: 8, alignItems: 'center' }}                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}                                    Experience the Future
+                                </Heading                                <Text sx={{ 
                                     color: 'rgba(255,255,255,0.7)', 
                                     fontSize: 15, 
                                     textAlign: 'center',
                                     maxWidth: 400 
-                                }}>
-                                    Explore a fully populated sample dashboard to see how Gurudevi transforms school management.
-                                </Text>
-                            </VStack>
-                            
+                                }}                                    Explore a fully populated sample dashboard to see how Gurudevi transforms school management.
+                                </Text                            </VStack                            
                             <Button 
                                 action="primary" 
                                 onPress={() => {
@@ -219,27 +160,15 @@ export default function PrincipalOnboardingView({
                                     height: 54,
                                     borderRadius: 27
                                 }}
-                            >
-                                <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}>
-                                    Launch Demo Sandbox
-                                </ButtonText>
-                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" />
-                            </Button>
-                        </VStack>
-                    </Box>
-
-                </VStack>
-
+                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Demo Sandbox
+                                </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            </Button                        </VStack                    </Box
+                </VStack
                 {/* Footer Info */}
                 <Text sx={{ 
                     textAlign: 'center', 
                     color: colors.textTertiary, 
                     fontSize: 12,
                     marginTop: 20 
-                }}>
-                    Gurudevi Sanctuaries are designed for dignified growth.
-                </Text>
-            </VStack>
-        </ScrollView>
-    );
+                }}                    Gurudevi Sanctuaries are designed for dignified growth.
+                </Text            </VStack        </ScrollView    );
 }

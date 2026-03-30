@@ -2,7 +2,7 @@
  * GroupChatScreen
  *
  * Thin wrapper around BaseChatScreen for group conversations.
- * All chat logic lives in BaseChatScreen — this just wires the group-specific
+ * All chat logic lives in BaseChatScreen  this just wires the group-specific
  * data sources (fetch, send, realtime subscription).
  */
 
@@ -68,8 +68,8 @@ export default function GroupChatScreen() {
                     conversationId={groupId}
                     groupId={groupId}
                     targetUserName={groupName}
-                />
+                /
             }
-        />
+        /
     );
 }

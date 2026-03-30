@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, PressableStateCallbackType } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { dailyContentAPI } from '../api/dailyContent';
 import { DailyContent } from '../types';
@@ -21,7 +21,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
 
     const isMotivation = type === 'motivation';
     const title = isMotivation ? t('self.dailyMotivation') : t('self.didYouKnow');
-    const emoji = isMotivation ? '✨' : '💡';
+    const emoji = isMotivation ? '\u2728' : '\uD83D\uDCA1';
 
     const styles = useMemo(() => StyleSheet.create({
         card: {
@@ -111,7 +111,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
 
     if (loading) {
         return (
-            <SkeletonCard height={120} />
+            <SkeletonCard height={120} /
         );
     }
 
@@ -129,26 +129,26 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
     return (
         <Pressable
             onPress={() => needsExpansion && setExpanded(!expanded)}
-            style={({ pressed }) => [
+            style={({ pressed }: PressableStateCallbackType) => [
                 styles.card,
                 isMotivation ? styles.motivationCard : styles.didYouKnowCard,
                 pressed && styles.cardPressed,
             ]}
-        >
-            <View style={styles.header}>
-                <Text style={styles.emoji}>{emoji}</Text>
-                <Text style={styles.title}>{title}</Text>
-            </View>
+        
+            <View style={styles.header}
+                <Text style={styles.emoji}>{emoji}</Text
+                <Text style={styles.title}>{title}</Text
+            </View
 
-            <Text style={styles.content}>{displayContent}</Text>
+            <Text style={styles.content}>{displayContent}</Text
 
             {content.author && (
-                <Text style={styles.author}>— {content.author}</Text>
+                <Text style={styles.author}>\u2014 {content.author}</Text
             )}
 
             {needsExpansion && !expanded && (
-                <Text style={styles.tapToExpand}>{t('self.tapToReadMore')}</Text>
+                <Text style={styles.tapToExpand}>{t('self.tapToReadMore')}</Text
             )}
-        </Pressable>
+        </Pressable
     );
 }

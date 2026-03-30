@@ -1,13 +1,16 @@
-import { composeUserAbilities } from '../composer';
-import { UserContext } from '../schemas/user.schema';
+import { composeUserAbilities } from './composer';
+import { UserContext } from './schemas/user.schema';
 
 describe('POA Exhaustive Verification: Every Role, Every Power', () => {
     const baseContext: UserContext = {
         userId: 'test-user-id',
         email: 'test@example.com',
         schoolId: 'test-school-id',
+        tenancy: { kind: 'customer', isPersonal: false },
+        tenancyName: 'Test School',
         tenantKind: 'customer',
         roles: [],
+        authority: null,
         isAnonymous: false,
         hasGlobalAccess: false,
         isPersonal: false,

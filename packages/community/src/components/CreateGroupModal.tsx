@@ -60,39 +60,34 @@ export default function CreateGroupModal({
         isOpen={isOpen}
         onClose={onClose}
         title="Community Founded!"
-      >
-        <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
-          <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}>
-            <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={64} />
-          </Box>
-          <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-            <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}>
+              <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}
+          <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}
+            <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={64} /
+          </Box
+          <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}
+            <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}
               Group Ready!
-            </Heading>
-            <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
+            </Heading
+            <Text sx={{ textAlign: 'center', color: colors.textSecondary }}
               Your community is ready to welcome its members.
-            </Text>
-          </VStack>
+            </Text
+          </VStack
 
-          <Box sx={{ padding: 20, backgroundColor: 'white', borderRadius: 12 }}>
+          <Box sx={{ padding: 20, backgroundColor: 'white', borderRadius: 12 }}
             <QRCodeGenerator
               value={groupQRValue}
               size={180}
               color="#000"
-            />
-          </Box>
+            /
+          </Box
           
           <SanctuaryButton 
             onPress={() => {
               onClose();
               navigation.navigate("GroupDetails", { groupId: createdGroupId });
             }}
-          >
-            <Text color="white" bold>Enter Group Space</Text>
-          </SanctuaryButton>
-        </VStack>
-      </SanctuaryModal>
-    );
+          
+            <Text color="white" bold>Enter Group Space</Text          </SanctuaryButton        </VStack      </SanctuaryModal    );
   }
 
   return (
@@ -102,6 +97,6 @@ export default function CreateGroupModal({
       definition={groupDefinition}
       mode={mode as any}
       instance={initialData}
-    />
+    /
   );
 }

@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 import { SchoolJoinRequest, ClassroomJoinRequest, RequestStatus } from '../types/Onboarding';
-import { Role } from '../schemas/role.schema';
+import { Role } from '../permissions/schemas/role.schema';
+import { composeUserAbilities } from '../permissions/composer';
+
 
 /**
  * Onboarding API (Triple Helix BDD Implementation)
@@ -81,12 +83,16 @@ export const onboardingAPI = {
             .single();
 
         if (group) {
+            const ability = composeUserAbilities({ roles: [role as Role] });
+            // POA: Use capability to determine group capacity instead of hardcoded roles
+            const capacity = ability.can('manage', 'CommunityGroup') ? 'admin' : 'member';
+
             await supabase
                 .from('group_members')
                 .insert([{
                     group_id: group.id,
                     user_id: userId,
-                    capacity: role === 'student' ? 'member' : 'admin',
+                    capacity,
                     status: 'pending'
                 }]);
         }
@@ -127,11 +133,13 @@ export const onboardingAPI = {
                     .eq('user_id', request.user_id);
             }
 
-            if (request.role === 'student') {
+            const ability = composeUserAbilities({ roles: [request.role as Role] });
+
+            if (ability.can('manage', 'StudentDashboard')) {
                 await supabase
                     .from('classroom_students')
                     .insert([{ student_id: request.user_id, classroom_id: request.classroom_id }]);
-            } else if (request.role === 'teacher') {
+            } else if (ability.can('manage', 'TeacherDashboard')) {
                 // If it's a teacher request being approved (e.g. by admin and they join as co-teacher)
                 await supabase
                     .from('classrooms')
@@ -142,6 +150,7 @@ export const onboardingAPI = {
 
             await this.createNotification(request.user_id, 'join_request_approved', 'Classroom Joined', 'You have been admitted to the classroom sanctuary.');
         } else if (request && status === 'rejected') {
+
             // Find linked group
             const { data: group } = await supabase
                 .from('community_groups')

@@ -2,7 +2,7 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import 'react-native-gesture-handler/jestSetup';
 
-// ── Environment variables required by supabase.ts ────────────────────────────
+// \u2500\u2500 Environment variables required by supabase.ts \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // Must be set BEFORE any module is required (setupFilesAfterEnv runs before imports)
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
@@ -61,7 +61,7 @@ jest.mock('expo-haptics', () => ({
 }));
 
 // @gluestack-ui/themed and all sub-paths are handled by moduleNameMapper in jest.config.js
-// (maps '^@gluestack-ui/themed(.*)$' → '__mocks__/gluestack-themed.js').
+// (maps '^@gluestack-ui/themed(.*)$' \u2192 '__mocks__/gluestack-themed.js').
 // The manual mock uses host string types ('View', 'Text') that test-renderer@0.14.0
 // can process without going through the react-native-web rendering chain.
 
@@ -100,7 +100,7 @@ jest.mock('i18next', () => ({
 // react-native-reanimated and react-native-worklets are mocked via moduleNameMapper
 // in jest.config.js (they require C++ JSI + Worklets native build which can't run in Jest)
 
-// Mock @repo/ui — fully self-contained (NO jest.requireActual).
+// Mock @repo/ui \u2014 fully self-contained (NO jest.requireActual).
 //
 // WHY no requireActual: requireActual bypasses moduleNameMapper, so gluestack sub-paths
 // like '@gluestack-ui/themed/build/components/Box' load their real ESM/native code and
@@ -117,41 +117,41 @@ jest.mock('@repo/ui', () => {
     const corners = { small: 8, medium: 16, large: 24, tight: 8, comfortable: 16, generous: 24, full: 9999 };
 
     return {
-        // ── Gluestack layout ──────────────────────────────────────────────────
+        // \u2500\u2500 Gluestack layout \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Box: V, VStack: V, HStack: V, Center: V, View: V, Divider: V,
         ScrollView: V, FlatList: V,
-        // ── Typography ───────────────────────────────────────────────────────
+        // \u2500\u2500 Typography \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Text: T, Heading: T, Badge: T, BadgeText: T,
         ButtonText: T, ToastTitle: T, LinkText: T,
-        // ── Interactive ──────────────────────────────────────────────────────
-        Button: ({ testID, children, onPress, isDisabled, ...p }: any) =>
+        // \u2500\u2500 Interactive \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+        Button: ({ testID, children, onPress, isDisabled, ...p }: any) =
             React.createElement('View', { testID, onPress, isDisabled }, children),
-        Pressable: ({ testID, children, onPress, ...p }: any) =>
+        Pressable: ({ testID, children, onPress, ...p }: any) =
             React.createElement('View', { testID, onPress }, children),
-        Link: ({ testID, children, onPress, ...p }: any) =>
+        Link: ({ testID, children, onPress, ...p }: any) =
             React.createElement('View', { testID, onPress }, children),
-        // ── Form ─────────────────────────────────────────────────────────────
+        // \u2500\u2500 Form \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Input: V,
-        InputField: ({ testID, placeholder, value, onChangeText, ...p }: any) =>
+        InputField: ({ testID, placeholder, value, onChangeText, ...p }: any) =
             React.createElement('TextInput', { testID, placeholder, value, onChangeText }),
-        // ── Checkbox ─────────────────────────────────────────────────────────
+        // \u2500\u2500 Checkbox \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Checkbox: V, CheckboxIndicator: V, CheckboxIcon: noop,
         CheckboxLabel: T, CheckIcon: noop,
-        // ── Select ───────────────────────────────────────────────────────────
+        // \u2500\u2500 Select \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Select: V, SelectTrigger: V, SelectInput: V, SelectIcon: noop,
         SelectPortal: V, SelectBackdrop: V, SelectContent: V,
         SelectDragIndicatorWrapper: V, SelectDragIndicator: V, SelectItem: V,
-        // ── Toast ────────────────────────────────────────────────────────────
+        // \u2500\u2500 Toast \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Toast: V, useToast: jest.fn(() => ({ show: jest.fn() })),
-        // ── Wrapper ──────────────────────────────────────────────────────────
+        // \u2500\u2500 Wrapper \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         ScreenWrapper: ({ children }: any) => React.createElement(React.Fragment, null, children),
         EnvironmentProvider: ({ children }: any) => React.createElement(React.Fragment, null, children),
         ExternalLinkProvider: ({ children }: any) => React.createElement(React.Fragment, null, children),
         openExternalURL: jest.fn().mockResolvedValue(true),
         showExternalLinkOptions: jest.fn().mockResolvedValue(true),
-        // ── ProgressIndicator (inlined for ProgressIndicator.test.tsx) ───────
+        // \u2500\u2500 ProgressIndicator (inlined for ProgressIndicator.test.tsx) \u2500\u2500\u2500\u2500\u2500\u2500\u2500
         ProgressIndicator: ({ currentStep, totalSteps, showStepCount = true }: any) => {
-            const dots = Array.from({ length: totalSteps }, (_: any, i: number) =>
+            const dots = Array.from({ length: totalSteps }, (_: any, i: number) =
                 React.createElement('View', {
                     key: i,
                     testID: `progress-dot-${i}`,
@@ -165,7 +165,7 @@ jest.mock('@repo/ui', () => {
                     : null,
             );
         },
-        // ── Hooks ────────────────────────────────────────────────────────────
+        // \u2500\u2500 Hooks \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         useThemedColors: jest.fn(() => ({
             background: '#fff', text: '#000', primary: '#D4AF37',
             action: '#D4AF37', textSecondary: '#666', textTertiary: '#999',
@@ -176,9 +176,9 @@ jest.mock('@repo/ui', () => {
             colors: { background: '#fff', text: '#000', primary: '#D4AF37' },
             temporalPhase: 'morning', deviceTier: 'standard', networkQuality: 'good',
         })),
-        // ── Haptics ──────────────────────────────────────────────────────────
+        // \u2500\u2500 Haptics \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         hapticLight: jest.fn(), hapticSuccess: jest.fn(), hapticError: jest.fn(),
-        // ── Theme ────────────────────────────────────────────────────────────
+        // \u2500\u2500 Theme \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Theme: {
             corners,
             spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 },
@@ -190,7 +190,7 @@ jest.mock('@repo/ui', () => {
 });
 
 // Mock EnvironmentContext and useThemedColors at source level so components
-// loaded via moduleNameMapper (@repo/ui → packages/ui/src/index.ts) get the mock.
+// loaded via moduleNameMapper (@repo/ui \u2192 packages/ui/src/index.ts) get the mock.
 // Using __dirname template literals avoids jest.mock() hoisting issues since
 // __dirname is a CJS module constant (always available), not a declared variable.
 // eslint-disable-next-line @typescript-eslint/no-require-imports

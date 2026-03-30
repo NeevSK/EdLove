@@ -16,7 +16,7 @@ interface NativeSubstrateProps extends TrubeRendererProps {
 }
 
 /**
- * NativeSubstrateRenderer — The "Full-Metal" and "Anyhow" bridge component.
+ * NativeSubstrateRenderer \u2014 The "Full-Metal" and "Anyhow" bridge component.
  * Targets both Tier 1 (C++/Nitro) and Tier 2 (WebGPU/Standard).
  */
 export function NativeSubstrateRenderer({ width, height, surface, plan, soul }: NativeSubstrateProps) {
@@ -53,7 +53,7 @@ export function NativeSubstrateRenderer({ width, height, surface, plan, soul }: 
     async function init() {
       if (!wgsl) return;
       
-      console.log(`[Trübe-Art] [Substrate] Pre-warming ${surface.name} soul...`);
+      console.log(`[Tr\u00FCbe-Art] [Substrate] Pre-warming ${surface.name} soul...`);
       
       if (currentBackend === 'native-vulkan' || currentBackend === 'native-metal') {
         const ok = nativeDriver?.prewarmSurface(surface.name, wgsl) ?? false;
@@ -73,7 +73,7 @@ export function NativeSubstrateRenderer({ width, height, surface, plan, soul }: 
   useEffect(() => {
     if (currentBackend === 'webgpu' && canvasRef.current) {
       canvasRef.current.whenReady(() => {
-        console.log(`[Trübe-Art] [WebGPU] ${surface.name} Canvas Ready.`);
+        console.log(`[Tr\u00FCbe-Art] [WebGPU] ${surface.name} Canvas Ready.`);
       });
     }
   }, [currentBackend, surface.name]);
@@ -106,6 +106,5 @@ export function NativeSubstrateRenderer({ width, height, surface, plan, soul }: 
     <Canvas 
       ref={canvasRef}
       style={StyleSheet.absoluteFill}
-    />
-  );
+    /  );
 }

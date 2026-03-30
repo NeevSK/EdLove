@@ -2,7 +2,7 @@ import { tsl, TSLExpression } from './tsl';
 
 export const MotifLibrary = {
   /**
-   * LotusSketch — A central focal geometry for spiritual clarity.
+   * LotusSketch  A central focal geometry for spiritual clarity.
    * Implementation: Procedural petals using polar coordinates and jittered SDF.
    */
   lotus: (uv: TSLExpression, time: TSLExpression, style: 'draft' | 'ink' | 'luminous') => {
@@ -19,7 +19,7 @@ export const MotifLibrary = {
   },
 
   /**
-   * TideLines — Meditative, horizontal flow representing memory and transition.
+   * TideLines  Meditative, horizontal flow representing memory and transition.
    * Implementation: Domain-warped sine waves with additive noise.
    */
   tide: (uv: TSLExpression, time: TSLExpression) => {
@@ -32,7 +32,7 @@ export const MotifLibrary = {
   },
 
   /**
-   * BranchFlow — Directional, organic structure for peripheral air.
+   * BranchFlow  Directional, organic structure for peripheral air.
    */
   branch: (uv: TSLExpression, time: TSLExpression) => {
     const noise = tsl.fbm(tsl.mul(uv, tsl.float(5.0)), 4);

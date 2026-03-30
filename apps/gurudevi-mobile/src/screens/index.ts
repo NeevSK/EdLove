@@ -1,25 +1,11 @@
-import { Platform } from 'react-native';
-import { LibraryScreen as NativeLibraryScreen } from '@repo/library';
-import { CommunityScreen as NativeCommunityScreen } from '@repo/community';
-import { ClassroomScreen as NativeClassroomScreen } from '@repo/classroom';
-import { SelfScreen as NativeSelfScreen } from '@repo/self';
-
-export { default as AuthScreen } from './AuthScreen';
-
-// --- Web Consensus Layer ---
-// Domain screens with web-aligned sanctuary shells reside in the app screens directory.
-// This allows for a unified desktop experience that transcends the mobile domain logic.
-
-export { default as LibraryScreen } from './LibraryScreen';
-export { default as CommunityScreen } from './CommunityScreen';
-export { default as ClassroomScreen } from './ClassroomScreen';
-export { default as SelfScreen } from './SelfScreen';
-export { default as ProfileScreen } from './ProfileScreen';
-export { default as AppSettingsScreen } from './AppSettingsScreen';
-export { default as NotificationsScreen } from './NotificationsScreen';
-export { default as TrubeLabScreen } from './TrubeLabScreen';
-
-export { default as SchoolCreationScreen } from './SchoolCreationScreen';
-export { default as AIAssistantScreen } from './AIAssistantScreen';
-export { default as WelcomeScreen } from './WelcomeScreen';
-export * from './FounderVisionScreen';
+export { AuthScreenWeb, AppSettingsScreen, AppSettingsScreenWeb, ErrorMessageDemo, NotificationsScreen, NotificationsScreenWeb, OnboardingScreen, OnboardingScreenWeb, OnboardingWrapper, WelcomeScreen, WelcomeScreenWeb } from '@repo/ui/screens';
+export { default as AuthScreen } from '../composition/AuthScreen';
+export { MuteHubScreen, ThuthimalClaimScreen, FullProfileScreen, FullProfileScreenWeb, ProfileScreen, ProfileScreenWeb, PublicProfileScreenWeb } from '@repo/profile';
+export { FounderVisionScreen, SchoolCreationScreen, SchoolForestScreen, SchoolProfileScreen } from '@repo/admin';
+export { AIAssistantScreen, AIAssistantScreenWeb } from '@repo/ai';
+export { ClassroomDetailScreenWeb, ClassroomProfileScreenWeb, ClassroomScreen, ClassroomScreenWeb, DemoPlaygroundPanel as DemoPlaygroundPanelWeb, NoSchoolView, TimetableScreen as TimetableScreenWeb } from '@repo/classroom';
+export { AnnouncementsScreen, BaseChatScreen, CommunityScreen, CommunityScreenWeb, DirectMessageScreen, DirectMessagesListScreen, GroupChatScreen, GroupDetailsScreen, GroupDetailsScreenWeb, GroupsScreen, UserPublicProfileScreen, InvitationWelcomeScreen, InviteCodeEntry } from '@repo/community';
+export { FormBuilderScreenWeb, PublicFormScreenWeb } from '@repo/form-builder';
+export { CollectionDetailScreenWeb, LibraryScreen, LibraryScreenWeb } from '@repo/library';
+export { QRHandlerScreen } from '@repo/scanner-kit';
+export { PrivacyLedgerScreen, SelfScreen } from '@repo/self';

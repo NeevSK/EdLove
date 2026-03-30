@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
     usePermissions, 
-    useResonanceStore, 
+    useTemporalStore, 
     useJourneyHistory
 } from '@repo/core';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -63,14 +63,14 @@ export default function FounderSelfView() {
     const [isSavingMood, setIsSavingMood] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const { viewScale, setScale } = useResonanceStore();
+    const { viewScale, setScale } = useTemporalStore();
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom();
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}>
-            <HStack justifyContent="flex-end" space="xs">
+        <VStack space="lg" sx={{ p: 20 }}
+            <HStack justifyContent="flex-end" space="xs"
                 {(['day', 'week', 'month', 'year'] as const).map(scale => (
                     <Box 
                         key={scale}
@@ -80,19 +80,19 @@ export default function FounderSelfView() {
                             py: 4, 
                             borderRadius: 12 
                         }}
-                    >
-                        <Pressable onPress={() => setScale(scale)}>
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
-                        </Pressable>
-                    </Box>
+                    
+                        <Pressable onPress={() => setScale(scale)}
+                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text
+                        </Pressable
+                    </Box
                 ))}
-            </HStack>
+            </HStack
 
-            <JournalSection entries={journalEntries} loading={loadingJournals} />
-            <MoodSection logs={moodHistory} loading={loadingMoods} />
-            <VisionSection />
-            <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />
-        </VStack>
+            <JournalSection entries={journalEntries} loading={loadingJournals} /
+            <MoodSection logs={moodHistory} loading={loadingMoods} /
+            <VisionSection /
+            <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} /
+        </VStack
     );
 
     const handleMoodSelect = async (mood: any, note: string) => {
@@ -106,7 +106,7 @@ export default function FounderSelfView() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true}
             <BaseSelfView
                 perspective="founder"
                 description={t('self.founderDescription', 'The steady eye of the hurricane - a space for vision and personal pulse.')}
@@ -125,22 +125,22 @@ export default function FounderSelfView() {
                             {
                                 id: 'pulse',
                                 label: 'Ecosystem Dash',
-                                content: <PulseDashboard onEnterDetails={() => { }} />
+                                content: <PulseDashboard onEnterDetails={() => { }} /
                             },
                             {
                                 id: 'voice',
                                 label: 'Voice Journal',
-                                content: <VoiceJournaling userId={userId ?? undefined} />
+                                content: <VoiceJournaling userId={userId ?? undefined} /
                             },
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} />
+                                content: <MoodLotus userId={userId ?? undefined} /
                             },
                             {
                                 id: 'wisdom',
                                 label: 'Wisdom Seeds',
-                                content: <WisdomSeeds userId={userId ?? undefined} />
+                                content: <WisdomSeeds userId={userId ?? undefined} /
                             }
                         ]
                     },
@@ -161,37 +161,37 @@ export default function FounderSelfView() {
                                         latestMood={latestMood}
                                         isLoading={loadingMoods}
                                         accent="dark"
-                                    />
+                                    /
                                 )
                             },
                             {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
-                                        />
-                                    </Box>
+                                        /
+                                    </Box
                                 )
                             }
                         ]
                     }
                 ]}
                 sideBar={
-                    <VStack space="lg">
-                        <WarmMirrorCard text={warmMirrorText} />
-                        <ImpactRipplesCard ripples={ripples} />
-                    </VStack>
+                    <VStack space="lg"
+                        <WarmMirrorCard text={warmMirrorText} /
+                        <ImpactRipplesCard ripples={ripples} /
+                    </VStack
                 }
-            />
+            /
 
 
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            />
-        </ScreenWrapper>
+            /
+        </ScreenWrapper
     );
 }

@@ -1,7 +1,7 @@
 import type { KnowledgeTopology, GraphNode, GraphLink } from '@repo/core';
 
 /**
- * KnowledgeParser — The "Universal Translator" for the Retina Graphics Engine.
+ * KnowledgeParser  The "Universal Translator" for the Retina Graphics Engine.
  * 
  * Responsible for converting external grammars (Mermaid, Markdown, AI lists)
  * into the canonical KnowledgeTopology format.

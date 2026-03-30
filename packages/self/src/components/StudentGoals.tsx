@@ -112,20 +112,20 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
         if (days === 0) {
             return t('studentGoals.streakStart') || 'Start your streak today!';
         } else if (days === 1) {
-            return t('studentGoals.streak1') || '1 Day Streak 🌱';
+            return t('studentGoals.streak1') || '1 Day Streak \uD83C\uDF31';
         } else if (days < 7) {
-            return t('studentGoals.streakDays', { days }) || `${days} Day Streak 🔥`;
+            return t('studentGoals.streakDays', { days }) || `${days} Day Streak \uD83D\uDD25`;
         } else if (days < 30) {
             return t('studentGoals.streakWeeks', { weeks: Math.floor(days / 7) }) ||
-                `${Math.floor(days / 7)} Week Streak 💪`;
+                `${Math.floor(days / 7)} Week Streak \uD83D\uDCAA`;
         } else {
             return t('studentGoals.streakMonths', { months: Math.floor(days / 30) }) ||
-                `${Math.floor(days / 30)} Month Streak ⭐`;
+                `${Math.floor(days / 30)} Month Streak \u2B50`;
         }
     };
 
     return (
-        <VStack space="lg">
+        <VStack space="lg"
             {/* Motivation Bar / Streak */}
             <Box
                 sx={{
@@ -135,22 +135,22 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                     borderLeftWidth: 4,
                     borderLeftColor: Theme.colors.templeGold,
                 }}
-            >
-                <VStack space="md">
+            
+                <VStack space="md"
                     <HStack
                         sx={{
                             justifyContent: 'space-between',
                             alignItems: 'center',
                         }}
-                    >
+                    
                         <Text
                             color={Theme.colors.sacredWhite}
                             size="lg"
                             sx={{ fontWeight: '700' }}
-                        >
-                            {t('studentGoals.motivationTitle') || '✨ Your Momentum'}
-                        </Text>
-                    </HStack>
+                        
+                            {t('studentGoals.motivationTitle') || '\u2728 Your Momentum'}
+                        </Text
+                    </HStack
 
                     <HStack
                         sx={{
@@ -158,53 +158,53 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             justifyContent: 'center',
                             padding: Theme.spacing.md,
                         }}
-                    >
+                    
                         <Text
                             color={Theme.colors.templeGold}
                             sx={{
                                 fontSize: 32,
                                 fontWeight: '700',
                             }}
-                        >
+                        
                             {getStreakMessage(streak)}
-                        </Text>
-                    </HStack>
+                        </Text
+                    </HStack
 
                     <Text
                         color={Theme.colors.starlightGray}
                         size="sm"
                         textAlign="center"
-                    >
+                    
                         {t('studentGoals.streakDesc') ||
                             'Keep logging your mood and completing assignments!'}
-                    </Text>
-                </VStack>
-            </Box>
+                    </Text
+                </VStack
+            </Box
 
             {/* Goals Section */}
-            <VStack space="md">
+            <VStack space="md"
                 <HStack
                     sx={{
                         justifyContent: 'space-between',
                         alignItems: 'center',
                     }}
-                >
-                    <Heading size="lg" color={Theme.colors.sanctuarySaffron}>
-                        {t('studentGoals.goalsTitle') || '🎯 My Goals'}
-                    </Heading>
+                
+                    <Heading size="lg" color={Theme.colors.sanctuarySaffron}
+                        {t('studentGoals.goalsTitle') || '\uD83C\uDFAF My Goals'}
+                    </Heading
 
                     <Button
                         variant="link"
                         size="sm"
                         onPress={() => setShowAddGoal(!showAddGoal)}
-                    >
-                        <ButtonText color={Theme.colors.sanctuarySaffron}>
+                    
+                        <ButtonText color={Theme.colors.sanctuarySaffron}
                             {showAddGoal
                                 ? t('common.cancel') || 'Cancel'
                                 : t('studentGoals.addGoal') || '+ Add Goal'}
-                        </ButtonText>
-                    </Button>
-                </HStack>
+                        </ButtonText
+                    </Button
+                </HStack
 
                 {/* Add Goal Input */}
                 {showAddGoal && (
@@ -214,13 +214,13 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                         }}
-                    >
-                        <VStack space="md">
+                    
+                        <VStack space="md"
                             <Input
                                 sx={{
                                     backgroundColor: Theme.colors.obsidian,
                                 }}
-                            >
+                            
                                 <InputField
                                     placeholder={
                                         t('studentGoals.goalPlaceholder') ||
@@ -231,8 +231,8 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                     sx={{
                                         color: Theme.colors.sacredWhite,
                                     }}
-                                />
-                            </Input>
+                                /
+                            </Input
 
                             <Button
                                 sx={{
@@ -240,13 +240,13 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                 }}
                                 onPress={handleAddGoal}
                                 isDisabled={!newGoalText.trim() || isSaving}
-                            >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                            
+                                <ButtonText color={Theme.colors.sacredWhite}
                                     {isSaving ? 'Saving...' : (t('studentGoals.saveGoal') || 'Save Goal')}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    </Box>
+                                </ButtonText
+                            </Button
+                        </VStack
+                    </Box
                 )}
 
                 {/* Goals List */}
@@ -258,36 +258,36 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                         }}
-                    >
-                        <VStack space="md">
+                    
+                        <VStack space="md"
                             {/* Goal Text */}
                             <Text
                                 color={Theme.colors.sacredWhite}
                                 size="md"
                                 sx={{ fontWeight: '600' }}
-                            >
+                            
                                 {goal.text}
-                            </Text>
+                            </Text
 
                             {/* Progress Bar */}
-                            <VStack space="xs">
+                            <VStack space="xs"
                                 <HStack
                                     sx={{
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                     }}
-                                >
-                                    <Text color={Theme.colors.mistGray} size="sm">
+                                
+                                    <Text color={Theme.colors.mistGray} size="sm"
                                         {t('studentGoals.progress') || 'Progress'}
-                                    </Text>
+                                    </Text
                                     <Text
                                         color={Theme.colors.sanctuarySaffron}
                                         size="sm"
                                         sx={{ fontWeight: '700' }}
-                                    >
+                                    
                                         {goal.progress}%
-                                    </Text>
-                                </HStack>
+                                    </Text
+                                </HStack
 
                                 <Progress
                                     value={goal.progress}
@@ -295,7 +295,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                         height: 8,
                                         backgroundColor: Theme.colors.obsidian,
                                     }}
-                                >
+                                
                                     <ProgressFilledTrack
                                         sx={{
                                             backgroundColor:
@@ -303,61 +303,61 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                                     ? Theme.colors.sageGreen
                                                     : Theme.colors.sanctuarySaffron,
                                         }}
-                                    />
-                                </Progress>
-                            </VStack>
+                                    /
+                                </Progress
+                            </VStack
 
                             {/* Progress Controls */}
                             {goal.progress < 100 && (
-                                <HStack space="sm">
+                                <HStack space="sm"
                                     <TouchableOpacity
-                                        onPress={() =>
+                                        onPress={() =
                                             handleUpdateProgress(goal.id, goal.progress - 10)
                                         }
-                                    >
+                                    
                                         <Box
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: Theme.colors.obsidian,
                                                 borderRadius: Theme.corners.tight,
                                             }}
-                                        >
-                                            <Text color={Theme.colors.mistGray}>➖</Text>
-                                        </Box>
-                                    </TouchableOpacity>
+                                        
+                                            <Text color={Theme.colors.mistGray}>\u2796</Text
+                                        </Box
+                                    </TouchableOpacity
 
                                     <TouchableOpacity
-                                        onPress={() =>
+                                        onPress={() =
                                             handleUpdateProgress(goal.id, goal.progress + 10)
                                         }
-                                    >
+                                    
                                         <Box
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: Theme.colors.sanctuarySaffron,
                                                 borderRadius: Theme.corners.tight,
                                             }}
-                                        >
-                                            <Text color={Theme.colors.sacredWhite}>➕</Text>
-                                        </Box>
-                                    </TouchableOpacity>
-                                </HStack>
+                                        
+                                            <Text color={Theme.colors.sacredWhite}>\u2795</Text
+                                        </Box
+                                    </TouchableOpacity
+                                </HStack
                             )}
 
                             {/* Completion Badge */}
                             {goal.progress === 100 && (
-                                <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 20 }}>🎉</Text>
+                                <HStack space="sm" sx={{ alignItems: 'center' }}
+                                    <Text style={{ fontSize: 20 }}>\uD83C\uDF89</Text
                                     <Text
                                         color={Theme.colors.sageGreen}
                                         sx={{ fontWeight: '700' }}
-                                    >
+                                    
                                         {t('studentGoals.completed') || 'Goal Achieved!'}
-                                    </Text>
-                                </HStack>
+                                    </Text
+                                </HStack
                             )}
-                        </VStack>
-                    </Box>
+                        </VStack
+                    </Box
                 ))}
 
                 {/* Empty State */}
@@ -367,17 +367,17 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             padding: Theme.spacing.xl,
                             alignItems: 'center',
                         }}
-                    >
+                    
                         <Text
                             color={Theme.colors.starlightGray}
                             textAlign="center"
-                        >
+                        
                             {t('studentGoals.noGoals') ||
                                 'Set your first goal to start tracking your progress!'}
-                        </Text>
-                    </Box>
+                        </Text
+                    </Box
                 )}
-            </VStack>
-        </VStack>
+            </VStack
+        </VStack
     );
 }

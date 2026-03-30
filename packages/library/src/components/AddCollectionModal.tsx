@@ -44,24 +44,18 @@ export default function AddCollectionModal({ isOpen, onClose, onAdd }: AddCollec
     };
 
     const visibilityOptions = [
-        { label: '🔒 ' + t('library.visibility.personal'), value: 'personal' },
-        { label: '🏫 ' + t('library.visibility.school'), value: 'school' },
-        { label: '🌐 ' + t('library.visibility.public'), value: 'public' },
+        { label: '\uD83D\uDD12 ' + t('library.visibility.personal'), value: 'personal' },
+        { label: '\uD83C\uDFEB ' + t('library.visibility.school'), value: 'school' },
+        { label: '\uD83C\uDF10 ' + t('library.visibility.public'), value: 'public' },
     ];
 
     const footer = (
-        <HStack sx={{ gap: 12 }}>
-            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary">
-                {t('common.cancel') || 'Cancel'}
-            </SanctuaryButton>
-            <SanctuaryButton
+        <HStack sx={{ gap: 12 }}            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary"                {t('common.cancel') || 'Cancel'}
+            </SanctuaryButton            <SanctuaryButton
                 onPress={handleAdd}
                 isDisabled={!name}
-            >
-                {t('library.createCollection.submit') || 'Create Collection'}
-            </SanctuaryButton>
-        </HStack>
-    );
+                            {t('library.createCollection.submit') || 'Create Collection'}
+            </SanctuaryButton        </HStack    );
 
     return (
         <SanctuaryModal
@@ -70,54 +64,29 @@ export default function AddCollectionModal({ isOpen, onClose, onAdd }: AddCollec
             title={t('library.createCollection.title') || 'New Collection'}
             subtitle={t('library.createCollection.subtitle') || 'Organize resources into a shared or personal stream.'}
             footer={footer}
-        >
-            <VStack sx={{ gap: 16, mt: 16 }}>
-                <VStack sx={{ gap: 4 }}>
-                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}>
-                        {t('library.createCollection.nameLabel') || 'COLLECTION NAME'}
-                    </Text>
-                    <Input sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-                        <InputField
+                    <VStack sx={{ gap: 16, mt: 16 }}                <VStack sx={{ gap: 4 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.nameLabel') || 'COLLECTION NAME'}
+                    </Text                    <Input sx={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}                        <InputField
                             sx={{ color: colors.textPrimary }}
                             placeholder={t('library.createCollection.namePlaceholder') || 'e.g., Grade 10 Science Essentials'}
                             value={name}
                             onChangeText={setName}
-                        />
-                    </Input>
-                </VStack>
-
-                <VStack sx={{ gap: 4 }}>
-                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}>
-                        {t('library.createCollection.descriptionLabel') || 'DESCRIPTION'}
-                    </Text>
-                    <Input sx={{ minHeight: 80, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-                        <InputField
+                        /                    </Input                </VStack
+                <VStack sx={{ gap: 4 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.descriptionLabel') || 'DESCRIPTION'}
+                    </Text                    <Input sx={{ minHeight: 80, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}                        <InputField
                             sx={{ color: colors.textPrimary }}
                             placeholder={t('library.createCollection.descriptionPlaceholder') || 'What is this collection about?'}
                             value={description}
                             onChangeText={setDescription}
                             multiline
-                        />
-                    </Input>
-                </VStack>
-
-                <VStack sx={{ gap: 8 }}>
-                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}>
-                        {t('library.createCollection.visibilityLabel') || 'VISIBILITY (SHARDING)'}
-                    </Text>
-                    <HorizontalChipRow
+                        /                    </Input                </VStack
+                <VStack sx={{ gap: 8 }}                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}                        {t('library.createCollection.visibilityLabel') || 'VISIBILITY (SHARDING)'}
+                    </Text                    <HorizontalChipRow
                         chips={visibilityOptions}
                         selectedValue={visibility}
                         onSelect={(v) => setVisibility(v as ResourceVisibility)}
                         size="sm"
-                    />
-                    <Text sx={{ color: colors.textSecondary, fontSize: 11, fontStyle: 'italic', mt: 4 }}>
-                        {visibility === 'personal' && (t('library.visibility.personalNote') || 'Only you can see this.')}
+                    /                    <Text sx={{ color: colors.textSecondary, fontSize: 11, fontStyle: 'italic', mt: 4 }}                        {visibility === 'personal' && (t('library.visibility.personalNote') || 'Only you can see this.')}
                         {visibility === 'school' && (t('library.visibility.schoolNote') || 'Visible to everyone in your school.')}
                         {visibility === 'public' && (t('library.visibility.publicNote') || 'Global visibility for all Gurudevi users.')}
-                    </Text>
-                </VStack>
-            </VStack>
-        </SanctuaryModal>
-    );
+                    </Text                </VStack            </VStack        </SanctuaryModal    );
 }

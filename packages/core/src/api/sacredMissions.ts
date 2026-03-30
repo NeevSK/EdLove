@@ -1,4 +1,4 @@
-﻿import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { growthSignalsAPI } from './growthSignals';
 import { impactRipplesAPI } from './impactRipples';
 // types are defined below
@@ -105,7 +105,7 @@ export const sacredMissionsAPI = {
             manifesto_id: manifestoId,
         }).catch(() => {});
 
-        // Impact Ripple for the manifesto creator — "a fellow teacher endorsed your vision"
+        // Impact Ripple for the manifesto creator  "a fellow teacher endorsed your vision"
         if (manifesto?.creator_id && manifesto.creator_id !== userId) {
             void impactRipplesAPI.createRipple({
                 recipientUserId: manifesto.creator_id,

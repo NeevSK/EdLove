@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, VStack, Heading, Text, Button, ButtonText, Center } from '../gluestack';
 import { Plus, Sparkles, LogIn } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ interface PositiveInvitationProps {
 const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
     title,
     description,
-    icon: Icon = Sparkles,
+    icon: iconProp,
     actionLabel,
     onAction,
     type = 'empty',
@@ -73,11 +73,14 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
     };
 
     const messages = getMessages();
-    const DefaultIcon = messages.icon;
+    
+    // Safety check for Icon component to prevent "Component is not a constructor" crash
+    const Icon = iconProp || messages.icon || Sparkles;
+    const isValidComponent = typeof Icon === 'function' || (typeof Icon === 'object' && Icon !== null);
 
     return (
-        <Center sx={{ flex: 1, padding: Theme.spacing.xl, minHeight: 250 }}>
-            <VStack alignItems="center" sx={{ maxWidth: 300, gap: Theme.spacing.xl }}>
+        <Center sx={{ flex: 1, padding: Theme.spacing.xl, minHeight: 250 }}
+            <VStack alignItems="center" sx={{ maxWidth: 300, gap: Theme.spacing.xl }}
 
                 <Box
                     sx={{
@@ -88,26 +91,30 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
                         justifyContent: 'center',
                         alignItems: 'center'
                     }}
-                >
-                    <Icon size={32} color={colors.action} />
-                </Box>
+                
+                    {isValidComponent ? (
+                        <Icon size={32} color={colors.action} /
+                    ) : (
+                        <Sparkles size={32} color={colors.action} /
+                    )}
+                </Box
 
-                <VStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
+                <VStack alignItems="center" sx={{ gap: Theme.spacing.xs }}
                     <Heading
                         size="md"
                         textAlign="center"
                         color={colors.text}
-                    >
+                    
                         {title || messages.title}
-                    </Heading>
+                    </Heading
                     <Text
                         sx={{ fontSize: 14 }}
                         textAlign="center"
                         color={colors.textSecondary}
-                    >
+                    
                         {description || messages.desc}
-                    </Text>
-                </VStack>
+                    </Text
+                </VStack
 
                 {onAction && (
                     <Button
@@ -122,12 +129,12 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
                             borderRadius: Theme.corners.full,
                             paddingHorizontal: Theme.spacing.lg
                         }}
-                    >
-                        <ButtonText color={textOnAccent}>{actionLabel || messages.action}</ButtonText>
-                    </Button>
+                    
+                        <ButtonText color={textOnAccent}>{actionLabel || messages.action}</ButtonText
+                    </Button
                 )}
-            </VStack>
-        </Center>
+            </VStack
+        </Center
     );
 };
 

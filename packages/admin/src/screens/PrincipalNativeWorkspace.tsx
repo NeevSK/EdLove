@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScreenWrapper } from '@repo/ui';
-import { useCapabilities } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import { HierarchyBuilder, InviteManager } from '../components';
 import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
 import type { PrincipalWorkspaceView } from '../principal/workspace';
@@ -28,10 +28,10 @@ export function PrincipalNativeWorkspace({
   renderMain,
   renderAdditionalView,
 }: PrincipalNativeWorkspaceProps) {
-  const { policy } = useCapabilities();
+  const { can } = usePermissions();
   const [internalActiveView, setInternalActiveView] = useState<PrincipalWorkspaceView>('main');
   const activeView = controlledActiveView ?? internalActiveView;
-  const canManageSchoolScope = policy.can('school.manage', { schoolId });
+  const canManageSchoolScope = can('manage', 'School');
 
   const navigatePrincipalView = (view: PrincipalWorkspaceView) => {
     if (view === 'main') {
@@ -68,18 +68,12 @@ export function PrincipalNativeWorkspace({
   const renderWorkspaceView = () => {
     if (activeView === 'hierarchy') {
       return (
-        <ScreenWrapper>
-          <HierarchyBuilder schoolId={schoolId} onBack={() => navigatePrincipalView('main')} />
-        </ScreenWrapper>
-      );
+        <ScreenWrapper          <HierarchyBuilder schoolId={schoolId} onBack={() => navigatePrincipalView('main')} /        </ScreenWrapper      );
     }
 
     if (activeView === 'invites') {
       return (
-        <ScreenWrapper>
-          <InviteManager schoolId={schoolId} userId={userId} onBack={() => navigatePrincipalView('main')} />
-        </ScreenWrapper>
-      );
+        <ScreenWrapper          <InviteManager schoolId={schoolId} userId={userId} onBack={() => navigatePrincipalView('main')} /        </ScreenWrapper      );
     }
 
     return renderAdditionalView?.(ctx) ?? null;
@@ -91,6 +85,5 @@ export function PrincipalNativeWorkspace({
       onActiveViewChange={navigatePrincipalView}
       renderView={() => renderWorkspaceView()}
       renderMain={() => renderMain(ctx)}
-    />
-  );
+    /  );
 }

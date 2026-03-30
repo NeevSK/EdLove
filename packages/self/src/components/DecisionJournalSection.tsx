@@ -68,7 +68,7 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
     }
 
     return (
-        <VStack space="md" sx={{ flex: 1 }}>
+        <VStack space="md" sx={{ flex: 1 }}
             <Box
                 p={Theme.spacing.md}
                 sx={{
@@ -76,8 +76,8 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 120
                 }}
-            >
-                <Input sx={{ borderWidth: 0, flex: 1 }}>
+            
+                <Input sx={{ borderWidth: 0, flex: 1 }}
                     <InputField
                         placeholder={t('principal.decisionPlaceholder') || t('self.decisionPlaceholder') || "What decision is weighing on you today?"}
                         multiline
@@ -86,9 +86,9 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                         sx={{ textAlignVertical: 'top', minHeight: 100 }}
                         value={decisionText}
                         onChangeText={setDecisionText}
-                    />
-                </Input>
-                <Box alignItems="flex-end" mt="$2">
+                    /
+                </Input
+                <Box alignItems="flex-end" mt="$2"
                     <Pressable
                         onPress={handleSave}
                         disabled={!decisionText.trim() || isSaving}
@@ -99,20 +99,20 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                             borderRadius: Theme.corners.comfortable,
                             opacity: isSaving ? 0.7 : 1
                         }}
-                    >
-                        <Text color={Theme.colors.white} size="sm" bold>
+                    
+                        <Text color={Theme.colors.white} size="sm" bold
                             {isSaving ? (t('common.saving') || "Saving...") : (t('common.save') || "Save")}
-                        </Text>
-                    </Pressable>
-                </Box>
-            </Box>
+                        </Text
+                    </Pressable
+                </Box
+            </Box
 
-            <Heading size="sm" color={colors.textSecondary} mt="$4">
+            <Heading size="sm" color={colors.textSecondary} mt="$4"
                 {t('principal.recentDecisions') || t('self.recentDecisions') || "Recent Decisions"}
-            </Heading>
+            </Heading
 
-            <ScrollView style={{ maxHeight: 300 }} nestedScrollEnabled>
-                <VStack space="sm">
+            <ScrollView style={{ maxHeight: 300 }} nestedScrollEnabled
+                <VStack space="sm"
                     {decisions.map((decision) => (
                         <Box
                             key={decision.id}
@@ -123,22 +123,22 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                                 borderLeftWidth: 3,
                                 borderLeftColor: colors.action
                             }}
-                        >
-                            <Text color={colors.text} size="sm" numberOfLines={3}>
+                        
+                            <Text color={colors.text} size="sm" numberOfLines={3}
                                 {decision.decision_text}
-                            </Text>
-                            <Text color={colors.textTertiary} size="xs" mt="$1">
+                            </Text
+                            <Text color={colors.textTertiary} size="xs" mt="$1"
                                 {new Date(decision.created_at).toLocaleDateString()}
-                            </Text>
-                        </Box>
+                            </Text
+                        </Box
                     ))}
                     {decisions.length === 0 && (
-                        <Text color={colors.textTertiary} size="sm" fontStyle="italic">
+                        <Text color={colors.textTertiary} size="sm" fontStyle="italic"
                             {t('principal.noDecisionsYet') || t('self.noDecisionsYet') || "No decisions logged yet."}
-                        </Text>
+                        </Text
                     )}
-                </VStack>
-            </ScrollView>
-        </VStack>
+                </VStack
+            </ScrollView
+        </VStack
     );
 }

@@ -27,31 +27,20 @@ export function GeographicPerspective({
     [data, palette]);
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>{title}</Text>
-                {description && <Text style={styles.description}>{description}</Text>}
-            </View>
-            
+        <View style={styles.container}            <View style={styles.header}                <Text style={styles.title}>{title}</Text                {description && <Text style={styles.description}>{description}</Text>}
+            </View            
             <SriLankaMap 
                 districtColors={districtColors}
                 onDistrictSelect={onDistrictSelect}
                 width={350}
                 height={550}
-            />
-
-            <View style={styles.legend}>
-                <Text style={styles.legendText}>Low</Text>
-                <View style={[
+            /
+            <View style={styles.legend}                <Text style={styles.legendText}>Low</Text                <View style={[
                     styles.legendBar, 
                     { backgroundColor: (Object.keys(districtColors).length > 0 ? districtColors[Object.keys(districtColors)[0] as string] : '#eee') }
-                ]} />
-                <Text style={styles.legendText}>High</Text>
-            </View>
+                ]} /                <Text style={styles.legendText}>High</Text            </View
 
-
-        </View>
-    );
+        </View    );
 }
 
 const styles = StyleSheet.create({

@@ -14,7 +14,7 @@ import {
     supabase,
     useStore,
     usePermissions,
-    useResonanceStore,
+    useTemporalStore,
     useJourneyHistory,
     useBanyanGrowth
 } from '@repo/core';
@@ -69,14 +69,14 @@ export default function TeacherSelfView() {
     const [isPulseDashboardOpen, setIsPulseDashboardOpen] = useState(true);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const { viewScale, setScale } = useResonanceStore();
+    const { viewScale, setScale } = useTemporalStore();
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
     const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}>
-            <HStack justifyContent="flex-end" space="xs">
+        <VStack space="lg" sx={{ p: 20 }}
+            <HStack justifyContent="flex-end" space="xs"
                 {(['day', 'week', 'month', 'year'] as const).map(scale => (
                     <Box 
                         key={scale}
@@ -86,18 +86,18 @@ export default function TeacherSelfView() {
                             py: 4, 
                             borderRadius: 12 
                         }}
-                    >
-                        <Pressable onPress={() => setScale(scale)}>
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
-                        </Pressable>
-                    </Box>
+                    
+                        <Pressable onPress={() => setScale(scale)}
+                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text
+                        </Pressable
+                    </Box
                 ))}
-            </HStack>
+            </HStack
 
-            <JournalSection entries={journalEntries} loading={loadingJournals} />
-            <MoodSection logs={moodHistory} loading={loadingMoods} />
-            <TeacherPulse banyan={banyan} loading={banyanLoading} />
-        </VStack>
+            <JournalSection entries={journalEntries} loading={loadingJournals} /
+            <MoodSection logs={moodHistory} loading={loadingMoods} /
+            <TeacherPulse banyan={banyan} loading={banyanLoading} /
+        </VStack
     );
 
     const handleMoodSelect = async (mood: any, note: string) => {
@@ -111,7 +111,7 @@ export default function TeacherSelfView() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true}
             <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
@@ -130,17 +130,17 @@ export default function TeacherSelfView() {
                             {
                                 id: 'pulse',
                                 label: 'Daily Pulse',
-                                content: <PulseDashboard onEnterDetails={() => { }} />
+                                content: <PulseDashboard onEnterDetails={() => { }} /
                             },
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} />
+                                content: <MoodLotus userId={userId ?? undefined} /
                             },
                             {
                                 id: 'wisdom',
                                 label: 'Wisdom Seeds',
-                                content: <WisdomSeeds userId={userId ?? undefined} />
+                                content: <WisdomSeeds userId={userId ?? undefined} /
                             }
                         ]
                     },
@@ -152,12 +152,12 @@ export default function TeacherSelfView() {
                             {
                                 id: 'fire-journal',
                                 label: 'Fire Journal',
-                                content: <FireJournal userId={userId ?? undefined} />
+                                content: <FireJournal userId={userId ?? undefined} /
                             },
                             {
                                 id: 'voice',
                                 label: 'Voice Journal',
-                                content: <VoiceJournaling userId={userId ?? undefined} />
+                                content: <VoiceJournaling userId={userId ?? undefined} /
                             },
                             {
                                 id: 'mood-picker',
@@ -170,7 +170,7 @@ export default function TeacherSelfView() {
                                         isSaving={isSavingMood}
                                         latestMood={latestMood}
                                         isLoading={loadingMoods}
-                                    />
+                                    /
                                 )
                             }
                         ]
@@ -184,18 +184,18 @@ export default function TeacherSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
-                                        />
-                                    </Box>
+                                        /
+                                    </Box
                                 )
                             },
                             {
                                 id: 'wind-down',
                                 label: 'Restorative Ritual',
-                                content: <WindDownRitual userId={userId ?? undefined} />
+                                content: <WindDownRitual userId={userId ?? undefined} /
                             }
                         ]
                     },
@@ -207,24 +207,24 @@ export default function TeacherSelfView() {
                             {
                                 id: 'daily-rhythm',
                                 label: 'Working Pace',
-                                content: <DailyRhythm />
+                                content: <DailyRhythm /
                             }
                         ]
                     }
                 ]}
                 sideBar={
-                    <VStack space="lg">
-                        <WarmMirrorCard text={warmMirrorText} />
-                        <ImpactRipplesCard ripples={ripples} />
-                    </VStack>
+                    <VStack space="lg"
+                        <WarmMirrorCard text={warmMirrorText} /
+                        <ImpactRipplesCard ripples={ripples} /
+                    </VStack
                 }
-            />
+            /
 
 
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            />
-        </ScreenWrapper>
+            /
+        </ScreenWrapper
     );
 }

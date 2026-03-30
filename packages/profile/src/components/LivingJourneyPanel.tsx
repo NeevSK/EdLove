@@ -1,18 +1,18 @@
 /**
  * LivingJourneyPanel
  *
- * The holistic profile view — a place where the user can see their full growth
+ * The holistic profile view \u2014 a place where the user can see their full growth
  * picture across all four nature paths, their moon context, and their discovered
  * Whispered Moments.
  *
- * See: docs/Core/GROWTH_MODEL.md §15 "The Living Journey Panel"
+ * See: docs/Core/GROWTH_MODEL.md \u00A715 "The Living Journey Panel"
  *
  * Design principles:
- *   - Private — visible only to this user; never shown to colleagues
- *   - Story, not score — each row is human language, not a number
- *   - All paths shown — Bhumi + Banyan (teachers) or River + Crystal (students) + Moon (all)
- *   - Moon is live — computed in real time from the device's current date
- *   - Whispered Moments as memory — the moments that have been discovered are kept here
+ *   - Private \u2014 visible only to this user; never shown to colleagues
+ *   - Story, not score \u2014 each row is human language, not a number
+ *   - All paths shown \u2014 Bhumi + Banyan (teachers) or River + Crystal (students) + Moon (all)
+ *   - Moon is live \u2014 computed in real time from the device's current date
+ *   - Whispered Moments as memory \u2014 the moments that have been discovered are kept here
  *
  * This panel REPLACES UserStatsCard + AchievementGallery in ProfileScreen.
  */
@@ -32,7 +32,7 @@ import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
     moonPhaseAPI,
-    userGrowthStateAPI,
+    useTemporalStore,
     type UserGrowthState,
     type MoonPhase,
     type BhumiStage,
@@ -41,43 +41,46 @@ import {
     type CrystalTier,
 } from '@repo/core';
 import { usePermissions } from '@repo/core';
-import { communityAPI } from "@repo/community/api";
+import { communityAPI } from '@repo/core';
+import { profileAPI } from '../api/profile';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface LivingJourneyPanelProps {
     userId: string;
+    authority?: string;
+    role?: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE → HUMAN LANGUAGE
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// STAGE \u2192 HUMAN LANGUAGE
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const BHUMI_NARRATIVES: Record<BhumiStage, { label: string; description: string }> = {
     bijam: {
-        label: 'Bijam 🌰',
-        description: 'The seed is here — and seeds are beautiful.',
+        label: 'Bijam \uD83C\uDF30',
+        description: 'The seed is here \u2014 and seeds are beautiful.',
     },
     mula: {
-        label: 'Mūla 🌱',
+        label: 'M\u016Bla \uD83C\uDF31',
         description: 'Roots finding their ground. The foundation is real.',
     },
     nala: {
-        label: 'Nāla 🌿',
+        label: 'N\u0101la \uD83C\uDF3F',
         description: 'Rising through the water. Your presence is consistent.',
     },
     patra: {
-        label: 'Patra 🍃',
+        label: 'Patra \uD83C\uDF43',
         description: 'Leaves on the surface. You have contributed to the ecosystem.',
     },
     kamala: {
-        label: 'Kamala 🌸',
+        label: 'Kamala \uD83C\uDF38',
         description: 'The bud is forming. Others feel your warmth.',
     },
     purna_kamala: {
-        label: 'Pūrṇa Kamala 🪷',
+        label: 'P\u016Br\u1E47a Kamala \uD83E\uDEB7',
         description: 'Full bloom. You are alive in all five dimensions.',
     },
 };
@@ -104,9 +107,9 @@ const CRYSTAL_NARRATIVES: Record<CrystalTier, string> = {
     fractal: 'The fractal pattern is visible. You see how everything connects.',
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // PATH ROW COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface PathRowProps {
     emoji: string;
@@ -124,34 +127,34 @@ function PathRow({ emoji, pathName, stageLabel, narrative, colors }: PathRowProp
                 borderBottomWidth: 1,
                 borderBottomColor: `${colors.border}60`,
             }}
-        >
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>{emoji}</Text>
-                <VStack flex={1} space="xs">
-                    <HStack justifyContent="space-between" alignItems="center">
+        
+            <HStack space="md" alignItems="flex-start"
+                <Text style={styles.pathEmoji}>{emoji}</Text
+                <VStack flex={1} space="xs"
+                    <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+                        
                             {pathName}
-                        </Text>
-                        <Text size="sm" bold color={colors.text}>
+                        </Text
+                        <Text size="sm" bold color={colors.text}
                             {stageLabel}
-                        </Text>
-                    </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
+                        </Text
+                    </HStack
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}
                         {narrative}
-                    </Text>
-                </VStack>
-            </HStack>
-        </Box>
+                    </Text
+                </VStack
+            </HStack
+        </Box
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // MOON ROW COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface MoonRowProps {
     moon: MoonPhase;
@@ -167,39 +170,39 @@ function MoonRow({ moon, colors, t }: MoonRowProps) {
                 borderBottomWidth: 1,
                 borderBottomColor: `${colors.border}60`,
             }}
-        >
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>{moon.emoji}</Text>
-                <VStack flex={1} space="xs">
-                    <HStack justifyContent="space-between" alignItems="center">
+        
+            <HStack space="md" alignItems="flex-start"
+                <Text style={styles.pathEmoji}>{moon.emoji}</Text
+                <VStack flex={1} space="xs"
+                    <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+                        
                             {t('journey.moonTonight')}
-                        </Text>
-                        <Text size="sm" bold color={colors.text}>
+                        </Text
+                        <Text size="sm" bold color={colors.text}
                             {moon.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </Text>
-                    </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18, fontStyle: 'italic' }}>
+                        </Text
+                    </HStack
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18, fontStyle: 'italic' }}
                         {moon.invitation_en}
-                    </Text>
+                    </Text
                     {moon.is_poya && (
-                        <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}>
+                        <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}
                             {t('journey.poyaDay')}
-                        </Text>
+                        </Text
                     )}
-                </VStack>
-            </HStack>
-        </Box>
+                </VStack
+            </HStack
+        </Box
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // RESONANCE ROW COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface ResonanceRowProps {
     stats: { likes: number; comments: number; shares: number };
@@ -208,17 +211,17 @@ interface ResonanceRowProps {
 
 function ResonanceRow({ stats, colors }: ResonanceRowProps) {
     const total = stats.likes + stats.comments + stats.shares;
-    let label = 'Quiet Presence 🤫';
+    let label = 'Quiet Presence \uD83E\uDD2B';
     let narrative = 'Your voice is being found. Each interaction is a resonance.';
 
     if (total > 50) {
-        label = 'Luminous Echo 🔔';
+        label = 'Luminous Echo \uD83D\uDD14';
         narrative = 'Your presence ripples through the community. Others are listening.';
     } else if (total > 20) {
-        label = 'Steady Vibration 🌊';
+        label = 'Steady Vibration \uD83C\uDF0A';
         narrative = 'You are consistently heard. Your contributions find their mark.';
     } else if (total > 5) {
-        label = 'First Ripples 💧';
+        label = 'First Ripples \uD83D\uDCA7';
         narrative = 'A splash in the pond. Others have begun to respond to your presence.';
     }
 
@@ -229,44 +232,92 @@ function ResonanceRow({ stats, colors }: ResonanceRowProps) {
                 borderBottomWidth: 1,
                 borderBottomColor: `${colors.border}60`,
             }}
-        >
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>✨</Text>
-                <VStack flex={1} space="xs">
-                    <HStack justifyContent="space-between" alignItems="center">
+        
+            <HStack space="md" alignItems="flex-start"
+                <Text style={styles.pathEmoji}>\u2728</Text
+                <VStack flex={1} space="xs"
+                    <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+                        
                             COMMUNITY RESONANCE
-                        </Text>
-                        <Text size="sm" bold color={colors.text}>
+                        </Text
+                        <Text size="sm" bold color={colors.text}
                             {label}
-                        </Text>
-                    </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
+                        </Text
+                    </HStack
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}
                         {narrative}
-                    </Text>
-                    <HStack space="sm" mt={4}>
-                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
+                    </Text
+                    <HStack space="sm" mt={4}
+                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}
                             {stats.likes} Likes
-                        </Text>
-                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
+                        </Text
+                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}
                             {stats.comments} Comments
-                        </Text>
-                    </HStack>
-                </VStack>
-            </HStack>
-        </Box>
+                        </Text
+                    </HStack
+                </VStack
+            </HStack
+        </Box
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+interface RecognitionRowProps {
+    badges: string[];
+    colors: ReturnType<typeof useThemedColors>;
+}
 
-// ─────────────────────────────────────────────────────────────────────────────
+function RecognitionRow({ badges, colors }: RecognitionRowProps) {
+    const visibleBadges = badges.slice(0, 3);
+    const label = badges.length === 0
+        ? 'Recognition Still Gathering'
+        : badges.length >= 4
+            ? 'Recognition Constellation'
+            : 'Recognition Taking Shape';
+    const narrative = badges.length === 0
+        ? 'Your journey is being noticed quietly. Meaningful signals will gather here over time.'
+        : `Your path has already left ${badges.length} memorable ${badges.length === 1 ? 'signal' : 'signals'} in the platform.`;
+
+    return (
+        <Box
+            sx={{
+                paddingVertical: Theme.spacing.md,
+                borderBottomWidth: 1,
+                borderBottomColor: `${colors.border}60`,
+            }}
+                    <HStack space="md" alignItems="flex-start"                <Text style={styles.pathEmoji}>\uD83C\uDFC5</Text                <VStack flex={1} space="xs"                    <HStack justifyContent="space-between" alignItems="center"                        <Text
+                            size="xs"
+                            color={colors.textTertiary}
+                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
+                                                    JOURNEY RECOGNITION
+                        </Text                        <Text size="sm" bold color={colors.text}                            {label}
+                        </Text                    </HStack                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}                        {narrative}
+                    </Text                    {visibleBadges.length > 0 && (
+                        <HStack flexWrap="wrap" style={{ gap: 6, marginTop: 4 }}                            {visibleBadges.map((badge) => (
+                                <Box
+                                    key={badge}
+                                    sx={{
+                                        paddingHorizontal: Theme.spacing.sm,
+                                        paddingVertical: 4,
+                                        backgroundColor: `${colors.action}15`,
+                                        borderRadius: Theme.corners.full,
+                                        borderWidth: 1,
+                                        borderColor: `${colors.action}30`,
+                                    }}
+                                                                    <Text size="xs" color={colors.text}                                        {badge}
+                                    </Text                                </Box                            ))}
+                        </HStack                    )}
+                </VStack            </HStack        </Box    );
+}
+
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // WHISPERED MOMENTS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface WhisperedMomentsRowProps {
     moments: Array<{ key: string; name_en: string; name_si: string }>;
@@ -277,44 +328,44 @@ interface WhisperedMomentsRowProps {
 function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
     if (moments.length === 0) {
         return (
-            <Box sx={{ paddingVertical: Theme.spacing.md }}>
-                <HStack space="md" alignItems="center">
-                    <Text style={styles.pathEmoji}>✨</Text>
-                    <VStack flex={1} space="xs">
+            <Box sx={{ paddingVertical: Theme.spacing.md }}
+                <HStack space="md" alignItems="center"
+                    <Text style={styles.pathEmoji}>\u2728</Text
+                    <VStack flex={1} space="xs"
                         <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+                        
                             {t('journey.whisperedMoments')}
-                        </Text>
-                        <Text size="sm" color={colors.textSecondary} style={{ fontStyle: 'italic' }}>
+                        </Text
+                        <Text size="sm" color={colors.textSecondary} style={{ fontStyle: 'italic' }}
                             {t('journey.noMoments')}
-                        </Text>
-                    </VStack>
-                </HStack>
-            </Box>
+                        </Text
+                    </VStack
+                </HStack
+            </Box
         );
     }
 
     return (
-        <Box sx={{ paddingVertical: Theme.spacing.md }}>
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>✨</Text>
-                <VStack flex={1} space="sm">
-                    <HStack justifyContent="space-between" alignItems="center">
+        <Box sx={{ paddingVertical: Theme.spacing.md }}
+            <HStack space="md" alignItems="flex-start"
+                <Text style={styles.pathEmoji}>\u2728</Text
+                <VStack flex={1} space="sm"
+                    <HStack justifyContent="space-between" alignItems="center"
                         <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+                        
                             {t('journey.whisperedMoments')}
-                        </Text>
-                        <Text size="xs" color={colors.textTertiary}>
+                        </Text
+                        <Text size="xs" color={colors.textTertiary}
                             {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}
-                        </Text>
-                    </HStack>
-                    <HStack flexWrap="wrap" style={{ gap: 6 }}>
+                        </Text
+                    </HStack
+                    <HStack flexWrap="wrap" style={{ gap: 6 }}
                         {moments.map(m => (
                             <Box
                                 key={m.key}
@@ -326,32 +377,36 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
                                     borderWidth: 1,
                                     borderColor: `${colors.action}30`,
                                 }}
-                            >
-                                <Text size="xs" color={colors.text}>
+                            
+                                <Text size="xs" color={colors.text}
                                     {m.name_en}
-                                </Text>
-                            </Box>
+                                </Text
+                            </Box
                         ))}
-                    </HStack>
-                </VStack>
-            </HStack>
-        </Box>
+                    </HStack
+                </VStack
+            </HStack
+        </Box
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // MAIN PANEL
-// ─────────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) {
     const { can } = usePermissions();
     const colors = useThemedColors();
     const { t } = useTranslation();
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
+    const phase = useTemporalStore(state => state.phase);
 
     const [growth, setGrowth] = useState<UserGrowthState | null>(null);
+    const [journeyRewards, setJourneyRewards] = useState<{ points: number; badges: string[] } | null>(null);
     const [moon, setMoon] = useState<MoonPhase | null>(null);
-    const [moments, setMoments] = useState<
-        Array<{ key: string; name_en: string; name_si: string }>
+    const [moments, setMoments] = useState
+        Array<{ key: string; name_en: string; name_si: string }
     >([]);
     const [resonance, setResonance] = useState({ likes: 0, comments: 0, shares: 0 });
     const [loading, setLoading] = useState(true);
@@ -359,18 +414,21 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Moon is pure computation — instant, no network needed
-                setMoon(moonPhaseAPI.getCurrentMoonPhase());
+                setMoon(moonPhaseAPI.getCurrentMoonPhase(new Date(viewDate)));
 
-                // Fetch growth state, moments, and resonance in parallel
-                const [state, momentsData, resonanceData] = await Promise.all([
-                    userGrowthStateAPI.getOrCreateState(userId),
-                    userGrowthStateAPI.getWhisperedMoments(userId),
-                    communityAPI.getCommunityResonance(userId)
+                const [journeySnapshot, resonanceData] = await Promise.all([
+                    profileAPI.getJourneySnapshot(userId, {
+                        asOf: phase === 'past' ? viewDate : undefined,
+                        viewDate,
+                        viewScale,
+                    }),
+                    communityAPI.getCommunityResonance(userId, { viewDate, viewScale })
                 ]);
 
-                if (state) setGrowth(state);
-                if (momentsData) setMoments(momentsData);
+                if (journeySnapshot?.growth) setGrowth(journeySnapshot.growth);
+                else setGrowth(null);
+                setJourneyRewards(journeySnapshot?.rewards ?? null);
+                setMoments(journeySnapshot?.whispered_moments ?? []);
                 if (resonanceData) setResonance(resonanceData);
 
             } catch (err) {
@@ -381,7 +439,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         };
 
         fetchData();
-    }, [userId]);
+    }, [userId, phase, viewDate, viewScale]);
 
     if (loading) {
         return (
@@ -398,18 +456,18 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     alignItems: 'center',
                     justifyContent: 'center',
                 }}
-            >
-                <ActivityIndicator color={colors.action} />
-            </Box>
+            
+                <ActivityIndicator color={colors.action} /
+            </Box
         );
     }
 
     // 1. Data Guards (Defensive Coding)
     if (!growth) {
         return (
-            <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}>
-                <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text>
-            </Box>
+            <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}
+                <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text
+            </Box
         );
     }
 
@@ -429,7 +487,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         : FadeInDown.springify();
 
     return (
-        <Animated.View entering={enteringAnimation}>
+        <Animated.View entering={enteringAnimation}
             <Box
                 sx={{
                     backgroundColor: colors.secondary,
@@ -445,7 +503,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     marginTop: Theme.spacing.lg,
                     overflow: 'hidden',
                 }}
-            >
+            
                 {/* Header */}
                 <Box
                     sx={{
@@ -455,74 +513,75 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                         borderBottomWidth: 1,
                         borderBottomColor: `${colors.border}60`,
                     }}
-                >
-                    <Heading size="sm" color={colors.textSecondary as string}>
+                
+                    <Heading size="sm" color={colors.textSecondary as string}
                         {t('journey.title')}
-                    </Heading>
-                    <Text size="xs" color={colors.textTertiary} style={{ marginTop: 4 }}>
-                        {t('journey.subtitle')}
-                    </Text>
-                </Box>
-
+                    </Heading
+                    <Text size="xs" color={colors.textTertiary} style={{ marginTop: 4 }}                        {t('journey.subtitle')}
+                    </Text                    {phase !== 'present' && (
+                        <Text size="xs" color={colors.textTertiary} style={{ marginTop: 6 }}                            Journey state, discoveries, moon context, and community resonance follow the selected time.
+                        </Text                    )}
+                </Box
                 {/* Path rows */}
-                <Box sx={{ paddingHorizontal: Theme.spacing.xl }}>
-                    {/* Bhumi (Lotus) — all users */}
+                <Box sx={{ paddingHorizontal: Theme.spacing.xl }}
+                    {/* Bhumi (Lotus) \u2014 all users */}
                     <PathRow
-                        emoji="🌸"
+                        emoji="\uD83C\uDF38"
                         pathName={t('journey.lotusPath')}
                         stageLabel={bhumiData.label}
                         narrative={bhumiData.description}
                         colors={colors}
-                    />
+                    /
 
-                    {/* Banyan — teachers and principals */}
+                    {/* Banyan \u2014 teachers and principals */}
                     {isTeacherRole && (
                         <PathRow
-                            emoji="🌳"
+                            emoji="\uD83C\uDF33"
                             pathName={t('journey.banyanPath')}
                             stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             narrative={BANYAN_NARRATIVES[banyan]}
                             colors={colors}
-                        />
+                        /
                     )}
 
-                    {/* River — students */}
+                    {/* River \u2014 students */}
                     {isStudentRole && (
                         <PathRow
-                            emoji="🌊"
+                            emoji="\uD83C\uDF0A"
                             pathName={t('journey.riverPath')}
                             stageLabel={river.charAt(0).toUpperCase() + river.slice(1)}
                             narrative={RIVER_NARRATIVES[river]}
                             colors={colors}
-                        />
+                        /
                     )}
 
-                    {/* Crystal — students */}
+                    {/* Crystal \u2014 students */}
                     {isStudentRole && (
                         <PathRow
-                            emoji="💎"
+                            emoji="\uD83D\uDC8E"
                             pathName={t('journey.crystalPath')}
                             stageLabel={crystal.charAt(0).toUpperCase() + crystal.slice(1)}
                             narrative={CRYSTAL_NARRATIVES[crystal]}
                             colors={colors}
-                        />
+                        /
                     )}
 
-                    {/* Moon — all users, live */}
+                    {/* Moon \u2014 all users, live */}
                     {moon && <MoonRow moon={moon} colors={colors} t={t} />}
 
-                    {/* Community Resonance — aggregated from social actions */}
-                    <ResonanceRow stats={resonance} colors={colors} />
-
-                    {/* Whispered Moments — all users */}
+                    {/* Community Resonance \u2014 aggregated from social actions */}
+                    <ResonanceRow stats={resonance} colors={colors} /
+                    {/* Rewards / recognition \u2014 shown as narrative signals rather than a score */}
+                    <RecognitionRow badges={journeyRewards?.badges ?? []} colors={colors} /
+                    {/* Whispered Moments \u2014 all users */}
                     <WhisperedMomentsRow
                         moments={moments}
                         colors={colors}
                         t={t}
-                    />
-                </Box>
-            </Box>
-        </Animated.View>
+                    /
+                </Box
+            </Box
+        </Animated.View
     );
 }
 

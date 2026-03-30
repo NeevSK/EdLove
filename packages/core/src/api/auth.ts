@@ -1,12 +1,13 @@
 import { supabase } from '../lib/supabase';
 import { APIError } from './types';
 import { identityAPI } from './identity';
+import { Role } from '../permissions/schemas/role.schema';
 
 export const authAPI = {
     /**
      * Get current auth session.
      * NOTE: This returns the Supabase auth session (JWT, is_anonymous, email, etc.).
-     * Do NOT use session.user.id for DB queries — use identityAPI.getMyInternalId() instead.
+     * Do NOT use session.user.id for DB queries  use identityAPI.getMyInternalId() instead.
      */
     async getSession() {
         const { data, error } = await supabase.auth.getSession();
@@ -20,7 +21,7 @@ export const authAPI = {
 
     /**
      * Get current Supabase auth user object.
-     * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries —
+     * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries 
      * use identityAPI.getMyInternalId() to get the internal users.id instead.
      */
     async getUser() {
@@ -92,7 +93,7 @@ export const authAPI = {
             options: {
                 data: {
                     full_name: 'Guest User',
-                    role: 'teacher',
+                    role: 'teacher' as Role,
                     is_anonymous: true,
                 }
             }
@@ -108,7 +109,7 @@ export const authAPI = {
     /**
      * Link anonymous account to email/password
      */
-    async linkAnonymousToEmail(email: string, password: string, fullName: string, role: string) {
+    async linkAnonymousToEmail(email: string, password: string, fullName: string, role: Role) {
         // First, update the user's email and password in auth
         const { data: updateData, error: updateError } = await supabase.auth.updateUser({
             email,

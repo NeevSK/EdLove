@@ -16,7 +16,7 @@ interface LayoutOptions {
 }
 
 /**
- * usePerspectiveLayout — React hook for @repo/graphics.
+ * usePerspectiveLayout  React hook for @repo/graphics.
  * 
  * Computes the optimal layout for a given topology and perspective.
  * Memoized to avoid re-running expensive D3 math on every render.

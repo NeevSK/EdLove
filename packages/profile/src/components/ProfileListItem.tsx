@@ -47,29 +47,29 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
                 justifyContent: 'center',
                 ...Theme.shadows.none
             }}
-        >
-            <HStack justifyContent="space-between" alignItems="center">
-                <HStack space="md" alignItems="center">
+        
+            <HStack justifyContent="space-between" alignItems="center"
+                <HStack space="md" alignItems="center"
                     <Box
                         sx={{
                             p: '$2',
                             bg: colors.isDark ? 'rgba(255,255,255,0.05)' : colors.secondary,
                             borderRadius: '$full'
                         }}
-                    >
-                        <Icon size={18} color={iconColor || colors.action} />
-                    </Box>
-                    <Text color={colors.text} size="sm" bold>
+                    
+                        <Icon size={18} color={iconColor || colors.action} /
+                    </Box
+                    <Text color={colors.text} size="sm" bold
                         {label}
-                    </Text>
-                </HStack>
+                    </Text
+                </HStack
 
-                <HStack space="xs" alignItems="center">
+                <HStack space="xs" alignItems="center"
                     {rightElement}
                     {showChevron && <ChevronRight size={16} color={colors.textTertiary} />}
-                </HStack>
-            </HStack>
-        </TouchableOpacity>
+                </HStack
+            </HStack
+        </TouchableOpacity
     );
 };
 

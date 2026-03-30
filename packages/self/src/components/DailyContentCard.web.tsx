@@ -19,7 +19,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
 
     const isMotivation = type === 'motivation';
     const title = isMotivation ? 'Daily Motivation' : 'Did You Know?';
-    const emoji = isMotivation ? '✨' : '💡';
+    const emoji = isMotivation ? '\u2728' : '\uD83D\uDCA1';
     const accent = isMotivation ? '#F59E0B' : '#22C55E';
 
     useEffect(() => {
@@ -35,17 +35,17 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
         <div
             onClick={() => setExpanded(v => !v)}
             style={{ padding: '16px 20px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${accent}`, cursor: 'pointer' }}
-        >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '16px' }}>{emoji}</span>
-                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: accent, letterSpacing: '1px' }}>{title}</span>
-            </div>
-            <p style={{ fontSize: '13px', lineHeight: '1.65', color: 'var(--ink-soft)', margin: 0, display: '-webkit-box', WebkitLineClamp: expanded ? undefined : 2, WebkitBoxOrient: 'vertical' as any, overflow: expanded ? 'visible' : 'hidden' }}>
+        
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}
+                <span style={{ fontSize: '16px' }}>{emoji}</span
+                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: accent, letterSpacing: '1px' }}>{title}</span
+            </div
+            <p style={{ fontSize: '13px', lineHeight: '1.65', color: 'var(--ink-soft)', margin: 0, display: '-webkit-box', WebkitLineClamp: expanded ? undefined : 2, WebkitBoxOrient: 'vertical' as any, overflow: expanded ? 'visible' : 'hidden' }}
                 {content.content}
-            </p>
+            </p
             {content.author && expanded && (
-                <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '8px' }}>— {content.author}</div>
+                <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '8px' }}>\u2014 {content.author}</div
             )}
-        </div>
+        </div
     );
 }

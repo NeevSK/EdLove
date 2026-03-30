@@ -39,7 +39,7 @@ export const reportGenerator = {
 
             return summary;
         } catch (error) {
-            console.error('❌ Report Generation Failed:', error);
+            console.error('L Report Generation Failed:', error);
             throw error;
         }
     }

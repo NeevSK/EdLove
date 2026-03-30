@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    ResonanceProvider,
-    ResonanceShield,
+    TemporalProvider,
+    TemporalShield,
     TemporalNavigator,
     JourneyHistoryCard,
 } from '@repo/ui';
 import {
     usePermissions,
-    useResonanceStore,
+    useTemporalStore,
     useNaturePaths,
     useStudentGoals,
     useJourneyHistory,
@@ -39,7 +39,7 @@ export default function StudentSelfView() {
     const { t } = useTranslation();
     const { context } = usePermissions();
     const userId = context.userId;
-    const { viewMode, viewScale, setScale } = useResonanceStore();
+    const { viewMode, viewScale, setScale } = useTemporalStore();
 
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { logs: moodLogs, loading: loadingMoods } = useMoodLogs();
@@ -48,9 +48,7 @@ export default function StudentSelfView() {
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}>
-                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
                     <button
                         key={scale}
                         className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
@@ -65,37 +63,20 @@ export default function StudentSelfView() {
                             cursor: 'pointer',
                             textTransform: 'uppercase',
                         }}
-                    >
-                        {scale}
-                    </button>
-                ))}
-            </div>
-            <JourneyHistoryCard
+                                            {scale}
+                    </button                ))}
+            </div            <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
                 loading={journeyLoading}
                 scale={viewScale as any}
-            />
-
-            <ResonanceShield label="JOURNAL RESONANCE">
-                <JournalSection entries={journalEntries} loading={loadingJournals} />
-            </ResonanceShield>
-
-            <ResonanceShield label="MOOD RESONANCE">
-                <MoodSection logs={moodLogs} loading={loadingMoods} />
-            </ResonanceShield>
-
-            <GoalSection goals={goals} loading={loadingGoals} />
-            <NatureSection paths={paths} loading={loadingPaths} />
-        </div>
-    );
+            /
+            <TemporalShield label="JOURNAL HISTORY"                <JournalSection entries={journalEntries} loading={loadingJournals} /            </TemporalShield
+            <TemporalShield label="MOOD HISTORY"                <MoodSection logs={moodLogs} loading={loadingMoods} /            </TemporalShield
+            <GoalSection goals={goals} loading={loadingGoals} /            <NatureSection paths={paths} loading={loadingPaths} /        </div    );
 
     return (
-        <ResonanceProvider>
-            <div style={{ padding: '20px 40px 0' }}>
-                <TemporalNavigator />
-            </div>
-
+        <TemporalProvider            <div style={{ padding: '20px 40px 0' }}                <TemporalNavigator /            </div
             <BaseSelfView
                 perspective="student"
                 description={t('self.studentDesc', 'A steady space to grow your mind and heart.')}
@@ -135,7 +116,5 @@ export default function StudentSelfView() {
                         ],
                     },
                 ]}
-            />
-        </ResonanceProvider>
-    );
+            /        </TemporalProvider    );
 }

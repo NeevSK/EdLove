@@ -63,8 +63,8 @@ export interface ClaimInvitePayload {
   action: 'claim_invite'
   invite_code: string
   school_id: string
-  /** AuthorityTier string e.g. 'teacher' | 'student' | 'section_head' | 'grade_head' */
-  authority: string
+  /** UserRole string e.g. 'teacher' | 'student' | 'section_head' | 'grade_head' */
+  role: string
 }
 
 /** Personal referral QR shown on user identity card back — tracks inviter attribution */
@@ -73,7 +73,7 @@ export interface UserInvitePayload {
   action: 'user_invite'
   inviter_id: string
   /** UserRole string of the person sharing their QR */
-  inviter_authority: string
+  inviter_role: string
   /** Username of the inviter (e.g. @username) */
   username?: string
 }

@@ -6,7 +6,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * VastuView.web — The "Mind Map" Perspective (Web).
+ * VastuView.web  The "Mind Map" Perspective (Web).
  * 
  * Renders hierarchical mind maps using web-standard SVG.
  */
@@ -19,12 +19,12 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
     const { width, height } = useWindowDimensions();
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container}
             <svg 
                 width="100%" 
                 height="100%" 
                 viewBox={`0 0 ${width} ${height}`}
-            >
+            
                 {/* Connecting Links (Bezier Curves) */}
                 {data.links.map((link, i) => {
                     const sourcePos = typeof link.source === 'string' ? layout.positions.get(link.source) : (link.source as any);
@@ -40,7 +40,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                             strokeWidth={2}
                             fill="none"
                             opacity={0.3}
-                        />
+                        /
                     );
                 })}
 
@@ -54,7 +54,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                             key={node.id} 
                             onClick={() => onNodePress?.(node)}
                             style={{ cursor: 'pointer' }}
-                        >
+                        
                             <rect
                                 x={pos.x - 50}
                                 y={pos.y - 15}
@@ -64,7 +64,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                                 fill={colors.secondary}
                                 stroke={colors.action}
                                 strokeWidth={1}
-                            />
+                            /
                             <text
                                 x={pos.x}
                                 y={pos.y + 5}
@@ -72,14 +72,14 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                                 fill={colors.text}
                                 fontSize="12"
                                 fontWeight="bold"
-                            >
+                            
                                 {node.label}
-                            </text>
-                        </g>
+                            </text
+                        </g
                     );
                 })}
-            </svg>
-        </View>
+            </svg
+        </View
     );
 };
 

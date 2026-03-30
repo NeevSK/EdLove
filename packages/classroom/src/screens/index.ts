@@ -3,7 +3,6 @@ import AttendanceReportScreen from './AttendanceReportScreen';
 import { ClassroomDetailScreenWeb } from './ClassroomDetailScreen.web';
 import ContentLibrary from './ContentLibrary';
 import DemoPlaygroundPanelWeb from './DemoPlaygroundPanel.web';
-import FounderSchoolDashboard from './FounderSchoolDashboard';
 import GradeHeadDashboard from './GradeHeadDashboard';
 import LessonFeed from './LessonFeed';
 import NoSchoolViewWeb from './NoSchoolView.web';
@@ -19,7 +18,6 @@ export {
     ClassroomDetailScreenWeb,
     ContentLibrary,
     DemoPlaygroundPanelWeb,
-    FounderSchoolDashboard,
     GradeHeadDashboard,
     LessonFeed,
     NoSchoolViewWeb,

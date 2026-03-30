@@ -5,13 +5,19 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./api": "./src/api/community.ts",
-    "./components/*": "./src/components/*.tsx",
+    "./screens": "./src/screens/index.ts",
+    "./screens/CommunityScreen.web": "./src/screens/CommunityScreen.web.tsx",
+    "./screens/UserPublicProfileScreen.web": "./src/screens/UserPublicProfileScreen.web.tsx",
+    "./screens/GroupDetailsScreen.web": "./src/screens/GroupDetailsScreen.web.tsx",
+    "./screens/GroupChatScreen.web": "./src/screens/GroupChatScreen.web.tsx",
+    "./screens/DirectMessagesListScreen": "./src/screens/DirectMessagesListScreen.tsx",
+    "./screens/DirectMessageScreen.web": "./src/screens/DirectMessageScreen.web.tsx",
+    "./screens/AnnouncementsScreen": "./src/screens/AnnouncementsScreen.tsx",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "eslint .",
-    "check-types": "tsc --noEmit",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {

@@ -1,6 +1,17 @@
+export { default as CurriculumPulse } from './principal/CurriculumPulse';
+export { default as DashboardEcho } from './principal/DashboardEcho';
+export { default as GlobalCreateModal } from './founder/GlobalCreateModal';
 export { default as HierarchyBuilder } from './principal/HierarchyBuilder';
 export { default as InstitutionalCalendarSection } from './principal/InstitutionalCalendarSection';
 export { default as InviteManager } from './principal/InviteManager';
 export { default as LeaveApprovalSection } from './principal/LeaveApprovalSection';
+export { default as ManagementStation } from './principal/ManagementStation';
 export { default as MorningSituationalBrief } from './principal/MorningSituationalBrief';
+export { default as PrincipalModuleAtlas } from './principal/PrincipalModuleAtlas';
+export { default as PrincipalNotes } from './principal/PrincipalNotes';
+export { default as PrincipalGovernanceTimeline } from './principal/PrincipalGovernanceTimeline';
+export { default as PrincipalObservationsSection } from './principal/PrincipalObservationsSection';
+export { default as PulseDashboard } from './principal/PulseDashboard';
+export { default as ResourceNeedsDashboard } from './principal/ResourceNeedsDashboard';
 export { default as TeacherCarousel } from './principal/TeacherCarousel';
+export { default as CreateSchoolModal } from './school/CreateSchoolModal';

@@ -56,7 +56,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
                 animatedStyle,
                 style
             ]}
-        />
+        /
     );
 };
 
@@ -66,7 +66,7 @@ export const SkeletonCard = ({ height = 150, width = '100%', style }: { height?:
         height={height}
         borderRadius={Theme.corners.generous}
         style={[{ marginBottom: Theme.spacing.md, maxWidth: 800 }, style]}
-    />
+    /
 );
 
 export const SkeletonAvatar = ({ size = 50 }: { size?: number }) => (
@@ -74,7 +74,7 @@ export const SkeletonAvatar = ({ size = 50 }: { size?: number }) => (
         width={size}
         height={size}
         borderRadius={size / 2}
-    />
+    /
 );
 
 export const SkeletonTextLine = ({ width = '100%', mb = 8 }: { width?: string | number, mb?: number }) => (
@@ -83,7 +83,7 @@ export const SkeletonTextLine = ({ width = '100%', mb = 8 }: { width?: string | 
         height={16}
         borderRadius={4}
         style={{ marginBottom: mb }}
-    />
+    /
 );
 
 const styles = StyleSheet.create({

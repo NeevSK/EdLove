@@ -26,29 +26,29 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
     });
 
     return (
-        <ScreenWrapper backgroundColor={Theme.colors.ink}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <VStack gap="$4">
+        <ScreenWrapper backgroundColor={Theme.colors.ink}
+            <ScrollView contentContainerStyle={styles.scrollContent}
+                <VStack gap="$4"
                     {/* Header */}
-                    <Box sx={{ paddingVertical: '$xl' as any }}>
+                    <Box sx={{ paddingVertical: '$xl' as any }}
                         <Text sx={{
                             fontSize: '$2xl' as any,
                             fontWeight: '700',
                             color: Theme.colors.sacredWhite
-                        }}>
+                        }}
                             Grade Coordination
-                        </Text>
-                        <Text sx={{ color: Theme.colors.starlightGray }}>
+                        </Text
+                        <Text sx={{ color: Theme.colors.starlightGray }}
                             Overview of grade status and teacher coordination.
-                        </Text>
-                    </Box>
+                        </Text
+                    </Box
 
                     {/* Proactive Agent Notifications */}
                     {activeGaps.length > 0 && (
-                        <VStack gap="$3">
-                            <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.sanctuarySaffron }}>
+                        <VStack gap="$3"
+                            <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.sanctuarySaffron }}
                                 AI SUGGESTIONS
-                            </Text>
+                            </Text
                             {activeGaps.map((gap: any) => (
                                 <Box
                                     key={gap.id}
@@ -59,62 +59,62 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                                         borderWidth: 1,
                                         borderColor: Theme.colors.sanctuarySaffron
                                     }}
-                                >
-                                    <HStack gap="$3" alignItems="center">
-                                        <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} />
-                                        <VStack sx={{ flex: 1 }}>
-                                            <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>{gap.title}</Text>
-                                            <Text sx={{ fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>{gap.description}</Text>
-                                        </VStack>
-                                    </HStack>
-                                    <Box sx={{ marginTop: '$3' as any }}>
+                                
+                                    <HStack gap="$3" alignItems="center"
+                                        <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} /
+                                        <VStack sx={{ flex: 1 }}
+                                            <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>{gap.title}</Text
+                                            <Text sx={{ fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>{gap.description}</Text
+                                        </VStack
+                                    </HStack
+                                    <Box sx={{ marginTop: '$3' as any }}
                                         <SanctuaryButton
                                             onPress={() => console.log('Executing relief:', gap.suggestedAction)}
                                             size="sm"
                                             variant="solid"
-                                        >
+                                        
                                             Assign Relief Teacher
-                                        </SanctuaryButton>
-                                    </Box>
-                                </Box>
+                                        </SanctuaryButton
+                                    </Box
+                                </Box
                             ))}
-                        </VStack>
+                        </VStack
                     )}
 
                     {/* Operational Overview */}
-                    <HStack gap="$3">
-                        <Box sx={styles.statBox}>
-                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>CLASSES</Text>
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>5</Text>
-                        </Box>
-                        <Box sx={styles.statBox}>
-                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>STUDENTS</Text>
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>210</Text>
-                        </Box>
-                    </HStack>
+                    <HStack gap="$3"
+                        <Box sx={styles.statBox}
+                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>CLASSES</Text
+                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>5</Text
+                        </Box
+                        <Box sx={styles.statBox}
+                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>STUDENTS</Text
+                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>210</Text
+                        </Box
+                    </HStack
 
                     {/* Quick Coordination */}
-                    <VStack gap="$2">
-                        <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>
+                    <VStack gap="$2"
+                        <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.starlightGray }}
                             GRADE MANAGEMENT
-                        </Text>
-                        <SanctuaryButton onPress={() => { }} variant="outline">
-                            <HStack gap="$2" alignItems="center">
-                                <BookOpen size={18} color={Theme.colors.sacredWhite} />
-                                <Text sx={{ color: Theme.colors.sacredWhite }}>Curriculum Alignment Pulse</Text>
-                            </HStack>
-                        </SanctuaryButton>
-                        <SanctuaryButton onPress={() => { }} variant="outline">
-                            <HStack gap="$2" alignItems="center">
-                                <Users size={18} color={Theme.colors.sacredWhite} />
-                                <Text sx={{ color: Theme.colors.sacredWhite }}>Student Wellbeing Reports</Text>
-                            </HStack>
-                        </SanctuaryButton>
-                    </VStack>
-                </VStack>
-            </ScrollView>
+                        </Text
+                        <SanctuaryButton onPress={() => { }} variant="outline"
+                            <HStack gap="$2" alignItems="center"
+                                <BookOpen size={18} color={Theme.colors.sacredWhite} /
+                                <Text sx={{ color: Theme.colors.sacredWhite }}>Curriculum Alignment Pulse</Text
+                            </HStack
+                        </SanctuaryButton
+                        <SanctuaryButton onPress={() => { }} variant="outline"
+                            <HStack gap="$2" alignItems="center"
+                                <Users size={18} color={Theme.colors.sacredWhite} /
+                                <Text sx={{ color: Theme.colors.sacredWhite }}>Student Wellbeing Reports</Text
+                            </HStack
+                        </SanctuaryButton
+                    </VStack
+                </VStack
+            </ScrollView
 
-        </ScreenWrapper>
+        </ScreenWrapper
     );
 }
 

@@ -61,15 +61,19 @@ export type { StudentPerformanceMetrics, TenantMetrics, LiveMetrics, CustomRepor
 export * from './utils/analyticsHelpers';
 export * from './utils/benchmarking';
 
-// Components - MOVED to prevent circular dependencies
-// UI components should be imported from @repo/analytics/components or moved to @repo/ui
-// This prevents: ui -> core -> analytics -> ui circular dependency
+// Components
+export { PerformanceDashboard } from './components/PerformanceDashboard';
+export { GPAInsights } from './components/GPAInsights';
+
+// Export legacy documentation note
+// UI components were previously recommended to be imported from @repo/analytics/components
+// but now consolidated into root for Public API Boundary Strategy.
 
 // Hooks
 export * from './hooks/useAnalytics';
 
 // Provider - Moved to core package to prevent circular dependencies
-// Use: import { ResonanceProvider } from '@repo/core';
+// Use: import { TemporalProvider } from '@repo/core';
 
 // Legacy exports for backward compatibility
 import { posthogAnalytics } from './engine/PostHogAnalytics';

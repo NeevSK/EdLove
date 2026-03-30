@@ -1,5 +1,5 @@
 /**
- * ai-assistant — Supabase Edge Function (Deno)
+ * ai-assistant \u2014 Supabase Edge Function (Deno)
  *
  * The real AI spine of Gurudevi. Every role (Teacher, Principal, Student, Founder)
  * gets a contextual system prompt shaped by:
@@ -13,7 +13,7 @@
  *
  * Secrets required (set via `supabase secrets set`):
  *   OPENAI_API_KEY                        (primary LLM)
- *   ANTHROPIC_API_KEY                     (optional — enables Claude fallback)
+ *   ANTHROPIC_API_KEY                     (optional \u2014 enables Claude fallback)
  *   SUPABASE_URL                          (auto-provided)
  *   SUPABASE_SERVICE_ROLE_KEY             (auto-provided)
  */
@@ -25,7 +25,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// \u2500\u2500 Types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface RequestBody {
     message: string;
@@ -51,7 +51,7 @@ interface ActiveGap {
     suggestedAction: string;
 }
 
-// ── System prompt builder ─────────────────────────────────────────────────────
+// \u2500\u2500 System prompt builder \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function buildSystemPrompt(context: RequestBody['context'] = {}): string {
     const role = context.role ?? 'teacher';
@@ -60,8 +60,8 @@ function buildSystemPrompt(context: RequestBody['context'] = {}): string {
     const seeds = context.orientationSeeds;
     const moon = context.moonPhase;
 
-    // Core persona — always present
-    const core = `You are the Sanctuary Guide of Gurudevi — a wellbeing-centered school platform used by Sri Lankan educators, students, and school leaders.
+    // Core persona \u2014 always present
+    const core = `You are the Sanctuary Guide of Gurudevi \u2014 a wellbeing-centered school platform used by Sri Lankan educators, students, and school leaders.
 
 You are a thoughtful, warm, and grounded companion. You speak to the whole person, not just the professional. You follow the Socratic tradition: you ask good questions, reflect meaningfully, and never lecture.
 
@@ -75,7 +75,7 @@ The person you are speaking with is a ${role}${school}.`;
 As a teacher, their world balances lesson preparation, student relationships, wellbeing, and the sometimes-heavy weight of institutional demands. They may need practical help (curriculum, attendance, gradebook), emotional reflection (energy, stress, meaning), or creative thinking (new approaches, lesson ideas).`;
             case 'principal':
                 return `
-As a principal, they hold the wellbeing of their entire school in their hands. They may be thinking about staff morale, school improvement, resource gaps, or their own leadership journey. They see the forest — help them see each tree too.`;
+As a principal, they hold the wellbeing of their entire school in their hands. They may be thinking about staff morale, school improvement, resource gaps, or their own leadership journey. They see the forest \u2014 help them see each tree too.`;
             case 'student':
                 return `
 As a student, they are on a learning journey. They may need help understanding concepts, managing study stress, setting goals, or finding meaning in what they are learning. Meet them with curiosity and gentleness.`;
@@ -87,7 +87,7 @@ As a founder, they hold vision across many schools. They think in ecosystems and
         }
     })();
 
-    // Orientation seeds — silent personalisation
+    // Orientation seeds \u2014 silent personalisation
     let orientationContext = '';
     if (seeds) {
         const tendencies: string[] = [];
@@ -101,7 +101,7 @@ As a founder, they hold vision across many schools. They think in ecosystems and
         else if (seeds.steady_surge < 30) tendencies.push('works in energetic bursts');
 
         if (tendencies.length > 0) {
-            orientationContext = `\nBased on their learning orientation, this person ${tendencies.join(', ')}. Adjust your communication style accordingly — but never mention these tendencies explicitly.`;
+            orientationContext = `\nBased on their learning orientation, this person ${tendencies.join(', ')}. Adjust your communication style accordingly \u2014 but never mention these tendencies explicitly.`;
         }
     }
 
@@ -109,38 +109,38 @@ As a founder, they hold vision across many schools. They think in ecosystems and
     let moonContext = '';
     if (moon) {
         const moonGuide: Record<string, string> = {
-            new_moon: 'This is a new moon phase — a time for new intentions, planting seeds, beginning. Honour that energy in your responses.',
-            waxing_crescent: 'The moon is waxing — energy is building. Good for action, plans, and momentum.',
-            first_quarter: 'The first quarter moon — decision and commitment. Support the person in clarifying what they are building.',
-            waxing_gibbous: 'Almost full — refinement and preparation. Help them refine and strengthen what they have been building.',
-            full_moon: 'Full moon — illumination and completion. Help them see clearly what has been accomplished and what needs releasing.',
-            waning_gibbous: 'The moon is waning — reflection and gratitude. This is a time to honour what has been done.',
-            last_quarter: 'Last quarter — release and forgiveness. Help them let go of what no longer serves.',
-            waning_crescent: 'Waning crescent — rest and restoration. This is the quietest phase. Honour the need for stillness.',
+            new_moon: 'This is a new moon phase \u2014 a time for new intentions, planting seeds, beginning. Honour that energy in your responses.',
+            waxing_crescent: 'The moon is waxing \u2014 energy is building. Good for action, plans, and momentum.',
+            first_quarter: 'The first quarter moon \u2014 decision and commitment. Support the person in clarifying what they are building.',
+            waxing_gibbous: 'Almost full \u2014 refinement and preparation. Help them refine and strengthen what they have been building.',
+            full_moon: 'Full moon \u2014 illumination and completion. Help them see clearly what has been accomplished and what needs releasing.',
+            waning_gibbous: 'The moon is waning \u2014 reflection and gratitude. This is a time to honour what has been done.',
+            last_quarter: 'Last quarter \u2014 release and forgiveness. Help them let go of what no longer serves.',
+            waning_crescent: 'Waning crescent \u2014 rest and restoration. This is the quietest phase. Honour the need for stillness.',
         };
         const moonNote = moonGuide[moon.toLowerCase().replace(' ', '_')];
         if (moonNote) moonContext = `\n${moonNote}`;
     }
 
-    // Active gaps — urgent operational context
+    // Active gaps \u2014 urgent operational context
     let gapsContext = '';
     if (gaps.length > 0) {
         const highGaps = gaps.filter(g => g.priority === 'high');
         if (highGaps.length > 0) {
             gapsContext = `\nThere are currently ${highGaps.length} high-priority items in their school flow:\n` +
-                highGaps.map(g => `  - ${g.title} → ${g.suggestedAction}`).join('\n') +
+                highGaps.map(g => `  - ${g.title} \u2192 ${g.suggestedAction}`).join('\n') +
                 '\nYou may gently mention these if the conversation touches on school operations, but never be pushy.';
         }
     }
 
-    // Behaviour rules — always at the end
+    // Behaviour rules \u2014 always at the end
     const rules = `
 
 RULES:
 - Always respond in the same language the user writes in (English, Sinhala, or Tamil).
 - Never lecture. Ask one clear, thoughtful question when you want to deepen reflection.
 - Be warm, specific, and grounded. Avoid generic affirmations like "That's great!"
-- Keep responses concise — 2–4 sentences is ideal. Go longer only when a longer answer is genuinely needed.
+- Keep responses concise \u2014 2\u20134 sentences is ideal. Go longer only when a longer answer is genuinely needed.
 - If you don't know something specific about Sri Lankan education, ask rather than assume.
 - You are not a therapist. For serious mental health concerns, gently suggest professional support.
 - Never mention the orientation seeds or growth model explicitly.`;
@@ -148,7 +148,7 @@ RULES:
     return core + roleContext + orientationContext + moonContext + gapsContext + rules;
 }
 
-// ── LLM call ─────────────────────────────────────────────────────────────────
+// \u2500\u2500 LLM call \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 async function callOpenAI(
     systemPrompt: string,
@@ -224,7 +224,7 @@ async function callClaude(
     return data.content?.[0]?.text ?? 'I am here. How can I help?';
 }
 
-// ── Main handler ─────────────────────────────────────────────────────────────
+// \u2500\u2500 Main handler \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 Deno.serve(async (req: Request) => {
     // CORS preflight
@@ -279,7 +279,7 @@ Deno.serve(async (req: Request) => {
         } else if (hasOpenAI) {
             reply = await callOpenAI(systemPrompt, history, message);
         } else {
-            // Graceful degradation — no API keys set yet
+            // Graceful degradation \u2014 no API keys set yet
             reply = buildLocalFallback(message, context.role ?? 'teacher');
         }
 
@@ -303,7 +303,7 @@ Deno.serve(async (req: Request) => {
 function buildLocalFallback(input: string, role: string): string {
     const lowerInput = input.toLowerCase();
     if (lowerInput.includes('lesson') || lowerInput.includes('class')) {
-        return 'Lessons are more than delivery — they are shared experiences. How was the energy in the room?';
+        return 'Lessons are more than delivery \u2014 they are shared experiences. How was the energy in the room?';
     }
     if (lowerInput.includes('tired') || lowerInput.includes('stress')) {
         return 'Rest is not a luxury; it is a vital part of the cycle. How can you find a moment of stillness today?';

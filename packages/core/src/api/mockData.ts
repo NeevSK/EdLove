@@ -203,7 +203,7 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
         content: 'Invitation to a Socratic Dialogue on Student Agency. How are we making space for souls in our scheduled blocks?',
         post_type: 'announcement',
         created_at: new Date().toISOString(),
-        reactions: { '🙏': 8, '💡': 12 }
+        reactions: { '\uD83D\uDE4F': 8, '\uD83D\uDCA1': 12 }
     },
     {
         id: 'p-2',
@@ -213,7 +213,7 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
         content: 'I tried a "Silence Ritual" before my Grade 10 Math class today. The energy shifted immediately from chaos to focus. Anyone else experimenting with this?',
         post_type: 'discussion',
         created_at: new Date(Date.now() - 3600000).toISOString(),
-        reactions: { '❤️': 15, '🙌': 6 }
+        reactions: { '\u2764\uFE0F': 15, '\uD83D\uDE4C': 6 }
     }
 ];
 
@@ -239,7 +239,7 @@ export const MOCK_ANNOUNCEMENTS: any[] = [
     }
 ];
 
-// ── Demo / Sandbox: Staff Management ─────────────────────────────────────────
+// \u2500\u2500 Demo / Sandbox: Staff Management \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 export const MOCK_STAFF_PRESENCE: StaffPresenceSummary = {
     present: 38,

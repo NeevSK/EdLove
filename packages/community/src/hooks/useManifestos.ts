@@ -16,14 +16,14 @@ export const useManifestos = (schoolId: string | undefined, userId?: string) => 
     });
 
     const endorseMutation = useMutation({
-        mutationFn: ({ manifestoId, commitment }: { manifestoId: string; commitment?: string }) =>
+        mutationFn: ({ manifestoId, commitment }: { manifestoId: string; commitment?: string }) =
             sacredMissionsAPI.endorseManifesto(manifestoId, userId!, commitment),
         onMutate: async ({ manifestoId }) => {
             await queryClient.cancelQueries({ queryKey: MANIFESTO_KEYS.school(schoolId!) });
             const previousManifestos = queryClient.getQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!));
 
             if (previousManifestos) {
-                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!), (old) =>
+                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!), (old) =
                     old?.map(m => m.id === manifestoId
                         ? { ...m, has_endorsed: true, endorsement_count: (m.endorsement_count || 0) + 1 }
                         : m
@@ -43,14 +43,14 @@ export const useManifestos = (schoolId: string | undefined, userId?: string) => 
     });
 
     const unendorseMutation = useMutation({
-        mutationFn: (manifestoId: string) =>
+        mutationFn: (manifestoId: string) =
             sacredMissionsAPI.unendorseManifesto(manifestoId, userId!),
         onMutate: async (manifestoId) => {
             await queryClient.cancelQueries({ queryKey: MANIFESTO_KEYS.school(schoolId!) });
             const previousManifestos = queryClient.getQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!));
 
             if (previousManifestos) {
-                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!), (old) =>
+                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!), (old) =
                     old?.map(m => m.id === manifestoId
                         ? { ...m, has_endorsed: false, endorsement_count: Math.max((m.endorsement_count || 0) - 1, 0) }
                         : m

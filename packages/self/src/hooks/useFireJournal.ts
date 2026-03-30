@@ -1,6 +1,10 @@
-import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
+import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { FireJournalEntry } from '../types';
+import {
+    burnFireJournalEntry,
+    fetchFireJournalHistoryForView,
+} from '../api/wellbeingRepository';
 
 const JOURNAL_CACHE_KEY = 'gurudevi-journal-cache';
 
@@ -24,7 +28,7 @@ export function useFireJournal(userId?: string) {
 
         const loadCache = async () => {
             try {
-                const cached = await SafeZustandStorage.getItem(`${JOURNAL_CACHE_KEY}-${userId}`);
+                const cached = await SafeZustandStorage.getItem(`${JOURNAL_CACHE_KEY}-${userId}-${viewDate}`);
                 if (cached) {
                     setJournalHistory(JSON.parse(cached));
                 }
@@ -35,35 +39,19 @@ export function useFireJournal(userId?: string) {
             }
         };
         loadCache();
-    }, [userId]);
+    }, [userId, viewDate]);
 
     // Refresh from API
     const refreshData = useCallback(async () => {
         if (!userId || !isOnline) return;
 
         try {
-            let query = supabase
-                .from('fire_journal')
-                .select('*')
-                .eq('user_id', userId);
-
-            if (isPastView) {
-                const startOfDay = `${viewDate}T00:00:00.000Z`;
-                const endOfDay = `${viewDate}T23:59:59.999Z`;
-                query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
-            } else {
-                query = query.order('created_at', { ascending: false }).limit(10);
-            }
-
-            const { data, error } = await query;
-
-            if (error) throw error;
-
+            const data = await fetchFireJournalHistoryForView(userId, { viewDate, isPastView });
             if (data) {
                 setJournalHistory(data);
                 // Persist to cache
                 await SafeZustandStorage.setItem(
-                    `${JOURNAL_CACHE_KEY}-${userId}`,
+                    `${JOURNAL_CACHE_KEY}-${userId}-${viewDate}`,
                     JSON.stringify(data)
                 );
             }
@@ -77,10 +65,25 @@ export function useFireJournal(userId?: string) {
         refreshData();
     }, [refreshData, isOnline]);
 
+    const burnEntry = useCallback(async (content: string) => {
+        if (!userId) throw new Error('Missing user id for fire journal');
+
+        const entry = await burnFireJournalEntry(userId, content);
+        const nextHistory = [entry, ...journalHistory].slice(0, 10);
+        setJournalHistory(nextHistory);
+        await SafeZustandStorage.setItem(
+            `${JOURNAL_CACHE_KEY}-${userId}-${viewDate}`,
+            JSON.stringify(nextHistory)
+        );
+
+        return entry;
+    }, [journalHistory, userId, viewDate]);
+
     return {
         journalHistory,
         isLoading,
         refreshData,
+        burnEntry,
         setJournalHistory
     };
 }

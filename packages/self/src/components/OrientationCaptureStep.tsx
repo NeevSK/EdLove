@@ -1,21 +1,21 @@
 /**
  * OrientationCaptureStep
  *
- * The third onboarding step — presented AFTER name + role.
+ * The third onboarding step \u2014 presented AFTER name + role.
  * Labelled "How do you learn best?" (not "Personality type").
  *
  * Design principle: NEVER use MBTI / Enneagram labels.
  * Show three concrete life-situations, each with four
  * picture-card options.  The user's choices are translated
- * silently into four 0–100 orientation scores and saved to
+ * silently into four 0\u2013100 orientation scores and saved to
  * `users.orientation_seeds`.
  *
  * The three questions map to:
- *   Q1  → depth_breadth  +  reflect_act
- *   Q2  → solo_social
- *   Q3  → steady_surge
+ *   Q1  \u2192 depth_breadth  +  reflect_act
+ *   Q2  \u2192 solo_social
+ *   Q3  \u2192 steady_surge
  *
- * The step is OPTIONAL — users can skip it with one tap and
+ * The step is OPTIONAL \u2014 users can skip it with one tap and
  * nothing is stored.  The app works perfectly without seeds.
  */
 
@@ -41,7 +41,7 @@ import type { OrientationSeeds } from '@repo/profile';
 interface OptionCard {
     emoji: string;
     label: string;
-    /** How much this choice adds to each dimension (0–25 per question, 3 questions → 0–75 range, centred at 50) */
+    /** How much this choice adds to each dimension (0\u201325 per question, 3 questions \u2192 0\u201375 range, centred at 50) */
     delta: Partial<Record<keyof Omit<OrientationSeeds, 'source' | 'seeded_at' | 'last_updated'>, number>>;
 }
 
@@ -57,22 +57,22 @@ const QUESTIONS: Question[] = [
         prompt: 'Which feels most like you?',
         options: [
             {
-                emoji: '🔬',
+                emoji: '\uD83D\uDD2C',
                 label: 'Go deep into one fascinating topic for hours',
                 delta: { depth_breadth: -20, reflect_act: -10 },
             },
             {
-                emoji: '🗺️',
-                label: 'Browse widely — follow curiosity wherever it leads',
+                emoji: '\uD83D\uDDFA\uFE0F',
+                label: 'Browse widely \u2014 follow curiosity wherever it leads',
                 delta: { depth_breadth: 20, reflect_act: 10 },
             },
             {
-                emoji: '🛠️',
+                emoji: '\uD83D\uDEE0\uFE0F',
                 label: 'Try making or building something new straight away',
                 delta: { reflect_act: 20, depth_breadth: 0 },
             },
             {
-                emoji: '📔',
+                emoji: '\uD83D\uDCD4',
                 label: 'Sit quietly, read, and let ideas settle in your mind',
                 delta: { reflect_act: -20, depth_breadth: -5 },
             },
@@ -83,48 +83,48 @@ const QUESTIONS: Question[] = [
         prompt: 'What gives you the most energy?',
         options: [
             {
-                emoji: '🧘',
+                emoji: '\uD83E\uDDD8',
                 label: 'Stepping away to think it through alone first',
                 delta: { solo_social: -22 },
             },
             {
-                emoji: '💬',
+                emoji: '\uD83D\uDCAC',
                 label: 'Talking it through with a colleague or friend',
                 delta: { solo_social: 22 },
             },
             {
-                emoji: '✍️',
+                emoji: '\u270D\uFE0F',
                 label: 'Writing or drawing your thoughts to clarify them',
                 delta: { solo_social: -12, reflect_act: -10 },
             },
             {
-                emoji: '🔄',
+                emoji: '\uD83D\uDD04',
                 label: 'Trying different approaches until something clicks',
                 delta: { solo_social: 12, reflect_act: 12 },
             },
         ],
     },
     {
-        situation: 'A big project is ahead of you — a term, a semester, a year.',
+        situation: 'A big project is ahead of you \u2014 a term, a semester, a year.',
         prompt: 'How do you work best?',
         options: [
             {
-                emoji: '📅',
-                label: 'Steady daily progress — small steps, consistent rhythm',
+                emoji: '\uD83D\uDCC5',
+                label: 'Steady daily progress \u2014 small steps, consistent rhythm',
                 delta: { steady_surge: -22 },
             },
             {
-                emoji: '⚡',
-                label: 'Deep focused sprints, then rest — intense bursts',
+                emoji: '\u26A1',
+                label: 'Deep focused sprints, then rest \u2014 intense bursts',
                 delta: { steady_surge: 22 },
             },
             {
-                emoji: '🌊',
+                emoji: '\uD83C\uDF0A',
                 label: 'Let energy rise and fall naturally, follow the flow',
                 delta: { steady_surge: 10, reflect_act: -8 },
             },
             {
-                emoji: '🗂️',
+                emoji: '\uD83D\uDDC2\uFE0F',
                 label: 'Clear structure with planned milestones and checkpoints',
                 delta: { steady_surge: -12, reflect_act: -10 },
             },
@@ -204,9 +204,9 @@ export const OrientationCaptureStep = ({
     });
 
     return (
-        <VStack style={{ flex: 1 }} space="md">
+        <VStack style={{ flex: 1 }} space="md"
             {/* Progress dots */}
-            <HStack space="xs" justifyContent="center" style={{ paddingTop: Theme.spacing.md }}>
+            <HStack space="xs" justifyContent="center" style={{ paddingTop: Theme.spacing.md }}
                 {Array.from({ length: totalSteps }).map((_, i) => (
                     <Box
                         key={i}
@@ -218,17 +218,17 @@ export const OrientationCaptureStep = ({
                                 ? Theme.colors.sanctuarySaffron
                                 : i < currentStep ? colors.action : colors.border,
                         }}
-                    />
+                    /
                 ))}
-            </HStack>
+            </HStack
 
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ padding: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
-            >
+            
                 {/* Header */}
-                <VStack space="xs" style={{ marginBottom: Theme.spacing.lg }}>
+                <VStack space="xs" style={{ marginBottom: Theme.spacing.lg }}
                     <Text
                         style={{
                             fontSize: 11,
@@ -237,23 +237,23 @@ export const OrientationCaptureStep = ({
                             color: Theme.colors.sanctuarySaffron,
                             textTransform: 'uppercase',
                         }}
-                    >
+                    
                         {`${questionIndex + 1} of ${QUESTIONS.length}`}
-                    </Text>
+                    </Text
                     <Heading
                         size="lg"
                         color={colors.text}
                         style={{ lineHeight: 28 }}
-                    >
+                    
                         {question?.situation}
-                    </Heading>
-                    <Text color={colors.textSecondary} size="sm">
+                    </Heading
+                    <Text color={colors.textSecondary} size="sm"
                         {question?.prompt}
-                    </Text>
-                </VStack>
+                    </Text
+                </VStack
 
                 {/* Options */}
-                <VStack space="sm">
+                <VStack space="sm"
                     {question?.options.map((opt, i) => {
                         const isSelected = selected === i;
                         return (
@@ -271,9 +271,9 @@ export const OrientationCaptureStep = ({
                                             : colors.border,
                                     },
                                 ]}
-                            >
-                                <HStack space="md" alignItems="center">
-                                    <Text style={{ fontSize: 28 }}>{opt.emoji}</Text>
+                            
+                                <HStack space="md" alignItems="center"
+                                    <Text style={{ fontSize: 28 }}>{opt.emoji}</Text
                                     <Text
                                         style={{
                                             flex: 1,
@@ -282,14 +282,14 @@ export const OrientationCaptureStep = ({
                                             color: isSelected ? colors.text : colors.textSecondary,
                                             fontWeight: isSelected ? '600' : '400',
                                         }}
-                                    >
+                                    
                                         {opt.label}
-                                    </Text>
-                                </HStack>
-                            </Pressable>
+                                    </Text
+                                </HStack
+                            </Pressable
                         );
                     })}
-                </VStack>
+                </VStack
 
                 {/* Privacy note */}
                 <Text
@@ -300,10 +300,10 @@ export const OrientationCaptureStep = ({
                         textAlign: 'center',
                         lineHeight: 16,
                     }}
-                >
-                    🔒 Your answers are private. They help the app feel more like you — we never label or categorize you.
-                </Text>
-            </ScrollView>
+                
+                    \uD83D\uDD12 Your answers are private. They help the app feel more like you \u2014 we never label or categorize you.
+                </Text
+            </ScrollView
 
             {/* Footer actions */}
             <HStack
@@ -313,7 +313,7 @@ export const OrientationCaptureStep = ({
                     paddingBottom: Theme.spacing.xl,
                     paddingTop: Theme.spacing.sm,
                 }}
-            >
+            
                 <Pressable
                     onPress={handleBack}
                     style={{
@@ -327,10 +327,10 @@ export const OrientationCaptureStep = ({
                         flexDirection: 'row',
                         gap: 4,
                     }}
-                >
-                    <ChevronLeft color={colors.textSecondary} size={16} />
-                    <Text color={colors.textSecondary} size="sm">Back</Text>
-                </Pressable>
+                
+                    <ChevronLeft color={colors.textSecondary} size={16} /
+                    <Text color={colors.textSecondary} size="sm">Back</Text
+                </Pressable
                 <Pressable
                     onPress={onSkip}
                     style={{
@@ -339,11 +339,11 @@ export const OrientationCaptureStep = ({
                         borderRadius: Theme.corners.comfortable,
                         alignItems: 'center',
                     }}
-                >
-                    <Text color={colors.textTertiary} size="sm">Skip for now</Text>
-                </Pressable>
-            </HStack>
-        </VStack>
+                
+                    <Text color={colors.textTertiary} size="sm">Skip for now</Text
+                </Pressable
+            </HStack
+        </VStack
     );
 }
 
@@ -391,5 +391,5 @@ export function computeSeeds(selections: number[]): OrientationSeeds {
     };
 }
 
-// No default export — use the named export: import { OrientationCaptureStep } from './OrientationCaptureStep'
+// No default export \u2014 use the named export: import { OrientationCaptureStep } from './OrientationCaptureStep'
 

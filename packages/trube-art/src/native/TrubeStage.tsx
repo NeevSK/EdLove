@@ -46,8 +46,7 @@ export function TrubeStage({
         cornerRadius > 0 ? { borderRadius: cornerRadius } : null,
         style,
       ]}
-    >
-      {stage.layers.map((layer, index) => (
+          {stage.layers.map((layer, index) => (
         <TrubeCanvas
           key={layer.id ?? `${typeof layer.surface === 'string' ? layer.surface : layer.surface.name}-${index}`}
           cornerRadius={cornerRadius}
@@ -56,10 +55,8 @@ export function TrubeStage({
           quality={layer.quality ?? 'auto'}
           style={[StyleSheet.absoluteFill, resolveLayerStyle(layer.role, layer.opacity ?? 1)]}
           surface={layer.surface}
-        />
-      ))}
-    </View>
-  );
+        /      ))}
+    </View  );
 }
 
 const styles = StyleSheet.create({

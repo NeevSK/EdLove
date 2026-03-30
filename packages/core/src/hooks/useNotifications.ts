@@ -1,5 +1,5 @@
 /**
- * useNotifications — Real notification data for NotificationDrawer.
+ * useNotifications  Real notification data for NotificationDrawer.
  *
  * Fetches the 20 most recent notifications for the current user.
  * Provides `markAsRead` and `markAllRead` helpers.
@@ -65,7 +65,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         await loadUnreadCount();
       }
     } catch {
-      // Silently degrade — drawer shows empty state rather than crashing
+      // Silently degrade  drawer shows empty state rather than crashing
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +75,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
     load();
   }, [load]);
 
-  // Real-time subscription — new notifications arrive instantly without polling
+  // Real-time subscription  new notifications arrive instantly without polling
   useEffect(() => {
     if (!userId) return;
 
@@ -109,7 +109,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
           const updated = payload.new as AppNotification;
           const old = payload.old as AppNotification | undefined;
           
-          setNotifications((prev) =>
+          setNotifications((prev) =
             prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n))
           );
 
@@ -136,7 +136,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         .eq('id', id)
         .eq('user_id', userId);
       
-      setNotifications((prev) =>
+      setNotifications((prev) =
         prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
       );
       await loadUnreadCount();

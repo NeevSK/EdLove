@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, PanResponder, Animated, Dimensions } from 'react-native';
-import { useResonanceStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core';
 import { Theme } from '../theme/Theme';
 
 
@@ -15,7 +15,7 @@ const SCRUBBER_WIDTH = SCREEN_WIDTH * 0.8;
  * Adheres to the "Breath-like Motion" and "Sanctuary Glass" principles.
  */
 export const TemporalScrubber: React.FC = () => {
-  const { resonanceDate, setResonanceDate, intensity, phase } = useResonanceStore();
+  const { viewDate, setViewDate, intensity, phase } = useTemporalStore();
   
   // Animation value for the scrubber handle
   const pan = React.useRef(new Animated.Value(0)).current;
@@ -28,14 +28,14 @@ export const TemporalScrubber: React.FC = () => {
         // Simple logic to change date based on swipe direction
         const today = new Date();
         if (gestureState.dx < -50) {
-          // Swipe Left -> Past: derive target from current resonanceDate or yesterday
-          const currentDate = resonanceDate ? new Date(resonanceDate) : today;
+          // Swipe Left -> Past: derive target from current viewDate or yesterday
+          const currentDate = viewDate ? new Date(viewDate) : today;
           const pastDate = new Date(currentDate);
           pastDate.setDate(pastDate.getDate() - 1);
-          setResonanceDate(pastDate.toISOString().split('T')[0]!);
+          setViewDate(pastDate.toISOString().split('T')[0]!);
         } else if (gestureState.dx > 50) {
           // Swipe Right -> Reset to Present
-          setResonanceDate(today.toISOString().split('T')[0]!);
+          setViewDate(today.toISOString().split('T')[0]!);
         }
 
 
@@ -52,8 +52,8 @@ export const TemporalScrubber: React.FC = () => {
   const color = phase === 'past' ? '#968E80' : '#F6BF8C';
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.track, { backgroundColor: `${color}22` }]}>
+    <View style={styles.container}
+      <View style={[styles.track, { backgroundColor: `${color}22` }]}
         <Animated.View
           {...panResponder.panHandlers}
           style={[
@@ -65,14 +65,14 @@ export const TemporalScrubber: React.FC = () => {
               opacity: intensity,
             },
           ]}
-        >
-          <View style={styles.handleInner} />
-        </Animated.View>
-      </View>
-      <Text style={[styles.label, { color }]}>
-        {resonanceDate === new Date().toISOString().split('T')[0] ? 'LIVING PRESENT' : resonanceDate}
-      </Text>
-    </View>
+        
+          <View style={styles.handleInner} /
+        </Animated.View
+      </View
+      <Text style={[styles.label, { color }]}
+        {viewDate === new Date().toISOString().split('T')[0] ? 'LIVING PRESENT' : viewDate}
+      </Text
+    </View
   );
 };
 

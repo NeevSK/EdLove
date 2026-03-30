@@ -1,12 +1,12 @@
 /**
- * PWAInstallBanner — Web-exclusive component
+ * PWAInstallBanner \u2014 Web-exclusive component
  *
  * Shows an on-brand "Install Gurudevi" banner at the bottom of the screen when
  * the browser's PWA install criteria are met.  Tapping "Install" triggers the
  * native browser install dialog; tapping "Maybe later" dismisses for 30 days.
  *
  * On iOS/iPadOS (where the beforeinstallprompt event is never fired) a short
- * manual instruction ("Tap Share → Add to Home Screen") is shown instead.
+ * manual instruction ("Tap Share \u2192 Add to Home Screen") is shown instead.
  *
  * Only renders on web (Platform.OS guard + hook internals).
  */
@@ -21,7 +21,7 @@ import { Download, X, Share } from 'lucide-react-native';
 
 export function PWAInstallBanner() {
     const { canInstall, promptInstall, isDismissed, dismiss, isIOS, isInstalled } = usePWAInstallPrompt();
-    // All hooks must be called unconditionally — early returns come AFTER all hook calls
+    // All hooks must be called unconditionally \u2014 early returns come AFTER all hook calls
     const colors = useThemedColors();
 
     // Never render on native, when already installed, or after user dismissed
@@ -35,51 +35,51 @@ export function PWAInstallBanner() {
             entering={SlideInDown.springify().damping(18)}
             exiting={SlideOutDown.duration(220)}
             style={[styles.banner, { backgroundColor: colors.secondary, borderTopColor: colors.border }]}
-        >
-            <View style={styles.left}>
+        
+            <View style={styles.left}
                 {isIOS ? (
-                    <Share size={20} color={Theme.colors.sanctuarySaffron} />
+                    <Share size={20} color={Theme.colors.sanctuarySaffron} /
                 ) : (
-                    <Download size={20} color={Theme.colors.sanctuarySaffron} />
+                    <Download size={20} color={Theme.colors.sanctuarySaffron} /
                 )}
-                <View style={styles.textBlock}>
-                    <Text style={[styles.title, { color: colors.text }]}>
+                <View style={styles.textBlock}
+                    <Text style={[styles.title, { color: colors.text }]}
                         {isIOS ? 'Add to Home Screen' : 'Install Gurudevi'}
-                    </Text>
-                    <Text style={[styles.sub, { color: colors.textSecondary }]}>
+                    </Text
+                    <Text style={[styles.sub, { color: colors.textSecondary }]}
                         {isIOS
                             ? 'Tap the Share icon, then "Add to Home Screen"'
                             : 'Your Sanctuary, one tap away'}
-                    </Text>
-                </View>
-            </View>
+                    </Text
+                </View
+            </View
 
-            <View style={styles.actions}>
+            <View style={styles.actions}
                 {!isIOS && (
                     <TouchableOpacity
                         onPress={async () => {
                             try {
                                 await promptInstall();
                             } catch {
-                                // User cancelled or browser rejected — dismiss the banner quietly
+                                // User cancelled or browser rejected \u2014 dismiss the banner quietly
                                 dismiss();
                             }
                         }}
                         style={[styles.installBtn, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                         accessibilityLabel="Install Gurudevi as an app"
-                    >
-                        <Text style={styles.installBtnText}>Install</Text>
-                    </TouchableOpacity>
+                    
+                        <Text style={styles.installBtnText}>Install</Text
+                    </TouchableOpacity
                 )}
                 <TouchableOpacity
                     onPress={dismiss}
                     style={styles.dismissBtn}
                     accessibilityLabel="Dismiss install prompt"
-                >
-                    <X size={18} color={colors.textSecondary} />
-                </TouchableOpacity>
-            </View>
-        </Animated.View>
+                
+                    <X size={18} color={colors.textSecondary} /
+                </TouchableOpacity
+            </View
+        </Animated.View
     );
 }
 

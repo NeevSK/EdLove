@@ -1,8 +1,8 @@
 /**
- * useWebPageTitle — Web-only hook
+ * useWebPageTitle \u2014 Web-only hook
  *
  * Keeps `document.title` in sync with the current navigation screen so that:
- *   - Browser tab titles are human-readable ("Gurudevi · Profile")
+ *   - Browser tab titles are human-readable ("Gurudevi \u00B7 Profile")
  *   - Back/forward navigation shows meaningful titles in browser history
  *   - Screen readers and assistive tech announce the correct page name
  *
@@ -57,5 +57,5 @@ export function updateWebPageTitle(state: NavState | undefined) {
     if (!state) return;
     const routeName = getLeafRouteName(state);
     const label = routeName ? (ROUTE_LABELS[routeName] ?? routeName) : null;
-    document.title = label ? `${APP_NAME} · ${label}` : APP_NAME;
+    document.title = label ? `${APP_NAME} \u00B7 ${label}` : APP_NAME;
 }

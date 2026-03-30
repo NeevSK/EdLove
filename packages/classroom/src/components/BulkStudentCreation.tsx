@@ -63,9 +63,9 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
             toast.show({
                 placement: 'bottom',
                 render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('bulk_creation.errors.invalidNumber') || 'Please enter a number between 1 and 100'}</ToastTitle>
-                    </Toast>
+                    <Toast nativeID={id} action="error" variant="solid"
+                        <ToastTitle>{t('bulk_creation.errors.invalidNumber') || 'Please enter a number between 1 and 100'}</ToastTitle
+                    </Toast
                 ),
             });
             return;
@@ -93,9 +93,9 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
             toast.show({
                 placement: 'bottom',
                 render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('bulk_creation.errors.requiredFields') || 'Name and Index are required'}</ToastTitle>
-                    </Toast>
+                    <Toast nativeID={id} action="error" variant="solid"
+                        <ToastTitle>{t('bulk_creation.errors.requiredFields') || 'Name and Index are required'}</ToastTitle
+                    </Toast
                 ),
             });
             return;
@@ -171,9 +171,9 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
             toast.show({
                 placement: 'bottom',
                 render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('bulk_creation.errors.noValidStudents') || 'No valid students to add'}</ToastTitle>
-                    </Toast>
+                    <Toast nativeID={id} action="error" variant="solid"
+                        <ToastTitle>{t('bulk_creation.errors.noValidStudents') || 'No valid students to add'}</ToastTitle
+                    </Toast
                 ),
             });
             return;
@@ -187,7 +187,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
     const validStudentsCount = students.filter(s => s.name.trim() && s.index_number.trim()).length;
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}
             {/* Header */}
             <HStack
                 justifyContent="space-between"
@@ -199,22 +199,22 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                     borderBottomWidth: 1,
                     borderBottomColor: colors.border
                 }}
-            >
-                <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.xl }}>
+            
+                <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.xl }}
                     {t('bulk_creation.title') || 'Bulk Add Students'}
-                </Heading>
-                <Pressable onPress={() => { hapticLight(); onCancel(); }}>
-                    <X size={24} color={colors.textSecondary} />
-                </Pressable>
-            </HStack>
+                </Heading
+                <Pressable onPress={() => { hapticLight(); onCancel(); }}
+                    <X size={24} color={colors.textSecondary} /
+                </Pressable
+            </HStack
 
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.xl, paddingBottom: 120 }}>
+            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.xl, paddingBottom: 120 }}
                 {/* Step 1: Enter total count */}
                 {step === 'count' && (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}>
+                    <VStack sx={{ gap: Theme.spacing.md }}
+                        <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}
                             {t('bulk_creation.howMany') || 'How many students do you want to add?'}
-                        </Text>
+                        </Text
 
                         <Input
                             sx={{
@@ -222,7 +222,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 borderRadius: Theme.corners.comfortable,
                                 backgroundColor: colors.secondary,
                             }}
-                        >
+                        
                             <InputField
                                 placeholder={t('bulk_creation.countPlaceholder') || "Enter number (e.g., 35)"}
                                 value={totalCount}
@@ -234,8 +234,8 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     fontSize: 24,
                                     textAlign: 'center'
                                 }}
-                            />
-                        </Input>
+                            /
+                        </Input
 
                         <Button
                             size="lg"
@@ -244,30 +244,30 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 backgroundColor: Theme.colors.sanctuarySaffron,
                                 borderRadius: Theme.corners.comfortable,
                             }}
-                        >
-                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                        
+                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}
                                 {t('bulk_creation.startEntry') || 'Start Entry'}
-                            </ButtonText>
-                        </Button>
+                            </ButtonText
+                        </Button
 
-                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textAlign: 'center' }}>
+                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textAlign: 'center' }}
                             {t('bulk_creation.maxLimit') || 'Maximum 100 students at once'}
-                        </Text>
-                    </VStack>
+                        </Text
+                    </VStack
                 )}
 
                 {/* Step 2: Enter student details */}
                 {step === 'entry' && currentStudent && (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack sx={{ gap: Theme.spacing.md }}
                         {/* Progress */}
-                        <HStack justifyContent="space-between" alignItems="center">
-                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                        <HStack justifyContent="space-between" alignItems="center"
+                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}
                                 {t('bulk_creation.progress', { current: currentIndex + 1, total: students.length }) || `Student ${currentIndex + 1} of ${students.length}`}
-                            </Text>
-                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.xs, fontWeight: '600' }}>
+                            </Text
+                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.xs, fontWeight: '600' }}
                                 {t('bulk_creation.completedCount', { count: validStudentsCount }) || `${validStudentsCount} completed`}
-                            </Text>
-                        </HStack>
+                            </Text
+                        </HStack
 
                         {/* Progress Bar */}
                         <Box
@@ -277,65 +277,65 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 borderRadius: 2,
                                 overflow: 'hidden',
                             }}
-                        >
+                        
                             <Box
                                 sx={{
                                     height: '100%',
                                     width: `${((currentIndex + 1) / students.length) * 100}%`,
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                 }}
-                            />
-                        </Box>
+                            /
+                        </Box
 
                         {/* Name Input */}
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' }}>
+                        <VStack sx={{ gap: Theme.spacing.xs }}
+                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' }}
                                 {t('bulk_creation.studentName') || 'Student Name *'}
-                            </Text>
+                            </Text
                             <Input
                                 sx={{
                                     borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                     backgroundColor: colors.secondary,
                                 }}
-                            >
+                            
                                 <InputField
                                     placeholder={t('bulk_creation.namePlaceholder') || "Enter full name"}
                                     value={currentStudent.name}
                                     onChangeText={(value: string) => updateStudent('name', value)}
                                     color={colors.text}
                                     placeholderTextColor={colors.textTertiary}
-                                />
-                            </Input>
-                        </VStack>
+                                /
+                            </Input
+                        </VStack
 
                         {/* Index Number Input */}
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' }}>
+                        <VStack sx={{ gap: Theme.spacing.xs }}
+                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' }}
                                 {t('bulk_creation.indexNumber') || 'Index Number *'}
-                            </Text>
+                            </Text
                             <Input
                                 sx={{
                                     borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                     backgroundColor: colors.secondary,
                                 }}
-                            >
+                            
                                 <InputField
                                     placeholder={t('bulk_creation.indexPlaceholder') || "Enter index number"}
                                     value={currentStudent.index_number}
                                     onChangeText={(value: string) => updateStudent('index_number', value)}
                                     color={colors.text}
                                     placeholderTextColor={colors.textTertiary}
-                                />
-                            </Input>
-                        </VStack>
+                                /
+                            </Input
+                        </VStack
 
                         {/* Notes Input (Optional) */}
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}>
+                        <VStack sx={{ gap: Theme.spacing.xs }}
+                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}
                                 {t('bulk_creation.optionalNotes') || 'Notes (Optional)'}
-                            </Text>
+                            </Text
                             <Textarea
                                 sx={{
                                     borderColor: colors.border,
@@ -343,19 +343,19 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     backgroundColor: colors.secondary,
                                     minHeight: 80,
                                 }}
-                            >
+                            
                                 <TextareaInput
                                     placeholder={t('bulk_creation.notesPlaceholder') || "Add any notes about this student..."}
                                     value={currentStudent.notes}
                                     onChangeText={(value: string) => updateStudent('notes', value)}
                                     color={colors.text}
                                     placeholderTextColor={colors.textTertiary}
-                                />
-                            </Textarea>
-                        </VStack>
+                                /
+                            </Textarea
+                        </VStack
 
                         {/* Navigation Buttons */}
-                        <HStack sx={{ gap: Theme.spacing.md }}>
+                        <HStack sx={{ gap: Theme.spacing.md }}
                             <Button
                                 size="md"
                                 variant="outline"
@@ -366,11 +366,11 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
-                            >
-                                <ButtonText sx={{ color: colors.textSecondary }}>
-                                    {t('bulk_creation.previous') || '← Previous'}
-                                </ButtonText>
-                            </Button>
+                            
+                                <ButtonText sx={{ color: colors.textSecondary }}
+                                    {t('bulk_creation.previous') || '\u2190 Previous'}
+                                </ButtonText
+                            </Button
 
                             <Button
                                 size="md"
@@ -381,12 +381,12 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
-                            >
-                                <ButtonText sx={{ color: colors.textSecondary }}>
-                                    {t('bulk_creation.skip') || 'Skip →'}
-                                </ButtonText>
-                            </Button>
-                        </HStack>
+                            
+                                <ButtonText sx={{ color: colors.textSecondary }}
+                                    {t('bulk_creation.skip') || 'Skip \u2192'}
+                                </ButtonText
+                            </Button
+                        </HStack
 
                         {/* Save and Continue / Finish */}
                         <Button
@@ -396,40 +396,40 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 backgroundColor: Theme.colors.sanctuarySaffron,
                                 borderRadius: Theme.corners.comfortable,
                             }}
-                        >
-                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                        
+                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}
                                 {currentIndex === students.length - 1
                                     ? (t('bulk_creation.finishReview') || 'Finish & Review')
-                                    : (t('bulk_creation.saveNext') || 'Save & Next →')}
-                            </ButtonText>
-                        </Button>
+                                    : (t('bulk_creation.saveNext') || 'Save & Next \u2192')}
+                            </ButtonText
+                        </Button
 
                         {/* Review Button (anytime) */}
                         <Button
                             size="md"
                             variant="link"
                             onPress={() => { hapticLight(); setStep('review'); }}
-                        >
-                            <ButtonText sx={{ color: colors.textTertiary }}>
+                        
+                            <ButtonText sx={{ color: colors.textTertiary }}
                                 {t('bulk_creation.reviewAll', { count: validStudentsCount }) || `Review All (${validStudentsCount})`}
-                            </ButtonText>
-                        </Button>
-                    </VStack>
+                            </ButtonText
+                        </Button
+                    </VStack
                 )}
 
                 {/* Step 3: Review all students */}
                 {step === 'review' && (
-                    <VStack sx={{ gap: Theme.spacing.lg }}>
-                        <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}>
+                    <VStack sx={{ gap: Theme.spacing.lg }}
+                        <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}
                             {t('bulk_creation.reviewDesc') || 'Review all students before adding to classroom'}
-                        </Text>
+                        </Text
 
-                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.lg, fontWeight: '600', textAlign: 'center' }}>
+                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.lg, fontWeight: '600', textAlign: 'center' }}
                             {t('bulk_creation.validCount', { count: validStudentsCount }) || `${validStudentsCount} valid student(s)`}
-                        </Text>
+                        </Text
 
                         {/* Student List */}
-                        <VStack sx={{ gap: Theme.spacing.sm }}>
+                        <VStack sx={{ gap: Theme.spacing.sm }}
                             {students.map((student, index) => {
                                 const isValid = student.name.trim() && student.index_number.trim();
 
@@ -446,51 +446,51 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                             borderWidth: 1,
                                             borderColor: colors.border,
                                         }}
-                                    >
-                                        <HStack justifyContent="space-between" alignItems="flex-start">
-                                            <VStack sx={{ gap: Theme.spacing.xs, flex: 1 }}>
-                                                <HStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                    
+                                        <HStack justifyContent="space-between" alignItems="flex-start"
+                                            <VStack sx={{ gap: Theme.spacing.xs, flex: 1 }}
+                                                <HStack alignItems="center" sx={{ gap: Theme.spacing.xs }}
+                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}
                                                         #{index + 1}
-                                                    </Text>
-                                                    <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '700' }}>
+                                                    </Text
+                                                    <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '700' }}
                                                         {student.name || <Text sx={{ color: Theme.colors.emberRed }}>{t('bulk_creation.noName') || 'No name'}</Text>}
-                                                    </Text>
-                                                </HStack>
-                                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                                    </Text
+                                                </HStack
+                                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}
                                                     {t('students.rollNumber') || 'Index'}: {student.index_number || <Text sx={{ color: Theme.colors.emberRed }}>{t('bulk_creation.noIndex') || 'No index'}</Text>}
-                                                </Text>
+                                                </Text
                                                 {student.notes && (
-                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}>
+                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}
                                                         {student.notes}
-                                                    </Text>
+                                                    </Text
                                                 )}
-                                            </VStack>
+                                            </VStack
 
-                                            <HStack sx={{ gap: Theme.spacing.md }}>
+                                            <HStack sx={{ gap: Theme.spacing.md }}
                                                 <Pressable
                                                     onPress={() => {
                                                         hapticLight();
                                                         setCurrentIndex(index);
                                                         setStep('entry');
                                                     }}
-                                                >
-                                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' }}>
+                                                
+                                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' }}
                                                         {t('common.edit') || 'Edit'}
-                                                    </Text>
-                                                </Pressable>
-                                                <Pressable onPress={() => handleRemoveStudent(index)}>
-                                                    <Trash2 size={18} color={Theme.colors.emberRed} />
-                                                </Pressable>
-                                            </HStack>
-                                        </HStack>
-                                    </Box>
+                                                    </Text
+                                                </Pressable
+                                                <Pressable onPress={() => handleRemoveStudent(index)}
+                                                    <Trash2 size={18} color={Theme.colors.emberRed} /
+                                                </Pressable
+                                            </HStack
+                                        </HStack
+                                    </Box
                                 );
                             })}
-                        </VStack>
+                        </VStack
 
                         {/* Action Buttons */}
-                        <VStack sx={{ gap: Theme.spacing.md }}>
+                        <VStack sx={{ gap: Theme.spacing.md }}
                             <Button
                                 size="lg"
                                 onPress={handleAddOne}
@@ -500,12 +500,12 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
                                 }}
-                            >
-                                <Plus size={20} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                                <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}>
+                            
+                                <Plus size={20} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} /
+                                <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}
                                     {t('bulk_creation.addOneMore') || 'Add One More'}
-                                </ButtonText>
-                            </Button>
+                                </ButtonText
+                            </Button
 
                             <Button
                                 size="lg"
@@ -517,26 +517,26 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                         : colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
-                            >
-                                <Save size={20} color={Theme.colors.sacredWhite} style={{ marginRight: 8 }} />
-                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                            
+                                <Save size={20} color={Theme.colors.sacredWhite} style={{ marginRight: 8 }} /
+                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}
                                     {t('bulk_creation.addStudentsAction', { count: validStudentsCount }) || `Add ${validStudentsCount} Student(s)`}
-                                </ButtonText>
-                            </Button>
+                                </ButtonText
+                            </Button
 
                             <Button
                                 size="md"
                                 variant="link"
                                 onPress={() => { hapticLight(); setStep('entry'); }}
-                            >
-                                <ButtonText sx={{ color: colors.textSecondary }}>
-                                    {t('bulk_creation.backToEntry') || '← Back to Entry'}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    </VStack>
+                            
+                                <ButtonText sx={{ color: colors.textSecondary }}
+                                    {t('bulk_creation.backToEntry') || '\u2190 Back to Entry'}
+                                </ButtonText
+                            </Button
+                        </VStack
+                    </VStack
                 )}
-            </ScrollView>
-        </Box>
+            </ScrollView
+        </Box
     );
 }

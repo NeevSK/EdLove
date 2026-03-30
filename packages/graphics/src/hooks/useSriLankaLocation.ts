@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import * as Location from 'expo-location';
-import { Drilldown, DISTRICT_TO_DS_DIVISIONS } from '../data/AdministrativeHierarchy';
+import { Drilldown } from '../data/AdministrativeHierarchy';
 import { inferFromPostalCode } from '../data/PostalCodes';
 import { SRI_LANKAN_DISTRICTS } from '@repo/core';
+import type { DSDivision, GNDivision } from '@intuitui-labs/lk-edu-geo';
 
 
 export interface LocationState {
@@ -84,7 +85,7 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
                     postalCode: address.postalCode || '',
                 });
             }
-        } catch (err) {
+        } catch {
             updateLocation({ error: 'Failed to get location' });
         }
     };
@@ -92,8 +93,8 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
     const options = useMemo(() => ({
         provinces: Drilldown.getProvinces(),
         districts: Drilldown.getDistricts(state.provinceId),
-        dsDivisions: Drilldown.getDSDivisions(state.districtId),
-        gnDivisions: Drilldown.getGNDivisions(state.dsDivisionId),
+        dsDivisions: Drilldown.getDSDivisions(state.districtId) as DSDivision[],
+        gnDivisions: Drilldown.getGNDivisions(state.dsDivisionId) as GNDivision[],
     }), [state.provinceId, state.districtId, state.dsDivisionId]);
 
     return {

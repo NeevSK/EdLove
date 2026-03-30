@@ -14,7 +14,7 @@ import { Province, District, DSDivision, GNDivision } from '../src/types.js';
 const FILE_PATH = path.resolve(__dirname, '../sources/lka_admin_boundaries.xlsx');
 
 async function extract() {
-  console.log('🧐 Extracting High-Fidelity Administrative Hierarchy (Phase 5)...');
+  console.log('\uD83E\uDDD0 Extracting High-Fidelity Administrative Hierarchy (Phase 5)...');
   
   if (!fs.existsSync(FILE_PATH)) {
     throw new Error(`Survey Dept XLSX not found at ${FILE_PATH}`);
@@ -116,8 +116,8 @@ async function extract() {
   };
 
   fs.writeFileSync('./src/data/admin-hierarchy-official.json', JSON.stringify(result, null, 2));
-  console.log(`✅ Extraction Complete!`);
-  console.log(`📊 Extracted: ${result.gnDivisions.length} GN units with Multilingual labels and Spatial data.`);
+  console.log(`\u2705 Extraction Complete!`);
+  console.log(`\uD83D\uDCCA Extracted: ${result.gnDivisions.length} GN units with Multilingual labels and Spatial data.`);
 }
 
 extract().catch(console.error);
