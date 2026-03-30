@@ -383,7 +383,7 @@
     "invites": {
       "title": "Invite Codes",
       "description": "Generate invite codes for teachers and students to join your school.",
-      "generateTeacher": "≡ƒæ¿ΓÇì\uD83C\uDFEB Generate Teacher Code",
+      "generateTeacher": "\uD83D\uDC68\u200d\uD83C\uDFEB Generate Teacher Code",
       "generateSectionHead": "+ Section Head",
       "generateGradeHead": "+ Grade Head",
       "generateStudent": "\uD83D\uDC68\u200d\uD83C\uDF93 Generate Student Code",
@@ -596,7 +596,7 @@
       "tapToChange": "Tap to change",
       "addPhotoOptional": "Add a photo (optional)",
       "groupName": "Circle Name",
-      "groupNamePlaceholder": "e.g. Science Explorers, Reading CircleΓÇª",
+      "groupNamePlaceholder": "e.g. Science Explorers, Reading Circle\u2026",
       "description": "Description",
       "optional": "optional",
       "descriptionPlaceholder": "What is this circle about?",
@@ -1051,7 +1051,7 @@
     "navigationContent": "Use the Lotus Petal at the bottom for quick actions, and the tabs to navigate your sanctuary.",
     "philosophyTitle": "Sanctuary Philosophy",
     "philosophySubtitle": "Education is a living ecology.",
-    "philosophyContent": "Gurudevi is built on the Sanatana principles of learningΓÇöwhere wisdom is nurtured, not just knowledge transferred.",
+    "philosophyContent": "Gurudevi is built on the Sanatana principles of learning\u2014where wisdom is nurtured, not just knowledge transferred.",
     "sectionsContent": "Self for reflecting, Classroom for teaching, Community for sharing, and Library for discovering.",
     "ecologyContent": "Manage the energetic health of your classroom. Track relations, wellbeing, and the subtle nuances of learning.",
     "privacyContent": "We don't track you. Your insights and student records are private, secure, and for your eyes only.",
@@ -1190,7 +1190,7 @@
     "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
     "errorTitle": "Something went wrong",
     "errorDesc": "We couldn't process this gift. Please try again or contact support.",
-    "flowerTitle": "α╢¡α╖öα╢¡α╖Æα╢╕α╢╜α╖è",
+    "flowerTitle": "\uDAD4\uDD32\uDAD4\uDD32\uDA22\uDA14\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA36\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA12\uDAD3\uDCB8\uDAD3\uDCB8\uDA22\uDA12\uDAD3\uDCDD\uDAD3\uDCDD\uDA22\uDA3A\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA1A",
     "giftHeading": "A Flower of Gratitude",
     "giftFrom": "Your Pro subscription is a gift of gratitude from",
     "giftRecognition": "A recognition of your sacred work as an educator.",
@@ -1306,9 +1306,9 @@
   },
   "thuthimalBadge": {
     "title": "Thuthimal",
-    "sinhala": "α╢¡α╖öα╢¡α╖Æα╢╕α╢╜α╖è",
+    "sinhala": "\uDAD4\uDD32\uDAD4\uDD32\uDA22\uDA14\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA36\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA12\uDAD3\uDCB8\uDAD3\uDCB8\uDA22\uDA12\uDAD3\uDCDD\uDAD3\uDCDD\uDA22\uDA3A\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA1A",
     "giftedBy": "Your Pro subscription is a gift of gratitude from:",
-    "meaning": "α╢¡α╖öα╢¡α╖Æα╢╕α╢╜α╖è (Thuthimal) means \"Flower of Gratitude\" ΓÇö honoring the sacred work of teaching",
+    "meaning": "\uDAD4\uDD32\uDAD4\uDD32\uDA22\uDA14\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA36\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA12\uDAD3\uDCB8\uDAD3\uDCB8\uDA22\uDA12\uDAD3\uDCDD\uDAD3\uDCDD\uDA22\uDA3A\uDAD3\uDCD2\uDAD3\uDCD2\uDA22\uDA1A (Thuthimal) means \"Flower of Gratitude\" \u2014 honoring the sacred work of teaching",
     "giftedOn": "Gifted on {{date}}"
   },
   "socialSanctuary": {
@@ -1452,7 +1452,7 @@
       "closeScanner": "Close scanner",
       "cameraMessage": "Camera scanning is available in the\nGurudevi mobile app.",
       "desktopHint": "On desktop, paste the QR code value below.",
-      "pasteCode": "Paste QR code value hereΓÇª",
+      "pasteCode": "Paste QR code value here\u2026",
       "submitCode": "Submit Code",
       "title": "Enter QR Code"
     },

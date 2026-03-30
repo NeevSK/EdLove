@@ -13,20 +13,22 @@ interface GuardianChildrenListProps {
 export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ students, onStudentPress, isDesktop }) => {
   const theme = useTheme();
   return (
-    <View style={styles.section}      <Text >
+    <View style={styles.section}>
+      <Text
         style={[
           styles.sectionHeader,
-          { 
+          {
             color: theme.text.primary,
             fontWeight: '700',
-            fontSize: isDesktop ? 20 : 16
-          }
+            fontSize: isDesktop ? 20 : 16,
+          },
         ]}
-              Your Students
-      </Text      ><GuardianStudentsGrid 
-        students={students}
-        onStudentPress={onStudentPress} 
-      /    ></View  );
+      >
+        Your Students
+      </Text>
+      <GuardianStudentsGrid students={students} onStudentPress={onStudentPress} />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
