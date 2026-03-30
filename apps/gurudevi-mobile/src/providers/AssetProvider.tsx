@@ -25,8 +25,10 @@ export const AssetProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <AssetContext.Provider value={{ fontsLoaded }}      {children}>
-    </AssetContext.Provider  >);>
+    <AssetContext.Provider value={{ fontsLoaded }}>
+      {children}
+    </AssetContext.Provider>
+  );
 };
 
 export const useAssets = () => {
