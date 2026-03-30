@@ -288,9 +288,9 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     };
 
     return (
-        <EnvironmentContext.Provider value={value}
+        <EnvironmentContext.Provider value={value}>
             {children}
-        </EnvironmentContext.Provider
+        </EnvironmentContext.Provider>
     );
 }
 

@@ -53,7 +53,7 @@ export const TemporalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                             { backgroundColor: value.colorShift },
                         ]}
                     /                )}
-            </View        </TemporalContext.Provider    );
+            </View        ></TemporalContext.Provider    >);
 };
 
 const styles = StyleSheet.create({

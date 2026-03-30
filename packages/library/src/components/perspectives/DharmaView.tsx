@@ -41,7 +41,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                 {!isLast && (
                     <View style={styles.spineContainer}>
                         <Svg width={windowWidth} height={160} viewBox={`0 0 ${windowWidth} 160`}>
-                            <Path>
+                            <Path/>
                                 d={`M ${windowWidth/2 + xOffset} 80 
                                    C ${windowWidth/2 + xOffset} 120, 
                                      ${windowWidth/2 - xOffset} 120, 
@@ -96,7 +96,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <View style={styles.container}>
-            <SanctuaryFlashList>
+            <SanctuaryFlashList/>
                 data={orderedNodes}
                 renderItem={renderItem}
                 estimatedItemSize={160}

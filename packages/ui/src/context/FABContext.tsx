@@ -44,9 +44,9 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }, []);
 
     return (
-        <FABContext.Provider value={{ state, registerFAB, unregisterFAB, setVisibility }}
+        <FABContext.Provider value={{ state, registerFAB, unregisterFAB, setVisibility }}>
             {children}
-        </FABContext.Provider
+        </FABContext.Provider>
     );
 };
 

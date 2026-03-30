@@ -27,8 +27,8 @@ export function FounderGlow({
     };
 
     return (
-        <View style={[{ position: 'relative' }, style]}
-            <LivingGlow
+        <View style={[{ position: 'relative' }, style]}>
+            <LivingGlow>
                 active={active}
                 glowColor="rgba(255, 166, 0, 0.4)"
                 size={sizeMap[intensity]}
@@ -42,6 +42,6 @@ export function FounderGlow({
                 }}
             /
             {children}
-        </View
+        </View>
     );
 }

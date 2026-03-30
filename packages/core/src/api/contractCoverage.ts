@@ -14,7 +14,7 @@ export interface ContractCoverageDefinition<T extends object = object> {
 const contractCoverageRegistry = new Map<string, ContractCoverageDefinition<any>>();
 
 export const defineContractCoverage = <T extends object>(
-    definition: ContractCoverageDefinition<T): ContractCoverageDefinition<T> => {
+    definition: ContractCoverageDefinition<T>): ContractCoverageDefinition<T> => {
     contractCoverageRegistry.set(definition.moduleName, definition as ContractCoverageDefinition<any>);
     return definition;
 };
@@ -25,7 +25,7 @@ export const listContractCoverage = (): ContractCoverageDefinition[] => Array.fr
 
 export const assertContractCoverage = <T extends object>(
     target: T,
-    definition: ContractCoverageDefinition<T): ContractCoverageDefinition<T> => {
+    definition: ContractCoverageDefinition<T>): ContractCoverageDefinition<T> => {
     const methodMapping = definition.methodMapping ?? {};
     const internalMethods = new Set((definition.internalMethods ?? []).map(String));
     const missingCoverage = Object.keys(target as Record<string, unknown>).filter((key) => {

@@ -82,8 +82,8 @@ export const TemporalNavigator = () => {
                 <Calendar size={16} color={Theme.colors.gurudeviBlue} style={{ marginRight: 6 }} />
                 <View>
                     <Text style={styles.dateText}                        {formatDate(viewDate)}>
-                    </Text                    {/* Temporal pulse (Phase 2 delighter) */}
-                    <View style={styles.pulseDot} /                ></View            </TouchableOpacity>
+                    </Text                    >{/* Temporal pulse (Phase 2 delighter) */}
+                    <View style={styles.pulseDot} /                ></View            ></TouchableOpacity>
             <View style={styles.rightGroup}>
                 <TouchableOpacity accessibilityRole="button" >
                     style={[styles.actionBtn, { opacity: isToday ? 0.2 : 1 }]} 

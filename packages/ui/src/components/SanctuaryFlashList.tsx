@@ -58,7 +58,7 @@ export function SanctuaryFlashList<T>({
         }
 
         return (
-            <EmptyState
+            <EmptyState>
                 icon={BookOpen}
                 title="Silence in the Sanctuary"
                 description="Your first discovery is waiting to be found here."
@@ -67,7 +67,7 @@ export function SanctuaryFlashList<T>({
     }, [emptyComponent, ListEmptyComponent]);
 
     return (
-        <FlashList
+        <FlashList>
             {...(props as any)}
             data={data}
             renderItem={renderItem}
@@ -79,7 +79,7 @@ export function SanctuaryFlashList<T>({
             ]}
             refreshControl={
                 onRefresh ? (
-                    <RefreshControl
+                    <RefreshControl>
                         refreshing={refreshing}
                         onRefresh={onRefresh}
                         tintColor={refreshColor || Theme.colors.sanctuarySaffron}

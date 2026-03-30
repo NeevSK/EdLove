@@ -77,7 +77,7 @@ export default function DirectMessageScreen() {
     };
 
     return (
-        <BaseChatScreen
+        <BaseChatScreen>
             channelKey={`dm_${conversationId}`}
             title={userName}
             subtitle="Direct Message"
@@ -92,7 +92,7 @@ export default function DirectMessageScreen() {
             key={viewDate}
             blockedMessage={`This conversation is currently paused. ${userName} or you have restricted interactions.`}
             headerRight={
-                <HeaderMoreMenu
+                <HeaderMoreMenu>
                     conversationId={conversationId}
                     targetUserName={userName}
                     targetUserId={targetUserId}

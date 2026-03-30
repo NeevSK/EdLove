@@ -46,7 +46,7 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
         return (
             <GlassCard style={styles.container}>
                 <Text style={styles.loadingText}>Loading temporal history...</Text            ></GlassCard
-        );
+        >);
     }
 
     const { takeSnapshot, isSaving } = useManualSnapshot();
@@ -67,7 +67,7 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
                     
                         <Camera size={16} color={isSaving ? 'rgba(255, 255, 255, 0.2)' : '#F6BF8C'} />
                     </TouchableOpacity>
-                    <SanctuaryChip >
+                    <SanctuaryChip />
                         label={scale.toUpperCase()} 
                         variant="tag" 
                         size="sm"

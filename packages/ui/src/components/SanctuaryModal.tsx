@@ -74,7 +74,7 @@ export default function SanctuaryModal({
             {...({ size } as any)}
         
             {/* Backdrop: Shadow Violet  NEVER black */}
-            <ModalBackdrop>
+            <ModalBackdrop/>
                 sx={{
                     backgroundColor: isDark
                         ? 'rgba(107,100,128,0.65)'
@@ -121,7 +121,7 @@ export default function SanctuaryModal({
 
                     {showCloseButton && (
                         <ModalCloseButton>
-                            <Icon>
+                            <Icon/>
                                 as={CloseIcon}
                                 {...({ color: text.onElevated } as any)}
                             /

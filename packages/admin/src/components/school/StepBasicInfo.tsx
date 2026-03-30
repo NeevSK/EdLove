@@ -48,5 +48,5 @@ export default function StepBasicInfo({ data, onUpdate }: StepBasicInfoProps) {
                 value={data.website || ''}
                 onChangeText={(text) => onUpdate({ website: text })}
                 leftIcon={Globe}
-            /        </VStack    );
+            /        </VStack    >);
 }

@@ -23,10 +23,10 @@ export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ stud
           }
         ]}
               Your Students
-      </Text      <GuardianStudentsGrid 
+      </Text      ><GuardianStudentsGrid 
         students={students}
         onStudentPress={onStudentPress} 
-      /    </View  );
+      /    ></View  );
 };
 
 const styles = StyleSheet.create({

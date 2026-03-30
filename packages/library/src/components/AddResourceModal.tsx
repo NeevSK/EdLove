@@ -87,7 +87,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 </VStack>
 
                 <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
-                    <InputField>
+                    <InputField/>
                         {...({ color: text.primary } as any)}
                         placeholder={t('library.addResource.urlPlaceholder')}
                         value={url}
@@ -97,7 +97,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 </Input>
 
                 <Input sx={{ minHeight: 80, backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
-                    <InputField>
+                    <InputField/>
                         {...({ color: text.primary } as any)}
                         placeholder={t('library.addResource.descriptionPlaceholder')}
                         value={description}
@@ -126,7 +126,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 <VStack {...({ space: "xs" } as any)}>
                     <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.tagsSection')}</Text
                     ><Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
-                        <InputField>
+                        <InputField/>
                             {...({ color: text.primary } as any)}
                             placeholder={t('library.addResource.tagsPlaceholder')}
                             value={tags}

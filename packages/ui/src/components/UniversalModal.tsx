@@ -21,13 +21,13 @@ export const UniversalModal = ({
     transparent = true
 }: UniversalModalProps) => {
     return (
-        <Modal
+        <Modal>
             visible={isOpen}
             transparent={transparent}
             onRequestClose={onClose}
             animationType="fade"
         
             {children}
-        </Modal
+        </Modal>
     );
 };

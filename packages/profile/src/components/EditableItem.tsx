@@ -109,7 +109,7 @@ export const EditableItem = ({
                                     borderColor: error ? colors.error : colors.action
                                 }}
                             
-                                <InputField>
+                                <InputField/>
                                     value={editValue}
                                     onChangeText={(text: string) => {
                                         const nextValue = transform ? transform(text) : text;

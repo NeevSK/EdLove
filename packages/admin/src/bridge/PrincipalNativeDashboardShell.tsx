@@ -30,7 +30,8 @@ function ZoneButton({
   onPress: (zone: PrincipalZoneId) => void;
 }) {
   return (
-    <TouchableOpacity onPress={() => onPress(id)} activeOpacity={0.85} style={{ flex: 1 }}      <Box
+    <TouchableOpacity onPress={() => onPress(id)} activeOpacity={0.85} style={{ flex: 1 }}>
+      <Box
         sx={{
           padding: Theme.spacing.sm,
           borderRadius: Theme.corners.comfortable,
@@ -39,16 +40,36 @@ function ZoneButton({
           backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}16` : Theme.colors.silk,
           minHeight: 74,
         }}
-              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>{label}</Text          ><Box
+      >
+        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>
+            {label}
+          </Text>
+          <Box
             sx={{
               paddingHorizontal: 8,
               paddingVertical: 2,
               borderRadius: Theme.corners.full,
               backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}24` : Theme.colors.linen,
             }}
-                      <Text sx={{ fontSize: 10, fontWeight: '800', color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark }}              {count}>
-            </Text          ></Box        </HStack        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}          {detail}>
-        </Text      ></Box    </TouchableOpacity  );
+          >
+            <Text
+              sx={{
+                fontSize: 10,
+                fontWeight: '800',
+                color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark,
+              }}
+            >
+              {count}
+            </Text>
+          </Box>
+        </HStack>
+        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}>
+          {detail}
+        </Text>
+      </Box>
+    </TouchableOpacity>
+  );
 }
 
 interface PrincipalNativeDashboardShellProps {
@@ -77,9 +98,11 @@ export function PrincipalNativeDashboardShell({
   const colors = useThemedColors();
 
   return (
-    <      {showSandboxBanner ? <SandboxBanner /> : null}
-      <GlobalHeader title={title} subtitle={subtitle} /
-      ><Box
+    <>
+      {showSandboxBanner ? <SandboxBanner /> : null}
+      <GlobalHeader title={title} subtitle={subtitle} />
+
+      <Box
         sx={{
           paddingHorizontal: Theme.spacing.lg,
           paddingBottom: Theme.spacing.md,
@@ -87,30 +110,39 @@ export function PrincipalNativeDashboardShell({
           borderBottomColor: colors.border,
           backgroundColor: Theme.colors.vellum,
         }}
-              <HStack sx={{ gap: Theme.spacing.xs }}          <ZoneButton>
+      >
+        <HStack sx={{ gap: Theme.spacing.xs }}>
+          <ZoneButton
             id="today"
             label="Today"
             detail="Awareness, approvals, and immediate coordination."
             count={zoneCounts.today}
             isActive={activeZone === 'today'}
             onPress={onZoneChange}
-          /          ><ZoneButton
+          />
+          <ZoneButton
             id="institution"
             label="Institution"
             detail="Hierarchy, governance, and official school work."
             count={zoneCounts.institution}
             isActive={activeZone === 'institution'}
             onPress={onZoneChange}
-          /          ><ZoneButton
+          />
+          <ZoneButton
             id="outlook"
             label="Outlook"
             detail="Signals, resource pressure, and future ERP families."
             count={zoneCounts.outlook}
             isActive={activeZone === 'outlook'}
             onPress={onZoneChange}
-          /        ></HStack      ></Box>
-      <ScrollView        <VStack >sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}          {error ? (>
-            <Box>
+          />
+        </HStack>
+      </Box>
+
+      <ScrollView>
+        <VStack sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}>
+          {error ? (
+            <Box
               sx={{
                 padding: Theme.spacing.md,
                 backgroundColor: Theme.colors.errorBackground,
@@ -118,11 +150,22 @@ export function PrincipalNativeDashboardShell({
                 borderWidth: 1,
                 borderColor: Theme.colors.emberRed,
               }}
-                          <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text            ></Box          >) : null}
+            >
+              <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text>
+            </Box>
+          ) : null}
 
           {isLoading ? (
-            <VStack sx={{ gap: Theme.spacing.md }}              <SkeletonCard height={120} /              ><SkeletonCard height={220} /              ><SkeletonCard height={220} /            ></VStack          ) : (
-            children>
+            <VStack sx={{ gap: Theme.spacing.md }}>
+              <SkeletonCard height={120} />
+              <SkeletonCard height={220} />
+              <SkeletonCard height={220} />
+            </VStack>
+          ) : (
+            children
           )}
-        </VStack      </ScrollView    </  );
+        </VStack>
+      </ScrollView>
+    </>
+  );
 }

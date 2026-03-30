@@ -135,7 +135,7 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
                         error && styles.triggerError,
                     ]}
                 
-                    <SelectInput>
+                    <SelectInput/>
                         placeholder="Select an option"
                         style={styles.input}
                     /
@@ -143,7 +143,7 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
                     <SelectIcon style={styles.icon}>
                         <View>
                             {/* @ts-ignore */}
-                            <ChevronDown>
+                            <ChevronDown/>
                                 size={20}
                                 color={Theme.colors.sacredWhite}
                             /

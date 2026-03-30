@@ -115,7 +115,7 @@ export async function fetchJoyMoments(userId: string): Promise<JoyMoment[]> {
 
 export async function createJoyMoment(
     userId: string,
-    input: Pick<JoyMoment, 'student_name' | 'moment_description' | 'category'): Promise<JoyMoment> {
+    input: Pick<JoyMoment, 'student_name' | 'moment_description' | 'category'>): Promise<JoyMoment> {
     const { data, error } = await supabase
         .from('joy_moments')
         .insert({
@@ -145,7 +145,7 @@ export async function fetchGratitudeEntries(userId: string): Promise<GratitudeEn
 
 export async function createGratitudeEntry(
     userId: string,
-    input: Pick<GratitudeEntry, 'content' | 'category'): Promise<GratitudeEntry> {
+    input: Pick<GratitudeEntry, 'content' | 'category'>): Promise<GratitudeEntry> {
     const { data, error } = await supabase
         .from('gratitude_entries')
         .insert({

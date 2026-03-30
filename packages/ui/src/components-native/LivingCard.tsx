@@ -74,7 +74,7 @@ export const LivingCard: React.FC<LivingCardProps> = ({
                             height={height}
                             r={cornerRadius}
                         
-                            <RadialGradient>
+                            <RadialGradient/>
                                 c={vec(centerX, centerY * 0.6)}  // Center slightly high  light from above
                                 r={radius}
                                 colors={[warmCenterColor, coolEdgeColor]}
@@ -87,7 +87,7 @@ export const LivingCard: React.FC<LivingCardProps> = ({
                 {/* Fine grain texture  organic surface */}
                 <Rect x={0} y={0} width={width} height={height}>
                     <Turbulence freqX={0.8} freqY={0.8} octaves={3} seed={5} />
-                    <ColorMatrix>
+                    <ColorMatrix/>
                         matrix={[
                             1, 0, 0, 0, 0.01,
                             0, 1, 0, 0, 0.005,

@@ -16,9 +16,9 @@ export const MapProvider: React.FC<{ children: ReactNode; initialProvider?: MapP
   const [provider, setProvider] = React.useState<MapProviderType>(initialProvider);
 
   return (
-    <MapContext.Provider value={{ provider, setProvider }}
+    <MapContext.Provider value={{ provider, setProvider }}>
       {children}
-    </MapContext.Provider
+    </MapContext.Provider>
   );
 };
 

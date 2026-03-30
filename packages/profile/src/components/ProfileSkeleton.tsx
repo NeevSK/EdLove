@@ -13,7 +13,7 @@ export default function ProfileSkeleton() {
             <VStack space="2xl">
                 {/* Identity Card Placeholder */}
                 <Center>
-                    <SkeletonLoader>
+                    <SkeletonLoader/>
                         width={width - 48}
                         height={200}
                         borderRadius={Theme.corners.generous}
@@ -22,7 +22,7 @@ export default function ProfileSkeleton() {
 
                 {/* Stats Card Placeholder */}
                 <Box>
-                    <SkeletonCard >height={120} />
+                    <SkeletonCard />height={120} />
                 </Box>
 
                 {/* Achievements Placeholder */}

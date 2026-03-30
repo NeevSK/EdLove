@@ -49,7 +49,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                         <div style={{ color: action.color, background: 'rgba(0,0,0,0.05)', padding: '10px', borderRadius: '12px' }}>
                             <action.icon size={20} />
                         </div>
-                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{action.label}</span                        {getPrincipalFeatureScopeMeta(action.featureId) && (
+                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{action.label}</span                        >{getPrincipalFeatureScopeMeta(action.featureId) && (
                             <span>
                                 style={{
                                     fontSize: '10px',
@@ -62,9 +62,9 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                                     borderRadius: '999px',
                                 }}
                                                             {t(getPrincipalFeatureScopeMeta(action.featureId)!.scopeBadgeLabelKey)}
-                            </span                        )}
+                            </span                        >)}
                         {action.isAgentic && <span style={{ fontSize: '10px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Coming Soon</span>}
-                    </button                ))}
+                    </button                >))}
             </div>
         </div>
     );

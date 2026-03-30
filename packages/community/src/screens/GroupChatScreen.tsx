@@ -51,7 +51,7 @@ export default function GroupChatScreen() {
     };
 
     return (
-        <BaseChatScreen
+        <BaseChatScreen>
             channelKey={`group_chat_${groupId}`}
             title={groupName}
             subtitle="Group Chat"
@@ -64,7 +64,7 @@ export default function GroupChatScreen() {
                 navigation.navigate('PublicProfile', { id: userId, type: 'user' });
             }}
             headerRight={
-                <HeaderMoreMenu
+                <HeaderMoreMenu>
                     conversationId={groupId}
                     groupId={groupId}
                     targetUserName={groupName}

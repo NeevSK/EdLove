@@ -10,7 +10,7 @@ function CreateSchoolModalAdapter(props: {
   onSuccess?: () => void;
 }) {
   return (
-    <CreateSchoolModal
+    <CreateSchoolModal>
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSuccess={() => props.onSuccess?.()}
@@ -23,7 +23,7 @@ function CreateClassroomModalAdapter(props: {
   onSuccess?: () => void;
 }) {
   return (
-    <CreateClassroomModal
+    <CreateClassroomModal>
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSuccess={() => props.onSuccess?.()}
@@ -37,7 +37,7 @@ export default function PrincipalDashboardWeb(props: {
   onRefresh?: () => void;
 }) {
   return (
-    <AdminPrincipalDashboardWeb
+    <AdminPrincipalDashboardWeb>
       schoolId={props.schoolId}
       userId={props.userId}
       forceDemo={props.forceDemo}

@@ -66,7 +66,7 @@ export default function ManifestoCard({
                     </HStack>
 
                     <HStack space="xs" alignItems="center">
-                        <Heart>
+                        <Heart/>
                             size={16}
                             color={has_endorsed ? colors.error : colors.textTertiary}
                             fill={has_endorsed ? colors.error : 'none'}

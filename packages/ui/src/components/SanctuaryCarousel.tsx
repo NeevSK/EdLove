@@ -24,14 +24,14 @@ export function SanctuaryCarousel<T>({
     paddingHorizontal = Theme.spacing.lg,
 }: SanctuaryCarouselProps<T>) {
     return (
-        <FlatList
+        <FlatList>
             horizontal
             data={data}
             keyExtractor={(item, index) => keyExtractor(item, index)}
             renderItem={({ item, index }) => (
-                <View style={{ marginRight: index < data.length - 1 ? gap : 0 }}
+                <View style={{ marginRight: index < data.length - 1 ? gap : 0 }}>
                     {renderItem(item, index)}
-                </View
+                </View>
             )}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[

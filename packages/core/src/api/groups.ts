@@ -31,7 +31,7 @@ export const groupsAPI = {
      * @authority create Group
      */
     async create(
-        group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'    ): Promise<StudentGroup> {
+        group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'    >): Promise<StudentGroup> {
         const { data, error } = await supabase
             .from('student_groups')
             .insert([group])
@@ -50,7 +50,7 @@ export const groupsAPI = {
      */
     async update(
         id: string,
-        updates: Partial<StudentGroup    ): Promise<StudentGroup> {
+        updates: Partial<StudentGroup    >): Promise<StudentGroup> {
         const { data, error } = await supabase
             .from('student_groups')
             .update(updates)

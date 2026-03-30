@@ -38,22 +38,22 @@ export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
     ];
 
     return (
-        <Canvas
+        <Canvas>
             style={[StyleSheet.absoluteFill, styles.canvas]}
             pointerEvents="none"  // Never intercepts touches
         
-            <Rect x={0} y={0} width={width} height={height}
-                <Paint
-                    <Turbulence
+            <Rect x={0} y={0} width={width} height={height}>
+                <Paint>
+                    <Turbulence>
                         freqX={frequency}
                         freqY={frequency}
                         octaves={4}
                         seed={2}
                     /
-                    <ColorMatrix matrix={warm ? warmMatrix : coolMatrix} /
-                </Paint
-            </Rect
-        </Canvas
+                    <ColorMatrix matrix={warm ? warmMatrix : coolMatrix} />
+                </Paint>
+            </Rect>
+        </Canvas>
     );
 };
 

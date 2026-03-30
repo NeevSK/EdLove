@@ -75,7 +75,7 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
     }
 
     return (
-        <AttendanceSheet>
+        <AttendanceSheet/>
             classroomId={classroomId}
             initialStudents={students}
             onAttendanceChange={handleAttendanceChange}

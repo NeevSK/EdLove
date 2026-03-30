@@ -80,7 +80,7 @@ export function PrincipalNativeWorkspace({
   };
 
   return (
-    <PrincipalWorkspaceContainer>
+    <PrincipalWorkspaceContainer/>
       activeView={activeView}
       onActiveViewChange={navigatePrincipalView}
       renderView={() => renderWorkspaceView()}

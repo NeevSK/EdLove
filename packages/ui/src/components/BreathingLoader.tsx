@@ -63,13 +63,13 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
     }));
 
     return (
-        <View
+        <View>
             style={styles.container}
             accessible={true}
             accessibilityRole="progressbar"
             accessibilityLabel={t('accessibility.loading')}
         
-            <Animated.View
+            <Animated.View>
                 style={[
                     styles.circle,
                     {
@@ -81,7 +81,7 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
                     animatedStyle,
                 ]}
             /
-        </View
+        </View>
     );
 };
 

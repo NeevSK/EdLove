@@ -28,7 +28,7 @@ export const lessonMaterialsAPI = {
      * @authority create Material
      */
     async create(
-        material: Omit<LessonMaterial, 'id' | 'created_at' | 'updated_at'    ): Promise<LessonMaterial> {
+        material: Omit<LessonMaterial, 'id' | 'created_at' | 'updated_at'    >): Promise<LessonMaterial> {
         return educationalServices.lessonMaterials.create(material as any) as Promise<LessonMaterial>;
     },
 
@@ -38,7 +38,7 @@ export const lessonMaterialsAPI = {
      */
     async update(
         id: string,
-        updates: Partial<LessonMaterial    ): Promise<LessonMaterial> {
+        updates: Partial<LessonMaterial    >): Promise<LessonMaterial> {
         return educationalServices.lessonMaterials.update(id, updates as any) as Promise<LessonMaterial>;
     },
 
