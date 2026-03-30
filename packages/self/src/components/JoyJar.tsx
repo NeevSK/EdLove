@@ -92,9 +92,9 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
         <SkeletonCard height={48} /
-        <SkeletonCard height={80} /
-        <SkeletonCard height={80} /
-      </VStack
+        ><SkeletonCard height={80} /
+        ><SkeletonCard height={80} /
+      ></VStack
     );
   }
 
@@ -104,7 +104,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
-    );
+    >);
   }
 
   return (
@@ -112,7 +112,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
       <VStack space="xs"
         <HStack space="sm" alignItems="center"
           <Sparkles color={Theme.colors.sanctuarySaffron} size={24} /
-          <Heading color={Theme.colors.sacredWhite} size="lg"
+          ><Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.joyJar')}
           </Heading
         </HStack
@@ -139,8 +139,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
             }}
           
             <Plus color={Theme.colors.sacredWhite} size={20} /
-            <ButtonText ml="$2">{t('self.captureJoy')}</ButtonText
-          </Button
+            ><ButtonText ml="$2">{t('self.captureJoy')}</ButtonText
+          ></Button
 
           <ScrollView sx={{ flex: 1, maxHeight: 400 }}
             <VStack space="md"
@@ -185,7 +185,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                   icon={Sparkles}
                   title={t('self.startCapturing')}
                 /
-              )}
+              >)}
             </VStack
           </ScrollView
         </
@@ -193,7 +193,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
         <VStack space="md"
           {/* Student Name */}
           <Box
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
+            <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.studentName')}
             </Text
             <Input
@@ -212,7 +212,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 color={Theme.colors.sacredWhite}
                 placeholderTextColor={Theme.colors.dimGray}
               /
-            </Input
+            ></Input
           </Box
 
           {/* Category Selection */}
@@ -243,7 +243,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                     }}
                   
                     <Text fontSize="$md">{cat.emoji}</Text
-                    <Text
+                    ><Text
                       color={
                         category === cat.id
                           ? Theme.colors.sacredWhite
@@ -283,7 +283,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 placeholderTextColor={Theme.colors.dimGray}
                 sx={{ textAlignVertical: 'top' }}
               /
-            </Input
+            ></Input
           </Box
 
           {/* Actions */}
@@ -317,7 +317,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
               }}
             
               <ButtonText>{t('common.save')}</ButtonText
-            </Button
+            ></Button
           </HStack
         </VStack
       )}

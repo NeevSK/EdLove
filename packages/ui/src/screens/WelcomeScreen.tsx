@@ -56,7 +56,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
         toast.show({
             placement: "top",
             render: ({ id }: { id: string }) => (
-                <Toast nativeID={id} action="error" variant="solid"                    <VStack space="xs"                        <ToastTitle>{t('auth.acceptTermsRequired') || "Please accept the Terms and Privacy Pact to continue in the sanctuary"}</ToastTitle                    </VStack                </Toast            ),
+                <Toast nativeID={id} action="error" variant="solid"                    <VStack space="xs"                        <ToastTitle>{t('auth.acceptTermsRequired') || "Please accept the Terms and Privacy Pact to continue in the sanctuary"}</ToastTitle                    ></VStack                </Toast            ),
         });
     };
 
@@ -108,7 +108,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         borderRadius: 110,
                         backgroundColor: `${colors.action}14`,
                     }}
-                /                <Box
+                /                ><Box
                     sx={{
                         position: 'absolute',
                         right: -44,
@@ -118,7 +118,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         borderRadius: 90,
                         backgroundColor: `${Theme.colors.gurudeviBlue}16`,
                     }}
-                /                <Box
+                /                ><Box
                     sx={{
                         position: 'absolute',
                         left: 28,
@@ -129,7 +129,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         backgroundColor: `${Theme.colors.gurudeviViolet}10`,
                     }}
                 /
-                <Box sx={{ alignItems: 'flex-end', mb: Theme.spacing.lg }}                    <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}                    {LANGUAGES.map(lang => (
+                ><Box sx={{ alignItems: 'flex-end', mb: Theme.spacing.lg }}                    <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}                    {LANGUAGES.map(lang => (
                         <Pressable
                             key={lang.code}
                             onPress={() => changeLanguage(lang.code)}
@@ -185,12 +185,12 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         borderRadius: 32,
                                         backgroundColor: `${colors.action}08`,
                                     }}
-                                /                                <Image
+                                /                                ><Image
                                     source={LOGO}
                                     style={{ width: 96, height: 96, borderRadius: 18 }}
                                     accessible={true}
                                     accessibilityLabel={t('accessibility.appLogo')}
-                                /                            </Box
+                                /                            ></Box
                             <VStack space="sm" alignItems="center"                                <Heading
                                     color={colors.text}
                                     size="4xl"
@@ -265,7 +265,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                                 backgroundColor: 'transparent',
                                             }
                                         }}
-                                                                            <CheckboxIcon as={CheckIcon} color={colors.action} sx={{ boxSize: '$4' }} /                                    </CheckboxIndicator                                </Checkbox                                <HStack space="xs" flexShrink={1}                                    <Text size="sm" color={colors.textTertiary}>{t('welcome.acceptTerms')}</Text                                    <Link href="https://neevsk.org/privacy"                                        <LinkText size="sm" color={colors.action} sx={{ textDecorationLine: 'none', fontWeight: '$medium' }}                                            {t('welcome.privacyPactLink')}
+                                                                            <CheckboxIcon as={CheckIcon} color={colors.action} sx={{ boxSize: '$4' }} /                                    ></CheckboxIndicator                                </Checkbox                                <HStack space="xs" flexShrink={1}                                    <Text size="sm" color={colors.textTertiary}>{t('welcome.acceptTerms')}</Text                                    <Link href="https://neevsk.org/privacy"                                        <LinkText size="sm" color={colors.action} sx={{ textDecorationLine: 'none', fontWeight: '$medium' }}                                            {t('welcome.privacyPactLink')}
                                         </LinkText                                    </Link                                </HStack                                </HStack
                                 <Button
                                     size="xl"

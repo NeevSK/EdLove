@@ -191,7 +191,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
             }}
         
             <ButtonText {...({ color: text.inverse, bold: true } as any)}>Post Resonance</ButtonText
-        </Button
+        ></Button
     );
 
     return (
@@ -215,7 +215,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         onChangeText={setContent}
                         sx={{ lineHeight: 22 }}
                     /
-                </Textarea
+                ></Textarea
 
                 {/* \u2500\u2500 Poll builder \u2500\u2500 */}
                 {isPollMode && (
@@ -238,11 +238,11 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                             onChangeText={(val: string) => updatePollOption(idx, val)}
                                             {...({ color: text.primary, size: 'sm' } as any)}
                                         /
-                                    </Input
+                                    ></Input
                                     {pollOptions.length > 2 && (
                                         <TouchableOpacity onPress={() => removePollOption(idx)}
                                             <X size={18} color={text.muted} /
-                                        </TouchableOpacity
+                                        ></TouchableOpacity
                                     )}
                                 </HStack
                             ))}
@@ -252,7 +252,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                     style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 6 }}
                                 
                                     <Plus size={15} color={accent.action} /
-                                    <Text {...({ color: accent.action, size: '$sm' } as any)} sx={{ fontWeight: '600' }}
+                                    ><Text {...({ color: accent.action, size: '$sm' } as any)} sx={{ fontWeight: '600' }}
                                         Add option
                                     </Text
                                 </TouchableOpacity
@@ -274,8 +274,8 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             <HStack justifyContent="space-between" alignItems="center"
                                 <HStack {...({ space: 'xs', alignItems: 'center' } as any)}
                                     <Lock size={14} color={text.secondary} /
-                                    <Text {...({ color: text.primary, size: '$sm' } as any)}>Anonymous votes</Text
-                                </HStack
+                                    ><Text {...({ color: text.primary, size: '$sm' } as any)}>Anonymous votes</Text
+                                ></HStack
                                 <Switch
                                     value={pollIsAnonymous}
                                     onValueChange={setPollIsAnonymous}
@@ -288,8 +288,8 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             <HStack justifyContent="space-between" alignItems="center"
                                 <HStack {...({ space: 'xs', alignItems: 'center' } as any)}
                                     <Users size={14} color={text.secondary} /
-                                    <Text {...({ color: text.primary, size: '$sm' } as any)}>Allow multiple choices</Text
-                                </HStack
+                                    ><Text {...({ color: text.primary, size: '$sm' } as any)}>Allow multiple choices</Text
+                                ></HStack
                                 <Switch
                                     value={pollAllowMultiple}
                                     onValueChange={setPollAllowMultiple}
@@ -302,7 +302,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             <VStack {...({ space: 'xs' } as any)}
                                 <HStack {...({ space: 'xs', alignItems: 'center' } as any)}
                                     <Clock size={14} color={text.secondary} /
-                                    <Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}
+                                    ><Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}
                                         Poll closes
                                     </Text
                                 </HStack
@@ -375,7 +375,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                             outline: 'none',
                                         }}
                                     /
-                                )}
+                                >)}
                             </VStack
                         </VStack
                     </VStack
@@ -426,7 +426,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             style={{ width: '100%', height: '100%', borderRadius: Theme.corners.comfortable }}
                             resizeMode="cover"
                         /
-                        <TouchableOpacity
+                        ><TouchableOpacity
                             onPress={() => setSelectedImage(null)}
                             style={{
                                 position: 'absolute', top: 8, right: 8,
@@ -435,7 +435,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             }}
                         
                             <Trash2 size={16} color={text.inverse} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                         {isUploading && (
                             <Box sx={{
                                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -443,7 +443,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                 justifyContent: 'center', alignItems: 'center',
                             }}
                                 <ActivityIndicator color={accent.action} /
-                            </Box
+                            ></Box
                         )}
                     </Box
                 )}
@@ -455,10 +455,10 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
                     
                         <ImageIcon size={20} color={selectedImage ? accent.action : text.secondary} /
-                    </TouchableOpacity
+                    ></TouchableOpacity
                     <TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
                         <Mic size={20} color={text.secondary} /
-                    </TouchableOpacity
+                    ></TouchableOpacity
                     <TouchableOpacity
                         onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
                         style={{
@@ -468,7 +468,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         }}
                     
                         <BarChart3 size={20} color={isPollMode ? text.inverse : text.secondary} /
-                    </TouchableOpacity
+                    ></TouchableOpacity
                 </HStack
             </VStack
         </SanctuaryModal

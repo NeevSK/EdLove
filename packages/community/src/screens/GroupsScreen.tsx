@@ -70,7 +70,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     }}
                 
                     <Compass size={18} color={colors.textSecondary} /
-                    <TextInput
+                    ><TextInput
                         style={{ 
                             flex: 1, 
                             fontSize: 15, 
@@ -84,10 +84,10 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         value={searchQuery}
                         onChangeText={handleSearchChange}
                     /
-                    {searchQuery ? (
+                    >{searchQuery ? (
                         <Pressable onPress={handleClearSearch}
                             <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>\u00D7</Text
-                        </Pressable
+                        ></Pressable
                     ) : null}
                 </HStack
             </Box
@@ -111,7 +111,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 
                     <HStack space="xs" alignItems="center"
                         <Shield size={14} color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.textSecondary} /
-                        <Text
+                        ><Text
                             size="sm"
                             bold
                             color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.text}
@@ -134,7 +134,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 
                     <HStack space="xs" alignItems="center"
                         <Compass size={14} color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.textSecondary} /
-                        <Text
+                        ><Text
                             size="sm"
                             bold
                             color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.text}
@@ -171,9 +171,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
             return (
                 <VStack space="md" py="$4" px="$4"
                     <SkeletonCard height={72} /
-                    <SkeletonCard height={72} /
-                    <SkeletonCard height={72} /
-                </VStack
+                    ><SkeletonCard height={72} /
+                    ><SkeletonCard height={72} /
+                ></VStack
             );
         }
 
@@ -186,7 +186,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         borderRadius: Theme.corners.full
                     }}
                         <Shield size={48} color={Theme.colors.sanctuarySaffron} /
-                    </Box
+                    ></Box
                     <VStack space="sm" alignItems="center"
                         <Heading size="md" textAlign="center" color={Theme.colors.sanctuarySaffron}
                             {t('community.groups.noSanctuaryTitle') || 'Your Sanctuary is Quiet'}
@@ -214,7 +214,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     borderRadius: Theme.corners.full
                 }}
                     <Compass size={48} color={Theme.colors.gurudeviViolet} /
-                </Box
+                ></Box
                 <VStack space="sm" alignItems="center"
                     <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}
                         {t('community.groups.noGalaxyTitle') || 'Galaxy Waiting to Bloom'}
@@ -246,7 +246,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     description={item.description}
                     onPress={() => onNavigateToGroup(item.id)}
                 /
-            </Animated.View
+            ></Animated.View
         );
     }, [onNavigateToGroup]);
 
@@ -274,10 +274,10 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={isFetchingNextGroups ? (
                     <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} /
-                ) : null}
+                >) : null}
                 ListEmptyComponent={ListEmptyComponent}
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 120 }}
             /
-        </Box
+        ></Box
     );
 }

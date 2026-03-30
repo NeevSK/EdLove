@@ -108,7 +108,7 @@ export function AuthScreenWeb({
     };
 
     return (
-        <div className="auth-screen"            <div className="auth-orb auth-orb-one" /            <div className="auth-orb auth-orb-two" /            <div className="auth-shell"                <section className="auth-story sanctuary-card"                    <div className="auth-story-inner"                        <div className="auth-brand-pill">Gurudevi Sanctuary</div                        <div className="auth-hero"                            <div className="auth-logo-well"                                <div className="auth-logo-core">\u2726</div                            </div                            <div className="auth-copy"                                <p className="auth-eyebrow">{modeCopy.eyebrow}</p                                <h1>{modeCopy.title}</h1                                <p className="auth-subtitle">{modeCopy.subtitle}</p                            </div                        </div
+        <div className="auth-screen"            <div className="auth-orb auth-orb-one" /            ><div className="auth-orb auth-orb-two" /            ><div className="auth-shell"                <section className="auth-story sanctuary-card"                    <div className="auth-story-inner"                        <div className="auth-brand-pill">Gurudevi Sanctuary</div                        ><div className="auth-hero"                            <div className="auth-logo-well"                                <div className="auth-logo-core">\u2726</div                            ></div                            <div className="auth-copy"                                <p className="auth-eyebrow">{modeCopy.eyebrow}</p                                <h1>{modeCopy.title}</h1                                <p className="auth-subtitle">{modeCopy.subtitle}</p                            </div                        </div
                         <div className="auth-pillar-row"                            {ENTRY_PILLARS.map((pillar) => (
                                 <span key={pillar} className="auth-pillar"                                    {pillar}
                                 </span                            ))}
@@ -116,9 +116,9 @@ export function AuthScreenWeb({
                         <div className="auth-guidance sanctuary-hero-panel"                            <div                                <p className="auth-guidance-label">Why this step matters</p                                <p className="auth-guidance-text"                                    Your account keeps learning, invitations, and profile presence gathered into one living place without changing how you use the app.
                                 </p                            </div                            <div className="auth-guidance-grid"                                <div                                    <strong>Gentle entry</strong                                    <span>Start with Google or email.</span                                </div                                <div                                    <strong>Guest-safe</strong                                    <span>Browse first when logging in later feels better.</span                                </div                            </div                        </div                    </div                </section
                 <section className="auth-panel sanctuary-card"                    {onBack && (
-                        <button onClick={onBack} className="auth-back-button"                            <span>\u2190</span                            <span>Back</span                        </button                    )}
+                        <button onClick={onBack} className="auth-back-button"                            <span>\u2190</span                            ><span>Back</span                        ></button                    )}
 
-                    <div className="auth-panel-header"                        <div className="auth-panel-kicker">{mode === 'signup' ? 'Identity' : 'Return'}</div                        <div className="auth-mode-toggle"                            <button
+                    <div className="auth-panel-header"                        <div className="auth-panel-kicker">{mode === 'signup' ? 'Identity' : 'Return'}</div                        ><div className="auth-mode-toggle"                            <button
                                 onClick={() => {
                                     setMode('signup');
                                     setShowEmailForm(false);
@@ -136,11 +136,11 @@ export function AuthScreenWeb({
                                 }}
                                 className={`mode-button ${mode === 'login' ? 'active' : ''}`}
                                                             Log In
-                            </button                        </div                        <h2>{mode === 'signup' ? 'Choose your path in' : 'Reconnect with'} Gurudevi</h2                        <p                            {mode === 'signup'
+                            </button                        </div                        <h2>{mode === 'signup' ? 'Choose your path in' : 'Reconnect with'} Gurudevi</h2                        ><p                            {mode === 'signup'
                                 ? 'Create a held, cross-device identity when you are ready.'
                                 : 'Use the path that already belongs to you.'}
                         </p                    </div
-                    <div className="auth-form-stack"                        <button onClick={handleGoogleAuth} disabled={loading} className="auth-primary-button auth-google-button"                            <span className="auth-google-mark">G</span                            <span>{modeCopy.google}</span                        </button
+                    <div className="auth-form-stack"                        <button onClick={handleGoogleAuth} disabled={loading} className="auth-primary-button auth-google-button"                            <span className="auth-google-mark">G</span                            ><span>{modeCopy.google}</span                        ></button
                         {!showEmailForm && (
                             <button
                                 onClick={() => {
@@ -153,7 +153,7 @@ export function AuthScreenWeb({
                             </button                        )}
 
                         {showEmailForm && (
-                            <div className="auth-email-shell"                                <div className="auth-email-header"                                    <p>Email path</p                                    <span>{mode === 'signup' ? 'Create calmly' : 'Enter directly'}</span                                </div
+                            <div className="auth-email-shell"                                <div className="auth-email-header"                                    <p>Email path</p                                    ><span>{mode === 'signup' ? 'Create calmly' : 'Enter directly'}</span                                ></div
                                 <label className="auth-field"                                    <span>Email</span                                    <input
                                         type="email"
                                         placeholder="you@example.com"

@@ -112,7 +112,7 @@ export default function GuestDataSyncModal({
                     <VStack {...({ space: "md" } as any)}
                         <HStack {...({ space: "sm" } as any)} style={{ alignItems: 'center' }}
                             <AlertTriangle size={18} color={Theme.colors.amberGlow} /
-                            <Text {...({ bold: true } as any)}
+                            ><Text {...({ bold: true } as any)}
                                 {t('sync.skipWarningTitle') || 'Your data will be lost'}
                             </Text
                         </HStack
@@ -159,32 +159,32 @@ export default function GuestDataSyncModal({
                                 {summary.timetablePeriods > 0 && (
                                     <HStack justifyContent="space-between"
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Timetable Periods</Text
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.timetablePeriods}</Text
-                                    </HStack
+                                        ><Text {...({ color: text.primary, bold: true } as any)}>{summary.timetablePeriods}</Text
+                                    ></HStack
                                 )}
                                 {summary.moodLogs > 0 && (
                                     <HStack justifyContent="space-between"
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Mood Logs</Text
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.moodLogs}</Text
-                                    </HStack
+                                        ><Text {...({ color: text.primary, bold: true } as any)}>{summary.moodLogs}</Text
+                                    ></HStack
                                 )}
                                 {summary.journalEntries > 0 && (
                                     <HStack justifyContent="space-between"
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Journal Entries</Text
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.journalEntries}</Text
-                                    </HStack
+                                        ><Text {...({ color: text.primary, bold: true } as any)}>{summary.journalEntries}</Text
+                                    ></HStack
                                 )}
                                 {summary.students > 0 && (
                                     <HStack justifyContent="space-between"
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Students</Text
-                                        <Text {...({ color: text.primary, bold: true } as any)}>{summary.students}</Text
-                                    </HStack
+                                        ><Text {...({ color: text.primary, bold: true } as any)}>{summary.students}</Text
+                                    ></HStack
                                 )}
                                 <Box sx={{ height: 1, backgroundColor: glass.interact.border, marginVertical: 4 }} /
-                                <HStack justifyContent="space-between"
+                                ><HStack justifyContent="space-between"
                                     <Text {...({ color: text.primary, bold: true, size: "sm" } as any)}>Total Items</Text
-                                    <Text {...({ color: accent.action, bold: true } as any)}>{summary.total}</Text
-                                </HStack
+                                    ><Text {...({ color: accent.action, bold: true } as any)}>{summary.total}</Text
+                                ></HStack
                             </VStack
                         </Box
                     </
@@ -193,11 +193,11 @@ export default function GuestDataSyncModal({
                 {syncing && (
                     <VStack {...({ space: "md", alignItems: "center" } as any)}
                         <Spinner {...({ size: "large", color: accent.action } as any)} /
-                        <Text {...({ color: text.primary, textAlign: "center" } as any)}
+                        ><Text {...({ color: text.primary, textAlign: "center" } as any)}
                             {progress.step}
                         </Text
                         <Text {...({ color: text.secondary, size: "xs" } as any)}
-                            {progress.current} / {progress.total} items synced
+                            {progress.current} / >{progress.total} items synced
                         </Text
                         <Box
                             sx={{
@@ -218,7 +218,7 @@ export default function GuestDataSyncModal({
                                     backgroundColor: accent.action
                                 }}
                             /
-                        </Box
+                        ></Box
                     </VStack
                 )}
 
@@ -235,7 +235,7 @@ export default function GuestDataSyncModal({
                             }}
                         
                             <Check size={32} color={accent.action} /
-                        </Box
+                        ></Box
                         <Text {...({ color: text.primary, textAlign: "center", bold: true } as any)}
                             {t('sync.successMessage') || 'All your data has been synced successfully!'}
                         </Text
@@ -257,7 +257,7 @@ export default function GuestDataSyncModal({
                     
                         <HStack {...({ space: "sm" } as any)}
                             <AlertCircle size={20} color={accent.danger} /
-                            <Text {...({ color: accent.danger, size: "sm", flex: 1 } as any)}
+                            ><Text {...({ color: accent.danger, size: "sm", flex: 1 } as any)}
                                 {error}
                             </Text
                         </HStack

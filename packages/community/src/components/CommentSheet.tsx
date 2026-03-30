@@ -78,10 +78,10 @@ function CommentRow({
         <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.reward }]}            {/* Avatar */}
             <View style={[styles.avatar, { backgroundColor: comment.is_anonymous ? glass.interact.bg as string : accent.muted as string }]}                {comment.is_anonymous
                     ? <EyeOff size={14} color={text.muted as string} /
-                    : (comment.author_avatar
+                    >: (comment.author_avatar
                         ? null // we keep it simple  initials only for now
                         : <Text sx={{ fontSize: 11, fontWeight: '700', color: accent.action }}>{initials}</Text
-                    )
+                    >)
                 }
             </View
 
@@ -93,8 +93,8 @@ function CommentRow({
                         </Text
                         {comment.is_official_answer && (
                             <View style={[styles.officialBadge, { backgroundColor: accent.reward as string }]}                                <Shield size={9} color="#fff" /
-                                <Text sx={{ fontSize: 9, color: '#fff', fontWeight: '700', marginLeft: 2 }}>Official</Text
-                            </View
+                                ><Text sx={{ fontSize: 9, color: '#fff', fontWeight: '700', marginLeft: 2 }}>Official</Text
+                            ></View
                         )}
                     </HStack
                     <Text sx={{ fontSize: 10, color: text.muted }}
@@ -114,7 +114,7 @@ function CommentRow({
                             color={comment.has_upvoted ? accent.action as string : text.muted as string}
                             fill={comment.has_upvoted ? accent.action as string : 'transparent'}
                         /
-                        {comment.upvotes > 0 && (
+                        >{comment.upvotes > 0 && (
                             <Text sx={{ fontSize: 11, color: comment.has_upvoted ? accent.action : text.muted, marginLeft: 3 }}
                                 {comment.upvotes}
                             </Text
@@ -127,7 +127,7 @@ function CommentRow({
                             onPress={() => onMarkOfficial(comment.id, !comment.is_official_answer)}
                             style={styles.actionBtn}
                         
-                            <Shield size={13} color={comment.is_official_answer ? accent.reward as string : text.muted as string} /                            <Text sx={{ fontSize: 11, color: comment.is_official_answer ? accent.reward : text.muted, marginLeft: 3 }}                                {comment.is_official_answer ? 'Unmark' : 'Mark answer'}
+                            <Shield size={13} color={comment.is_official_answer ? accent.reward as string : text.muted as string} /                            ><Text sx={{ fontSize: 11, color: comment.is_official_answer ? accent.reward : text.muted, marginLeft: 3 }}                                {comment.is_official_answer ? 'Unmark' : 'Mark answer'}
                             </Text
                         </TouchableOpacity
                     )}
@@ -136,7 +136,7 @@ function CommentRow({
                     {isOwn && (
                         <TouchableOpacity onPress={confirmDelete} style={styles.actionBtn}
                             <Trash2 size={13} color={text.muted as string} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                     )}
                 </HStack
             </View
@@ -205,7 +205,7 @@ export function CommentSheet({
             <View style={styles.header}
                 <TouchableOpacity onPress={onClose} style={styles.dragHandle} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     <ChevronDown size={22} color={text.secondary as string} /
-                </TouchableOpacity
+                ></TouchableOpacity
                 <Text sx={{ fontSize: 15, fontWeight: '700', color: text.primary, flex: 1, textAlign: 'center' }}
                     {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}
                 </Text
@@ -215,7 +215,7 @@ export function CommentSheet({
             {/*  Comment list  */}
             {isLoading ? (
                 <ActivityIndicator color={accent.action as string} style={{ marginVertical: 40 }} /
-            ) : comments.length === 0 ? (
+            >) : comments.length === 0 ? (
                 <View style={styles.empty}
                     <Text sx={{ fontSize: 14, color: text.muted, textAlign: 'center' }}
                         Be the first to share a thought <1
@@ -238,9 +238,9 @@ export function CommentSheet({
                             onUpvote={toggleUpvote}
                             onMarkOfficial={(id, flag) => markOfficialAnswer({ commentId: id, isOfficial: flag })}
                         /
-                    )}
+                    >)}
                 /
-            )}
+            >)}
 
             {/*  Composer  */}
             <View style={[styles.composer, { borderTopColor: glass.interact.border as string }]}
@@ -251,7 +251,7 @@ export function CommentSheet({
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 
                     <Lock size={14} color={isAnonymous ? accent.action as string : text.muted as string} /
-                </TouchableOpacity
+                ></TouchableOpacity
 
                 <TextInput
                     style={[
@@ -282,8 +282,8 @@ export function CommentSheet({
                 
                     {isCreatingComment
                         ? <ActivityIndicator size="small" color="#fff" /
-                        : <Send size={16} color={!draft.trim() ? text.muted as string : '#fff'} /
-                    }
+                        >: <Send size={16} color={!draft.trim() ? text.muted as string : '#fff'} /
+                    >}
                 </TouchableOpacity
             </View
         </KeyboardAvoidingView
@@ -325,7 +325,7 @@ export function CommentSheet({
                 onPress={onClose}
                 style={styles.backdrop}
             /
-            {sheetContent}
+            >{sheetContent}
         </Modal
     );
 }

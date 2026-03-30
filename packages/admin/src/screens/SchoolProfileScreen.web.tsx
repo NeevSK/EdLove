@@ -60,7 +60,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                                 peekType="school"
                             /
                             
-                            <div style={{ flex: 1 }}
+                            ><div style={{ flex: 1 }}
                                 <EditableItem
                                     icon={SchoolIcon}
                                     label="School Name"
@@ -71,14 +71,14 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                                     disabled={!isEditable}
                                 /
                                 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginBottom: '16px' }}
+                                ><div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginBottom: '16px' }}
                                     <Shield size={14} /
-                                    <span style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}
+                                    ><span style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}
                                         {school.type} School
                                     </span
                                     <span style={{ opacity: 0.3 }}>"</span
-                                    <span style={{ fontSize: '14px' }}>@{school.handle}</span
-                                </div
+                                    ><span style={{ fontSize: '14px' }}>@{school.handle}</span
+                                ></div
 
                                 <div style={{ display: 'flex', gap: '12px' }}
                                     {isEditable && (
@@ -96,7 +96,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}
                             <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}
                                 <Users size={24} color="var(--water)" /
-                            </div
+                            ></div
                             <div
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_students || 0}</div
                                 <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Students</div
@@ -105,7 +105,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}
                             <div style={{ padding: '12px', background: 'var(--moss-soft)', borderRadius: '12px' }}
                                 <BookOpen size={24} color="var(--moss)" /
-                            </div
+                            ></div
                             <div
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_teachers || 0}</div
                                 <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Teachers</div
@@ -116,7 +116,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     {/* About Section */}
                     <div className="sanctuary-card" style={{ padding: '32px' }}
                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Our Mission</h3
-                        <p style={{ color: 'var(--ink-ghost)', lineHeight: '1.6', fontSize: '15px' }}
+                        ><p style={{ color: 'var(--ink-ghost)', lineHeight: '1.6', fontSize: '15px' }}
                             Welcome to the public profile of {school.name}. We are dedicated to nurturing the growth of every student and educator in our community.
                         </p
                     </div
@@ -128,7 +128,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                      <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px' }}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}
                             <Globe size={18} color="var(--ink-ghost)" /
-                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}
+                            ><h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}
                                 Official Links
                             </h3
                         </div
@@ -140,14 +140,14 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                             isOwnProfile={isEditable}
                             editable={isEditable}
                         /
-                    </div
+                    ></div
 
                     {/* Info Card */}
                     <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)' }}
                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}
                             <Layout size={16} color="var(--ink-ghost)" /
-                            <span style={{ fontSize: '13px', fontWeight: '700' }}>School Structure</span
-                        </div
+                            ><span style={{ fontSize: '13px', fontWeight: '700' }}>School Structure</span
+                        ></div
                         <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}
                              {stats?.total_sections || 0} Sections " {stats?.total_classrooms || 0} Classrooms
                         </div

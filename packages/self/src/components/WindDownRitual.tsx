@@ -103,7 +103,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         <VStack space="xs"
           <HStack space="sm" alignItems="center"
             <Moon color={Theme.colors.sanctuarySaffron} size={24} /
-            <Heading color={Theme.colors.sacredWhite} size="lg"
+            ><Heading color={Theme.colors.sacredWhite} size="lg"
               {t('self.windDown')}
             </Heading
           </HStack
@@ -122,7 +122,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           <VStack space="lg" alignItems="center"
             <CheckCircle color={Theme.colors.sanctuarySaffron} size={64} /
 
-            <VStack space="xs" alignItems="center"
+            ><VStack space="xs" alignItems="center"
               <Text
                 color={Theme.colors.sacredWhite}
                 size="xl"
@@ -207,7 +207,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
-    );
+    >);
   }
 
   return (
@@ -215,7 +215,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       <VStack space="xs"
         <HStack space="sm" alignItems="center"
           <Moon color={Theme.colors.sanctuarySaffron} size={24} /
-          <Heading color={Theme.colors.sacredWhite} size="lg"
+          ><Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.windDown')}
           </Heading
         </HStack
@@ -273,7 +273,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
             <Box
               <Input
                 variant="outline"
-                size="md"
+                >size="md"
                 sx={{
                   backgroundColor: Theme.colors.ink,
                   borderWidth: 1,
@@ -291,7 +291,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   sx={{ textAlignVertical: 'top' }}
                 /
               </Input
-            </Box
+            </>Box
           )}
 
           {currentStepData.id === 'breathe' && (
@@ -308,7 +308,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
               
                 <Text fontSize="$4xl"><</Text
               </Box
-              <Text color={Theme.colors.mistGray} size="sm" textAlign="center"
+              ><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
                 {t('self.breatheInstructions')}
               </Text
             </VStack

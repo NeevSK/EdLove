@@ -144,20 +144,20 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                         <Pressable onPress={() => { hapticLight(); onAnalyzePotential(student); }}
                                             <Box sx={{ padding: Theme.spacing.xs }}
                                                 <Sparkles size={20} color={Theme.colors.sanctuarySaffron} /
-                                            </Box
+                                            ></Box
                                         </Pressable
                                     )}
                                     {!student.student_id && student.invite_code && (
                                         <Pressable onPress={() => handleShowQr(student)}
                                             <Box sx={{ padding: Theme.spacing.xs }}
                                                 <QrCode size={20} color={Theme.colors.sanctuarySaffron} /
-                                            </Box
+                                            ></Box
                                         </Pressable
                                     )}
                                     <Pressable onPress={() => handleEditStudent(student)}
                                         <Box sx={{ padding: Theme.spacing.xs }}
                                             <Edit2 size={20} color={colors.textSecondary} /
-                                        </Box
+                                        ></Box
                                     </Pressable
                                     <Pressable
                                         onPress={() => handleRemoveStudent(student.id)}
@@ -166,9 +166,9 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                         <Box sx={{ padding: Theme.spacing.xs }}
                                             {isDeleting === student.id ? (
                                                 <ActivityIndicator size="small" color={Theme.colors.emberRed} /
-                                            ) : (
+                                            >) : (
                                                 <Trash2 size={20} color={Theme.colors.emberRed} /
-                                            )}
+                                            >)}
                                         </Box
                                     </Pressable
                                 </HStack
@@ -199,7 +199,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                 }}
             
                 <Plus color={Theme.colors.sacredWhite} size={32} /
-            </Pressable
+            ></Pressable
 
             <AddStudentModal
                 isOpen={isAddModalOpen}
@@ -219,14 +219,14 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
             {/* View QR Modal for Shadow Students */}
             <Modal isOpen={!!studentForQr} onClose={() => setStudentForQr(null)}
                 <ModalBackdrop /
-                <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}
+                ><ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}
                     <ModalHeader
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}
+                        <Heading >sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}
                             {t('classroom.students.inviteTitle') || 'Invite Student'}
                         </Heading
                         <ModalCloseButton
-                            <Icon as={CloseIcon} sx={{ color: colors.textSecondary }} /
-                        </ModalCloseButton
+                            <Icon >as={CloseIcon} sx={{ color: colors.textSecondary }} /
+                        ></ModalCloseButton
                     </ModalHeader
                     <ModalBody
                         <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}
@@ -237,7 +237,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                     color="black"
                                     backgroundColor="white"
                                 /
-                            </Box
+                            ></Box
                             <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}
                                 <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text, textAlign: 'center' }}
                                     {studentForQr?.full_name}

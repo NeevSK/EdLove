@@ -76,7 +76,7 @@ function QuickAction({
                     backgroundColor: colors.tertiary,
                     marginBottom: Theme.spacing.sm,
                 }}
-                            <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} /            </Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 12, fontWeight: '700' }}                {label}
+                            <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} /            ></Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 12, fontWeight: '700' }}                {label}
             </Text        </Pressable    );
 }
 
@@ -109,7 +109,7 @@ function StatCard({
                 </Text                <Text color={colors.text} sx={{ fontSize: 32, fontWeight: '700' }}                    {value}
                     {isDemoMode ? '*' : ''}
                 </Text            </VStack            {isDemoMode ? (
-                <Box sx={{ position: 'absolute', top: 5, right: 5 }}                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} /                </Box            ) : null}
+                <Box sx={{ position: 'absolute', top: 5, right: 5 }}                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} /                ></Box            ) : null}
             <Box
                 sx={{
                     position: 'absolute',
@@ -117,7 +117,7 @@ function StatCard({
                     bottom: -10,
                     opacity: 0.1,
                 }}
-                            <LucideIcon color={colors.text} size={80} /            </Box        </Box    );
+                            <LucideIcon color={colors.text} size={80} /            ></Box        </Box    );
 }
 
 type Args = {
@@ -188,7 +188,7 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: isPastView ? 'Past view' : 'Action ready',
                 metadata: ['Create', 'Join', 'Scan'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}                        <QuickAction icon={Plus} label="Create Class" onPress={() => openCreateFlow('create')} disabled={isPastView} colors={colors} /                        <QuickAction icon={Users} label="Join Class" onPress={() => openCreateFlow('join')} color={Theme.colors.sanctuarySaffron} disabled={isPastView} colors={colors} /                        <QuickAction icon={ScanLine} label="Scan QR" onPress={() => setIsScannerOpen(true)} color={Theme.colors.amberGlow} disabled={isPastView} colors={colors} /                    </HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md }}                        <QuickAction icon={Plus} label="Create Class" onPress={() => openCreateFlow('create')} disabled={isPastView} colors={colors} /                        ><QuickAction icon={Users} label="Join Class" onPress={() => openCreateFlow('join')} color={Theme.colors.sanctuarySaffron} disabled={isPastView} colors={colors} /                        ><QuickAction icon={ScanLine} label="Scan QR" onPress={() => setIsScannerOpen(true)} color={Theme.colors.amberGlow} disabled={isPastView} colors={colors} /                    ></HStack                ),
             },
             {
                 surfaceId: 'support-tools',
@@ -205,7 +205,7 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: 'Support',
                 metadata: ['Admin', 'Echoes', 'Breathing'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md, flexWrap: 'wrap', justifyContent: 'space-between' }}                        <Box sx={{ width: '48%' }}><QuickAction icon={ShieldCheck} label="Admin" onPress={() => setIsAdminModalOpen(true)} color={Theme.colors.sageGreen} colors={colors} /></Box                        <Box sx={{ width: '48%' }}><QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} color={Theme.colors.amberGlow} colors={colors} /></Box                        <Box sx={{ width: '48%' }}><QuickAction icon={MessageCircle} label="Principal Echo" onPress={() => setIsFeedbackModalOpen(true)} color={Theme.colors.emberRed} colors={colors} /></Box                        <Box sx={{ width: '48%' }}><QuickAction icon={ClipboardList} label="My Echoes" onPress={() => setShowEchoHistory(true)} color={colors.action} colors={colors} /></Box                        <Box sx={{ width: '48%' }}><QuickAction icon={Wind} label="Breathing" onPress={() => setIsBreathingOpen(true)} color={colors.success} colors={colors} /></Box                    </HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md, flexWrap: 'wrap', justifyContent: 'space-between' }}                        <Box sx={{ width: '48%' }}><QuickAction icon={ShieldCheck} label="Admin" onPress={() => setIsAdminModalOpen(true)} color={Theme.colors.sageGreen} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} color={Theme.colors.amberGlow} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={MessageCircle} label="Principal Echo" onPress={() => setIsFeedbackModalOpen(true)} color={Theme.colors.emberRed} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={ClipboardList} label="My Echoes" onPress={() => setShowEchoHistory(true)} color={colors.action} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={Wind} label="Breathing" onPress={() => setIsBreathingOpen(true)} color={colors.success} colors={colors} /></Box                    ></HStack                ),
             },
             {
                 surfaceId: 'pulse',
@@ -222,7 +222,7 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: 'Snapshot',
                 metadata: [`Classes ${stats.activeClasses}`, `Students ${stats.totalStudents}`],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}                        <StatCard icon={School} label="Active Classes" value={stats.activeClasses} isDemoMode={isDemoMode} colors={colors} /                        <StatCard icon={Users} label="Total Students" value={stats.totalStudents} isDemoMode={isDemoMode} colors={colors} /                    </HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md }}                        <StatCard icon={School} label="Active Classes" value={stats.activeClasses} isDemoMode={isDemoMode} colors={colors} /                        ><StatCard icon={Users} label="Total Students" value={stats.totalStudents} isDemoMode={isDemoMode} colors={colors} /                    ></HStack                ),
             },
             {
                 surfaceId: 'classroom-registry',
@@ -251,9 +251,9 @@ export function useTeacherDashboardSurfaces({
                                     description={isDemoMode ? 'Ready to lead your first classroom? Generate a sanctuary for your students to begin their journey.' : undefined}
                                     actionLabel={isDemoMode ? 'Create My First Classroom' : undefined}
                                     onAction={() => openCreateFlow('create')}
-                                /                            }
-                        /                        {isGuest ? (
-                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" onAction={() => {}} /                            </Box                        ) : null}
+                                /                            >}
+                        /                        >{isGuest ? (
+                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" onAction={() => {}} /                            ></Box                        ) : null}
                     </                ),
             },
         ],

@@ -176,9 +176,9 @@ export default function GroupDetailsScreen() {
     if (loading) {
         return (
             <ScreenWrapper
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                <Box >sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} /
-                </Box
+                ></Box
             </ScreenWrapper
         );
     }
@@ -194,7 +194,7 @@ export default function GroupDetailsScreen() {
                 <HStack space="md" p="$4" pt="$8" alignItems="center" bg={colors.secondary}
                     <TouchableOpacity onPress={() => setShowAdmin(false)}
                         <ChevronLeft color={colors.textPrimary} /
-                    </TouchableOpacity
+                    ></TouchableOpacity
                     <Text bold size="lg">{t('community.groups.manage')}</Text
                 </HStack
                 <GroupMemberManagement groupId={groupId} /
@@ -215,22 +215,22 @@ export default function GroupDetailsScreen() {
                     <HStack space="md" alignItems="center"
                         <TouchableOpacity onPress={() => navigation.goBack()}
                             <ChevronLeft color={colors.textPrimary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                         <Text bold size="lg" numberOfLines={1} sx={{ maxWidth: 200 }}>{group.name}</Text
                     </HStack
 
                     <HStack space="sm"
                         <TouchableOpacity onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}
                             <MessageSquare size={20} color={colors.textSecondary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                         {isAdmin && (
                             <TouchableOpacity onPress={() => setShowAdmin(true)}
                                 <Settings size={20} color={colors.textSecondary} /
-                            </TouchableOpacity
+                            ></TouchableOpacity
                         )}
                         <TouchableOpacity onPress={() => setShowQRModal(true)}
                             <QrCode size={20} color={colors.textSecondary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                         <TouchableOpacity
                             <MoreVertical size={20} color={colors.textSecondary} /
                         </TouchableOpacity
@@ -260,7 +260,7 @@ export default function GroupDetailsScreen() {
                                         setShowReportModal(true);
                                     }}
                                 /
-                            </Box
+                            ></Box
                         </Animated.View
                     )}
                     ListHeaderComponent={
@@ -288,7 +288,7 @@ export default function GroupDetailsScreen() {
                                                         source={{ uri: group.image_url }}
                                                         style={{ width: 64, height: 64, borderRadius: 32 }}
                                                     /
-                                                ) : (
+                                                >) : (
                                                     <Text size="2xl" bold color={Theme.colors.sacredWhite}
                                                         {group.name.charAt(0).toUpperCase()}
                                                     </Text
@@ -297,7 +297,7 @@ export default function GroupDetailsScreen() {
                                             <VStack flex={1}
                                                 <HStack space="md" alignItems="center"
                                                     <Text bold size="xl" color={Theme.colors.sacredWhite}>{group.name}</Text
-                                                    {group.classroom_id && (
+                                                    >{group.classroom_id && (
                                                         <Box
                                                             px="$2"
                                                             py="$0.5"
@@ -316,7 +316,7 @@ export default function GroupDetailsScreen() {
                                                 </HStack
                                                 <HStack space="xs" alignItems="center"
                                                     <Users size={14} color={Theme.colors.dimGray} /
-                                                    <Text color={Theme.colors.dimGray} size="sm"
+                                                    ><Text color={Theme.colors.dimGray} size="sm"
                                                         {group.member_count || 0} {t('community.groups.members')}
                                                     </Text
                                                 </HStack
@@ -348,10 +348,10 @@ export default function GroupDetailsScreen() {
                             {/* Pinned Resources - Library First */}
                             <PinnedResourcesShelf resources={[]} /
 
-                            {/* Feed Header */}
+                            >{/* Feed Header */}
                             <HStack space="sm" alignItems="center" mt="$2"
                                 <MessageSquare size={18} color={Theme.colors.sanctuarySaffron} /
-                                <Text bold size="md" color={Theme.colors.sacredWhite}
+                                ><Text bold size="md" color={Theme.colors.sacredWhite}
                                     {t('community.groups.feed')}
                                 </Text
                             </HStack
@@ -362,7 +362,7 @@ export default function GroupDetailsScreen() {
                             <VStack p="$8" alignItems="center" space="md"
                                 <Box sx={{ p: '$4', borderRadius: '$full', backgroundColor: 'rgba(255,255,255,0.03)' }}
                                     <MessageSquare size={32} color={Theme.colors.mistGray} /
-                                </Box
+                                ></Box
                                 <Text color={Theme.colors.mistGray} textAlign="center"
                                     {t('community.groups.emptyFeed')}
                                 </Text
@@ -371,7 +371,7 @@ export default function GroupDetailsScreen() {
                     }
                 /
 
-                <SocialShieldModal
+                ><SocialShieldModal
                     isOpen={showReportModal}
                     onClose={() => {
                         setShowReportModal(false);
@@ -381,7 +381,7 @@ export default function GroupDetailsScreen() {
                     groupId={groupId}
                 /
 
-                {/* Comment Sheet  opens when user taps the comment button on a post */}
+                >{/* Comment Sheet  opens when user taps the comment button on a post */}
                 <CommentSheet
                     postId={commentPostId}
                     postAuthorId={commentPostAuthorId}
@@ -390,18 +390,18 @@ export default function GroupDetailsScreen() {
                     onClose={() => setCommentPostId(null)}
                 /
 
-                <Modal
+                ><Modal
                     isOpen={showQRModal}
                     onClose={() => setShowQRModal(false)}
                     size="md"
                 
                     <ModalBackdrop /
-                    <ModalContent sx={{ bg: colors.secondary }}
+                    ><ModalContent sx={{ bg: colors.secondary }}
                         <ModalHeader
-                            <UIHeading size="lg">{t('community.groups.qrTitle', 'Group QR Code')}</UIHeading
-                            <ModalCloseButton
-                                <Icon as={CloseIcon} /
-                            </ModalCloseButton
+                            <UIHeading >size="lg">{t('community.groups.qrTitle', 'Group QR Code')}</UIHeading
+                            ><ModalCloseButton
+                                <Icon >as={CloseIcon} /
+                            ></ModalCloseButton
                         </ModalHeader
                         <ModalBody
                             <VStack space="xl" alignItems="center" py="$4"
@@ -411,9 +411,9 @@ export default function GroupDetailsScreen() {
                                 /
                                 <VStack space="xs" alignItems="center"
                                     <Text bold size="xl" textAlign="center">{group.name}</Text
-                                    {group.handle && (
+                                    >{group.handle && (
                                         <Text color={colors.textSecondary} size="sm">@{group.handle}</Text
-                                    )}
+                                    >)}
                                     <Text size="sm" color={colors.textTertiary} textAlign="center" sx={{ mt: '$2', px: '$4' }}
                                         {t('community.groups.qrHint', 'Scan to join this community group')}
                                     </Text
@@ -422,7 +422,7 @@ export default function GroupDetailsScreen() {
                         </ModalBody
                         <ModalFooter
                             <SanctuaryButton
-                                variant="outline"
+                                >variant="outline"
                                 action="secondary"
                                 onPress={() => setShowQRModal(false)}
                             

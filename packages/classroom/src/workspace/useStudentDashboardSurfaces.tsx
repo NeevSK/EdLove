@@ -105,7 +105,7 @@ function QuickAction({
                     borderWidth: 1,
                     borderColor: colors.border,
                 }}
-                            <button onClick={disabled ? undefined : onPress as any}                    <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} /                </button            </Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700' }}                {label}
+                            <button onClick={disabled ? undefined : onPress as any}                    <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} /                ></button            </Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700' }}                {label}
             </Text        </VStack    );
 }
 
@@ -133,7 +133,7 @@ function StatWidget({
                 borderColor: colors.border,
                 minHeight: 100,
             }}
-                    <VStack sx={{ gap: 4 }}                <LucideIcon color={color || colors.textSecondary} size={20} /                <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}
+                    <VStack sx={{ gap: 4 }}                <LucideIcon color={color || colors.textSecondary} size={20} /                ><Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}
                 </Text                <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700' }}                    {value}
                 </Text            </VStack        </Box    );
 }
@@ -185,7 +185,7 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: isPastView ? 'Past view' : 'Ready',
                 metadata: ['Library', 'Sanctuaries', 'Breathing'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md, justifyContent: 'space-between' }}                        <QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} color={Theme.colors.amberGlow} disabled={isPastView} colors={colors} /                        <QuickAction icon={MessageSquare} label="Sanctuaries" onPress={onOpenCommunity} color={Theme.colors.gurudeviBlue} disabled={isPastView} colors={colors} /                        <QuickAction icon={Star} label="Rewards" onPress={onOpenRewards} color={Theme.colors.sanctuarySaffron} disabled={isPastView} colors={colors} /                        <QuickAction icon={Layout} label="Timetable" onPress={onOpenTimetable} color={Theme.colors.sageGreen} disabled={isPastView} colors={colors} /                        <QuickAction icon={Wind} label="Breathing" onPress={onOpenBreathing} color={Theme.colors.lotusDeepPink} disabled={isPastView} colors={colors} /                    </HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md, justifyContent: 'space-between' }}                        <QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} color={Theme.colors.amberGlow} disabled={isPastView} colors={colors} /                        ><QuickAction icon={MessageSquare} label="Sanctuaries" onPress={onOpenCommunity} color={Theme.colors.gurudeviBlue} disabled={isPastView} colors={colors} /                        ><QuickAction icon={Star} label="Rewards" onPress={onOpenRewards} color={Theme.colors.sanctuarySaffron} disabled={isPastView} colors={colors} /                        ><QuickAction icon={Layout} label="Timetable" onPress={onOpenTimetable} color={Theme.colors.sageGreen} disabled={isPastView} colors={colors} /                        ><QuickAction icon={Wind} label="Breathing" onPress={onOpenBreathing} color={Theme.colors.lotusDeepPink} disabled={isPastView} colors={colors} /                    ></HStack                ),
             },
             {
                 surfaceId: 'learning-pulse',
@@ -202,7 +202,7 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: stats.pendingAssignments > 0 ? 'Due soon' : 'On track',
                 metadata: [`Classes ${stats.enrolledClasses}`, `Pending ${stats.pendingAssignments}`, `Growth ${stats.growthPoints}`],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}                        <StatWidget icon={ClipboardCheck} label="My Classes" value={stats.enrolledClasses} color={Theme.colors.gurudeviBlue} colors={colors} /                        <StatWidget icon={Zap} label="Assignments" value={stats.pendingAssignments} color={Theme.colors.amberGlow} colors={colors} /                    </HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md }}                        <StatWidget icon={ClipboardCheck} label="My Classes" value={stats.enrolledClasses} color={Theme.colors.gurudeviBlue} colors={colors} /                        ><StatWidget icon={Zap} label="Assignments" value={stats.pendingAssignments} color={Theme.colors.amberGlow} colors={colors} /                    ></HStack                ),
             },
             {
                 surfaceId: 'sanctuaries',
@@ -229,9 +229,9 @@ export function useStudentDashboardSurfaces({
                                     description={isDemoExperience ? 'Welcome to the student sanctuary. Ready to officially join your classes and begin your quest? Connect with your teachers to get started.' : undefined}
                                     actionLabel={isDemoExperience ? 'Join a Classroom' : undefined}
                                     onAction={onOpenCommunity}
-                                /                            }
-                        /                        {isGuest ? (
-                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" context="classroom" onAction={onOpenGuestAuth} /                            </Box                        ): null}
+                                /                            >}
+                        /                        >{isGuest ? (
+                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" context="classroom" onAction={onOpenGuestAuth} /                            ></Box                        ): null}
                     </                ),
             },
             {
@@ -251,7 +251,7 @@ export function useStudentDashboardSurfaces({
                 metadata: ['Assignments', 'Demo'],
                 content: (
                     <VStack sx => {{ gap: Theme.spacing.sm }}                        {DEMO_ASSIGNMENTS.map((assignment, index) => (
-                            <Box key={index} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>{assignment.title}</Text                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs, marginTop: 2 }}>{assignment.classroom}</Text                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: Theme.colors.amberGlow, fontWeight: '700', marginTop: 4 }}                                    Due in {assignment.daysLeft} days
+                            <Box key={index} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>{assignment.title}</Text                                ><Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs, marginTop: 2 }}>{assignment.classroom}</Text                                ><Text sx={{ fontSize: Theme.typography.fontSize.xs, color: Theme.colors.amberGlow, fontWeight: '700', marginTop: 4 }}                                    Due in {assignment.daysLeft} days
                                 </Text                            </Box                        ))}
                     </VStack                ),
             },
@@ -272,7 +272,7 @@ export function useStudentDashboardSurfaces({
                 metadata: ['Goals', 'Growth'],
                 content: (
                     <VStack sx={{ gap: Theme.spacing.sm }}                        {DEMO_GOALS.map((goal, index) => (
-                            <Box key={index} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.sm, marginBottom: 8 }}>{goal.text}</Text                                <Box sx={{ height: 6, backgroundColor: colors.tertiary, borderRadius: 3, overflow: 'hidden' }}                                    <Box sx={{ width: `${goal.progress}%` as any, height: 6, backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 3 }} /                                </Box                                <Text color={colors.textSecondary} sx={{ fontSize: 10, marginTop: 4, fontWeight: '700' }}                                    {goal.progress}% complete
+                            <Box key={index} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.sm, marginBottom: 8 }}>{goal.text}</Text                                ><Box sx={{ height: 6, backgroundColor: colors.tertiary, borderRadius: 3, overflow: 'hidden' }}                                    <Box sx={{ width: `${goal.progress}%` as any, height: 6, backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 3 }} /                                ></Box                                <Text color={colors.textSecondary} sx={{ fontSize: 10, marginTop: 4, fontWeight: '700' }}                                    {goal.progress}% complete
                                 </Text                            </Box                        ))}
                     </VStack                ),
             },

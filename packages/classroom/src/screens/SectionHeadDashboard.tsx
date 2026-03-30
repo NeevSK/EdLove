@@ -69,10 +69,10 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                 
                                     <HStack gap="$3" alignItems="center"
                                         <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} /
-                                        <VStack sx={{ flex: 1 }}
+                                        ><VStack sx={{ flex: 1 }}
                                             <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>{gap.title}</Text
-                                            <Text sx={{ fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>{gap.description}</Text
-                                        </VStack
+                                            ><Text sx={{ fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>{gap.description}</Text
+                                        ></VStack
                                     </HStack
                                     <Box sx={{ marginTop: '$3' as any }}
                                         <SanctuaryButton
@@ -100,8 +100,8 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                         <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}
                             <HStack sx={{ gap: 8, alignItems: 'center' }}
                                 <CalendarCheck size={20} color={Theme.colors.gurudeviBlue} /
-                                <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>Timetable Review</Text
-                            </HStack
+                                ><Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>Timetable Review</Text
+                            ></HStack
                             <Box sx={{
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
@@ -109,14 +109,14 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                 backgroundColor: Theme.colors.gurudeviBlue + '33'
                             }}
                                 <Text sx={{ fontSize: 10, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}>AGENTIC</Text
-                            </Box
+                            ></Box
                         </HStack
 
                         {lastTimetableDraft ? (
                             <VStack sx={{ gap: 8 }}
                                 <HStack sx={{ gap: 8, alignItems: 'center' }}
                                     <AlertCircle size={16} color={Theme.colors.amberGlow} /
-                                    <Text sx={{ fontSize: 13, color: Theme.colors.sacredWhite }}
+                                    ><Text sx={{ fontSize: 13, color: Theme.colors.sacredWhite }}
                                         Draft generated for your section.
                                     </Text
                                 </HStack
@@ -147,8 +147,8 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                     <HStack gap="$3"
                         <Box sx={styles.statBox}
                             <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>CLASSES</Text
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>12</Text
-                        </Box
+                            ><Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>12</Text
+                        ></Box
                         <Box sx={styles.statBox}
                             <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>TEACHERS</Text
                             <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>8</Text
@@ -163,14 +163,14 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                         <SanctuaryButton onPress={() => { }} variant="outline"
                             <HStack gap="$2" alignItems="center"
                                 <Calendar size={18} color={Theme.colors.sacredWhite} /
-                                <Text sx={{ color: Theme.colors.sacredWhite }}>Review Section Schedule</Text
-                            </HStack
+                                ><Text sx={{ color: Theme.colors.sacredWhite }}>Review Section Schedule</Text
+                            ></HStack
                         </SanctuaryButton
                         <SanctuaryButton onPress={() => { }} variant="outline"
                             <HStack gap="$2" alignItems="center"
                                 <Users size={18} color={Theme.colors.sacredWhite} /
                                 <Text sx={{ color: Theme.colors.sacredWhite }}>Staff Workload Balance</Text
-                            </HStack
+                            ></HStack
                         </SanctuaryButton
                     </VStack
                 </VStack

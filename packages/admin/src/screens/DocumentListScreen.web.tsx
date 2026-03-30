@@ -253,7 +253,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={styles.searchInputWeb}
-          /        </View
+          /        ></View
         <View style={styles.controlGroup}          <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}

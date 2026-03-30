@@ -180,7 +180,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         }}
                     
                         <cat.icon size={14} color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} /
-                        <Text color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13 }}
+                        ><Text color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13 }}
                             {t(cat.labelKey)}
                         </Text
                     </Pressable
@@ -195,10 +195,10 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         title={t('classroom.inventory.guestTitle')}
                         description={t('classroom.inventory.guestDesc')}
                     /
-                ) : filteredItems.length === 0 ? (
+                >) : filteredItems.length === 0 ? (
                     <Box sx={{ padding: 40, alignItems: 'center' }}
                         <Text color={colors.textSecondary}>{t('common.noItemsFound')}</Text
-                    </Box
+                    ></Box
                 ) : filteredItems.map(item => (
                     <Pressable
                         key={item.id}
@@ -222,7 +222,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                     }}
                                 
                                     <Package size={20} color={colors.text} /
-                                </Box
+                                ></Box
                                 <VStack
                                     <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{item.name}</Text
                                     <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{t('classroom.inventory.quantity', { count: item.quantity })}</Text
@@ -266,8 +266,8 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                 }}
             
                 <ButtonText color={Theme.colors.sacredWhite} sx={{ marginRight: Theme.spacing.sm }}>{t('classroom.inventory.requestSupplies')}</ButtonText
-                <Plus color={Theme.colors.sacredWhite} size={20} /
-            </Button
+                ><Plus color={Theme.colors.sacredWhite} size={20} /
+            ></Button
 
             {/* Report Issue Modal */}
             <Modal
@@ -275,20 +275,20 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                 onClose={() => setShowReportModal(false)}
             
                 <ModalBackdrop /
-                <ModalContent sx={{ backgroundColor: colors.primary }}
+                ><ModalContent sx={{ backgroundColor: colors.primary }}
                     <ModalHeader
-                        <Heading color={colors.text} sx={{ fontSize: 20 }}>{t('classroom.inventory.reportIssue')}</Heading
-                        <ModalCloseButton
-                            <Icon as={CloseIcon} /
-                        </ModalCloseButton
+                        <Heading >color={colors.text} sx={{ fontSize: 20 }}>{t('classroom.inventory.reportIssue')}</Heading
+                        ><ModalCloseButton
+                            <Icon >as={CloseIcon} /
+                        ></ModalCloseButton
                     </ModalHeader
                     <ModalBody
                         <Text color={colors.textSecondary} sx={{ marginBottom: Theme.spacing.md }}
                             {t('classroom.inventory.reportIssue')} for: <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{selectedItem?.name}</Text
-                        </Text
+                        ></Text
                         <VStack sx={{ gap: Theme.spacing.md }}
                             <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.condition')}</Text
-                            <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}
+                            ><HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}
                                 {(['good', 'fair', 'poor', 'broken'] as const).map(cond => (
                                     <Pressable
                                         key={cond}
@@ -315,9 +315,9 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             </HStack
 
                             <Text color={colors.text} sx={{ fontSize: 13, marginTop: 8 }}>{t('classroom.inventory.notes')}</Text
-                            <Textarea
-                                <TextareaInput placeholder={t('classroom.inventory.damagePlaceholder')} color={colors.text} /
-                            </Textarea
+                            ><Textarea
+                                <TextareaInput >placeholder={t('classroom.inventory.damagePlaceholder')} color={colors.text} /
+                            ></Textarea
                         </VStack
                     </ModalBody
                     <ModalFooter
@@ -328,7 +328,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             onPress={() => setShowReportModal(false)}
                         
                             <ButtonText>{t('common.cancel')}</ButtonText
-                        </Button
+                        ></Button
                         <Button
                             action="negative"
                             onPress={() => {
@@ -337,7 +337,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             }}
                         
                             <ButtonText>{t('classroom.inventory.reportDamage')}</ButtonText
-                        </Button
+                        ></Button
                     </ModalFooter
                 </ModalContent
             </Modal
@@ -348,25 +348,25 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                 onClose={() => setShowRequestModal(false)}
             
                 <ModalBackdrop /
-                <ModalContent sx={{ backgroundColor: colors.primary }}
+                ><ModalContent sx={{ backgroundColor: colors.primary }}
                     <ModalHeader
-                        <Heading color={colors.text} sx={{ fontSize: 20 }}>{t('classroom.inventory.requestSupplies')}</Heading
-                        <ModalCloseButton
-                            <Icon as={CloseIcon} /
-                        </ModalCloseButton
+                        <Heading >color={colors.text} sx={{ fontSize: 20 }}>{t('classroom.inventory.requestSupplies')}</Heading
+                        ><ModalCloseButton
+                            <Icon >as={CloseIcon} /
+                        ></ModalCloseButton
                     </ModalHeader
                     <ModalBody
                         <VStack sx={{ gap: Theme.spacing.md }}
                             <VStack sx={{ gap: 4 }}
                                 <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.itemName')}</Text
-                                <Input
+                                ><Input
                                     <InputField
-                                        placeholder={t('classroom.inventory.itemNamePlaceholder')}
+                                        >placeholder={t('classroom.inventory.itemNamePlaceholder')}
                                         color={colors.text}
                                         value={requestName}
                                         onChangeText={setRequestName}
                                     /
-                                </Input
+                                ></Input
                             </VStack
                             <VStack sx={{ gap: 4 }}
                                 <Text color={colors.text} sx={{ fontSize: 13 }}
@@ -374,24 +374,24 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                 </Text
                                 <Input
                                     <InputField
-                                        placeholder="e.g. 1 Box"
+                                        >placeholder="e.g. 1 Box"
                                         keyboardType="numeric"
                                         color={colors.text}
                                         value={requestQty}
                                         onChangeText={setRequestQty}
                                     /
-                                </Input
+                                ></Input
                             </VStack
                             <VStack sx={{ gap: 4 }}
                                 <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.reason')}</Text
-                                <Input
+                                ><Input
                                     <InputField
-                                        placeholder={t('classroom.inventory.reasonPlaceholder')}
+                                        >placeholder={t('classroom.inventory.reasonPlaceholder')}
                                         color={colors.text}
                                         value={requestReason}
                                         onChangeText={setRequestReason}
                                     /
-                                </Input
+                                ></Input
                             </VStack
                         </VStack
                     </ModalBody
@@ -403,7 +403,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             onPress={() => setShowRequestModal(false)}
                         
                             <ButtonText>{t('common.cancel')}</ButtonText
-                        </Button
+                        ></Button
                         <Button
                             action="primary"
                             onPress={() => {
@@ -418,7 +418,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             disabled={!requestName || !requestQty || requestMutation.isLoading}
                         
                             <ButtonText>{requestMutation.isLoading ? t('classroom.inventory.sending') : t('classroom.inventory.submit')}</ButtonText
-                        </Button
+                        ></Button
                     </ModalFooter
                 </ModalContent
             </Modal

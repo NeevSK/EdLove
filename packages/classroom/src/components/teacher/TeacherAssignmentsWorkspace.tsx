@@ -114,26 +114,26 @@ export default function TeacherAssignmentsWorkspace({
                                         shadowOpacity: 1,
                                         shadowRadius: 12,
                                     }}
-                                                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        <ButtonText color={Theme.colors.sacredWhite}>Create</ButtonText                                    </HStack                                </Button                            )}
+                                                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        ><ButtonText color={Theme.colors.sacredWhite}>Create</ButtonText                                    ></HStack                                </Button                            )}
                         </HStack
                         <HStack sx={{ gap: Theme.spacing.sm }}                            <SummaryPill
                                 icon={<ClipboardList size={14} color={Theme.colors.sanctuarySaffron} />}
                                 label="Total"
                                 value={String(assignments.length)}
                                 colors={colors}
-                            /                            <SummaryPill
+                            /                            ><SummaryPill
                                 icon={<Clock3 size={14} color={Theme.colors.gurudeviBlue} />}
                                 label="Upcoming"
                                 value={String(upcomingCount)}
                                 colors={colors}
-                            /                            <SummaryPill
+                            /                            ><SummaryPill
                                 icon={<Sparkles size={14} color={Theme.colors.sageGreen} />}
                                 label="State"
                                 value={assignments.length > 0 ? 'Live' : 'Quiet'}
                                 colors={colors}
-                            /                        </HStack                    </VStack                </Box
+                            /                        ></HStack                    </VStack                </Box
                 {isLoading ? (
-                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    </Box                ) : assignments.length === 0 ? (
+                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : assignments.length === 0 ? (
                     <Box
                         sx={{
                             backgroundColor: Theme.colors.silk,
@@ -148,7 +148,7 @@ export default function TeacherAssignmentsWorkspace({
                             shadowOpacity: 1,
                             shadowRadius: 16,
                         }}
-                                            <ClipboardList size={36} color={colors.textTertiary} /                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            No assignments yet
+                                            <ClipboardList size={36} color={colors.textTertiary} /                        ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            No assignments yet
                         </Heading                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}                            Create a classroom assignment here, or add one from a monthly lesson lane when the work belongs to a specific module.
                         </Text                    </Box                ) : (
                     assignments.map((assignment) => (
@@ -168,7 +168,7 @@ export default function TeacherAssignmentsWorkspace({
                                 shadowRadius: 12,
                             }}
                                                     <VStack sx={{ gap: Theme.spacing.sm }}                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, flex: 1 }}                                        {assignment.title}
-                                    </Heading                                    <HStack sx={{ alignItems: 'center', gap: 6 }}                                        <CalendarDays size={14} color={Theme.colors.gurudeviBlue} /                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                            {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
+                                    </Heading                                    <HStack sx={{ alignItems: 'center', gap: 6 }}                                        <CalendarDays size={14} color={Theme.colors.gurudeviBlue} /                                        ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                            {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
                                         </Text                                    </HStack                                </HStack                                {!!assignment.description && (
                                     <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                        {assignment.description}
                                     </Text                                )}
@@ -177,19 +177,19 @@ export default function TeacherAssignmentsWorkspace({
                                     </Text                                </HStack                            </VStack                        </Box                    ))
                 )}
             </VStack
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}                <ModalBackdrop /                <ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}                    <ModalHeader                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            Create assignment
-                        </Heading                    </ModalHeader                    <ModalBody                        <VStack sx={{ gap: Theme.spacing.md }}                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField placeholder="Assignment title" value={title} onChangeText={setTitle} color={colors.text} /                            </Input                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 90 }}                                <InputField
+            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}                <ModalBackdrop /                ><ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}                    <ModalHeader                        <Heading >sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            Create assignment
+                        </Heading                    </ModalHeader                    <ModalBody                        <VStack >sx={{ gap: Theme.spacing.md }}                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField placeholder="Assignment title" value={title} onChangeText={setTitle} color={colors.text} /                            ></Input                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 90 }}                                <InputField
                                     placeholder="What should students complete?"
                                     value={description}
                                     onChangeText={setDescription}
                                     color={colors.text}
                                     multiline
-                                /                            </Input                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField
+                                /                            ></Input                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField
                                     placeholder="Due date (YYYY-MM-DD)"
                                     value={dueDate}
                                     onChangeText={setDueDate}
                                     color={colors.text}
-                                /                            </Input                        </VStack                    </ModalBody                    <ModalFooter                        <HStack sx={{ gap: Theme.spacing.sm }}                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)}                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText                            </Button                            <Button
+                                /                            ></Input                        </VStack                    </ModalBody                    <ModalFooter                        <HStack sx={{ gap: Theme.spacing.sm }}                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)}                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText                            ></Button                            <Button
                                 action="primary"
                                 onPress={handleCreate}
                                 isDisabled={!title.trim() || isSaving}

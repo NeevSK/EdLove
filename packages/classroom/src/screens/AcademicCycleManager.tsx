@@ -130,11 +130,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         return (
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}
                 <GlobalHeader title="Academic Cycles" onBack={onBack} /
-                <VStack space="md" sx={{ padding: Theme.spacing.lg }}
+                ><VStack space="md" sx={{ padding: Theme.spacing.lg }}
                     <SkeletonCard height={100} /
-                    <SkeletonCard height={100} /
-                    <SkeletonCard height={100} /
-                </VStack
+                    ><SkeletonCard height={100} /
+                    ><SkeletonCard height={100} /
+                ></VStack
             </Box
         );
     }
@@ -147,14 +147,14 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                 rightAction={
                     <Pressable onPress={() => setShowAddForm(!showAddForm)}
                         <Plus size={24} color={colors.action} /
-                    </Pressable
+                    ></Pressable
                 }
             /
 
             <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}
                 <VStack space="xl"
                     <Box
-                        <Text color={colors.textSecondary} sx={{ fontSize: 13, marginBottom: Theme.spacing.xs }}
+                        <Text >color={colors.textSecondary} sx={{ fontSize: 13, marginBottom: Theme.spacing.xs }}
                             {t('principal.cycles.description') || 'Define your terms and semesters to synchronize syllabus progress and attendance reports.'}
                         </Text
                     </Box
@@ -170,25 +170,25 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                             <VStack space="md"
                                 <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>New Cycle</Text
 
-                                <VStack space="xs"
+                                ><VStack space="xs"
                                     <Text sx={{ fontSize: 12, color: colors.textSecondary }}>Name (e.g. Term 1 2026)</Text
-                                    <Input variant="underlined"
+                                    ><Input variant="underlined"
                                         <InputField value={name} onChangeText={setName} placeholder="Cycle Name" /
-                                    </Input
+                                    ></Input
                                 </VStack
 
                                 <HStack space="md"
                                     <VStack space="xs" sx={{ flex: 1 }}
                                         <Text sx={{ fontSize: 12, color: colors.textSecondary }}>Start Date</Text
-                                        <Input variant="underlined"
+                                        ><Input variant="underlined"
                                             <InputField value={startDate} onChangeText={setStartDate} placeholder="YYYY-MM-DD" /
-                                        </Input
+                                        ></Input
                                     </VStack
                                     <VStack space="xs" sx={{ flex: 1 }}
                                         <Text sx={{ fontSize: 12, color: colors.textSecondary }}>End Date</Text
-                                        <Input variant="underlined"
+                                        ><Input variant="underlined"
                                             <InputField value={endDate} onChangeText={setEndDate} placeholder="YYYY-MM-DD" /
-                                        </Input
+                                        ></Input
                                     </VStack
                                 </HStack
 
@@ -197,7 +197,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         <HStack space="sm" alignItems="center"
                                             {isCurrent ? <CheckCircle2 size={18} color={colors.success} /> : <Circle size={18} color={colors.textTertiary} />}
                                             <Text sx={{ fontSize: 13, color: colors.text }}>Set as Current Cycle</Text
-                                        </HStack
+                                        ></HStack
                                     </Pressable
                                 </HStack
 
@@ -211,7 +211,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                     }}
                                 
                                     <ButtonText>{saving ? 'Saving...' : 'Create Cycle'}</ButtonText
-                                </Button
+                                ></Button
                             </VStack
                         </Box
                     )}
@@ -220,8 +220,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                         {cycles.length === 0 ? (
                             <Box sx={{ alignItems: 'center', padding: Theme.spacing.xl }}
                                 <Calendar size={48} color={colors.textTertiary} strokeWidth={1} /
-                                <Text sx={{ marginTop: Theme.spacing.md, color: colors.textSecondary }}>No cycles defined yet.</Text
-                            </Box
+                                ><Text sx={{ marginTop: Theme.spacing.md, color: colors.textSecondary }}>No cycles defined yet.</Text
+                            ></Box
                         ) : (
                             cycles.map((cycle) => (
                                 <Box
@@ -238,7 +238,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         <VStack space="xs"
                                             <HStack space="sm" alignItems="center"
                                                 <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{cycle.name}</Text
-                                                {cycle.is_current && (
+                                                >{cycle.is_current && (
                                                     <Box sx={{
                                                         backgroundColor: colors.success + '22',
                                                         paddingHorizontal: 8,
@@ -246,7 +246,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                                         borderRadius: 10
                                                     }}
                                                         <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.success }}>CURRENT</Text
-                                                    </Box
+                                                    ></Box
                                                 )}
                                             </HStack
                                             <HStack space="xs" alignItems="center"
@@ -261,11 +261,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                             {!cycle.is_current && (
                                                 <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}
                                                     <CheckCircle2 size={20} color={colors.textTertiary} /
-                                                </TouchableOpacity
+                                                ></TouchableOpacity
                                             )}
                                             <TouchableOpacity onPress={() => handleDelete(cycle.id)}
                                                 <Trash2 size={20} color={colors.error} /
-                                            </TouchableOpacity
+                                            ></TouchableOpacity
                                         </HStack
                                     </HStack
                                 </Box

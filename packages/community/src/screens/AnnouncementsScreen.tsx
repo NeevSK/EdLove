@@ -133,7 +133,7 @@ export default function AnnouncementsScreen({
                 flex: 1,
                 backgroundColor: Theme.colors.obsidian,
             }}
-                    <ScrollView                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}                    {/* Header */}
+                    <ScrollView                <VStack >space="lg" sx={{ padding: Theme.spacing.lg }}                    {/* Header */}
                     <HStack
                         sx={{
                             justifyContent: 'space-between',
@@ -154,7 +154,7 @@ export default function AnnouncementsScreen({
 
                     {/* Loading State */}
                     {isLoading && (
-                        <VStack space="md"                            <SkeletonCard height={120} /                            <SkeletonCard height={120} /                            <SkeletonCard height={120} /                        </VStack                    )}
+                        <VStack space="md"                            <SkeletonCard height={120} /                            ><SkeletonCard height={120} /                            ><SkeletonCard height={120} /                        ></VStack                    )}
 
                     {/* Error State */}
                     {error && !isLoading && (
@@ -164,7 +164,7 @@ export default function AnnouncementsScreen({
                                 backgroundColor: Theme.colors.emberRed,
                                 borderRadius: Theme.corners.comfortable,
                             }}
-                                                    <Text color={Theme.colors.sacredWhite}>{error}</Text                        </Box                    )}
+                                                    <Text color={Theme.colors.sacredWhite}>{error}</Text                        ></Box                    )}
 
                     {/* Pinned Announcements */}
                     {!isLoading && pinnedAnnouncements.length > 0 && (
@@ -255,12 +255,12 @@ export default function AnnouncementsScreen({
                     setNewAnnouncementContent('');
                     setIsPinned(false);
                 }}
-                            <ModalBackdrop /                <ModalContent
+                            <ModalBackdrop /                ><ModalContent
                     sx={{
                         backgroundColor: Theme.colors.ink,
                     }}
-                                    <ModalHeader                        <Heading size="lg" color={Theme.colors.sanctuarySaffron}                            {t('announcements.createTitle') || 'Create Announcement'}
-                        </Heading                    </ModalHeader                    <ModalBody                        <VStack space="md"                            <Textarea
+                                    <ModalHeader                        <Heading >size="lg" color={Theme.colors.sanctuarySaffron}                            {t('announcements.createTitle') || 'Create Announcement'}
+                        </Heading                    </ModalHeader                    <ModalBody                        <VStack >space="md"                            <Textarea
                                 sx={{
                                     backgroundColor: Theme.colors.obsidian,
                                     minHeight: 150,
@@ -275,7 +275,7 @@ export default function AnnouncementsScreen({
                                     sx={{
                                         color: Theme.colors.sacredWhite,
                                     }}
-                                /                            </Textarea
+                                /                            ></Textarea
                             {/* Pin Toggle */}
                             <HStack
                                 sx={{
@@ -283,7 +283,7 @@ export default function AnnouncementsScreen({
                                     alignItems: 'center',
                                 }}
                                                             <Text color={Theme.colors.starlightGray}                                    {t('announcements.pinAnnouncement') || 'Pin to top'}
-                                </Text                                <Switch value={isPinned} onValueChange={setIsPinned} /                            </HStack                        </VStack                    </ModalBody                    <ModalFooter                        <HStack space="md" sx={{ width: '100%' }}                            <Button
+                                </Text                                <Switch value={isPinned} onValueChange={setIsPinned} /                            ></HStack                        </VStack                    </ModalBody                    <ModalFooter                        <HStack space="md" sx={{ width: '100%' }}                            <Button
                                 variant="outline"
                                 sx={{ flex: 1, borderColor: Theme.colors.mistGray }}
                                 onPress={() => {
@@ -301,7 +301,7 @@ export default function AnnouncementsScreen({
                                 onPress={handleCreateAnnouncement}
                                 disabled={isCreating}
                                                             {isCreating ? (
-                                    <Spinner color={Theme.colors.sacredWhite} size="small" /                                ) : (
+                                    <Spinner color={Theme.colors.sacredWhite} size="small" /                                >) : (
                                     <ButtonText color={Theme.colors.sacredWhite}                                        {t('announcements.post') || 'Post'}
                                     </ButtonText                                )}
                             </Button                        </HStack                    </ModalFooter                </ModalContent            </Modal        </Box    );

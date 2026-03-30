@@ -100,7 +100,7 @@ export default function SchoolForestScreen() {
                     style={{ background: 'var(--background-alt)', border: 'none', borderRadius: '10px', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)', opacity: refreshing ? 0.6 : 1 }}
                 
                     <RefreshCw size={14} /
-                    Refresh
+                    >Refresh
                 </button
             </div
 
@@ -139,7 +139,7 @@ export default function SchoolForestScreen() {
                                 {WEATHER_EMOJI[forest.forest_weather] ?? '\uD83C\uDF24'}
                             </span
                             <div
-                                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--moss)', textTransform: 'capitalize' }}
+                                <div >style={{ fontSize: '18px', fontWeight: '800', color: 'var(--moss)', textTransform: 'capitalize' }}
                                     {forest.forest_weather} Season
                                 </div
                                 <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}
@@ -177,7 +177,7 @@ export default function SchoolForestScreen() {
                             
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}
                                     <span style={{ fontSize: '32px' }}>{HEALTH_EMOJI[tree.tree_health] ?? '\uD83C\uDF31'}</span
-                                    <div style={{ flex: 1 }}
+                                    ><div style={{ flex: 1 }}
                                         <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink)', textTransform: 'capitalize' }}
                                             {tree.tree_health}
                                         </div

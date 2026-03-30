@@ -482,7 +482,7 @@ export default function CreateClassroomModal({
                                         /                                    ></Input                                </FormControl                            )}
 
                             {(mode === 'create' || mode === 'edit') && (
-                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText >sx={{ color: colors.textSecondary }}                                            Classroom Handle (unique ID)
+                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                            Classroom Handle (unique ID)
                                         </FormControlLabelText                                    </FormControlLabel                                    <Input
                                         sx={{
                                             backgroundColor: colors.tertiary,
@@ -501,7 +501,7 @@ export default function CreateClassroomModal({
                                     </Text                                </FormControl                            )}
 
                             {(mode === 'create' || mode === 'edit') && (
-                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText >sx={{ color: colors.textSecondary }}                                            {t('classroom.description') || 'Brief Description'}
+                                <FormControl                                    <FormControlLabel                                        <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                            {t('classroom.description') || 'Brief Description'}
                                         </FormControlLabelText                                    </FormControlLabel                                    <Input
                                         sx={{
                                             minHeight: 100,
@@ -566,7 +566,7 @@ export default function CreateClassroomModal({
                                                     </ButtonText                                                </Button                                            ))}
                                         </Box                                    </FormControl                                </VStack                            )}
 
-                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                        {t('classroom.labelSubject') || 'Core Subject'}
+                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.labelSubject') || 'Core Subject'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack flexWrap="wrap" sx={{ gap: 8 }}                                    {availableSubjects.map((sub: any) => (
                                         <Button
                                             key={sub.id}
@@ -580,7 +580,7 @@ export default function CreateClassroomModal({
                                                                                     <ButtonText color={state.academic.subject === sub.id ? text.inverse : colors.textSecondary}                                                {sub.en}
                                             </ButtonText                                        </Button                                    ))}
                                 </HStack                            </FormControl
-                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                        {t('classroom.theme') || 'Sanctuary Theme'}
+                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.theme') || 'Sanctuary Theme'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack sx={{ flexWrap: 'wrap', gap: 12, paddingVertical: 4 }}                                    {CLASSROOM_THEMES.map((theme) => (
                                         <Pressable key={theme.id} onPress={() => updateAesthetics({ themeId: theme.id })}                                            <Box
                                                 sx={{
@@ -596,7 +596,7 @@ export default function CreateClassroomModal({
                                                                                             {state.aesthetics.themeId === theme.id && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: 'white' }} />}
                                             </Box                                        </Pressable                                    ))}
                                 </HStack                            </FormControl
-                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >sx={{ color: colors.textSecondary }}                                        {t('classroom.labelType') || 'Institutional Role'}
+                            <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.labelType') || 'Institutional Role'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack sx={{ gap: Theme.spacing.md }}                                    {(['own', 'subject'] as const).map((type) => (
                                         <Button
                                             key={type}

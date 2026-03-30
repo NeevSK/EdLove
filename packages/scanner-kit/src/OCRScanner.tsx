@@ -213,7 +213,7 @@ export default function OCRScanner({
         </Text
         <TouchableOpacity onPress={onCancel}
           <Text style={{ color: colors.textSecondary, fontSize: 24 }}>\u2715</Text
-        </TouchableOpacity
+        ></TouchableOpacity
       </View
 
       {/* Content */}
@@ -297,9 +297,9 @@ export default function OCRScanner({
                 style={{ width: 300, height: 400, borderRadius: 12 }}
                 resizeMode="contain"
               /
-            )}
+            >)}
             <ActivityIndicator size="large" color={colors.accent} /
-            <Text style={{ color: colors.textSecondary, textAlign: "center" }}
+            ><Text style={{ color: colors.textSecondary, textAlign: "center" }}
               {t("ocr.scanning")}
             </Text
           </View
@@ -318,7 +318,7 @@ export default function OCRScanner({
                 style={{ width: "100%", height: 150, borderRadius: 12 }}
                 resizeMode="contain"
               /
-            )}
+            >)}
 
             <View style={{ gap: 8 }}
               {parsedStudents.map((student, index) => (
@@ -416,7 +416,7 @@ export default function OCRScanner({
                 }}
               
                 <Text style={{ color: colors.text }}>{t("ocr.tryAgain")}</Text
-              </TouchableOpacity
+              ></TouchableOpacity
               <TouchableOpacity
                 onPress={handleConfirm}
                 style={{

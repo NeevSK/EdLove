@@ -152,7 +152,7 @@ export default function ReportCard({
                                                         {grade.marks}
                                                     </Text
                                                     <Text size="sm" color={Theme.colors.starlightGray}
-                                                        /100
+                                                        />100
                                                     </Text
                                                 </HStack
                                                 {showGPA && (

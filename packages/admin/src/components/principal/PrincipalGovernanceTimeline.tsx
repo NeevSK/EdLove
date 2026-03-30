@@ -182,7 +182,7 @@ export default function PrincipalGovernanceTimeline({
             borderWidth: 1,
             borderColor: colors.border,
           }}
-                  <Text sx={{ color: colors.textSecondary }}>Loading governance history...</Text        </Box      ) : null}
+                  <Text sx={{ color: colors.textSecondary }}>Loading governance history...</Text        ></Box      ) : null}
 
       {!isLoading && error ? (
         <Box
@@ -193,7 +193,7 @@ export default function PrincipalGovernanceTimeline({
             borderWidth: 1,
             borderColor: Theme.colors.emberRed,
           }}
-                  <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text        </Box      ) : null}
+                  <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text        ></Box      ) : null}
 
       {!isLoading && !error && events.length === 0 ? (
         <Box
@@ -256,7 +256,7 @@ export default function PrincipalGovernanceTimeline({
               backgroundColor: Theme.colors.silk,
               textAlignVertical: 'top',
             }}
-          /          <HStack sx={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}            {(['noted', 'escalated', 'resolved'] as const).map((status) => (
+          /          ><HStack sx={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}            {(['noted', 'escalated', 'resolved'] as const).map((status) => (
               <TouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}                <Box
                   sx={{
                     paddingHorizontal: Theme.spacing.md,
@@ -281,7 +281,7 @@ export default function PrincipalGovernanceTimeline({
                   borderWidth: 1,
                   borderColor: colors.border,
                 }}
-                              <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary }}>Cancel</Text              </Box            </TouchableOpacity            <TouchableOpacity onPress={handleSaveFollowUp} activeOpacity={0.85} disabled={savingFollowUp}              <Box
+                              <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary }}>Cancel</Text              ></Box            </TouchableOpacity            <TouchableOpacity onPress={handleSaveFollowUp} activeOpacity={0.85} disabled={savingFollowUp}              <Box
                 sx={{
                   paddingHorizontal: Theme.spacing.md,
                   paddingVertical: Theme.spacing.sm,

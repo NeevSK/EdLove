@@ -51,7 +51,7 @@ const GoogleIcon = ({ size = 20 }: { size?: number }) => (
             fontWeight: '700',
             color: '#4285F4',
             lineHeight: size * 0.75,
-        }}>G</Text    </Box);
+        }}>G</Text    ></Box);
 
 const ENTRY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 
@@ -425,7 +425,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         toast.show({
             placement: "bottom",
             render: ({ id }: { id: string }) => (
-                <Toast nativeID={id} action={action} variant="solid"                    <ToastTitle>{message}</ToastTitle                </Toast            ),
+                <Toast nativeID={id} action={action} variant="solid"                    <ToastTitle>{message}</ToastTitle                ></Toast            ),
         });
     }
 
@@ -447,7 +447,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         borderRadius: 105,
                         backgroundColor: `${colors.action}14`,
                     }}
-                /                <Box
+                /                ><Box
                     sx={{
                         position: 'absolute',
                         left: -24,
@@ -458,10 +458,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         backgroundColor: `${Theme.colors.gurudeviBlue}14`,
                     }}
                 /
-                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center' }}
+                ><VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center' }}
                     {/* Back button row */}
                     {onBack && (
-                        <Box sx={{ alignSelf: 'flex-start' }}                            <Button variant="link" onPress={onBack} sx={{ pl: 0 }}                                <HStack space="xs" alignItems="center"                                    <Text color={colors.textSecondary} size="lg">\u2190</Text                                    <ButtonText color={colors.textSecondary} size="sm">Back</ButtonText                                </HStack                            </Button                        </Box                    )}
+                        <Box sx={{ alignSelf: 'flex-start' }}                            <Button variant="link" onPress={onBack} sx={{ pl: 0 }}                                <HStack space="xs" alignItems="center"                                    <Text color={colors.textSecondary} size="lg">\u2190</Text                                    ><ButtonText color={colors.textSecondary} size="sm">Back</ButtonText                                ></HStack                            </Button                        </Box                    )}
 
                     <VStack space="lg" alignItems="center" sx={{ pt: Theme.spacing.md }}                        <BreathAnimation delay={100}                            <LivingGlow active size={132} glowColor={colors.glow} style={{ alignItems: 'center', justifyContent: 'center' }}                                <VStack space="sm" alignItems="center"                                    <Box
                                         sx={{
@@ -570,7 +570,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                 elevation: 4,
                                                 width: '100%'
                                             }}
-                                                                                    <HStack space="md" alignItems="center"                                                <Box sx={{ p: '$2', backgroundColor: Theme.colors.sacredWhite, borderRadius: Theme.corners.full }}                                                    <GoogleIcon size={24} /                                                </Box                                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                                    {isSignUp ? "Sign up with Google" : t('auth.signInWithGoogle')}
+                                                                                    <HStack space="md" alignItems="center"                                                <Box sx={{ p: '$2', backgroundColor: Theme.colors.sacredWhite, borderRadius: Theme.corners.full }}                                                    <GoogleIcon size={24} /                                                ></Box                                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                                    {isSignUp ? "Sign up with Google" : t('auth.signInWithGoogle')}
                                                 </ButtonText                                            </HStack                                        </Button
                                         <Button
                                             size="lg"
@@ -578,7 +578,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                             onPress={() => { hapticLight(); setShowEmailAuth(true); }}
                                             isDisabled={loading}
                                             sx={{ borderColor: colors.border, borderRadius: Theme.corners.comfortable, height: 54, backgroundColor: 'transparent' }}
-                                                                                    <HStack space="sm" alignItems="center"                                                <Mail size={18} color={colors.text} /                                                <ButtonText color={colors.text} fontWeight="$medium"                                                    {isSignUp ? t('auth.signUpWithEmail') || 'Sign up with email' : t('auth.signInWithEmail') || 'Sign in with email'}
+                                                                                    <HStack space="sm" alignItems="center"                                                <Mail size={18} color={colors.text} /                                                ><ButtonText color={colors.text} fontWeight="$medium"                                                    {isSignUp ? t('auth.signUpWithEmail') || 'Sign up with email' : t('auth.signInWithEmail') || 'Sign in with email'}
                                                 </ButtonText                                            </HStack                                        </Button                                    </VStack                                </BreathAnimation                            )}
 
                             {showEmailAuth && (
@@ -595,7 +595,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                     returnKeyType="next"
                                                     onSubmitEditing={() => passwordRef.current?.focus()}
                                                     blurOnSubmit={false}
-                                                /                                            </Input
+                                                /                                            ></Input
                                             <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary, borderColor: colors.border }}                                                <InputField
                                                     ref={passwordRef}
                                                     placeholder={t('auth.password')}
@@ -606,7 +606,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                     textContentType={isSignUp ? 'newPassword' : 'password'}
                                                     returnKeyType="go"
                                                     onSubmitEditing={handleAuth}
-                                                /                                            </Input
+                                                /                                            ></Input
                                             <Button
                                                 size="lg"
                                                 onPress={handleAuth}
@@ -614,7 +614,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                 sx={{ backgroundColor: colors.action, borderRadius: Theme.corners.comfortable, mt: '$2' }}
                                                                                             <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold"                                                    {loading ? t('auth.processing') : (isSignUp ? t('auth.signup') : t('auth.login'))}
                                                 </ButtonText                                            </Button
-                                            <Button variant="link" onPress={() => { setShowEmailAuth(false); setErrors({}); }}                                                <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText                                            </Button                                        </VStack                                    </GlassCard                                </BreathAnimation                            )}
+                                            <Button variant="link" onPress={() => { setShowEmailAuth(false); setErrors({}); }}                                                <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText                                            ></Button                                        </VStack                                    </GlassCard                                </BreathAnimation                            )}
 
                             {!shouldHideGeneralAuth && !showEmailAuth && !isSignUp && (
                                 <Box
@@ -662,7 +662,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         showToast(result.message, 'success');
                     }}
                     title="Scan Invite Code"
-                /            )}
+                /            >)}
             <GuestDataSyncModal
                 isOpen={showSyncModal}
                 userId={newUserId}
@@ -674,5 +674,5 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     setShowSyncModal(false);
                 }}
             /
-        </ScreenWrapper    );
+        ></ScreenWrapper    );
 }

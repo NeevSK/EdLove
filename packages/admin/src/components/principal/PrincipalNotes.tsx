@@ -257,12 +257,12 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             
                                 {note.is_done
                                     ? <CheckSquare size={18} color={colors.textTertiary} /
-                                    : <Square size={18} color={meta.color} /
-                                }
+                                    >: <Square size={18} color={meta.color} /
+                                >}
                             </TouchableOpacity
                         ) : (
                             <NoteIcon size={14} color={note.is_done ? colors.textTertiary : meta.color} /
-                        )}
+                        >)}
                         <Text
                             sx={{
                                 fontSize: Theme.typography.fontSize.xs,
@@ -279,7 +279,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     {/* Right: time + actions */}
                     <HStack sx={{ gap: 10, alignItems: 'center' }}
                         <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text
-                        {!note.is_done && (
+                        >{!note.is_done && (
                             <TouchableOpacity
                                 onPress={() => handleTogglePin(note)}
                                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -289,14 +289,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                     color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
                                     fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
                                 /
-                            </TouchableOpacity
+                            ></TouchableOpacity
                         )}
                         <TouchableOpacity
                             onPress={() => handleDelete(note.id)}
                             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         
                             <X size={14} color={colors.textTertiary} /
-                        </TouchableOpacity
+                        ></TouchableOpacity
                     </HStack
                 </HStack
 
@@ -317,7 +317,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 {(note.context_teacher || note.context_classroom) && (
                     <HStack sx={{ gap: 6, marginTop: Theme.spacing.xs, alignItems: 'center' }}
                         <BookMarked size={11} color={colors.textTertiary} /
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary }}
+                        ><Text sx={{ fontSize: 11, color: colors.textTertiary }}
                             {note.context_teacher?.full_name || (note.context_classroom as any)?.name}
                         </Text
                     </HStack
@@ -358,7 +358,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 onBack={onBack}
             /
 
-            <KeyboardAvoidingView
+            ><KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={100}
@@ -367,14 +367,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     {loading ? (
                         <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
-                        </Box
+                        ></Box
                     ) : grouped.length === 0 ? (
                         <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}
                             <PositiveInvitation
                                 title="Your logbook is empty"
                                 description="Tap the button below to capture your first thought \u2014 a to-do for tomorrow, a classroom observation, or a decision you just made."
                             /
-                        </Box
+                        ></Box
                     ) : (
                         <FlatList
                             data={grouped}
@@ -386,7 +386,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             }}
                             showsVerticalScrollIndicator={false}
                         /
-                    )}
+                    >)}
 
                     {/* Compose sheet */}
                     {composing ? (
@@ -416,7 +416,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                             ]}
                                         
                                             <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} /
-                                            <Text
+                                            ><Text
                                                 style={{
                                                     fontSize: 11,
                                                     fontWeight: isActive ? '700' : '400',
@@ -448,7 +448,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 ]}
                             /
 
-                            <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}
+                            ><HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}
                                 <TouchableOpacity
                                     onPress={() => { setComposing(false); setDraft(''); }}
                                     style={styles.cancelBtn}
@@ -467,8 +467,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 
                                     {saving
                                         ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /
-                                        : <Text sx={{ fontSize: 14, fontWeight: '700', color: draft.trim() ? Theme.colors.sacredWhite : colors.textTertiary }}>Save</Text
-                                    }
+                                        >: <Text sx={{ fontSize: 14, fontWeight: '700', color: draft.trim() ? Theme.colors.sacredWhite : colors.textTertiary }}>Save</Text
+                                    >}
                                 </TouchableOpacity
                             </HStack
                         </Box
@@ -480,7 +480,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 activeOpacity={0.85}
                             
                                 <NotebookPen size={20} color={Theme.colors.sacredWhite} /
-                            </TouchableOpacity
+                            ></TouchableOpacity
                         </Box
                     )}
                 </VStack

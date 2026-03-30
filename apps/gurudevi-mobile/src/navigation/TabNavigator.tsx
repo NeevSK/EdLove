@@ -70,7 +70,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   return (
     <View style={{ flex: 1 }}      {/* Living backdrop  renders behind all tabs */}
       <SanctuaryBackground /
-      <Tab.Navigator
+      ><Tab.Navigator
         id="MainTabs"
         initialRouteName="Self"
         screenListeners={{
@@ -123,10 +123,10 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
-              <View                <User color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} /              </View            ),
+              <View                <User >color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} /              ></View            ),
           }}
                   {() => (
-            <ErrorBoundary name="Profile Stack"              <ProfileStackNavigator /            </ErrorBoundary          )}
+            <ErrorBoundary name="Profile Stack"              <ProfileStackNavigator /            ></ErrorBoundary          )}
         </Tab.Screen
         {/* 2. Classroom Tab */}
         <Tab.Screen
@@ -134,11 +134,11 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: getClassroomLabel(),
             tabBarIcon: ({ color, size }) => (
-              <School color={color} size={size} fill={currentTab === 'classroom' ? color : 'none'} /            ),
+              <School color={color} size={size} fill={currentTab === 'classroom' ? color : 'none'} /            >),
           }}
                   {() => (
             isFounderLane ? (
-              <ErrorBoundary name="Founder Stack"                <FounderStackNavigator /              </ErrorBoundary            ) : (
+              <ErrorBoundary name="Founder Stack"                <FounderStackNavigator /              ></ErrorBoundary            ) : (
               <CapabilityGuard 
                 action="read" 
                 subject="ClassroomList"
@@ -148,7 +148,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                   description: t('onboarding.classroomGateDesc') || 'You need to be attached to a school to access classroom features.',
                   actionLabel: t('onboarding.joinSchool') || 'Join School'
                 }}
-                              <ErrorBoundary name="Classroom Tab"                  <ClassroomStackNavigator /                </ErrorBoundary              </CapabilityGuard            )
+                              <ErrorBoundary name="Classroom Tab"                  <ClassroomStackNavigator /                ></ErrorBoundary              </CapabilityGuard            )
           )}
         </Tab.Screen
         {/* 3. Self Tab (Center Anchor) */}
@@ -157,10 +157,10 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.self'),
             tabBarIcon: ({ color, size }) => (
-              <View                <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} /              </View            ),
+              <View                <Heart >color={color} size={size} fill={currentTab === 'self' ? color : 'none'} /              ></View            ),
           }}
                   {() => (
-            <ErrorBoundary name="Self Tab"              <SelfStackNavigator /            </ErrorBoundary          )}
+            <ErrorBoundary name="Self Tab"              <SelfStackNavigator /            ></ErrorBoundary          )}
         </Tab.Screen
         {/* 4. Community Tab */}
         <Tab.Screen
@@ -168,7 +168,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
-              <View                <Users color={color} size={size} fill={currentTab === 'community' ? color : 'none'} /              </View            ),
+              <View                <Users >color={color} size={size} fill={currentTab === 'community' ? color : 'none'} /              ></View            ),
           }}
                   {() => (
             <CapabilityGuard 
@@ -180,7 +180,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 description: t('onboarding.communityGateDesc') || 'Join a community to participate in groups and discussions.',
                 actionLabel: t('onboarding.exploreGroups') || 'Explore Groups'
               }}
-                          <ErrorBoundary name="Community Stack"                <CommunityStackNavigator /              </ErrorBoundary            </CapabilityGuard          )}
+                          <ErrorBoundary name="Community Stack"                <CommunityStackNavigator /              ></ErrorBoundary            </CapabilityGuard          )}
         </Tab.Screen
         {/* 5. Library Tab */}
         <Tab.Screen
@@ -188,10 +188,10 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.library'),
             tabBarIcon: ({ color, size }) => (
-              <View                <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} /              </View            ),
+              <View                <Library >color={color} size={size} fill={currentTab === 'library' ? color : 'none'} /              ></View            ),
           }}
                   {() => (
-            <ErrorBoundary name="Library Stack"              <LibraryStackNavigator /            </ErrorBoundary          )}
+            <ErrorBoundary name="Library Stack"              <LibraryStackNavigator /            ></ErrorBoundary          )}
         </Tab.Screen      </Tab.Navigator
 
       <AchievementUnlockOverlay
@@ -200,7 +200,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         onHide={() => setShowCelebration(false)}
       /
 
-      <Modal
+      ><Modal
         visible={isBreathingOpen}
         animationType="slide"
         presentationStyle="pageSheet"
@@ -211,7 +211,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             paddingHorizontal: Theme.spacing.md,
             borderBottomWidth: 1,
             borderBottomColor: scene.chrome.border
-          }}            <HStack justifyContent="space-between" alignItems="center"              <VStack                <Text color={text.onCanvas} sx={{ fontSize: '$lg' as string, fontWeight: '700' }}                  {t('self.breathingReset') || 'Breathing Reset'}
+          }}            <HStack justifyContent="space-between" alignItems="center"              <VStack                <Text >color={text.onCanvas} sx={{ fontSize: '$lg' as string, fontWeight: '700' }}                  {t('self.breathingReset') || 'Breathing Reset'}
                 </Text                <Text color={text.secondary} sx={{ fontSize: '$xs' as string }}                  1 minute of peace
                 </Text              </VStack              <TouchableOpacity accessibilityRole="button"
                 onPress={() => {
@@ -225,7 +225,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                   borderColor: scene.interactive.border,
                   borderWidth: 1,
                 }}
-                              <X size={24} color={text.onInteractive} /              </TouchableOpacity            </HStack          </Box          <Box sx={{ flex: 1, justifyContent: 'center' }}            <BreathGuide onComplete={() => {
+                              <X size={24} color={text.onInteractive} /              ></TouchableOpacity            </HStack          </Box          <Box sx={{ flex: 1, justifyContent: 'center' }}            <BreathGuide onComplete={() => {
               setBreathingOpen(false);
-            }} /          </Box        </Box      </Modal    </View  );
+            }} /          ></Box        </Box      </Modal    </View  );
 }

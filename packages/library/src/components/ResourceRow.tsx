@@ -111,16 +111,16 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             borderWidth: 1,
                             borderColor: `${config.color}30`,
                         }}
-                                            <Icon color={config.color} size={20} /                        <Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text                    </Box
-                    {/* Content */}
-                    <VStack sx={{ flex: 1, gap: 2 }}                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text                        <HStack space="xs" alignItems="center"                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text                            {metaParts.length > 0 && (
-                                <                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} /                                    <Text size="xs" color={colors.textTertiary}>{metaParts.join(' \u00B7 ')}</Text                                </                            )}
+                                            <Icon color={config.color} size={20} /                        ><Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text                    ></Box
+                    >{/* Content */}
+                    <VStack sx={{ flex: 1, gap: 2 }}                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text                        ><HStack space="xs" alignItems="center"                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text                            >{metaParts.length > 0 && (
+                                <                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} /                                    ><Text size="xs" color={colors.textTertiary}>{metaParts.join(' \u00B7 ')}</Text                                ></                            )}
                         </HStack                        <HStack space="xs" alignItems="center"                            {resource.verified && (
-                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>VERIFIED</Text                                </Box                            )}
+                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>VERIFIED</Text                                ></Box                            )}
                             {resource.is_community && (
-                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>COMMUNITY</Text                                </Box                            )}
+                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>COMMUNITY</Text                                ></Box                            )}
                             {resource.link_status === 'broken' && (
-                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text                                </Box                            )}
+                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text                                ></Box                            )}
                         </HStack                    </VStack
                     {/* Actions */}
                     <HStack space="xs" alignItems="center"                        {onFlashPlay && (

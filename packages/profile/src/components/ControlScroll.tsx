@@ -70,7 +70,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                 }}
                             
                                 <IconComponent size={20} color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} /
-                            </Box
+                            ></Box
                             <VStack
                                 <Text color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}
                                     {label}
@@ -132,7 +132,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                     <HStack sx={{ p: Theme.spacing.md }} space="md" alignItems="center"
                         <Box style={styles.iconBox}
                             <Globe size={20} color={Theme.colors.sanctuarySaffron} /
-                        </Box
+                        ></Box
                         <VStack
                             <Text color={Theme.colors.sacredWhite} bold
                                 {t('profile.appLanguage') || 'App Language'}
@@ -169,7 +169,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                             <HStack space="md" alignItems="center"
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}
                                     <Moon size={20} color="#9B59B6" /
-                                </Box
+                                ></Box
                                 <VStack
                                     <Text color={Theme.colors.sacredWhite}>Theme</Text
                                     <Text color={Theme.colors.dimGray} size="xs">{getThemeLabel(themeMode)}</Text
@@ -227,7 +227,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                 sx={{ padding: Theme.spacing.xs }}
                             
                                 <X color={Theme.colors.mistGray} size={24} /
-                            </Pressable
+                            ></Pressable
                         </HStack
 
                         <VStack space="md"

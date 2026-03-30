@@ -86,7 +86,7 @@ export default function FounderDashboard() {
                 subtitle={t('founder.ecosystemTitle') || 'The Gurudevi Ecology'}
             /
 
-            <ScrollView showsVerticalScrollIndicator={false}
+            ><ScrollView showsVerticalScrollIndicator={false}
                 <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}
 
                     {/* 1. Ecosystem Pulse (Aggregate Stats) */}
@@ -98,7 +98,7 @@ export default function FounderDashboard() {
                             <FounderGlow active={true} intensity="subtle"
                                 <HStack sx={{ gap: 4, alignItems: 'center', backgroundColor: colors.secondary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}
                                     <HeartPulse size={16} color={colors.success} /
-                                    <Text sx={{ fontSize: 12, fontWeight: '800' }} color={colors.success}
+                                    ><Text sx={{ fontSize: 12, fontWeight: '800' }} color={colors.success}
                                         Health: {stats?.ecosystem_health || 0}%
                                     </Text
                                 </HStack
@@ -131,10 +131,10 @@ export default function FounderDashboard() {
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                         <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}
                                             <SchoolIcon size={24} color={Theme.colors.sanctuarySaffron} /
-                                            <VStack
-                                                <Text sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text
-                                                <Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text
-                                            </VStack
+                                            ><VStack
+                                                <Text >sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text
+                                                ><Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text
+                                            ></VStack
                                         </HStack
                                         <ChevronRight size={20} color={colors.textTertiary} /
                                     </HStack
@@ -146,8 +146,8 @@ export default function FounderDashboard() {
                         {isLoading ? (
                             <HStack sx={{ gap: Theme.spacing.md }}
                                 <SkeletonCard height={80} style={{ flex: 1 }} /
-                                <SkeletonCard height={80} style={{ flex: 1 }} /
-                            </HStack
+                                ><SkeletonCard height={80} style={{ flex: 1 }} /
+                            ></HStack
                         ) : (
                             <HStack sx={{ gap: Theme.spacing.md }}
                                 <StatCard
@@ -156,13 +156,13 @@ export default function FounderDashboard() {
                                     icon={<SchoolIcon size={20} color={colors.action} />}
                                     color={colors.action}
                                 /
-                                <StatCard
+                                ><StatCard
                                     label="Total Souls"
                                     value={stats?.total_users || 0}
                                     icon={<Users size={20} color={colors.success} />}
                                     color={colors.success}
                                 /
-                            </HStack
+                            ></HStack
                         )}
 
                         {!isLoading && (
@@ -173,13 +173,13 @@ export default function FounderDashboard() {
                                     icon={<LayoutGrid size={20} color={colors.warning} />}
                                     color={colors.warning}
                                 /
-                                <StatCard
+                                ><StatCard
                                     label="Teachers"
                                     value={stats?.total_teachers || 0}
                                     icon={<Zap size={20} color={Theme.colors.sanctuarySaffron} />}
                                     color={Theme.colors.sanctuarySaffron}
                                 /
-                            </HStack
+                            ></HStack
                         )}
 
                         {/* Quick Actions */}
@@ -193,10 +193,10 @@ export default function FounderDashboard() {
                                 }}
                                 color={Theme.colors.lotusDeepPink}
                             /
-                            {/* Placeholder for future founder quick actions */}
+                            >{/* Placeholder for future founder quick actions */}
                             <Box sx={{ flex: 1 }} /
-                            <Box sx={{ flex: 1 }} /
-                        </HStack
+                            ><Box sx={{ flex: 1 }} /
+                        ></HStack
                     </VStack
 
                     {/* 2. School Gallery */}
@@ -220,8 +220,8 @@ export default function FounderDashboard() {
                         {isLoading ? (
                             <VStack sx={{ gap: Theme.spacing.md }}
                                 <SkeletonCard height={100} /
-                                <SkeletonCard height={100} /
-                            </VStack
+                                ><SkeletonCard height={100} /
+                            ></VStack
                         ) : (
                             <VStack sx={{ gap: Theme.spacing.md }}
                                 {filteredSchools.map((school) => (
@@ -235,7 +235,7 @@ export default function FounderDashboard() {
                                             });
                                         }}
                                     /
-                                ))}
+                                >))}
 
                                 {filteredSchools.length === 0 && (
                                     <Box sx={{
@@ -248,7 +248,7 @@ export default function FounderDashboard() {
                                         borderStyle: 'dashed'
                                     }}
                                         <Text color={colors.textTertiary}>No institutions found</Text
-                                    </Box
+                                    ></Box
                                 )}
                             </VStack
                         )}
@@ -292,7 +292,7 @@ function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, l
                 }}
             
                 <LucideIcon color={color} size={28} /
-            </TouchableOpacity
+            ></TouchableOpacity
             <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 11, fontWeight: '700' }}
                 {label}
             </Text
@@ -351,7 +351,7 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                         alignItems: 'center'
                     }}
                         <SchoolIcon size={24} color={colors.action} /
-                    </Box
+                    ></Box
                     <VStack sx={{ flex: 1 }}
                         <Text sx={{ fontWeight: '700', fontSize: 16 }} color={colors.text}
                             {school.name}

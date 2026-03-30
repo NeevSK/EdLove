@@ -419,7 +419,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                         backgroundColor: liveMetrics.resource_usage.cpu > 80 ? theme.accent.danger : theme.sageGreen
                       }
                     ]}
-                  /                </View                <Text 
+                  /                ></View                <Text 
                   style={[
                     styles.resourceValue,
                     { 
@@ -449,7 +449,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                         backgroundColor: liveMetrics.resource_usage.memory > 85 ? theme.accent.danger : theme.sageGreen
                       }
                     ]}
-                  /                </View                <Text 
+                  /                ></View                <Text 
                   style={[
                     styles.resourceValue,
                     { 

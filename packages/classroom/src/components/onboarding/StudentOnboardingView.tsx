@@ -57,7 +57,7 @@ export default function StudentOnboardingView({
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
                         marginBottom: 12
-                    }}                        <Icon as={GraduationCap} color={Theme.colors.sanctuarySaffron} size={40} /                    </Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Student
+                    }}                        <Icon as={GraduationCap} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Student
                     </Heading                    <Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
@@ -89,11 +89,11 @@ export default function StudentOnboardingView({
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}                                    <Icon as={UserPlus} color="white" size={32} /                                </Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="md" color={colors.text}>Join a Classroom</Heading                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Enter a class code or scan a QR code provided by your teacher to enter your learning space.
+                                }}                                    <Icon as={UserPlus} color="white" size={32} /                                ></Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="md" color={colors.text}>Join a Classroom</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Enter a class code or scan a QR code provided by your teacher to enter your learning space.
                                     </Text                                    {isGuest && (
-                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} /                                            <Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}                                                Guest Access
+                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} /                                            ><Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}                                                Guest Access
                                             </Text                                        </HStack                                    )}
-                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            </HStack                        </Box                    </TouchableOpacity
+                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Find School Card */}
                     <TouchableOpacity 
                         onPress={() => {
@@ -115,8 +115,8 @@ export default function StudentOnboardingView({
                                     backgroundColor: colors.border,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                </Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Find My School</Heading                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Search for your institution to find available classes and school events.
-                                    </Text                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            </HStack                        </Box                    </TouchableOpacity
+                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                ></Box                                <VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Find My School</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Search for your institution to find available classes and school events.
+                                    </Text                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Try Demo Banner */}
                     <Box sx={{ 
                         marginTop: Theme.spacing.xl,
@@ -135,11 +135,11 @@ export default function StudentOnboardingView({
                             backgroundColor: 'rgba(212,132,58,0.15)',
                             zIndex: 0
                         }} /
-                        <VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}                            <Box sx={{ 
+                        ><VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}                            <Box sx={{ 
                                 padding: 12, 
                                 borderRadius: 16, 
                                 backgroundColor: 'rgba(255,255,255,0.1)'
-                            }}                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} /                            </Box                            <VStack sx={{ gap: 8, alignItems: 'center' }}                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}                                    See Your Future
+                            }}                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} /                            ></Box                            <VStack sx={{ gap: 8, alignItems: 'center' }}                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}                                    See Your Future
                                 </Heading                                <Text sx={{ 
                                     color: 'rgba(255,255,255,0.7)', 
                                     fontSize: 15, 
@@ -160,7 +160,7 @@ export default function StudentOnboardingView({
                                     borderRadius: 27
                                 }}
                                                             <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Start Learning Demo
-                                </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            </Button                        </VStack                    </Box
+                                </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
                 </VStack
                 <Text sx={{ 
                     textAlign: 'center', 

@@ -80,10 +80,10 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
         return (
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}
                 <GlobalHeader title="Attendance Report" onBack={onBack} /
-                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
+                ><VStack space="lg" sx={{ padding: Theme.spacing.lg }}
                     <SkeletonCard height={150} /
-                    <SkeletonCard height={300} /
-                </VStack
+                    ><SkeletonCard height={300} /
+                ></VStack
             </Box
         );
     }
@@ -97,11 +97,11 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                 onBack={onBack}
             /
 
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}
+            ><ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}
                 <VStack space="xl"
                     {/* Cycle Selector */}
                     <Box
-                        <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary, marginBottom: Theme.spacing.sm, textTransform: 'uppercase' }}
+                        <Text >sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary, marginBottom: Theme.spacing.sm, textTransform: 'uppercase' }}
                             Select Academic Cycle
                         </Text
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}
@@ -132,16 +132,16 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                             <Box sx={{ flex: 1, backgroundColor: colors.secondary, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border }}
                                 <VStack space="xs"
                                     <Activity size={20} color={colors.action} /
-                                    <Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.overallRate}%</Text
-                                    <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Average Rate</Text
-                                </VStack
+                                    ><Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.overallRate}%</Text
+                                    ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>Average Rate</Text
+                                ></VStack
                             </Box
                             <Box sx={{ flex: 1, backgroundColor: colors.secondary, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border }}
                                 <VStack space="xs"
                                     <AlertTriangle size={20} color={Theme.colors.amberGlow ?? '#ffcc00'} /
-                                    <Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.totalAbsences}</Text
-                                    <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Total Absences</Text
-                                </VStack
+                                    ><Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.totalAbsences}</Text
+                                    ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>Total Absences</Text
+                                ></VStack
                             </Box
                         </HStack
                     )}
@@ -157,8 +157,8 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                         <VStack space="md"
                             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                 <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Attendance Trend</Text
-                                <TrendingUp size={18} color={colors.success} /
-                            </HStack
+                                ><TrendingUp size={18} color={colors.success} /
+                            ></HStack
 
                             {report && report.trend.length > 0 ? (
                                 <VStack space="sm"
@@ -171,8 +171,8 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                                                     backgroundColor: point.rate > 90 ? colors.success : (point.rate > 75 ? colors.warning : colors.error),
                                                     borderRadius: 4
                                                 }} /
-                                                <Text sx={{ fontSize: 8, color: colors.textTertiary }}>{point.date.split('-')[2]}</Text
-                                            </VStack
+                                                ><Text sx={{ fontSize: 8, color: colors.textTertiary }}>{point.date.split('-')[2]}</Text
+                                            ></VStack
                                         ))}
                                     </HStack
                                     <Text sx={{ fontSize: 10, color: colors.textTertiary, textAlign: 'center' }}>Showing last 10 session days</Text
@@ -180,7 +180,7 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                             ) : (
                                 <Box sx={{ height: 100, justifyContent: 'center', alignItems: 'center' }}
                                     <Text sx={{ color: colors.textTertiary }}>No data for this period</Text
-                                </Box
+                                ></Box
                             )}
                         </VStack
                     </Box
@@ -188,12 +188,12 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                     {/* Daily Table */}
                     <VStack space="sm"
                         <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text, marginLeft: 4 }}>Attendance Log</Text
-                        {report?.trend.slice().reverse().map((point) => (
+                        >{report?.trend.slice().reverse().map((point) => (
                             <Box key={point.date} sx={{ padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border }}
                                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                     <VStack
-                                        <Text sx={{ fontSize: 14, fontWeight: '600', color: colors.text }}>{point.date}</Text
-                                        <Text sx={{ fontSize: 11, color: colors.textSecondary }}
+                                        <Text >sx={{ fontSize: 14, fontWeight: '600', color: colors.text }}>{point.date}</Text
+                                        ><Text sx={{ fontSize: 11, color: colors.textSecondary }}
                                             {point.presentCount} present \u00B7 {point.absentCount} absent
                                         </Text
                                     </VStack

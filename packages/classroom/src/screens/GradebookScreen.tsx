@@ -54,7 +54,7 @@ export default function GradebookScreen({
 
     const handleSaveSettings = async (
         settings: Omit<ClassroomGradingSettings, 'classroom_id'
-    ) => {
+    >) => {
         try {
             await updateSettings(settings);
             setShowSettings(false);
@@ -82,7 +82,7 @@ export default function GradebookScreen({
                     onSave={handleSaveSettings}
                     onCancel={() => setShowSettings(false)}
                 /
-            )
+            >)
         );
     }
 
@@ -96,7 +96,7 @@ export default function GradebookScreen({
                 onSave={handleSaveGrade}
                 onCancel={() => setGradingStudentId(null)}
             /
-        );
+        >);
     }
 
     return (
@@ -108,7 +108,7 @@ export default function GradebookScreen({
         
             <ScrollView
                 <VStack
-                    sx={{ padding: Theme.spacing.lg, gap: 24 }}
+                    >sx={{ padding: Theme.spacing.lg, gap: 24 }}
                 
                     {/* Header */}
                     <HStack
@@ -222,7 +222,7 @@ export default function GradebookScreen({
                             }}
                         
                             <Spinner color={Theme.colors.sanctuarySaffron} /
-                            <Text
+                            ><Text
                                 color={Theme.colors.starlightGray}
                                 sx={{ marginTop: Theme.spacing.md }}
                             
@@ -254,7 +254,7 @@ export default function GradebookScreen({
                                 gradingSettings={gradingSettings}
                                 studentNames={studentNames}
                             /
-                            <Text color={Theme.colors.starlightGray} sx={{ fontSize: 12, textAlign: 'center', marginTop: -Theme.spacing.sm }}
+                            ><Text color={Theme.colors.starlightGray} sx={{ fontSize: 12, textAlign: 'center', marginTop: -Theme.spacing.sm }}
                                 {t('grading.gradebook.tapToGrade') || 'Tap a student row to enter or update their grade'}
                             </Text
                             {/* Per-student grade buttons */}
@@ -276,7 +276,7 @@ export default function GradebookScreen({
                                             <Text color={Theme.colors.sacredWhite} sx={{ fontWeight: '600' }}
                                                 {studentNames[g.student_id] ?? g.student_id}
                                             </Text
-                                            <HStack sx={{ gap: 12, alignItems: 'center' }}                                                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700' }}                                                    {g.marks}/100
+                                            <HStack sx={{ gap: 12, alignItems: 'center' }}                                                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700' }}                                                    {g.marks}/>100
                                                 </Text                                                <Text color={g.publication_state === 'published' ? Theme.colors.mossGreen : Theme.colors.starlightGray} sx={{ fontSize: 11, fontWeight: '700' }}                                                    {g.publication_state === 'published' ? 'Published' : 'Draft'}
                                                 </Text                                                <Button size="xs" variant="outline" sx={{ borderColor: Theme.colors.sanctuarySaffron }} onPress={() => setGradingStudentId(g.student_id)}                                                    <ButtonText color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 11 }}                                                        {t('grading.gradebook.grade') || 'Edit Draft'}
                                                     </ButtonText                                                </Button                                                <Button

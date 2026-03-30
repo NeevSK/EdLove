@@ -77,7 +77,7 @@ export default function AIAssistantScreen() {
 
     if (!userId) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', gap: '16px', padding: '32px' }}                <div style={{ fontSize: '40px' }}>\u2728</div                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)' }}>Sign in to meet your Sanctuary Guide</div                <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', textAlign: 'center', maxWidth: '360px', lineHeight: '1.6' }}                    The AI assistant is personalised to your role, school, and learning orientation. Sign in to begin.
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', gap: '16px', padding: '32px' }}                <div style={{ fontSize: '40px' }}>\u2728</div                ><div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)' }}>Sign in to meet your Sanctuary Guide</div                ><p style={{ fontSize: '14px', color: 'var(--ink-ghost)', textAlign: 'center', maxWidth: '360px', lineHeight: '1.6' }}                    The AI assistant is personalised to your role, school, and learning orientation. Sign in to begin.
                 </p                <button className="premium-button" onClick={() => navigation.navigate('Auth')}                    Sign In
                 </button            </div        );
     }
@@ -103,7 +103,7 @@ export default function AIAssistantScreen() {
                                         fontFamily: 'var(--font-body)',
                                     }}
                                                                     <div style={{ fontSize: '12px', fontWeight: '700', color: gap.priority === 'high' ? '#c0392b' : '#e67e22', marginBottom: '2px' }}                                        {gap.priority === 'high' ? '\u26A1' : '\u26A0'} {gap.title}
-                                    </div                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{gap.suggestedAction}</div                                </button                            ))}
+                                    </div                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{gap.suggestedAction}</div                                ></button                            ))}
                         </div                    )}
                 </div
                 {/* Clear history */}
@@ -118,7 +118,7 @@ export default function AIAssistantScreen() {
                         onClick={() => navigation.goBack()}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: '600', padding: '4px 8px', borderRadius: '8px' }}
                                             \u2190 Back
-                    </button                    <div style={{ flex: 1 }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                            <span style={{ fontSize: '18px' }}>\u2728</span                            <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}                                {t('aiAssistant.title') || 'Sanctuary Guide'}
+                    </button                    <div style={{ flex: 1 }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                            <span style={{ fontSize: '18px' }}>\u2728</span                            ><span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}                                {t('aiAssistant.title') || 'Sanctuary Guide'}
                             </span                        </div                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}                            {t('aiAssistant.subtitle') || 'Your AI companion for reflection and school flow'}
                         </div                    </div                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', background: 'var(--background-alt)', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border-light)' }}                        {context.roles[0] ?? 'member'}
                     </div                </div
@@ -150,20 +150,20 @@ export default function AIAssistantScreen() {
                                         whiteSpace: 'pre-wrap',
                                         wordBreak: 'break-word',
                                     }}                                        {msg.content}
-                                    </div                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.timestamp)}</span                                </div                            </div                        );
+                                    </div                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.timestamp)}</span                                ></div                            </div                        );
                     })}
 
                     {/* Thinking indicator */}
                     {isThinking && (
-                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}                            <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: 'linear-gradient(135deg, #8b5cf6, #f59e0b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>\u2728</div                            <div style={{ padding: '12px 16px', borderRadius: '18px', borderBottomLeftRadius: '4px', background: 'var(--background-alt)', border: '1px solid var(--border-light)', display: 'flex', gap: '6px', alignItems: 'center' }}                                {[0, 1, 2].map(i => (
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}                            <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: 'linear-gradient(135deg, #8b5cf6, #f59e0b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>\u2728</div                            ><div style={{ padding: '12px 16px', borderRadius: '18px', borderBottomLeftRadius: '4px', background: 'var(--background-alt)', border: '1px solid var(--border-light)', display: 'flex', gap: '6px', alignItems: 'center' }}                                {[0, 1, 2].map(i => (
                                     <div key={i} style={{
                                         width: '6px', height: '6px', borderRadius: '3px', background: 'var(--ink-ghost)',
                                         animation: 'pulse 1.4s ease-in-out infinite',
                                         animationDelay: `${i * 0.2}s`,
-                                    }} /                                ))}
+                                    }} /                                >))}
                             </div                        </div                    )}
 
-                    <div ref={bottomRef} /                </div
+                    <div ref={bottomRef} /                ></div
                 {/* Compose bar */}
                 <div style={{ borderTop: '1px solid var(--border-light)', padding: '16px 24px', background: 'var(--surface)', display: 'flex', gap: '12px', alignItems: 'flex-end' }}                    <textarea
                         ref={textareaRef}
@@ -179,7 +179,7 @@ export default function AIAssistantScreen() {
                             lineHeight: '1.5', outline: 'none', resize: 'none',
                             minHeight: '44px', maxHeight: '160px', overflow: 'auto',
                         }}
-                    /                    <button
+                    /                    ><button
                         onClick={handleSend}
                         disabled={!draft.trim() || isThinking}
                         style={{
