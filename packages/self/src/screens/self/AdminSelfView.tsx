@@ -152,7 +152,7 @@ export default function AdminSelfView() {
             /
 
 
-            <WelcomeModal>
+            <WelcomeModal/>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /

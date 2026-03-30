@@ -45,5 +45,5 @@ export default function SelfScreenWeb() {
           note={note}
           showPersonalizedGreeting
         /        <div style={{ marginTop: 24 }}            {renderDashboard()}
-        </div      </div    </div  );
+        </div      ></div    </div  );
 }

@@ -20,7 +20,7 @@ export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, is
           }
         ]}
               Guardian Dashboard
-      </Text      <Text 
+      </Text      ><Text 
         style={[
           styles.subtitle,
           { 

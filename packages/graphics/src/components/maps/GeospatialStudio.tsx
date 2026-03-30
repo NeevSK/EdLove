@@ -36,6 +36,6 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
       /
       <View style={{ marginTop: 20 }}        <Text style={{ fontSize: 16, fontWeight: '600' }}>Dataset Features:</Text        >{data.map((f: any) => (
           <Text key={f.id} style={{ fontSize: 12 }}            " {f.properties.school_name}: {f.properties.viability_score}>
-          </Text        ))}
+          </Text        >))}
       </View    </View  );
 }

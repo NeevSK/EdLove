@@ -105,7 +105,7 @@ export function AvatarDisplay({
   ];
 
   const content = (
-    <UserAvatar>
+    <UserAvatar/>
       avatarUrl={displayUri}
       fullName={fullName}
       size={size}
@@ -116,7 +116,7 @@ export function AvatarDisplay({
     if (peekable) {
       return (
         <TouchableOpacity style={containerStyle} onPress={handlePeek} activeOpacity={0.7}          {content}>
-        </TouchableOpacity      );
+        </TouchableOpacity      >);
     }
     return <View style={containerStyle}>{content}</View>;
   }
@@ -125,7 +125,7 @@ export function AvatarDisplay({
     <TouchableOpacity style={containerStyle} onPress={handlePickAndUpload} activeOpacity={0.8}      {content}>
       <View style={[styles.editOverlay, { borderRadius }]}        {uploading
           ? <ActivityIndicator color="white" size="small" /          >: <Camera size={size * 0.22} color="white" /        >}>
-      </View    </TouchableOpacity  );
+      </View    ></TouchableOpacity  >);
 }
 
 const styles = StyleSheet.create({

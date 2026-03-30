@@ -53,7 +53,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
     if (avatarUrl) {
         return (
-            <Image>
+            <Image/>
                 source={{ uri: avatarUrl }}
                 accessible={true}
                 accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}

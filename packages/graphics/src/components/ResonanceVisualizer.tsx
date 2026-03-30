@@ -37,7 +37,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
             }
           ]}
         /        {/* Simple CSS simulation of "subsurface scattering" */}
-        <View >
+        <View />
           style={[
             styles.webCore,
             {
@@ -49,7 +49,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
               backgroundColor: `rgba(255, 235, 205, ${0.3 + intensity * 0.6})`, // BlanchedAlmond (Silk)
             }
           ]}
-        /      </SanctuaryCanvas    );
+        /      </SanctuaryCanvas    >);
   }
 
   // Native implementation would ideally use Skia
@@ -64,7 +64,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
             backgroundColor: 'rgba(255, 150, 0, 0.2)',
           }
         ]}
-      /    </SanctuaryCanvas  );
+      /    </SanctuaryCanvas  >);
 };
 
 const styles = StyleSheet.create({

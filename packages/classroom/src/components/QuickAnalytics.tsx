@@ -84,7 +84,7 @@ export default function QuickAnalytics({
             value={`#${rank}`}
             subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
             color={Theme.colors.gurudeviBlue}
-          /          />/>
+          /          />/>/>
           ><AnalyticsWidget
             title="Attendance Rate"
             value={`${(attendanceRate * 100).toFixed(1)}%`}

@@ -46,7 +46,7 @@ export function SriLankaMap({
                             }}
 
                         /                    ))}
-                </G            </Svg        </View    );
+                </G            ></Svg        </View    );
 }
 
 const styles = StyleSheet.create({

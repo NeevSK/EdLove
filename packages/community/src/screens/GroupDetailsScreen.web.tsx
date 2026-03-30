@@ -24,7 +24,7 @@ export default function GroupDetailsScreenWeb() {
     if (error || !instance) {
         return (
             <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                Community Circle Not Found or Error Loading>
-            </Box        );
+            </Box        >);
     }
 
     return (
@@ -32,5 +32,5 @@ export default function GroupDetailsScreenWeb() {
                 definition={instance.definition} 
                 instance={instance} 
                 mode="view" 
-            /        </Box    );
+            /        </Box    >);
 }

@@ -188,7 +188,7 @@ export default function FounderSelfView() {
             /
 
 
-            <WelcomeModal>
+            <WelcomeModal/>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /

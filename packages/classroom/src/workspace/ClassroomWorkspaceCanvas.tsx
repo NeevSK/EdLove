@@ -73,11 +73,11 @@ export function ClassroomWorkspaceCanvas({
                             onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
                             style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
                                                     <Text style={styles.actionText}                                {typedSurface.pinned ? 'Unpin' : 'Pin'}>
-                            </Text                        </Pressable                        <Pressable
+                            </Text                        ></Pressable                        ><Pressable
                             accessibilityRole="button"
                             onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
                             style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
-                                                    <Text style={styles.actionText}>Move to {nextZone}</Text                        ></Pressable                    </View                );
+                                                    <Text style={styles.actionText}>Move to {nextZone}</Text                        ></Pressable                    ></View                );
             }}
             onToggleHidden={(surface) => onToggleHidden(surface.surfaceId, !surface.hidden)}
         /    );
