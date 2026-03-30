@@ -260,7 +260,7 @@ export const FormBuilder = ({
                     ><Text sx={{ color: colors.textSecondary }}>{description}</Text
                 ></VStack
                 
-                <HStack sx={{ gap: 12 }}
+                ><HStack sx={{ gap: 12 }}
                     <Button 
                         variant="outline" 
                         onPress={() => setPreviewMode(!previewMode)}
@@ -313,7 +313,7 @@ export const FormBuilder = ({
                     <Heading size="md" sx={{ marginBottom: 24, textAlign: 'center' }}>Real-time Preview</Heading
                     ><NativeForm manager={previewManager} submitLabel="Register Interaction" /
                 ></Box
-            ) : activeTab === 'editor' ? (
+            >) : activeTab === 'editor' ? (
                 <HStack sx={{ gap: 32, flex: 1 }}
                     <VStack sx={{ flex: 2, gap: 16 }}>
                         {fields.map((field, index) => (
@@ -359,7 +359,7 @@ export const FormBuilder = ({
                                                 }}
                                             /
                                         ></VStack
-                                        <VStack sx={{ flex: 1, gap: 6 }}
+                                        ><VStack sx={{ flex: 1, gap: 6 }}
                                             <Text sx={{ fontSize: 12, fontWeight: '600' }}>Type</Text
                                             ><select 
                                                 value={field.type}
@@ -439,7 +439,7 @@ export const FormBuilder = ({
                             <Heading >size="md">Performance Dashboard</Heading
                             ><Text sx={{ color: colors.textSecondary }}>{responses.length} Resonance Submissions</Text
                         ></VStack
-                        <HStack sx={{ gap: 8 }}
+                        ><HStack sx={{ gap: 8 }}
                             <Button 
                                 variant="outline" 
                                 action="secondary" 
@@ -448,15 +448,15 @@ export const FormBuilder = ({
                                 <Icon as={Layout} sx={{ marginRight: 8 }} /
                                 ><ButtonText>Print Report</ButtonText
                             ></Button
-                            <Button 
+                            ><Button 
                                 variant="outline" 
                                 action="secondary" 
                                 onPress={handleExportCSV}
                                 isDisabled={responses.length === 0}>
                             
                                 <Icon as={Download} sx={{ marginRight: 8 }} /
-                                <ButtonText>CSV</ButtonText
-                            </Button>
+                                ><ButtonText>CSV</ButtonText
+                            ></Button>
                             <Button 
                                 variant="outline" 
                                 action="primary" 
@@ -467,7 +467,7 @@ export const FormBuilder = ({
                                 <Icon as={Save} color="white" sx={{ marginRight: 8 }} /
                                 ><ButtonText>XLSX (Excel)</ButtonText
                             ></Button
-                        </HStack>
+                        ></HStack>
                     </HStack>
 
                     {templateId && (
@@ -540,7 +540,7 @@ export const FormBuilder = ({
                                         ><Text sx={{ fontSize: 12, color: colors.textTertiary }}>{stat.type.toUpperCase()}</Text
                                     ></HStack
 
-                                    {stat.type === 'select' ? (
+                                    >{stat.type === 'select' ? (
                                         <VStack sx={{ gap: 12 }}
                                             {Object.entries(stat.data).map(([option, count]: any) => {
                                                 const percentage = (count / stat.totalResponses) * 100;
@@ -550,7 +550,7 @@ export const FormBuilder = ({
                                                             <Text sx={{ fontSize: 13, fontWeight: '500' }}>{option}</Text
                                                             ><Text sx={{ fontSize: 12, color: colors.textSecondary }}>{count} ({Math.round(percentage)}%)</Text
                                                         ></HStack
-                                                        <Box sx={{ height: 8, backgroundColor: colors.tertiary, borderRadius: 4, overflow: 'hidden' }}
+                                                        ><Box sx={{ height: 8, backgroundColor: colors.tertiary, borderRadius: 4, overflow: 'hidden' }}
                                                             <Box sx={{ height: '100%', width: `${percentage}%`, backgroundColor: Theme.colors.sageGreen }} /
                                                         ></Box
                                                     </VStack>
@@ -563,10 +563,10 @@ export const FormBuilder = ({
                                                 <Text >sx={{ fontSize: 12, color: colors.textTertiary }}>AVERAGE</Text
                                                 ><Heading size="lg">{stat.data.average.toFixed(1)}</Heading
                                             ></VStack
-                                            <VStack
-                                                <Text sx={{ fontSize: 12, color: colors.textTertiary }}>RANGE</Text
-                                                <Text sx={{ fontWeight: '600' }}>{stat.data.min} - {stat.data.max}</Text
-                                            </VStack>
+                                            ><VStack
+                                                <Text >sx={{ fontSize: 12, color: colors.textTertiary }}>RANGE</Text
+                                                ><Text sx={{ fontWeight: '600' }}>{stat.data.min} - {stat.data.max}</Text
+                                            ></VStack>
                                         </HStack>
                                     ) : (
                                         <VStack sx={{ gap: 8 }}

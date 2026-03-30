@@ -89,23 +89,23 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
 
     return (
         <VStack sx={{ gap: Theme.spacing.md }}
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <VStack sx={{ gap: Theme.spacing.xs }}
-                    <Heading sx={{ fontSize: Theme.typography.fontSize.md }} color={colors.text}
+                    <Heading sx={{ fontSize: Theme.typography.fontSize.md }} color={colors.text}>
                         {t('principal.echo.title')}
-                    </Heading
+                    </Heading>
                     <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}
-                        {t('principal.echo.subtitle')}
-                    </Text
-                </VStack
+                        {t('principal.echo.subtitle')}>
+                    </Text>
+                </VStack>
                 {feedback.filter(e => !e.is_read).length > 0 && (
                     <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 10, paddingHorizontal: Theme.spacing.sm, paddingVertical: 2 }}
-                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '800', color: '#fff' }}
+                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '800', color: '#fff' }}>
                             {feedback.filter(e => !e.is_read).length} new
-                        </Text
-                    </Box
+                        </Text>
+                    </Box>
                 )}
-            </HStack
+            </HStack>
 
             <VStack sx={{ gap: Theme.spacing.sm }}
                 {feedback.map((item) => {
@@ -119,32 +119,32 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                     backgroundColor: item.is_read ? colors.tertiary : colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 4,
-                                    borderLeftColor: item.priority === 'high' ? Theme.colors.emberRed : colors.action,
+                                    borderLeftColor: item.priority === 'high' ? Theme.colors.emberRed : colors.action,>
                                 }}
                             
                                 <HStack sx={{ gap: Theme.spacing.md, alignItems: 'flex-start' }}
-                                    <Box sx={{ padding: Theme.spacing.sm, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable }}
+                                    <Box sx={{ padding: Theme.spacing.sm, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable }}>
                                         <IconComp size={18} color={colors.action} /
-                                    </Box
+                                    ></Box>
                                     <VStack sx={{ gap: Theme.spacing.xs, flex: 1 }}
-                                        <HStack sx={{ justifyContent: 'space-between' }}
+                                        <HStack sx={{ justifyContent: 'space-between' }}>
                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={colors.textSecondary}
-                                                {item.source.toUpperCase()} \u00B7 {item.category.toUpperCase()}
+                                                {item.source.toUpperCase()} \u00B7 {item.category.toUpperCase()}>
                                                 {!item.is_read && <Text color={Theme.colors.emberRed}>  \u25CF</Text>}
-                                            </Text
+                                            </Text>
                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textTertiary}
-                                                {new Date(item.created_at).toLocaleDateString()}
-                                            </Text
-                                        </HStack
+                                                {new Date(item.created_at).toLocaleDateString()}>
+                                            </Text>
+                                        </HStack>
                                         <Text sx={{ fontSize: Theme.typography.fontSize.sm }} color={colors.text} numberOfLines={3}
-                                            {item.content}
-                                        </Text
+                                            {item.content}>
+                                        </Text>
                                         {/* Principal response bubble */}
                                         {item.principal_response && (
                                             <Box sx={{ marginTop: Theme.spacing.sm, padding: Theme.spacing.sm, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: colors.action }}
                                                 <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '800' }} color={colors.action}>Your Reply</Text
-                                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, marginTop: 2 }} color={colors.text}>{item.principal_response}</Text
-                                            </Box
+                                                ><Text sx={{ fontSize: Theme.typography.fontSize.xs, marginTop: 2 }} color={colors.text}>{item.principal_response}</Text
+                                            ></Box>
                                         )}
                                         {/* Reply toggle */}
                                         <Pressable onPress={() => {
@@ -152,45 +152,45 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                             else { setReplyingTo(item.id); setReplyText(item.principal_response ?? ''); }
                                         }}
                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={colors.action}
-                                                {item.principal_response ? '\u270F\uFE0F Edit reply' : '\u21A9 Reply'}
-                                            </Text
-                                        </Pressable
+                                                {item.principal_response ? '\u270F\uFE0F Edit reply' : '\u21A9 Reply'}>
+                                            </Text>
+                                        </Pressable>
                                         {/* Inline reply input */}
                                         {isExpanded && (
                                             <VStack sx={{ gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}
-                                                <Input
+                                                <Input>
                                                     <InputField
-                                                        value={replyText}
+                                                        >value={replyText}
                                                         onChangeText={setReplyText}
                                                         placeholder="Write your response\u2026"
                                                         multiline
                                                         numberOfLines={2}
-                                                    /
-                                                </Input
+                                                    />
+                                                ></Input>
                                                 <HStack sx={{ gap: Theme.spacing.sm, justifyContent: 'flex-end' }}
                                                     <Button variant="outline" size="sm" onPress={() => { setReplyingTo(null); setReplyText(''); }}
                                                         <ButtonText>{t('common.cancel')}</ButtonText
-                                                    </Button
+                                                    ></Button>
                                                     <Button size="sm" isDisabled={!replyText.trim() || savingReply} onPress={() => handleSendReply(item.id)}
                                                         <Send size={14} color="#fff" /
-                                                        <ButtonText> {savingReply ? '\u2026' : t('common.send')}</ButtonText
-                                                    </Button
-                                                </HStack
-                                            </VStack
+                                                        ><ButtonText> {savingReply ? '\u2026' : t('common.send')}</ButtonText
+                                                    ></Button>
+                                                </HStack>
+                                            </VStack>
                                         )}
-                                    </VStack
+                                    </VStack>
                                     {!isExpanded && <ChevronRight size={16} color={colors.textTertiary} />}
-                                </HStack
-                            </Box
-                        </Pressable
+                                </HStack>
+                            </Box>
+                        </Pressable>
                     );
                 })}
                 {feedback.length === 0 && (
                     <Text sx={{ fontStyle: 'italic', textAlign: 'center' }} color={colors.textTertiary}
-                        {t('principal.echo.empty')}
-                    </Text
+                        {t('principal.echo.empty')}>
+                    </Text>
                 )}
-            </VStack
-        </VStack
+            </VStack>
+        </VStack>
     );
 }

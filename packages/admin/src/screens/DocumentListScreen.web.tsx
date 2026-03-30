@@ -152,7 +152,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           </Text          >
           {document.status === 'review' && document.authorId !== user.userId && (
             <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}              <Text style={[styles.reviewText, { color: theme.accent.action }]}                Pending Review
-              </Text            </View          )}>
+              </Text            ></View          )}>
         </TouchableOpacity      );
     }
 
@@ -239,8 +239,8 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Enhanced Header */}
       <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}            Documents>
-          </Text          <Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
-          </Text        </View        
+          </Text          ><Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
+          </Text        ></View        
         <View style={styles.headerActions}          <TouchableOpacity
             style={[styles.createButton, { backgroundColor: theme.accent.action }]}
             onPress={onCreateNew}>

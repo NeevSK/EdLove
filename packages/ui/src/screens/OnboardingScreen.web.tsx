@@ -303,7 +303,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         <div className="ob-step-meta">Step 1 \u00C2\u00B7 Arrival</div
                         ><div className="ob-step-icon">\uD83D\u2018\u2039</div
                     ></div
-                    <h2 className="ob-step-title"
+                    ><h2 className="ob-step-title"
                         {t('onboarding.nameTitle')}>
                     </h2>
                     <p className="ob-step-subtitle"
@@ -341,7 +341,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         <div className="ob-step-meta">Step 2 \u00C2\u00B7 Belonging</div
                         ><div className="ob-step-icon">\uD83D\u017D\u00AF</div
                     ></div
-                    <h2 className="ob-step-title"
+                    ><h2 className="ob-step-title"
                         {t('onboarding.roleTitle')}>
                     </h2>
                     <p className="ob-step-subtitle"
@@ -395,9 +395,9 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         <div className="ob-step-meta">Sanctuary Tour</div
                         ><div className="ob-step-icon">{screen.emoji}</div
                     ></div
-                    <h2 className="ob-step-title">{screen.title}</h2
-                    <p className="ob-step-subtitle">{screen.subtitle}</p
-                    {renderError()}
+                    ><h2 className="ob-step-title">{screen.title}</h2
+                    ><p className="ob-step-subtitle">{screen.subtitle}</p
+                    >{renderError()}
                     <div className="ob-tour-content">{screen.content}</div
                     ><div className="ob-actions"
                         <button className="ob-btn-secondary" onClick={handleBack}
@@ -464,9 +464,9 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                 ><span className="ob-brand-name">Gurudevi</span
                             ></div
 
-                            <div
-                                <h1 className="ob-left-headline">Your Sacred<br />Sanctuary</h1
-                                <p className="ob-left-tagline"
+                            ><div
+                                <h1 >className="ob-left-headline">Your Sacred<br />Sanctuary</h1
+                                ><p className="ob-left-tagline"
                                     A healing ecosystem for educators \u2014 built in Sri Lanka, breathing worldwide.>
                                 </p>
                             </div>

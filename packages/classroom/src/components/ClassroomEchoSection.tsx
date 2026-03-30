@@ -259,7 +259,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                     <Heading >sx={{ fontSize: 18, color: colors.text }}>Student Echoes</Heading
                     ><Text sx={{ fontSize: 12, color: colors.textTertiary }}>Dignified feedback from your class</Text
                 ></VStack
-                {echoes.filter(e => !e.is_read).length > 0 && (
+                >{echoes.filter(e => !e.is_read).length > 0 && (
                     <Box sx={{ 
                         backgroundColor: Theme.colors.emberRed, 
                         paddingHorizontal: 8, 
@@ -337,7 +337,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                                         autoFocus
                                                     /
                                                 ></Input
-                                            </Box>
+                                            ></Box>
                                             <HStack space="sm" justifyContent="flex-end"
                                                 <Button size="xs" variant="outline" action="secondary" onPress={() => setReplyingTo(null)}
                                                     <ButtonText>Cancel</ButtonText

@@ -110,13 +110,13 @@ export default function ThuthimalClaimScreen() {
 
   if (claimState === 'loading') {
     return (
-      <ScreenWrapper        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}            <Spinner size="large" color={Theme.colors.sanctuarySaffron} /            <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}              {t('thuthimalClaim.loading')}
-            </Text          </VStack        </Box      </ScreenWrapper    );
+      <ScreenWrapper        <Box >sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}            <Spinner size="large" color={Theme.colors.sanctuarySaffron} /            ><Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}              {t('thuthimalClaim.loading')}
+            </Text          </VStack        </Box      </ScreenWrapper    );>
   }
 
   if (claimState === 'already_claimed') {
     return (
-      <ScreenWrapper        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}          <Animated.View entering={FadeInDown.duration(500)}            <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}              <Text sx={{ fontSize: 56, textAlign: 'center' }}>\uD83C\uDF38</Text              <Heading
+      <ScreenWrapper        <Box >sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}          <Animated.View entering={FadeInDown.duration(500)}            <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}              <Text sx={{ fontSize: 56, textAlign: 'center' }}>\uD83C\uDF38</Text              ><Heading
                 sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize['2xl'] }}
                 color={Theme.colors.starlightGray as any}
                               {t('thuthimalClaim.alreadyBloomedTitle')}
@@ -124,12 +124,12 @@ export default function ThuthimalClaimScreen() {
               </Text              <TouchableOpacity accessibilityRole="button"
                 onPress={() => navigation.goBack()}
                 style={[styles.button, { backgroundColor: Theme.colors.ink }]}
-                              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text              </TouchableOpacity            </VStack          </Animated.View        </Box      </ScreenWrapper    );
+                              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text              ></TouchableOpacity            </VStack          </Animated.View        </Box      </ScreenWrapper    );
   }
 
   if (claimState === 'error') {
     return (
-      <ScreenWrapper        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}            <Text sx={{ fontSize: 48 }}>\u26A0\uFE0F</Text            <Heading
+      <ScreenWrapper        <Box >sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}            <Text sx={{ fontSize: 48 }}>\u26A0\uFE0F</Text            ><Heading
               sx={{ textAlign: 'center' }}
               color={Theme.colors.emberRed as any}
                           {t('thuthimalClaim.errorTitle')}
@@ -137,33 +137,33 @@ export default function ThuthimalClaimScreen() {
             </Text            <TouchableOpacity accessibilityRole="button"
               onPress={() => navigation.goBack()}
               style={[styles.button, { backgroundColor: Theme.colors.ink }]}
-                          <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text            </TouchableOpacity          </VStack        </Box      </ScreenWrapper    );
+                          <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text            ></TouchableOpacity          </VStack        </Box      </ScreenWrapper    );
   }
 
   // SUCCESS STATE \u2014 warm, sacred, non-transactional
   return (
     <ScreenWrapper      <Box
-        sx={{
+        >sx={{
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
           padding: Theme.spacing.xl,
-          backgroundColor: Theme.colors.obsidian,
+          backgroundColor: Theme.colors.obsidian,>
         }}
               {/* Flower */}
-        <Animated.View style={[styles.flowerContainer, flowerStyle]}          <Text style={styles.flowerEmoji}>\uD83C\uDF38</Text        </Animated.View
+        <Animated.View style={[styles.flowerContainer, flowerStyle]}          <Text style={styles.flowerEmoji}>\uD83C\uDF38</Text        ></Animated.View
         <Animated.View entering={FadeInDown.delay(400).duration(600)}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}            {/* Sinhala title */}
-            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}              {t('thuthimalClaim.flowerTitle')}
-            </Text
+            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}              {t('thuthimalClaim.flowerTitle')}>
+            </Text>
             <Heading
               sx={{
                 textAlign: 'center',
                 fontSize: Theme.typography.fontSize['2xl'],
-                fontWeight: '700',
+                fontWeight: '700',>
               }}
               color={Theme.colors.sacredWhite as any}
                           {t('thuthimalClaim.giftHeading')}
-            </Heading
+            </Heading>
             {/* Gift message */}
             <Box
               sx={{
@@ -172,14 +172,14 @@ export default function ThuthimalClaimScreen() {
                 borderWidth: 1,
                 borderColor: `${Theme.colors.sanctuarySaffron}40`,
                 padding: Theme.spacing.lg,
-                width: '100%',
+                width: '100%',>
               }}
                           <Text
                 sx={{
                   color: Theme.colors.starlightGray,
                   textAlign: 'center',
                   lineHeight: 24,
-                  fontSize: 16,
+                  fontSize: 16,>
                 }}
                               {t('thuthimalClaim.giftFrom')}
               </Text              <Text
@@ -210,15 +210,15 @@ export default function ThuthimalClaimScreen() {
                 paddingHorizontal: Theme.spacing.lg,
                 paddingVertical: Theme.spacing.md,
                 alignItems: 'center',
-                gap: Theme.spacing.sm,
+                gap: Theme.spacing.sm,>
               }}
-                          <Text sx={{ fontSize: 20 }}>\u2728</Text              <Text sx={{ color: Theme.colors.sageGreen, fontWeight: '600' }}                {t('thuthimalClaim.proActive')}
+                          <Text sx={{ fontSize: 20 }}>\u2728</Text              ><Text sx={{ color: Theme.colors.sageGreen, fontWeight: '600' }}                {t('thuthimalClaim.proActive')}
               </Text            </HStack
             {/* Continue button */}
             <TouchableOpacity accessibilityRole="button"
               onPress={handleContinue}
               style={[
-                styles.button,
+                styles.button,>
                 {
                   backgroundColor: Theme.colors.sanctuarySaffron,
                   width: '100%',
@@ -226,7 +226,7 @@ export default function ThuthimalClaimScreen() {
                 },
               ]}
                           <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}                {t('thuthimalClaim.enterSanctuary')}
-              </Text            </TouchableOpacity          </VStack        </Animated.View      </Box    </ScreenWrapper  );
+              </Text            </TouchableOpacity          </VStack        </Animated.View      </Box    </ScreenWrapper  );>
 }
 
 const styles = StyleSheet.create({

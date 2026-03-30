@@ -63,8 +63,8 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
             case 'notes':
                 return <ClassroomNotes classroomId={classroomId} isTeacher={false} />;
             case 'attendance':
-                return <AttendanceView classroomId={classroomId} /            case 'gradebook':
-                return <Box sx={{ padding: Theme.spacing.md }}><Text sx={{ color: colors.textTertiary }}>My Grade Performance</Text></Box            case 'lessons':
+                return <AttendanceView classroomId={classroomId} /            >case 'gradebook':
+                return <Box sx={{ padding: Theme.spacing.md }}><Text sx={{ color: colors.textTertiary }}>My Grade Performance</Text></Box            >case 'lessons':
                 return (
                     <LessonFeed
                         classroomId={classroomId}
@@ -73,17 +73,17 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                         onOpenAssignment={(id: string) => console.log('Open Assignment', id)}
                         onOpenAssignmentRecord={(assignment) => setSubmissionModal(assignment)}
                         submittedAssignmentIds={workspace.submittedAssignmentIds}
-                    /                );
+                    /                >);
             case 'resources':
-                return <ResourcesView classroomId={classroomId} isTeacher={false} /            case 'echo':
-                return <ClassroomEchoSection classroomId={classroomId} isTeacher={false} /            default:
+                return <ResourcesView classroomId={classroomId} isTeacher={false} /            >case 'echo':
+                return <ClassroomEchoSection classroomId={classroomId} isTeacher={false} /            >default:
                 return null;
         }
     };
 
     if (workspace.isLoading) {
         return (
-            <ScreenWrapper                <GlobalHeader title={classroomName} showBack onBack={() => navigation.goBack()} /                <VStack sx={{ gap: '$md' as any, padding: '$4' as any }}                    <SkeletonCard height={100} /                    <HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}                        <SkeletonCard width={90} height={70} /                        <SkeletonCard width={90} height={70} /                        <SkeletonCard width={90} height={70} /                    </HStack                </VStack            </ScreenWrapper        );
+            <ScreenWrapper                <GlobalHeader >title={classroomName} showBack onBack={() => navigation.goBack()} /                ><VStack sx={{ gap: '$md' as any, padding: '$4' as any }}                    <SkeletonCard height={100} /                    ><HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}                        <SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                        ><SkeletonCard width={90} height={70} /                    ></HStack                </VStack            </ScreenWrapper        );
     }
 
     const summaryCards = [
@@ -100,8 +100,8 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                 showBack
                 onBack={() => navigation.goBack()}
             /
-            <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: bottomPadding }}                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <VStack                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase' }}                            Subject Sanctuary
-                        </Text                        <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.sanctuarySaffron }}                            {classroomName}
+            ><ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: bottomPadding }}                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <VStack                        <Text >sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase' }}                            Subject Sanctuary
+                        </Text                        <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.sanctuarySaffron }}                            {classroomName}>
                         </Heading                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary, marginTop: Theme.spacing.xs }}                            {workspace.pendingAssignments > 0
                                 ? `${workspace.pendingAssignments} assignment${workspace.pendingAssignments === 1 ? '' : 's'} waiting for your response`
                                 : 'Your submissions and study notes are in rhythm here'}
@@ -114,21 +114,21 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                     borderRadius: Theme.corners.comfortable,
                                     paddingHorizontal: Theme.spacing.md,
                                     paddingVertical: Theme.spacing.sm,
-                                    minWidth: 82,
+                                    minWidth: 82,>
                                 }}
                                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                    {card.label}
-                                </Text                                <Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}                                    {card.value}
+                                </Text                                <Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}                                    {card.value}>
                                 </Text                            </Box                        ))}
                     </HStack                    {workspace.recentSubmissions.length > 0 && (
                         <VStack sx={{ marginTop: Theme.spacing.md, gap: Theme.spacing.xs }}                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                Recent Submissions
                             </Text                            {workspace.recentSubmissions.map((submission) => (
                                 <Text key={submission.id} sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}                                    {submission.assignment_title} on {new Date(submission.submitted_at).toLocaleDateString()}
-                                </Text                            ))}
+                                </Text                            ))}>
                         </VStack                    )}
                     {workspace.error && (
                         <Text sx={{ marginTop: Theme.spacing.sm, fontSize: Theme.typography.fontSize.sm, color: colors.error }}                            {workspace.error}
-                        </Text                    )}
-                </Box
+                        </Text                    )}>
+                </Box>
                 <Box sx={{ backgroundColor: colors.secondary, paddingBottom: Theme.spacing.md, paddingTop: Theme.spacing.sm }}                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}                        <HStack sx={{ gap: 12 }}                            {STUDENT_FEATURES.map((f) => {
                                 const Icon = f.icon;
                                 const isActive = activeFeature === f.id;
@@ -142,15 +142,15 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                             backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.tertiary,
                                             minWidth: 90,
                                             gap: Theme.spacing.xs
-                                        }}                                            <Icon size={20} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} /                                            <Text sx={{
+                                        }}                                            <Icon size={20} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} /                                            ><Text sx={{
                                                 fontSize: Theme.typography.fontSize.xs,
                                                 fontWeight: (isActive ? '700' : '400') as any,
                                                 color: isActive ? Theme.colors.sacredWhite : colors.textSecondary
-                                            }}>{f.label}</Text                                        </VStack                                    </Pressable                                );
+                                            }}>{f.label}</Text                                        ></VStack                                    </Pressable                                );
                             })}
                         </HStack                    </ScrollView                </Box
                 <Box flex={1}                    {renderFeatureContent()}
-                </Box            </ScrollView
+                </Box            </ScrollView>
             {submissionModal && (
                 <SubmissionModal
                     isOpen={true}
@@ -161,6 +161,6 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                         setSubmissionModal(null);
                         await workspace.refresh();
                     }}
-                /            )}
+                /            >)}
         </ScreenWrapper    );
 }

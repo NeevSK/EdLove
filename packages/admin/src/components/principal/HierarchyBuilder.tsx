@@ -156,7 +156,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 ) : (
                                     <Text color={colors.textSecondary} sx={{ fontSize: 14 }}                                        {t('principal.hierarchy.noGrades')}
                                     </Text                                )}>
-                            </VStack                        </Box                    ))}
+                            </VStack                        ></Box                    ))}
 
                     {!isLoading && sections.length === 0 && (
                         <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}                            <Text color={colors.textSecondary} textAlign="center" sx={{ fontSize: 18 }}                                {t('principal.hierarchy.noSections')}

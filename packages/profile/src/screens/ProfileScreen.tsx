@@ -114,7 +114,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     <Text color={colors.text} bold                        {isWanderer
                             ? t('auth.createAccount')
                             : t('profile.viewEditProfile')}>
-                    </Text                </HStack            </TouchableOpacity        </Center    );
+                    </Text                ></HStack            </TouchableOpacity        </Center    );
 };
 
 const StatsSection = ({ profile, role }: any) => {
@@ -151,19 +151,19 @@ const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) 
                 mt={Theme.spacing.sm}
                 mb={Theme.spacing.md}>
                             {t('profile.account.support')}
-            </Heading            <ProfileListItem
+            </Heading            ><ProfileListItem
                 icon={HelpCircle}
                 label={t('profile.faqTitle')}
                 onPress={() => hapticLight()}
-            /            <ProfileListItem
+            /            ><ProfileListItem
                 icon={MessageSquare}
                 label={t('profile.feedbackTitle')}
                 onPress={() => hapticLight()}
-            /            <ProfileListItem
+            /            ><ProfileListItem
                 icon={Info}
                 label={t('profile.aboutTitle')}
                 onPress={() => hapticLight()}
-            /        </VStack    </Center);
+            /        ></VStack    </Center);
 
 const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
     const showToast = useStore((state) => state.showToast);
@@ -189,7 +189,7 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                     mt={Theme.spacing.sm}
                     mb={Theme.spacing.md}>
                                     {t('profile.account.support_app')}
-                </Heading                <ProfileListItem
+                </Heading                ><ProfileListItem
                     icon={Heart}
                     label={t('profile.loveApp')}
                     onPress={() => {
@@ -204,7 +204,7 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                             );
                         }
                     }}
-                /                <ProfileListItem
+                /                ><ProfileListItem
                     icon={Heart}
                     label={t('profile.helpSupportApp')}
                     onPress={() => {
@@ -219,7 +219,7 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                             );
                         }
                     }}
-                /            </VStack        </Center    );
+                /            ></VStack        </Center    );
 };
 
 const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH }: any) => {
@@ -231,7 +231,7 @@ const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH
                 color={colors.textSecondary as any}
                 mb={Theme.spacing.xs}>
                             {t('profile.account.actions')}
-            </Heading            <Button
+            </Heading            ><Button
                 variant="outline"
                 size="lg"
                 onPress={() => {
@@ -423,7 +423,7 @@ export const ProfileScreen = () => {
                                                     }}
                                                                                                     <Text size="xs" color={colors.textSecondary} bold                                                        {pillar}
                                                     </Text                                                </Box                                            ))}>
-                                        </HStack                                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                                            PERSONAL SANCTUARY
+                                        </HStack                                        ><Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                                            PERSONAL SANCTUARY
                                         </Text                                        <Heading size="sm" color={colors.text}                                            Your profile is the living record of how you move through Gurudevi.
                                         </Heading                                        <Text color={colors.textSecondary} size="sm"                                            Everything below stays the same functionally, but this space helps hold identity, progress, and support in one calmer rhythm.
                                         </Text                                    </VStack                                </Box                            </Center                        </Animated.View
@@ -461,7 +461,7 @@ export const ProfileScreen = () => {
                                     /                                ></Box                            </Center                        </Animated.View
                         <Animated.View entering={FadeInDown.delay(550).duration(500)}                            <SupportSection t={t} colors={colors} navigation={navigation} cardWidth={cardWidth} /                        </Animated.View
                         <Animated.View entering={FadeInDown.delay(600).duration(500)}                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} /                        </Animated.View>
-                        <Animated.View entering={FadeInDown.delay(700).duration(500)}                            <Center                                <Box sx={{ width: cardWidth, mt: Theme.spacing.md }}                                    <AccountActions
+                        <Animated.View entering={FadeInDown.delay(700).duration(500)}                            <Center                                <Box >sx={{ width: cardWidth, mt: Theme.spacing.md }}                                    <AccountActions
                                         t={t}
                                         colors={colors}
                                         navigation={navigation}

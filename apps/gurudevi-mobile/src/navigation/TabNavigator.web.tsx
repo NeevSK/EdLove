@@ -165,7 +165,7 @@ export default function TabNavigator({
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
   // Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
   const [isMobileView, setIsMobileView] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<string>("Self");
+  const [activeTab, setActiveTab] = React.useState<string/>("Self");
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
   const { isBreathingOpen, setBreathingOpen } = useStore();
@@ -328,12 +328,12 @@ export default function TabNavigator({
             
               <Menu size={24} /
             ></button
-          )}
+          >)}
           <span className="brand-lotus">\uD83E\uDEB7</span
           ><span className="brand-name">{t("webNav.brandName")}</span
         ></div
-        <div className="top-bar-right" /
-      </header>
+        ><div className="top-bar-right" /
+      ></header>
 
       <div className="shell-body-core"
         {/* \u2500\u2500 MOBILE SIDEBAR OVERLAY \u2500\u2500 */}>
@@ -565,7 +565,7 @@ export default function TabNavigator({
                     
                       <LibraryStackNavigatorWeb /
                     ></React.Suspense
-                  </ErrorBoundary>
+                  ></ErrorBoundary>
                 )}
               </Tab.Screen>
               <Tab.Screen name="Profile"
@@ -707,7 +707,7 @@ export default function TabNavigator({
             ></button
           </HStack>
           <BreathGuide onComplete={() => setBreathingOpen(false)} /
-        </Box>
+        ></Box>
       </UniversalModal>
     </div>
   );

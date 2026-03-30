@@ -206,7 +206,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 <Pressable onPress={() => { hapticLight(); onCancel(); }}
                     <X size={24} color={colors.textSecondary} /
                 ></Pressable
-            </HStack>
+            ></HStack>
 
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.xl, paddingBottom: 120 }}
                 {/* Step 1: Enter total count */}>
@@ -237,7 +237,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                             /
                         ></Input
 
-                        <Button
+                        ><Button
                             size="lg"
                             onPress={handleSetCount}
                             sx={{

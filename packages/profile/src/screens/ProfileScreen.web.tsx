@@ -138,12 +138,12 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                         </span                                    )}
                                 </div>
                                 <div className="profile-context-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}                                    <span style={{ fontSize: '15px', color: 'var(--action)', fontWeight: '600', textTransform: 'capitalize' }}                                        {profile.role?.split('_').join(' ')}
-                                    </span                                    {profile.school_name && (>
+                                    </span                                    >{profile.school_name && (>
                                         <                                            <span style={{ color: 'var(--border)', fontWeight: '300' }}>\u00B7</span                                            ><span style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}>{profile.school_name}</span                                        ></                                    )}
                                 </div>
                                 {!completionResult.isComplete && (
                                     <div style={{ marginBottom: '16px' }}                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}                                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}                                                Profile Completion
-                                            </span                                            <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)' }}                                                {completionResult.percentage}%>
+                                            </span                                            ><span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)' }}                                                {completionResult.percentage}%>
                                             </span                                        </div                                        <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}                                            <div
                                                 style={{
                                                     width: `${completionResult.percentage}%`,
@@ -160,7 +160,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                                 </div                                            ) : (
                                                 <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}                                                    {t('profile.completion.incomplete')}
                                                 </div                                            )}>
-                                        </div                                    </div                                )}
+                                        </div                                    ></div                                )}
 
                                 {isOwnProfile && !context.isAnonymous && (
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}                                        <button
@@ -168,7 +168,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                                             onClick={openInlineEdit}>
                                                                                     <Edit3 size={16} /                                            >{t('profile.viewEditProfile')}
-                                        </button                                        <button
+                                        </button                                        ><button
                                             className="secondary-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                                             onClick={() => navigation.openFullProfile(toFullProfileParams(profile))}
@@ -276,7 +276,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                         <div                                            <div >style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Subjects Taught</div                                            ><div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}                                                {subjectsTaught.map((subject: string) => (
                                                     <span key={subject} style={{ padding: '4px 12px', background: 'var(--action-soft)', color: 'var(--action)', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}                                                        {subject}
                                                     </span                                                ))}>
-                                            </div                                        </div                                    )}
+                                            </div                                        ></div                                    )}
                                     {qualifications.length > 0 && (
                                         <div                                            <div >style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Qualifications</div                                            ><div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}                                                {qualifications.map((qualification: string) => (
                                                     <span key={qualification} style={{ padding: '4px 12px', background: 'var(--moss-soft)', color: 'var(--moss)', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}                                                        <GraduationCap size={12} style={{ marginRight: 4 }} /                                                        >{qualification}
@@ -285,7 +285,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                     {profile.experience_years && (
                                         <div style={{ fontSize: '14px', color: 'var(--ink)', fontWeight: '600' }}                                            {profile.experience_years} years of teaching experience
                                         </div                                    )}>
-                                </div                            </div                        )}
+                                </div                            ></div                        )}
 
                         <div className="sanctuary-card" style={{ padding: '32px' }}                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                                    <Globe size={18} color="var(--ink-ghost)" /                                    ><h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}                                        Social Sanctuary
                                     </h3                                </div                            </div

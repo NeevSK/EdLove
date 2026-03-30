@@ -260,7 +260,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 backgroundColor: (enableLivingTheme ? colors.action : colors.tertiary) as any,
                 alignItems: 'center', justifyContent: 'center',
               }}                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.sacredWhite : (colors.textTertiary as any)}
-                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} /              ></Box              <VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('settings.living_theme.title')}
+                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} /              ></Box              ><VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('settings.living_theme.title')}
                 </Text                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {enableLivingTheme
                     ? t('settings.living_theme.on')
                     : t('settings.living_theme.off')}
@@ -276,7 +276,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               accessibilityRole="switch"
               accessibilityLabel={t('settings.living_theme.title')}
               accessibilityState={{ checked: enableLivingTheme }}
-            /          </HStack        </Box
+            /          ></HStack        </Box
         {/* Language & Localization */}
         <SectionHeader
           colors={colors}
@@ -588,7 +588,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
                       color: colors.text as any,>
                     }}
                                       {option.label}
-                  </Text                  <Text
+                  </Text                  ><Text
                     sx={{
                       fontSize: Theme.typography.fontSize.sm,
                       color: colors.textSecondary as any,
@@ -610,5 +610,5 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
           accessibilityRole="button"
           accessibilityLabel="Close"
                   <ButtonText sx={{ color: colors.text as any }}            Close
-          </ButtonText        </Button      </Box    </Box  );>
+          </ButtonText        ></Button      </Box    </Box  );>
 }

@@ -109,7 +109,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderWidth: 1,
-                            borderColor: `${config.color}30`,
+                            borderColor: `${config.color}30`,>
                         }}
                                             <Icon color={config.color} size={20} /                        ><Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text                    ></Box
                     >{/* Content */}
@@ -129,7 +129,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={Play}
+                                leftIcon={Play}>
                                                             {''}
                             </SanctuaryButton                        )}
                         {onPullToDesk && (
@@ -138,7 +138,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={Bookmark}
+                                leftIcon={Bookmark}>
                                                             {''}
                             </SanctuaryButton                        )}
                         {onOpenAnotherWay && (
@@ -147,7 +147,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={ArrowLeftRight}
+                                leftIcon={ArrowLeftRight}>
                                                             {''}
                             </SanctuaryButton                        )}
                         {onDelete && (
@@ -156,7 +156,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="negative"
-                                leftIcon={Trash2}
+                                leftIcon={Trash2}>
                                                             {''}
                             </SanctuaryButton                        )}
 
@@ -166,7 +166,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="primary"
-                                leftIcon={Sparkles}
+                                leftIcon={Sparkles}>
                                                             {''}
                             </SanctuaryButton                        )}
 
@@ -176,7 +176,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={ClipboardCheck}
+                                leftIcon={ClipboardCheck}>
                                                             {''}
                             </SanctuaryButton                        )}
 
@@ -186,7 +186,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={Brain}
+                                leftIcon={Brain}>
                                                             {''}
                             </SanctuaryButton                        )}
                     </HStack                </HStack            </SanctuaryCard        </Box    );

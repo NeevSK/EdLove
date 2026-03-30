@@ -49,14 +49,14 @@ export default function TeacherOnboardingView({
                 padding: Theme.spacing.lg, 
                 maxWidth: 800, 
                 alignSelf: 'center',
-                width: '100%' 
+                width: '100%' >
             }}
                     <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}
                 <VStack sx={{ gap: 8, alignItems: 'center' }}                    <Box sx={{ 
                         padding: 16, 
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
-                        marginBottom: 12
+                        marginBottom: 12>
                     }}                        <Icon as={School} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Teacher
                     </Heading                    <Text sx={{ 
                         textAlign: 'center', 
@@ -67,7 +67,7 @@ export default function TeacherOnboardingView({
                     </Text                </VStack
                 {/* Primary Actions Grid */}
                 <VStack sx={{ gap: Theme.spacing.lg }}                    
-                    {/* Create Classroom Card */}
+                    {/* Create Classroom Card */}>
                     <TouchableOpacity 
                         onPress={() => {
                             hapticLight();
@@ -81,7 +81,7 @@ export default function TeacherOnboardingView({
                             backgroundColor: 'white',
                             borderWidth: 1,
                             borderColor: colors.border,
-                            ...Theme.shadows.md
+                            ...Theme.shadows.md>
                         }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
@@ -107,7 +107,7 @@ export default function TeacherOnboardingView({
                             borderRadius: 24, 
                             backgroundColor: colors.tertiary,
                             borderWidth: 1,
-                            borderColor: colors.border
+                            borderColor: colors.border>
                         }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
@@ -124,7 +124,7 @@ export default function TeacherOnboardingView({
                         borderRadius: 32, 
                         backgroundColor: '#1A1A1A', 
                         overflow: 'hidden',
-                        position: 'relative'
+                        position: 'relative'>
                     }}                        <Box sx={{
                             position: 'absolute',
                             right: -20,
@@ -161,12 +161,12 @@ export default function TeacherOnboardingView({
                                 }}
                                                             <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Teacher Sandbox
                                 </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
-                </VStack
+                </VStack>
                 <Text sx={{ 
                     textAlign: 'center', 
                     color: colors.textTertiary, 
                     fontSize: 12,
-                    marginTop: 20 
+                    marginTop: 20 >
                 }}                    Gurudevi Workbenches are designed for intentional teaching.
                 </Text            </VStack        </ScrollView    );
 }

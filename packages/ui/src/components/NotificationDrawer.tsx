@@ -73,12 +73,12 @@ export default function NotificationDrawer({
             visible={isVisible}
             transparent
             animationType="none"
-            onRequestClose={onClose}
+            onRequestClose={onClose}>
         
             <Box
                 sx={{
                     flex: 1,
-                    backgroundColor: 'rgba(0,0,0,0.4)',
+                    backgroundColor: 'rgba(0,0,0,0.4)',>
                 }}
             
                 <Pressable accessibilityRole="button"
@@ -89,11 +89,11 @@ export default function NotificationDrawer({
                     }}
                 /
 
-                <Animated.View
+                ><Animated.View
                     entering={SlideInLeft.duration(800).easing(Easing.out(Easing.exp))}
                     exiting={SlideOutLeft.duration(500)}
                     style={[
-                        styles.drawer,
+                        styles.drawer,>
                         {
                             backgroundColor: colors.primary,
                             borderColor: colors.border,
@@ -103,13 +103,13 @@ export default function NotificationDrawer({
                     ]}
                 
                     <VStack sx={{ gap: '$md' as any, flex: 1, padding: Theme.spacing.lg }}
-                        {/* Header */}
+                        {/* Header */}>
                         <HStack justifyContent="space-between" alignItems="center" sx={{ height: 60 }}
-                            <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}
+                            <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
                                 <Bell size={24} color={colors.action} /
-                                <Heading color={colors.text} sx={{ fontSize: '$lg' as any }}
-                                    Notifications
-                                </Heading
+                                ><Heading color={colors.text} sx={{ fontSize: '$lg' as any }}
+                                    Notifications>
+                                </Heading>
                                 {unreadCount > 0 && (
                                     <Box sx={{
                                         backgroundColor: colors.action,
@@ -118,14 +118,14 @@ export default function NotificationDrawer({
                                         height: 20,
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        paddingHorizontal: 4,
+                                        paddingHorizontal: 4,>
                                     }}
                                         <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 11, fontWeight: '700' }}
                                             {unreadCount > 99 ? '99+' : unreadCount}
-                                        </Text
-                                    </Box
+                                        </Text>
+                                    </Box>
                                 )}
-                            </HStack
+                            </HStack>
                             <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}
                                 {unreadCount > 0 && onMarkAllRead && (
                                     <Pressable accessibilityRole="button"
@@ -133,33 +133,33 @@ export default function NotificationDrawer({
                                         hitSlop={10}
                                     
                                         <Check size={18} color={colors.action} /
-                                    </Pressable
+                                    ></Pressable>
                                 )}
                                 <Pressable accessibilityRole="button"
                                     onPress={() => { hapticLight(); onClose(); }}
                                     hitSlop={10}
                                 
                                     <X size={28} color={colors.textSecondary} /
-                                </Pressable
-                            </HStack
-                        </HStack
+                                ></Pressable>
+                            </HStack>
+                        </HStack>
 
                         <ScrollView
                             showsVerticalScrollIndicator={false}
                             showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingBottom: Theme.spacing.xl }}
+                            contentContainerStyle={{ paddingBottom: Theme.spacing.xl }}>
                         
                             {isLoading ? (
                                 <Box sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl }}
-                                    <ActivityIndicator color={colors.action} /
-                                </Box
+                                    <ActivityIndicator color={colors.action} />
+                                ></Box>
                             ) : notifications.length === 0 ? (
                                 <VStack sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl, gap: 8 }}
-                                    <Bell size={40} color={colors.textTertiary} /
-                                    <Text color={colors.textTertiary} sx={{ textAlign: 'center', fontSize: '$sm' as any }}
-                                        You're all caught up \uD83D\u2122\u008F
-                                    </Text
-                                </VStack
+                                    <Bell size={40} color={colors.textTertiary} />
+                                    ><Text color={colors.textTertiary} sx={{ textAlign: 'center', fontSize: '$sm' as any }}
+                                        You're all caught up \uD83D\u2122\u008F>
+                                    </Text>
+                                </VStack>
                             ) : (
                                 <VStack sx={{ gap: '$sm' as any, marginTop: '$4' as any }}
                                     {notifications.map((n) => {
@@ -177,49 +177,49 @@ export default function NotificationDrawer({
                                                     borderRadius: Theme.corners.comfortable,
                                                     backgroundColor: n.is_read ? colors.tertiary : `${colors.action}14`,
                                                     borderWidth: 1,
-                                                    borderColor: n.is_read ? colors.border : `${colors.action}40`,
+                                                    borderColor: n.is_read ? colors.border : `${colors.action}40`,>
                                                 }}
                                                     <HStack sx={{ gap: '$sm' as any, alignItems: 'flex-start' }}
                                                         <Box sx={{
                                                             padding: 8,
                                                             borderRadius: 20,
-                                                            backgroundColor: colors.secondary
+                                                            backgroundColor: colors.secondary>
                                                         }}
                                                             <Icon size={16} color={n.is_read ? colors.textTertiary : colors.action} /
-                                                        </Box
+                                                        ></Box>
                                                         <VStack sx={{ flex: 1, gap: 2 }}
-                                                            <Text color={colors.text} sx={{ fontWeight: n.is_read ? '400' : '700', fontSize: '$sm' as any }}
+                                                            <Text color={colors.text} sx={{ fontWeight: n.is_read ? '400' : '700', fontSize: '$sm' as any }}>
                                                                 {n.title}
-                                                            </Text
+                                                            </Text>
                                                             {n.body ? (
                                                                 <Text color={colors.textSecondary} sx={{ fontSize: '$xs' as any }} numberOfLines={2}
-                                                                    {n.body}
-                                                                </Text
+                                                                    {n.body}>
+                                                                </Text>
                                                             ) : null}
                                                             <Text color={colors.textTertiary} sx={{ fontSize: 10 }}
-                                                                {relativeTime(n.created_at)}
-                                                            </Text
-                                                        </VStack
-                                                    </HStack
-                                                </Box
-                                            </Pressable
+                                                                {relativeTime(n.created_at)}>
+                                                            </Text>
+                                                        </VStack>
+                                                    </HStack>
+                                                </Box>
+                                            </Pressable>
                                         );
                                     })}
-                                </VStack
+                                </VStack>
                             )}
-                        </ScrollView
+                        </ScrollView>
 
                         <Text
                             color={colors.textTertiary}
                             textAlign="center"
                             sx={{ fontSize: '$xs' as any, fontStyle: 'italic', marginBottom: Theme.spacing.sm }}
                         
-                            Your sanctuary stays updated.
-                        </Text
-                    </VStack
-                </Animated.View
-            </Box
-        </Modal
+                            Your sanctuary stays updated.>
+                        </Text>
+                    </VStack>
+                </Animated.View>
+            </Box>
+        </Modal>
     );
 }
 

@@ -195,10 +195,10 @@ export default function GroupDetailsScreen() {
                     <TouchableOpacity onPress={() => setShowAdmin(false)}
                         <ChevronLeft color={colors.textPrimary} /
                     ></TouchableOpacity
-                    <Text bold size="lg">{t('community.groups.manage')}</Text
-                </HStack>
+                    ><Text bold size="lg">{t('community.groups.manage')}</Text
+                ></HStack>
                 <GroupMemberManagement groupId={groupId} /
-            </Box>
+            ></Box>
         );
     }
 
@@ -216,8 +216,8 @@ export default function GroupDetailsScreen() {
                         <TouchableOpacity onPress={() => navigation.goBack()}
                             <ChevronLeft color={colors.textPrimary} /
                         ></TouchableOpacity
-                        <Text bold size="lg" numberOfLines={1} sx={{ maxWidth: 200 }}>{group.name}</Text
-                    </HStack>
+                        ><Text bold size="lg" numberOfLines={1} sx={{ maxWidth: 200 }}>{group.name}</Text
+                    ></HStack>
 
                     <HStack space="sm"
                         <TouchableOpacity onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}
@@ -261,7 +261,7 @@ export default function GroupDetailsScreen() {
                                     }}
                                 /
                             ></Box
-                        </Animated.View>
+                        ></Animated.View>
                     )}
                     ListHeaderComponent={
                         <VStack space="xl" p="$4"
@@ -363,7 +363,7 @@ export default function GroupDetailsScreen() {
                                 <Box sx={{ p: '$4', borderRadius: '$full', backgroundColor: 'rgba(255,255,255,0.03)' }}>
                                     <MessageSquare size={32} color={Theme.colors.mistGray} /
                                 ></Box
-                                <Text color={Theme.colors.mistGray} textAlign="center"
+                                ><Text color={Theme.colors.mistGray} textAlign="center"
                                     {t('community.groups.emptyFeed')}>
                                 </Text>
                             </VStack>
@@ -404,7 +404,7 @@ export default function GroupDetailsScreen() {
                             ></ModalCloseButton
                         </ModalHeader>
                         <ModalBody
-                            <VStack space="xl" alignItems="center" py="$4">
+                            <VStack >space="xl" alignItems="center" py="$4">
                                 <QRCodeGenerator
                                     value={QRBuilder.group(group.id, group.handle)}
                                     size={240}

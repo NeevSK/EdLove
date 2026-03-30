@@ -222,7 +222,7 @@ export default function LibraryScreenWeb() {
                                     onClick={handleAddResourcePress}
                                     disabled={isPastView}>
                                                                     <Plus size={15} /                                    >{t('library.contributeResource') || 'Contribute Resource'}
-                                </button                            )}
+                                </button                            >)}
                             <button
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
@@ -480,7 +480,7 @@ export default function LibraryScreenWeb() {
                                                         height: '4px', 
                                                         background: 'var(--action)', 
                                                         opacity: 0.3 >
-                                                    }} /                                                ></div                                            ))}
+                                                    }} /                                                ></div                                            >))}
                                         </div                                    </SmartShelf                                )}
 
                                 {/* Categorized Shelves */}
@@ -556,7 +556,7 @@ export default function LibraryScreenWeb() {
                         }
                     }}
                 /            >)}
-        </div    );
+        </div    >);
 }
 
 function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick: () => void }) {

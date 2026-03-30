@@ -185,18 +185,18 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                 borderColor: glass.surface.border,
                                 borderWidth: 1,
                                 borderRadius: Theme.corners.comfortable,
-                                padding: Theme.spacing.md,
+                                padding: Theme.spacing.md,>
                             }}
-                                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', marginBottom: Theme.spacing.xs }}                                <TrustIcon size={16} color={trustCopy.label === 'Broken or unverified' ? accent.danger : accent.action} /                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                    {trustCopy.label}
-                                </Text                            </HStack                            <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                {trustCopy.note}
+                                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', marginBottom: Theme.spacing.xs }}                                <TrustIcon size={16} color={trustCopy.label === 'Broken or unverified' ? accent.danger : accent.action} /                                ><Text sx={{ color: text.primary, fontWeight: '700' }}                                    {trustCopy.label}
+                                </Text                            </HStack                            <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                {trustCopy.note}>
                             </Text                            <Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}                                Destination: {pendingRequest.domain}
                             </Text                            {pendingRequest.options.sourceBadge ? (
                                 <Text sx={{ color: accent.action, fontSize: 12, marginTop: 4, fontWeight: '700' }}                                    {pendingRequest.options.sourceBadge}
-                                </Text                            ) : null}
+                                </Text                            ) : null}>
                             {pendingRequest.overrideCount >= 2 && !pendingRequest.currentPreference ? (
                                 <Text sx={{ color: text.secondary, fontSize: 12, marginTop: Theme.spacing.sm }}                                    You often choose a different link method. Saving a default may reduce friction.
-                                </Text                            ) : null}
-                        </Box
+                                </Text                            ) : null}>
+                        </Box>
                         <VStack sx={{ gap: Theme.spacing.sm }}                            {methods.map((method) => {
                                 const isSelected = selectedMethod === method.id;
                                 return (
@@ -212,7 +212,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                         ]}
                                                                             <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                            <View
                                                 style={[
-                                                    styles.selectionDot,
+                                                    styles.selectionDot,>
                                                     {
                                                         borderColor: isSelected ? accent.action : text.muted,
                                                         backgroundColor: isSelected ? accent.action : 'transparent',
@@ -223,7 +223,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                                 </Text                                                <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                                    {method.description}
                                                 </Text                                            </VStack                                        </HStack                                    </Pressable                                );
                             })}
-                        </VStack
+                        </VStack>
                         <Pressable accessibilityRole="button"
                             onPress={() => setRememberChoice((current) => !current)}
                             style={[
@@ -232,7 +232,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                             ]}
                                                     <View
                                 style={[
-                                    styles.checkbox,
+                                    styles.checkbox,>
                                     {
                                         borderColor: rememberChoice ? accent.action : text.muted,
                                         backgroundColor: rememberChoice ? accent.action : 'transparent',

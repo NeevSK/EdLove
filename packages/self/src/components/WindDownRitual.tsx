@@ -273,7 +273,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
             <Box
               <Input
                 variant="outline"
-                >>>size="md"
+                >>>>size="md"
                 sx={{
                   backgroundColor: Theme.colors.ink,
                   borderWidth: 1,
@@ -291,7 +291,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   sx={{ textAlignVertical: 'top' }}
                 /
               </Input>
-            </>>>Box
+            </>>>>Box
           )}>>
 
           {currentStepData.id === 'breathe' && (
@@ -308,7 +308,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
               
                 <Text fontSize="$4xl"><</Text
               </Box>
-              >>><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
+              >>>><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
                 {t('self.breatheInstructions')}
               </Text>
             </VStack>

@@ -145,33 +145,33 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
             animationType="slide"
             transparent={true}
             visible={visible}
-            onRequestClose={onClose}
+            onRequestClose={onClose}>
         
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}
-                <Box style={styles.overlay}
+                <Box style={styles.overlay}>
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        style={{ width: '100%', height: '100%', justifyContent: 'flex-end' }}
+                        style={{ width: '100%', height: '100%', justifyContent: 'flex-end' }}>
                     
                         <Box style={[styles.modalContent, { backgroundColor: glass.modal.bg, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: glass.modal.border }]}
-                            {/* Header */}
+                            {/* Header */}>
                             <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}
-                                <Heading {...({ color: text.primary, size: "lg" } as any)}
+                                <Heading {...({ color: text.primary, size: "lg" } as any)}>
                                     {t('profile.settings')}
-                                </Heading
+                                </Heading>
                                 <Pressable
                                     onPress={onClose}
-                                    sx={{ padding: Theme.spacing.xs }}
+                                    sx={{ padding: Theme.spacing.xs }}>
                                 
                                     <X color={text.muted} size={24} /
-                                </Pressable
-                            </HStack
+                                ></Pressable>
+                            </HStack>
 
                             <VStack space="xl"
-                                {/* Photo Edit Section */}
+                                {/* Photo Edit Section */}>
                                 <Center
-                                    <Box
-                                        <Image
+                                    <Box>
+                                        ><Image
                                             source={{ uri: avatarUrl || 'https://via.placeholder.com/150' }}
                                             alt="Profile"
                                             sx={{
@@ -179,10 +179,10 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 height: 100,
                                                 borderRadius: "$full" as any,
                                                 borderWidth: 2,
-                                                borderColor: accent.action
+                                                borderColor: accent.action>
                                             }}
                                         /
-                                        <Pressable
+                                        ><Pressable
                                             onPress={handlePickImage}
                                             style={{
                                                 position: 'absolute',
@@ -192,26 +192,26 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 padding: 8,
                                                 borderRadius: 20,
                                                 borderWidth: 1,
-                                                borderColor: accent.action
+                                                borderColor: accent.action>
                                             }}
                                         
                                             <Camera size={16} color={accent.action} /
-                                        </Pressable
-                                    </Box
+                                        ></Pressable>
+                                    </Box>
                                     <Text {...({ color: text.muted, size: "xs", mt: "$2" } as any)}
-                                        {t('profile.tapToChange')}
-                                    </Text
-                                </Center
+                                        {t('profile.tapToChange')}>
+                                    </Text>
+                                </Center>
 
                                 {/* Name Input */}
                                 <VStack space="xs"
                                     <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.fullName')}</Text
-                                    <Input
+                                    ><Input
                                         size="xl"
                                         variant="outline"
                                         style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                         isInvalid={false}
-                                        isDisabled={loading}
+                                        isDisabled={loading}>
                                     
                                         <InputField
                                             {...({ color: text.primary } as any)}
@@ -219,19 +219,19 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             onChangeText={setFullName}
                                             placeholder={t('auth.fullName')}
                                             placeholderTextColor={text.muted}
-                                        /
-                                    </Input
-                                </VStack
+                                        />
+                                    ></Input>
+                                </VStack>
 
                                 {/* Phone Input */}
                                 <VStack space="xs"
                                     <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.phone') || 'Phone Number'}</Text
-                                    <Input
+                                    ><Input
                                         size="xl"
                                         variant="outline"
                                         style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                         isInvalid={false}
-                                        isDisabled={loading}
+                                        isDisabled={loading}>
                                     
                                         <InputField
                                             {...({ color: text.primary } as any)}
@@ -240,19 +240,19 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             placeholder="+94 XX XXX XXXX"
                                             placeholderTextColor={text.muted}
                                             keyboardType="phone-pad"
-                                        /
-                                    </Input
-                                </VStack
+                                        />
+                                    ></Input>
+                                </VStack>
 
                                 {/* Bio Input */}
                                 <VStack space="xs"
                                     <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.bio') || 'Bio'}</Text
-                                    <Input
+                                    ><Input
                                         size="xl"
                                         variant="outline"
                                         style={[styles.input, { height: 100, borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                         isInvalid={false}
-                                        isDisabled={loading}
+                                        isDisabled={loading}>
                                     
                                         <InputField
                                             {...({ color: text.primary } as any)}
@@ -262,19 +262,19 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             placeholderTextColor={text.muted}
                                             multiline
                                             numberOfLines={4}
-                                        /
-                                    </Input
-                                </VStack
+                                        />
+                                    ></Input>
+                                </VStack>
 
                                 {/* NIC Number (Staff) */}
                                 {ability.can('update', 'TeacherProfile') && (
                                     <VStack space="xs"
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.nicNumber') || 'NIC Number'}</Text
-                                        <Input
+                                        ><Input
                                             size="xl"
                                             variant="outline"
                                             style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
-                                            isDisabled={loading}
+                                            isDisabled={loading}>
                                         
                                             <InputField
                                                 {...({ color: text.primary } as any)}
@@ -282,20 +282,20 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 onChangeText={setNicNumber}
                                                 placeholder="e.g. 19XXXXXXXXXX"
                                                 placeholderTextColor={text.muted}
-                                            /
-                                        </Input
-                                    </VStack
+                                            />
+                                        ></Input>
+                                    </VStack>
                                 )}
 
                                 {/* Index Number (Students) */}
                                 {ability.can('update', 'StudentProfile') && (
                                     <VStack space="xs"
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>{t('profile.indexNumber') || 'Index Number'}</Text
-                                        <Input
+                                        ><Input
                                             size="xl"
                                             variant="outline"
                                             style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
-                                            isDisabled={loading}
+                                            isDisabled={loading}>
                                         
                                             <InputField
                                                 {...({ color: text.primary } as any)}
@@ -303,46 +303,46 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 onChangeText={setIndexNumber}
                                                 placeholder="e.g. STU-XXXXX"
                                                 placeholderTextColor={text.muted}
-                                            /
-                                        </Input
-                                    </VStack
+                                            />
+                                        ></Input>
+                                    </VStack>
                                 )}
 
 
                                 {/* Role Selector (Developer Mode) */}
                                 <Box
-                                    <Text {...({ color: text.secondary, size: "sm", mb: "$1" } as any)}>{t('profile.role')} (Developer Access)</Text
-                                    <Select
+                                    <Text >{...({ color: text.secondary, size: "sm", mb: "$1" } as any)}>{t('profile.role')} (Developer Access)</Text
+                                    ><Select
                                         selectedValue={selectedRole || 'student'}
                                         onValueChange={(value: string | null) => setSelectedRole(value as Role)}
                                     
                                         <SelectTrigger
                                             variant="outline"
                                             size="xl"
-                                            style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
+                                            style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}>
                                         
                                             <SelectInput
-                                                placeholder="Select role"
+                                                placeholder="Select role">
                                                 {...({ color: text.primary } as any)}
                                             /
-                                            <SelectIcon mr="$3" as={ChevronDown} color={text.muted} /
-                                        </SelectTrigger
+                                            ><SelectIcon mr="$3" as={ChevronDown} color={text.muted} /
+                                        ></SelectTrigger>
                                         <SelectPortal
-                                            <SelectBackdrop /
+                                            <SelectBackdrop />
                                             <SelectContent
-                                                <SelectDragIndicatorWrapper
-                                                    <SelectDragIndicator /
-                                                </SelectDragIndicatorWrapper
+                                                <SelectDragIndicatorWrapper>
+                                                    ><SelectDragIndicator /
+                                                ></SelectDragIndicatorWrapper>
                                                 <SelectItem label={t('role.student')} value="student" /
-                                                <SelectItem label={t('role.teacher')} value="teacher" /
-                                                <SelectItem label={t('role.section_head')} value="sectionHead" /
-                                                <SelectItem label={t('role.grade_head')} value="gradeHead" /
-                                                <SelectItem label={t('role.principal')} value="principal" /
-                                                <SelectItem label={t('role.developer')} value="developer" /
-                                            </SelectContent
-                                        </SelectPortal
-                                    </Select
-                                </Box
+                                                <SelectItem label={t('role.teacher')} value="teacher" />
+                                                ><SelectItem label={t('role.section_head')} value="sectionHead" /
+                                                ><SelectItem label={t('role.grade_head')} value="gradeHead" />
+                                                ><SelectItem label={t('role.principal')} value="principal" /
+                                                ><SelectItem label={t('role.developer')} value="developer" />
+                                            ></SelectContent>
+                                        </SelectPortal>
+                                    </Select>
+                                </Box>
 
                                 {/* Action Buttons */}
                                 <Button
@@ -353,20 +353,20 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     onPress={handleSave}
                                     style={{
                                         backgroundColor: accent.action,
-                                        borderRadius: Theme.corners.comfortable
+                                        borderRadius: Theme.corners.comfortable>
                                     }}
                                 
                                     <ButtonText {...({ color: text.inverse } as any)}
-                                        {loading ? t('common.processing') : t('common.save')}
-                                    </ButtonText
+                                        {loading ? t('common.processing') : t('common.save')}>
+                                    </ButtonText>
                                     {!loading && <Save size={20} color={text.inverse} style={{ marginLeft: 8 }} />}
-                                </Button
-                            </VStack
-                        </Box
-                    </KeyboardAvoidingView
-                </Box
-            </TouchableWithoutFeedback
-        </Modal
+                                </Button>
+                            </VStack>
+                        </Box>
+                    </KeyboardAvoidingView>
+                </Box>
+            </TouchableWithoutFeedback>
+        </Modal>
     );
 }
 

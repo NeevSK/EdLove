@@ -240,7 +240,7 @@ export default function CommunityScreenWeb() {
                                 active={activeTab === 'dms'}
                                 onClick={() => setActiveTab('dms')}
                             /                        ></nav
-                        {activeTab === 'feed' && (
+                        >{activeTab === 'feed' && (
                             <                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} /                                ><div style={{ padding: '0 16px' }}                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.filters.title') || "Filters"}</div                                    ><SidebarItem
                                         icon={<Activity size={16} />}
                                         label={t('community.filters.allUpdates') || "All Updates"}
@@ -289,7 +289,7 @@ export default function CommunityScreenWeb() {
                         {activeTab === 'feed' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                                {!can('read', 'CommunityFeed') ? (
                                     <div className="sanctuary-card" style={{ padding: '28px' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}                                            The Feed is born from Groups>
-                                        </h3                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            As a wanderer, you can discover groups and explore the ecosystem. Upgrade your account to join circles and let your feed emerge.
+                                        </h3                                        ><p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            As a wanderer, you can discover groups and explore the ecosystem. Upgrade your account to join circles and let your feed emerge.
                                         </p                                        <PositiveInvitation
                                             title="Become a Citizen"
                                             description="Create an account to join groups, post, and build resonance."
@@ -304,7 +304,7 @@ export default function CommunityScreenWeb() {
                                             </button                                        </div                                    </div                                ) : (!joinedGroups || joinedGroups.length === 0) ? (
                                     <div className="sanctuary-card" style={{ padding: '28px' }}                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}                                            Your feed will appear after you join a group
                                         </h3                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.>
-                                        </p                                        <button
+                                        </p                                        ><button
                                             className="premium-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                                             onClick={() => setActiveTab('groups')}
@@ -350,7 +350,7 @@ export default function CommunityScreenWeb() {
                                             }}
                                         /                                    >));
                                 })()}
-                            </div                        )}
+                            </div                        >)}
 
                         {activeTab === 'groups' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}                                <div style={{ display: 'flex', gap: '8px' }}                                    <button 
@@ -399,7 +399,7 @@ export default function CommunityScreenWeb() {
                                                 }}                                                    {initials}
                                                 </div>
                                                 <div style={{ flex: 1, minWidth: 0 }}                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}                                                        <span style={{ fontWeight: '600', fontSize: '15px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}                                                            {g.name}
-                                                        </span                                                        {g.join_policy === 'invite_only' && <Lock size={12} color="var(--ink-ghost)" />}
+                                                        </span                                                        >{g.join_policy === 'invite_only' && <Lock size={12} color="var(--ink-ghost)" />}
                                                     </div                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}                                                        {g.description || "Building resonance together..."}
                                                     </div                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}                                                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '4px' }}                                                            <Users2 size={10} /                                                            >{g.member_count} members
                                                         </span                                                        {!isJoined && (
@@ -498,5 +498,5 @@ function SidebarItem({ icon, label, active, onClick }: { icon: any, label: strin
                 className: 'sidebar-icon',
                 color: active ? 'var(--water)' : 'var(--ink-ghost)'
             })}
-            <span className="sidebar-label">{label}</span        ></button    );
+            <span className="sidebar-label">{label}</span        ></button    >);
 }

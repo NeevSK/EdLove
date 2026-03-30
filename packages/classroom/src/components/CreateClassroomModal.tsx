@@ -399,7 +399,7 @@ export default function CreateClassroomModal({
                                     sx={{ flex: 1, borderColor: glass.interact.border }}
                                     isDisabled={isSubmitting}>
                                                                     <ButtonText {...({ color: text.secondary } as any)}                                        {t('common.cancel') || 'Cancel'}
-                                    </ButtonText                                </Button                                <Button
+                                    </ButtonText                                ></Button                                <Button
                                     action="primary"
                                     onPress={() => updateStep(2)}
                                     sx={{
@@ -418,7 +418,7 @@ export default function CreateClassroomModal({
                                     sx={{ flex: 1, borderColor: glass.interact.border }}
                                     isDisabled={isSubmitting}
                                                                     <ButtonText {...({ color: text.secondary } as any)}                                        {'Back'}
-                                    </ButtonText                                </Button                                <Button
+                                    </ButtonText                                ></Button                                <Button
                                     action="primary"
                                     onPress={handleSubmit}
                                     sx={{
@@ -443,7 +443,7 @@ export default function CreateClassroomModal({
                                 }}
                                                             <ButtonText {...({ color: text.inverse } as any)}                                    {'Enter Classroom Dashboard'}
                                 </ButtonText                            </Button                        )}>
-                    </HStack                }
+                    </HStack                >}
                             <VStack sx={{ gap: Theme.spacing.xl }}                    {error && (
                         <Box
                             sx={{
@@ -459,7 +459,7 @@ export default function CreateClassroomModal({
                     {state.step === 1 && (
                         <                            {(mode === 'create' || mode === 'edit') && (
                                 <FormControl isRequired isInvalid={!!error}                                    <FormControlLabel                                        <FormControlLabelText >sx={{ color: colors.textSecondary }}                                            {t('classroom.labelClassName') || 'What shall we call your Sanctuary?'}
-                                        </FormControlLabelText                                    </FormControlLabel                                    <Input
+                                        </FormControlLabelText                                    ></FormControlLabel                                    <Input
                                         sx={{
                                             backgroundColor: colors.tertiary,
                                             borderColor: colors.border,
@@ -544,7 +544,7 @@ export default function CreateClassroomModal({
                                                             }}
                                                                                                                     <ButtonText color={state.academic.sectionId === section.id ? text.inverse : colors.textSecondary}                                                                {section.name}
                                                             </ButtonText                                                        </Button                                                    ))}>
-                                                </Box                                            </FormControl                                        </VStack                                    )}
+                                                </Box                                            ></FormControl                                        </VStack                                    )}
                                 </Box                            )}
                         </                    )}
 
@@ -564,7 +564,7 @@ export default function CreateClassroomModal({
                                                     }}
                                                                                                     <ButtonText color={state.academic.gradeId === grade.id ? text.inverse : colors.textSecondary}                                                        {grade.number}
                                                     </ButtonText                                                </Button                                            ))}>
-                                        </Box                                    </FormControl                                </VStack                            )}
+                                        </Box                                    ></FormControl                                </VStack                            )}
 
                             <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.labelSubject') || 'Core Subject'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack flexWrap="wrap" sx={{ gap: 8 }}                                    {availableSubjects.map((sub: any) => (
@@ -579,7 +579,7 @@ export default function CreateClassroomModal({
                                             }}
                                                                                     <ButtonText color={state.academic.subject === sub.id ? text.inverse : colors.textSecondary}                                                {sub.en}
                                             </ButtonText                                        </Button                                    ))}>
-                                </HStack                            </FormControl
+                                </HStack                            ></FormControl
                             <FormControl                                <FormControlLabel                                    <FormControlLabelText >>sx={{ color: colors.textSecondary }}                                        {t('classroom.theme') || 'Sanctuary Theme'}
                                     </FormControlLabelText                                </FormControlLabel                                <HStack sx={{ flexWrap: 'wrap', gap: 12, paddingVertical: 4 }}                                    {CLASSROOM_THEMES.map((theme) => (
                                         <Pressable key={theme.id} onPress={() => updateAesthetics({ themeId: theme.id })}                                            <Box

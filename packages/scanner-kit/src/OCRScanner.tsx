@@ -173,7 +173,7 @@ export default function OCRScanner({
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary }}
-      {/* Toast */}
+      {/* Toast */}>
       {toastMessage && (
         <View
           style={{
@@ -184,13 +184,13 @@ export default function OCRScanner({
             zIndex: 999,
             backgroundColor: colors.accent,
             padding: 12,
-            borderRadius: 8,
+            borderRadius: 8,>
           }}
         
           <Text style={{ color: "#fff", textAlign: "center" }}
-            {toastMessage}
-          </Text
-        </View
+            {toastMessage}>
+          </Text>
+        </View>
       )}
 
       {/* Header */}
@@ -203,26 +203,26 @@ export default function OCRScanner({
           paddingTop: 48,
           paddingBottom: 16,
           borderBottomWidth: 1,
-          borderBottomColor: colors.border,
+          borderBottomColor: colors.border,>
         }}
       
         <Text
-          style={{ color: colors.accent, fontSize: 20, fontWeight: "bold" }}
+          style={{ color: colors.accent, fontSize: 20, fontWeight: "bold" }}>
         
           {t("ocr.title")}
-        </Text
+        </Text>
         <TouchableOpacity onPress={onCancel}
           <Text style={{ color: colors.textSecondary, fontSize: 24 }}>\u2715</Text
         ></TouchableOpacity
-      </View
+      </View>
 
       {/* Content */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }}
-        {step === "capture" && (
+        {step === "capture" && (>
           <View style={{ gap: 16 }}
-            <Text style={{ color: colors.textSecondary, textAlign: "center" }}
+            <Text style={{ color: colors.textSecondary, textAlign: "center" }}>
               {t("ocr.captureDescription")}
-            </Text
+            </Text>
 
             <TouchableOpacity
               onPress={handleCaptureImage}
@@ -230,13 +230,13 @@ export default function OCRScanner({
                 backgroundColor: colors.accent,
                 padding: 16,
                 borderRadius: 12,
-                alignItems: "center",
+                alignItems: "center",>
               }}
             
               <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}
-                \uD83D\uDCF7 {t("ocr.takePhoto")}
-              </Text
-            </TouchableOpacity
+                \uD83D\uDCF7 {t("ocr.takePhoto")}>
+              </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handlePickImage}
@@ -245,13 +245,13 @@ export default function OCRScanner({
                 borderColor: colors.border,
                 padding: 16,
                 borderRadius: 12,
-                alignItems: "center",
+                alignItems: "center",>
               }}
             
               <Text style={{ color: colors.text, fontSize: 16 }}
-                {t("ocr.chooseFromGallery")}
-              </Text
-            </TouchableOpacity
+                {t("ocr.chooseFromGallery")}>
+              </Text>
+            </TouchableOpacity>
 
             <View
               style={{
@@ -260,18 +260,18 @@ export default function OCRScanner({
                 borderRadius: 12,
                 borderWidth: 1,
                 borderColor: colors.border,
-                gap: 6,
+                gap: 6,>
               }}
             
               <Text
                 style={{
                   color: colors.accent,
                   fontWeight: "600",
-                  fontSize: 13,
+                  fontSize: 13,>
                 }}
               
                 {t("ocr.tipsTitle")}
-              </Text
+              </Text>
               {[
                 "Good lighting (avoid shadows)",
                 "Clear, focused image",
@@ -282,16 +282,16 @@ export default function OCRScanner({
                   key={tip}
                   style={{ color: colors.textSecondary, fontSize: 13 }}
                 
-                  \u2022 {tip}
-                </Text
+                  \u2022 {tip}>
+                </Text>
               ))}
-            </View
-          </View
+            </View>
+          </View>
         )}
 
         {step === "processing" && (
           <View style={{ alignItems: "center", marginTop: 48, gap: 16 }}
-            {imageUri && (
+            {imageUri && (>
               <Image
                 source={{ uri: imageUri }}
                 style={{ width: 300, height: 400, borderRadius: 12 }}
@@ -301,16 +301,16 @@ export default function OCRScanner({
             <ActivityIndicator size="large" color={colors.accent} /
             ><Text style={{ color: colors.textSecondary, textAlign: "center" }}
               {t("ocr.scanning")}
-            </Text
-          </View
+            </Text>
+          </View>
         )}
 
         {step === "review" && (
           <View style={{ gap: 16 }}
             <Text style={{ color: colors.textSecondary, textAlign: "center" }}
               Found {parsedStudents.length} student(s). Review and confirm or
-              edit manually.
-            </Text
+              edit manually.>
+            </Text>
 
             {imageUri && (
               <Image
@@ -333,52 +333,52 @@ export default function OCRScanner({
                       ? colors.warning
                       : colors.success,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: colors.border,>
                   }}
                 
                   <View
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      alignItems: "center",
+                      alignItems: "center",>
                     }}
                   
                     <View style={{ flex: 1, gap: 4 }}
-                      <Text style={{ color: colors.text, fontWeight: "600" }}
+                      <Text style={{ color: colors.text, fontWeight: "600" }}>
                         {student.name}
-                      </Text
+                      </Text>
                       <Text
                         style={{ color: colors.textSecondary, fontSize: 13 }}
                       
-                        Index: {student.index_number}
-                      </Text
+                        Index: {student.index_number}>
+                      </Text>
                       {student.notes && (
                         <Text
-                          style={{ color: colors.textSecondary, fontSize: 13 }}
+                          style={{ color: colors.textSecondary, fontSize: 13 }}>
                         
                           {student.notes}
-                        </Text
+                        </Text>
                       )}
                       {student.uncertain && (
                         <Text style={{ color: colors.warning, fontSize: 11 }}
-                          \u26A0 Low confidence \u2014 please verify
-                        </Text
+                          \u26A0 Low confidence \u2014 please verify>
+                        </Text>
                       )}
-                    </View
+                    </View>
                     <Text
                       style={{
                         color: student.uncertain
                           ? colors.warning
                           : colors.success,
-                        fontSize: 18,
+                        fontSize: 18,>
                       }}
                     
                       {student.uncertain ? "?" : "\u2713"}
-                    </Text
-                  </View
-                </View
+                    </Text>
+                  </View>
+                </View>
               ))}
-            </View
+            </View>
 
             {scannedText && (
               <View
@@ -387,20 +387,20 @@ export default function OCRScanner({
                   padding: 16,
                   borderRadius: 12,
                   borderWidth: 1,
-                  borderColor: colors.border,
+                  borderColor: colors.border,>
                 }}
               
                 <Text
                   style={{
                     color: colors.textSecondary,
                     fontSize: 11,
-                    fontFamily: "monospace",
+                    fontFamily: "monospace",>
                   }}
                 
                   {scannedText.substring(0, 200)}
                   {scannedText.length > 200 && "..."}
-                </Text
-              </View
+                </Text>
+              </View>
             )}
 
             <View style={{ flexDirection: "row", gap: 12 }}
@@ -412,7 +412,7 @@ export default function OCRScanner({
                   borderColor: colors.border,
                   padding: 16,
                   borderRadius: 12,
-                  alignItems: "center",
+                  alignItems: "center",>
                 }}
               
                 <Text style={{ color: colors.text }}>{t("ocr.tryAgain")}</Text
@@ -424,17 +424,17 @@ export default function OCRScanner({
                   backgroundColor: colors.accent,
                   padding: 16,
                   borderRadius: 12,
-                  alignItems: "center",
+                  alignItems: "center",>
                 }}
               
                 <Text style={{ color: "#fff", fontWeight: "bold" }}
-                  Confirm ({parsedStudents.length})
-                </Text
-              </TouchableOpacity
-            </View
-          </View
+                  Confirm ({parsedStudents.length})>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
-      </ScrollView
-    </View
+      </ScrollView>
+    </View>
   );
 }

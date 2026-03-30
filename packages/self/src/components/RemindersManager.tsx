@@ -217,7 +217,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     <Plus color={Theme.colors.sacredWhite} size={16} style={{ marginRight: 4 }} /
                     ><ButtonText>{t('reminders.addReminder')}</ButtonText
                 ></Button
-            </HStack>
+            ></HStack>
 
             {/* Reminders List */}
             <VStack space="md"
@@ -271,7 +271,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                 size={20}
                                             /
                                         ></Box
-                                    </Pressable>
+                                    ></Pressable>
 
                                     {/* Content */}
                                     <VStack space="xs" sx={{ flex: 1 }}
@@ -369,8 +369,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                         </Heading>
                         <ModalCloseButton /
                     ></ModalHeader
-                    <ModalBody
-                        <VStack space="md">
+                    ><ModalBody
+                        <VStack >space="md">
                             {/* Title */}
                             <VStack space="xs"
                                 <Text color={Theme.colors.starlightGray} size="sm"
@@ -392,7 +392,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                         placeholderTextColor={Theme.colors.dimGray}
                                     /
                                 ></Input
-                            </VStack>
+                            ></VStack>
 
                             {/* Description */}
                             <VStack space="xs"

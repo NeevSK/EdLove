@@ -104,46 +104,45 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
     return (
         <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen"
-            <Box style={styles.overlay}
+            <Box style={styles.overlay}>
                 <Box sx={{
                     flex: 1,
                     backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
-                    width: '100%',
+                    width: '100%',>
                 }}
-                    <TouchableOpacity style={{ flex: 1 }} onPress={onClose} /
-
+                    <TouchableOpacity style={{ flex: 1 }} onPress={onClose} />
                     <Box sx={{
-                        backgroundColor: colors.primary,
+                    >    backgroundColor: colors.primary,
                         borderTopLeftRadius: Theme.corners.generous,
                         borderTopRightRadius: Theme.corners.generous,
                         padding: Theme.spacing.xl,
                         maxHeight: '85%',
                         borderWidth: 1,
-                        borderColor: colors.border
+                        borderColor: colors.border>
                     }}
                         <HStack justifyContent="space-between" alignItems="center" mb="$6"
-                            <VStack
+                            <VStack>
                                 <Heading color={colors.textPrimary}
-                                    {initialLink ? t('addSocialLink.editTitle') : t('addSocialLink.title')}
-                                </Heading
+                                    {init>ialLink ? t('addSocialLink.editTitle') : t('addSocialLink.title')}>
+                                </Heading>
                                 <Text size="xs" color={colors.textTertiary}
-                                    {initialLink ? t('addSocialLink.editSubtitle') : t('addSocialLink.subtitle')}
-                                </Text
-                            </VStack
+                                    {initialLink ? t('addSocialLink.editSubtitle') : t('addSocialLink.subtitle')}>
+                                </Text>
+                            </VStack>
                             <TouchableOpacity
                                 onPress={onClose}
                                 style={{
                                     padding: 8,
                                     borderRadius: Theme.corners.full,
-                                    backgroundColor: colors.tertiary
+                                    backgroundColor: colors.tertiary>
                                 }}
                             
                                 <X size={20} color={colors.textSecondary} /
-                            </TouchableOpacity
-                        </HStack
+                            </TouchableOpacity>
+                        </HS>tack>
 
                         <ScrollView showsVerticalScrollIndicator={false}
-                            <VStack space="xl"
+                            <VStack space="xl">
                                 <VStack space="xs"
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.selectPlatform')}</Text
                                     <HStack space="sm" sx={{ flexWrap: 'wrap' }}
@@ -161,19 +160,19 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                             
                                                 <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} /
                                                 <Text
-                                                    size="xs"
+                                                >    size="xs"
                                                     bold={platform === p.value}
                                                     sx={{
                                                         color: platform === p.value ? p.color : colors.textSecondary,
-                                                        marginLeft: 6
+                                                        marginLeft: 6>
                                                     }}
                                                 
                                                     {t(p.labelKey)}
-                                                </Text
-                                            </TouchableOpacity
+                                                </Text>
+                                            </TouchableOpacity>
                                         ))}
-                                    </HStack
-                                </VStack
+                                    </HStack>
+                                </VStack>
 
                                 <VStack space="xs"
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.handleOrLink')}</Text
@@ -181,7 +180,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                         height: 54,
                                         borderRadius: Theme.corners.comfortable,
                                         backgroundColor: colors.secondary,
-                                        borderColor: colors.border
+                                        borderColor: colors.border>
                                     }}
                                         <InputField
                                             color={colors.textPrimary}
@@ -189,9 +188,9 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                             onChangeText={setUrl}
                                             placeholder={platform === 'whatsapp' ? t('addSocialLink.phoneOrLink') : t('addSocialLink.usernameOrLink')}
                                             placeholderTextColor={colors.textTertiary}
-                                        /
-                                    </Input
-                                </VStack
+                                        />
+                                    </Input>
+                                </VS>tack>
 
                                 <VStack space="xs"
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.privacyLevel')}</Text
@@ -205,26 +204,26 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                     variant={privacy === pl.value ? 'glass' : 'solid'}
                                                     style={{
                                                         padding: Theme.spacing.md,
-                                                        borderColor: privacy === pl.value ? Theme.colors.sanctuarySaffron : colors.border
+                                                        borderColor: privacy === pl.value ? Theme.colors.sanctuarySaffron : colors.border>
                                                     }}
                                                 
                                                     <HStack space="md" alignItems="center"
-                                                        <pl.icon size={20} color={privacy === pl.value ? colors.action : colors.textTertiary} /
+                                                        <pl.icon size={20} color={privacy === pl.value ? colors.action : colors.textTertiary} />
                                                         <VStack flex={1}
-                                                            <Text bold color={privacy === pl.value ? colors.textPrimary : colors.textSecondary}
+                                                        >    <Text bold color={privacy === pl.value ? colors.textPrimary : colors.textSecondary}>
                                                                 {t(pl.labelKey)}
-                                                            </Text
+                                                            </Text>
                                                             <Text size="xs" color={colors.textTertiary}
-                                                                {t(pl.descKey)}
-                                                            </Text
-                                                        </VStack
+                                                                {t(pl.descKey)}>
+                                                            </Text>
+                                                        </VStack>
                                                         {privacy === pl.value && <ShieldCheck size={18} color={colors.action} />}
-                                                    </HStack
-                                                </SanctuaryCard
-                                            </TouchableOpacity
+                                                    </HStack>
+                                                </SanctuaryCard>
+                                            </TouchableOpacity>
                                         ))}
-                                    </VStack
-                                </VStack
+                                    </VStack>
+                                </VStack>
 
                                 <Button
                                     size="lg"
@@ -234,23 +233,23 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                         marginTop: Theme.spacing.md,
                                         backgroundColor: colors.action,
                                         borderRadius: Theme.corners.comfortable,
-                                        height: 56
+                                        height: 56>
                                     }}
                                 
                                     <HStack space="xs" alignItems="center"
                                         {initialLink ? <Check size={20} color={text.inverse} /> : <Plus size={20} color={text.inverse} />}
                                         <ButtonText {...({ color: text.inverse, bold: true } as any)}
-                                            {initialLink ? t('addSocialLink.saveButton') : t('addSocialLink.addButton')}
-                                        </ButtonText
-                                    </HStack
-                                </Button
-                            </VStack
+                                            {initialLink ? t('addSocialLink.saveButton') : t('addSocialLink.addButton')}>
+                                        </ButtonText>
+                                    </HStack>
+                                </Button>
+                            </VStack>
                             <Box h={Theme.spacing.xl} /
-                        </ScrollView
-                    </Box
-                </Box
-            </Box
-        </Modal
+                        </ScrollView>
+                    </Bo>x>
+                </Box>
+            </Box>
+        </Modal>
     );
 };
 

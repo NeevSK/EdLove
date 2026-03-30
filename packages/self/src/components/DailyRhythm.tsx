@@ -252,7 +252,7 @@ function DailyRhythmContent() {
                                                 ><Text size="xs" color={Theme.colors.mistGray}>{period.end_time?.slice(0, 5)}</Text
                                             ></VStack
 
-                                            <VStack sx={{ flex: 1 }}
+                                            ><VStack sx={{ flex: 1 }}
                                                 <HStack justifyContent="space-between" alignItems="center">
                                                     <Heading size="sm" color={active ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite}
                                                         {period.subject || period.activity}>
@@ -261,7 +261,7 @@ function DailyRhythmContent() {
                                                         <Box px="$2" py="$0.5" sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: '$full' }}
                                                             <Text size="2xs" color={Theme.colors.sacredWhite} bold>{t('common.now') || 'NOW'}</Text
                                                         ></Box
-                                                    )}
+                                                    >)}
                                                 </HStack>
                                                 <HStack space="xs" alignItems="center"
                                                     <Text size="xs" color={Theme.colors.mistGray}>{period.class_name}</Text
@@ -290,25 +290,25 @@ function DailyRhythmContent() {
                         <ModalCloseButton
                             <CloseIcon >color={Theme.colors.mistGray} /
                         ></ModalCloseButton
-                    </ModalHeader>
+                    ></ModalHeader>
                     <ModalBody
-                        <VStack space="lg" pb="$6">
+                        <VStack >space="lg" pb="$6">
                             <Input
                                 <InputField
-                                    placeholder={t('self.subjectPlaceholder')}
+                                    >placeholder={t('self.subjectPlaceholder')}
                                     value={editingPeriod?.subject || ''}
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, subject: val })}
                                     color={Theme.colors.sacredWhite}
                                 /
-                            </Input>
+                            ></Input>
                             <Input
                                 <InputField
-                                    placeholder={t('self.classPlaceholder')}
+                                    >placeholder={t('self.classPlaceholder')}
                                     value={editingPeriod?.class_name || ''}
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, class_name: val })}
                                     color={Theme.colors.sacredWhite}
                                 /
-                            </Input>
+                            ></Input>
 
                             <HStack space="md"
                                 <Input style={{ flex: 1 }}>
@@ -319,7 +319,7 @@ function DailyRhythmContent() {
                                         color={Theme.colors.sacredWhite}
                                     /
                                 ></Input
-                                <Input style={{ flex: 1 }}
+                                ><Input style={{ flex: 1 }}
                                     <InputField
                                         placeholder={t('self.endPlaceholder')}
                                         value={editingPeriod?.end_time || ''}
@@ -366,7 +366,7 @@ function DailyRhythmContent() {
                                 
                                     <ButtonText color={Theme.colors.sacredWhite}>{t('common.save')}</ButtonText
                                 ></Button
-                            </HStack>
+                            ></HStack>
                         </VStack>
                     </ModalBody>
                 </ModalContent>

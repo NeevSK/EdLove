@@ -225,7 +225,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                     
                                         <Icon as={getIcon(resource.type)} sx={{ color: colors.text, width: 20, height: 20 }} /
                                     ></Box
-                                    <VStack sx={{ flex: 1 }}
+                                    ><VStack sx={{ flex: 1 }}
                                         <HStack sx={{ alignItems: 'center', gap: 4 }}>
                                             <Text color={colors.text} sx={{ fontWeight: 'bold' }} numberOfLines={1}
                                                 {resource.title}>
@@ -319,7 +319,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         ></ModalCloseButton
                     </ModalHeader>
                     <ModalBody
-                        <VStack sx={{ gap: Theme.spacing.md }}>
+                        <VStack >sx={{ gap: Theme.spacing.md }}>
                             <VStack sx={{ gap: 4 }}
                                 <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.titleLabel') || 'Title'}</Text
                                 ><Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}
@@ -330,7 +330,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                         onChangeText={setTitle}
                                     /
                                 ></Input
-                            </VStack>
+                            ></VStack>
 
                             <VStack sx={{ gap: 4 }}
                                 <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.typeLabel') || 'Type'}</Text

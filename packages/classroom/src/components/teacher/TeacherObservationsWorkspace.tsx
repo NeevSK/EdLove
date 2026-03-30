@@ -123,7 +123,7 @@ export default function TeacherObservationsWorkspace({
                     }}
                                     <VStack sx={{ gap: Theme.spacing.md }}                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}                            <VStack sx={{ flex: 1, gap: 4 }}                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                    Observations
                                 </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                    Track classroom noticing, not just incidents>
-                                </Heading                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Keep small signals close to the classroom rhythm, so growth and concern stay visible before they become reports.
+                                </Heading                                ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    Keep small signals close to the classroom rhythm, so growth and concern stay visible before they become reports.
                                 </Text                            </VStack                            {canManage && (
                                 <Button
                                     action="primary"
@@ -146,7 +146,7 @@ export default function TeacherObservationsWorkspace({
                                 label="Concerns"
                                 value={String(concernCount)}
                                 colors={colors}
-                            /                        ></HStack                    </VStack                </Box
+                            /                        ></HStack                    ></VStack                </Box
                 {isLoading ? (
                     <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : observations.length === 0 ? (
                     <Box
@@ -273,6 +273,6 @@ function SignalPill({
             }}
                     <VStack sx={{ gap: 4 }}                <HStack sx={{ alignItems: 'center', gap: 6 }}                    {icon}
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                        {label}>
-                    </Text                </HStack                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
+                    </Text                ></HStack                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
                 </Text            </VStack        </Box    );
 }

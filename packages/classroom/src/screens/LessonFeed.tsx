@@ -266,7 +266,7 @@ export default function LessonFeed({
                             ><SkeletonCard height={80} /
                             ><SkeletonCard height={80} /
                         ></VStack
-                    )}
+                    >)}
 
                     {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
                         <Box key={monthTitle} sx={{ marginBottom: Theme.spacing.md }}
@@ -298,7 +298,7 @@ export default function LessonFeed({
                                                     }}
                                                         <Text color={Theme.colors.white} sx={{ fontWeight: 'bold', fontSize: 10 }}>CURRENT</Text
                                                     ></Box
-                                                )}
+                                                >)}
                                             </HStack>
                                             <Text color={colors.textSecondary} sx={{ fontSize: 12 }}
                                                 {materials.length} Materials " {assignments.length} Assignments>
@@ -308,7 +308,7 @@ export default function LessonFeed({
                                             <ChevronUp color={colors.action} /
                                         ) : (>
                                             <ChevronDown color={colors.textTertiary} /
-                                        )}>
+                                        >)}>
                                     </HStack>
                                 </Box>
                             </TouchableOpacity>

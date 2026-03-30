@@ -223,10 +223,10 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                 
                                     <Package size={20} color={colors.text} /
                                 ></Box
-                                <VStack
-                                    <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{item.name}</Text
-                                    <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{t('classroom.inventory.quantity', { count: item.quantity })}</Text
-                                </VStack>
+                                ><VStack
+                                    <Text >color={colors.text} sx={{ fontWeight: 'bold' }}>{item.name}</Text
+                                    ><Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{t('classroom.inventory.quantity', { count: item.quantity })}</Text
+                                ></VStack>
                             </HStack>
 
                             <Box
@@ -283,10 +283,10 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         ></ModalCloseButton
                     </ModalHeader>
                     <ModalBody
-                        <Text color={colors.textSecondary} sx={{ marginBottom: Theme.spacing.md }}>
+                        <Text >color={colors.textSecondary} sx={{ marginBottom: Theme.spacing.md }}>
                             {t('classroom.inventory.reportIssue')} for: <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{selectedItem?.name}</Text
                         ></Text
-                        <VStack sx={{ gap: Theme.spacing.md }}
+                        ><VStack sx={{ gap: Theme.spacing.md }}
                             <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.condition')}</Text
                             ><HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}
                                 {(['good', 'fair', 'poor', 'broken'] as const).map(cond => (
@@ -318,11 +318,11 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             ><Textarea
                                 <TextareaInput >placeholder={t('classroom.inventory.damagePlaceholder')} color={colors.text} /
                             ></Textarea
-                        </VStack>
+                        ></VStack>
                     </ModalBody>
                     <ModalFooter
                         <Button
-                            variant="outline"
+                            >variant="outline"
                             action="secondary"
                             sx={{ marginRight: Theme.spacing.sm }}
                             onPress={() => setShowReportModal(false)}
@@ -356,7 +356,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         ></ModalCloseButton
                     </ModalHeader>
                     <ModalBody
-                        <VStack sx={{ gap: Theme.spacing.md }}>
+                        <VStack >sx={{ gap: Theme.spacing.md }}>
                             <VStack sx={{ gap: 4 }}
                                 <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.itemName')}</Text
                                 ><Input
@@ -367,7 +367,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                         onChangeText={setRequestName}
                                     /
                                 ></Input
-                            </VStack>
+                            ></VStack>
                             <VStack sx={{ gap: 4 }}
                                 <Text color={colors.text} sx={{ fontSize: 13 }}>
                                     {String(t('classroom.inventory.quantity', { count: 0 }) || '').split(':')[0]?.trim() || ''}
@@ -397,7 +397,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                     </ModalBody>
                     <ModalFooter
                         <Button
-                            variant="outline"
+                            >variant="outline"
                             action="secondary"
                             sx={{ marginRight: Theme.spacing.sm }}
                             onPress={() => setShowRequestModal(false)}

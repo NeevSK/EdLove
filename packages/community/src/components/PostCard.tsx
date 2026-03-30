@@ -174,7 +174,7 @@ const PostCard = React.memo(function PostCard({
                         <BookOpen size={11} color="#6366F1" /
                         ><Text size="xs" bold sx={{ color: '#6366F1' }}>Resource</Text
                     ></Box
-                </Box>
+                ></Box>
             );
         }
 
@@ -192,7 +192,7 @@ const PostCard = React.memo(function PostCard({
                     <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}>
                         <Text size="xs" bold sx={{ color: cfg.color }}>{cfg.label}</Text
                     ></Box
-                    {!!feedback_response && (
+                    >{!!feedback_response && (
                         <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: Theme.colors.sanctuarySaffron }}
                             <Text color={colors.textSecondary} size="xs" italic>{feedback_response}</Text
                         ></Box
@@ -342,7 +342,7 @@ const PostCard = React.memo(function PostCard({
                             </Avatar>
                         </TouchableOpacity>
                         <VStack
-                            <HStack space="xs" alignItems="center">
+                            <HStack >space="xs" alignItems="center">
                                 <Text color={colors.text} bold size="sm"
                                     {is_anonymous ? 'Anonymous' : author_name}>
                                 </Text>
@@ -354,7 +354,7 @@ const PostCard = React.memo(function PostCard({
                     </HStack>
 
                     <Box
-                        <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}
+                        <TouchableOpacity >onPress={() => setMenuOpen(!menuOpen)}
                             <MoreHorizontal color={colors.textTertiary} size={20} /
                         ></TouchableOpacity
 
@@ -383,7 +383,7 @@ const PostCard = React.memo(function PostCard({
                                                 <XIcon size={16} color={colors.error} /
                                                 ><Text size="sm" color={colors.error}>Delete Post</Text
                                             ></HStack
-                                        </TouchableOpacity>
+                                        ></TouchableOpacity>
                                     )}
 
                                     {/* Report (other people's posts) */}
@@ -408,7 +408,7 @@ const PostCard = React.memo(function PostCard({
                                                 <UserX size={16} color={Theme.colors.sanctuarySaffron} /
                                                 ><Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text
                                             ></HStack
-                                        </TouchableOpacity>
+                                        ></TouchableOpacity>
                                     )}
                                 </VStack>
                             </Box>
@@ -455,7 +455,7 @@ const PostCard = React.memo(function PostCard({
                                     color={hasResonated ? colors.action : colors.textTertiary}
                                 /
                             ></LivingGlow
-                        </TouchableOpacity>
+                        ></TouchableOpacity>
 
                         <TouchableOpacity onPress={onComment} style={styles.actionButton}
                             <MessageCircle size={20} color={colors.textTertiary} />
@@ -726,12 +726,12 @@ function PollWidget({
                             <Lock size={11} color={colors.textTertiary} /
                             ><Text color={colors.textTertiary} size="xs">Anonymous</Text
                         ></HStack
-                    )}
+                    >)}
                     {allow_multiple && (
                         <Box style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}
                             <Text color={colors.textTertiary} size="xs">Multi-select</Text
                         ></Box
-                    )}
+                    >)}
                 </HStack>
 
                 {isExpired ? (
@@ -892,7 +892,7 @@ function PollWidget({
 export default PostCard;
 
 /** Maps each canonical PostType to its footer badge config. */
-const TYPE_BADGE: Record<PostType, { label: string; bg: string; border: string; text: string }/> = {
+const TYPE_BADGE: Record<PostType, { label: string; bg: string; border: string; text: string }>/> = {
     announcement: { label: 'Sacred Bulletin', bg: '$amber100',          border: '$amber400',           text: '$amber700' },
     question:     { label: 'Question',        bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.5)', text: '#3B82F6' },
     resource:     { label: 'Resource',        bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.5)', text: '#6366F1' },

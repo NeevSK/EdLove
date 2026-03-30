@@ -217,7 +217,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     /
                 ></Textarea
 
-                {/* \u2500\u2500 Poll builder \u2500\u2500 */}
+                >{/* \u2500\u2500 Poll builder \u2500\u2500 */}
                 {isPollMode && (
                     <VStack {...({ space: 'md' } as any)}>
                         {/* Options */}
@@ -238,11 +238,11 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                             {...({ color: text.primary, size: 'sm' } as any)}
                                         /
                                     ></Input
-                                    {pollOptions.length > 2 && (
+                                    >{pollOptions.length > 2 && (
                                         <TouchableOpacity onPress={() => removePollOption(idx)}
                                             <X size={18} color={text.muted} /
                                         ></TouchableOpacity
-                                    )}
+                                    >)}
                                 </HStack>
                             ))}
                             {pollOptions.length < 5 && (
@@ -275,7 +275,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                     <Lock size={14} color={text.secondary} /
                                     ><Text {...({ color: text.primary, size: '$sm' } as any)}>Anonymous votes</Text
                                 ></HStack
-                                <Switch
+                                ><Switch
                                     value={pollIsAnonymous}
                                     onValueChange={setPollIsAnonymous}
                                     trackColor={{ false: glass.interact.border, true: accent.action }}
@@ -455,7 +455,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     
                         <ImageIcon size={20} color={selectedImage ? accent.action : text.secondary} /
                     ></TouchableOpacity
-                    <TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
+                    ><TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
                         <Mic size={20} color={text.secondary} /
                     ></TouchableOpacity
                     <TouchableOpacity

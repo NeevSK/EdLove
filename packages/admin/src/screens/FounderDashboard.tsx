@@ -134,9 +134,9 @@ export default function FounderDashboard() {
                                                 <Text >sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text
                                                 ><Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text
                                             ></VStack
-                                        </HStack>
+                                        ></HStack>
                                         <ChevronRight size={20} color={colors.textTertiary} /
-                                    </HStack>
+                                    ></HStack>
                                 </Box>
                             </TouchableOpacity>
                         )}
@@ -263,7 +263,7 @@ export default function FounderDashboard() {
                 availableSchools={schools}
             /
 
-        </ScreenWrapper>
+        ></ScreenWrapper>
     );
 }
 
@@ -360,7 +360,7 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                         </Text>
                     </VStack>
                     <ChevronRight size={20} color={colors.textTertiary} /
-                </HStack>
+                ></HStack>
             </Box>
         </TouchableOpacity>
     );

@@ -109,17 +109,17 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}
-      <VStack space="xs"
+      <VStack space="xs">
         <HStack space="sm" alignItems="center"
           <Sparkles color={Theme.colors.sanctuarySaffron} size={24} /
           ><Heading color={Theme.colors.sacredWhite} size="lg"
             {t('self.joyJar')}
-          </Heading
-        </HStack
+          </Heading>
+        </HStack>
         <Text color={Theme.colors.mistGray} size="sm"
-          {t('self.joyJarDesc')}
-        </Text
-      </VStack
+          {t('self.joyJarDesc')}>
+        </Text>
+      </VStack>
 
       {!showForm ? (
         <
@@ -143,7 +143,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
           ></Button
 
           <ScrollView sx={{ flex: 1, maxHeight: 400 }}
-            <VStack space="md"
+            <VStack space="md">
               {joyMoments.map((moment) => (
                 <Box
                   key={moment.id}
@@ -152,32 +152,32 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
-                    borderLeftColor: Theme.colors.sanctuarySaffron
+                    borderLeftColor: Theme.colors.sanctuarySaffron>
                   }}
                 
                   <HStack justifyContent="space-between" alignItems="flex-start"
-                    <VStack space="xs" sx={{ flex: 1 }}
+                    <VStack space="xs" sx={{ flex: 1 }}>
                       {moment.student_name && (
                         <Text
                           color={Theme.colors.sanctuarySaffron}
                           size="sm"
-                          bold
+                          bold>
                         
                           {moment.student_name}
-                        </Text
+                        </Text>
                       )}
                       <Text color={Theme.colors.sacredWhite} size="md"
-                        {moment.moment_description}
-                      </Text
+                        {moment.moment_description}>
+                      </Text>
                       <Text color={Theme.colors.dimGray} size="xs"
-                        {new Date(moment.created_at).toLocaleDateString()}
-                      </Text
-                    </VStack
+                        {new Date(moment.created_at).toLocaleDateString()}>
+                      </Text>
+                    </VStack>
                     <Text fontSize="$2xl"
                       {categories.find(c => c.id === moment.category)?.emoji || '\u2728'}
-                    </Text
-                  </HStack
-                </Box
+                    </Text>
+                  </HStack>
+                </Box>
               ))}
 
               {joyMoments.length === 0 && (
@@ -186,23 +186,23 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                   title={t('self.startCapturing')}
                 /
               >)}
-            </VStack
-          </ScrollView
+            </VStack>
+          </ScrollView>
         </
       ) : (
         <VStack space="md"
-          {/* Student Name */}
+          {/* Student Name */}>
           <Box
             <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
               {t('self.studentName')}
-            </Text
+            </Text>
             <Input
               variant="outline"
               size="md"
               sx={{
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
-                borderColor: Theme.colors.transparent
+                borderColor: Theme.colors.transparent>
               }}
             
               <InputField
@@ -213,13 +213,13 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 placeholderTextColor={Theme.colors.dimGray}
               /
             ></Input
-          </Box
+          </Box>
 
           {/* Category Selection */}
           <Box
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
+            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
               {t('self.category')}
-            </Text
+            </Text>
             <HStack space="sm" flexWrap="wrap"
               {categories.map((cat) => (
                 <Pressable
@@ -239,7 +239,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                         category === cat.id
                           ? Theme.colors.sanctuarySaffron
                           : Theme.colors.ink,
-                      borderRadius: Theme.corners.comfortable
+                      borderRadius: Theme.corners.comfortable>
                     }}
                   
                     <Text fontSize="$md">{cat.emoji}</Text
@@ -252,18 +252,18 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                       size="sm"
                     
                       {cat.label}
-                    </Text
-                  </HStack
-                </Pressable
+                    </Text>
+                  </HStack>
+                </Pressable>
               ))}
-            </HStack
-          </Box
+            </HStack>
+          </Box>
 
           {/* Moment Description */}
           <Box
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2"
+            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
               {t('self.momentDescription')}
-            </Text
+            </Text>
             <Input
               variant="outline"
               size="md"
@@ -271,7 +271,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
-                minHeight: 100
+                minHeight: 100>
               }}
             
               <InputField
@@ -284,7 +284,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 sx={{ textAlignVertical: 'top' }}
               /
             ></Input
-          </Box
+          </Box>
 
           {/* Actions */}
           <HStack space="md" justifyContent="flex-end"
@@ -303,9 +303,9 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
               }}
             
               <ButtonText color={Theme.colors.mistGray}
-                {t('common.cancel')}
-              </ButtonText
-            </Button
+                {t('common.cancel')}>
+              </ButtonText>
+            </Button>
             <Button
               size="md"
               action="primary"
@@ -313,14 +313,14 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
               isDisabled={!momentDescription.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
-                borderRadius: Theme.corners.comfortable
+                borderRadius: Theme.corners.comfortable>
               }}
             
               <ButtonText>{t('common.save')}</ButtonText
             ></Button
-          </HStack
-        </VStack
+          </HStack>
+        </VStack>
       )}
-    </VStack
+    </VStack>
   );
 }

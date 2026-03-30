@@ -56,7 +56,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
     const renderSearchBar = () => (
         <Animated.View entering={FadeInDown.delay(100).springify()}
-            <Box px="$4" mb="$3"
+            <Box px="$4" mb="$3">
                 <HStack 
                     space="sm" 
                     alignItems="center" 
@@ -66,7 +66,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         paddingHorizontal: Theme.spacing.md,
                         height: 48,
                         borderWidth: 1,
-                        borderColor: colors.border
+                        borderColor: colors.border>
                     }}
                 
                     <Compass size={18} color={colors.textSecondary} /
@@ -89,14 +89,14 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>\u00D7</Text
                         ></Pressable
                     ) : null}
-                </HStack
-            </Box
-        </Animated.View
+                </HStack>
+            </Box>
+        </Animated.View>
     );
 
     const renderSubTabs = () => (
         <Animated.View entering={FadeInDown.delay(150).springify()}
-            <HStack space="sm" mx="$4" mb="$3" mt="$1"
+            <HStack space="sm" mx="$4" mb="$3" mt="$1">
                 <Pressable
                     onPress={() => setActiveSubTab('sanctuary')}
                     sx={{
@@ -117,9 +117,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.text}
                         
                             {t('community.groups.sanctuary')}
-                        </Text
-                    </HStack
-                </Pressable
+                        </Text>
+                    </HStack>
+                </Pressable>
                 <Pressable
                     onPress={() => setActiveSubTab('galaxy')}
                     sx={{
@@ -140,11 +140,11 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.text}
                         
                             {t('community.groups.galaxy')}
-                        </Text
-                    </HStack
-                </Pressable
-            </HStack
-        </Animated.View
+                        </Text>
+                    </HStack>
+                </Pressable>
+            </HStack>
+        </Animated.View>
     );
 
     const renderGalaxyActions = () => {
@@ -152,7 +152,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
         return (
             <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}
-                <Box sx={{ mx: '$4', mb: '$4' }}
+                <Box sx={{ mx: '$4', mb: '$4' }}>
                     <SanctuaryButton
                         action="primary"
                         onPress={() => onCreateGroup?.()}
@@ -160,9 +160,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         fullWidth
                     
                         {t('community.groups.create')}
-                    </SanctuaryButton
-                </Box
-            </Animated.View
+                    </SanctuaryButton>
+                </Box>
+            </Animated.View>
         );
     };
 
@@ -183,26 +183,26 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     <Box sx={{
                         padding: Theme.spacing.xl,
                         backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                        borderRadius: Theme.corners.full
+                        borderRadius: Theme.corners.full>
                     }}
                         <Shield size={48} color={Theme.colors.sanctuarySaffron} /
                     ></Box
                     <VStack space="sm" alignItems="center"
-                        <Heading size="md" textAlign="center" color={Theme.colors.sanctuarySaffron}
+                        <Heading size="md" textAlign="center" color={Theme.colors.sanctuarySaffron}>
                             {t('community.groups.noSanctuaryTitle') || 'Your Sanctuary is Quiet'}
-                        </Heading
+                        </Heading>
                         <Text textAlign="center" color={colors.textSecondary}
-                            {t('community.groups.noSanctuaryDesc') || 'You haven\'t joined any school circles yet. Explore the Galaxy to find your tribe.'}
-                        </Text
-                    </VStack
+                            {t('community.groups.noSanctuaryDesc') || 'You haven\'t joined any school circles yet. Explore the Galaxy to find your tribe.'}>
+                        </Text>
+                    </VStack>
                     <SanctuaryButton
                         onPress={() => setActiveSubTab('galaxy')}
                         variant="outline"
                         size="lg"
                     
                         {t('community.groups.exploreGalaxy') || 'Explore the Infinite Galaxy'}
-                    </SanctuaryButton
-                </VStack
+                    </SanctuaryButton>
+                </VStack>
             );
         }
 
@@ -211,26 +211,26 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 <Box sx={{
                     padding: Theme.spacing.xl,
                     backgroundColor: Theme.colors.gurudeviViolet + '11',
-                    borderRadius: Theme.corners.full
+                    borderRadius: Theme.corners.full>
                 }}
                     <Compass size={48} color={Theme.colors.gurudeviViolet} /
                 ></Box
                 <VStack space="sm" alignItems="center"
-                    <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}
+                    <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
                         {t('community.groups.noGalaxyTitle') || 'Galaxy Waiting to Bloom'}
-                    </Heading
+                    </Heading>
                     <Text textAlign="center" color={colors.textSecondary}
-                        {t('community.groups.noGalaxyDesc') || 'Be the first to create a club, interest group, or inter-school circle.'}
-                    </Text
-                </VStack
+                        {t('community.groups.noGalaxyDesc') || 'Be the first to create a club, interest group, or inter-school circle.'}>
+                    </Text>
+                </VStack>
                 <SanctuaryButton
                     onPress={() => onCreateGroup?.()}
                     action="primary"
                     size="lg"
                 
                     {t('community.groups.foundCircle') || 'Found a New Circle'}
-                </SanctuaryButton
-            </VStack
+                </SanctuaryButton>
+            </VStack>
         );
     };
 
@@ -262,7 +262,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
     return (
         <Box sx={{ flex: 1 }}
-            {renderSubTabs()}
+            {renderSubTabs()}>
             {renderSearchBar()}
             {renderGalaxyActions()}
             <SanctuaryFlashList
@@ -272,7 +272,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 estimatedItemSize={Theme.listSizes.communityCard}
                 onEndReached={handleEndReached}
                 onEndReachedThreshold={0.5}
-                ListFooterComponent={isFetchingNextGroups ? (
+                ListFooterComponent={isFetchingNextGroups ? (>
                     <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} /
                 >) : null}
                 ListEmptyComponent={ListEmptyComponent}

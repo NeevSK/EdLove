@@ -130,8 +130,8 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                             }}
                         /                        {!isOtherProfile && (
                             <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}                                Tap to update your photo
-                            </Text                        )}
-                    </Center
+                            </Text                        )}>
+                    </Center>
                     {isOtherProfile && isTeacherProfile && currentUserId && (
                         <Center                            <SanctuaryButton
                                 >onPress={() => setShowThuthimalModal(true)}
@@ -147,7 +147,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 style={{
                                     paddingHorizontal: Theme.spacing.xl,
                                     marginTop: Theme.spacing.md,
-                                    marginBottom: Theme.spacing.xs,
+                                    marginBottom: Theme.spacing.xs,>
                                 }}
                             /                        ></Reanimated.View                    )}
 
@@ -162,7 +162,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 ...Theme.shadows.md
                             }}
                                                     <Heading size="md" color={colors.text} mb="$4"                                {t('profile.personalDetails')}
-                            </Heading
+                            </Heading>
                             <VStack space="xl"                                <EditableItem
                                     icon={UserIcon}
                                     label={t('profile.fullName')}
@@ -220,7 +220,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                     ...Theme.shadows.md
                                 }}
                                                             <Heading size="md" color={colors.text} mb="$4"                                    {t('profile.professionalDetails')}
-                                </Heading
+                                </Heading>
                                 <VStack space="xl"                                    <EditableItem
                                         icon={School}
                                         label={t('profile.currentSchool')}
@@ -294,7 +294,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 /                            ></Box                        </Center                    )}
 
                     <Box alignItems="center" mt="$4"                        <Text size="xs" color={colors.textTertiary}                            v1.2.0 " Sanctuary ID: {profile.id?.substring(0, 8)}
-                        </Text                    </Box                </VStack            </ScrollView
+                        </Text                    </Box                </VStack            </ScrollView>
             {!isOtherProfile && (
                 <AddSocialLinkModal
                     visible={showSocialModal}

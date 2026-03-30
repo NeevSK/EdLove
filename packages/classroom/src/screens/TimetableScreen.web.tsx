@@ -68,38 +68,38 @@ export default function TimetableScreen() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--background)', fontFamily: 'var(--font-body)' }}
-            {/* Header */}
+            {/* Header */}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--border-light)', background: 'var(--surface)' }}
                 <button
                     onClick={() => navigation.goBack()}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: '600', padding: '4px 8px', borderRadius: '8px' }}
                 
                     \u2190 Back
-                </button
+                </button>
                 <div style={{ flex: 1 }}
                     <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)' }}
-                        \uD83D\uDCC5 Weekly Timetable
-                    </div
+                        \uD83D\uDCC5 Weekly Timetable>
+                    </div>
                     <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}
                         {draft?.status === 'draft'
                             ? `Draft \u2014 ${draft.total_classrooms ?? 0} classroom${draft.total_classrooms !== 1 ? 's' : ''}, ${draft.total_teachers ?? 0} teacher${draft.total_teachers !== 1 ? 's' : ''}`
-                            : 'Generate a timetable from your school data'}
-                    </div
-                </div
+                            : 'Generate a timetable from your school data'}>
+                    </div>
+                </div>
                 <button
                     className="premium-button"
                     onClick={generate}
                     disabled={loading || !schoolId}
-                    style={{ fontSize: '13px' }}
+                    style={{ fontSize: '13px' }}>
                 
                     {loading ? '\u23F3 Generating\u2026' : '\uD83D\uDD04 Regenerate'}
-                </button
-            </div
+                </button>
+            </div>
 
             {error && (
                 <div style={{ padding: '16px 24px', background: 'rgba(231,76,60,0.08)', borderBottom: '1px solid rgba(231,76,60,0.2)', color: '#c0392b', fontSize: '13px' }}
-                    {error}
-                </div
+                    {error}>
+                </div>
             )}
 
             {/* Recommendations */}
@@ -108,16 +108,16 @@ export default function TimetableScreen() {
                     {draft.recommendations.map((rec: string, i: number) => (
                         <div key={i} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>\u26A0 {rec}</div
                     >))}
-                </div
+                </div>
             )}
 
             <div style={{ display: 'flex', flex: 1, minHeight: 0 }}
-                {/* Classroom selector sidebar */}
+                {/* Classroom selector sidebar */}>
                 {classroomIds.length > 1 && (
                     <div style={{ width: '200px', flexShrink: 0, borderRight: '1px solid var(--border-light)', overflowY: 'auto', padding: '16px 12px' }}
                         <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}
-                            Classrooms
-                        </div
+                            Classrooms>
+                        </div>
                         {classroomIds.map(id => (
                             <button
                                 key={id}
@@ -130,17 +130,17 @@ export default function TimetableScreen() {
                                 }}
                             
                                 {draft?.classroom_names?.[id] ?? id.slice(0, 12) + '\u2026'}
-                            </button
+                            </button>
                         ))}
-                    </div
+                    </div>
                 )}
 
                 {/* Timetable grid */}
                 <div style={{ flex: 1, overflowX: 'auto', overflowY: 'auto', padding: '24px' }}
-                    {loading ? (
+                    {loading ? (>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: 'var(--ink-ghost)', fontSize: '14px' }}
-                            \u23F3 Reading classrooms and teachers\u2026
-                        </div
+                            \u23F3 Reading classrooms and teachers\u2026>
+                        </div>
                     ) : !draft ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', gap: '12px' }}
                             <div style={{ fontSize: '40px' }}>\uD83D\uDCC5</div
@@ -149,26 +149,26 @@ export default function TimetableScreen() {
                         ></div
                     ) : classroomIds.length === 0 ? (
                         <div style={{ color: 'var(--ink-ghost)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}
-                            No classrooms found. Add classrooms in your school settings first.
-                        </div
+                            No classrooms found. Add classrooms in your school settings first.>
+                        </div>
                     ) : (
                         <div style={{ minWidth: '700px' }}
-                            {/* Grid header */}
+                            {/* Grid header */}>
                             <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}
                                 <div /
                                 >{DAYS.map(day => (
                                     <div key={day} style={{ textAlign: 'center', fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', padding: '8px 4px' }}
-                                        {DAY_SHORT[day]}
-                                    </div
+                                        {DAY_SHORT[day]}>
+                                    </div>
                                 ))}
-                            </div
+                            </div>
 
                             {/* Period rows */}
                             {PERIODS.map(p => (
                                 <div key={p} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', background: 'var(--background-alt)', borderRadius: '8px', padding: '4px' }}
-                                        P{p}
-                                    </div
+                                        P{p}>
+                                    </div>
                                     {DAYS.map(day => {
                                         const slot = (currentSchedule[day] ?? []).find((s: any) => s.period === p);
                                         return (
@@ -176,7 +176,7 @@ export default function TimetableScreen() {
                                                 key={day}
                                                 style={{
                                                     padding: '8px 10px', borderRadius: '8px', background: slot ? 'var(--surface)' : 'var(--background-alt)',
-                                                    border: '1px solid var(--border-light)', minHeight: '60px', display: 'flex', flexDirection: 'column', gap: '2px',
+                                                    border: '1px solid var(--border-light)', minHeight: '60px', display: 'flex', flexDirection: 'column', gap: '2px',>
                                                 }}
                                             
                                                 {slot ? (
@@ -187,19 +187,19 @@ export default function TimetableScreen() {
                                                 ) : (
                                                     <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', opacity: 0.5 }}>\u2014</div
                                                 >)}
-                                            </div
+                                            </div>
                                         );
                                     })}
-                                </div
+                                </div>
                             ))}
 
                             <div style={{ marginTop: '20px', fontSize: '11px', color: 'var(--ink-ghost)', textAlign: 'right' }}
-                                Draft generated {draft.generated_at ? new Date(draft.generated_at).toLocaleString() : 'just now'}
-                            </div
-                        </div
+                                Draft generated {draft.generated_at ? new Date(draft.generated_at).toLocaleString() : 'just now'}>
+                            </div>
+                        </div>
                     )}
-                </div
-            </div
-        </div
+                </div>
+            </div>
+        </div>
     );
 }

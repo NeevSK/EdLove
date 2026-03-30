@@ -78,22 +78,22 @@ export default function SchoolForestScreen() {
 
     return (
         <div className="sub-view-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}
-            {/* Header */}
+            {/* Header */}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}
                 <button
                     onClick={() => navigation.goBack()}
                     style={{ background: 'var(--background-alt)', border: 'none', borderRadius: '10px', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}
                 
                     <ArrowLeft size={16} /> Back
-                </button
+                </button>
                 <div style={{ flex: 1 }}
                     <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '800', color: 'var(--ink)' }}
-                        School Forest \uD83C\uDF33
-                    </h1
+                        School Forest \uD83C\uDF33>
+                    </h1>
                     <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--ink-ghost)' }}
-                        A living map of your staff's wellbeing and growth
-                    </p
-                </div
+                        A living map of your staff's wellbeing and growth>
+                    </p>
+                </div>
                 <button
                     onClick={() => void load(true)}
                     disabled={refreshing}
@@ -101,25 +101,25 @@ export default function SchoolForestScreen() {
                 
                     <RefreshCw size={14} /
                     >Refresh
-                </button
-            </div
+                </button>
+            </div>
 
             {loading && <SkeletonCard />}
 
             {!loading && !can('read', 'SchoolForest') && (
                 <div className="sanctuary-card" style={{ padding: '40px', textAlign: 'center' }}
                     <p style={{ fontSize: '15px', color: 'var(--ink-ghost)' }}
-                        You do not have permission to view the School Forest.
-                    </p
-                </div
+                        You do not have permission to view the School Forest.>
+                    </p>
+                </div>
             )}
 
             {!loading && can('read', 'SchoolForest') && !forest && (
                 <div className="sanctuary-card" style={{ padding: '40px', textAlign: 'center' }}
                     <p style={{ fontSize: '15px', color: 'var(--ink-ghost)' }}
-                        No forest data yet. Check back after teachers have logged their first wellbeing check-in.
-                    </p
-                </div
+                        No forest data yet. Check back after teachers have logged their first wellbeing check-in.>
+                    </p>
+                </div>
             )}
 
             {!loading && forest && (
@@ -131,38 +131,38 @@ export default function SchoolForestScreen() {
                             padding: '28px',
                             marginBottom: '24px',
                             background: 'linear-gradient(135deg, var(--moss-soft) 0%, var(--background-alt) 100%)',
-                            border: '1px solid var(--moss-soft)',
+                            border: '1px solid var(--moss-soft)',>
                         }}
                     
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}
-                            <span style={{ fontSize: '36px' }}
+                            <span style={{ fontSize: '36px' }}>
                                 {WEATHER_EMOJI[forest.forest_weather] ?? '\uD83C\uDF24'}
-                            </span
+                            </span>
                             <div
                                 <div >style={{ fontSize: '18px', fontWeight: '800', color: 'var(--moss)', textTransform: 'capitalize' }}
                                     {forest.forest_weather} Season
-                                </div
+                                </div>
                                 <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}
-                                    {forest.trees.length} teacher{forest.trees.length !== 1 ? 's' : ''} in your forest
+                                    {forest.trees.length} teacher{forest.trees.length !== 1 ? 's' : ''} in your forest>
                                     {forest.trees.filter(t => t.needs_rain).length > 0 && (
                                         <span style={{ color: '#c0392b', marginLeft: '8px', fontWeight: '700' }}
                                             \u00B7 {forest.trees.filter(t => t.needs_rain).length} needing care
-                                        </span
+                                        </span>
                                     )}
-                                </div
-                            </div
-                        </div
+                                </div>
+                            </div>
+                        </div>
                         <p style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--ink)', fontStyle: 'italic', margin: 0 }}
-                            {forest.forest_narrative_en}
-                        </p
-                    </div
+                            {forest.forest_narrative_en}>
+                        </p>
+                    </div>
 
                     {/* Trees Grid */}
                     <div
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
-                            gap: '16px',
+                            gap: '16px',>
                         }}
                     
                         {forest.trees.map(tree => (
@@ -172,15 +172,15 @@ export default function SchoolForestScreen() {
                                 style={{
                                     padding: '20px',
                                     border: tree.needs_rain ? '1px solid rgba(192,57,43,0.3)' : undefined,
-                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined,
+                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined,>
                                 }}
                             
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}
                                     <span style={{ fontSize: '32px' }}>{HEALTH_EMOJI[tree.tree_health] ?? '\uD83C\uDF31'}</span
                                     ><div style={{ flex: 1 }}
                                         <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink)', textTransform: 'capitalize' }}
-                                            {tree.tree_health}
-                                        </div
+                                            {tree.tree_health}>
+                                        </div>
                                         <div
                                             style={{
                                                 display: 'inline-block',
@@ -191,12 +191,12 @@ export default function SchoolForestScreen() {
                                                 fontWeight: '700',
                                                 color: HEALTH_COLOR[tree.tree_health],
                                                 textTransform: 'uppercase',
-                                                letterSpacing: '0.5px',
+                                                letterSpacing: '0.5px',>
                                             }}
                                         
                                             {tree.tree_health}
-                                        </div
-                                    </div
+                                        </div>
+                                    </div>
                                     {tree.needs_rain && (
                                         <div
                                             style={{
@@ -205,31 +205,31 @@ export default function SchoolForestScreen() {
                                                 borderRadius: '6px',
                                                 fontSize: '10px',
                                                 fontWeight: '800',
-                                                color: '#c0392b',
+                                                color: '#c0392b',>
                                             }}
                                         
                                             \uD83D\uDCA7 Needs care
-                                        </div
+                                        </div>
                                     )}
-                                </div
+                                </div>
 
                                 {/* Days since last signal \u2014 proxy for engagement */}
                                 <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '8px' }}
-                                    {lastSignalLabel(tree.days_since_signal)}
-                                </div
-                            </div
+                                    {lastSignalLabel(tree.days_since_signal)}>
+                                </div>
+                            </div>
                         ))}
-                    </div
+                    </div>
 
                     {forest.trees.length === 0 && (
                         <div className="sanctuary-card" style={{ padding: '40px', textAlign: 'center' }}
                             <p style={{ fontSize: '15px', color: 'var(--ink-ghost)' }}
-                                Your forest is just beginning to grow. Encourage teachers to log their first mood check-in!
-                            </p
-                        </div
+                                Your forest is just beginning to grow. Encourage teachers to log their first mood check-in!>
+                            </p>
+                        </div>
                     )}
                 </
             )}
-        </div
+        </div>
     );
 }

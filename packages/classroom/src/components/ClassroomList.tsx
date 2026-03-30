@@ -269,8 +269,8 @@ export default function ClassroomList({
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 toast={toast}
                 t={t}
-            /
-        );
+            />
+        >);
     }, [handleClassroomPress, onClassroomPress, colors, toast, t]);
 
     const keyExtractor = useCallback((item: WorkspaceClassroom) => item.id, []);
@@ -279,10 +279,10 @@ export default function ClassroomList({
     if (loading) {
         return (
             <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}
-                <SkeletonCard height={80} /
-                <SkeletonCard height={80} /
-                <SkeletonCard height={80} /
-            </VStack
+                <SkeletonCard height={80} />
+                ><SkeletonCard height={80} /
+                ><SkeletonCard height={80} />
+            ></VStack>
         );
     }
 
@@ -290,13 +290,13 @@ export default function ClassroomList({
         return (
             <View style={styles.centerContainer}
                 <Text style={styles.errorText}>\u26A0\uFE0F {error}</Text
-                <TouchableOpacity
+                ><TouchableOpacity
                     style={styles.retryButton}
-                    onPress={handleRetry}
+                    onPress={handleRetry}>
                 
                     <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text
-                </TouchableOpacity
-            </View
+                ></TouchableOpacity>
+            </View>
         );
     }
 
@@ -304,7 +304,7 @@ export default function ClassroomList({
         return (
             <VStack sx={{ width: '100%', gap: Theme.spacing.md }}
                 {classrooms.length === 0 ? (
-                    emptyContent || (
+                    emptyContent || (>
                         <PositiveInvitation
                             context="classroom"
                             onAction={() => {
@@ -315,7 +315,7 @@ export default function ClassroomList({
                                 }
                             }}
                         /
-                    )
+                    >)
                 ) : (
                     classrooms.map((classroom) => (
                         <ClassroomCard
@@ -329,8 +329,8 @@ export default function ClassroomList({
                             setIsCreateModalOpen={setIsCreateModalOpen}
                             toast={toast}
                             t={t}
-                        /
-                    ))
+                        />
+                    >))
                 )}
 
                 <CreateClassroomModal
@@ -345,13 +345,13 @@ export default function ClassroomList({
                         setInternalRefreshTrigger(prev => prev + 1);
                     }}
                 /
-            </VStack
+            ></VStack>
         );
     }
 
     return (
         <Box sx={{ flex: 1, backgroundColor: colors.primary }}
-            {classrooms.length === 0 ? (
+            {classrooms.length === 0 ? (>
                 <PositiveInvitation
                     context="classroom"
                     onAction={() => {
@@ -362,7 +362,7 @@ export default function ClassroomList({
                         }
                     }}
                 /
-            ) : (
+            >) : (
                 <
                     <FlatList
                         data={classrooms}
@@ -381,7 +381,7 @@ export default function ClassroomList({
                         removeClippedSubviews={true}
                     /
 
-                    {canCreateClassroom && (
+                    >{canCreateClassroom && (
                         <TouchableOpacity
                             onPress={() => {
                                 hapticLight();
@@ -403,7 +403,7 @@ export default function ClassroomList({
                             }}
                         
                             <Plus size={24} color="white" /
-                        </TouchableOpacity
+                        ></TouchableOpacity>
                     )}
                 </
             )}
@@ -420,7 +420,7 @@ export default function ClassroomList({
                     setInternalRefreshTrigger(prev => prev + 1);
                 }}
             /
-        </Box
+        ></Box>
     );
 }
 
@@ -460,13 +460,13 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
             placement: "top",
             render: ({ id }: { id: string }) => (
                 <Toast nativeID={"toast-" + id}
-                    <VStack sx={{ gap: 4 }}
+                    <VStack sx={{ gap: 4 }}>
                         <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle
-                        <ToastDescription
-                            {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}
-                        </ToastDescription
-                    </VStack
-                </Toast
+                        ><ToastDescription
+                            {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}>
+                        </ToastDescription>
+                    </VStack>
+                </Toast>
             ),
         });
     }, [classroom.id, dismissSample, toast, t]);
@@ -474,7 +474,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
     return (
         <TouchableOpacity
             onPress={handlePress}
-            activeOpacity={0.7}
+            activeOpacity={0.7}>
         
             <Box
                 sx={{
@@ -482,7 +482,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                     padding: Theme.spacing.md,
                     borderWidth: 1,
                     backgroundColor: colors.secondary,
-                    borderColor: colors.border,
+                    borderColor: colors.border,>
                 }}
             
                 <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}
@@ -492,19 +492,19 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                         borderRadius: Theme.corners.comfortable,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: colors.tertiary
+                        backgroundColor: colors.tertiary>
                     }}
                         <BookOpen
                             size={24}
                             color={Theme.colors.sanctuarySaffron}
-                        /
-                    </Box
+                        />
+                    ></Box>
 
                     <VStack sx={{ flex: 1, gap: 4 }}
-                        <HStack alignItems="center" sx={{ gap: 8 }}
+                        <HStack alignItems="center" sx={{ gap: 8 }}>
                             <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}
-                                {classroom.name}
-                            </Text
+                                {classroom.name}>
+                            </Text>
                             {(classroom as any).is_sample && (
                                 <Box sx={{
                                     backgroundColor: Theme.colors.amberGlow + '22',
@@ -515,51 +515,51 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                                     borderColor: Theme.colors.amberGlow,
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    gap: 2
+                                    gap: 2>
                                 }}
                                     <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} /
-                                    <Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text
-                                </Box
+                                    ><Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text
+                                ></Box>
                             )}
-                        </HStack
+                        </HStack>
                         <HStack alignItems="center" sx={{ gap: 8 }}
-                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}
+                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}>
                                 {classroom.subject || t('classroom.noSubject')}
-                            </Text
+                            </Text>
                             <Box
                                 sx={{
                                     width: 4,
                                     height: 4,
                                     borderRadius: 2,
-                                    backgroundColor: colors.textTertiary,
+                                    backgroundColor: colors.textTertiary,>
                                 }}
                             /
-                            <HStack alignItems="center" sx={{ gap: 4 }}
-                                <Users size={14} color={colors.textSecondary} /
-                                <Text color={colors.textSecondary} sx={{ fontSize: 14 }}
-                                    {studentCount}
-                                </Text
-                            </HStack
-                        </HStack
-                    </VStack
+                            ><HStack alignItems="center" sx={{ gap: 4 }}
+                                <Users size={14} color={colors.textSecondary} />
+                                ><Text color={colors.textSecondary} sx={{ fontSize: 14 }}
+                                    {studentCount}>
+                                </Text>
+                            </HStack>
+                        </HStack>
+                    </VStack>
 
                     <TouchableOpacity onPress={handleAttendancePress}
                         <Box sx={{
                             padding: Theme.spacing.sm,
                             borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.tertiary,
+                            backgroundColor: colors.tertiary,>
                         }}
                             <ClipboardCheck size={20} color={Theme.colors.sageGreen} /
-                        </Box
-                    </TouchableOpacity
+                        ></Box>
+                    </TouchableOpacity>
 
                     <ChevronRight
                         size={20}
                         color={colors.textSecondary}
-                    /
-                </HStack
-            </Box
-        </TouchableOpacity
+                    />
+                </HStack>
+            </Box>
+        </TouchableOpacity>
     );
 }, (prevProps, nextProps) => {
     return (

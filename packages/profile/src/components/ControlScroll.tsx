@@ -71,8 +71,8 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                             
                                 <IconComponent size={20} color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} /
                             ></Box
-                            <VStack
-                                <Text color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}>
+                            ><VStack
+                                <Text >color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}>
                                     {label}
                                 </Text>
                                 <Text color={Theme.colors.dimGray} size="xs"
@@ -133,8 +133,8 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         <Box style={styles.iconBox}
                             <Globe size={20} color={Theme.colors.sanctuarySaffron} /
                         ></Box
-                        <VStack
-                            <Text color={Theme.colors.sacredWhite} bold>
+                        ><VStack
+                            <Text >color={Theme.colors.sacredWhite} bold>
                                 {t('profile.appLanguage') || 'App Language'}
                             </Text>
                             <Text color={Theme.colors.mistGray} size="xs"
@@ -169,13 +169,13 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}
                                     <Moon size={20} color="#9B59B6" /
                                 ></Box
-                                <VStack
-                                    <Text color={Theme.colors.sacredWhite}>Theme</Text
-                                    <Text color={Theme.colors.dimGray} size="xs">{getThemeLabel(themeMode)}</Text
-                                </VStack>
+                                ><VStack
+                                    <Text >color={Theme.colors.sacredWhite}>Theme</Text
+                                    ><Text color={Theme.colors.dimGray} size="xs">{getThemeLabel(themeMode)}</Text
+                                ></VStack>
                             </HStack>
                             <ChevronRight size={20} color={Theme.colors.mistGray} /
-                        </HStack>
+                        ></HStack>
                     </Pressable>
 
                     <Divider bg={Theme.colors.ink} ml={56} />
@@ -185,15 +185,15 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                             <HStack space="md" alignItems="center"
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(46, 204, 113, 0.1)' }]}>
                                     <Database size={20} color="#2ECC71" /
-                                </Box>
+                                ></Box>
                                 <VStack
-                                    <Text color={Theme.colors.sacredWhite}>Data Saver</Text
-                                    <Text color={Theme.colors.dimGray} size="xs">Reduce usage</Text
-                                </VStack>
+                                    <Text >color={Theme.colors.sacredWhite}>Data Saver</Text
+                                    ><Text color={Theme.colors.dimGray} size="xs">Reduce usage</Text
+                                ></VStack>
                             </HStack>
                             <Box style={styles.comingSoonBadge}
                                 <Text color={Theme.colors.ink} size="2xs" bold>SOON</Text
-                            </Box>
+                            ></Box>
                         </HStack>
                     </Pressable>
                 </Box>

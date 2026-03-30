@@ -113,8 +113,8 @@ export function AuthScreenWeb({
                                 <span key={pillar} className="auth-pillar"                                    {pillar}
                                 </span                            ))}>
                         </div>
-                        <div className="auth-guidance sanctuary-hero-panel"                            <div                                <p className="auth-guidance-label">Why this step matters</p                                <p className="auth-guidance-text"                                    Your account keeps learning, invitations, and profile presence gathered into one living place without changing how you use the app.
-                                </p                            </div                            <div className="auth-guidance-grid"                                <div                                    <strong>Gentle entry</strong                                    <span>Start with Google or email.</span                                </div                                <div                                    <strong>Guest-safe</strong                                    <span>Browse first when logging in later feels better.</span                                </div                            </div                        </div                    </div                </section
+                        <div className="auth-guidance sanctuary-hero-panel"                            <div                                <p >className="auth-guidance-label">Why this step matters</p                                ><p className="auth-guidance-text"                                    Your account keeps learning, invitations, and profile presence gathered into one living place without changing how you use the app.
+                                </p                            </div                            <div className="auth-guidance-grid"                                <div                                    <strong>Gentle entry</strong                                    <span>Start with Google or email.</span                                ></div                                <div                                    <strong>Guest-safe</strong                                    <span>Browse first when logging in later feels better.</span                                </div                            </div                        </div                    </div                </section
                 <section className="auth-panel sanctuary-card"                    {onBack && (
                         <button onClick={onBack} className="auth-back-button"                            <span>\u2190</span                            ><span>Back</span                        ></button                    )}
 
@@ -163,14 +163,14 @@ export function AuthScreenWeb({
                                         autoComplete="email"
                                     /                                    {errors.email && <small>{errors.email}</small>}
                                 </label>
-                                <label className="auth-field"                                    <span>Password</span                                    <input
+                                <label className="auth-field"                                    <span>Password</span                                    ><input
                                         type="password"
                                         placeholder="Your password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="auth-input"
                                         autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                                    /                                    {errors.password && <small>{errors.password}</small>}
+                                    /                                    >{errors.password && <small>{errors.password}</small>}
                                 </label>
                                 <button onClick={handleEmailAuth} disabled={loading} className="auth-primary-button auth-submit-button"                                    {loading ? 'Please wait...' : modeCopy.primary}
                                 </button>
@@ -181,7 +181,7 @@ export function AuthScreenWeb({
                                         setErrors({});
                                     }}
                                                                     Back to Google
-                                </button                            </div                        )}
+                                </button                            ></div                        )}
 
                         {mode === 'login' && (
                             <button onClick={handleGuest} disabled={loading} className="auth-guest-button"                                Continue as Guest

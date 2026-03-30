@@ -152,7 +152,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                             <Box sx={{ padding: Theme.spacing.xs }}
                                                 <QrCode size={20} color={Theme.colors.sanctuarySaffron} /
                                             ></Box
-                                        </Pressable>
+                                        ></Pressable>
                                     )}
                                     <Pressable onPress={() => handleEditStudent(student)}
                                         <Box sx={{ padding: Theme.spacing.xs }}
@@ -227,9 +227,9 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                         <ModalCloseButton
                             <Icon >as={CloseIcon} sx={{ color: colors.textSecondary }} /
                         ></ModalCloseButton
-                    </ModalHeader>
+                    ></ModalHeader>
                     <ModalBody
-                        <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}>
+                        <VStack >sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}>
                             <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous, ...Theme.shadows.md }}
                                 <QRCodeGenerator
                                     value={studentForQr?.invite_code || ''}
@@ -238,7 +238,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                     backgroundColor="white"
                                 /
                             ></Box
-                            <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}
+                            ><VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}
                                 <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text, textAlign: 'center' }}>
                                     {studentForQr?.full_name}
                                 </Heading>

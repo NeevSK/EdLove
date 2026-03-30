@@ -36,7 +36,7 @@ function Spin({ size = 16 }: { size?: number }) {
             style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}>
             <path d="M21 12a9 9 0 1 1-6.219-8.56" /
         ></svg
-    );
+    >);
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -86,17 +86,17 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
             }}
                 <CheckCircle2 size={32} color="var(--moss)" /
             ></div
-            <div style={{ fontSize: '28px' }}>{emoji}</div
-            <div
-                <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3
-                <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p
-            </div>
+            ><div style={{ fontSize: '28px' }}>{emoji}</div
+            ><div
+                <h3 >style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3
+                ><p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p
+            ></div>
             <button className="premium-button"
                 style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}
                 onClick={onCta}>
                 {cta} <ArrowRight size={14} /
             ></button
-        </div>
+        ></div>
     );
 }
 
@@ -332,7 +332,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                                     <div >style={{ fontSize: '14px', fontWeight: '700' }}>{s.name}</div
                                     ><div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.type}</div
                                 ></div
-                                <button className="secondary-button" style={{ fontSize: '12px', padding: '6px 12px' }}
+                                ><button className="secondary-button" style={{ fontSize: '12px', padding: '6px 12px' }}
                                     onClick={() => handleRequest(s.id)} disabled={requesting === s.id}
                                     {requesting === s.id ? <Spin size={12} /> : 'Request Join'}
                                 </button>
@@ -398,7 +398,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
                 You can join a school later and move classrooms under it.
             </div>
             <FieldInput label="Classroom Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grade 10B Science" /
-            <FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" /
+            ><FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" /
             >{error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
             <button className="premium-button"
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
@@ -519,7 +519,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
                         fontWeight: '800', letterSpacing: '4px', textAlign: 'center' as const,
                     }}
                 /
-                {error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
+                >{error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
             </div>
 
             <button className="premium-button"

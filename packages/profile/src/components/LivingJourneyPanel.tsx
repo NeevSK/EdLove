@@ -309,7 +309,7 @@ function RecognitionRow({ badges, colors }: RecognitionRowProps) {
                                     }}
                                                                     <Text size="xs" color={colors.text}                                        {badge}
                                     </Text                                </Box                            ))}>
-                        </HStack                    )}
+                        </HStack                    >)}
                 </VStack            </HStack        </Box    );
 }
 
@@ -580,7 +580,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                         t={t}
                     /
                 ></Box
-            </Box>
+            ></Box>
         </Animated.View>
     );
 }

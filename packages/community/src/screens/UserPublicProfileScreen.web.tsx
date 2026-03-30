@@ -167,7 +167,7 @@ export default function UserPublicProfileScreen() {
                 /
               ></HStack
 
-              <VStack sx={{ alignItems: "center", gap: 4 }}
+              ><VStack sx={{ alignItems: "center", gap: 4 }}
                 <HStack sx={{ gap: 6, alignItems: "center" }}>
                   <Heading
                     sx={{
@@ -327,7 +327,7 @@ export default function UserPublicProfileScreen() {
                             <Heart size={14} color={text.secondary} /
                             ><Text sx={{ fontSize: 13, color: text.secondary }}>--</Text
                           ></HStack
-                          <HStack sx={{ gap: 4, alignItems: 'center' }}
+                          ><HStack sx={{ gap: 4, alignItems: 'center' }}
                             <MessageSquare size={14} color={text.secondary} /
                             ><Text sx={{ fontSize: 13, color: text.secondary }}>--</Text
                           ></HStack
@@ -384,7 +384,7 @@ export default function UserPublicProfileScreen() {
       </View>
 
       <LoadingOverlay visible={loading} /
-    </View>
+    ></View>
   );
 }
 
@@ -395,7 +395,7 @@ function InfoRow({ icon, text }: { icon: any; text: string }) {
       {React.cloneElement(icon, { color: textColors.secondary })}>
       <Text sx={{ fontSize: 14, color: textColors.secondary }}>{text}</Text
     ></HStack
-  );
+  >);
 }
 
 function StatCard({

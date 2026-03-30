@@ -273,7 +273,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               }
             ]}
                       Analytics Dashboard
-          </Text          <Text 
+          </Text          ><Text 
             style={[
               styles.subtitle,
               { 
@@ -385,7 +385,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`,
                 getSystemHealthColor(liveMetrics.system_health)
               )}
-            </View          </View        )}
+            </View          ></View        )}
 
         {/* Resource Usage */}
         {liveMetrics && (
@@ -411,7 +411,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                     }
                   ]}
                                   CPU Usage
-                </Text                <View style={styles.resourceBar}                  <View 
+                </Text                ><View style={styles.resourceBar}                  <View 
                     style={[
                       styles.resourceFill,
                       { 

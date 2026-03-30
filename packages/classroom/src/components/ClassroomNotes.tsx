@@ -390,7 +390,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             }
                         /
                     ></Box
-                ) : (
+                >) : (
                     <FlatList
                         data={grouped}
                         keyExtractor={(g) => g.label}
@@ -444,7 +444,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                     </Text>
                                     <ChevronDown size={12} color={colors.textTertiary} /
                                 ></HStack
-                            </TouchableOpacity>
+                            ></TouchableOpacity>
                         )}
 
                         {/* Text input */}

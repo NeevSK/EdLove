@@ -150,7 +150,7 @@ export default function AnnouncementsScreen({
                             }}
                             onPress={() => setShowCreateModal(true)}
                                                     <ButtonText color={Theme.colors.sacredWhite}                                {t('announcements.create') || '+ Create Announcement'}
-                            </ButtonText                        </Button                    )}>
+                            </ButtonText                        ></Button                    )}>
 
                     {/* Loading State */}
                     {isLoading && (
@@ -193,7 +193,7 @@ export default function AnnouncementsScreen({
                                                                                     <HStack space="sm" sx={{ alignItems: 'center' }}                                                <Text color={Theme.colors.sacredWhite}                                                    {announcement.author_name || 'Unknown'}
                                                 </Text                                            </HStack>
                                             <Text color={Theme.colors.mistGray} size="xs"                                                {formatDate(announcement.created_at)}
-                                            </Text                                        </HStack>
+                                            </Text                                        ></HStack>
                                         {/* Content */}
                                         <Text color={Theme.colors.sacredWhite} size="md"                                            {announcement.content}
                                         </Text                                    </VStack                                </Box                            ))}>
@@ -207,7 +207,7 @@ export default function AnnouncementsScreen({
                                     size="sm"
                                     sx={{ fontWeight: '600', marginTop: Theme.spacing.md }}>
                                                                     {t('announcements.recent') || 'RECENT'}
-                                </Text                            )}
+                                </Text                            >)}
 
                             {regularAnnouncements.map((announcement) => (
                                 <Box
@@ -226,7 +226,7 @@ export default function AnnouncementsScreen({
                                                                                     <HStack space="sm" sx={{ alignItems: 'center' }}                                                <Text color={Theme.colors.sacredWhite}                                                    {announcement.author_name || 'Unknown'}
                                                 </Text                                            </HStack>
                                             <Text color={Theme.colors.mistGray} size="xs"                                                {formatDate(announcement.created_at)}
-                                            </Text                                        </HStack>
+                                            </Text                                        ></HStack>
                                         {/* Content */}
                                         <Text color={Theme.colors.starlightGray} size="md"                                            {announcement.content}
                                         </Text                                    </VStack                                </Box                            ))}>
@@ -245,7 +245,7 @@ export default function AnnouncementsScreen({
                                 textAlign="center">
                                                             {t('announcements.noAnnouncements') ||
                                     'No announcements yet. Check back soon!'}
-                            </Text                        </Box                    )}
+                            </Text                        ></Box                    )}
                 </VStack            </ScrollView
             {/* Create Announcement Modal */}
             <Modal
@@ -304,5 +304,5 @@ export default function AnnouncementsScreen({
                                     <Spinner color={Theme.colors.sacredWhite} size="small" /                                >) : (
                                     <ButtonText color={Theme.colors.sacredWhite}                                        {t('announcements.post') || 'Post'}
                                     </ButtonText                                )}>
-                            </Button                        </HStack                    </ModalFooter                </ModalContent            </Modal        </Box    );
+                            </Button                        ></HStack                    </ModalFooter                </ModalContent            </Modal        </Box    );
 }

@@ -100,7 +100,7 @@ export default function TeacherAssignmentsWorkspace({
                     }}
                                     <VStack sx={{ gap: Theme.spacing.md }}                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}                            <VStack sx={{ flex: 1, gap: 4 }}                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                    Assignment Workspace
                                 </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                    Keep assignment momentum visible>
-                                </Heading                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    See what is active, what is upcoming, and add top-level classroom work without disappearing into lesson structure.
+                                </Heading                                ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    See what is active, what is upcoming, and add top-level classroom work without disappearing into lesson structure.
                                 </Text                            </VStack                            {canManage && (
                                 <Button
                                     action="primary"
@@ -131,7 +131,7 @@ export default function TeacherAssignmentsWorkspace({
                                 label="State"
                                 value={assignments.length > 0 ? 'Live' : 'Quiet'}
                                 colors={colors}
-                            /                        ></HStack                    </VStack                </Box
+                            /                        ></HStack                    ></VStack                </Box
                 {isLoading ? (
                     <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : assignments.length === 0 ? (
                     <Box
@@ -173,8 +173,8 @@ export default function TeacherAssignmentsWorkspace({
                                     <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                        {assignment.description}
                                     </Text                                )}>
                                 <HStack sx={{ alignItems: 'center', justifyContent: 'space-between' }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}                                        Max points: {assignment.max_points ?? 100}
-                                    </Text                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.xs }}                                        Lesson-linked work stays in the Lessons lane>
-                                    </Text                                </HStack                            </VStack                        </Box                    ))
+                                    </Text                                    ><Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.xs }}                                        Lesson-linked work stays in the Lessons lane>
+                                    </Text                                ></HStack                            </VStack                        </Box                    ))
                 )}
             </VStack>
             <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}                <ModalBackdrop /                ><ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}                    <ModalHeader                        <Heading >sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            Create assignment
@@ -221,6 +221,6 @@ function SummaryPill({
             }}
                     <VStack sx={{ gap: 4 }}                <HStack sx={{ alignItems: 'center', gap: 6 }}                    {icon}
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                        {label}>
-                    </Text                </HStack                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
+                    </Text                ></HStack                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
                 </Text            </VStack        </Box    );
 }

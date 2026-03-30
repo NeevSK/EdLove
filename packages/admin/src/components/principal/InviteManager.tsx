@@ -145,17 +145,17 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                 onPress={() => handleGenerateCode('teacher')}
                                 disabled={isGenerating}
                                                             <ButtonText color={Theme.colors.sacredWhite}                                    {isGenerating ? t('common.generating') || 'Generating...' : t('principal.invites.generateTeacher') || 'Generate Teacher Code'}
-                                </ButtonText                            </Button                        )}>
+                                </ButtonText                            ></Button                        )}>
 
                         <HStack space="md"                            <Button
                                 sx={{ flex: 1, backgroundColor: Theme.colors.twilightBlue, padding: Theme.spacing.lg }}
                                 onPress={() => handleGenerateCode('sectionHead')}
                                 disabled={isGenerating}
-                                                            <ButtonText color={Theme.colors.sacredWhite}>{t('principal.invites.generateSectionHead') || '+ Section Head'}</ButtonText                            ></Button                            <Button
+                                                            <ButtonText color={Theme.colors.sacredWhite}>{t('principal.invites.generateSectionHead') || '+ Section Head'}</ButtonText                            ></Button                            ><Button
                                 sx={{ flex: 1, backgroundColor: Theme.colors.twilightBlue, padding: Theme.spacing.lg }}
                                 onPress={() => handleGenerateCode('gradeHead')}
                                 disabled={isGenerating}
-                                                            <ButtonText color={Theme.colors.sacredWhite}>{t('principal.invites.generateGradeHead') || '+ Grade Head'}</ButtonText                            </Button                        </HStack
+                                                            <ButtonText color={Theme.colors.sacredWhite}>{t('principal.invites.generateGradeHead') || '+ Grade Head'}</ButtonText                            ></Button                        </HStack
                         {can('create', 'StudentPulse') && (
                             <Button
                                 sx={{ backgroundColor: Theme.colors.sanctuarySaffron, padding: Theme.spacing.lg }}
@@ -193,7 +193,7 @@ export default function InviteManager({ schoolId, userId: providedUserId, onBack
                                                     }}
                                                                                                     <Text color={Theme.colors.sacredWhite} sx={{ fontWeight: '600', fontSize: 12 }}                                                        {getRoleIcon(invite.authority)} {invite.authority.toUpperCase()}
                                                     </Text                                                </Box                                                <Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}                                                    {invite.used ? t('principal.invites.used') || 'Used' : t('principal.invites.active') || 'Active'}>
-                                                </Text                                            </HStack
+                                                </Text                                            ></HStack
                                             <Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}                                                {t('principal.invites.createdAt') || 'Created:'} {new Date(invite.created_at).toLocaleDateString()}
                                             </Text                                        </VStack                                    </HStack                                </Box                            ))}>
                         </VStack                    )}
