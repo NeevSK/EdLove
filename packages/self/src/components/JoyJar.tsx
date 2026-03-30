@@ -261,7 +261,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
 
           {/* Moment Description */}
           <Box
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
+            <Text >color={Theme.colors.mistGray} size="sm" mb="$2">
               {t('self.momentDescription')}
             </Text>
             <Input

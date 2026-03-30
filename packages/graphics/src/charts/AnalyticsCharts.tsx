@@ -24,7 +24,7 @@ export function SimpleBarChart({
         <View style={styles.chartContainer}          {data.map((item, index) => (
             <View key={index} style={styles.barContainer}              <View 
                 style={[
-                  styles.bar,
+                  styles.bar,>
                   { 
                     height: (item.value / maxValue) * (height - 40),
                     width: barWidth,
@@ -32,9 +32,9 @@ export function SimpleBarChart({
                     marginBottom: showValues ? Theme.spacing.xs : 0
                   }
                 ]} 
-              /              {showValues && (
-                <Text style={styles.valueLabel}>{item.value}</Text              )}
-              <Text style={styles.barLabel}>{item.label}</Text            </View          ))}
+              /              >{showValues && (
+                <Text style={styles.valueLabel}>{item.value}</Text              >)}
+              <Text style={styles.barLabel}>{item.label}</Text            ></View          ))}
         </View      </View    </SanctuaryCanvas  );
 }
 
@@ -66,7 +66,7 @@ export function SimpleLineChart({
               {index > 0 && (
                 <View 
                   style={[
-                    styles.line,
+                    styles.line,>
                     {
                       left: x - 250 / (data.length - 1),
                       top: y,
@@ -75,12 +75,12 @@ export function SimpleLineChart({
                       backgroundColor: color
                     }
                   ]} 
-                /              )}
+                /              >)}
               
               {/* Point */}
               <View 
                 style={[
-                  styles.point,
+                  styles.point,>
                   {
                     left: x - 6,
                     top: y - 6,
@@ -88,9 +88,9 @@ export function SimpleLineChart({
                   }
                 ]} 
               /              
-              {/* Label */}
+              >{/* Label */}
               <Text style={[styles.pointLabel, { left: x - 30 }]}                {point.x}
-              </Text            </View          );
+              </Text            </View          );>
         })}
       </View    </View  );
 }
@@ -120,7 +120,7 @@ export function SimplePieChart({
             <View key={index} style={styles.pieSliceContainer}              {/* Pie slice visualization - simplified as arc */}
               <View 
                 style={[
-                  styles.pieSlice,
+                  styles.pieSlice,>
                   {
                     backgroundColor: item.color || Theme.colors.gurudeviBlue,
                     transform: `rotate(${startAngle}deg)`,
@@ -130,7 +130,7 @@ export function SimplePieChart({
                   }
                 ]} 
               /              
-              {/* Label */}
+              >{/* Label */}
               <Text style={styles.pieLabel}                {item.label}
                 {percentage > 5 && ` (${percentage.toFixed(1)}%)`}
               </Text            </View          );
@@ -163,7 +163,7 @@ export function ProgressRing({
     <View style={[styles.container, { width: size, height: size }]}      <View style={styles.ringContainer}        {/* Background ring */}
         <View 
           style={[
-            styles.ring,
+            styles.ring,>
             {
               borderColor: Theme.colors.border,
               borderWidth: strokeWidth,
@@ -173,10 +173,10 @@ export function ProgressRing({
             }
           ]} 
         /        
-        {/* Progress ring */}
+        >{/* Progress ring */}
         <View 
           style={[
-            styles.ring,
+            styles.ring,>
             {
               borderColor: color,
               borderWidth: strokeWidth,
@@ -187,9 +187,9 @@ export function ProgressRing({
             }
           ]} 
         /        
-        {/* Center content */}
+        >{/* Center content */}
         <View style={styles.ringCenter}          {showLabel && (
-            <Text style={styles.percentageText}>{percentage.toFixed(0)}%</Text          )}
+            <Text style={styles.percentageText}>{percentage.toFixed(0)}%</Text          >)}
         </View      </View    </View  );
 }
 

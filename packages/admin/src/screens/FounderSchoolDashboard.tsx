@@ -135,8 +135,8 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                             <Text color={colors.text} sx={{ fontWeight: '700' }}>{t('founder.wellnessIndex')}</Text
                                             ><Text color={colors.success} sx={{ fontSize: Theme.typography.fontSize.xs }}>{t('founder.wellnessIncrease', { percent: 12 })}</Text
                                         ></VStack
-                                        <Heart color={colors.error} size={24} fill={colors.error} /
-                                    </HStack>
+                                        ><Heart color={colors.error} size={24} fill={colors.error} /
+                                    ></HStack>
                                 </Box>
                             </VStack>
 

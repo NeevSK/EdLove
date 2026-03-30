@@ -147,8 +147,8 @@ export default function MapScreen() {
         if (loading) {
             return (
                 <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} /
-                </Box
+                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
+                ></Box>
             );
         }
 
@@ -161,8 +161,8 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                /
-            );
+                />
+            >);
         }
 
         if (activePerspective === 'jyoti' && activeData) {
@@ -172,8 +172,8 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                /
-            );
+                />
+            >);
         }
 
         if (activePerspective === 'terra' && activeData) {
@@ -183,8 +183,8 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                /
-            );
+                />
+            >);
         }
 
         if (activePerspective === 'dharma' && activeData) {
@@ -194,8 +194,8 @@ export default function MapScreen() {
                     layout={layout!} 
                     width={width}
                     height={height}
-                /
-            );
+                />
+            >);
         }
 
         if (activePerspective === 'vatya' && activeData) {
@@ -206,8 +206,8 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                /
-            );
+                />
+            >);
         }
 
         if (activePerspective === 'vastu' && activeData && layout) {
@@ -219,14 +219,14 @@ export default function MapScreen() {
                     selectedNode={selectedNode as any}
                     width={width}
                     height={height}
-                /
-            );
+                />
+            >);
         }
 
         return (
             <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
-            </Box
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            ></Box>
         );
     };
 
@@ -249,19 +249,19 @@ export default function MapScreen() {
                             flexDirection: 'row',
                             alignItems: 'center',
                             opacity: isExporting ? 0.5 : 1,
-                            marginRight: 12
+                            marginRight: 12>
                         }}
                     
                         <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} /
-                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}
+                        ><Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
                             {isExporting ? 'CAPTURING...' : 'EXPORT'}
-                        </Text
-                    </TouchableOpacity
+                        </Text>
+                    </TouchableOpacity>
                 }
             /
 
-            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
-                <View style={styles.perspectiveSwitcherContainer}
+            ><Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
+                <View style={styles.perspectiveSwitcherContainer}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}
                         {getAvailablePerspectives(activeData).map((p) => {
                             const isActive = activePerspective === p.id;
@@ -281,25 +281,25 @@ export default function MapScreen() {
                                     <Icon 
                                         size={18} 
                                         color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
-                                    /
-                                    <Text style={[
+                                    />
+                                    ><Text style={[
                                         styles.perspectiveLabel,
-                                        isActive && styles.activePerspectiveLabel
+                                        isActive && styles.activePerspectiveLabel>
                                     ]}
                                         {p.label}
-                                    </Text
-                                </TouchableOpacity
+                                    </Text>
+                                </TouchableOpacity>
                             );
                         })}
-                    </ScrollView
-                </View
-            </Box
+                    </ScrollView>
+                </View>
+            </Box>
 
             <Box sx={{ 
                 flex: 1, 
                 backgroundColor: colors.obsidian || colors.black,
                 overflow: 'hidden',
-                position: 'relative'
+                position: 'relative'>
             }}
                 {renderContent()}
 
@@ -313,29 +313,29 @@ export default function MapScreen() {
                         borderRadius: 32,
                         padding: 24,
                         borderWidth: 1,
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',>
                     } as any}
                         <VStack spacing={12}
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                 <VStack
-                                    <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}
+                                    <Text >sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
                                         {selectedNode.label}
-                                    </Text
+                                    </Text>
                                     <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}
-                                        {selectedNode.type} " {selectedNode.group}
-                                    </Text
-                                </VStack
+                                        {selectedNode.type} " {selectedNode.group}>
+                                    </Text>
+                                </VStack>
                                 <TouchableOpacity onPress={() => setSelectedNode(null)}
                                     <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                                        <X size={20} color={Theme.colors.sacredWhite} /
-                                    </Box
-                                </TouchableOpacity
-                            </HStack
+                                        <X size={20} color={Theme.colors.sacredWhite} />
+                                    ></Box>
+                                </TouchableOpacity>
+                            </HStack>
 
                             {selectedNode.metadata?.description && (
                                 <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}
-                                    {selectedNode.metadata.description}
-                                </Text
+                                    {selectedNode.metadata.description}>
+                                </Text>
                             )}
 
                             <TouchableOpacity 
@@ -348,14 +348,14 @@ export default function MapScreen() {
                                 }}
                             
                                 <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}
-                                    {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
-                                </Text
-                            </TouchableOpacity
-                        </VStack
-                    </Box
+                                    {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}>
+                                </Text>
+                            </TouchableOpacity>
+                        </VStack>
+                    </Box>
                 )}
-            </Box
-        </ScreenWrapper
+            </Box>
+        </ScreenWrapper>
     );
 }
 

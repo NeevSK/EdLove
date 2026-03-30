@@ -181,7 +181,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             <Text >style={styles.title}>Potential Analysis</Text
                             ><Text style={styles.subtitle}>{studentName}</Text
                         ></View
-                        <View style={styles.headerActions}
+                        ><View style={styles.headerActions}
                             <TouchableOpacity 
                                 onPress={handleExport} 
                                 style={[styles.actionIcon, isExporting && styles.disabledIcon]}
@@ -267,7 +267,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                     </G>
                                 </Svg>
                                 <Text style={styles.chartHint}>Dynamic Resonance Radar</Text
-                            </View>
+                            ></View>
 
                             {/* Stats Summary */}
                             <GlassCard style={styles.slidersCard}
@@ -299,7 +299,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                     <Text style={styles.statLabel}>{stat.label}</Text
                                                     ><Text style={styles.statValue}>{stat.value}%</Text
                                                 ></HStack
-                                                <Slider
+                                                ><Slider
                                                     minValue={0}
                                                     maxValue={100}
                                                     value={stat.value || 0}
@@ -326,8 +326,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         <Sparkles size={16} color={Theme.colors.sanctuarySaffron} /
                                         ><Text style={styles.sectionTitle}>AI Potential Insights</Text
                                     ></View
-                                    <Text style={styles.aiInsightsText}>{aiInsights}</Text
-                                </GlassCard>
+                                    ><Text style={styles.aiInsightsText}>{aiInsights}</Text
+                                ></GlassCard>
                             )}
 
                             {/* Silver Lining Analysis */}
@@ -352,7 +352,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                         <TouchableOpacity style={styles.cancelAction} onPress={onClose}>
                             <Text style={styles.cancelText}>Cancel</Text
                         ></TouchableOpacity
-                        <TouchableOpacity 
+                        ><TouchableOpacity 
                             style={styles.saveAction} 
                             onPress={handleSave}
                             disabled={saving}>

@@ -129,7 +129,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
 
     return (
         <View style={{ width: CHART_SIZE, height: CHART_SIZE }}
-            <Canvas style={StyleSheet.absoluteFill}
+            <Canvas style={StyleSheet.absoluteFill}>
                 {/* Grid circles */}
                 {gridRadii.map((r, i) => (
                     <Circle
@@ -141,8 +141,8 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                         style="stroke"
                         strokeWidth={1}
                         opacity={0.15}
-                    /
-                ))}
+                    />
+                >))}
 
                 {/* Axis lines */}
                 {AXES.map((axis, i) => {
@@ -155,27 +155,27 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                             color={color}
                             strokeWidth={1}
                             opacity={0.1}
-                        /
-                    );
+                        />
+                    >);
                 })}
 
                 {/* The Resonance Polygon */}
                 <Group
                     <Path
-                        path={polygonPath}
+                        >path={polygonPath}
                         color={color}
                         style="fill"
                         opacity={0.2}
-                    /
-                    <Path
+                    />
+                    ><Path
                         path={polygonPath}
                         color={color}
                         style="stroke"
                         strokeWidth={2}
                         opacity={0.8}
-                    /
+                    />
 
-                    {/* Polygon corner glows */}
+                    >{/* Polygon corner glows */}
                     {points.map((pt, i) => (
                         <Circle
                             key={`pt-${i}`}
@@ -183,9 +183,9 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                             cy={pt.y}
                             r={3}
                             color={color}
-                        /
-                    ))}
-                </Group
+                        />
+                    >))}
+                </Group>
 
                 {/* Center dot */}
                 <Circle
@@ -194,9 +194,9 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                     r={2}
                     color={color}
                     opacity={0.5}
-                /
-            </Canvas
-        </View
+                />
+            ></Canvas>
+        </View>
     );
 }
 
@@ -248,25 +248,25 @@ export function ResonancePatternCard({
                 borderWidth: 1,
                 borderColor: colors.border,
                 padding: Theme.spacing.md,
-                ...Theme.shadows.sm,
+                ...Theme.shadows.sm,>
             }}
         
             <VStack space="md"
-                {/* Header */}
+                {/* Header */}>
                 <HStack space="sm" alignItems="center"
-                    <Sparkles color={accentColor} size={16} /
-                    <Text
+                    <Sparkles color={accentColor} size={16} />
+                    ><Text
                         style={{
                             fontSize: 11,
                             fontWeight: '700',
                             letterSpacing: 1,
                             color: accentColor,
-                            textTransform: 'uppercase',
+                            textTransform: 'uppercase',>
                         }}
                     
                         Your Learning Pattern
-                    </Text
-                </HStack
+                    </Text>
+                </HStack>
 
                 {isForming ? (
                     <Text
@@ -275,21 +275,20 @@ export function ResonancePatternCard({
                             fontSize: Theme.typography.fontSize.sm,
                             lineHeight: 20,
                             textAlign: 'center',
-                            padding: Theme.spacing.lg,
+                            padding: Theme.spacing.lg,>
                         }}
                     
                         \u2726 Still forming...{'\n'}
                         <Text style={{ color: colors.textTertiary, fontSize: 12 }}
-                            Your pattern will emerge as you use the app.
-                        </Text
-                    </Text
+                            Your pattern will emerge as you use the app.>
+                        </Text>
+                    </Text>
                 ) : (
                     <HStack space="lg" alignItems="center"
-                        {/* Radar chart */}
-                        <RadarChart points={points} color={accentColor} /
-
+                        {/* Radar chart */}>
+                        <RadarChart points={points} color={accentColor} />
                         {/* Axis labels */}
-                        <VStack space="sm" style={{ flex: 1 }}
+                        ><VStack space="sm" style={{ flex: 1 }}
                             {AXES.map(axis => {
                                 const value = seeds[axis.key] ?? 50;
                                 const pct = value / 100;
@@ -297,16 +296,16 @@ export function ResonancePatternCard({
                                 const intensity = Math.abs(value - 50) / 50; // 0=neutral, 1=strong
                                 return (
                                     <View key={axis.key}
-                                        <HStack justifyContent="space-between" alignItems="center"
+                                        <HStack justifyContent="space-between" alignItems="center">
                                             <Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.lo}</Text
                                             <Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.hi}</Text
-                                        </HStack
-                                        <View
+                                        </HS>tack>
+                                        ><View
                                             style={{
                                                 height: 4,
                                                 backgroundColor: colors.border,
                                                 borderRadius: 2,
-                                                marginTop: 2,
+                                                marginTop: 2,>
                                             }}
                                         
                                             <View
@@ -318,15 +317,15 @@ export function ResonancePatternCard({
                                                     height: 6,
                                                     borderRadius: 3,
                                                     backgroundColor: accentColor,
-                                                    transform: [{ translateX: -3 }],
+                                                    transform: [{ translateX: -3 }],>
                                                 }}
                                             /
-                                        </View
-                                    </View
+                                        </View>
+                                    </Vi>ew>
                                 );
                             })}
-                        </VStack
-                    </HStack
+                        </VStack>
+                    </HStack>
                 )}
 
                 {/* Footer note */}
@@ -335,7 +334,7 @@ export function ResonancePatternCard({
                         color: colors.textTertiary,
                         fontSize: 10,
                         textAlign: 'center',
-                        fontStyle: 'italic',
+                        fontStyle: 'italic',>
                     }}
                 
                     {dataQuality === 'strong' && orientationSeeds
@@ -345,7 +344,7 @@ export function ResonancePatternCard({
                             : dataQuality === 'emerging'
                                 ? 'Still emerging \u2014 keeps refining as you log'
                                 : 'Starting from your perspective \u2014 refines with use'}
-                </Text
+                </Text>
 
                 {!isForming && onExplore && (
                     <Pressable
@@ -356,16 +355,16 @@ export function ResonancePatternCard({
                             paddingVertical: Theme.spacing.sm,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: accentColor + '60',
+                            borderColor: accentColor + '60',>
                         }}
                     
                         <Text style={{ color: accentColor, fontSize: 12, fontWeight: '600' }}
-                            Explore your pattern \u2192
-                        </Text
-                    </Pressable
+                            Explore your pattern \u2192>
+                        </Text>
+                    </Pressable>
                 )}
-            </VStack
-        </View
+            </VStack>
+        </View>
     );
 }
 

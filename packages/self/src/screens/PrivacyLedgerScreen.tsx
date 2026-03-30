@@ -40,30 +40,30 @@ export default function PrivacyLedgerScreen() {
 
         return (
             <Box sx={{ mb: Theme.spacing.sm }}
-                <SanctuaryCard
-                    <Box sx={{ p: Theme.spacing.md }}
-                        <HStack space="md" alignItems="flex-start"
+                <SanctuaryCard>
+                    <Box >sx={{ p: Theme.spacing.md }}
+                        <HStack space="md" alignItems="flex-start">
                             <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: colors.tertiary }}
-                                <Lock size={18} color={Theme.colors.gurudeviViolet} /
-                            </Box
+                                <Lock size={18} color={Theme.colors.gurudeviViolet} />
+                            ></Box>
                             <VStack flex={1} space="xs"
-                                <HStack justifyContent="space-between" alignItems="center"
+                                <HStack justifyContent="space-between" alignItems="center">
                                     <Text size="sm" bold color={colors.text}>{item.activity_type}</Text
                                     <HStack space="xs" alignItems="center"
-                                        <Clock size={12} color={colors.textTertiary} /
+                                        <Clock size={12} color={colors.textTertiary} />
                                         <Text size="xs" color={colors.textTertiary}>{time}</Text
-                                    </HStack
-                                </HStack
+                                    ></HStack>
+                                </HStack>
                                 <Text size="xs" color={colors.textSecondary}>{item.description}</Text
                                 <HStack space="xs" alignItems="center" mt="$1"
-                                    <FileText size={12} color={colors.textTertiary} /
+                                    <FileText size={12} color={colors.textTertiary} />
                                     <Text size="xs" italic color={colors.textTertiary}>{item.resource_name}</Text
-                                </HStack
-                            </VStack
-                        </HStack
-                    </Box
-                </SanctuaryCard
-            </Box
+                                ></HStack>
+                            </VStack>
+                        </HStack>
+                    </Box>
+                </SanctuaryCard>
+            </Box>
         );
     };
 
@@ -73,23 +73,23 @@ export default function PrivacyLedgerScreen() {
                 title="Privacy Ledger"
                 subtitle="Your data activity journey"
                 showBack
-            /
+            />
 
-            <Box sx={{ flex: 1, p: Theme.spacing.md }}
-                <VStack space="md" mb="$4"
+            ><Box sx={{ flex: 1, p: Theme.spacing.md }}
+                <VStack space="md" mb="$4">
                     <HStack space="sm" alignItems="center"
-                        <Shield size={20} color={Theme.colors.sageGreen} /
-                        <Heading size="sm">Transparency Circle</Heading
-                    </HStack
+                        <Shield size={20} color={Theme.colors.sageGreen} />
+                        ><Heading size="sm">Transparency Circle</Heading
+                    ></HStack>
                     <Text size="sm" color={colors.textSecondary}
-                        Every time your data is accessed or security settings change, it's recorded here for your peace of mind.
-                    </Text
-                </VStack
+                        Every time your data is accessed or security settings change, it's recorded here for your peace of mind.>
+                    </Text>
+                </VStack>
 
                 {loading ? (
                     <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                        <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
-                    </Box
+                        <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+                    ></Box>
                 ) : (
                     <FlatList
                         data={entries}
@@ -98,12 +98,12 @@ export default function PrivacyLedgerScreen() {
                         ListEmptyComponent={
                             <Box sx={{ flex: 1, mt: 100, alignItems: 'center', justifyContent: 'center' }}
                                 <Text color={colors.textTertiary}>No privacy events recorded yet.</Text
-                            </Box
+                            ></Box>
                         }
                         showsVerticalScrollIndicator={false}
                     /
                 )}
-            </Box
-        </ScreenWrapper
+            </Box>
+        </ScreenWrapper>
     );
 }

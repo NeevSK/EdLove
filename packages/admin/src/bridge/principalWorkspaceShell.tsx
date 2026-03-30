@@ -75,7 +75,7 @@ function SnapshotTile({ label, value }: { label: string; value: number | string 
       }}
           <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.bark, textTransform: 'uppercase', letterSpacing: 0.6 }}        {label}
       </Text      <Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}        {value}>
-      </Text    </Box  );
+      </Text    ></Box  );
 }
 
 function InstitutionLinks({

@@ -108,7 +108,7 @@ export default function TeacherAnalysisWorkspace({
                     }}
                                     <VStack sx={{ gap: Theme.spacing.md }}                        <VStack sx={{ gap: 4 }}                            <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                Analysis
                             </Text                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                Read the classroom before reacting>
-                            </Heading                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
+                            </Heading                            ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
                             </Text                        </VStack
                         <HStack sx={{ gap: Theme.spacing.sm }}                            <StatCard
                                 label="Average GPA"
@@ -181,7 +181,7 @@ export default function TeacherAnalysisWorkspace({
                     studentName={selectedStudent.full_name}
                     classroomId={classroomId}
                 /            >)}
-        </Box    );
+        </Box    >);
 }
 
 function StatCard({
@@ -207,7 +207,7 @@ function StatCard({
             }}
                     <VStack sx={{ gap: Theme.spacing.xs }}                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                    {icon}
                     <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}                        {label}>
-                    </Text                </HStack                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                    {value}
+                    </Text                ></HStack                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                    {value}
                 </Heading            </VStack        </Box    );
 }
 

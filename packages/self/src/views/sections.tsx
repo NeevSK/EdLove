@@ -52,7 +52,7 @@ export const JournalSection: React.FC<{ entries: any[], loading?: boolean }> = (
             <BookOpen size={18} color="#8B5CF6" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#8B5CF6' }]}>Inner Resonance</Text
         ></View
-        {loading ? (
+        >{loading ? (
             <View style={styles.loadingContainer}><ActivityIndicator color="#8B5CF6" /></View
         >) : entries.length > 0 ? (
             entries.slice(0, 2).map(entry => (
@@ -72,7 +72,7 @@ export const MoodSection: React.FC<{ logs: any[], loading?: boolean }> = ({ logs
             <Sparkles size={18} color="#EC4899" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#EC4899' }]}>Emotional Flow</Text
         ></View
-        {loading ? (
+        >{loading ? (
             <View style={styles.loadingContainer}><ActivityIndicator color="#EC4899" /></View
         >) : (
             <Text style={styles.contentText}
@@ -94,7 +94,7 @@ export const TeacherPulse: React.FC<{ banyan?: any, loading?: boolean }> = ({ ba
                 <Zap size={18} color="#10B981" style={{ marginRight: 8 }} /
                 ><Text style={[styles.title, { color: '#10B981' }]}>Instructional Energy</Text
             ></View
-            {loading ? (
+            >{loading ? (
                 <View style={styles.loadingContainer}><ActivityIndicator color="#10B981" /></View
             >) : (
                 <View
@@ -112,7 +112,7 @@ export const BanyanSection: React.FC = () => (
             <Leaf size={18} color="#10B981" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#10B981' }]}>The Banyan Tree</Text
         ></View
-        <Text style={styles.contentText}>Visualizing your classroom's collective growth roots.</Text
+        ><Text style={styles.contentText}>Visualizing your classroom's collective growth roots.</Text
     ></View
 );
 
@@ -128,7 +128,7 @@ export const PrincipalPulse: React.FC<{ energy?: any, decisions?: any[], loading
                 <Brain size={18} color="#F59E0B" style={{ marginRight: 8 }} /
                 ><Text style={[styles.title, { color: '#F59E0B' }]}>Systemic Pulse</Text
             ></View
-            {loading ? (
+            >{loading ? (
                 <View style={styles.loadingContainer}><ActivityIndicator color="#F59E0B" /></View
             >) : (
                 <View
@@ -146,7 +146,7 @@ export const DecisionSection: React.FC<{ decisions: any[], loading?: boolean }> 
             <Zap size={18} color="#F59E0B" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#F59E0B' }]}>Governance Mirror</Text
         ></View
-        {loading ? (
+        >{loading ? (
             <View style={styles.loadingContainer}><ActivityIndicator color="#F59E0B" /></View
         >) : decisions.length > 0 ? (
             decisions.slice(0, 2).map(d => (
@@ -172,7 +172,7 @@ export const VisionSection: React.FC = () => {
                 <Sparkles size={18} color="#FBBF24" style={{ marginRight: 8 }} /
                 ><Text style={[styles.title, { color: '#FBBF24' }]}>Ecosystem Vision</Text
             ></View
-            <Text style={[styles.contentText, { fontStyle: 'italic', color: '#FBBF24' }]}
+            ><Text style={[styles.contentText, { fontStyle: 'italic', color: '#FBBF24' }]}
                 &quot;The architecture of education is the architecture of human potential.&quot;>
             </Text>
         </View>
@@ -189,7 +189,7 @@ export const PhilosophySection: React.FC<{ wisdom: any[], loading?: boolean }> =
                 <Lightbulb size={18} color="#FBBF24" style={{ marginRight: 8 }} /
                 ><Text style={[styles.title, { color: '#FBBF24' }]}>Philosophical Anchors</Text
             ></View
-            {loading ? (
+            >{loading ? (
                  <View style={styles.loadingContainer}><ActivityIndicator color="#FBBF24" /></View
             >) : wisdom.length > 0 ? (
                 wisdom.slice(0, 2).map(w => (
@@ -216,7 +216,7 @@ export const GoalSection: React.FC<{ goals: any[], loading?: boolean }> = ({ goa
                 <Target size={18} color="#8B5CF6" style={{ marginRight: 8 }} /
                 ><Text style={[styles.title, { color: '#8B5CF6' }]}>Active Intentions</Text
             ></View
-            {loading ? (
+            >{loading ? (
                 <View style={styles.loadingContainer}><ActivityIndicator color="#8B5CF6" /></View
             >) : goals.length > 0 ? (
                 goals.map(g => (
@@ -235,7 +235,7 @@ export const NatureSection: React.FC<{ paths: any, loading?: boolean }> = ({ pat
             <Leaf size={18} color="#10B981" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#10B981' }]}>Residual Resonance</Text
         ></View
-        {loading ? (
+        >{loading ? (
             <View style={styles.loadingContainer}><ActivityIndicator color="#10B981" /></View
         >) : (
             <View
@@ -252,7 +252,7 @@ export const IdentitySection: React.FC = () => (
             <User size={18} color="#A78BFA" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#A78BFA' }]}>Who Am I Becoming?</Text
         ></View
-        <Text style={styles.placeholder}>Reflecting your inner qualities...</Text
+        ><Text style={styles.placeholder}>Reflecting your inner qualities...</Text
     ></View
 );
 
@@ -262,6 +262,6 @@ export const TeacherFeedbackSection: React.FC = () => (
             <MessageCircle size={18} color="#C4B5FD" style={{ marginRight: 8 }} /
             ><Text style={[styles.title, { color: '#C4B5FD' }]}>Teacher Echoes</Text
         ></View
-        <Text style={styles.placeholder}>Guidance from your mentors.</Text
+        ><Text style={styles.placeholder}>Guidance from your mentors.</Text
     ></View
 );

@@ -86,7 +86,7 @@ export default function AIAssistantScreen() {
         <div style={{ display: 'flex', height: '100%', background: 'var(--background)', fontFamily: 'var(--font-body)' }}
             {/* \u2500\u2500 Left sidebar: active gaps \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */}>
             <div style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', background: 'var(--surface)', overflowY: 'auto' }}                <div style={{ padding: '24px 20px 16px' }}                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}                        School Flow
-                    </div                    {activeGaps.length === 0 ? (>
+                    </div                    >{activeGaps.length === 0 ? (>
                         <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}                            All clear \u2726 No pending items.
                         </div                    ) : (>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}                            {activeGaps.map(gap => (
@@ -111,7 +111,7 @@ export default function AIAssistantScreen() {
                         onClick={clearHistory}
                         style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '12px', fontFamily: 'var(--font-body)', width: '100%' }}
                                             \uD83D\uDDD1 Clear conversation>
-                    </button                </div            </div
+                    </button                ></div            </div
             {/* \u2500\u2500 Main chat area \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}                {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--border-light)', background: 'var(--surface)' }}                    <button
@@ -150,7 +150,7 @@ export default function AIAssistantScreen() {
                                         whiteSpace: 'pre-wrap',
                                         wordBreak: 'break-word',>
                                     }}                                        {msg.content}
-                                    </div                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.timestamp)}</span                                ></div                            </div                        );
+                                    </div                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.timestamp)}</span                                ></div                            ></div                        );
                     })}
 
                     {/* Thinking indicator */}

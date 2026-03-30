@@ -68,22 +68,22 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
     return (
         <ScrollView
             contentContainerStyle={{ paddingBottom: 100 }}
-            refreshControl={
+            refreshControl={>
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.action} /
-            }
+            >}>
         
             <VStack space="xl" px="$4" pt="$8"
-                {/* 1. The Welcome Breath */}
+                {/* 1. The Welcome Breath */}>
                 <BreathAnimation delay={100}
-                    <VStack space="xs"
+                    <VStack space="xs">
                         <Text sx={{ color: colors.textSecondary, fontSize: '$sm', fontFamily: 'Inter_400Regular' }}
-                            {getGreeting()},
-                        </Text
+                            {getGreeting()},>
+                        </Text>
                         <Heading size="2xl" sx={{ color: colors.text, fontFamily: 'Outfit_700Bold' }}
-                            {userName}
-                        </Heading
-                    </VStack
-                </BreathAnimation
+                            {userName}>
+                        </Heading>
+                    </VStack>
+                </BreathAnimation>
 
                 {/* 2. Daily Motivation (The Spark) */}
                 <BreathAnimation delay={250}
@@ -93,8 +93,8 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                         author={dailyContent?.motivation?.author || 'Sanctuary'}
                         icon={Sparkles}
                         type="motivation"
-                    /
-                </BreathAnimation
+                    />
+                ></BreathAnimation>
 
                 {/* 3. Did You Know? (The Wisdom) */}
                 <BreathAnimation delay={400}
@@ -103,32 +103,32 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                         content={dailyContent?.didYouKnow?.content || 'Did you know? Every student brings a unique harmony to the classroom.'}
                         icon={BookOpen}
                         type="wisdom"
-                    /
-                </BreathAnimation
+                    />
+                ></BreathAnimation>
 
                 {/* 4. Clerical Relief / Action Pulse */}
                 <BreathAnimation delay={550}
-                    <GlassCard sx={{ p: Theme.spacing.lg, borderRadius: Theme.corners.generous }}
+                    <GlassCard sx={{ p: Theme.spacing.lg, borderRadius: Theme.corners.generous }}>
                         <VStack space="md"
-                            <HStack justifyContent="space-between" alignItems="center"
+                            <HStack justifyContent="space-between" alignItems="center">
                                 <Heading size="md" sx={{ color: colors.text }}
-                                    {t('pulse.actions') || 'Today\'s Pulse'}
-                                </Heading
+                                    {t('pulse.actions') || 'Today\'s Pulse'}>
+                                </Heading>
                                 <Calendar color={colors.action} size={20} /
-                            </HStack
+                            ></HStack>
 
                             {actionsLoading ? (
                                 <VStack space="sm"
-                                    <SkeletonCard height={56} /
-                                    <SkeletonCard height={56} /
-                                </VStack
+                                    <SkeletonCard height={56} />
+                                    ><SkeletonCard height={56} /
+                                ></VStack>
                             ) : !hasActions ? (
                                 <HStack space="sm" alignItems="center" py="$2"
-                                    <CheckCircle size={16} color={Theme.colors.sageGreen} /
-                                    <Text sx={{ color: colors.textSecondary, fontSize: '$sm' }}
-                                        {t('pulse.allClear') || 'Your day is clear \uD83E\uDEB7'}
-                                    </Text
-                                </HStack
+                                    <CheckCircle size={16} color={Theme.colors.sageGreen} />
+                                    ><Text sx={{ color: colors.textSecondary, fontSize: '$sm' }}
+                                        {t('pulse.allClear') || 'Your day is clear \uD83E\uDEB7'}>
+                                    </Text>
+                                </HStack>
                             ) : (
                                 <VStack space="sm"
                                     {attendancePending.map((item) => (
@@ -143,7 +143,7 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                                                 classroomName: item.classroomName,
                                             })}
                                         /
-                                    ))}
+                                    >))}
                                     {gradingPending.map((item) => (
                                         <PulseActionItem
                                             key={item.assignmentId}
@@ -156,30 +156,30 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                                                 classroomName: item.classroomName,
                                             })}
                                         /
-                                    ))}
-                                </VStack
+                                    >))}
+                                </VStack>
                             )}
-                        </VStack
-                    </GlassCard
-                </BreathAnimation
+                        </VStack>
+                    </GlassCard>
+                </BreathAnimation>
 
                 {/* 5. Entrance to Full View */}
                 <BreathAnimation delay={700}
-                    <HStack justifyContent="center" pt="$4"
+                    <HStack justifyContent="center" pt="$4">
                         <Text
                             sx={{
                                 color: colors.action,
                                 fontSize: Theme.typography.fontSize.sm,
-                                fontWeight: '$bold'
+                                fontWeight: '$bold'>
                             }}
                             onPress={onEnterDetails}
                         
                             {t('pulse.view_full') || 'Enter Full Sanctuary'} \u2192
-                        </Text
-                    </HStack
-                </BreathAnimation
-            </VStack
-        </ScrollView
+                        </Text>
+                    </HStack>
+                </BreathAnimation>
+            </VStack>
+        </ScrollView>
     );
 }
 
@@ -192,18 +192,18 @@ function PulseActionItem({ title, time, status, onPress, isDark }: any) {
                 backgroundColor: isDark ? colors.tertiary : '#FAF7ED', // Silk for light mode
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: colors.border
+                borderColor: colors.border>
             }}
             justifyContent="space-between"
             alignItems="center"
         
             <VStack space="xs" sx={{ flex: 1, marginRight: Theme.spacing.sm }}
                 <Text sx={{ color: colors.text, fontSize: '$sm', fontWeight: '$600' }} numberOfLines={3}>{title}</Text
-                <HStack space="xs" alignItems="center"
-                    <Clock size={12} color={colors.textTertiary} /
-                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>{time}</Text
-                </HStack
-            </VStack
+                ><HStack space="xs" alignItems="center"
+                    <Clock size={12} color={colors.textTertiary} />
+                    ><Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>{time}</Text
+                ></HStack>
+            </VStack>
             <Box
                 sx={{
                     px: '$2',
@@ -211,17 +211,17 @@ function PulseActionItem({ title, time, status, onPress, isDark }: any) {
                     borderRadius: Theme.corners.full,
                     backgroundColor: status === 'pending'
                         ? `${Theme.colors.sanctuarySaffron}26`
-                        : Theme.colors.skyBlue
+                        : Theme.colors.skyBlue>
                 }}
             
                 <Text sx={{
                     color: status === 'pending' ? Theme.colors.sanctuarySaffron : colors.textTertiary,
                     fontSize: Theme.typography.fontSize.xs,
-                    fontWeight: '$600'
+                    fontWeight: '$600'>
                 }}
                     {status.toUpperCase()}
-                </Text
-            </Box
-        </HStack
+                </Text>
+            </Box>
+        </HStack>
     );
 }

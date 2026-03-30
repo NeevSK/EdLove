@@ -163,10 +163,10 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     if (isLoading && userId) {
         return (
             <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
-                <SkeletonCard height={40} /
-                <SkeletonCard height={280} /
-                <SkeletonCard height={80} /
-            </VStack
+                <SkeletonCard height={40} />
+                ><SkeletonCard height={280} /
+                ><SkeletonCard height={80} />
+            ></VStack>
         );
     }
 
@@ -176,20 +176,20 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                 type="guest"
                 onAction={() => navigation.navigate('Auth' as never)}
             /
-        );
+        >);
     }
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
-            {/* Header */}
+            {/* Header */}>
             <VStack space="xs"
-                <Heading color={Theme.colors.sacredWhite} size="lg"
+                <Heading color={Theme.colors.sacredWhite} size="lg">
                     {t('progressTree.title')}
-                </Heading
+                </Heading>
                 <Text color={Theme.colors.mistGray} size="sm"
-                    {t('progressTree.subtitle')}
-                </Text
-            </VStack
+                    {t('progressTree.subtitle')}>
+                </Text>
+            </VStack>
 
             {/* Tree Visualization */}
             <Box
@@ -200,14 +200,14 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
-                    position: 'relative',
+                    position: 'relative',>
                 }}
             
                 {/* Bloom effect */}
                 {showBloom && (
                     <Animated.View
                         style={[
-                            bloomStyle,
+                            bloomStyle,>
                             {
                                 position: 'absolute',
                                 top: '20%',
@@ -217,60 +217,60 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                         ]}
                     
                         <Text style={{ fontSize: 72 }}>\uD83C\uDF38</Text
-                        <Text
+                        ><Text
                             color={Theme.colors.sanctuarySaffron}
                             size="lg"
                             sx={{
                                 fontWeight: typography.fontWeight.bold,
-                                marginTop: Theme.spacing.sm,
+                                marginTop: Theme.spacing.sm,>
                             }}
                         
                             Milestone reached!
-                        </Text
-                    </Animated.View
+                        </Text>
+                    </Animated.View>
                 )}
 
                 {/* Main tree */}
                 <Animated.View style={treeStyle}
-                    <Text style={{ fontSize: 96 }}
+                    <Text style={{ fontSize: 96 }}>
                         {currentStage?.emoji || '\uD83C\uDF31'}
-                    </Text
-                </Animated.View
+                    </Text>
+                </Animated.View>
 
                 <Text
                     color={Theme.colors.sacredWhite}
                     size="2xl"
                     sx={{
                         fontWeight: typography.fontWeight.semibold,
-                        marginTop: Theme.spacing.md,
+                        marginTop: Theme.spacing.md,>
                     }}
                 
                     {currentStage?.label || ''}
-                </Text
+                </Text>
                 <Text
                     color={Theme.colors.mistGray}
                     size="sm"
-                    sx={{ fontStyle: 'italic' }}
+                    sx={{ fontStyle: 'italic' }}>
                 
                     {currentStage?.description || ''}
-                </Text
-            </Box
+                </Text>
+            </Box>
 
             {/* Gentle progress indicator */}
             <Box
                 sx={{
                     backgroundColor: Theme.colors.ink,
                     padding: Theme.spacing.md,
-                    borderRadius: Theme.corners.comfortable,
+                    borderRadius: Theme.corners.comfortable,>
                 }}
             
                 <Text
                     color={Theme.colors.dimGray}
                     size="xs"
-                    sx={{ marginBottom: Theme.spacing.sm }}
+                    sx={{ marginBottom: Theme.spacing.sm }}>
                 
                     {interactionCount} interactions nurturing your tree
-                </Text
+                </Text>
 
                 {nextStage && (
                     <
@@ -280,34 +280,34 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                                 height: 8,
                                 backgroundColor: Theme.colors.ink,
                                 borderRadius: 4,
-                                overflow: 'hidden',
+                                overflow: 'hidden',>
                             }}
                         
                             <Box
                                 sx={{
                                     width: `${progressPercent}%`,
                                     height: '100%',
-                                    backgroundColor: Theme.colors.sageGreen,
+                                    backgroundColor: Theme.colors.sageGreen,>
                                 }}
                             /
-                        </Box
+                        ></Box>
                         <Text
                             color={Theme.colors.dimGray}
                             size="xs"
                             sx={{ marginTop: Theme.spacing.sm }}
                         
-                            Next: {nextStage.label} ({nextStage.minInteractions - interactionCount} more interactions)
-                        </Text
+                            Next: {nextStage.label} ({nextStage.minInteractions - interactionCount} more interactions)>
+                        </Text>
                     </
                 )}
-            </Box
+            </Box>
 
             {/* Philosophy note */}
             <Box
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
+                    borderRadius: Theme.corners.comfortable,>
                 }}
             
                 <Text
@@ -316,9 +316,9 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                     textAlign="center"
                     sx={{ fontStyle: 'italic' }}
                 
-                    Growth happens in its own time. Every small action counts. \uD83C\uDF31
-                </Text
-            </Box
-        </VStack
+                    Growth happens in its own time. Every small action counts. \uD83C\uDF31>
+                </Text>
+            </Box>
+        </VStack>
     );
 }

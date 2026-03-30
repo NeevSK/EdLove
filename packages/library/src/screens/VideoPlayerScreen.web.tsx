@@ -96,12 +96,12 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
         return (
             <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}
                 <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}
-                    Unable to load video. Please check the URL and try again.
-                </Text
+                    Unable to load video. Please check the URL and try again.>
+                </Text>
                 <SanctuaryButton onPress={() => navigation.goBack()} leftIcon={X}
                     Go Back
-                </SanctuaryButton
-            </Box
+                </SanctuaryButton>
+            </Box>
         );
     }
 
@@ -127,12 +127,12 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                     onDurationChange={() => setDuration(videoRef.current?.duration ?? 0)}
                     onError={() => setHasError(true)}
                 /
-            </Pressable
+            ></Pressable>
 
             {/* Overlay controls */}
             {showControls && (
                 <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="box-none"
-                    {/* Header */}
+                    {/* Header */}>
                     <View style={styles.header} pointerEvents="auto"
                         <Pressable
                             onPress={() => navigation.goBack()}
@@ -140,42 +140,42 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                             style={styles.closeBtn}
                         
                             <X size={22} color="#fff" /
-                        </Pressable
+                        ></Pressable>
                         <VStack sx={{ flex: 1 }}
                             <Text style={styles.titleText} numberOfLines={1}>{title}</Text
-                            {creator ? <Text style={styles.creatorText}>{creator}</Text> : null}
-                        </VStack
+                            >{creator ? <Text style={styles.creatorText}>{creator}</Text> : null}
+                        </VStack>
                         <Pressable
                             onPress={handleFullscreen}
                             accessibilityLabel="Enter fullscreen"
-                            style={styles.closeBtn}
+                            style={styles.closeBtn}>
                         
                             <Maximize size={20} color="#fff" /
-                        </Pressable
-                    </View
+                        </Pressable>
+                    </View>
 
                     {/* Playback buttons */}
                     <View style={styles.centerRow} pointerEvents="auto"
                         <Pressable onPress={() => handleSeekBy(-10)} style={styles.controlBtn} accessibilityLabel="Rewind 10 seconds"
                             <RotateCcw size={28} color="#fff" /
-                            <Text style={styles.seekLabel}>10</Text
-                        </Pressable
+                            ><Text style={styles.seekLabel}>10</Text
+                        ></Pressable>
                         <Pressable onPress={handlePlayPause} style={styles.playBtn} accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
                             {isPlaying
                                 ? <Pause size={36} color="#fff" fill="#fff" /
-                                : <Play size={36} color="#fff" fill="#fff" /
-                            }
-                        </Pressable
+                                >: <Play size={36} color="#fff" fill="#fff" />
+                            >}
+                        </Pressable>
                         <Pressable onPress={() => handleSeekBy(10)} style={styles.controlBtn} accessibilityLabel="Skip 10 seconds"
                             <RotateCw size={28} color="#fff" /
                             <Text style={styles.seekLabel}>10</Text
-                        </Pressable
-                    </View
+                        ></Pressable>
+                    </View>
 
                     {/* Progress bar + timestamps */}
                     <View style={styles.footer} pointerEvents="auto"
                         <Text style={styles.timeText}>{formatTimeSecs(currentTime)}</Text
-                        {/* @ts-ignore  onClick on div in react-native-web */}
+                        >{/* @ts-ignore  onClick on div in react-native-web */}
                         <div
                             style={styles.progressTrack as any}
                             onClick={handleProgressClick}
@@ -183,15 +183,15 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                             aria-label="Video progress"
                             aria-valuenow={Math.round(progress)}
                             aria-valuemin={0}
-                            aria-valuemax={100}
+                            aria-valuemax={100}>
                         
                             <div style={{ ...styles.progressFill as any, width: `${progress}%` }} /
-                        </div
+                        ></div>
                         <Text style={styles.timeText}>{formatTimeSecs(duration)}</Text
-                    </View
-                </View
+                    </View>
+                </View>
             )}
-        </Box
+        </Box>
     );
 }
 

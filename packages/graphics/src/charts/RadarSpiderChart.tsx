@@ -45,7 +45,7 @@ export function RadarChart({
     <Card style={[styles.container, { width: size, height: size }]}      {title && <Text style={styles.title}>{title}</Text>}
       
       <View style={[styles.chartContainer, { width: size, height: size }]}        {/* Grid lines */}
-        {showGrid && (
+        {showGrid && (>
           <            {/* Circular grid */}
             {Array.from({ length: 5 }, (_, i) => {
               const gridAngle = (i * Math.PI) / 2.5;
@@ -53,7 +53,7 @@ export function RadarChart({
                 <View
                   key={`grid-${i}`}
                   style={[
-                    styles.gridLine,
+                    styles.gridLine,>
                     {
                       width: radius,
                       height: 2,
@@ -63,7 +63,7 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                /              );
+                /              >);
             })}
             
             {/* Radial grid lines */}
@@ -73,7 +73,7 @@ export function RadarChart({
                 <View
                   key={`radial-grid-${index}`}
                   style={[
-                    styles.gridLine,
+                    styles.gridLine,>
                     {
                       width: radius,
                       height: 1,
@@ -87,13 +87,13 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                /              );
+                /              >);
             })}
           </        )}
         
         {/* Data polygon */}
         <View style={[
-          styles.dataPolygon,
+          styles.dataPolygon,>
           {
             width: radius * 2,
             height: radius * 2,
@@ -112,7 +112,7 @@ export function RadarChart({
               <View key={index} style={styles.dataSlice}                {/* Slice from center to point */}
                 <View
                   style={[
-                    styles.dataSlice,
+                    styles.dataSlice,>
                     {
                       backgroundColor: point.color || Theme.colors.sanctuarySaffron,
                       width: radius,
@@ -127,10 +127,10 @@ export function RadarChart({
                     }
                   ]}
                 /                
-                {/* Slice from point to next point */}
+                >{/* Slice from point to next point */}
                 <View
                   style={[
-                    styles.dataSlice,
+                    styles.dataSlice,>
                     {
                       backgroundColor: point.color || Theme.colors.sanctuarySaffron,
                       width: radius,
@@ -144,17 +144,17 @@ export function RadarChart({
                       ]
                     }
                   ]}
-                /              </View            );
+                /              ></View            );
           })}
-        </View        
+        </View        >
         {/* Center point */}
         <View style={[styles.centerPoint, { 
           left: centerX - 4, 
           top: centerY - 4,
           width: 8,
-          height: 8
+          height: 8>
         }]} /        
-        {/* Labels */}
+        >{/* Labels */}
         {showLabels && data.map((point, index) => {
           const angle = index * angleStep;
           const labelX = centerX + (radius + 20) * Math.cos(angle);
@@ -164,7 +164,7 @@ export function RadarChart({
             <View
               key={`label-${index}`}
               style={[
-                styles.label,
+                styles.label,>
                 {
                   left: labelX - 30,
                   top: labelY - 10,
@@ -175,7 +175,7 @@ export function RadarChart({
                 }
               ]}
                           <Text style={styles.labelText}                {point.label}
-              </Text              <Text style={styles.labelValue}                {point.value}
+              </Text              <Text style={styles.labelValue}                {point.value}>
               </Text            </View          );
         })}
       </View    </Card  );
@@ -214,7 +214,7 @@ export function SpiderChart({
             <View
               key={`connection-${index}`}
               style={[
-                styles.connectionLine,
+                styles.connectionLine,>
                 {
                   width: radius,
                   height: 2,
@@ -228,7 +228,7 @@ export function SpiderChart({
                   ]
                 }
               ]}
-            /          );
+            /          >);
         })}
         
         {/* Data points and connections */}
@@ -250,7 +250,7 @@ export function SpiderChart({
                     <View
                       key={`connection-${index}-${connIndex}`}
                       style={[
-                        styles.connectionLine,
+                        styles.connectionLine,>
                         {
                           width: Math.sqrt(Math.pow(targetX - x, 2) + Math.pow(targetY - y, 2)),
                           height: 2,
@@ -264,7 +264,7 @@ export function SpiderChart({
                           ]
                         }
                       ]}
-                    /                  );
+                    /                  >);
                 }
                 return null;
               })}
@@ -272,7 +272,7 @@ export function SpiderChart({
               {/* Data point */}
               <View
                 style={[
-                  styles.dataPoint,
+                  styles.dataPoint,>
                   {
                     backgroundColor: point.color || Theme.colors.sanctuarySaffron,
                     transform: [
@@ -282,7 +282,7 @@ export function SpiderChart({
                   }
                 ]}
                               <Text style={styles.pointLabel}                  {point.label}
-                </Text                <Text style={styles.pointValue}                  {point.value}
+                </Text                <Text style={styles.pointValue}                  {point.value}>
                 </Text              </View            </View          );
         })}
         
@@ -291,8 +291,8 @@ export function SpiderChart({
           left: centerX - 4, 
           top: centerY - 4,
           width: 8,
-          height: 8
-        }]} /      </View    </Card  );
+          height: 8>
+        }]} /      ></View    </Card  );
 }
 
 const styles = StyleSheet.create({

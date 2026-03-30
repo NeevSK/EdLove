@@ -131,7 +131,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="secondary"
                                 leftIcon={Play}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                         {onPullToDesk && (
                             <SanctuaryButton
                                 onPress={onPullToDesk}
@@ -140,7 +140,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="secondary"
                                 leftIcon={Bookmark}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                         {onOpenAnotherWay && (
                             <SanctuaryButton
                                 onPress={onOpenAnotherWay}
@@ -149,7 +149,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="secondary"
                                 leftIcon={ArrowLeftRight}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                         {onDelete && (
                             <SanctuaryButton
                                 onPress={onDelete}
@@ -158,7 +158,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="negative"
                                 leftIcon={Trash2}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
 
                         {onAISparkle && (
                             <SanctuaryButton
@@ -168,7 +168,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="primary"
                                 leftIcon={Sparkles}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
 
                         {onGenerateQuiz && (
                             <SanctuaryButton
@@ -178,7 +178,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="secondary"
                                 leftIcon={ClipboardCheck}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
 
                         {onGenerateGraphic && (
                             <SanctuaryButton
@@ -188,6 +188,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 action="secondary"
                                 leftIcon={Brain}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                     </HStack                </HStack            </SanctuaryCard        </Box    );
 }

@@ -189,13 +189,13 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                             }}
                                                     <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', marginBottom: Theme.spacing.xs }}                                <TrustIcon size={16} color={trustCopy.label === 'Broken or unverified' ? accent.danger : accent.action} /                                ><Text sx={{ color: text.primary, fontWeight: '700' }}                                    {trustCopy.label}
                                 </Text                            </HStack                            <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}                                {trustCopy.note}>
-                            </Text                            <Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}                                Destination: {pendingRequest.domain}
+                            </Text                            ><Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}                                Destination: {pendingRequest.domain}
                             </Text                            {pendingRequest.options.sourceBadge ? (
                                 <Text sx={{ color: accent.action, fontSize: 12, marginTop: 4, fontWeight: '700' }}                                    {pendingRequest.options.sourceBadge}
                                 </Text                            ) : null}>
                             {pendingRequest.overrideCount >= 2 && !pendingRequest.currentPreference ? (
                                 <Text sx={{ color: text.secondary, fontSize: 12, marginTop: Theme.spacing.sm }}                                    You often choose a different link method. Saving a default may reduce friction.
-                                </Text                            ) : null}>
+                                </Text                            >) : null}>
                         </Box>
                         <VStack sx={{ gap: Theme.spacing.sm }}                            {methods.map((method) => {
                                 const isSelected = selectedMethod === method.id;
@@ -239,7 +239,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                     },
                                 ]}
                                                             {rememberChoice ? <Check size={12} color={Theme.colors.sacredWhite} /> : null}
-                            </View                            <VStack sx={{ flex: 1 }}                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                    Remember my choice on this {pendingRequest.platform === 'web' ? 'browser' : 'device'}
+                            </View                            ><VStack sx={{ flex: 1 }}                                <Text sx={{ color: text.primary, fontWeight: '700' }}                                    Remember my choice on this {pendingRequest.platform === 'web' ? 'browser' : 'device'}
                                 </Text                                <Text sx={{ color: text.secondary, fontSize: 12 }}                                    You can still choose another method whenever you need to.
                                 </Text                            </VStack                        </Pressable                    </VStack                )}
             </SanctuaryModal        </    );

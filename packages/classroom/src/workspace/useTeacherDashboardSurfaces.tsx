@@ -108,7 +108,7 @@ function StatCard({
                     <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}                <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}
                 </Text                <Text color={colors.text} sx={{ fontSize: 32, fontWeight: '700' }}                    {value}>
                     {isDemoMode ? '*' : ''}
-                </Text            </VStack            {isDemoMode ? (
+                </Text            ></VStack            {isDemoMode ? (
                 <Box sx={{ position: 'absolute', top: 5, right: 5 }}                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} /                ></Box            ) : null}
             <Box
                 sx={{

@@ -135,7 +135,7 @@ export default function SocialShieldModal({
                             <TouchableOpacity onPress={onClose}
                                 <X color={text.muted} size={24} /
                             ></TouchableOpacity
-                        </HStack>
+                        ></HStack>
 
                         {step === 'reason' ? (
                             <VStack {...({ space: "md" } as any)}
@@ -158,7 +158,7 @@ export default function SocialShieldModal({
                                                 <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}>
                                                     <ItemIcon size={20} color={isSelected ? accent.action : text.muted} /
                                                 ></Box
-                                                <Text {...({ color: isSelected ? text.primary : text.secondary, bold: isSelected } as any)}
+                                                ><Text {...({ color: isSelected ? text.primary : text.secondary, bold: isSelected } as any)}
                                                     {item.label}>
                                                 </Text>
                                             </HStack>
@@ -176,14 +176,14 @@ export default function SocialShieldModal({
                                     <Text size="sm" color={text.secondary}>Also block this user from interacting with me</Text
                                 ></HStack
 
-                                <Button
+                                ><Button
                                     onPress={handleNext}
                                     isDisabled={!reason}
                                     sx={{ backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50, mt: '$2' }}>
                                 
                                     <ButtonText {...({ color: text.inverse, bold: true } as any)}>Next: Choose Guardian</ButtonText
                                 ></Button
-                            </VStack>
+                            ></VStack>
                         ) : (
                             <VStack {...({ space: "md" } as any)}
                                 {TARGET_OPTIONS.map((item) => {
@@ -205,12 +205,12 @@ export default function SocialShieldModal({
                                                 <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}>
                                                     <ItemIcon size={20} color={isSelected ? accent.action : text.muted} /
                                                 ></Box
-                                                <VStack flex={1}
+                                                ><VStack flex={1}
                                                     <Text {...({ color: isSelected ? text.primary : text.secondary, bold: true } as any)}>
                                                         {item.label}
                                                     </Text>
                                                     <Text size="xs" color={text.muted}>{item.description}</Text
-                                                </VStack>
+                                                ></VStack>
                                             </HStack>
                                         </TouchableOpacity>
                                     );

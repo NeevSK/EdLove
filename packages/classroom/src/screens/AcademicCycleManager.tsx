@@ -183,7 +183,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         ><Input variant="underlined"
                                             <InputField value={startDate} onChangeText={setStartDate} placeholder="YYYY-MM-DD" /
                                         ></Input
-                                    </VStack>
+                                    ></VStack>
                                     <VStack space="xs" sx={{ flex: 1 }}
                                         <Text sx={{ fontSize: 12, color: colors.textSecondary }}>End Date</Text
                                         ><Input variant="underlined"
@@ -247,7 +247,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                                     }}
                                                         <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.success }}>CURRENT</Text
                                                     ></Box
-                                                )}
+                                                >)}
                                             </HStack>
                                             <HStack space="xs" alignItems="center"
                                                 <Clock size={12} color={colors.textTertiary} />

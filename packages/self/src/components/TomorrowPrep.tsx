@@ -107,10 +107,10 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   if (isLoading && userId) {
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
-        <SkeletonCard height={48} /
-        <SkeletonCard height={48} /
-        <SkeletonCard height={48} /
-      </VStack
+        <SkeletonCard height={48} />
+        ><SkeletonCard height={48} /
+        ><SkeletonCard height={48} />
+      ></VStack>
     );
   }
 
@@ -120,22 +120,22 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
-    );
+    >);
   }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}
-      <VStack space="xs"
+      <VStack space="xs">
         <HStack space="sm" alignItems="center"
-          <Calendar color={Theme.colors.sanctuarySaffron} size={24} /
-          <Heading color={Theme.colors.sacredWhite} size="lg"
-            {t('self.tomorrowPrep')}
-          </Heading
-        </HStack
+          <Calendar color={Theme.colors.sanctuarySaffron} size={24} />
+          ><Heading color={Theme.colors.sacredWhite} size="lg"
+            {t('self.tomorrowPrep')}>
+          </Heading>
+        </HStack>
         <Text color={Theme.colors.mistGray} size="sm"
-          {t('self.tomorrowPrepDesc')}
-        </Text
-      </VStack
+          {t('self.tomorrowPrepDesc')}>
+        </Text>
+      </VStack>
 
       {items.length < 3 && !showForm && (
         <Button
@@ -151,8 +151,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
           }}
         
           <Plus color={Theme.colors.sacredWhite} size={20} /
-          <ButtonText ml="$2">{t('self.addPrepItem')}</ButtonText
-        </Button
+          ><ButtonText ml="$2">{t('self.addPrepItem')}</ButtonText
+        ></Button>
       )}
 
       {items.length >= 3 && (
@@ -160,25 +160,25 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
           p="$3"
           sx={{
             backgroundColor: Theme.colors.ink,
-            borderRadius: Theme.corners.comfortable
+            borderRadius: Theme.corners.comfortable>
           }}
         
           <Text color={Theme.colors.dimGray} size="sm" textAlign="center"
-            {t('self.maxItems')} 
-          </Text
-        </Box
+            {t('self.maxItems')} >
+          </Text>
+        </Box>
       )}
 
       {showForm ? (
         <VStack space="md"
-          <Box
+          <Box>
             <Input
-              variant="outline"
+              >variant="outline"
               size="md"
               sx={{
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
-                borderColor: Theme.colors.transparent
+                borderColor: Theme.colors.transparent>
               }}
             
               <InputField
@@ -187,9 +187,9 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 onChangeText={setItemText}
                 color={Theme.colors.sacredWhite}
                 placeholderTextColor={Theme.colors.dimGray}
-              /
-            </Input
-          </Box
+              />
+            ></Input>
+          </Box>
 
           <HStack space="md" justifyContent="flex-end"
             <Button
@@ -206,9 +206,9 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               }}
             
               <ButtonText color={Theme.colors.mistGray}
-                {t('common.cancel')}
-              </ButtonText
-            </Button
+                {t('common.cancel')}>
+              </ButtonText>
+            </Button>
             <Button
               size="md"
               action="primary"
@@ -216,13 +216,13 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               isDisabled={!itemText.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
-                borderRadius: Theme.corners.comfortable
+                borderRadius: Theme.corners.comfortable>
               }}
             
               <ButtonText>{t('common.save')}</ButtonText
-            </Button
-          </HStack
-        </VStack
+            ></Button>
+          </HStack>
+        </VStack>
       ) : (
         <VStack space="md"
           {items.map((item) => (
@@ -234,7 +234,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               sx={{
                 backgroundColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable,
-                opacity: item.is_completed ? 0.6 : 1
+                opacity: item.is_completed ? 0.6 : 1>
               }}
             
               <Checkbox
@@ -248,23 +248,23 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                     borderColor: Theme.colors.sanctuarySaffron,
                     backgroundColor: item.is_completed
                       ? Theme.colors.sanctuarySaffron
-                      : 'transparent'
+                      : 'transparent'>
                   }}
                 
                   <CheckboxIcon as={Check} color={Theme.colors.sacredWhite} /
-                </CheckboxIndicator
-              </Checkbox
+                ></CheckboxIndicator>
+              </Checkbox>
 
               <Text
                 color={Theme.colors.sacredWhite}
                 size="md"
                 sx={{
                   flex: 1,
-                  textDecorationLine: item.is_completed ? 'line-through' : 'none'
+                  textDecorationLine: item.is_completed ? 'line-through' : 'none'>
                 }}
               
                 {item.item_text}
-              </Text
+              </Text>
 
               <Pressable
                 onPress={() => handleDelete(item.id)}
@@ -273,19 +273,19 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 <Trash2
                   color={Theme.colors.dimGray}
                   size={18}
-                /
-              </Pressable
-            </HStack
+                />
+              ></Pressable>
+            </HStack>
           ))}
 
           {items.length === 0 && (
             <PositiveInvitation
               icon={Calendar}
               title={t('self.threeGentleThings')}
-            /
-          )}
-        </VStack
+            />
+          >)}
+        </VStack>
       )}
-    </VStack
+    </VStack>
   );
 }

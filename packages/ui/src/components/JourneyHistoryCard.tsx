@@ -45,7 +45,7 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
     if (loading) {
         return (
             <GlassCard style={styles.container}
-                <Text style={styles.loadingText}>Loading temporal history...</Text            </GlassCard
+                <Text style={styles.loadingText}>Loading temporal history...</Text            ></GlassCard
         );
     }
 
@@ -55,10 +55,10 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
 
     return (
         <GlassCard style={styles.container}
-            <View style={styles.header}
+            <View style={styles.header}>
                 <View style={styles.titleRow}
-                    <History size={18} color="#F6BF8C" /
-                    <Text style={styles.title}>Temporal History</Text                </View
+                    <History size={18} color="#F6BF8C" />
+                    ><Text style={styles.title}>Temporal History</Text                ></View
                 <View style={styles.headerActions}
                     <TouchableOpacity accessibilityRole="button" 
                         style={styles.snapshotButton}
@@ -66,62 +66,62 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
                         disabled={isSaving}
                     
                         <Camera size={16} color={isSaving ? 'rgba(255, 255, 255, 0.2)' : '#F6BF8C'} /
-                    </TouchableOpacity
+                    </TouchableOpacity>
                     <SanctuaryChip 
                         label={scale.toUpperCase()} 
                         variant="tag" 
                         size="sm"
-                    /
-                </View
-            </View
+                    />
+                </View>
+            </View>
 
             {summary && <Text style={styles.summary}>{summary}</Text>}
 
             {scale === 'year' ? (
                 <View style={styles.heatmapWrapper}
-                    <View style={styles.heatmapHeader}
+                    <View style={styles.heatmapHeader}>
                         <TrendingUp size={14} color="#F6BF8C" /
-                        <Text style={styles.heatmapTitle}>Growth Arc Intensity</Text
-                    </View
+                        ><Text style={styles.heatmapTitle}>Growth Arc Intensity</Text
+                    ></View>
                     <ResonantHeatmap data={heatmap} loading={heatmapLoading} /
                     <Text style={styles.heatmapSub}>Tapping a cell zooms into that temporal focus.</Text
-                </View
+                ></View>
             ) : (
                 <View style={styles.stream}
-                    {events.length === 0 ? (
+                    {events.length === 0 ? (>
                         <Text style={styles.emptyText}>The temporal field is quiet here.</Text
-                    ) : (
+                    >) : (
                         events.map((event, index) => {
                             const Icon = getEventIcon(event.type);
                             const time = new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                             
                             return (
                                 <View key={event.id} style={styles.eventItem}
-                                    <View style={styles.timeline}
+                                    <View style={styles.timeline}>
                                         <View style={[styles.dot, { backgroundColor: event.accentColor || '#F6BF8C' }]} /
-                                        {index < events.length - 1 && <View style={styles.line} />}
-                                    </View
+                                        >{index < events.length - 1 && <View style={styles.line} />}
+                                    </View>
                                     <View style={styles.eventContent}
-                                        <View style={styles.eventHeader}
+                                        <View style={styles.eventHeader}>
                                             <View style={styles.eventTitleRow}
-                                                <Icon size={14} color={event.accentColor || '#F6BF8C'} style={{ marginRight: 6 }} /
+                                                <Icon size={14} color={event.accentColor || '#F6BF8C'} style={{ marginRight: 6 }} />
                                                 <Text style={styles.eventTitle}>{event.title}</Text
-                                            </View
+                                            </View>
                                             <Text style={styles.eventTime}>{time}</Text
-                                        </View
+                                        </View>
                                         {event.description && (
                                             <Text style={styles.eventDesc} numberOfLines={2}
-                                                {event.description}
-                                            </Text
+                                                {event.description}>
+                                            </Text>
                                         )}
-                                    </View
-                                </View
+                                    </View>
+                                </View>
                             );
                         })
                     )}
-                </View
+                </View>
             )}
-        </GlassCard
+        </GlassCard>
     );
 };
 

@@ -120,7 +120,7 @@ export default function ThuthimalClaimScreen() {
                 sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize['2xl'] }}
                 color={Theme.colors.starlightGray as any}
                               {t('thuthimalClaim.alreadyBloomedTitle')}
-              </Heading              <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}                {t('thuthimalClaim.alreadyBloomedDesc')}
+              </Heading              ><Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}                {t('thuthimalClaim.alreadyBloomedDesc')}
               </Text              <TouchableOpacity accessibilityRole="button"
                 onPress={() => navigation.goBack()}
                 style={[styles.button, { backgroundColor: Theme.colors.ink }]}
@@ -182,7 +182,7 @@ export default function ThuthimalClaimScreen() {
                   fontSize: 16,>
                 }}
                               {t('thuthimalClaim.giftFrom')}
-              </Text              <Text
+              </Text              ><Text
                 sx={{
                   color: Theme.colors.sacredWhite,
                   textAlign: 'center',

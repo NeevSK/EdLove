@@ -135,14 +135,14 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                                     ><Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.overallRate}%</Text
                                     ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>Average Rate</Text
                                 ></VStack
-                            </Box>
+                            ></Box>
                             <Box sx={{ flex: 1, backgroundColor: colors.secondary, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border }}
                                 <VStack space="xs">
                                     <AlertTriangle size={20} color={Theme.colors.amberGlow ?? '#ffcc00'} /
                                     ><Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.totalAbsences}</Text
                                     ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>Total Absences</Text
                                 ></VStack
-                            </Box>
+                            ></Box>
                         </HStack>
                     )}
 
@@ -160,7 +160,7 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                                 ><TrendingUp size={18} color={colors.success} /
                             ></HStack
 
-                            {report && report.trend.length > 0 ? (
+                            >{report && report.trend.length > 0 ? (
                                 <VStack space="sm"
                                     <HStack sx={{ height: 150, alignItems: 'flex-end', gap: 4 }}>
                                         {report.trend.slice(-10).map((point, i) => (
@@ -173,10 +173,10 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                                                 }} /
                                                 ><Text sx={{ fontSize: 8, color: colors.textTertiary }}>{point.date.split('-')[2]}</Text
                                             ></VStack
-                                        ))}
+                                        >))}
                                     </HStack>
                                     <Text sx={{ fontSize: 10, color: colors.textTertiary, textAlign: 'center' }}>Showing last 10 session days</Text
-                                </VStack>
+                                ></VStack>
                             ) : (
                                 <Box sx={{ height: 100, justifyContent: 'center', alignItems: 'center' }}
                                     <Text sx={{ color: colors.textTertiary }}>No data for this period</Text

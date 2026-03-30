@@ -207,7 +207,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                         placeholder="19XXXXXXXXXX"
                                         onSave={isOtherProfile ? async () => { } : handleSave}
                                     /                                >)}
-                            </VStack                        </Box                    </Center
+                            </VStack                        ></Box                    </Center
                     {isTeacherProfile && (
                         <Center                            <Box
                                 >sx={{
@@ -252,7 +252,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                         field="qualifications"
                                         placeholder="B.A, M.Sc, etc."
                                         onSave={isOtherProfile ? async () => { } : handleSave}
-                                    /                                ></VStack                            </Box                        </Center                    )}
+                                    /                                ></VStack                            ></Box                        </Center                    )}
 
                     <Center                        <Box
                             >sx={{

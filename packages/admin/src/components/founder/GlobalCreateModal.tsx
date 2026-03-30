@@ -178,14 +178,14 @@ export default function GlobalCreateModal({
                 isOpen={isOpen}
                 onClose={handleClose}
                 title="Ecosystem Creation"
-                footer={
+                footer={>
                     <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}
                         <Button
                             variant="outline"
                             action="secondary"
                             onPress={handleClose}
                             sx={{ flex: 1, borderColor: colors.border }}
-                            isDisabled={isSubmitting}
+                            isDisabled={isSubmitting}>
                         
                             <ButtonText color={colors.textSecondary}>Cancel</ButtonText
                         ></Button
@@ -194,7 +194,7 @@ export default function GlobalCreateModal({
                             onPress={handleSubmit}
                             sx={{
                                 flex: 1,
-                                backgroundColor: Theme.colors.sanctuarySaffron,
+                                backgroundColor: Theme.colors.sanctuarySaffron,>
                             }}
                             isDisabled={isSubmitting || !name.trim()}
                         
@@ -203,12 +203,12 @@ export default function GlobalCreateModal({
                             >) : (
                                 <ButtonText color={Theme.colors.sacredWhite}>Initialize</ButtonText
                             >)}
-                        </Button
-                    </HStack
+                        </Button>
+                    </HStack>
                 }
             
                 <VStack sx={{ gap: Theme.spacing.xl }}
-                    {/* Entity Type Selector */}
+                    {/* Entity Type Selector */}>
                     <HStack sx={{ gap: Theme.spacing.sm }}
                         <TypeButton
                             active={type === 'school'}
@@ -237,10 +237,10 @@ export default function GlobalCreateModal({
                     )}
 
                     <VStack sx={{ gap: Theme.spacing.md }}
-                        {/* Target School Picker for non-school entities */}
+                        {/* Target School Picker for non-school entities */}>
                         {type !== 'school' && (
                             <FormControl isRequired
-                                <FormControlLabel
+                                <FormControlLabel>
                                     <FormControlLabelText >color={colors.textSecondary}>Target Institution</FormControlLabelText
                                 ></FormControlLabel
                                 <Button
@@ -254,19 +254,19 @@ export default function GlobalCreateModal({
                                     }}
                                 
                                     <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}
-                                        {selectedSchool ? selectedSchool.name : "Select School..."}
-                                    </ButtonText
+                                        {selectedSchool ? selectedSchool.name : "Select School..."}>
+                                    </ButtonText>
                                     <ChevronDown size={18} color={colors.textSecondary} /
                                 ></Button
-                            </FormControl
+                            </FormControl>
                         )}
 
                         <FormControl isRequired
-                            <FormControlLabel
+                            <FormControlLabel>
                                 <FormControlLabelText >color={colors.textSecondary}
                                     {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Class Name/ID' : 'Group Name'}
-                                </FormControlLabelText
-                            </FormControlLabel
+                                </FormControlLabelText>
+                            </FormControlLabel>
                             <Input sx={{ height: 48, backgroundColor: colors.tertiary, borderColor: colors.border }}
                                 <InputField
                                     value={name}
@@ -275,7 +275,7 @@ export default function GlobalCreateModal({
                                     placeholder="e.g., Royal Academy"
                                 /
                             ></Input
-                        </FormControl
+                        </FormControl>
 
                         {type === 'school' && (
                             <FormControl
@@ -296,12 +296,12 @@ export default function GlobalCreateModal({
                                             size="sm"
                                         
                                             <ButtonText color={schoolType === t ? '#fff' : colors.textSecondary}
-                                                {t.charAt(0).toUpperCase() + t.slice(1)}
-                                            </ButtonText
-                                        </Button
+                                                {t.charAt(0).toUpperCase() + t.slice(1)}>
+                                            </ButtonText>
+                                        </Button>
                                     ))}
-                                </HStack
-                            </FormControl
+                                </HStack>
+                            </FormControl>
                         )}
 
                         {type === 'group' && (
@@ -318,11 +318,11 @@ export default function GlobalCreateModal({
                                         placeholder="Briefly describe this community space..."
                                     /
                                 ></Input
-                            </FormControl
+                            </FormControl>
                         )}
-                    </VStack
-                </VStack
-            </SanctuaryModal
+                    </VStack>
+                </VStack>
+            </SanctuaryModal>
 
             {/* School Picker Sheet */}
             <Actionsheet isOpen={showSchoolPicker} onClose={() => setShowSchoolPicker(false)}
@@ -343,9 +343,9 @@ export default function GlobalCreateModal({
                                 <ActionsheetItemText color={colors.text}>{school.name}</ActionsheetItemText
                             ></ActionsheetItem
                         ))}
-                    </VStack
-                </ActionsheetContent
-            </Actionsheet
+                    </VStack>
+                </ActionsheetContent>
+            </Actionsheet>
         </
     );
 }
@@ -360,7 +360,7 @@ function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress
                 flex: 1,
                 gap: 4,
                 backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
-                borderColor: active ? Theme.colors.sanctuarySaffron : colors.border
+                borderColor: active ? Theme.colors.sanctuarySaffron : colors.border>
             }}
             size="sm"
         

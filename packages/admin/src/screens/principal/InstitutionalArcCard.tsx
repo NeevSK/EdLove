@@ -55,12 +55,12 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                 flexDirection: 'column',
                 gap: '16px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                height: '100%'
+                height: '100%'>
             }}
         
             {/* Header Section */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {FeatureIcon && (
                         <div style={{ 
                             width: '36px', 
@@ -69,13 +69,13 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                             background: 'var(--sanctuary-blue-soft)',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center'>
                         }}
                             <FeatureIcon size={20} color="var(--sanctuary-blue)" /
-                        </div
+                        ></div>
                     )}
                     <Text style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}                        {title}
-                    </Text                    {scopeMeta && (
+                    </Text                    {scopeMeta && (>
                         <span
                             title={scopeHelpText}
                             style={{
@@ -86,21 +86,21 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 borderRadius: '999px',
                                 background: 'var(--background-alt)',
                                 color: 'var(--ink-ghost)',
-                                letterSpacing: '0.4px',
+                                letterSpacing: '0.4px',>
                             }}
                                                     {scopeBadgeLabel}
                         </span                    )}
-                </div
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                    {/* Info Icon (\u24D8) */}
+                    {/* Info Icon (\u24D8) */}>
                     <Pressable 
                         onPress={() => setIsInfoOpen(true)}
                         accessibilityRole="button"
                         accessibilityLabel={`Open information for ${title}`}
                         accessibilityHint={`Shows details and guidance for ${title}`}
                         style={{ padding: 4 }}
-                                            <InfoIcon size="sm" color="var(--ink-ghost)" /                    </Pressable
-                    {/* Add Icon (+) */}
+                                            <InfoIcon size="sm" color="var(--ink-ghost)" /                    ></Pressable
+                    {/* Add Icon (+) */}>
                     {onAdd && (
                         <Pressable 
                             onPress={onAdd}
@@ -113,10 +113,10 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: 'var(--lotus-soft)'
+                                backgroundColor: 'var(--lotus-soft)'>
                             }}
                                                     <Plus size={16} color="var(--lotus)" /
-                        </Pressable
+                        ></Pressable>
                     )}
 
                     {/* History Icon (\u23F3) */}
@@ -131,19 +131,19 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 borderRadius: 999,
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center'>
                             }}
                         
                             <Clock size={16} color="var(--ink-ghost)" /
-                        </Pressable
+                        ></Pressable>
                     )}
-                </div
-            </div
+                </div>
+            </div>
 
             {/* Content Section */}
             <Box style={{ flex: 1 }}
-                {children}
-            </Box
+                {children}>
+            </Box>
 
             {/* Info Modal */}
             <SanctuaryModal
@@ -152,26 +152,26 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                 title={featureInfo?.title || title}
             
                 <Box style={{ gap: '16px', padding: '16px' }}
-                    <Text style={{ fontSize: '16px', lineHeight: '24px', color: 'var(--ink)' }}                        {featureInfo?.description}
-                    </Text
+                    <Text style={{ fontSize: '16px', lineHeight: '24px', color: 'var(--ink)' }}                        {featureInfo?.description}>
+                    </Text>
                     {scopeMeta && (
                         <Box style={{ background: 'var(--background-alt)', padding: '12px', borderRadius: '12px' }}                            <Text style={{ fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: 'var(--ink-ghost)' }}                                {scopeBadgeLabel}
-                            </Text                            <Text style={{ fontSize: '13px', color: 'var(--ink-subtle)' }}                                {scopeHelpText}
+                            </Text                            <Text style={{ fontSize: '13px', color: 'var(--ink-subtle)' }}                                {scopeHelpText}>
                             </Text                        </Box                    )}
                     
                     {featureInfo?.howToUse && (
                         <Box style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '12px' }}
                             <Text style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px' }}
-                                How to use:
-                            </Text
+                                How to use:>
+                            </Text>
                             <Text style={{ fontSize: '14px', color: 'var(--ink-subtle)' }}
-                                {featureInfo.howToUse}
-                            </Text
-                        </Box
+                                {featureInfo.howToUse}>
+                            </Text>
+                        </Box>
                     )}
-                </Box
-            </SanctuaryModal
-        </Box
+                </Box>
+            </SanctuaryModal>
+        </Box>
     );
 };
 

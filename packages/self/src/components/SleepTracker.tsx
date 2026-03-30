@@ -166,10 +166,10 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
         return (
             <VStack space="lg" sx={{ padding: Theme.spacing.lg, alignItems: 'center' }}
                 <Text color={Theme.colors.mistGray} size="md" textAlign="center"
-                    Sleep tracking is available in the morning (5am - 11am)
-                </Text
+                    Sleep tracking is available in the morning (5am - 11am)>
+                </Text>
                 <Text style={{ fontSize: 48 }}>\uD83C\uDF19</Text
-            </VStack
+            </VStack>
         );
     }
 
@@ -177,15 +177,15 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}
-            {/* Header */}
+            {/* Header */}>
             <VStack space="xs"
-                <Heading color={Theme.colors.sacredWhite} size="lg"
+                <Heading color={Theme.colors.sacredWhite} size="lg">
                     {t('sleepTracker.title')}
-                </Heading
+                </Heading>
                 <Text color={Theme.colors.mistGray} size="sm"
-                    Understanding your rest helps you care for yourself
-                </Text
-            </VStack
+                    Understanding your rest helps you care for yourself>
+                </Text>
+            </VStack>
 
             {/* Sleep visualization */}
             <Box
@@ -196,13 +196,13 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
-                    position: 'relative',
+                    position: 'relative',>
                 }}
             
                 {/* Animated stars */}
                 <Animated.View
                     style={[
-                        starsStyle,
+                        starsStyle,>
                         {
                             position: 'absolute',
                             top: 20,
@@ -211,33 +211,33 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     ]}
                 
                     <Stars color={Theme.colors.twilightBlue} size={24} /
-                </Animated.View
+                ></Animated.View>
 
                 {/* Moon/Sun based on quality */}
                 <Animated.View style={moonStyle}
-                    <Text style={{ fontSize: 96 }}
+                    <Text style={{ fontSize: 96 }}>
                         {currentQuality?.emoji}
-                    </Text
-                </Animated.View
+                    </Text>
+                </Animated.View>
 
                 <Text
                     color={currentQuality?.color}
                     size="2xl"
                     sx={{
                         fontWeight: typography.fontWeight.semibold,
-                        marginTop: Theme.spacing.md,
+                        marginTop: Theme.spacing.md,>
                     }}
                 
                     {currentQuality?.label}
-                </Text
+                </Text>
                 <Text
                     color={Theme.colors.mistGray}
                     size="sm"
-                    sx={{ fontStyle: 'italic' }}
+                    sx={{ fontStyle: 'italic' }}>
                 
                     {currentQuality?.description}
-                </Text
-            </Box
+                </Text>
+            </Box>
 
             {/* Slider */}
             {!hasLoggedToday && (
@@ -258,34 +258,34 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                             <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}
                                 <SliderFilledTrack
                                     sx={{
-                                        backgroundColor: currentQuality?.color,
+                                        backgroundColor: currentQuality?.color,>
                                     }}
                                 /
-                            </SliderTrack
+                            ></SliderTrack>
                             <SliderThumb
                                 sx={{
                                     backgroundColor: currentQuality?.color,
                                     borderWidth: 4,
                                     borderColor: Theme.colors.sacredWhite,
                                     width: 36,
-                                    height: 36,
+                                    height: 36,>
                                 }}
                             /
-                        </Slider
+                        ></Slider>
 
                         {/* Labels */}
                         <HStack
                             justifyContent="space-between"
-                            sx={{ marginTop: Theme.spacing.md }}
+                            sx={{ marginTop: Theme.spacing.md }}>
                         
                             <Text color={Theme.colors.dimGray} size="xs"
-                                {t('sleepTracker.restless')}
-                            </Text
+                                {t('sleepTracker.restless')}>
+                            </Text>
                             <Text color={Theme.colors.dimGray} size="xs"
-                                {t('sleepTracker.excellent')}
-                            </Text
-                        </HStack
-                    </Box
+                                {t('sleepTracker.excellent')}>
+                            </Text>
+                        </HStack>
+                    </Box>
 
                     {/* Save button */}
                     <Button
@@ -294,13 +294,13 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                         isDisabled={isSaving || disabled}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: currentQuality?.color,
+                            backgroundColor: currentQuality?.color,>
                         }}
                     
                         <ButtonText
-                            {isSaving ? t('common.loading') : t('sleepTracker.logButton')}
-                        </ButtonText
-                    </Button
+                            {isSaving ? t('common.loading') : t('sleepTracker.logButton')}>
+                        </ButtonText>
+                    </Button>
                 </
             )}
 
@@ -310,16 +310,16 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                         padding: Theme.spacing.md,
                         backgroundColor: Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',
+                        alignItems: 'center',>
                     }}
                 
                     <Text color={Theme.colors.sageGreen} size="md"
-                        \u2713 {t('sleepTracker.alreadyLogged')}
-                    </Text
+                        \u2713 {t('sleepTracker.alreadyLogged')}>
+                    </Text>
                     <Text color={Theme.colors.mistGray} size="xs" sx={{ marginTop: Theme.spacing.xs }}
-                        You can update tomorrow morning
-                    </Text
-                </Box
+                        You can update tomorrow morning>
+                    </Text>
+                </Box>
             )}
 
             {/* Info */}
@@ -327,7 +327,7 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
+                    borderRadius: Theme.corners.comfortable,>
                 }}
             
                 <Text
@@ -336,9 +336,9 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     textAlign="center"
                     sx={{ fontStyle: 'italic' }}
                 
-                    \uD83D\uDCA4 Rest is sacred. Your wellbeing matters.
-                </Text
-            </Box
-        </VStack
+                    \uD83D\uDCA4 Rest is sacred. Your wellbeing matters.>
+                </Text>
+            </Box>
+        </VStack>
     );
 }

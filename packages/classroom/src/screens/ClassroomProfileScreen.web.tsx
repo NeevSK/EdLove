@@ -36,7 +36,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                                     <ArrowLeft size={16} /> Back
                 </button            </div
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}                
-                <div                    <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px' }}                        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}                            <div style={{ padding: '24px', background: 'var(--accent-action-soft)', borderRadius: '24px' }}                                <GraduationCap size={48} color="var(--accent-action)" /                            </div                            
+                <div                    <div >className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px' }}                        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}                            <div style={{ padding: '24px', background: 'var(--accent-action-soft)', borderRadius: '24px' }}                                <GraduationCap size={48} color="var(--accent-action)" /                            ></div                            >
                             <div style={{ flex: 1 }}                                <EditableItem
                                     icon={Hash}
                                     label="Classroom Name"
@@ -46,9 +46,9 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                                     onSave={(field, val) => updateField(field as any, val)}
                                     disabled={!isEditable}
                                 /                                
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginTop: '8px' }}                                    <BookOpen size={14} /                                    <span style={{ fontSize: '14px', fontWeight: '600' }}                                        {classroom.subject || 'General Studies'}
-                                    </span                                </div                            </div                        </div                    </div
-                    <div className="sanctuary-card" style={{ padding: '32px' }}                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Description</h3                        <EditableItem
+                                ><div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginTop: '8px' }}                                    <BookOpen size={14} /                                    ><span style={{ fontSize: '14px', fontWeight: '600' }}                                        {classroom.subject || 'General Studies'}
+                                    </span                                </div                            </div                        </div                    </div>
+                    <div className="sanctuary-card" style={{ padding: '32px' }}                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Description</h3                        ><EditableItem
                             icon={BookOpen}
                             label="Classroom Description"
                             value={classroom.description || ''}
@@ -57,15 +57,15 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                             onSave={(field, val) => updateField(field as any, val)}
                             disabled={!isEditable}
                             multiline={true}
-                        /                    </div                </div
-                <div                    <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '24px' }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}                            <User size={16} color="var(--ink-ghost)" /                            <span style={{ fontSize: '13px', fontWeight: '700' }}>Teacher</span                        </div                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                             <AvatarDisplay 
+                        /                    ></div                </div
+                <div                    <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '24px' }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}                            <User size={16} color="var(--ink-ghost)" /                            ><span style={{ fontSize: '13px', fontWeight: '700' }}>Teacher</span                        ></div                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                             <AvatarDisplay 
                                 userId={classroom.teacher_id || 'unknown'}
                                 size={40}
                                 editable={false}
                                 peekable={true}
                                 peekType="user"
-                             /                             <div style={{ fontSize: '14px', fontWeight: '600' }}>Teacher In Charge</div                        </div                    </div
-                    <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)' }}                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}                            <Clock size={16} color="var(--ink-ghost)" /                            <span style={{ fontSize: '13px', fontWeight: '700' }}>Academic Year</span                        </div                        <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}                             {classroom.academic_year || 'Current'}
+                             /                             ><div style={{ fontSize: '14px', fontWeight: '600' }}>Teacher In Charge</div                        ></div                    </div
+                    <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)' }}                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}                            <Clock size={16} color="var(--ink-ghost)" /                            ><span style={{ fontSize: '13px', fontWeight: '700' }}>Academic Year</span                        ></div                        <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}                             {classroom.academic_year || 'Current'}
                         </div                    </div                </div
             </div        </div    );
 }

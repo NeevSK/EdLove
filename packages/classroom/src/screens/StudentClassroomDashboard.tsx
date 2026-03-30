@@ -102,7 +102,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
             /
             ><ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: bottomPadding }}                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <VStack                        <Text >sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase' }}                            Subject Sanctuary
                         </Text                        <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.sanctuarySaffron }}                            {classroomName}>
-                        </Heading                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary, marginTop: Theme.spacing.xs }}                            {workspace.pendingAssignments > 0
+                        </Heading                        ><Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary, marginTop: Theme.spacing.xs }}                            {workspace.pendingAssignments > 0
                                 ? `${workspace.pendingAssignments} assignment${workspace.pendingAssignments === 1 ? '' : 's'} waiting for your response`
                                 : 'Your submissions and study notes are in rhythm here'}
                         </Text                    </VStack                </Box
@@ -118,13 +118,13 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                 }}
                                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                    {card.label}
                                 </Text                                <Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}                                    {card.value}>
-                                </Text                            </Box                        ))}
+                                </Text                            ></Box                        ))}
                     </HStack                    {workspace.recentSubmissions.length > 0 && (
                         <VStack sx={{ marginTop: Theme.spacing.md, gap: Theme.spacing.xs }}                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}                                Recent Submissions
                             </Text                            {workspace.recentSubmissions.map((submission) => (
                                 <Text key={submission.id} sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}                                    {submission.assignment_title} on {new Date(submission.submitted_at).toLocaleDateString()}
                                 </Text                            ))}>
-                        </VStack                    )}
+                        </VStack                    >)}
                     {workspace.error && (
                         <Text sx={{ marginTop: Theme.spacing.sm, fontSize: Theme.typography.fontSize.sm, color: colors.error }}                            {workspace.error}
                         </Text                    )}>
@@ -162,5 +162,5 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                         await workspace.refresh();
                     }}
                 /            >)}
-        </ScreenWrapper    );
+        </ScreenWrapper    >);
 }

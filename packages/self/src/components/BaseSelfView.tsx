@@ -79,26 +79,25 @@ export function BaseSelfView({
 
     return (
         <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}
-            {/* Global Header Restored */}
+            {/* Global Header Restored */}>
             <GlobalHeader
                 isSelfView={true}
                 subtitle={perspective.toUpperCase()}
                 title="Sadhana"
-            /
+            />
 
-            <TemporalNavigator /
-
+            ><TemporalNavigator />
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}
-                {voiceJournal && (
+            >    {voiceJournal && (>
                     <View style={nativeStyles.ritualWrapper}
-                        {voiceJournal}
-                    </View
+                        {voiceJournal}>
+                    </View>
                 )}
 
                 {morningRitual && (
                     <View style={nativeStyles.ritualWrapper}
-                        {morningRitual}
-                    </View
+                        {morningRitual}>
+                    </View>
                 )}
 
                 {/* Horizontal Circular Carousel with Domain Rings */}
@@ -106,7 +105,7 @@ export function BaseSelfView({
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={nativeStyles.carouselContent}
+                        contentContainerStyle={nativeStyles.carouselContent}>
                     
                         {sortedFeatures.map((feature) => {
                             const isActive = activeFeatureId === feature.id;
@@ -122,7 +121,7 @@ export function BaseSelfView({
                                 
                                     <View
                                         style={[
-                                            nativeStyles.circleRing,
+                                            nativeStyles.circleRing,>
                                             {
                                                 borderColor: isActive ? feature.domainColor : 'rgba(0,0,0,0.05)',
                                                 borderWidth: 2,
@@ -133,7 +132,7 @@ export function BaseSelfView({
                                     
                                         <View
                                             style={[
-                                                nativeStyles.circle,
+                                                nativeStyles.circle,>
                                                 {
                                                     backgroundColor: isActive ? 'white' : 'white',
                                                     shadowColor: feature.domainColor,
@@ -142,23 +141,23 @@ export function BaseSelfView({
                                             ]}
                                         
                                             <Text style={nativeStyles.circleIcon}
-                                                {getEmoji(feature)}
-                                            </Text
+                                                {getEmoji(feature)}>
+                                            </Text>
                                             {isPinned && (
                                                 <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}
                                                     <Text style={{ fontSize: 10, color: 'white' }}>\uD83D\uDCCC</Text
-                                                </View
+                                                </View>
                                             )}
-                                        </View
-                                    </View
+                                        </View>
+                                    </View>
                                     <View style={[
-                                        nativeStyles.activeIndicator,
+                                        nativeStyles.activeIndicator,>
                                         { backgroundColor: isActive ? feature.domainColor : 'transparent' }
                                     ]} /
                                     <Text
                                         numberOfLines={1}
                                         style={[
-                                            nativeStyles.circleLabel,
+                                            nativeStyles.circleLabel,>
                                             {
                                                 color: isActive ? '#000' : 'rgba(0,0,0,0.4)',
                                                 fontWeight: isActive ? '800' : '600'
@@ -166,54 +165,54 @@ export function BaseSelfView({
                                         ]}
                                     
                                         {feature.label}
-                                    </Text
-                                </Pressable
+                                    </Text>
+                                </Pressable>
                             );
                         })}
-                    </ScrollView
-                </View
+                    </ScrollView>
+                </View>
 
                 {/* Active Feature Content */}
                 <View style={nativeStyles.activeFeatureContainer}
-                    {activeFeature && (
+                    {activeFeature && (>
                         <VStack sx={{ space: 'md', mb: 16 } as any}
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' } as any}
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' } as any}>
                                 <HStack sx={{ alignItems: 'center', space: 'sm' } as any}
-                                    <Text style={nativeStyles.activeLabel}
+                                    <Text style={nativeStyles.activeLabel}>
                                         {activeFeature.label}
-                                    </Text
+                                    </Text>
                                     <FeatureInfoIcon 
                                         title={activeFeature.label}
                                         discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
                                         color={activeFeature.domainColor}
-                                    /
+                                    />
                                     {activeFeature.id !== 'holistic_history' && (
-                                        <Pressable 
+                                    >    <Pressable 
                                             onPress={() => handleFeaturePress('holistic_history')}
                                             style={{ padding: 4, marginLeft: 4 }}
                                         
                                             <Text style={{ fontSize: 16 }}>\u23F3</Text
-                                        </Pressable
+                                        </Pressable>
                                     )}
-                                </HStack
+                                </HStack>
                                 {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
                                     <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}
-                                        ACTIVE FEATURE
-                                    </Text
+                                        ACTIVE FEATURE>
+                                    </Text>
                                 )}
-                            </HStack
+                            </HStack>
                             {activeFeature.content}
-                        </VStack
+                        </VStack>
                     )}
-                </View
+                </View>
 
                 {nightRitual && (
                     <View style={nativeStyles.ritualWrapper}
-                        {nightRitual}
-                    </View
+                        {nightRitual}>
+                    </View>
                 )}
-            </ScrollView
-        </VStack
+            </ScrollView>
+        </VStack>
     );
 }
 
@@ -328,3 +327,4 @@ const nativeStyles = StyleSheet.create({
         letterSpacing: -0.5,
     },
 });
+>>

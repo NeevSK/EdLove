@@ -253,7 +253,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                 sx={{ textAlignVertical: 'top' }}
               /
             ></Input
-          </Box>
+          ></Box>
 
           {/* Actions */}
           <HStack space="md" justifyContent="flex-end"

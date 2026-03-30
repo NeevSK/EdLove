@@ -142,7 +142,7 @@ export function DashboardContent({
               onClick={onNavigateToProfile}>
                           <Building2 size={18} /> {t('principal.ia.actions.profileCta') || 'Institution Profile'}
               {renderScopeBadge('school_profile')}
-            </button            <button
+            </button            ><button
               className="secondary-button"
               style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--water)', borderColor: 'var(--water)' }}
               onClick={onOpenCommons}
@@ -150,7 +150,7 @@ export function DashboardContent({
               {renderScopeBadge('open_commons')}
             </button          </div        )}
       /
-      <div
+      ><div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -178,7 +178,7 @@ export function DashboardContent({
               onClick={() => onNavigate('hierarchy')}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
                           <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                <LayoutGrid size={16} /> Shape structure
-              </span              {renderScopeBadge('hierarchy')}
+              </span              >{renderScopeBadge('hierarchy')}
             </button            <button
               className="secondary-button"
               onClick={() => onNavigate('invites')}
@@ -210,7 +210,7 @@ export function DashboardContent({
                 lineHeight: '1.6',>
               }}
                           Published grading is live in {publishedGradingCompletion.classroomsWithPublishedGrades} of {publishedGradingCompletion.totalClassrooms} classrooms.
-            </div          )}
+            </div          >)}
           {renderOutlookZone?.({ schoolId, principalId })}
         </ZoneShell      </div    </div  );
 }

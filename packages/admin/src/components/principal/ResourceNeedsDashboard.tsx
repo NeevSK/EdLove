@@ -71,8 +71,8 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     if (isLoading) {
         return (
             <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}
-                <Spinner color={colors.action} /
-            </Box
+                <Spinner color={colors.action} />
+            ></Box>
         );
     }
 
@@ -83,35 +83,35 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                     padding: Theme.spacing.xl,
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
-                    alignItems: 'center',
+                    alignItems: 'center',>
                 }}
             
                 <Text
                     color={colors.success}
-                    sx={{ fontWeight: typography.fontWeight.medium, fontSize: 18 }}
+                    sx={{ fontWeight: typography.fontWeight.medium, fontSize: 18 }}>
                 
                     {t('principal.resources.emptyState') || 'Sanctuary is Well-Equipped'}
-                </Text
+                </Text>
                 <Text
                     color={colors.textSecondary}
-                    sx={{ marginTop: Theme.spacing.sm, fontSize: 14 }}
+                    sx={{ marginTop: Theme.spacing.sm, fontSize: 14 }}>
                 
                     {t('principal.resources.emptyStateDesc') || 'No resource requests or damaged items reported.'}
-                </Text
-            </Box
+                </Text>
+            </Box>
         );
     }
 
     return (
         <VStack space="lg"
-            <VStack space="xs"
+            <VStack space="xs">
                 <Heading color={colors.text} sx={{ fontSize: 24 }}
-                    {t('principal.resources.title') || 'Resource Vistas'}
-                </Heading
+                    {t('principal.resources.title') || 'Resource Vistas'}>
+                </Heading>
                 <Text color={colors.textSecondary} sx={{ fontSize: 14 }}
-                    {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}
-                </Text
-            </VStack
+                    {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}>
+                </Text>
+            </VStack>
 
             <VStack space="md"
                 {needs.map((need) => {
@@ -126,7 +126,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
-                                borderLeftColor: priorityColor,
+                                borderLeftColor: priorityColor,>
                             }}
                         
                             <HStack space="md" sx={{ alignItems: "center" }}
@@ -137,55 +137,55 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                         borderRadius: 24,
                                         backgroundColor: colors.tertiary,
                                         alignItems: 'center',
-                                        justifyContent: 'center',
+                                        justifyContent: 'center',>
                                     }}
                                 
                                     <Icon color={priorityColor} size={24} /
-                                </Box
+                                ></Box>
 
                                 <VStack space="xs" sx={{ flex: 1 }}
-                                    <HStack space="sm" sx={{ alignItems: "center" }}
+                                    <HStack space="sm" sx={{ alignItems: "center" }}>
                                         <Text
                                             color={colors.text}
-                                            sx={{ fontWeight: typography.fontWeight.semibold, fontSize: 18 }}
+                                            sx={{ fontWeight: typography.fontWeight.semibold, fontSize: 18 }}>
                                         
                                             {t('principal.resources.needUnit', { count: need.requested_by_count })}
-                                        </Text
-                                    </HStack
+                                        </Text>
+                                    </HStack>
                                     <Text color={colors.textSecondary} sx={{ fontSize: 16 }}
-                                        {need.description}
-                                    </Text
+                                        {need.description}>
+                                    </Text>
                                     {need.priority === 'urgent' && (
                                         <Text
                                             color={Theme.colors.emberRed}
-                                            sx={{ fontWeight: typography.fontWeight.medium, fontSize: 12 }}
+                                            sx={{ fontWeight: typography.fontWeight.medium, fontSize: 12 }}>
                                         
                                             {t('principal.resources.urgent')}
-                                        </Text
+                                        </Text>
                                     )}
-                                </VStack
-                            </HStack
-                        </Box
+                                </VStack>
+                            </HStack>
+                        </Box>
                     );
                 })}
-            </VStack
+            </VStack>
 
             <Box
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: colors.tertiary,
                     borderRadius: Theme.corners.comfortable,
-                    marginTop: Theme.spacing.md,
+                    marginTop: Theme.spacing.md,>
                 }}
             
                 <Text
                     color={colors.textTertiary}
                     textAlign="center"
-                    sx={{ fontStyle: 'italic', fontSize: 12 }}
+                    sx={{ fontStyle: 'italic', fontSize: 12 }}>
                 
                     {t('principal.resources.philosophy')}
-                </Text
-            </Box
-        </VStack
+                </Text>
+            </Box>
+        </VStack>
     );
 }

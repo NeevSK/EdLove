@@ -102,7 +102,7 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                 <CalendarCheck size={20} color={Theme.colors.gurudeviBlue} /
                                 ><Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>Timetable Review</Text
                             ></HStack
-                            <Box sx={{
+                            ><Box sx={{
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
                                 borderRadius: 12,

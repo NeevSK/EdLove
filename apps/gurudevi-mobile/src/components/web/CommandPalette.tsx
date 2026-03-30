@@ -289,16 +289,16 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
     return (
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none"
-            {/* Backdrop */}
+            {/* Backdrop */}>
             <Animated.View
-                style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}
+                style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}>
             
                 <Pressable
                     style={StyleSheet.absoluteFill}
                     onPress={close}
                     accessibilityLabel="Close command palette"
-                /
-            </Animated.View
+                />
+            ></Animated.View>
 
             {/* Palette card \u2014 dialog role for screen readers */}
             <View style={styles.centeredWrap} pointerEvents="box-none"
@@ -306,7 +306,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     accessibilityViewIsModal
                     accessibilityRole="none"
                     style={[
-                        styles.card,
+                        styles.card,>
                         {
                             backgroundColor: bg,
                             borderColor: border,
@@ -319,7 +319,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                 
                     {/* Search input \u2014 border glows Saffron when focused */}
                     <View style={[
-                        styles.searchRow,
+                        styles.searchRow,>
                         {
                             borderBottomColor: searchFocused
                                 ? Theme.colors.sanctuarySaffron
@@ -328,8 +328,8 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         },
                     ]}
                         <Text style={[styles.searchIcon, { color: Theme.colors.sanctuarySaffron }]}
-                            \u2315
-                        </Text
+                            \u2315>
+                        </Text>
                         <TextInput accessibilityLabel="Text input field"
                             ref={inputRef}
                             style={[styles.searchInput, { color: inputColor }]}
@@ -342,23 +342,23 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                             autoCorrect={false}
                             autoCapitalize="none"
                         /
-                        <View style={styles.escBadge}
+                        ><View style={styles.escBadge}
                             <Text style={[styles.escText, { color: sectionColor }]}>ESC</Text
-                        </View
-                    </View
+                        ></View>
+                    </View>
 
                     {/* Commands */}
                     <ScrollView
                         style={styles.commandList}
                         showsVerticalScrollIndicator={false}
-                        keyboardShouldPersistTaps="always"
+                        keyboardShouldPersistTaps="always">
                     
                         {Object.entries(sections).map(([sectionName, cmds]) => (
                             <View key={sectionName}
-                                {/* Section header */}
+                                {/* Section header */}>
                                 <Text style={[styles.sectionHeader, { color: sectionColor }]}
-                                    {sectionName.toUpperCase()}
-                                </Text
+                                    {sectionName.toUpperCase()}>
+                                </Text>
 
                                 {cmds.map((cmd) => {
                                     const idx = globalIndex++;
@@ -383,22 +383,22 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                             {/* Active bar */}
                                             <View
                                                 style={[
-                                                    styles.activeBar,
+                                                    styles.activeBar,>
                                                     { opacity: isSelected ? 1 : 0 },
                                                 ]}
                                             /
 
-                                            <View style={[styles.glyphCircle, {
+                                            ><View style={[styles.glyphCircle, {
                                                 backgroundColor: isSelected
                                                     ? Theme.colors.sanctuarySaffron + '1A'
-                                                    : (isDark ? 'rgba(252,249,242,0.06)' : 'rgba(42,35,24,0.05)'),
+                                                    : (isDark ? 'rgba(252,249,242,0.06)' : 'rgba(42,35,24,0.05)'),>
                                             }]}
                                                 <Text style={styles.glyph}>{cmd.glyph}</Text
-                                            </View
+                                            ></View>
 
                                             <View style={styles.labelWrap}
                                                 <Text style={[
-                                                    styles.commandLabel,
+                                                    styles.commandLabel,>
                                                     {
                                                         color: isSelected
                                                             ? Theme.colors.sanctuarySaffron
@@ -407,17 +407,17 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                                     },
                                                 ]}
                                                     {cmd.label}
-                                                </Text
+                                                </Text>
                                                 {cmd.subtitle && (
                                                     <Text style={[styles.commandSubtitle, { color: sectionColor }]}
-                                                        {cmd.subtitle}
-                                                    </Text
+                                                        {cmd.subtitle}>
+                                                    </Text>
                                                 )}
-                                            </View
+                                            </View>
 
                                             {cmd.shortcut && (
                                                 <View style={[
-                                                    styles.shortcutBadge,
+                                                    styles.shortcutBadge,>
                                                     {
                                                         backgroundColor: isSelected
                                                             ? Theme.colors.sanctuarySaffron + '20'
@@ -428,7 +428,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                                     },
                                                 ]}
                                                     <Text style={[
-                                                        styles.shortcutText,
+                                                        styles.shortcutText,>
                                                         {
                                                             color: isSelected
                                                                 ? Theme.colors.sanctuarySaffron
@@ -436,34 +436,34 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                                         },
                                                     ]}
                                                         {cmd.shortcut}
-                                                    </Text
-                                                </View
+                                                    </Text>
+                                                </View>
                                             )}
-                                        </Pressable
+                                        </Pressable>
                                     );
                                 })}
-                            </View
+                            </View>
                         ))}
 
                         {filtered.length === 0 && (
                             <View style={styles.emptyState}
                                 <Text style={styles.emptyGlyph}>\uD83E\uDEB7</Text
-                                <Text style={[styles.emptyText, { color: sectionColor }]}
-                                    No results for "{query}"
-                                </Text
-                            </View
+                                ><Text style={[styles.emptyText, { color: sectionColor }]}
+                                    No results for "{query}">
+                                </Text>
+                            </View>
                         )}
-                    </ScrollView
+                    </ScrollView>
 
                     {/* Footer hint */}
                     <View style={[styles.footer, { borderTopColor: border }]}
                         <Text style={[styles.footerHint, { color: sectionColor }]}
-                            \u2191\u2193 navigate \u00B7 \u21B5 open \u00B7 \u2318K close
-                        </Text
-                    </View
-                </Animated.View
-            </View
-        </View
+                            \u2191\u2193 navigate \u00B7 \u21B5 open \u00B7 \u2318K close>
+                        </Text>
+                    </View>
+                </Animated.View>
+            </View>
+        </View>
     );
 }
 

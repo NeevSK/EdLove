@@ -35,10 +35,10 @@ export function PerformanceDashboard({
 
   return (
     <ScrollView style={styles.container}      <VStack space="md"        {/* Header Card */}
-        <Card style={styles.headerCard}          <Text style={styles.studentTitle}>Student Performance</Text          <Text style={styles.studentSubtitle}>ID: {metrics.studentId}</Text          
-          <HStack style={styles.metricsRow}            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{formatGPA(metrics.currentGPA)}</Text              <Text style={styles.metricLabel}>Current GPA</Text            </VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{metrics.averageMarks.toFixed(1)}%</Text              <Text style={styles.metricLabel}>Average Marks</Text            </VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>#{metrics.rankInClass}</Text              <Text style={styles.metricLabel}>Class Rank</Text            </VStack          </HStack          
+        <Card style={styles.headerCard}          <Text style={styles.studentTitle}>Student Performance</Text          ><Text style={styles.studentSubtitle}>ID: {metrics.studentId}</Text          
+          ><HStack style={styles.metricsRow}            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{formatGPA(metrics.currentGPA)}</Text              ><Text style={styles.metricLabel}>Current GPA</Text            ></VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>{metrics.averageMarks.toFixed(1)}%</Text              <Text style={styles.metricLabel}>Average Marks</Text            </VStack            <VStack flex={1} alignItems="center"              <Text style={styles.metricValue}>#{metrics.rankInClass}</Text              <Text style={styles.metricLabel}>Class Rank</Text            </VStack          </HStack          
           <View style={styles.trendContainer}            <Text style={[
-              styles.trendText,
+              styles.trendText,>
               { color: metrics.trendDirection === 'improving' ? Theme.colors.success : 
                        metrics.trendDirection === 'declining' ? Theme.colors.error : 
                        Theme.colors.warning }
@@ -46,32 +46,32 @@ export function PerformanceDashboard({
             </Text          </View        </Card
         {/* Performance Chart */}
         <Card          <SimpleBarChart 
-            title="Performance Overview"
-            data={[
+            >title="Performance Overview"
+            data={[>
               { label: 'GPA', value: metrics.currentGPA, color: getGradeColor(formatGPA(metrics.currentGPA)) },
               { label: 'Avg Marks', value: metrics.averageMarks, color: getGradeColor(Math.round(metrics.averageMarks).toString()) },
               { label: 'Rank', value: metrics.rankInClass, color: Theme.colors.gurudeviBlue }
             ]}
             height={150}
-          /        </Card
+          /        ></Card
         {/* Subject Performance */}
         <Card          <SimpleBarChart 
-            title="Subject Performance"
+            >title="Subject Performance"
             data={subjectData}
             height={120}
-          /        </Card
+          /        ></Card>
         {/* Insights */}
         {insights.length > 0 && (
-          <Card            <Text style={styles.sectionTitle}>Insights</Text            <VStack space="sm"              {insights.map((insight, index) => (
+          <Card            <Text >style={styles.sectionTitle}>Insights</Text            ><VStack space="sm"              {insights.map((insight, index) => (
                 <Text key={index} style={styles.insightText}                  " {insight}
-                </Text              ))}
+                </Text              ))}>
             </VStack          </Card        )}
 
         {/* Recommendations */}
         {recommendations.length > 0 && (
-          <Card            <Text style={styles.sectionTitle}>Recommendations</Text            <VStack space="sm"              {recommendations.map((recommendation, index) => (
+          <Card            <Text >style={styles.sectionTitle}>Recommendations</Text            ><VStack space="sm"              {recommendations.map((recommendation, index) => (
                 <Text key={index} style={styles.recommendationText}                  {index + 1}. {recommendation}
-                </Text              ))}
+                </Text              ))}>
             </VStack          </Card        )}
       </VStack    </ScrollView  );
 }

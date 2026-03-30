@@ -138,14 +138,14 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                 }}
                             
                                 <X size={20} color={colors.textSecondary} /
-                            </TouchableOpacity>
+                            ></TouchableOpacity>
                         </HS>tack>
 
                         <ScrollView showsVerticalScrollIndicator={false}
                             <VStack space="xl">
                                 <VStack space="xs"
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.selectPlatform')}</Text
-                                    <HStack space="sm" sx={{ flexWrap: 'wrap' }}
+                                    ><HStack space="sm" sx={{ flexWrap: 'wrap' }}
                                         {PLATFORMS.map((p) => (
                                             <TouchableOpacity
                                                 key={p.value}
@@ -159,7 +159,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                 ]}
                                             
                                                 <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} /
-                                                <Text
+                                                ><Text
                                                 >    size="xs"
                                                     bold={platform === p.value}
                                                     sx={{
@@ -176,7 +176,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                                 <VStack space="xs"
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.handleOrLink')}</Text
-                                    <Input variant="outline" sx={{
+                                    ><Input variant="outline" sx={{
                                         height: 54,
                                         borderRadius: Theme.corners.comfortable,
                                         backgroundColor: colors.secondary,
@@ -194,7 +194,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                                 <VStack space="xs"
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.privacyLevel')}</Text
-                                    <VStack space="sm"
+                                    ><VStack space="sm"
                                         {PRIVACY_LEVELS.map((pl) => (
                                             <TouchableOpacity
                                                 key={pl.value}
@@ -245,7 +245,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                 </Button>
                             </VStack>
                             <Box h={Theme.spacing.xl} /
-                        </ScrollView>
+                        ></ScrollView>
                     </Bo>x>
                 </Box>
             </Box>

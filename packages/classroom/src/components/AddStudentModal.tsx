@@ -76,7 +76,7 @@ export const AddStudentModal = ({
                         visible={true}
                         onHide={() => toast.close(id)}
                     /
-                ),
+                >),
             });
             return;
         }
@@ -98,7 +98,7 @@ export const AddStudentModal = ({
                             visible={true}
                             onHide={() => toast.close(id)}
                         /
-                    ),
+                    >),
                 });
             } else {
                 await studentsAPI.create({
@@ -116,7 +116,7 @@ export const AddStudentModal = ({
                             visible={true}
                             onHide={() => toast.close(id)}
                         /
-                    ),
+                    >),
                 });
             }
             onSuccess();
@@ -131,7 +131,7 @@ export const AddStudentModal = ({
                         visible={true}
                         onHide={() => toast.close(id)}
                     /
-                ),
+                >),
             });
         } finally {
             setIsLoading(false);
@@ -147,13 +147,13 @@ export const AddStudentModal = ({
                     backgroundColor: 'transparent',
                     borderColor: glass.interact.border,
                     borderWidth: 1,
-                    borderRadius: Theme.corners.comfortable
+                    borderRadius: Theme.corners.comfortable>
                 }}
             
                 <ButtonText {...({ color: text.secondary } as any)}
-                    {t('common.cancel') || 'Cancel'}
-                </ButtonText
-            </Button
+                    {t('common.cancel') || 'Cancel'}>
+                </ButtonText>
+            </Button>
             <Button
                 onPress={handleSave}
                 disabled={isLoading}
@@ -161,14 +161,14 @@ export const AddStudentModal = ({
                     flex: 1,
                     backgroundColor: accent.action,
                     borderRadius: Theme.corners.comfortable,
-                    opacity: isLoading ? 0.6 : 1
+                    opacity: isLoading ? 0.6 : 1>
                 }}
             
                 <ButtonText {...({ color: text.inverse } as any)}
-                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}
-                </ButtonText
-            </Button
-        </HStack
+                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}>
+                </ButtonText>
+            </Button>
+        </HStack>
     );
 
     return (
@@ -176,7 +176,7 @@ export const AddStudentModal = ({
             isOpen={isOpen}
             onClose={onClose}
             title={studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
-            footer={footer}
+            footer={footer}>
         
             {/* Tab switcher \u2014 only shown when adding (not editing) */}
             {!studentToEdit && (
@@ -195,13 +195,13 @@ export const AddStudentModal = ({
                             <Text style={{
                                 color: activeTab === tab ? text.inverse : text.secondary,
                                 fontWeight: activeTab === tab ? '700' : '400',
-                                fontSize: 14,
+                                fontSize: 14,>
                             }}
                                 {tab === 'manual' ? '\u270F\uFE0F Manual' : '\uD83D\uDCF7 Scan Register'}
-                            </Text
-                        </TouchableOpacity
+                            </Text>
+                        </TouchableOpacity>
                     ))}
-                </HStack
+                </HStack>
             )}
 
             {/* Scan Register tab */}
@@ -218,83 +218,83 @@ export const AddStudentModal = ({
                                     visible
                                     onHide={() => toast.close(id)}
                                 /
-                            ),
+                            >),
                         });
                         onSuccess();
                     }}
                     onCancel={onClose}
                 /
-            )}
+            >)}
 
             {/* Manual entry tab */}
             {(activeTab === 'manual' || studentToEdit) && (
                 <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}
-                    <VStack sx={{ gap: Theme.spacing.xs }}
+                    <VStack sx={{ gap: Theme.spacing.xs }}>
                         <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}
+                            {...({ color: text.primary } as any)}>
                             {t('students.fullName') || 'Full Name'} *
-                        </Text
+                        </Text>
                         <Input
                             sx={{
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable
+                                borderRadius: Theme.corners.comfortable>
                             }}
                         
                             <InputField
                                 placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
                                 value={fullName}
-                                onChangeText={setFullName}
+                                onChangeText={setFullName}>
                                 {...({ color: text.primary } as any)}
                             /
-                        </Input
-                    </VStack
+                        ></Input>
+                    </VStack>
 
                     <VStack sx={{ gap: Theme.spacing.xs }}
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
                             {...({ color: text.primary } as any)}
                             {t('students.rollNumber') || 'Roll Number / ID'}
-                        </Text
+                        </Text>
                         <Input
                             sx={{
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable
+                                borderRadius: Theme.corners.comfortable>
                             }}
                         
                             <InputField
                                 placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
                                 value={rollNumber}
-                                onChangeText={setRollNumber}
+                                onChangeText={setRollNumber}>
                                 {...({ color: text.primary } as any)}
                             /
-                        </Input
-                    </VStack
+                        ></Input>
+                    </VStack>
 
                     <VStack sx={{ gap: Theme.spacing.xs }}
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
                             {...({ color: text.primary } as any)}
                             {t('students.notes') || 'Notes'}
-                        </Text
+                        </Text>
                         <Input
                             sx={{
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable,
-                                minHeight: 80
+                                minHeight: 80>
                             }}
                         
                             <InputField
                                 placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
                                 value={notes}
                                 onChangeText={setNotes}
-                                multiline
+                                multiline>
                                 {...({ color: text.primary, textAlignVertical: 'top' } as any)}
                             /
-                        </Input
-                    </VStack
-                </VStack
+                        ></Input>
+                    </VStack>
+                </VStack>
             )}
-        </SanctuaryModal
+        </SanctuaryModal>
     );
 };

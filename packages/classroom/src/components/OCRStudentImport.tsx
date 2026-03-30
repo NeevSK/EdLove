@@ -81,7 +81,7 @@ export default function OCRStudentImport({
             visible
             onHide={() => toast.close(id)}
           /
-        ),
+        >),
       });
       return;
     }
@@ -110,7 +110,7 @@ export default function OCRStudentImport({
             visible
             onHide={() => toast.close(id)}
           /
-        ),
+        >),
       });
       setPhase('review');
     }
@@ -131,20 +131,20 @@ export default function OCRStudentImport({
           textSecondary: Theme.colors.starlightGray,
           tertiary: Theme.colors.ink,
           accent: Theme.colors.sanctuarySaffron,
-          success: Theme.colors.sageGreen,
+          success: Theme.colors.sageGreen,>
         }}
       /
-    );
+    >);
   }
 
   if (phase === 'importing') {
     return (
       <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}
         <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>\u23F3</Text
-        <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}
-          Importing students...
-        </Text
-      </VStack
+        ><Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}
+          Importing students...>
+        </Text>
+      </VStack>
     );
   }
 
@@ -153,18 +153,18 @@ export default function OCRStudentImport({
 
   return (
     <VStack sx={{ flex: 1, gap: Theme.spacing.md }}
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}
-          Review Students ({students.length} found)
-        </Heading
+          Review Students ({students.length} found)>
+        </Heading>
         <TouchableOpacity onPress={() => setPhase('scan')}
           <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 13 }}>Rescan</Text
-        </TouchableOpacity
-      </HStack
+        ></TouchableOpacity>
+      </HStack>
 
       <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}
-        Tap a student to toggle selection. Amber items have low OCR confidence.
-      </Text
+        Tap a student to toggle selection. Amber items have low OCR confidence.>
+      </Text>
 
       <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}
         {students.map((student, index) => (
@@ -186,23 +186,23 @@ export default function OCRStudentImport({
                     : Theme.colors.sageGreen
                   : Theme.colors.mistGray,
                 padding: Theme.spacing.md,
-                opacity: student.selected ? 1 : 0.5,
+                opacity: student.selected ? 1 : 0.5,>
               }}
             
               <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-                <VStack sx={{ gap: 2, flex: 1 }}
+                <VStack sx={{ gap: 2, flex: 1 }}>
                   <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}
-                    {student.name}
-                  </Text
+                    {student.name}>
+                  </Text>
                   <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}
-                    Index: {student.index_number}
-                  </Text
+                    Index: {student.index_number}>
+                  </Text>
                   {student.uncertain && student.selected && (
                     <Text style={{ color: '#f59e0b', fontSize: 11 }}
-                      \u26A0 Low confidence \u2014 verify before importing
-                    </Text
+                      \u26A0 Low confidence \u2014 verify before importing>
+                    </Text>
                   )}
-                </VStack
+                </VStack>
                 <Text
                   style={{
                     fontSize: 20,
@@ -210,16 +210,16 @@ export default function OCRStudentImport({
                       ? student.uncertain
                         ? '#f59e0b'
                         : Theme.colors.sageGreen
-                      : Theme.colors.mistGray,
+                      : Theme.colors.mistGray,>
                   }}
                 
                   {student.selected ? (student.uncertain ? '?' : '\u2713') : '\u25CB'}
-                </Text
-              </HStack
-            </View
-          </TouchableOpacity
+                </Text>
+              </HStack>
+            </View>
+          </TouchableOpacity>
         ))}
-      </VStack
+      </VStack>
 
       <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}
         <TouchableOpacity
@@ -230,11 +230,11 @@ export default function OCRStudentImport({
             borderColor: Theme.colors.mistGray,
             borderRadius: Theme.corners.comfortable,
             paddingVertical: 14,
-            alignItems: 'center',
+            alignItems: 'center',>
           }}
         
           <Text sx={{ color: Theme.colors.sacredWhite }}>Cancel</Text
-        </TouchableOpacity
+        ></TouchableOpacity>
         <TouchableOpacity
           onPress={handleConfirm}
           style={{
@@ -247,10 +247,10 @@ export default function OCRStudentImport({
           }}
         
           <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}
-            Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
-          </Text
-        </TouchableOpacity
-      </HStack
-    </VStack
+            Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}>
+          </Text>
+        </TouchableOpacity>
+      </HStack>
+    </VStack>
   );
 }

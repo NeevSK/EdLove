@@ -157,7 +157,7 @@ export default function AttendanceScreenWeb() {
                     </span                  </div                );>
               })}
               <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}                {students.length} students total
-              </span            </div>
+              </span            ></div>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}                Mark all:
               </span              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
                 <button
@@ -200,7 +200,7 @@ export default function AttendanceScreenWeb() {
                       event.currentTarget.style.background = 'transparent';
                     }}
                                       <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', minWidth: '32px' }}                      {student.roll_number ?? index + 1}
-                    </span                    <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}>{student.full_name}</span                    ><div
+                    </span                    ><span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}>{student.full_name}</span                    ><div
                       style={{
                         display: 'flex',
                         alignItems: 'center',

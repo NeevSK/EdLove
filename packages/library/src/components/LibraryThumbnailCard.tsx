@@ -201,7 +201,7 @@ export function LibraryThumbnailCard({
 
     const overlay = (
         <View style={styles.overlay}            {/* Top: type badge + bookmark + verified */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                </View                <View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                ></View                <View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
                         <TouchableOpacity 
                             onPress={(e) => {
                                 if (Platform.OS === 'web') (e as unknown as { stopPropagation: () => void }).stopPropagation();
@@ -215,18 +215,18 @@ export function LibraryThumbnailCard({
                                 size={16} 
                                 color={has_bookmarked ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.8)'}
                                 fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
-                            /                        </TouchableOpacity                    )}
+                            /                        ></TouchableOpacity                    )}>
                     {verified && (
-                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}                            <BadgeCheck color={Theme.colors.sageGreen} size={14} /                        </View                    )}
-                </View            </View
+                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}                            <BadgeCheck color={Theme.colors.sageGreen} size={14} /                        ></View                    )}
+                </View            </View>
             {/* Bottom: gradient + title + meta */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}                <Text style={styles.title} numberOfLines={2}>{title}</Text                <View style={styles.meta}                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
+            <LinearGradient colors={gradientColors} style={styles.gradient}                <Text style={styles.title} numberOfLines={2}>{title}</Text                ><View style={styles.meta}                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
                     {endorsements > 0 && (
                         <                            {subject && <Text style={styles.metaText}>\u00C2\u00B7</Text>}
-                            <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} /                            <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}                                {endorsements}
-                            </Text                        </                    )}
+                            <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} /                            ><Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}                                {endorsements}
+                            </Text                        </                    )}>
                 </View                {copyrightNotice && (
-                    <View style={styles.copyrightBadge}                        <Text style={styles.copyrightText} numberOfLines={1}>\u00C2\u00A9 {copyrightNotice}</Text                    </View                )}
+                    <View style={styles.copyrightBadge}                        <Text style={styles.copyrightText} numberOfLines={1}>\u00C2\u00A9 {copyrightNotice}</Text                    ></View                )}
             </LinearGradient        </View    );
 
     return (
@@ -245,9 +245,9 @@ export function LibraryThumbnailCard({
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,
             }}
                     <View style={styles.card}                {thumbnailUrl ? (
-                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}
+                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}>
                     </ImageBackground                ) : (
-                    <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        </View                        {overlay}
+                    <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        ></View                        {overlay}
                     </                )}
             </View        </Pressable    );
 }

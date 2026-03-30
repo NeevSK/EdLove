@@ -88,7 +88,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         <Pressable onPress={handleClearSearch}
                             <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>\u00D7</Text
                         ></Pressable
-                    ) : null}
+                    >) : null}
                 </HStack>
             </Box>
         </Animated.View>
@@ -279,5 +279,5 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 120 }}
             /
         ></Box
-    );
+    >);
 }

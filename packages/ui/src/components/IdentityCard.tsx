@@ -161,10 +161,10 @@ export default function IdentityCard({
                     value={
                         data.id
                             ? QRBuilder.userInvite(data.id, data.role || 'unknown', data.username || undefined)
-                            : 'gurudevi-guest'
+                            : 'gurudevi-guest'>
                     }
                     size={120}
-                /            </Box            <Text color={colors.text} mt={Theme.spacing.md} bold                INVITE
+                /            ></Box            <Text color={colors.text} mt={Theme.spacing.md} bold                INVITE
             </Text            <Text color={colors.textSecondary} size="xs"                {t('profile.scanToConnect')}
             </Text        </Center    );
 
@@ -174,7 +174,7 @@ export default function IdentityCard({
             disabled={!allowFlip}
             accessibilityRole="button"
             accessibilityLabel={t('profile.flipCard')}
-            accessibilityHint={t('profile.flipCardHint')}
+            accessibilityHint={t('profile.flipCardHint')}>
                     <Box style={[{
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
@@ -182,26 +182,26 @@ export default function IdentityCard({
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.6,
                 shadowRadius: 20,
-                elevation: 10,
+                elevation: 10,>
             }, style]}                {/* FRONT SIDE - IDENTITY */}
                 <Animated.View style={[styles.cardCommon, frontStyle]}                    <Box style={styles.glassLayer} /
-                    <HStack space="lg" alignItems="center" h="100%" sx={{ p: Theme.spacing.xl }}                        <UserAvatar 
+                    ><HStack space="lg" alignItems="center" h="100%" sx={{ p: Theme.spacing.xl }}                        <UserAvatar 
                             avatarUrl={data.avatar_url}
                             fullName={data.full_name}
                             fallbackEmoji={roleContext.emoji}
                             size={80}
-                        /
-                        {/* Details */}
+                        />
+                        >{/* Details */}
                         <VStack space="xs" flex={1}                            <HStack alignItems="center" space="xs"                                <Text color={colors.textSecondary as string} size="xs" bold textTransform="uppercase"                                    {roleContext.label}
-                                </Text                                <roleContext.icon size={14} color={roleContext.color} /                            </HStack
+                                </Text                                <roleContext.icon size={14} color={roleContext.color} /                            ></HStack>
                             <Text color={colors.text} size="xl" bold numberOfLines={1}                                {data.full_name || 'Guest User'}
-                            </Text
+                            </Text>
                             <Text color={colors.textSecondary} size="xs" numberOfLines={1} mb={2}                                {data.school_name || t('profile.noSchoolConnected')}
-                            </Text
+                            </Text>
                             {/* Identification Row */}
                             {(data.nic_number || data.index_number) && (
                                 <Box sx={{ bg: `${colors.action}10`, px: Theme.spacing.sm, py: Theme.spacing.xs, borderRadius: Theme.corners.tight, alignSelf: "flex-start" }}                                    <Text color={colors.action} size="xxs" bold                                        {can('manage', 'StudentDashboard') ? 'INDEX:' : 'NIC:'} {data.nic_number || data.index_number}
-                                    </Text                                </Box                            )}
+                                    </Text                                </Box                            )}>
                         </VStack                    </HStack
                     <RNImage
                         // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -209,10 +209,10 @@ export default function IdentityCard({
                         style={styles.watermark}
                         resizeMode="contain"
                         accessibilityIgnoresInvertColors={true}
-                    /                </Animated.View
+                    /                </Animated.View>
                 {/* BACK SIDE - CUSTOM OR QR CODE */}
                 {allowFlip && (
-                    <Animated.View style={[styles.cardCommon, styles.cardBack, backStyle]}                        <Box style={styles.glassLayer} /                        {renderBackSide ? renderBackSide() : defaultBackSide()}
-                    </Animated.View                )}
+                    <Animated.View style={[styles.cardCommon, styles.cardBack, backStyle]}                        <Box style={styles.glassLayer} /                        >{renderBackSide ? renderBackSide() : defaultBackSide()}
+                    </Animated.View                )}>
             </Box        </Pressable     );
 }
