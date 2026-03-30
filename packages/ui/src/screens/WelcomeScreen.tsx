@@ -90,15 +90,15 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
     };
 
     return (
-        <ScreenWrapper scroll            <Box
+        <ScreenWrapper scroll            <Box>
                 sx={{
                     flex: 1,
                     backgroundColor: colors.primary,
                     paddingHorizontal: Theme.spacing.lg,
                     paddingTop: Theme.spacing.xl,
-                    paddingBottom: Theme.spacing['2xl'],>
+                    paddingBottom: Theme.spacing['2xl'],
                 }}
-                            <Box
+                            <Box>
                     sx={{
                         position: 'absolute',
                         top: -56,
@@ -106,7 +106,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         width: 220,
                         height: 220,
                         borderRadius: 110,
-                        backgroundColor: `${colors.action}14`,>
+                        backgroundColor: `${colors.action}14`,
                     }}
                 /                ><Box
                     sx={{
@@ -130,7 +130,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                     }}
                 /
                 ><Box sx={{ alignItems: 'flex-end', mb: Theme.spacing.lg }}                    <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}                    {LANGUAGES.map(lang => (
-                        <Pressable
+                        <Pressable>
                             key={lang.code}
                             onPress={() => changeLanguage(lang.code)}
                             accessibilityRole="button"
@@ -142,14 +142,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                 borderRadius: 16,
                                 backgroundColor: i18n.language?.startsWith(lang.code) ? colors.action : 'transparent'
                             }}
-                                                    <Text
+                                                    <Text>
                                 size="xs"
                                 color={i18n.language?.startsWith(lang.code) ? Theme.colors.sacredWhite : colors.textSecondary}
                                 bold={i18n.language?.startsWith(lang.code)}>
                                                             {lang.code.toUpperCase()}
-                            </Text                        ></Pressable                    ))}
-                    </HStack                </Box
-                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}                        <Box
+                            </Text                        ></Pressable                    >))}
+                    </HStack                ></Box
+                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}                        <Box>
                             sx={{
                                 alignSelf: 'flex-start',
                                 px: Theme.spacing.md,
@@ -157,11 +157,11 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                 borderRadius: Theme.corners.full,
                                 backgroundColor: `${colors.action}14`,
                                 borderWidth: 1,
-                                borderColor: `${colors.action}30`,>
+                                borderColor: `${colors.action}30`,
                             }}
-                                                    <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.6 }}                                SANCTUARY FOR TEACHERS
-                            </Text                        </Box>
-                        <VStack space="md"                            <Box
+                                                    <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.6 }}                                SANCTUARY FOR TEACHERS>
+                            </Text                        ></Box>
+                        <VStack space="md"                            <Box>
                                 sx={{
                                     width: 156,
                                     height: 156,
@@ -176,14 +176,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                     shadowOffset: { width: 0, height: 10 },
                                     shadowOpacity: 0.18,
                                     shadowRadius: 24,
-                                    elevation: 10,>
+                                    elevation: 10,
                                 }}
-                                                            <Box
+                                                            <Box>
                                     sx={{
                                         position: 'absolute',
                                         inset: 10,
                                         borderRadius: 32,
-                                        backgroundColor: `${colors.action}08`,>
+                                        backgroundColor: `${colors.action}08`,
                                     }}
                                 /                                ><Image
                                     source={LOGO}
@@ -203,14 +203,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                     textAlign="center"
                                     sx={{ maxWidth: 320, lineHeight: '$lg' }}
                                                                     {t('welcome.subtitle')}
-                                </Text                            </VStack                        </VStack
-                        <HStack space="sm" justifyContent="center" sx={{ flexWrap: 'wrap' }}                            {[
-                                { label: 'Self', tone: colors.action },>
+                                </Text                            ></VStack                        </VStack
+                        <HStack space="sm" justifyContent="center" sx={{ flexWrap: 'wrap' }}                            {[>
+                                { label: 'Self', tone: colors.action },
                                 { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
                                 { label: 'Community', tone: Theme.colors.gurudeviViolet },
                                 { label: 'Library', tone: Theme.colors.success },
                             ].map((pillar) => (
-                                <Box
+                                <Box>
                                     key={pillar.label}
                                     sx={{
                                         px: Theme.spacing.md,
@@ -218,12 +218,12 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         borderRadius: Theme.corners.full,
                                         backgroundColor: `${pillar.tone}12`,
                                         borderWidth: 1,
-                                        borderColor: `${pillar.tone}30`,>
+                                        borderColor: `${pillar.tone}30`,
                                     }}
-                                                                    <Text size="xs" color={pillar.tone} bold                                        {pillar.label}
-                                    </Text                                </Box                            ))}>
+                                                                    <Text size="xs" color={pillar.tone} bold                                        {pillar.label}>
+                                    </Text                                ></Box                            ))}>
                         </HStack                    ></VStack
-                    <Box
+                    <Box>
                         sx={{
                             backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
@@ -234,12 +234,12 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                             shadowOffset: { width: 0, height: 8 },
                             shadowOpacity: 0.1,
                             shadowRadius: 20,
-                            elevation: 4,>
+                            elevation: 4,
                         }}
-                                            <VStack space="xl"                            <VStack space="sm"                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                    BEGIN QUIETLY
+                                            <VStack space="xl"                            <VStack space="sm"                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                    BEGIN QUIETLY>
                                 </Text                                <Text color={colors.textSecondary} size="md"                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.>
                                 </Text                            ></VStack
-                            <VStack space="lg"                                <HStack space="md" alignItems="center" justifyContent="center"                                <Checkbox
+                            <VStack space="lg"                                <HStack space="md" alignItems="center" justifyContent="center"                                <Checkbox>
                                     size="md"
                                     value="terms"
                                     isChecked={acceptedTerms}
@@ -248,7 +248,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         setAcceptedTerms(checked);
                                     }}
                                     aria-label="Accept Terms"
-                                                                    <CheckboxIndicator
+                                                                    <CheckboxIndicator>
                                         sx={{
                                             borderColor: colors.action,
                                             backgroundColor: 'transparent',
@@ -256,7 +256,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                             borderWidth: 2,
                                             ':checked': {
                                                 backgroundColor: 'transparent',
-                                                borderColor: colors.action,>
+                                                borderColor: colors.action,
                                             },
                                             ':active': {
                                                 backgroundColor: 'transparent',
@@ -267,7 +267,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         }}
                                                                             <CheckboxIcon as={CheckIcon} color={colors.action} sx={{ boxSize: '$4' }} /                                    ></CheckboxIndicator                                </Checkbox                                <HStack space="xs" flexShrink={1}                                    <Text size="sm" color={colors.textTertiary}>{t('welcome.acceptTerms')}</Text                                    <Link href="https://neevsk.org/privacy"                                        <LinkText size="sm" color={colors.action} sx={{ textDecorationLine: 'none', fontWeight: '$medium' }}                                            {t('welcome.privacyPactLink')}
                                         </LinkText                                    </Link                                </HStack                                </HStack
-                                <Button
+                                <Button>
                                     size="xl"
                                     variant="solid"
                                     onPress={handleStartExploring}
@@ -279,12 +279,12 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         elevation: 2,
                                         width: '100%',
                                         ':active': {
-                                            opacity: 0.8>
+                                            opacity: 0.8
                                         }
                                     }}
-                                                                    <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}
+                                                                    <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}>
                                     </ButtonText                                </Button>
-                                <Button
+                                <Button>
                                     size="lg"
                                     variant="outline"
                                     onPress={handleLogin}
@@ -294,10 +294,10 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         height: 54,
                                         borderWidth: 1,
                                         width: '100%',
-                                        backgroundColor: 'transparent',>
+                                        backgroundColor: 'transparent',
                                     }}
-                                                                    <ButtonText color={colors.textSecondary} fontWeight="$medium"                                        {t('welcome.login')}
+                                                                    <ButtonText color={colors.textSecondary} fontWeight="$medium"                                        {t('welcome.login')}>
                                     </ButtonText                                ></Button                            </VStack>
-                            <Text color={colors.textTertiary} size="xs" textAlign="center"                                {t('welcome.footer')}
+                            <Text color={colors.textTertiary} size="xs" textAlign="center"                                {t('welcome.footer')}>
                             </Text                        </VStack                    </Box                </VStack            </Box        </ScreenWrapper    );>
 }

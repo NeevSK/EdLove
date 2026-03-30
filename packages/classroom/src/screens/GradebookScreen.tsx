@@ -103,8 +103,8 @@ export default function GradebookScreen({
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.ink,>
-            }}
+                backgroundColor: Theme.colors.ink,
+            }}>
         
             <ScrollView
                 <VStack
@@ -114,8 +114,8 @@ export default function GradebookScreen({
                     <HStack
                         sx={{
                             justifyContent: 'space-between',
-                            alignItems: 'center',>
-                        }}
+                            alignItems: 'center',
+                        }}>
                     
                         <Heading
                             color={Theme.colors.sanctuarySaffron}
@@ -128,8 +128,8 @@ export default function GradebookScreen({
                             variant="outline"
                             size="sm"
                             sx={{
-                                borderColor: Theme.colors.sanctuarySaffron,>
-                            }}
+                                borderColor: Theme.colors.sanctuarySaffron,
+                            }}>
                             onPress={() => setShowSettings(true)}
                         
                             <ButtonText color={Theme.colors.sanctuarySaffron}
@@ -144,8 +144,8 @@ export default function GradebookScreen({
                             padding: Theme.spacing.md,
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
-                            gap: 16>
-                        }}
+                            gap: 16
+                        }}>
                     
                         <VStack sx={{ flex: 1 }}
                             <Text
@@ -199,8 +199,8 @@ export default function GradebookScreen({
                                             sortBy === option
                                                 ? Theme.colors.sanctuarySaffron
                                                 : Theme.colors.ink,
-                                        borderRadius: Theme.corners.tight,>
-                                    }}
+                                        borderRadius: Theme.corners.tight,
+                                    }}>
                                 
                                     <Text
                                         color={Theme.colors.sacredWhite}
@@ -218,8 +218,8 @@ export default function GradebookScreen({
                         <Box
                             sx={{
                                 padding: Theme.spacing.xl,
-                                alignItems: 'center',>
-                            }}
+                                alignItems: 'center',
+                            }}>
                         
                             <Spinner color={Theme.colors.sanctuarySaffron} /
                             ><Text
@@ -237,8 +237,8 @@ export default function GradebookScreen({
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.comfortable,>
-                            }}
+                                borderRadius: Theme.corners.comfortable,
+                            }}>
                         
                             <Text color={Theme.colors.sacredWhite}
                                 {error}>
@@ -270,8 +270,8 @@ export default function GradebookScreen({
                                                 alignItems: 'center',
                                                 padding: Theme.spacing.md,
                                                 backgroundColor: Theme.colors.ink,
-                                                borderRadius: Theme.corners.comfortable,>
-                                            }}
+                                                borderRadius: Theme.corners.comfortable,
+                                            }}>
                                         
                                             <Text color={Theme.colors.sacredWhite} sx={{ fontWeight: '600' }}
                                                 {studentNames[g.student_id] ?? g.student_id}>
@@ -296,8 +296,8 @@ export default function GradebookScreen({
                             sx={{
                                 padding: Theme.spacing.xl,
                                 alignItems: 'center',
-                                gap: 16,>
-                            }}
+                                gap: 16,
+                            }}>
                         
                             <Text
                                 color={Theme.colors.starlightGray}

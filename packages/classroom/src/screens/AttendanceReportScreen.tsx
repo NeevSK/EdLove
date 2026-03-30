@@ -114,8 +114,8 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                                             borderRadius: 20,
                                             backgroundColor: selectedCycleId === cycle.id ? colors.action : colors.secondary,
                                             borderWidth: 1,
-                                            borderColor: selectedCycleId === cycle.id ? colors.action : colors.border>
-                                        }}
+                                            borderColor: selectedCycleId === cycle.id ? colors.action : colors.border
+                                        }}>
                                             <Text sx={{ fontSize: 13, fontWeight: '600', color: selectedCycleId === cycle.id ? '#fff' : colors.text }}
                                                 {cycle.name}>
                                             </Text>
@@ -152,8 +152,8 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                         padding: 20,
                         borderRadius: 20,
                         borderWidth: 1,
-                        borderColor: colors.border>
-                    }}
+                        borderColor: colors.border
+                    }}>
                         <VStack space="md"
                             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Attendance Trend</Text

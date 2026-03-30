@@ -21,7 +21,7 @@ function ProfileStackCapabilities({ children }: { children: React.ReactNode }) {
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
 
     return (
-        <ProfileNavigationProvider
+        <ProfileNavigationProvider>
             value={{
                 openFullProfile: (profile: FullProfileParams) => navigation.navigate('FullProfile', { profile }),
                 openSettings: () => navigation.navigate('AppSettings'),
@@ -40,7 +40,7 @@ export default function ProfileStackNavigatorWeb() {
     const { scene } = useTheme();
 
     return (
-        <Stack.Navigator
+        <Stack.Navigator>
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
@@ -48,6 +48,6 @@ export default function ProfileStackNavigatorWeb() {
                 animation: 'slide_from_right',
             }}
                     <Stack.Screen name="ProfileMain"                {() => withProfileNavigationCapabilities(<ProfileScreenWeb />)}
-            </Stack.Screen            <Stack.Screen name="FullProfile"                {() => withProfileNavigationCapabilities(<FullProfileScreenWeb />)}
-            </Stack.Screen            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} /            <Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} /            <Stack.Screen name="PublicProfile" component={UserPublicProfileScreen} /            <Stack.Screen name="MuteHub" component={MuteHubScreen} /        </Stack.Navigator    );
+            </Stack.Screen            ><Stack.Screen name="FullProfile"                {() => withProfileNavigationCapabilities(<FullProfileScreenWeb />)}
+            </Stack.Screen            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} /            ><Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} /            ><Stack.Screen name="PublicProfile" component={UserPublicProfileScreen} /            ><Stack.Screen name="MuteHub" component={MuteHubScreen} /        ></Stack.Navigator    );
 }

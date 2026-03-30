@@ -67,8 +67,8 @@ function ZoneShell({
         background: 'rgba(250, 247, 237, 0.55)',
         border: '1px solid var(--border)',
         borderRadius: '24px',
-        padding: '20px',>
-      }}
+        padding: '20px',
+      }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}        <div style={{ minWidth: 0 }}          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: 'var(--ink)' }}>{title}</h2          ><p style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: '1.6', color: 'var(--ink-ghost)' }}>{subtitle}</p        ></div        <div
           style={{
             flexShrink: 0,
@@ -120,8 +120,8 @@ export function DashboardContent({
           borderRadius: '999px',
           background: 'var(--background-alt)',
           color: 'var(--ink-ghost)',
-          letterSpacing: '0.4px',>
-        }}
+          letterSpacing: '0.4px',
+        }}>
               {t(scopeMeta.scopeBadgeLabelKey)}
       </span    );
   };
@@ -155,7 +155,7 @@ export function DashboardContent({
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '24px',
-          alignItems: 'start',>
+          alignItems: 'start',
         }}
               <ZoneShell
           title="Today"
@@ -171,8 +171,8 @@ export function DashboardContent({
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap: '12px',>
-            }}
+              gap: '12px',
+            }}>
                       <button
               className="secondary-button"
               onClick={() => onNavigate('hierarchy')}
@@ -207,8 +207,8 @@ export function DashboardContent({
                 background: 'rgba(250,247,237,0.72)',
                 color: 'var(--ink-ghost)',
                 fontSize: '12px',
-                lineHeight: '1.6',>
-              }}
+                lineHeight: '1.6',
+              }}>
                           Published grading is live in {publishedGradingCompletion.classroomsWithPublishedGrades} of {publishedGradingCompletion.totalClassrooms} classrooms.
             </div          >)}
           {renderOutlookZone?.({ schoolId, principalId })}

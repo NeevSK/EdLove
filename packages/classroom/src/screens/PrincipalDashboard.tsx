@@ -131,7 +131,7 @@ export default function PrincipalDashboard({
               onZoneChange={setActiveZone}
               zoneCounts={zoneCounts}
               isLoading={isLoading}
-              error={error}
+              error={error}>
                           {surfaces[activeZone].content}
             </PrincipalNativeDashboardShell          </ScreenWrapper        )}
         renderAdditionalView={({ activeView: nextView, navigatePrincipalView }) => {
@@ -146,7 +146,7 @@ export default function PrincipalDashboard({
           return null;
         }}
       /
-      <CreateSchoolModal
+      ><CreateSchoolModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         initialData={
@@ -164,14 +164,14 @@ export default function PrincipalDashboard({
           refreshData();
         }}
       /
-      <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}        <ModalBackdrop /        <ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous }}          <ModalHeader            <Heading color={colors.text} sx={{ fontSize: 18 }}              School QR Code
+      ><Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}        <ModalBackdrop /        ><ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous }}          <ModalHeader            <Heading >color={colors.text} sx={{ fontSize: 18 }}              School QR Code
             </Heading          </ModalHeader          <ModalBody sx={{ alignItems: 'center', paddingVertical: 20 }}            <Box sx={{ padding: 16, backgroundColor: Theme.colors.sacredWhite, borderRadius: 16 }}              <QRCodeGenerator
                 value={QRBuilder.school(schoolId, '', school?.handle ?? undefined)}
                 size={220}
-              /            </Box            <Text color={colors.textSecondary} sx={{ marginTop: 20, textAlign: 'center' }}              Scan to join the <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{school?.name}</Text> sanctuary.
+              /            ></Box            <Text color={colors.textSecondary} sx={{ marginTop: 20, textAlign: 'center' }}              Scan to join the <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{school?.name}</Text> sanctuary.
             </Text            {school?.handle ? (
               <Text color={colors.textTertiary} sx={{ marginTop: 8, fontSize: 12 }}                @{school.handle}
-              </Text            ) : null}
+              </Text            ) : null}>
           </ModalBody          <ModalFooter            <Button
               action="primary"
               onPress={() => {
@@ -179,5 +179,5 @@ export default function PrincipalDashboard({
                 setIsQrModalOpen(false);
               }}
               sx={{ width: '100%', backgroundColor: Theme.colors.sanctuarySaffron }}
-                          <ButtonText color={Theme.colors.sacredWhite}>Close</ButtonText            </Button          </ModalFooter        </ModalContent      </Modal    </  );
+                          <ButtonText color={Theme.colors.sacredWhite}>Close</ButtonText            ></Button          </ModalFooter        </ModalContent      </Modal    </  );
 }

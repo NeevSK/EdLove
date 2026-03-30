@@ -98,7 +98,7 @@ export default function ClassroomScreen() {
     const renderContent = () => {
         if (loading && !classroomData) {
             return (
-                <ScreenWrapper scroll={false} noTopInset={true}                    <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}                        <SkeletonCard height={60} /                        <SkeletonCard height={200} /                        <SkeletonCard height={120} /                    </VStack                </ScreenWrapper            );
+                <ScreenWrapper scroll={false} noTopInset={true}                    <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}                        <SkeletonCard height={60} /                        ><SkeletonCard height={200} /                        ><SkeletonCard height={120} /                    ></VStack                </ScreenWrapper            );
         }
 
         if (classroomData && arrangedWorkspaceSurfaces.length > 0) {
@@ -109,7 +109,7 @@ export default function ClassroomScreen() {
                                 onToggleHidden={setSurfaceHidden}
                                 onTogglePinned={setSurfacePinned}
                                 onMoveToNextZone={setSurfaceZone}
-                            /                        </Box                    </ScreenWrapper
+                            /                        ></Box                    </ScreenWrapper>
                     <CreateSchoolModal
                         isOpen={isCreateSchoolOpen}
                         onClose={() => setIsCreateSchoolOpen(false)}
@@ -139,15 +139,15 @@ export default function ClassroomScreen() {
             <FeatureGuard
                 action="read"
                 subject="ClassroomList"
-                fallback={
-                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                            <GlobalHeader title={t('classroom.welcome') || 'Welcome to Sanctuary'} subtitle={undefined} /                            <PositiveInvitation
+                fallback={>
+                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                            <GlobalHeader title={t('classroom.welcome') || 'Welcome to Sanctuary'} subtitle={undefined} /                            ><PositiveInvitation
                                 type="guest"
                                 onAction={() => {
                                     hapticLight();
                                     navigation.navigate('Auth' as never);
                                 }}
-                            /                        </Box                    </ScreenWrapper                }
-                            <ScreenWrapper scroll={false} noTopInset={true}                    <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                        <GlobalHeader title={t('classroom.journeyTitle') || 'Learning Journey'} subtitle={t('classroom.mySanctuary') || 'My Sanctuary'} /                        <ClassroomList
+                            /                        ></Box                    </ScreenWrapper                }
+                            <ScreenWrapper scroll={false} noTopInset={true}                    <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                        <GlobalHeader title={t('classroom.journeyTitle') || 'Learning Journey'} subtitle={t('classroom.mySanctuary') || 'My Sanctuary'} /                        ><ClassroomList
                             refreshTrigger={refreshTrigger}
                             onClassroomPress={(classroom) => {
                                 navigation.navigate('Classroom' as never, {
@@ -155,7 +155,7 @@ export default function ClassroomScreen() {
                                     params: { classroomId: classroom.id, classroomName: classroom.name },
                                 } as never);
                             }}
-                        /                    </Box                </ScreenWrapper            </FeatureGuard        );
+                        /                    ></Box                </ScreenWrapper            </FeatureGuard        );
     };
 
     return renderContent();

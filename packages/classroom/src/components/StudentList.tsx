@@ -83,17 +83,17 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
     };
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}
+        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
             <VStack sx={{ padding: Theme.spacing.md, gap: Theme.spacing.md }}>
                 {students.length === 0 ? (
-                    <Center sx={{ padding: Theme.spacing.xl, marginTop: 40 }}
+                    <Center sx={{ padding: Theme.spacing.xl, marginTop: 40 }}>
                         <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
                             {t('classroom.students.emptyState') || 'No students in this class yet.'}
                         </Text>
                     </Center>
                 ) : (
                     students.map((student) => (
-                        <Box
+                        <Box>
                             key={student.id}
                             sx={{
                                 backgroundColor: colors.secondary,
@@ -101,69 +101,69 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                 padding: Theme.spacing.md,
                                 borderWidth: 1,
                                 borderColor: student.student_id ? colors.border : Theme.colors.amberGlow,
-                                opacity: student.student_id ? 1 : 0.9,>
+                                opacity: student.student_id ? 1 : 0.9,
                             }}
                         
                             {!student.student_id && (
-                                <Box sx={{ position: 'absolute', top: -Theme.spacing.xs, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: Theme.corners.tight }}
+                                <Box sx={{ position: 'absolute', top: -Theme.spacing.xs, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: Theme.corners.tight }}>
                                     <Text sx={{ fontSize: 10, color: Theme.colors.black, fontWeight: '700' }}>
                                         {t('classroom.students.unclaimed') || 'UNCLAIMED'}
                                     </Text>
                                 </Box>
                             )}
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                 <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                    <Box
+                                    <Box>
                                         sx={{
                                             width: 42,
                                             height: 42,
                                             borderRadius: Theme.corners.full,
                                             backgroundColor: colors.tertiary,
                                             justifyContent: 'center',
-                                            alignItems: 'center',>
+                                            alignItems: 'center',
                                         }}
                                     
-                                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}
+                                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
                                             {student.roll_number || '#'}>
                                         </Text>
                                     </Box>
-                                    <VStack sx={{ flex: 1 }}
+                                    <VStack sx={{ flex: 1 }}>
                                         <Text sx={{ color: colors.text, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
                                             {student.full_name}
                                         </Text>
                                         {student.notes && (
-                                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}
+                                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
                                                 {student.notes}>
                                             </Text>
                                         )}
                                     </VStack>
                                 </HStack>
 
-                                <HStack sx={{ gap: Theme.spacing.sm }}
+                                <HStack sx={{ gap: Theme.spacing.sm }}>
                                     {onAnalyzePotential && (>
                                         <Pressable onPress={() => { hapticLight(); onAnalyzePotential(student); }}
-                                            <Box sx={{ padding: Theme.spacing.xs }}
+                                            <Box sx={{ padding: Theme.spacing.xs }}>
                                                 <Sparkles size={20} color={Theme.colors.sanctuarySaffron} /
                                             ></Box
                                         </Pressable>
                                     )}
                                     {!student.student_id && student.invite_code && (
                                         <Pressable onPress={() => handleShowQr(student)}
-                                            <Box sx={{ padding: Theme.spacing.xs }}
+                                            <Box sx={{ padding: Theme.spacing.xs }}>
                                                 <QrCode size={20} color={Theme.colors.sanctuarySaffron} /
                                             ></Box
                                         ></Pressable>
                                     )}
                                     <Pressable onPress={() => handleEditStudent(student)}
-                                        <Box sx={{ padding: Theme.spacing.xs }}
+                                        <Box sx={{ padding: Theme.spacing.xs }}>
                                             <Edit2 size={20} color={colors.textSecondary} /
                                         ></Box
                                     </Pressable>
-                                    <Pressable
+                                    <Pressable>
                                         onPress={() => handleRemoveStudent(student.id)}
                                         disabled={isDeleting === student.id}
                                     
-                                        <Box sx={{ padding: Theme.spacing.xs }}
+                                        <Box sx={{ padding: Theme.spacing.xs }}>
                                             {isDeleting === student.id ? (>
                                                 <ActivityIndicator size="small" color={Theme.colors.emberRed} /
                                             >) : (
@@ -179,7 +179,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
             </VStack>
 
             {/* Floating Action Button for Adding Students */}
-            <Pressable
+            <Pressable>
                 onPress={() => {
                     hapticLight();
                     setSelectedStudent(null);
@@ -201,7 +201,7 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                 <Plus color={Theme.colors.sacredWhite} size={32} /
             ></Pressable
 
-            <AddStudentModal
+            <AddStudentModal>
                 isOpen={isAddModalOpen}
                 onClose={() => {
                     setIsAddModalOpen(false);
@@ -220,18 +220,18 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
             <Modal isOpen={!!studentForQr} onClose={() => setStudentForQr(null)}
                 <ModalBackdrop /
                 ><ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}
-                    <ModalHeader
+                    <ModalHeader>
                         <Heading >sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}
                             {t('classroom.students.inviteTitle') || 'Invite Student'}
                         </Heading>
-                        <ModalCloseButton
+                        <ModalCloseButton>
                             <Icon >as={CloseIcon} sx={{ color: colors.textSecondary }} /
                         ></ModalCloseButton
                     ></ModalHeader>
-                    <ModalBody
+                    <ModalBody>
                         <VStack >sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}>
-                            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous, ...Theme.shadows.md }}
-                                <QRCodeGenerator
+                            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous, ...Theme.shadows.md }}>
+                                <QRCodeGenerator>
                                     value={studentForQr?.invite_code || ''}
                                     size={200}
                                     color="black"
@@ -242,23 +242,23 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                                 <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text, textAlign: 'center' }}>
                                     {studentForQr?.full_name}
                                 </Heading>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}
+                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
                                     {t('classroom.students.individualCode') || 'Individual Invite Code'}>
                                 </Text>
                                 <Pressable onPress={() => copyToClipboard(studentForQr?.invite_code || '')}
-                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}
+                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
                                         {studentForQr?.invite_code}>
                                     </Text>
                                 </Pressable>
-                                <Text sx={{ fontSize: 10, color: colors.textTertiary, marginTop: Theme.spacing.xs }}
+                                <Text sx={{ fontSize: 10, color: colors.textTertiary, marginTop: Theme.spacing.xs }}>
                                     {t('common.tapToCopy') || 'Tap to copy'}>
                                 </Text>
                             </VStack>
-                            <Button
+                            <Button>
                                 onPress={() => setStudentForQr(null)}
                                 sx={{ backgroundColor: colors.tertiary, width: '100%', borderRadius: Theme.corners.comfortable }}
                             
-                                <ButtonText sx={{ color: colors.text }}
+                                <ButtonText sx={{ color: colors.text }}>
                                     {t('common.close') || 'Close'}>
                                 </ButtonText>
                             </Button>

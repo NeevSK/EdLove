@@ -85,7 +85,7 @@ export default function TeacherAssignmentsWorkspace({
     }).length;
 
     return (
-        <Box sx={{ flex: 1 }}            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}                <Box
+        <Box sx={{ flex: 1 }}            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}                <Box>
                     sx={{
                         backgroundColor: Theme.colors.silk,
                         borderRadius: Theme.corners.generous,
@@ -96,13 +96,13 @@ export default function TeacherAssignmentsWorkspace({
                         shadowOffset: { width: 0, height: 8 },
                         shadowOpacity: 1,
                         shadowRadius: 18,
-                        elevation: 4,>
+                        elevation: 4,
                     }}
-                                    <VStack sx={{ gap: Theme.spacing.md }}                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}                            <VStack sx={{ flex: 1, gap: 4 }}                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                    Assignment Workspace
-                                </Text                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                    Keep assignment momentum visible>
+                                    <VStack sx={{ gap: Theme.spacing.md }}                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}                            <VStack sx={{ flex: 1, gap: 4 }}                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                    Assignment Workspace>
+                                </Text                                ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                    Keep assignment momentum visible>
                                 </Heading                                ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                    See what is active, what is upcoming, and add top-level classroom work without disappearing into lesson structure.
                                 </Text                            </VStack                            {canManage && (
-                                <Button
+                                <Button>
                                     action="primary"
                                     onPress={() => setShowCreateModal(true)}
                                     sx={{
@@ -116,7 +116,7 @@ export default function TeacherAssignmentsWorkspace({
                                     }}
                                                                     <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                                        <Plus size={16} color={Theme.colors.sacredWhite} /                                        ><ButtonText color={Theme.colors.sacredWhite}>Create</ButtonText                                    ></HStack                                </Button                            )}
                         </HStack>
-                        <HStack sx={{ gap: Theme.spacing.sm }}                            <SummaryPill
+                        <HStack sx={{ gap: Theme.spacing.sm }}                            <SummaryPill>
                                 icon={<ClipboardList size={14} color={Theme.colors.sanctuarySaffron} />}
                                 label="Total"
                                 value={String(assignments.length)}
@@ -134,7 +134,7 @@ export default function TeacherAssignmentsWorkspace({
                             /                        ></HStack                    ></VStack                </Box
                 {isLoading ? (
                     <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : assignments.length === 0 ? (
-                    <Box
+                    <Box>
                         sx={{
                             backgroundColor: Theme.colors.silk,
                             borderRadius: Theme.corners.generous,
@@ -146,13 +146,13 @@ export default function TeacherAssignmentsWorkspace({
                             shadowColor: Theme.colors.shadowAmbient,
                             shadowOffset: { width: 0, height: 6 },
                             shadowOpacity: 1,
-                            shadowRadius: 16,>
+                            shadowRadius: 16,
                         }}
                                             <ClipboardList size={36} color={colors.textTertiary} /                        ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}                            No assignments yet
-                        </Heading                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}                            Create a classroom assignment here, or add one from a monthly lesson lane when the work belongs to a specific module.
+                        </Heading                        ><Text sx={{ color: colors.textSecondary, textAlign: 'center' }}                            Create a classroom assignment here, or add one from a monthly lesson lane when the work belongs to a specific module.
                         </Text                    </Box                ) : (
                     assignments.map((assignment) => (
-                        <Box
+                        <Box>
                             key={assignment.id}
                             sx={{
                                 backgroundColor: Theme.colors.silk,
@@ -165,14 +165,14 @@ export default function TeacherAssignmentsWorkspace({
                                 shadowColor: Theme.colors.shadowAmbient,
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 1,
-                                shadowRadius: 12,>
+                                shadowRadius: 12,
                             }}
-                                                    <VStack sx={{ gap: Theme.spacing.sm }}                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, flex: 1 }}                                        {assignment.title}
-                                    </Heading                                    <HStack sx={{ alignItems: 'center', gap: 6 }}                                        <CalendarDays size={14} color={Theme.colors.gurudeviBlue} /                                        ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                            {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
+                                                    <VStack sx={{ gap: Theme.spacing.sm }}                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, flex: 1 }}                                        {assignment.title}>
+                                    </Heading                                    ><HStack sx={{ alignItems: 'center', gap: 6 }}                                        <CalendarDays size={14} color={Theme.colors.gurudeviBlue} /                                        ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                            {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
                                         </Text                                    </HStack                                </HStack                                {!!assignment.description && (
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                        {assignment.description}
+                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                        {assignment.description}>
                                     </Text                                )}>
-                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between' }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}                                        Max points: {assignment.max_points ?? 100}
+                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between' }}                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}                                        Max points: {assignment.max_points ?? 100}>
                                     </Text                                    ><Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.xs }}                                        Lesson-linked work stays in the Lessons lane>
                                     </Text                                ></HStack                            </VStack                        </Box                    ))
                 )}
@@ -210,17 +210,17 @@ function SummaryPill({
     colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
-        <Box
+        <Box>
             sx={{
                 flex: 1,
                 backgroundColor: colors.primary,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
                 borderColor: colors.border,
-                padding: Theme.spacing.sm,>
+                padding: Theme.spacing.sm,
             }}
-                    <VStack sx={{ gap: 4 }}                <HStack sx={{ alignItems: 'center', gap: 6 }}                    {icon}
+                    <VStack sx={{ gap: 4 }}                <HStack sx={{ alignItems: 'center', gap: 6 }}                    {icon}>
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                        {label}>
-                    </Text                ></HStack                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
+                    </Text                ></HStack                ><Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}                    {value}
                 </Text            </VStack        </Box    );
 }

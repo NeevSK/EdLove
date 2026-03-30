@@ -11,7 +11,7 @@ export default function CommunityStackNavigator() {
     const { scene } = useTheme();
 
     return (
-        <Stack.Navigator
+        <Stack.Navigator>
             id="CommunityStack"
             screenOptions={{
                 headerShown: false,
@@ -19,26 +19,26 @@ export default function CommunityStackNavigator() {
             }}
         
             <Stack.Screen name="CommunityMain" component={CommunityScreen} /
-            <Stack.Screen
+            ><Stack.Screen
                 name="GroupDetails"
                 component={GroupDetailsScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            /
-            <Stack.Screen
+            />
+            ><Stack.Screen
                 name="GroupChat"
                 component={GroupChatScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            /
-            <Stack.Screen
+            />
+            ><Stack.Screen
                 name="UserProfile"
                 component={UserPublicProfileScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            /
-            <Stack.Screen
+            />
+            ><Stack.Screen
                 name="PublicProfile"
                 component={UserPublicProfileScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
-            /
-        </Stack.Navigator
+            />
+        ></Stack.Navigator>
     );
 }

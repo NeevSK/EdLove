@@ -95,7 +95,7 @@ function CommentRow({
                             <View style={[styles.officialBadge, { backgroundColor: accent.reward as string }]}                                <Shield size={9} color="#fff" /
                                 ><Text sx={{ fontSize: 9, color: '#fff', fontWeight: '700', marginLeft: 2 }}>Official</Text
                             ></View
-                        )}
+                        >)}
                     </HStack>
                     <Text sx={{ fontSize: 10, color: text.muted }}
                         {formatTimestamp(comment.created_at)}>
@@ -206,7 +206,7 @@ export function CommentSheet({
                 <TouchableOpacity onPress={onClose} style={styles.dragHandle} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
                     <ChevronDown size={22} color={text.secondary as string} /
                 ></TouchableOpacity
-                <Text sx={{ fontSize: 15, fontWeight: '700', color: text.primary, flex: 1, textAlign: 'center' }}
+                ><Text sx={{ fontSize: 15, fontWeight: '700', color: text.primary, flex: 1, textAlign: 'center' }}
                     {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}>
                 </Text>
                 <View style={{ width: 34 }} /
@@ -253,7 +253,7 @@ export function CommentSheet({
                     <Lock size={14} color={isAnonymous ? accent.action as string : text.muted as string} /
                 ></TouchableOpacity
 
-                <TextInput
+                ><TextInput
                     style={[
                         styles.input,>
                         {
@@ -272,7 +272,7 @@ export function CommentSheet({
                     blurOnSubmit={false}
                 /
 
-                <TouchableOpacity
+                ><TouchableOpacity
                     onPress={handleSend}
                     disabled={!draft.trim() || isCreatingComment}
                     style={[

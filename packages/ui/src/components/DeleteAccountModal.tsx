@@ -24,25 +24,25 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
 
     const footer = (
         <HStack {...({ space: "md", width: "100%" } as any)}
-            <Box sx={{ flex: 1 }}
+            <Box sx={{ flex: 1 }}>
                 <SanctuaryButton
                     action="secondary"
                     onPress={onClose}
                     isDisabled={isLoading}
                 
-                    Cancel
-                </SanctuaryButton
-            </Box
+                    Cancel>
+                </SanctuaryButton>
+            </Box>
             <Box sx={{ flex: 1.5 }}
                 <SanctuaryButton
                     action="negative"
                     onPress={onDelete}
-                    isLoading={isLoading}
+                    isLoading={isLoading}>
                 
                     {isLoading ? "Processing..." : "Delete Permanently"}
-                </SanctuaryButton
-            </Box
-        </HStack
+                </SanctuaryButton>
+            </Box>
+        </HStack>
     );
 
     return (
@@ -57,32 +57,32 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
             <VStack {...({ space: "md", py: "$2" } as any)}
                 <Text {...({ color: text.secondary, size: "md" } as any)}
                     This action is <Text {...({ bold: true, color: text.primary } as any)}>irreversible</Text>. Your personal profile, settings, and private data will be permanently removed from the Gurudevi sanctuary.
-                </Text
+                </Text>
                 {/* Data scope clarification */}
                 <Box sx={{
                     backgroundColor: glass.interact.bg,
                     padding: Theme.spacing.md,
                     borderRadius: Theme.corners.comfortable,
                     borderWidth: 1,
-                    borderColor: glass.interact.border,
+                    borderColor: glass.interact.border,>
                 }}
                     <Text {...({ color: text.secondary, size: "sm" } as any)}
-                        School records (attendance, grades, community posts) are retained for institutional integrity and cannot be removed by individuals.
-                    </Text
-                </Box
+                        School records (attendance, grades, community posts) are retained for institutional integrity and cannot be removed by individuals.>
+                    </Text>
+                </Box>
                 <Box sx={{
                     backgroundColor: `${dangerColor}18`,
                     padding: Theme.spacing.md,
                     borderRadius: Theme.corners.comfortable,
                     borderWidth: 1,
-                    borderColor: `${dangerColor}33`,
+                    borderColor: `${dangerColor}33`,>
                 }}
                     <Text {...({ color: dangerColor, bold: true, size: "sm" } as any)}
-                        Just need a break? You can sign out instead  your sanctuary will be waiting for you.
-                    </Text
-                </Box
-            </VStack
-        </SanctuaryModal
+                        Just need a break? You can sign out instead  your sanctuary will be waiting for you.>
+                    </Text>
+                </Box>
+            </VStack>
+        </SanctuaryModal>
     );
 }
 

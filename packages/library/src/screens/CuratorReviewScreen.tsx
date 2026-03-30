@@ -198,7 +198,7 @@ export default function CuratorReviewScreen() {
                     ></Box>
                 </HStack>
                 <Text sx={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }} numberOfLines={1}>{item.url}</Text
-                <HStack sx={{ gap: 12, mt: 8 }}
+                ><HStack sx={{ gap: 12, mt: 8 }}
                     <TouchableOpacity
                         style={[styles.actionBtn, { backgroundColor: '#10B981' }]}
                         onPress={() => handleRepair(item.id)}
@@ -238,7 +238,7 @@ export default function CuratorReviewScreen() {
                     style={[styles.tab, activeTab === 'broken' && { borderBottomColor: Theme.colors.emberRed, borderBottomWidth: 2 }]}
                 
                     <Text sx={{ color: activeTab === 'broken' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Broken Links</Text
-                </TouchableOpacity>
+                ></TouchableOpacity>
             </HStack>
 
             {loading ? (

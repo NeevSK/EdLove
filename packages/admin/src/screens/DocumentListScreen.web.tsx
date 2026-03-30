@@ -107,7 +107,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   const renderDocumentItem = (document: DocumentWorkflow, index: number) => {
     if (viewMode === 'grid' && isDesktop) {
       return (
-        <TouchableOpacity
+        <TouchableOpacity>
           key={document.id}
           style={[
             styles.documentCardGrid,>
@@ -117,7 +117,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             }
           ]}
           onPress={() => onDocumentPress(document)}
-                  <View style={styles.cardHeader}            <Text 
+                  <View style={styles.cardHeader}            <Text >
               style={[
                 styles.documentTitleGrid,>
                 { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
@@ -129,21 +129,21 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 styles.statusBadge,
                 { backgroundColor: getStatusColor(document.status) }
               ]}
-                          <Text 
+                          <Text >
                 style={[
                   styles.statusText,>
                   { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
                 ]}
                               {document.status.toUpperCase()}
               </Text            </View          </View          
-          <Text 
+          <Text >
             style={[
               styles.documentMeta,>
               { color: theme.text.secondary, fontFamily: 'System' }
             ]}
                       Version {document.version}
           </Text          >
-          <Text 
+          <Text >
             style={[
               styles.documentMeta,>
               { color: theme.text.secondary, fontFamily: 'System' }
@@ -151,13 +151,13 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                       Updated {formatDate(document.updatedAt)}
           </Text          >
           {document.status === 'review' && document.authorId !== user.userId && (
-            <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}              <Text style={[styles.reviewText, { color: theme.accent.action }]}                Pending Review
+            <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}              <Text style={[styles.reviewText, { color: theme.accent.action }]}                Pending Review>
               </Text            ></View          )}>
         </TouchableOpacity      );
     }
 
     return (
-      <TouchableOpacity
+      <TouchableOpacity>
         key={document.id}
         style={[
           styles.documentItem,>
@@ -168,7 +168,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           }
         ]}
         onPress={() => onDocumentPress(document)}
-              <View style={styles.documentHeader}          <Text 
+              <View style={styles.documentHeader}          <Text >
             style={[
               styles.documentTitle, >
               { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
@@ -180,14 +180,14 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               styles.statusBadge,
               { backgroundColor: getStatusColor(document.status) }
             ]}
-                      <Text 
+                      <Text >
               style={[
                 styles.statusText,>
                 { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
               ]}
                           {document.status.toUpperCase()}
             </Text            </View        </View        
-        <Text 
+        <Text >
           style={[
             styles.documentMeta,>
             { color: theme.text.secondary, fontFamily: 'System' }
@@ -195,7 +195,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   Version {document.version} " Updated {formatDate(document.updatedAt)}
         </Text        >
         {document.status === 'review' && document.authorId !== user.userId && (
-          <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}            <Text style={[styles.reviewText, { color: theme.accent.action }]}              Pending Review
+          <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}            <Text style={[styles.reviewText, { color: theme.accent.action }]}              Pending Review>
             </Text          </View        )}>
       </TouchableOpacity    );
   };
@@ -207,7 +207,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       : documents.filter(doc => doc.status === status).length;
 
     return (
-      <TouchableOpacity
+      <TouchableOpacity>
         key={status}
         style={[
           styles.filterChip,>
@@ -217,7 +217,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           }
         ]}
         onPress={() => setSelectedStatus(status)}
-              <Text 
+              <Text >
           style={[
             styles.filterText,>
             { 
@@ -232,41 +232,41 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...>
         </Text      </View    );>
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Enhanced Header */}
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Enhanced Header */}>
       <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}            Documents>
           </Text          ><Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
           </Text        ></View        
-        <View style={styles.headerActions}          <TouchableOpacity
+        <View style={styles.headerActions}          <TouchableOpacity>
             style={[styles.createButton, { backgroundColor: theme.accent.action }]}
             onPress={onCreateNew}>
-                      <Text style={[styles.createButtonText, { color: theme.text.inverse }]}              + New Document
+                      <Text style={[styles.createButtonText, { color: theme.text.inverse }]}              + New Document>
             </Text          </TouchableOpacity        </View      </View>
       {/* Web Controls */}
-      <View style={[styles.webControls, { backgroundColor: theme.glass.surface.bg }]}        <View style={styles.searchSection}          <input
+      <View style={[styles.webControls, { backgroundColor: theme.glass.surface.bg }]}        <View style={styles.searchSection}          <input>
             type="text"
             placeholder="Search documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={styles.searchInputWeb}
           /        ></View
-        <View style={styles.controlGroup}          <select
+        <View style={styles.controlGroup}          <select>
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
             style={styles.sortSelectWeb}
                       <option value="updatedAt">Last Updated</option            <option value="title">Title</option            <option value="status">Status</option          </select
           {isDesktop && (
-            <View style={styles.viewToggle}              <TouchableOpacity
+            <View style={styles.viewToggle}              <TouchableOpacity>
                 style={[
                   styles.viewButton,
-                  viewMode === 'list' && { backgroundColor: theme.accent.action }>
+                  viewMode === 'list' && { backgroundColor: theme.accent.action }
                 ]}
                 onPress={() => setViewMode('list')}
-                              <Text style={[
+                              <Text style={[>
                   styles.viewButtonText,>
                   { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
                 ]}                  List
@@ -276,14 +276,14 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   viewMode === 'grid' && { backgroundColor: theme.accent.action }
                 ]}
                 onPress={() => setViewMode('grid')}
-                              <Text style={[
+                              <Text style={[>
                   styles.viewButtonText,>
                   { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
                 ]}                  Grid
                 </Text              </TouchableOpacity            </View          )}
         </View      </View
       {/* Status Filters */}
-      <ScrollView 
+      <ScrollView >
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
@@ -291,7 +291,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               {statusFilters.map(renderStatusFilter)}
       </ScrollView>
       {/* Documents List/Grid */}
-      <ScrollView 
+      <ScrollView >
         style={styles.documentsContainer}
         contentContainerStyle={[
           styles.documentsContent,
@@ -303,9 +303,9 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                 ? `No documents found matching "${searchQuery}"`
                 : selectedStatus === 'all' 
                   ? 'No documents yet. Create your first document to get started.'
-                  : `No ${selectedStatus} documents found.`>
-              }
-            </Text          </View        ) : (
+                  : `No ${selectedStatus} documents found.`
+              }>
+            </Text          ></View        ) : (
           filteredDocuments.map(renderDocumentItem)
         )}
       </ScrollView    </View  );

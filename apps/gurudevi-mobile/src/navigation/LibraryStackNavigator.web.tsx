@@ -26,7 +26,7 @@ export default function LibraryStackNavigatorWeb() {
 
     return (
         <React.Suspense fallback={<ScreenFallback />}
-        <Stack.Navigator
+        <Stack.Navigator>
             id="LibraryStack"
             screenOptions={{
                 headerShown: false,
@@ -34,12 +34,12 @@ export default function LibraryStackNavigatorWeb() {
             }}
         
             <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} /
-            <Stack.Screen name="CollectionDetail" component={CollectionDetailScreenWeb} /
-            <Stack.Screen name="PDFViewer" component={PDFViewerScreen} /
-            <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} /
-            <Stack.Screen name="LibraryMap" component={MapScreen} /
-            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} /
-        </Stack.Navigator
-        </React.Suspense
+            ><Stack.Screen name="CollectionDetail" component={CollectionDetailScreenWeb} />
+            ><Stack.Screen name="PDFViewer" component={PDFViewerScreen} /
+            ><Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
+            ><Stack.Screen name="LibraryMap" component={MapScreen} /
+            ><Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
+        ></Stack.Navigator>
+        </React.Suspense>
     );
 }

@@ -165,8 +165,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                             padding: Theme.spacing.lg,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: colors.border>
-                        }}
+                            borderColor: colors.border
+                        }}>
                             <VStack space="md"
                                 <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>New Cycle</Text
 
@@ -207,8 +207,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                     sx={{
                                         backgroundColor: colors.action,
                                         borderRadius: Theme.corners.medium,
-                                        marginTop: Theme.spacing.sm>
-                                    }}
+                                        marginTop: Theme.spacing.sm
+                                    }}>
                                 
                                     <ButtonText>{saving ? 'Saving...' : 'Create Cycle'}</ButtonText
                                 ></Button
@@ -231,8 +231,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         padding: Theme.spacing.md,
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
-                                        borderColor: cycle.is_current ? colors.success + '44' : colors.border,>
-                                    }}
+                                        borderColor: cycle.is_current ? colors.success + '44' : colors.border,
+                                    }}>
                                 
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
                                         <VStack space="xs">
@@ -243,8 +243,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                                         backgroundColor: colors.success + '22',
                                                         paddingHorizontal: 8,
                                                         paddingVertical: 2,
-                                                        borderRadius: 10>
-                                                    }}
+                                                        borderRadius: 10
+                                                    }}>
                                                         <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.success }}>CURRENT</Text
                                                     ></Box
                                                 >)}

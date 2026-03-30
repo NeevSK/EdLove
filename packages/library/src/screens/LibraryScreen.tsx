@@ -80,7 +80,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                     overflow: 'hidden',
                     backgroundColor: colors.secondary,
                     borderWidth: 1,
-                    borderColor: colors.border,>
+                    borderColor: colors.border,
                 }}                    <LinearGradient
                         colors={[`${Theme.colors.gurudeviViolet}26`, 'transparent']}
                         start={{ x: 0, y: 0 }}
@@ -113,7 +113,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                     overflow: 'hidden',
                     backgroundColor: colors.secondary,
                     borderWidth: 1,
-                    borderColor: Theme.colors.sanctuarySaffron + '33',>
+                    borderColor: Theme.colors.sanctuarySaffron + '33',
                 }}                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}                        <Box sx={{
                             width: 48,
                             height: 48,
@@ -375,7 +375,7 @@ export default function LibraryScreen() {
         if (items.length === 0) return null;
         return (
             <Box sx={{ marginBottom: Theme.spacing.lg }}                <SmartShelf key={label} title={label} onSeeAll={onSeeAll}                    {items.map(res => (
-                        <LibraryThumbnailCard
+                        <LibraryThumbnailCard>
                             key={`shelf-${label}-${res.id}`}
                             title={res.title}
                             type={res.type}
@@ -396,40 +396,40 @@ export default function LibraryScreen() {
     }, [handleOpenResource]);
 
     return (
-        <ScreenWrapper scroll={!isSearchMode} noTopInset={true}            <GlobalHeader
+        <ScreenWrapper scroll={!isSearchMode} noTopInset={true}            <GlobalHeader>
                 title={t('tabs.library') || 'Library'}
                 subtitle={t('library.knowledgeSanctuary')}
                 showSearch
                 searchProps={{
                     value: searchQuery,
                     onChangeText: setSearchQuery,
-                    placeholder: t('library.searchPlaceholder')>
+                    placeholder: t('library.searchPlaceholder')
                 }}
                 rightAction={
-                    <HStack sx={{ gap: 8, alignItems: 'center' }}                        {isSyncing && (
-                            <Animated.View entering={FadeInDown}                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                            ></Animated.View                        )}
-                        <TouchableOpacity
+                    <HStack sx={{ gap: 8, alignItems: 'center' }}                        {isSyncing && (>
+                            <Animated.View entering={FadeInDown}                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} /                            ></Animated.View                        >)}
+                        <TouchableOpacity>
                             onPress={() => navigation.navigate('LibraryMap' as any)}
                             style={styles.mapToggleButton}
                                                     <MapIcon size={20} color={colors.textPrimary} /                        ></TouchableOpacity                    </HStack                }
             /            ><Box sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm }}                <TemporalNavigator /            ></Box
             {libraryError ? (
-                <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, alignItems: 'center', gap: 12 }}                    <Text sx={{ color: colors.error, textAlign: 'center' }}                        {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}
+                <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, alignItems: 'center', gap: 12 }}                    <Text sx={{ color: colors.error, textAlign: 'center' }}                        {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}>
                     </Text                    <TouchableOpacity onPress={() => fetchResources()}                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>Retry</Text                    ></TouchableOpacity                </VStack            ) : (loading || isFetchingPublic) && !refreshing ? (
                 <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, gap: 16 }}                    <SkeletonCard height={200} /                    ><SkeletonCard height={160} /                    ><SkeletonCard height={160} /                ></VStack            ) : (
-                <Box sx={{ flex: 1 }}                    {!isSearchMode && (
-                        <HStack sx={{ px: Theme.spacing.md, py: 12, gap: 12 }}                            <TouchableOpacity 
+                <Box sx={{ flex: 1 }}                    {!isSearchMode && (>
+                        <HStack sx={{ px: Theme.spacing.md, py: 12, gap: 12 }}                            <TouchableOpacity >
                                 onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
                                 style={[styles.actionBtn, { borderColor: Theme.colors.sanctuarySaffron + '88' }]}
                                                             <Library size={14} color={Theme.colors.sanctuarySaffron} /                                ><Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }}>+ Collection</Text                            ></TouchableOpacity                        </HStack                    )}
 
-                    <Box sx={{ flex: 1, backgroundColor: colors.secondary }}                        <Animated.View entering={FadeInDown.delay(100).springify()}                            <HorizontalChipRow
+                    <Box sx={{ flex: 1, backgroundColor: colors.secondary }}                        <Animated.View entering={FadeInDown.delay(100).springify()}                            <HorizontalChipRow>
                                 chips={chipData}
                                 selectedValue={selectedCategoryId}
                                 onSelect={setSelectedCategoryId}
                                 size="sm"
                             /                        ></Animated.View                        
-                        <Animated.View entering={FadeInDown.delay(160).springify()}                            <HStack sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm, justifyContent: 'space-between', alignItems: 'center' }}                                <Box sx={{ flex: 1 }}                                    <HorizontalChipRow
+                        <Animated.View entering={FadeInDown.delay(160).springify()}                            <HStack sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm, justifyContent: 'space-between', alignItems: 'center' }}                                <Box sx={{ flex: 1 }}                                    <HorizontalChipRow>
                                         chips={sortChips}
                                         selectedValue={selectedSort}
                                         onSelect={(v) => setSelectedSort(v as typeof selectedSort)}
@@ -440,12 +440,12 @@ export default function LibraryScreen() {
                                                                             <Layers size={14} color={viewMode === 'shelf' ? Theme.colors.sacredWhite : colors.textSecondary} /                                    ></TouchableOpacity                                    <TouchableOpacity 
                                         onPress={() => setViewMode('grid')} 
                                         style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                                                                            <LayoutGrid size={14} color={viewMode === 'grid' ? Theme.colors.sacredWhite : colors.textSecondary} /                                    </TouchableOpacity                                    <TouchableOpacity 
+                                                                            <LayoutGrid size={14} color={viewMode === 'grid' ? Theme.colors.sacredWhite : colors.textSecondary} /                                    </TouchableOpacity                                    <TouchableOpacity >
                                         onPress={() => setViewMode('list')} 
                                         style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                                                                            <List size={14} color={viewMode === 'list' ? Theme.colors.sacredWhite : colors.textSecondary} /                                    </TouchableOpacity                                </HStack                            </HStack                        </Animated.View
+                                                                            <List size={14} color={viewMode === 'list' ? Theme.colors.sacredWhite : colors.textSecondary} /                                    </TouchableOpacity                                </HStack                            </HStack                        </Animated.View>
                         {viewMode === 'shelf' && !isSearchMode ? (>
-                            <ScrollView 
+                            <ScrollView >
                                 style={{ flex: 1 }}
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
@@ -455,7 +455,7 @@ export default function LibraryScreen() {
                                     <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} /                                >)}
                                 <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} /                                ><FeatureGuard action="manage" subject="LibraryCuratorDashboard"                                    <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} /                                ></FeatureGuard                                <Box sx={{ paddingTop: Theme.spacing.md }}                                    {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
                                         <SmartShelf title="\u25B6 Continue Learning"                                            {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
-                                                <LibraryThumbnailCard
+                                                <LibraryThumbnailCard>
                                                     key={res.id}
                                                     title={res.title}
                                                     type={res.type}
@@ -465,7 +465,7 @@ export default function LibraryScreen() {
                                         </SmartShelf                                    )}
                                     {bookmarkedResources.length > 0 && (
                                         <SmartShelf title="\uD83D\uDD16 My Bookmarks"                                            {bookmarkedResources.map((res: any) => (
-                                                <LibraryThumbnailCard
+                                                <LibraryThumbnailCard>
                                                     key={`bookmark-${res.id}`}
                                                     title={res.title}
                                                     type={res.type}
@@ -480,7 +480,7 @@ export default function LibraryScreen() {
                                         </SmartShelf                                    )}
                                     {collections.length > 0 && (
                                         <Box sx={{ marginBottom: Theme.spacing.lg }}                                            <SmartShelf title={rawUserCollections.length > 0 ? "\uD83D\uDCDA Your Collections" : "\uD83C\uDF1F Discover Collections"}                                                {collections.map((col: any) => (
-                                                    <CollectionCard
+                                                    <CollectionCard>
                                                         key={col.id}
                                                         title={col.name}
                                                         creator={col.creator_name}
@@ -489,7 +489,7 @@ export default function LibraryScreen() {
                                                         thumbnailUrl={col.thumbnail_url}
                                                         verified={col.is_official}
                                                         contextData={col}
-                                                        onPress={(collection) =                                                            navigation.navigate('CollectionDetail', { id: collection.id, title: collection.name })>
+                                                        onPress={(collection) =                                                            navigation.navigate('CollectionDetail', { id: collection.id, title: collection.name })
                                                         }
                                                     /                                                >))}
                                             </SmartShelf                                        </Box                                    )}
@@ -500,14 +500,14 @@ export default function LibraryScreen() {
                                     {trending.length > 0 && renderShelf('\u2B50 Trending', trending)}
                                     {newArrivals.length > 0 && renderShelf('\u2728 New Arrivals', newArrivals)}
                                 </Box                            </ScrollView                        ) : (
-                            <ResourceList
+                            <ResourceList>
                                 resources={resources}
                                 onOpenResource={handleOpenResource}
                                 onOpenResourceOptions={handleOpenResourceOptions}
                                 onPullToDesk={(res) => console.log('Pull', res.id)}
                                 viewMode={viewMode === 'grid' ? 'grid' : 'list'}
                                 ListHeaderComponent={
-                                    <Box sx={{ p: Theme.spacing.md }}                                        <Text sx={{ fontSize: 13, color: colors.textSecondary }}                                            {searchQuery ? `Found ${resources.length} resources for "${searchQuery}"` : `Showing curated findings`}
+                                    <Box sx={{ p: Theme.spacing.md }}                                        <Text sx={{ fontSize: 13, color: colors.textSecondary }}                                            {searchQuery ? `Found ${resources.length} resources for "${searchQuery}"` : `Showing curated findings`}>
                                         </Text                                    </Box                                }
                                 onEndReached={handleEndReached}
                                 refreshing={refreshing}
@@ -515,7 +515,7 @@ export default function LibraryScreen() {
                             /                        >)}
                     </Box                </Box            )}
 
-            <AddResourceModal
+            <AddResourceModal>
                 isOpen={isAddModalOpen && !isPastView}
                 onClose={() => setIsAddModalOpen(false)}
                 onAdd={handleAddResource}
@@ -526,7 +526,7 @@ export default function LibraryScreen() {
                 onAdd={handleCreateCollection}
             /
             >{selectedResource && (
-                <ResourceActionSheet
+                <ResourceActionSheet>
                     visible={isActionSheetVisible}
                     onClose={() => setIsActionSheetVisible(false)}
                     resource={selectedResource}
@@ -535,7 +535,7 @@ export default function LibraryScreen() {
                     onShare={() => handleShare(selectedResource)}
                 /            >)}
 
-            <CollectionPickerModal
+            <CollectionPickerModal>
                 visible={isCollectionPickerVisible}
                 onClose={() => setIsCollectionPickerVisible(false)}
                 collections={rawUserCollections as any}
@@ -554,7 +554,7 @@ const HERO_HEIGHT = 220;
 function HeroBanner({ resource, onPress }: HeroBannerProps) {
     const colors = useThemedColors();
     return (
-        <Pressable onPress={onPress}            <Box sx={{ height: HERO_HEIGHT, overflow: 'hidden', backgroundColor: colors.secondary, mb: Theme.spacing.md }}                {resource.media?.url ? (
+        <Pressable onPress={onPress}            <Box sx={{ height: HERO_HEIGHT, overflow: 'hidden', backgroundColor: colors.secondary, mb: Theme.spacing.md }}                {resource.media?.url ? (>
                     <ImageBackground source={{ uri: resource.media.url as string }} style={{ flex: 1 }} resizeMode="cover"                        <HeroOverlay resource={resource} colors={colors} /                    ></ImageBackground                ) : (
                     <Box sx={{ flex: 1, backgroundColor: `${colors.action}18` }}                        <HeroOverlay resource={resource} colors={colors} /                    ></Box                )}
             </Box        </Pressable    );
@@ -562,11 +562,11 @@ function HeroBanner({ resource, onPress }: HeroBannerProps) {
 
 function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: any }) {
     return (
-        <LinearGradient 
+        <LinearGradient >
             colors={['transparent', `${colors.obsidian}88`, `${colors.obsidian}EE`]}
-            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}>
+            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}
                     <Box sx={{ alignSelf: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron, px: 8, py: 3, borderRadius: 4, mb: 8 }}                <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sacredWhite, letterSpacing: 1 }}>\u2727 FEATURED</Text            ></Box            ><Text sx={{ fontSize: 22, fontWeight: '800', lineHeight: 28, mb: 6, color: colors.textPrimary }}>{resource.title}</Text            >{resource.description && (
-                <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={2}                    {resource.description}
+                <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={2}                    {resource.description}>
                 </Text            )}>
             <HStack sx={{ alignItems: 'center', gap: 10 }}                <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Theme.colors.sanctuarySaffron, px: 14, py: 8, borderRadius: 12 }}                    <Play size={14} color={Theme.colors.sacredWhite} fill={Theme.colors.sacredWhite} /                    ><Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 13 }}>Open</Text                ></Box            </HStack        </LinearGradient    );
 }

@@ -155,7 +155,7 @@ export function useClassroomWorkspaceSurfaces({
                 summary: surfaceInsights?.principal?.summary ?? 'Institutional pulse, observations, approvals, and published academic oversight.',
                 temporalLabel: surfaceInsights?.principal?.temporalLabel ?? 'Official',
                 metadata: surfaceInsights?.principal?.metadata ?? ['Admin-owned', 'Governance'],
-                content: principalContent,>
+                content: principalContent,
             });
         }
 
@@ -228,7 +228,7 @@ export function useClassroomWorkspaceSurfaces({
                 summary: surfaceInsights?.teacher?.summary ?? 'Assignments, lessons, attendance, grading, and teacher-owned pedagogical signals.',
                 temporalLabel: surfaceInsights?.teacher?.temporalLabel ?? 'Daily Work',
                 metadata: surfaceInsights?.teacher?.metadata ?? ['Academic', 'Write owner'],
-                content: teacherContent,>
+                content: teacherContent,
             });
         }
 
@@ -263,7 +263,7 @@ export function useClassroomWorkspaceSurfaces({
                 summary: surfaceInsights?.student?.summary ?? 'Student-facing classroom flow across lessons, assignments, notes, and longitudinal story.',
                 temporalLabel: surfaceInsights?.student?.temporalLabel ?? 'Journey',
                 metadata: surfaceInsights?.student?.metadata ?? ['Academic', 'Student-owned'],
-                content: studentContent,>
+                content: studentContent,
             });
         }
 

@@ -175,7 +175,7 @@ export default function GroupDetailsScreen() {
 
     if (loading) {
         return (
-            <ScreenWrapper
+            <ScreenWrapper>
                 <Box >sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} /
                 ></Box
@@ -190,7 +190,7 @@ export default function GroupDetailsScreen() {
 
     if (showAdmin && isAdmin) {
         return (
-            <Box sx={{ flex: 1 }}
+            <Box sx={{ flex: 1 }}>
                 <HStack space="md" p="$4" pt="$8" alignItems="center" bg={colors.secondary}>
                     <TouchableOpacity onPress={() => setShowAdmin(false)}
                         <ChevronLeft color={colors.textPrimary} /
@@ -203,23 +203,23 @@ export default function GroupDetailsScreen() {
     }
 
     return (
-        <ScreenWrapper scroll={false}
+        <ScreenWrapper scroll={false}>
             <Box sx={{ flex: 1 }}>
                 {/* Custom Header */}
-                <HStack
+                <HStack>
                     space="md"
                     p="$4"
                     alignItems="center"
                     justifyContent="space-between">
                 
-                    <HStack space="md" alignItems="center"
+                    <HStack space="md" alignItems="center">
                         <TouchableOpacity onPress={() => navigation.goBack()}
                             <ChevronLeft color={colors.textPrimary} /
                         ></TouchableOpacity
                         ><Text bold size="lg" numberOfLines={1} sx={{ maxWidth: 200 }}>{group.name}</Text
                     ></HStack>
 
-                    <HStack space="sm"
+                    <HStack space="sm">
                         <TouchableOpacity onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}
                             <MessageSquare size={20} color={colors.textSecondary} /
                         ></TouchableOpacity
@@ -231,19 +231,19 @@ export default function GroupDetailsScreen() {
                         <TouchableOpacity onPress={() => setShowQRModal(true)}
                             <QrCode size={20} color={colors.textSecondary} /
                         ></TouchableOpacity
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             <MoreVertical size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                     </HStack>
                 </HStack>
 
-                <SanctuaryFlashList
+                <SanctuaryFlashList>
                     data={posts}
                     estimatedItemSize={Theme.listSizes.communityCard}
                     renderItem={({ item, index }) => (
-                        <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}
+                        <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
                             <Box px="$4" pb="$4">
-                                <PostCard
+                                <PostCard>
                                     post={item}
                                     currentUserId={user?.id}
                                     onPress={() => console.log('OPEN_POST', item.id)}
@@ -264,13 +264,13 @@ export default function GroupDetailsScreen() {
                         ></Animated.View>
                     )}
                     ListHeaderComponent={
-                        <VStack space="xl" p="$4"
+                        <VStack space="xl" p="$4">
                             {/* Hero Card */}>
-                            <Animated.View entering={FadeInDown.duration(600).springify()}
+                            <Animated.View entering={FadeInDown.duration(600).springify()}>
                                 <SanctuaryCard variant="glass">
-                                    <VStack space="md"
+                                    <VStack space="md">
                                         <HStack space="md" alignItems="center">
-                                            <Box
+                                            <Box>
                                                 sx={{
                                                     width: 64,
                                                     height: 64,
@@ -280,41 +280,41 @@ export default function GroupDetailsScreen() {
                                                     alignItems: 'center',
                                                     overflow: 'hidden',
                                                     borderWidth: 2,
-                                                    borderColor: 'rgba(255,255,255,0.15)',>
+                                                    borderColor: 'rgba(255,255,255,0.15)',
                                                 }}
                                             
                                                 {group.image_url ? (
-                                                    <Image
+                                                    <Image>
                                                         source={{ uri: group.image_url }}
                                                         style={{ width: 64, height: 64, borderRadius: 32 }}
                                                     /
                                                 >) : (
-                                                    <Text size="2xl" bold color={Theme.colors.sacredWhite}
+                                                    <Text size="2xl" bold color={Theme.colors.sacredWhite}>
                                                         {group.name.charAt(0).toUpperCase()}>
                                                     </Text>
                                                 )}
                                             </Box>
-                                            <VStack flex={1}
+                                            <VStack flex={1}>
                                                 <HStack space="md" alignItems="center">
                                                     <Text bold size="xl" color={Theme.colors.sacredWhite}>{group.name}</Text
                                                     >{group.classroom_id && (
-                                                        <Box
+                                                        <Box>
                                                             px="$2"
                                                             py="$0.5"
                                                             sx={{
                                                                 backgroundColor: 'rgba(230, 126, 34, 0.15)',
                                                                 borderRadius: Theme.corners.tight,
                                                                 borderWidth: 1,
-                                                                borderColor: Theme.colors.sanctuarySaffron>
+                                                                borderColor: Theme.colors.sanctuarySaffron
                                                             }}
                                                         
-                                                            <Text color={Theme.colors.sanctuarySaffron} size="2xs" bold
+                                                            <Text color={Theme.colors.sanctuarySaffron} size="2xs" bold>
                                                                 CLASS>
                                                             </Text>
                                                         </Box>
                                                     )}
                                                 </HStack>
-                                                <HStack space="xs" alignItems="center"
+                                                <HStack space="xs" alignItems="center">
                                                     <Users size={14} color={Theme.colors.dimGray} /
                                                     ><Text color={Theme.colors.dimGray} size="sm"
                                                         {group.member_count || 0} {t('community.groups.members')}
@@ -323,13 +323,13 @@ export default function GroupDetailsScreen() {
                                             </VStack>
                                         </HStack>
 
-                                        <Text color={Theme.colors.mistGray} size="sm"
+                                        <Text color={Theme.colors.mistGray} size="sm">
                                             {group.description || t('community.groups.noDesc')}>
                                         </Text>
 
                                         {!isAdmin && (
-                                            <Box mt="$2"
-                                                <SanctuaryButton
+                                            <Box mt="$2">
+                                                <SanctuaryButton>
                                                     action={isMember ? "secondary" : "primary"}
                                                     variant={isMember ? "outline" : "solid"}
                                                     onPress={isMember ? () => {} : () => { handleJoin(); }}
@@ -349,7 +349,7 @@ export default function GroupDetailsScreen() {
                             <PinnedResourcesShelf resources={[]} /
 
                             >{/* Feed Header */}
-                            <HStack space="sm" alignItems="center" mt="$2"
+                            <HStack space="sm" alignItems="center" mt="$2">
                                 <MessageSquare size={18} color={Theme.colors.sanctuarySaffron} /
                                 ><Text bold size="md" color={Theme.colors.sacredWhite}
                                     {t('community.groups.feed')}
@@ -359,7 +359,7 @@ export default function GroupDetailsScreen() {
                     }
                     ListEmptyComponent={
                         posts.length === 0 ? (
-                            <VStack p="$8" alignItems="center" space="md"
+                            <VStack p="$8" alignItems="center" space="md">
                                 <Box sx={{ p: '$4', borderRadius: '$full', backgroundColor: 'rgba(255,255,255,0.03)' }}>
                                     <MessageSquare size={32} color={Theme.colors.mistGray} /
                                 ></Box
@@ -382,7 +382,7 @@ export default function GroupDetailsScreen() {
                 /
 
                 >{/* Comment Sheet  opens when user taps the comment button on a post */}
-                <CommentSheet
+                <CommentSheet>
                     postId={commentPostId}
                     postAuthorId={commentPostAuthorId}
                     currentUserId={user?.id}
@@ -397,30 +397,30 @@ export default function GroupDetailsScreen() {
                 
                     <ModalBackdrop /
                     ><ModalContent sx={{ bg: colors.secondary }}
-                        <ModalHeader
+                        <ModalHeader>
                             <UIHeading >size="lg">{t('community.groups.qrTitle', 'Group QR Code')}</UIHeading
                             ><ModalCloseButton
                                 <Icon >as={CloseIcon} /
                             ></ModalCloseButton
                         </ModalHeader>
-                        <ModalBody
+                        <ModalBody>
                             <VStack >space="xl" alignItems="center" py="$4">
-                                <QRCodeGenerator
+                                <QRCodeGenerator>
                                     value={QRBuilder.group(group.id, group.handle)}
                                     size={240}
                                 />
-                                <VStack space="xs" alignItems="center"
+                                <VStack space="xs" alignItems="center">
                                     <Text bold size="xl" textAlign="center">{group.name}</Text
                                     >{group.handle && (
                                         <Text color={colors.textSecondary} size="sm">@{group.handle}</Text
                                     >)}
-                                    <Text size="sm" color={colors.textTertiary} textAlign="center" sx={{ mt: '$2', px: '$4' }}
+                                    <Text size="sm" color={colors.textTertiary} textAlign="center" sx={{ mt: '$2', px: '$4' }}>
                                         {t('community.groups.qrHint', 'Scan to join this community group')}>
                                     </Text>
                                 </VStack>
                             </VStack>
                         </ModalBody>
-                        <ModalFooter
+                        <ModalFooter>
                             <SanctuaryButton
                                 >variant="outline"
                                 action="secondary"

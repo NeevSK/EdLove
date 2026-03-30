@@ -76,7 +76,7 @@ export default function MorningSituationalBrief({
 
   if (loading) {
     return (
-      <VStack sx={{ gap: Theme.spacing.sm }}        <SkeletonCard height={56} /        <SkeletonCard height={56} /      </VStack    );
+      <VStack sx={{ gap: Theme.spacing.sm }}        <SkeletonCard height={56} /        ><SkeletonCard height={56} /      ></VStack    );
   }
 
   const dotColor = presence ? presenceColor(presence.present, presence.total) : colors.textSecondary;
@@ -91,16 +91,16 @@ export default function MorningSituationalBrief({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,
+            borderColor: colors.border,>
           }}
                   <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}            <Box
               sx={{
                 width: 10,
                 height: 10,
                 borderRadius: 5,
-                backgroundColor: dotColor,
+                backgroundColor: dotColor,>
               }}
-            /            <Text sx={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '600' }}              {presence ? `${presence.present} of ${presence.total} teachers present today` : 'No attendance data yet'}
+            /            ><Text sx={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '600' }}              {presence ? `${presence.present} of ${presence.total} teachers present today` : 'No attendance data yet'}
             </Text            {onViewStaff && <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View</Text>}
           </HStack        </Box      </TouchableOpacity
       <HStack sx={{ gap: Theme.spacing.sm }}        <Box
@@ -110,9 +110,9 @@ export default function MorningSituationalBrief({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,
+            borderColor: colors.border,>
           }}
-                  <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Student Attendance</Text          <Text sx={{ fontSize: 22, fontWeight: '700', color: colors.text }}>{pulse ? `${pulse.todayRate}%` : '-'}</Text          <Text
+                  <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Student Attendance</Text          ><Text sx={{ fontSize: 22, fontWeight: '700', color: colors.text }}>{pulse ? `${pulse.todayRate}%` : '-'}</Text          ><Text
             sx={{
               fontSize: 11,
               color: attendanceDelta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336'),
@@ -126,16 +126,16 @@ export default function MorningSituationalBrief({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,
+            borderColor: colors.border,>
           }}
-                  <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>At-Risk Students</Text          <Text
+                  <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>At-Risk Students</Text          ><Text
             sx={{
               fontSize: 22,
               fontWeight: '700',
               color: (pulse?.atRiskCount ?? 0) > 0 ? (Theme.colors.amberGlow ?? '#ffc107') : colors.text,
             }}
                       {pulse?.atRiskCount ?? 0}
-          </Text          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{'attendance < 75%'}</Text        </Box
+          </Text          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{'attendance < 75%'}</Text        ></Box
         <TouchableOpacity onPress={onViewApprovals} activeOpacity={0.8} style={{ flex: 1 }}          <Box
             sx={{
               flex: 1,
@@ -143,9 +143,9 @@ export default function MorningSituationalBrief({
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
-              borderColor: colors.border,
+              borderColor: colors.border,>
             }}
-                      <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Pending Leaves</Text            <Text
+                      <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Pending Leaves</Text            ><Text
               sx={{
                 fontSize: 22,
                 fontWeight: '700',

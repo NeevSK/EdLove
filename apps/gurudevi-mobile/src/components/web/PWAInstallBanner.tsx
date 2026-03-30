@@ -31,32 +31,32 @@ export function PWAInstallBanner() {
     if (!canInstall && !isIOS) return null;
 
     return (
-        <Animated.View
+        <Animated.View>
             entering={SlideInDown.springify().damping(18)}
             exiting={SlideOutDown.duration(220)}
             style={[styles.banner, { backgroundColor: colors.secondary, borderTopColor: colors.border }]}
         
-            <View style={styles.left}
-                {isIOS ? (
+            <View style={styles.left}>
+                {isIOS ? (>
                     <Share size={20} color={Theme.colors.sanctuarySaffron} /
-                ) : (
+                >) : (
                     <Download size={20} color={Theme.colors.sanctuarySaffron} /
-                )}
-                <View style={styles.textBlock}
-                    <Text style={[styles.title, { color: colors.text }]}
+                >)}>
+                <View style={styles.textBlock}>
+                    <Text style={[styles.title, { color: colors.text }]}>
                         {isIOS ? 'Add to Home Screen' : 'Install Gurudevi'}
-                    </Text
-                    <Text style={[styles.sub, { color: colors.textSecondary }]}
+                    </Text>
+                    <Text style={[styles.sub, { color: colors.textSecondary }]}>
                         {isIOS
                             ? 'Tap the Share icon, then "Add to Home Screen"'
                             : 'Your Sanctuary, one tap away'}
-                    </Text
-                </View
-            </View
+                    </Text>
+                </View>
+            </View>
 
-            <View style={styles.actions}
-                {!isIOS && (
-                    <TouchableOpacity
+            <View style={styles.actions}>
+                {!isIOS && (>
+                    <TouchableOpacity>
                         onPress={async () => {
                             try {
                                 await promptInstall();
@@ -69,17 +69,17 @@ export function PWAInstallBanner() {
                         accessibilityLabel="Install Gurudevi as an app"
                     
                         <Text style={styles.installBtnText}>Install</Text
-                    </TouchableOpacity
+                    ></TouchableOpacity>
                 )}
-                <TouchableOpacity
+                <TouchableOpacity>
                     onPress={dismiss}
                     style={styles.dismissBtn}
-                    accessibilityLabel="Dismiss install prompt"
+                    accessibilityLabel="Dismiss install prompt">
                 
                     <X size={18} color={colors.textSecondary} /
-                </TouchableOpacity
-            </View
-        </Animated.View
+                ></TouchableOpacity>
+            </View>
+        </Animated.View>
     );
 }
 

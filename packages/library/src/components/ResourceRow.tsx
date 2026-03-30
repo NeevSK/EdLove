@@ -99,8 +99,8 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
     ].filter(Boolean);
 
     return (
-        <Box sx={{ marginBottom: Theme.spacing.sm }}            <SanctuaryCard onPress={onOpen}                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}                    {/* File Type Icon - Refined Glass Effect */}
-                    <Box
+        <Box sx={{ marginBottom: Theme.spacing.sm }}            <SanctuaryCard onPress={onOpen}                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}                    {/* File Type Icon - Refined Glass Effect */}>
+                    <Box>
                         sx={{
                             width: 48,
                             height: 48,
@@ -109,7 +109,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderWidth: 1,
-                            borderColor: `${config.color}30`,>
+                            borderColor: `${config.color}30`,
                         }}
                                             <Icon color={config.color} size={20} /                        ><Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text                    ></Box
                     >{/* Content */}
@@ -123,8 +123,8 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text                                ></Box                            )}
                         </HStack                    </VStack
                     {/* Actions */}
-                    <HStack space="xs" alignItems="center"                        {onFlashPlay && (
-                            <SanctuaryButton
+                    <HStack space="xs" alignItems="center"                        {onFlashPlay && (>
+                            <SanctuaryButton>
                                 onPress={onFlashPlay}
                                 variant="ghost"
                                 size="xs"
@@ -133,7 +133,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                                             {''}
                             </SanctuaryButton                        >)}
                         {onPullToDesk && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onPullToDesk}
                                 variant="ghost"
                                 size="xs"
@@ -142,7 +142,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                                             {''}
                             </SanctuaryButton                        >)}
                         {onOpenAnotherWay && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onOpenAnotherWay}
                                 variant="ghost"
                                 size="xs"
@@ -151,7 +151,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                                             {''}
                             </SanctuaryButton                        >)}
                         {onDelete && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onDelete}
                                 variant="ghost"
                                 size="xs"
@@ -161,7 +161,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             </SanctuaryButton                        >)}
 
                         {onAISparkle && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onAISparkle}
                                 variant="ghost"
                                 size="xs"
@@ -171,7 +171,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             </SanctuaryButton                        >)}
 
                         {onGenerateQuiz && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onGenerateQuiz}
                                 variant="ghost"
                                 size="xs"
@@ -181,7 +181,7 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             </SanctuaryButton                        >)}
 
                         {onGenerateGraphic && (
-                            <SanctuaryButton
+                            <SanctuaryButton>
                                 onPress={onGenerateGraphic}
                                 variant="ghost"
                                 size="xs"

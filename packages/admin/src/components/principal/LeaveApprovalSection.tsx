@@ -70,16 +70,16 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
-        padding: Theme.spacing.md,>
-      }}
+        padding: Theme.spacing.md,
+      }}>
           <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Leave Requests</Text        >{leaves.length > 0 && (
           <Box
             sx={{
               backgroundColor: Theme.colors.amberGlow ?? '#ffc107',
               borderRadius: 10,
               paddingHorizontal: 8,
-              paddingVertical: 2,>
-            }}
+              paddingVertical: 2,
+            }}>
                       <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{leaves.length}</Text          ></Box        )}
       </HStack>
       {loading && <SkeletonCard height={70} />}
@@ -98,15 +98,15 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
                 paddingVertical: Theme.spacing.sm,
                 borderBottomWidth: 1,
                 borderBottomColor: colors.border,
-                gap: 6,>
-              }}
+                gap: 6,
+              }}>
                           <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}                <Box
                   sx={{
                     backgroundColor: leaveTypeColor(leave.leave_type),
                     borderRadius: 8,
                     paddingHorizontal: 7,
-                    paddingVertical: 2,>
-                  }}
+                    paddingVertical: 2,
+                  }}>
                                   <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>{leave.leave_type}</Text                ></Box                <Text sx={{ flex: 1, fontSize: 13, color: colors.text, fontWeight: '600' }}>{shortId(leave.user_id)}...</Text                <Text sx={{ fontSize: 11, color: colors.textSecondary }}                  {formatShortDate(leave.start_date)} - {formatShortDate(leave.end_date)}
                 </Text              </HStack
               {leave.reason ? (

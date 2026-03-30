@@ -41,7 +41,7 @@ function GradeModal({
   };
 
   return (
-    <div
+    <div>
       style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={(event) => event.target === event.currentTarget && onClose()}
           <div style={{ background: 'var(--background)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '400px', margin: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.25)' }}        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}          <div            <h3 >style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: '800' }}>Grade Entry</h3            ><p style={{ margin: 0, fontSize: '12px', color: 'var(--ink-ghost)' }}>{studentName}</p          ></div          <button onClick={onClose} style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}            <X size={18} color="var(--ink-ghost)" /          ></button        </div
@@ -92,12 +92,12 @@ function SettingsModal({
   };
 
   return (
-    <div
+    <div>
       style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={(event) => event.target === event.currentTarget && onClose()}
           <div style={{ background: 'var(--background)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '360px', margin: '16px' }}        <h3 style={{ margin: '0 0 20px', fontSize: '17px', fontWeight: '800' }}>Grading Settings</h3        ><div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}          <div            <label >style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}              Grading Mode
             </label            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}              {(['marks', 'gpa', 'both'] as const).map((mode) => (
-                <button
+                <button>
                   key={mode}
                   type="button"
                   onClick={() => setGradingMode(mode)}
@@ -153,7 +153,7 @@ export default function GradebookScreenWeb() {
   };
 
   return (
-    <div className="sanctuary-screen"      <div className="sanctuary-container" style={{ maxWidth: '780px' }}        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px', flexWrap: 'wrap' }}          <button
+    <div className="sanctuary-screen"      <div className="sanctuary-container" style={{ maxWidth: '780px' }}        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px', flexWrap: 'wrap' }}          <button>
             onClick={() => navigation.goBack()}
             style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-ghost)' }}
                       <ChevronLeft size={14} /> Back
@@ -167,7 +167,7 @@ export default function GradebookScreenWeb() {
           <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}>{error}</div        >) : (
           <            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '12px', marginBottom: '20px' }}              <div className="sanctuary-card" style={{ padding: '18px' }}                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--water)' }}                  <Users size={14} /> <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Students</span                ></div                <div style={{ marginTop: '10px', fontSize: '24px', fontWeight: '800' }}>{stats.totalStudents}</div              </div              <div className="sanctuary-card" style={{ padding: '18px' }}                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--lotus)' }}                  <TrendingUp size={14} /> <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Average</span                ></div                <div style={{ marginTop: '10px', fontSize: '24px', fontWeight: '800' }}>{stats.averageMarks}</div              </div              <div className="sanctuary-card" style={{ padding: '18px' }}                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--moss)' }}                  <Award size={14} /> <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Pass Rate</span                ></div                <div style={{ marginTop: '10px', fontSize: '24px', fontWeight: '800' }}>{passRate}%</div              </div              <div className="sanctuary-card" style={{ padding: '18px' }}                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--sanctuary-saffron)' }}                  <Edit3 size={14} /> <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Mode</span                ></div                <div style={{ marginTop: '10px', fontSize: '16px', fontWeight: '800', textTransform: 'capitalize' }}>{gradingSettings?.grading_mode ?? 'marks'}</div              </div            </div
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}              {sorts.map((sort) => (
-                <button
+                <button>
                   key={sort.id}
                   onClick={() => setSortBy(sort.id)}
                   style={{
@@ -189,9 +189,9 @@ export default function GradebookScreenWeb() {
                 const marks = grade.marks ?? 0;
                 const statusColor = marks >= passingMarks ? 'var(--moss)' : 'var(--ember)';
                 return (
-                  <div
+                  <div>
                     key={grade.student_id}
-                    style={{ display: 'grid', gridTemplateColumns: '60px 1.2fr 110px 110px 180px', gap: '12px', padding: '16px 20px', borderBottom: '1px solid var(--border-light)', alignItems: 'center' }}>
+                    style={{ display: 'grid', gridTemplateColumns: '60px 1.2fr 110px 110px 180px', gap: '12px', padding: '16px 20px', borderBottom: '1px solid var(--border-light)', alignItems: 'center' }}
                                       <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--ink)' }}>#{grade.rank ?? '-'}</span                    ><div                      <div >style={{ fontSize: '14px', fontWeight: '700' }}>{studentNames[grade.student_id] ?? 'Student'}</div                      >{grade.feedback ? <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{grade.feedback}</div> : null}
                     </div                    ><span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink)' }}>{marks}/{maxMarks}</span                    ><div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}                      <span style={{ fontSize: '12px', fontWeight: '800', color: statusColor }}>{marks >= passingMarks ? 'Passing' : 'Needs support'}</span                      ><span style={{ fontSize: '11px', fontWeight: '700', color: grade.publication_state === 'published' ? 'var(--moss)' : 'var(--ink-ghost)' }}                        {grade.publication_state === 'published' ? 'Published' : 'Draft'}
                       </span                    </div                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}                      <button
@@ -199,7 +199,7 @@ export default function GradebookScreenWeb() {
                         style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', color: 'var(--ink)' }}
                                               {grade.marks === null || grade.marks === undefined ? 'Grade' : 'Edit Draft'}
                       </button                      {grade.id ? (
-                        <button
+                        <button>
                           onClick={() => publishGrade(grade.id)}
                           style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--moss)', background: 'rgba(34,197,94,0.08)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', color: 'var(--moss)' }}
                                                   {grade.publication_state === 'published' ? 'Republish' : 'Publish'}
@@ -208,7 +208,7 @@ export default function GradebookScreenWeb() {
               })}
             </div>
             {gradingStudent ? (
-              <GradeModal
+              <GradeModal>
                 studentName={studentNames[gradingStudent.student_id] ?? 'Student'}
                 current={gradingStudent.marks === null || gradingStudent.marks === undefined ? undefined : { marks: gradingStudent.marks, feedback: gradingStudent.feedback ?? '' }}
                 maxMarks={maxMarks}

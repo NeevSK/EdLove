@@ -37,13 +37,13 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading dashboard...
-        </Text      </View    );
+        </Text      </View    );>
   }
 
   if (!dashboard) {
     return (
       <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.errorText, { color: theme.accent.danger }]}          {error || 'Failed to load dashboard'}
-        </Text      </View    );
+        </Text      </View    );>
   }
 
   return (
@@ -51,12 +51,12 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
       <GuardianHeader 
         studentCount={dashboard.students.length} 
         isDesktop={isDesktop} 
-      /
-      <ScrollView 
+      />
+      ><ScrollView 
         style={styles.content}
         contentContainerStyle={[
           styles.contentContainer,
-          isDesktop && styles.contentContainerDesktop
+          isDesktop && styles.contentContainerDesktop>
         ]}
         showsVerticalScrollIndicator={false}
               {/* Students Section (Direct Component) */}
@@ -64,12 +64,12 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
           students={dashboard.students}
           onStudentPress={onStudentPress}
           isDesktop={isDesktop}
-        /
-        {/* Notifications and Events Row (POA) */}
+        />
+        >{/* Notifications and Events Row (POA) */}
         {isDesktop ? (
           <View style={styles.desktopRow}            <View style={[styles.desktopColumn, { flex: 1 }]}              <Text 
                 style={[
-                  styles.sectionHeader,
+                  styles.sectionHeader,>
                   { 
                     color: theme.text.primary,
                     fontFamily: 'System',
@@ -82,10 +82,10 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                 notifications={dashboard.notifications}
                 onNotificationPress={onNotificationPress}
                 limit={5}
-              /            </View
+              /            ></View
             <View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}              <Text 
                 style={[
-                  styles.sectionHeader,
+                  styles.sectionHeader,>
                   { 
                     color: theme.text.primary,
                     fontFamily: 'System',
@@ -102,7 +102,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
           <            {/* Mobile Notifications (POA) */}
             <View style={styles.section}              <Text 
                 style={[
-                  styles.sectionHeader,
+                  styles.sectionHeader,>
                   { 
                     color: theme.text.primary,
                     fontFamily: 'System',
@@ -119,7 +119,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
             {/* Mobile Events (POA) */}
             <View style={styles.section}              <Text 
                 style={[
-                  styles.sectionHeader,
+                  styles.sectionHeader,>
                   { 
                     color: theme.text.primary,
                     fontFamily: 'System',
@@ -132,7 +132,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
                 events={dashboard.upcomingEvents}
                 onEventPress={onEventPress}
                 limit={3}
-              /            </View          </        )}
+              /            ></View          </        )}
       </ScrollView    </View  );
 };
 

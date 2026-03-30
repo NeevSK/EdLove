@@ -68,7 +68,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   };
 
   return (
-    <View style={{ flex: 1 }}      {/* Living backdrop  renders behind all tabs */}
+    <View style={{ flex: 1 }}      {/* Living backdrop  renders behind all tabs */}>
       <SanctuaryBackground /
       ><Tab.Navigator
         id="MainTabs"
@@ -118,7 +118,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           tabBarBackground: () => <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} />,
         }}
               {/* 1. Profile Tab */}
-        <Tab.Screen
+        <Tab.Screen>
           name="Profile"
           options={{
             tabBarLabel: t('tabs.profile'),
@@ -129,7 +129,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             <ErrorBoundary name="Profile Stack"              <ProfileStackNavigator /            ></ErrorBoundary          )}
         </Tab.Screen>
         {/* 2. Classroom Tab */}
-        <Tab.Screen
+        <Tab.Screen>
           name="Classroom"
           options={{
             tabBarLabel: getClassroomLabel(),
@@ -139,20 +139,20 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                   {() => (
             isFounderLane ? (
               <ErrorBoundary name="Founder Stack"                <FounderStackNavigator /              ></ErrorBoundary            ) : (
-              <CapabilityGuard 
+              <CapabilityGuard >
                 action="read" 
                 subject="ClassroomList"
                 gateProps={{
                   context: 'classroom',
                   title: t('onboarding.classroomGateTitle') || 'Classroom Access',
                   description: t('onboarding.classroomGateDesc') || 'You need to be attached to a school to access classroom features.',
-                  actionLabel: t('onboarding.joinSchool') || 'Join School'>
+                  actionLabel: t('onboarding.joinSchool') || 'Join School'
                 }}
-                              <ErrorBoundary name="Classroom Tab"                  <ClassroomStackNavigator /                ></ErrorBoundary              </CapabilityGuard            )
+                              <ErrorBoundary name="Classroom Tab"                  <ClassroomStackNavigator /                ></ErrorBoundary              ></CapabilityGuard            )
           )}
         </Tab.Screen>
         {/* 3. Self Tab (Center Anchor) */}
-        <Tab.Screen
+        <Tab.Screen>
           name="Self"
           options={{
             tabBarLabel: t('tabs.self'),
@@ -163,7 +163,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             <ErrorBoundary name="Self Tab"              <SelfStackNavigator /            ></ErrorBoundary          )}
         </Tab.Screen>
         {/* 4. Community Tab */}
-        <Tab.Screen
+        <Tab.Screen>
           name="Community"
           options={{
             tabBarLabel: t('tabs.community'),
@@ -171,19 +171,19 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
               <View                <Users >color={color} size={size} fill={currentTab === 'community' ? color : 'none'} /              ></View            ),
           }}
                   {() => (
-            <CapabilityGuard 
+            <CapabilityGuard >
               action="read" 
               subject="CommunityGroups"
               gateProps={{
                 context: 'community',
                 title: t('onboarding.communityGateTitle') || 'Community Access',
                 description: t('onboarding.communityGateDesc') || 'Join a community to participate in groups and discussions.',
-                actionLabel: t('onboarding.exploreGroups') || 'Explore Groups'>
+                actionLabel: t('onboarding.exploreGroups') || 'Explore Groups'
               }}
-                          <ErrorBoundary name="Community Stack"                <CommunityStackNavigator /              ></ErrorBoundary            </CapabilityGuard          )}
+                          <ErrorBoundary name="Community Stack"                <CommunityStackNavigator /              ></ErrorBoundary            ></CapabilityGuard          )}
         </Tab.Screen>
         {/* 5. Library Tab */}
-        <Tab.Screen
+        <Tab.Screen>
           name="Library"
           options={{
             tabBarLabel: t('tabs.library'),
@@ -194,7 +194,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             <ErrorBoundary name="Library Stack"              <LibraryStackNavigator /            ></ErrorBoundary          )}
         </Tab.Screen      </Tab.Navigator
 
-      <AchievementUnlockOverlay
+      <AchievementUnlockOverlay>
         title={currentAchievement}
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
@@ -210,7 +210,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             paddingBottom: Theme.spacing.md,
             paddingHorizontal: Theme.spacing.md,
             borderBottomWidth: 1,
-            borderBottomColor: scene.chrome.border>
+            borderBottomColor: scene.chrome.border
           }}            <HStack justifyContent="space-between" alignItems="center"              <VStack                <Text >color={text.onCanvas} sx={{ fontSize: '$lg' as string, fontWeight: '700' }}                  {t('self.breathingReset') || 'Breathing Reset'}
                 </Text                <Text color={text.secondary} sx={{ fontSize: '$xs' as string }}                  1 minute of peace
                 </Text              </VStack              <TouchableOpacity accessibilityRole="button"

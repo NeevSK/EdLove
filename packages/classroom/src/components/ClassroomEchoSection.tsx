@@ -141,19 +141,19 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     };
 
     const renderStudentView = () => (
-        <VStack space="md" sx={{ padding: Theme.spacing.md }}
+        <VStack space="md" sx={{ padding: Theme.spacing.md }}>
             <Box sx={{ 
                 padding: Theme.spacing.lg, 
                 backgroundColor: colors.secondary, 
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: colors.tertiary>
-            }}
-                <VStack space="md"
-                    <Heading sx={{ fontSize: 18, color: Theme.colors.sanctuarySaffron }}
+                borderColor: colors.tertiary
+            }}>
+                <VStack space="md">
+                    <Heading sx={{ fontSize: 18, color: Theme.colors.sanctuarySaffron }}>
                         Sharing Your Voice>
                     </Heading>
-                    <Text sx={{ fontSize: 14, color: colors.textSecondary }}
+                    <Text sx={{ fontSize: 14, color: colors.textSecondary }}>
                         Your feedback helps the teacher improve the classroom experience. You can choose to remain anonymous.>
                     </Text>
                     
@@ -161,10 +161,10 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                         marginTop: Theme.spacing.sm,
                         borderRadius: Theme.corners.comfortable,
                         backgroundColor: colors.primary,
-                        padding: Theme.spacing.sm>
-                    }}
-                        <Input variant="underlined" sx={{ borderBottomWidth: 0 }}
-                            <InputField 
+                        padding: Theme.spacing.sm
+                    }}>
+                        <Input variant="underlined" sx={{ borderBottomWidth: 0 }}>
+                            <InputField >
                                 placeholder="What's on your mind?"
                                 value={newEcho}
                                 onChangeText={setNewEcho}
@@ -173,11 +173,11 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                 sx={{ color: colors.text }}
                             /
                         ></Input
-                    </Box>
+                    ></Box>
 
-                    <HStack justifyContent="space-between" alignItems="center"
+                    <HStack justifyContent="space-between" alignItems="center">
                         <Pressable onPress={() => setIsAnonymous(!isAnonymous)}
-                            <HStack space="xs" alignItems="center"
+                            <HStack space="xs" alignItems="center">
                                 {isAnonymous ? (>
                                     <EyeOff size={16} color={Theme.colors.sanctuarySaffron} /
                                 >) : (
@@ -186,19 +186,19 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                 <Text sx={{ 
                                     fontSize: 12, 
                                     fontWeight: '600',
-                                    color: isAnonymous ? Theme.colors.sanctuarySaffron : colors.textTertiary >
-                                }}
+                                    color: isAnonymous ? Theme.colors.sanctuarySaffron : colors.textTertiary 
+                                }}>
                                     {isAnonymous ? 'Anonymous Mode' : 'Share as yourself'}
                                 </Text>
                             </HStack>
                         </Pressable>
 
-                        <Button 
+                        <Button >
                             action="primary" 
                             size="sm" 
                             onPress={handleSendEcho}
                             isDisabled={!newEcho.trim() || isSending}
-                            sx={{ borderRadius: Theme.corners.full }}>
+                            sx={{ borderRadius: Theme.corners.full }}
                         
                             {isSending ? <Spinner color="#fff" size="small" /> : <ButtonText>Send Echo</ButtonText>}
                         </Button>
@@ -207,10 +207,10 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
             </Box>
 
             {/* Previous Echoes (Student) */}
-            <VStack space="sm" sx={{ marginTop: Theme.spacing.md }}
+            <VStack space="sm" sx={{ marginTop: Theme.spacing.md }}>
                 <Heading sx={{ fontSize: 16, color: colors.text }}>Your Recent Echoes</Heading
                 >{echoes.length === 0 ? (
-                    <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}
+                    <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
                         <Inbox size={48} color={colors.tertiary} /
                         ><Text sx={{ marginTop: Theme.spacing.sm, color: colors.textTertiary }}>No echoes sent yet.</Text
                     ></Box
@@ -219,14 +219,14 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                         <Box key={echo.id} sx={{ 
                             padding: Theme.spacing.md, 
                             backgroundColor: colors.secondary, 
-                            borderRadius: Theme.corners.comfortable >
-                        }}
-                            <VStack space="xs"
+                            borderRadius: Theme.corners.comfortable 
+                        }}>
+                            <VStack space="xs">
                                 <HStack justifyContent="space-between">
-                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textTertiary }}
-                                        {echo.is_anonymous ? 'ANONYMOUS' : 'YOU'}>
+                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textTertiary }}>
+                                        {echo.is_anonymous ? 'ANONYMOUS' : 'YOU'}
                                     </Text>
-                                    <Text sx={{ fontSize: 10, color: colors.textTertiary }}
+                                    <Text sx={{ fontSize: 10, color: colors.textTertiary }}>
                                         {formatDistanceToNow(new Date(echo.created_at))} ago>
                                     </Text>
                                 </HStack>
@@ -238,12 +238,12 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                         backgroundColor: colors.primary, 
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 3,
-                                        borderLeftColor: Theme.colors.sanctuarySaffron>
-                                    }}
+                                        borderLeftColor: Theme.colors.sanctuarySaffron
+                                    }}>
                                         <Text sx={{ fontSize: 11, fontWeight: '800', color: Theme.colors.sanctuarySaffron }}>TEACHER RESPONSE</Text
                                         ><Text sx={{ fontSize: 13, color: colors.text, marginTop: 2 }}>{echo.teacher_response}</Text
                                     ></Box
-                                )}
+                                >)}
                             </VStack>
                         </Box>
                     ))
@@ -253,9 +253,9 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     );
 
     const renderTeacherView = () => (
-        <VStack space="md" sx={{ padding: Theme.spacing.md }}
+        <VStack space="md" sx={{ padding: Theme.spacing.md }}>
             <HStack justifyContent="space-between" alignItems="center">
-                <VStack
+                <VStack>
                     <Heading >sx={{ fontSize: 18, color: colors.text }}>Student Echoes</Heading
                     ><Text sx={{ fontSize: 12, color: colors.textTertiary }}>Dignified feedback from your class</Text
                 ></VStack
@@ -264,9 +264,9 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                         backgroundColor: Theme.colors.emberRed, 
                         paddingHorizontal: 8, 
                         paddingVertical: 2, 
-                        borderRadius: 10 >
-                    }}
-                        <Text sx={{ fontSize: 10, fontWeight: '800', color: '#fff' }}
+                        borderRadius: 10 
+                    }}>
+                        <Text sx={{ fontSize: 10, fontWeight: '800', color: '#fff' }}>
                             {echoes.filter(e => !e.is_read).length} NEW
                         </Text>
                     </Box>
@@ -274,7 +274,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
             </HStack>
 
             {echoes.length === 0 ? (
-                <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}
+                <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
                     <Inbox size={48} color={colors.tertiary} /
                     ><Text sx={{ marginTop: Theme.spacing.sm, color: colors.textTertiary }}>No student echoes yet.</Text
                 ></Box
@@ -282,7 +282,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                 echoes.map(echo => {
                     const isReplyingThis = replyingTo === echo.id;
                     return (
-                        <Pressable 
+                        <Pressable >
                             key={echo.id} 
                             onPress={() => !echo.is_read && handleMarkRead(echo.id)}
                         
@@ -291,15 +291,15 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                 backgroundColor: echo.is_read ? colors.tertiary : colors.secondary, 
                                 borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
-                                borderLeftColor: echo.is_read ? colors.textTertiary : Theme.colors.sanctuarySaffron>
-                            }}
-                                <VStack space="sm"
+                                borderLeftColor: echo.is_read ? colors.textTertiary : Theme.colors.sanctuarySaffron
+                            }}>
+                                <VStack space="sm">
                                     <HStack justifyContent="space-between">
-                                        <Text sx={{ fontSize: 11, fontWeight: '800', color: colors.textTertiary }}
-                                            {echo.is_anonymous ? '\uD83D\uDC64 ANONYMOUS STUDENT' : `\uD83C\uDF93 ${echo.student_name || 'STUDENT'}`}>
+                                        <Text sx={{ fontSize: 11, fontWeight: '800', color: colors.textTertiary }}>
+                                            {echo.is_anonymous ? '\uD83D\uDC64 ANONYMOUS STUDENT' : `\uD83C\uDF93 ${echo.student_name || 'STUDENT'}`}
                                             {!echo.is_read && <Text color={Theme.colors.emberRed}>  \u25CF</Text>}
                                         </Text>
-                                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}
+                                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}>
                                             {formatDistanceToNow(new Date(echo.created_at))} ago>
                                         </Text>
                                     </HStack>
@@ -311,24 +311,24 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                             padding: Theme.spacing.sm, 
                                             backgroundColor: colors.primary, 
                                             borderRadius: Theme.corners.comfortable,
-                                            marginTop: 4>
-                                        }}
+                                            marginTop: 4
+                                        }}>
                                             <Text sx={{ fontSize: 11, fontWeight: '700', color: colors.textSecondary }}>YOUR RESPONSE</Text
                                             ><Text sx={{ fontSize: 13, color: colors.text }}>{echo.teacher_response}</Text
                                         ></Box
-                                    )}
+                                    >)}
 
                                     {!isReplyingThis ? (
                                         <Pressable onPress={() => setReplyingTo(echo.id)}
-                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}
-                                                {echo.teacher_response ? 'Edit Response' : 'Reply'}>
+                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
+                                                {echo.teacher_response ? 'Edit Response' : 'Reply'}
                                             </Text>
                                         </Pressable>
                                     ) : (
-                                        <VStack space="sm" sx={{ marginTop: 8 }}
+                                        <VStack space="sm" sx={{ marginTop: 8 }}>
                                             <Box sx={{ backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, padding: 8 }}>
-                                                <Input variant="underlined" sx={{ borderBottomWidth: 0 }}
-                                                    <InputField 
+                                                <Input variant="underlined" sx={{ borderBottomWidth: 0 }}>
+                                                    <InputField >
                                                         placeholder="Write your response..."
                                                         value={replyText}
                                                         onChangeText={setReplyText}
@@ -338,7 +338,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                                     /
                                                 ></Input
                                             ></Box>
-                                            <HStack space="sm" justifyContent="flex-end"
+                                            <HStack space="sm" justifyContent="flex-end">
                                                 <Button size="xs" variant="outline" action="secondary" onPress={() => setReplyingTo(null)}
                                                     <ButtonText>Cancel</ButtonText
                                                 ></Button
@@ -358,7 +358,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     );
 
     if (isLoading) return (
-        <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}
+        <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
             <Spinner color={Theme.colors.sanctuarySaffron} /
         ></Box
     );

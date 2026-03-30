@@ -211,8 +211,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     sx={{
                         borderRadius: Theme.corners.full,
                         backgroundColor: Theme.colors.sanctuarySaffron,
-                        paddingHorizontal: Theme.spacing.md,>
-                    }}
+                        paddingHorizontal: Theme.spacing.md,
+                    }}>
                 
                     <Plus color={Theme.colors.sacredWhite} size={16} style={{ marginRight: 4 }} /
                     ><ButtonText>{t('reminders.addReminder')}</ButtonText
@@ -227,8 +227,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                             padding: Theme.spacing.xl,
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
-                            alignItems: 'center',>
-                        }}
+                            alignItems: 'center',
+                        }}>
                     
                         <Text color={Theme.colors.mistGray} size="md" textAlign="center"
                             {t('reminders.noReminders')}>
@@ -250,8 +250,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                     borderLeftColor: reminder.is_active
                                         ? Theme.colors.sanctuarySaffron
                                         : Theme.colors.dimGray,
-                                    opacity: reminder.is_active ? 1 : 0.6,>
-                                }}
+                                    opacity: reminder.is_active ? 1 : 0.6,
+                                }}>
                             
                                 <HStack space="md" alignItems="center"
                                     {/* Icon */}>
@@ -263,8 +263,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                 borderRadius: 20,
                                                 backgroundColor: Theme.colors.obsidian,
                                                 alignItems: 'center',
-                                                justifyContent: 'center',>
-                                            }}
+                                                justifyContent: 'center',
+                                            }}>
                                         
                                             <Icon
                                                 color={reminder.is_active ? Theme.colors.sanctuarySaffron : Theme.colors.dimGray}
@@ -306,8 +306,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                             borderRadius: 18,
                                                             backgroundColor: Theme.colors.obsidian,
                                                             alignItems: 'center',
-                                                            justifyContent: 'center',>
-                                                        }}
+                                                            justifyContent: 'center',
+                                                        }}>
                                                     
                                                         <Edit color={Theme.colors.mistGray} size={16} /
                                                     ></Box
@@ -320,8 +320,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                             borderRadius: 18,
                                                             backgroundColor: Theme.colors.obsidian,
                                                             alignItems: 'center',
-                                                            justifyContent: 'center',>
-                                                        }}
+                                                            justifyContent: 'center',
+                                                        }}>
                                                     
                                                         <Trash2 color={Theme.colors.emberRed} size={16} /
                                                     ></Box
@@ -341,8 +341,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,>
-                }}
+                    borderRadius: Theme.corners.comfortable,
+                }}>
             
                 <Text
                     color={Theme.colors.mistGray}
@@ -381,8 +381,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                     size="md"
                                     sx={{
                                         backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,>
-                                    }}
+                                        borderColor: Theme.colors.obsidian,
+                                    }}>
                                 
                                     <InputField
                                         value={title}
@@ -404,8 +404,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                     size="md"
                                     sx={{
                                         backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,>
-                                    }}
+                                        borderColor: Theme.colors.obsidian,
+                                    }}>
                                 
                                     <InputField
                                         value={description}
@@ -444,8 +444,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                                             ? Theme.colors.sanctuarySaffron
                                                             : Theme.colors.ink,
                                                         alignItems: 'center',
-                                                        justifyContent: 'center',>
-                                                    }}
+                                                        justifyContent: 'center',
+                                                    }}>
                                                 
                                                     <Icon
                                                         color={isSelected ? Theme.colors.white : Theme.colors.mistGray}
@@ -466,8 +466,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                 variant="outline"
                                 onPress={closeModal}
                                 sx={{
-                                    borderColor: Theme.colors.dimGray,>
-                                }}
+                                    borderColor: Theme.colors.dimGray,
+                                }}>
                             
                                 <ButtonText color={Theme.colors.mistGray}>Cancel</ButtonText
                             ></Button
@@ -476,8 +476,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                                 onPress={saveReminder}
                                 isDisabled={!title.trim()}
                                 sx={{
-                                    backgroundColor: Theme.colors.sanctuarySaffron,>
-                                }}
+                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                }}>
                             
                                 <ButtonText
                                     {editingReminder ? 'Update' : 'Create'}>

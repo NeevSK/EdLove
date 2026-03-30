@@ -193,7 +193,7 @@ export default function IdentityCard({
                         />
                         >{/* Details */}
                         <VStack space="xs" flex={1}                            <HStack alignItems="center" space="xs"                                <Text color={colors.textSecondary as string} size="xs" bold textTransform="uppercase"                                    {roleContext.label}
-                                </Text                                <roleContext.icon size={14} color={roleContext.color} /                            ></HStack>
+                                </Text                                ><roleContext.icon size={14} color={roleContext.color} /                            ></HStack>
                             <Text color={colors.text} size="xl" bold numberOfLines={1}                                {data.full_name || 'Guest User'}
                             </Text>
                             <Text color={colors.textSecondary} size="xs" numberOfLines={1} mb={2}                                {data.school_name || t('profile.noSchoolConnected')}

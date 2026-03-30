@@ -54,8 +54,8 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
-                        borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',>
-                    }}
+                        borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',
+                    }}>
                 
                     <HStack justifyContent="space-between" alignItems="center"
                         <HStack space="md" alignItems="center">
@@ -66,8 +66,8 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                     borderRadius: 12,
                                     backgroundColor: isActive ? 'rgba(230, 126, 34, 0.2)' : 'rgba(255,255,255,0.05)',
                                     alignItems: 'center',
-                                    justifyContent: 'center',>
-                                }}
+                                    justifyContent: 'center',
+                                }}>
                             
                                 <IconComponent size={20} color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} /
                             ></Box
@@ -103,8 +103,8 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         paddingVertical: Theme.spacing.md,
                         paddingHorizontal: Theme.spacing.lg,
                         backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : 'transparent',
-                        borderRadius: Theme.corners.comfortable,>
-                    }}
+                        borderRadius: Theme.corners.comfortable,
+                    }}>
                 
                     <HStack justifyContent="space-between" alignItems="center"
                         <Text
@@ -213,8 +213,8 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                             borderTopLeftRadius: Theme.corners.generous,
                             borderTopRightRadius: Theme.corners.generous,
                             padding: Theme.spacing.xl,
-                            paddingBottom: 40,>
-                        }}
+                            paddingBottom: 40,
+                        }}>
                     
                         <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}
                             <Heading color={Theme.colors.sacredWhite} size="lg"

@@ -171,43 +171,43 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <Modal visible={visible} transparent animationType="fade"
+        <Modal visible={visible} transparent animationType="fade">
             <View style={styles.overlay}>
                 <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /
                 ><View style={styles.modalContent}
                     {/* Header */}
-                    <View style={styles.header}
+                    <View style={styles.header}>
                         <View>
                             <Text >style={styles.title}>Potential Analysis</Text
                             ><Text style={styles.subtitle}>{studentName}</Text
                         ></View
                         ><View style={styles.headerActions}
-                            <TouchableOpacity 
+                            <TouchableOpacity >
                                 onPress={handleExport} 
                                 style={[styles.actionIcon, isExporting && styles.disabledIcon]}
                                 disabled={isExporting}>
                             
                                 {isExporting ? <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} /> : <FileCheck size={20} color={Theme.colors.sanctuarySaffron} />}
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={onClose} style={styles.closeButton}
+                            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                                 <X size={24} color={colors.textSecondary} />
                             </TouchableOpacity>
                         </View>
                     </View>
 
                     {loading ? (
-                        <View style={styles.loaderContainer}
+                        <View style={styles.loaderContainer}>
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
                         ></View
                     ) : (
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                             {/* Analysis Visualization */}>
-                            <View style={styles.chartSection}
+                            <View style={styles.chartSection}>
                                 <Svg width={layoutSize} height={layoutSize}>
-                                    <G
+                                    <G>
                                         {/* Scale levels */}>
                                         {[0.2, 0.4, 0.6, 0.8, 1.0].map((scale) => (
-                                            <Circle
+                                            <Circle>
                                                 key={`scale-${scale}`}
                                                 cx={layout.center.x}
                                                 cy={layout.center.y}
@@ -221,8 +221,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         
                                         {/* Axes */}
                                         {layout.axes.map((axis, i) => (
-                                            <G key={`axis-${i}`}
-                                                <Line
+                                            <G key={`axis-${i}`}>
+                                                <Line>
                                                     x1={layout.center.x}
                                                     y1={layout.center.y}
                                                     x2={axis.x}
@@ -245,7 +245,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         ))}
 
                                         {/* Data Polygon */}
-                                        <Polygon
+                                        <Polygon>
                                             points={polygonPoints}
                                             fill={`${Theme.colors.sanctuarySaffron}40`}
                                             stroke={Theme.colors.sanctuarySaffron}
@@ -254,7 +254,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
 
                                         >{/* Interaction Points */}
                                         {layout.points.map((p, i) => (
-                                            <Circle
+                                            <Circle>
                                                 key={`pt-${i}`}
                                                 cx={p.x}
                                                 cy={p.y}
@@ -270,13 +270,13 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             ></View>
 
                             {/* Stats Summary */}
-                            <GlassCard style={styles.slidersCard}
+                            <GlassCard style={styles.slidersCard}>
                                 <View style={styles.sectionHeader}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                                         <Sparkles size={16} color={Theme.colors.sanctuarySaffron} /
                                         ><Text style={styles.sectionTitle}>Nurturing Dimensions</Text
                                     ></View
-                                    <TouchableOpacity 
+                                    <TouchableOpacity >
                                         onPress={handleGetAIInsights}
                                         disabled={loadingAI}
                                         style={styles.aiScoutButton}>
@@ -285,7 +285,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         <Text style={styles.aiScoutText}>AI Scout</Text
                                     ></TouchableOpacity
                                 </View>
-                                <View style={styles.statsGrid}
+                                <View style={styles.statsGrid}>
                                     {[>
                                         { label: 'Cognitive', value: analysis.cognitive_flow, key: 'cognitive_flow' },
                                         { label: 'Emotional', value: analysis.emotional_resonance, key: 'emotional_resonance' },
@@ -293,9 +293,9 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         { label: 'Creative', value: analysis.creative_spark, key: 'creative_spark' },
                                         { label: 'Practical', value: analysis.practical_mastery, key: 'practical_mastery' },
                                     ].map(stat => (
-                                        <View key={stat.key} style={styles.statItem}
+                                        <View key={stat.key} style={styles.statItem}>
                                             <VStack sx={{ flex: 1, gap: 4 }}>
-                                                <HStack justifyContent="space-between"
+                                                <HStack justifyContent="space-between">
                                                     <Text style={styles.statLabel}>{stat.label}</Text
                                                     ><Text style={styles.statValue}>{stat.value}%</Text
                                                 ></HStack
@@ -308,10 +308,10 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                     }}
                                                     sx={{ height: 30 }}
                                                 
-                                                    <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                                    <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
                                                         <SliderFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} /
                                                     ></SliderTrack
-                                                    <SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} /
+                                                    <SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} />
                                                 </Slider>
                                             </VStack>
                                         </View>
@@ -321,7 +321,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
 
                             {/* AI Insights Section */}
                             {aiInsights && (
-                                <GlassCard style={styles.aiInsightsCard}
+                                <GlassCard style={styles.aiInsightsCard}>
                                     <View style={styles.sectionHeader}>
                                         <Sparkles size={16} color={Theme.colors.sanctuarySaffron} /
                                         ><Text style={styles.sectionTitle}>AI Potential Insights</Text
@@ -331,7 +331,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             )}
 
                             {/* Silver Lining Analysis */}
-                            <GlassCard style={styles.notesCard}
+                            <GlassCard style={styles.notesCard}>
                                 <Text style={styles.notesLabel}>Silver Lining & Potential</Text
                                 ><TextInput
                                     style={[styles.textInput, { color: colors.textPrimary }]}
@@ -343,12 +343,12 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                 /
                             ></GlassCard
 
-                            <View style={{ height: 120 }} /
+                            <View style={{ height: 120 }} />
                         </ScrollView>
                     )}
 
                     {/* Footer Actions */}
-                    <View style={styles.footer}
+                    <View style={styles.footer}>
                         <TouchableOpacity style={styles.cancelAction} onPress={onClose}>
                             <Text style={styles.cancelText}>Cancel</Text
                         ></TouchableOpacity

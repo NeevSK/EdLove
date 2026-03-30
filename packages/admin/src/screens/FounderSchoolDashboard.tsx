@@ -75,8 +75,8 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: Theme.spacing.sm,
-                                    marginBottom: Theme.spacing.sm>
-                                }}
+                                    marginBottom: Theme.spacing.sm
+                                }}>
                                     <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} /
                                     ><Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}
                                         {t('demoMode.visionaryEcology') || "VISIONARY ECOLOGY: Previewing platform potential"}
@@ -158,16 +158,16 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                     borderColor: colors.action,
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    gap: Theme.spacing.md>
-                                }}
+                                    gap: Theme.spacing.md
+                                }}>
                                     <Box sx={{
                                         width: 40,
                                         height: 40,
                                         borderRadius: 20,
                                         backgroundColor: colors.action + '11',
                                         justifyContent: 'center',
-                                        alignItems: 'center'>
-                                    }}
+                                        alignItems: 'center'
+                                    }}>
                                         <Zap color={colors.action} size={20} /
                                     ></Box
                                     <VStack sx={{ flex: 1 }}

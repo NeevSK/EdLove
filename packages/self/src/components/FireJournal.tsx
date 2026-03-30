@@ -284,8 +284,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             backgroundColor: Theme.colors.sageGreen,
                             padding: Theme.spacing.md,
                             borderRadius: Theme.corners.comfortable,
-                            alignItems: 'center',>
-                        }}
+                            alignItems: 'center',
+                        }}>
                     
                         <Text
                             color={Theme.colors.obsidian}
@@ -302,8 +302,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                     sx={{
                         backgroundColor: Theme.colors.emberRed,
                         padding: Theme.spacing.md,
-                        borderRadius: Theme.corners.comfortable,>
-                    }}
+                        borderRadius: Theme.corners.comfortable,
+                    }}>
                                     <Text color={Theme.colors.sacredWhite} size="sm" textAlign="center"                        {burnError}
                     </Text                </Box            )}>
 
@@ -366,16 +366,16 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                             padding: Theme.spacing.md,
-                            minHeight: 200,>
-                        }}
+                            minHeight: 200,
+                        }}>
                     
                         <Input
                             variant="outline"
                             size="md"
                             sx={{
                                 borderWidth: 0,
-                                flex: 1,>
-                            }}
+                                flex: 1,
+                            }}>
                             isDisabled={isBurning || isPastView}
                         
                             <InputField
@@ -410,8 +410,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                         borderRadius: Theme.corners.full,
                         width: 48,
                         height: 48,
-                        backgroundColor: Theme.colors.ink,>
-                    }}
+                        backgroundColor: Theme.colors.ink,
+                    }}>
                 
                     <Mic color={Theme.colors.sanctuarySaffron} size={20} /
                 ></Button>
@@ -428,8 +428,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             ? Theme.colors.emberRed
                             : Theme.colors.sanctuarySaffron,
                         paddingHorizontal: Theme.spacing.lg,
-                        paddingVertical: Theme.spacing.md,>
-                    }}
+                        paddingVertical: Theme.spacing.md,
+                    }}>
                 
                     <Flame
                         color={Theme.colors.sacredWhite}
@@ -437,7 +437,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                         style={{ marginRight: Theme.spacing.sm }}
                     />
                     ><ButtonText color={Theme.colors.sacredWhite}
-                        {isPastView ? t('fireJournal.historical') : (isBurning ? t('fireJournal.burning') : t('fireJournal.burn'))}>
+                        {isPastView ? t('fireJournal.historical') : (isBurning ? t('fireJournal.burning') : t('fireJournal.burn'))}
                     </ButtonText>
                 </Button>
             </HStack>
@@ -448,8 +448,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                     sx={{
                         backgroundColor: Theme.colors.ink,
                         padding: Theme.spacing.md,
-                        borderRadius: Theme.corners.comfortable,>
-                    }}
+                        borderRadius: Theme.corners.comfortable,
+                    }}>
                 
                     <Text color={Theme.colors.mistGray} size="xs" textAlign="center"
                         {t('fireJournal.privacy')}>
@@ -458,8 +458,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
 
                 <Box
                     sx={{
-                        padding: Theme.spacing.sm,>
-                    }}
+                        padding: Theme.spacing.sm,
+                    }}>
                 
                     <Text
                         color={Theme.colors.dimGray}

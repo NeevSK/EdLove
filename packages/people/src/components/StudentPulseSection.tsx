@@ -61,8 +61,8 @@ export default function StudentPulseSection({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,>
-          }}
+            borderColor: colors.border,
+          }}>
                   <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Attendance Today</Text          ><Text
             sx={{
               fontSize: 28,
@@ -78,8 +78,8 @@ export default function StudentPulseSection({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,>
-          }}
+            borderColor: colors.border,
+          }}>
                   <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>Submissions This Week</Text          ><Text sx={{ fontSize: 28, fontWeight: '700', color: colors.text }}            {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined ? `${pulse.submissionRate}%` : '-'}
           </Text          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>of assignments</Text        ></Box      </HStack
       <HStack sx={{ gap: Theme.spacing.sm }}        <TouchableOpacity onPress={onViewAtRisk} activeOpacity={0.8} style={{ flex: 1 }}          <Box
@@ -96,8 +96,8 @@ export default function StudentPulseSection({
                   backgroundColor: colors.error,
                   borderRadius: 10,
                   paddingHorizontal: 8,
-                  paddingVertical: 2,>
-                }}
+                  paddingVertical: 2,
+                }}>
                               <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.atRiskCount ?? 0}</Text              ></Box              <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>At-risk students</Text            </HStack            {onViewAtRisk && <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text>}
           </Box        </TouchableOpacity
         {!classroomId && (
@@ -115,8 +115,8 @@ export default function StudentPulseSection({
                     backgroundColor: colors.warning,
                     borderRadius: 10,
                     paddingHorizontal: 8,
-                    paddingVertical: 2,>
-                  }}
+                    paddingVertical: 2,
+                  }}>
                                   <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{pulse?.pendingEnrollments ?? 0}</Text                ></Box                <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text                <ChevronRight size={16} color={colors.textTertiary} /              </HStack              {onViewEnrollments && (
                 <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Tap to review</Text              >)}
             </Box          </TouchableOpacity        )}
@@ -130,8 +130,8 @@ export default function StudentPulseSection({
               gap: 4,
               paddingVertical: 8,
               borderTopWidth: 1,
-              borderTopColor: colors.border,>
-            }}
+              borderTopColor: colors.border,
+            }}>
                       <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.action }}>VIEW FULL ANALYTICS</Text            ><TrendingUp size={14} color={colors.action} /          ></HStack        </TouchableOpacity      )}
     </VStack  );
 }

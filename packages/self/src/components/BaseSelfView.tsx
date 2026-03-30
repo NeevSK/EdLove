@@ -146,7 +146,7 @@ export function BaseSelfView({
                                             {isPinned && (
                                                 <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}
                                                     <Text style={{ fontSize: 10, color: 'white' }}>\uD83D\uDCCC</Text
-                                                </View>
+                                                ></View>
                                             )}
                                         </View>
                                     </View>
@@ -154,7 +154,7 @@ export function BaseSelfView({
                                         nativeStyles.activeIndicator,>
                                         { backgroundColor: isActive ? feature.domainColor : 'transparent' }
                                     ]} /
-                                    <Text
+                                    ><Text
                                         numberOfLines={1}
                                         style={[
                                             nativeStyles.circleLabel,>
@@ -192,7 +192,7 @@ export function BaseSelfView({
                                             style={{ padding: 4, marginLeft: 4 }}
                                         
                                             <Text style={{ fontSize: 16 }}>\u23F3</Text
-                                        </Pressable>
+                                        ></Pressable>
                                     )}
                                 </HStack>
                                 {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (

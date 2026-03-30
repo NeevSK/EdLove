@@ -153,8 +153,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                     borderRadius: Theme.corners.comfortable,
                                     backgroundColor: colors.tertiary,
                                     borderWidth: 1,
-                                    borderColor: colors.border>
-                                }}
+                                    borderColor: colors.border
+                                }}>
                             
                                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                     <VStack sx={{ gap: 2 }}>
@@ -221,8 +221,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         borderRadius: Theme.corners.comfortable,
                                         backgroundColor: colors.tertiary,
                                         borderWidth: 1,
-                                        borderColor: isOwner ? Theme.colors.sanctuarySaffron : colors.border>
-                                    }}
+                                        borderColor: isOwner ? Theme.colors.sanctuarySaffron : colors.border
+                                    }}>
                                 
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                         <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>

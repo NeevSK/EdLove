@@ -16,7 +16,7 @@ export default function ClassroomStackNavigator() {
     const { scene } = useTheme();
 
     return (
-        <Stack.Navigator
+        <Stack.Navigator>
             id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
@@ -24,5 +24,5 @@ export default function ClassroomStackNavigator() {
             }}
         
             <Stack.Screen name="ClassroomList" component={ClassroomScreen} /
-            <Stack.Screen name="TeacherClassroomDashboard" component={TeacherClassroomDashboard} /            <Stack.Screen name="StudentClassroomDashboard" component={StudentClassroomDashboard} /            <Stack.Screen name="Attendance" component={AttendanceScreen} /            <Stack.Screen name="Gradebook" component={GradebookScreen} /        </Stack.Navigator    );
+            ><Stack.Screen name="TeacherClassroomDashboard" component={TeacherClassroomDashboard} /            ><Stack.Screen name="StudentClassroomDashboard" component={StudentClassroomDashboard} /            ><Stack.Screen name="Attendance" component={AttendanceScreen} /            ><Stack.Screen name="Gradebook" component={GradebookScreen} /        ></Stack.Navigator    >);>
 }

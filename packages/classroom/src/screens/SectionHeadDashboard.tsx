@@ -41,8 +41,8 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                         <Text sx={{
                             fontSize: '$2xl' as any,
                             fontWeight: '700',
-                            color: Theme.colors.sacredWhite>
-                        }}
+                            color: Theme.colors.sacredWhite
+                        }}>
                             Section Coordination
                         </Text>
                         <Text sx={{ color: Theme.colors.starlightGray }}
@@ -64,8 +64,8 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                         borderRadius: '$lg' as any,
                                         backgroundColor: 'rgba(230, 126, 34, 0.1)',
                                         borderWidth: 1,
-                                        borderColor: Theme.colors.sanctuarySaffron>
-                                    }}
+                                        borderColor: Theme.colors.sanctuarySaffron
+                                    }}>
                                 
                                     <HStack gap="$3" alignItems="center"
                                         <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} /
@@ -95,8 +95,8 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                         backgroundColor: 'rgba(59, 130, 246, 0.05)',
                         borderRadius: Theme.corners.generous,
                         borderWidth: 1,
-                        borderColor: 'rgba(59, 130, 246, 0.2)',>
-                    }}
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                    }}>
                         <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}
                             <HStack sx={{ gap: 8, alignItems: 'center' }}>
                                 <CalendarCheck size={20} color={Theme.colors.gurudeviBlue} /
@@ -106,7 +106,7 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
                                 borderRadius: 12,
-                                backgroundColor: Theme.colors.gurudeviBlue + '33'>
+                                backgroundColor: Theme.colors.gurudeviBlue + '33'
                             }}
                                 <Text sx={{ fontSize: 10, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}>AGENTIC</Text
                             ></Box

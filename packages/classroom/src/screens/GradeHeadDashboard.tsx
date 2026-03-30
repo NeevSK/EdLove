@@ -89,8 +89,8 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                         ></Box>
                         <Box sx={styles.statBox}
                             <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>STUDENTS</Text
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>210</Text
-                        </Box>
+                            ><Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>210</Text
+                        ></Box>
                     </HStack>
 
                     {/* Quick Coordination */}

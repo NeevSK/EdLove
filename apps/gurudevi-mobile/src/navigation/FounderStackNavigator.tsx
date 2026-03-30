@@ -11,11 +11,11 @@ export default function FounderStackNavigator() {
     const { scene } = useTheme();
 
     return (
-        <Stack.Navigator
+        <Stack.Navigator>
             id="FounderStack"
             screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: scene.canvas.bg },
             }}
-                    <Stack.Screen name="FounderDashboard" component={FounderDashboard} /            <Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} /            <Stack.Screen name="PrincipalDashboard" component={PrincipalDashboard} /            <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} /        </Stack.Navigator    );
+                    <Stack.Screen name="FounderDashboard" component={FounderDashboard} /            ><Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} /            ><Stack.Screen name="PrincipalDashboard" component={PrincipalDashboard} /            ><Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} /        ></Stack.Navigator    >);
 }

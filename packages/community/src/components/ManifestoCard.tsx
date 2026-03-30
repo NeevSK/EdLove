@@ -43,56 +43,56 @@ export default function ManifestoCard({
 
     return (
         <SanctuaryCard onPress={onPress} elevated={has_endorsed}
-            <VStack space="md"
+            <VStack space="md">
                 <HStack justifyContent="space-between" alignItems="center"
-                    <HStack space="xs" alignItems="center"
+                    <HStack space="xs" alignItems="center">
                         <Box
                             p="$1"
                             sx={{
                                 backgroundColor: colors.overlay,
-                                borderRadius: Theme.corners.tight,
+                                borderRadius: Theme.corners.tight,>
                             }}
                         
                             <VibeIcon size={16} color={config.color} /
-                        </Box
+                        ></Box>
                         <Text
                             size="xs"
                             color={config.color}
                             bold
-                            sx={{ textTransform: 'uppercase' }}
+                            sx={{ textTransform: 'uppercase' }}>
                         
                             {vibe} Manifesto
-                        </Text
-                    </HStack
+                        </Text>
+                    </HStack>
 
                     <HStack space="xs" alignItems="center"
                         <Heart
                             size={16}
                             color={has_endorsed ? colors.error : colors.textTertiary}
                             fill={has_endorsed ? colors.error : 'none'}
-                        /
+                        />
                         <Text size="xs" color={colors.textTertiary} bold
-                            {endorsement_count}
-                        </Text
-                    </HStack
-                </HStack
+                            {endorsement_count}>
+                        </Text>
+                    </HStack>
+                </HStack>
 
                 <VStack space="xs"
-                    <Heading size="md" color={colors.text}
+                    <Heading size="md" color={colors.text}>
                         {title}
-                    </Heading
+                    </Heading>
                     <Text
                         size="sm"
                         numberOfLines={onPress ? 3 : undefined}
                         color={colors.textSecondary}
-                        sx={{ lineHeight: 22 }}
+                        sx={{ lineHeight: 22 }}>
                     
                         {content}
-                    </Text
-                </VStack
+                    </Text>
+                </VStack>
 
                 <Animated.View layout={LinearTransition}
-                    <HStack justifyContent="space-between" alignItems="center" mt="$1"
+                    <HStack justifyContent="space-between" alignItems="center" mt="$1">
                         <Box
                             sx={{
                                 backgroundColor: has_endorsed ? colors.action : 'transparent',
@@ -100,7 +100,7 @@ export default function ManifestoCard({
                                 paddingHorizontal: 12,
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: has_endorsed ? 0 : 1,
-                                borderColor: colors.border,
+                                borderColor: colors.border,>
                             }}
                         
                             <Text
@@ -110,17 +110,17 @@ export default function ManifestoCard({
                                 onPress={() => onEndorse?.(id)}
                             
                                 {has_endorsed ? 'Identified with Mission' : 'Endorse Mission'}
-                            </Text
-                        </Box
+                            </Text>
+                        </Box>
 
                         {has_endorsed && (
                             <LivingGlow duration={3000}
-                                <Star size={18} color={colors.action} /
-                            </LivingGlow
+                                <Star size={18} color={colors.action} />
+                            ></LivingGlow>
                         )}
-                    </HStack
-                </Animated.View
-            </VStack
-        </SanctuaryCard
+                    </HStack>
+                </Animated.View>
+            </VStack>
+        </SanctuaryCard>
     );
 }

@@ -173,7 +173,7 @@ export default function SubmissionModal({
                         borderWidth: 1,
                         padding: Theme.spacing.xl,
                         alignItems: 'center',
-                        borderRadius: Theme.corners.generous,>
+                        borderRadius: Theme.corners.generous,
                     }}
                 
                     <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}
@@ -207,22 +207,22 @@ export default function SubmissionModal({
                     // Full-screen modal: no border radius \u2014 content fills the entire viewport
                     borderRadius: 0,
                     height: '100%',
-                    width: '100%',>
+                    width: '100%',
                 }}
             
                 <VStack
                     sx={{
                         flex: 1,
                         padding: Theme.spacing.lg,
-                        gap: Theme.spacing.lg,>
-                    }}
+                        gap: Theme.spacing.lg,
+                    }}>
                 
                     {/* Header */}
                     <HStack
                         sx={{
                             justifyContent: 'space-between',
-                            alignItems: 'center',>
-                        }}
+                            alignItems: 'center',
+                        }}>
                     
                         <Heading sx={{ fontSize: 24, color: accent.action }}
                             {t('submission.title') || 'Submit Work'}>
@@ -233,8 +233,8 @@ export default function SubmissionModal({
                             size="sm"
                             sx={{
                                 borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable,>
-                            }}
+                                borderRadius: Theme.corners.comfortable,
+                            }}>
                             onPress={handleCancel}
                             disabled={isSubmitting}
                         
@@ -251,8 +251,8 @@ export default function SubmissionModal({
                             backgroundColor: glass.interact.bg,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: glass.interact.border,>
-                        }}
+                            borderColor: glass.interact.border,
+                        }}>
                     
                         <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 14 }}
                             {t('submission.assignmentLabel') || 'Assignment'}>
@@ -276,8 +276,8 @@ export default function SubmissionModal({
                                 backgroundColor: glass.interact.bg,
                                 borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable,
-                                minHeight: 200,>
-                            }}
+                                minHeight: 200,
+                            }}>
                         
                             <TextareaInput
                                 placeholder={
@@ -305,7 +305,7 @@ export default function SubmissionModal({
                                     style={{
                                         width: '100%',
                                         height: 200,
-                                        borderRadius: 12,>
+                                        borderRadius: 12,
                                     }}
                                     resizeMode="cover"
                                 /
@@ -327,8 +327,8 @@ export default function SubmissionModal({
                                     sx={{
                                         flex: 1,
                                         borderColor: accent.action,
-                                        borderRadius: Theme.corners.comfortable,>
-                                    }}
+                                        borderRadius: Theme.corners.comfortable,
+                                    }}>
                                     onPress={() => handlePickImage(true)}
                                     disabled={isSubmitting}
                                 
@@ -342,8 +342,8 @@ export default function SubmissionModal({
                                     sx={{
                                         flex: 1,
                                         borderColor: accent.action,
-                                        borderRadius: Theme.corners.comfortable,>
-                                    }}
+                                        borderRadius: Theme.corners.comfortable,
+                                    }}>
                                     onPress={() => handlePickImage(false)}
                                     disabled={isSubmitting}
                                 
@@ -360,8 +360,8 @@ export default function SubmissionModal({
                         sx={{
                             backgroundColor: accent.reward,
                             padding: Theme.spacing.lg,
-                            borderRadius: Theme.corners.comfortable,>
-                        }}
+                            borderRadius: Theme.corners.comfortable,
+                        }}>
                         onPress={handleSubmit}
                         disabled={isSubmitting}
                     

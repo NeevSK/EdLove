@@ -92,7 +92,7 @@ export function SimpleLineChart({
               <Text style={[styles.pointLabel, { left: x - 30 }]}                {point.x}
               </Text            </View          );>
         })}
-      </View    </View  );
+      </View    ></View  );
 }
 
 interface SimplePieChartProps {

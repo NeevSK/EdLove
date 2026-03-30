@@ -135,7 +135,7 @@ export default function StudentProfileScreen() {
     };
 
     const renderOverview = () => (
-        <VStack sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.md }}            <HStack sx={{ gap: Theme.spacing.md }}                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}
+        <VStack sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.md }}            <HStack sx={{ gap: Theme.spacing.md }}                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}>
                     <VStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
                         <Calendar size={20} color={Theme.colors.sanctuarySaffron} /
                         ><Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: colors.text }}
@@ -144,7 +144,7 @@ export default function StudentProfileScreen() {
                         <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('student.attendance') || 'Attendance'}</Text
                     ></VStack>
                 </Card>
-                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}
+                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}>
                     <VStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
                         <Trophy size={20} color={Theme.colors.amberGlow} /                        ><Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: colors.text }}                            {latestGrade?.grade ? latestGrade.grade : 'N/A'}
                         </Heading                        ><Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('student.currentGrade') || 'Current Grade'}</Text                    ></VStack                </Card            </HStack
@@ -153,32 +153,32 @@ export default function StudentProfileScreen() {
                         </Text                    </VStack                </Card                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <VStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                        <ShieldCheck size={20} color={Theme.colors.sageGreen} /                        ><Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: colors.text }}                            {timeline.length}
                         </Heading                        <Text sx={{ fontSize: 10, color: colors.textSecondary }}                            {t('student.timelineEvents') || 'Timeline Events'}
                         </Text                    </VStack                </Card            </HStack
-            <VStack sx={{ gap: Theme.spacing.sm }}                <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text }}                    {t('student.recentActivity') || 'Recent Activity'}
+            <VStack sx={{ gap: Theme.spacing.sm }}                <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text }}                    {t('student.recentActivity') || 'Recent Activity'}>
                 </Heading                {latestTimelineEvents.map((event) => (
-                    <Box
+                    <Box>
                         key={event.id}
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.comfortable,
                             borderLeftWidth: 4,
-                            borderLeftColor: event.entity_type === 'grade' ? Theme.colors.amberGlow : Theme.colors.border,>
+                            borderLeftColor: event.entity_type === 'grade' ? Theme.colors.amberGlow : Theme.colors.border,
                         }}
-                                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.sm }}                            {formatTimelineTitle(event)}
-                        </Text                        <Text sx={{ color: colors.textTertiary, fontSize: 10, marginTop: 4 }}                            {new Date(formatTimelineMeta(event)).toLocaleDateString()}>
+                                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.sm }}                            {formatTimelineTitle(event)}>
+                        </Text                        ><Text sx={{ color: colors.textTertiary, fontSize: 10, marginTop: 4 }}                            {new Date(formatTimelineMeta(event)).toLocaleDateString()}>
                         </Text                    ></Box                ))}
                 {latestTimelineEvents.length === 0 && (
-                    <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 20 }}                        {t('student.noTimelineEvents') || 'No longitudinal events recorded yet.'}
+                    <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 20 }}                        {t('student.noTimelineEvents') || 'No longitudinal events recorded yet.'}>
                     </Text                )}>
             </VStack        ></VStack    );
 
     const renderTimeline = () => (
         <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}            <HStack sx={{ gap: Theme.spacing.md }}                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>{'Attendance events'}</Text                    ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>{timelineSummary.attendanceEvents}</Heading                ></Card                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>{'Grade events'}</Text                    ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>{timelineSummary.gradeEvents}</Heading                ></Card                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>{'Observation events'}</Text                    ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>{timelineSummary.observationEvents}</Heading                ></Card            </HStack            <HStack sx={{ gap: Theme.spacing.md }}                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>{'Submission events'}</Text                    ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>{timelineSummary.submissionEvents}</Heading                ></Card                <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}                    <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>{'Study note events'}</Text                    ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>{timelineSummary.studyNoteEvents}</Heading                ></Card            </HStack
             {timeline.length === 0 ? (
-                <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 40 }}                    {t('student.noTimeline') || 'No timeline data available for this student yet.'}
+                <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 40 }}                    {t('student.noTimeline') || 'No timeline data available for this student yet.'}>
                 </Text            ) : (
                 timeline.map((event) => (
-                    <Box key={event.id} sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}                            <Text sx={{ color: colors.text, fontWeight: 'bold', textTransform: 'capitalize' }}                                {formatTimelineTitle(event)}
+                    <Box key={event.id} sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}                            <Text sx={{ color: colors.text, fontWeight: 'bold', textTransform: 'capitalize' }}                                {formatTimelineTitle(event)}>
                             </Text                            <Text sx={{ color: colors.textTertiary, fontSize: 10 }}                                {new Date(event.recorded_at).toLocaleDateString()}>
                             </Text                        ></HStack                        <Text sx={{ color: colors.textSecondary, fontSize: 12 }}                            {JSON.stringify(event.snapshot)}
                         </Text                    </Box                ))
@@ -186,14 +186,14 @@ export default function StudentProfileScreen() {
         </VStack    );
 
     const renderAcademics = () => (
-        <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}
+        <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}>
             {grades.length === 0 && (>
-                <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 40 }}
+                <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 40 }}>
                     {t('student.noGrades') || 'No academic records found.'}>
                 </Text>
             )}
             {grades.map((grade) => (
-                <HStack key={grade.id} sx={{ justifyContent: 'space-between', alignItems: 'center', padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}
+                <HStack key={grade.id} sx={{ justifyContent: 'space-between', alignItems: 'center', padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
                     <VStack>
                         <Text >sx={{ fontWeight: 'bold', color: colors.text }}>{t('common.assignment') || 'Assignment'} {grade.assignment_id?.slice(0, 4)}</Text
                         ><Text sx={{ fontSize: 12, color: colors.textSecondary }}>{new Date(grade.graded_at).toLocaleDateString()}</Text
@@ -207,28 +207,28 @@ export default function StudentProfileScreen() {
     );
 
     const renderObservations = () => (
-        <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}
+        <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}>
             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text }}
+                <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text }}>
                     {t('student.governanceNotes') || 'Professional Governance'}>
                 </Heading>
                 <Lock size={16} color={colors.textTertiary} /
             ></HStack>
             {observations.length === 0 && (
-                <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 40 }}
+                <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', padding: 40 }}>
                     {t('student.noNotes') || 'No professional notes recorded.'}>
                 </Text>
             )}
             {observations.map((obs) => (
-                <Box key={obs.id} sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}
+                <Box key={obs.id} sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
                     <HStack sx={{ justifyContent: 'space-between', marginBottom: 8 }}>
-                        <Box sx={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, backgroundColor: obs.observation_type === 'positive' ? 'rgba(255,184,0,0.1)' : colors.tertiary }}
+                        <Box sx={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, backgroundColor: obs.observation_type === 'positive' ? 'rgba(255,184,0,0.1)' : colors.tertiary }}>
                             <Text sx={{ fontSize: 10, color: obs.observation_type === 'positive' ? Theme.colors.sanctuarySaffron : colors.textSecondary, fontWeight: 'bold', textTransform: 'uppercase' }}>
                                 {obs.observation_type}
                             </Text>
                         </Box>
                         {obs.is_finalized && (
-                            <HStack sx={{ gap: 4, alignItems: 'center' }}
+                            <HStack sx={{ gap: 4, alignItems: 'center' }}>
                                 <ShieldCheck size={12} color={Theme.colors.sanctuarySaffron} /
                                 ><Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron }}>{t('student.finalized') || 'Finalized'}</Text
                             ></HStack
@@ -246,9 +246,9 @@ export default function StudentProfileScreen() {
     );
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}
+        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
             <Box sx={{ padding: Theme.spacing.md, paddingTop: Theme.spacing.xl, backgroundColor: colors.secondary, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}
+                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}>
                     <Pressable onPress={() => navigation.goBack()} onPressIn={() => hapticMedium()}
                         <Icon as={ArrowLeftIcon} size="xl" color={colors.text} /
                     ></Pressable
@@ -258,9 +258,9 @@ export default function StudentProfileScreen() {
                     ></VStack>
                 </HStack>
 
-                <HStack sx={{ gap: Theme.spacing.md }}
+                <HStack sx={{ gap: Theme.spacing.md }}>
                     {(['overview', 'academics', 'observations', 'timeline'] as const).map((tab) => (
-                        <Pressable
+                        <Pressable>
                             key={tab}
                             onPress={() => {
                                 hapticMedium();
@@ -276,8 +276,8 @@ export default function StudentProfileScreen() {
                                 color: activeTab === tab ? colors.text : colors.textSecondary,
                                 fontWeight: activeTab === tab ? 'bold' : 'normal',
                                 fontSize: Theme.typography.fontSize.sm,
-                                textTransform: 'capitalize'>
-                            }}
+                                textTransform: 'capitalize'
+                            }}>
                                 {t(`common.${tab}`) || tab}
                             </Text>
                         </Pressable>
@@ -285,12 +285,12 @@ export default function StudentProfileScreen() {
                 </HStack>
             </Box>
 
-            <ScrollView
+            <ScrollView>
                 refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
                 contentContainerStyle={{ paddingBottom: 40 }}
             
                 {isLoading ? (
-                    <Center sx={{ padding: 40 }}
+                    <Center sx={{ padding: 40 }}>
                         <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
                     ></Center
                 ) : (

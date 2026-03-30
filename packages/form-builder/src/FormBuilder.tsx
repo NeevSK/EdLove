@@ -251,17 +251,17 @@ export const FormBuilder = ({
             maxWidth: 1200,
             alignSelf: 'center',
             width: '100%',
-            gap: 32>
-        }}
+            gap: 32
+        }}>
             {/* Header */}
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <VStack sx={{ gap: 4 }}>
                     <Heading size="xl">{title}</Heading
                     ><Text sx={{ color: colors.textSecondary }}>{description}</Text
                 ></VStack
                 
                 ><HStack sx={{ gap: 12 }}
-                    <Button 
+                    <Button >
                         variant="outline" 
                         onPress={() => setPreviewMode(!previewMode)}
                         style={{ borderRadius: 12 }}
@@ -269,28 +269,28 @@ export const FormBuilder = ({
                         <Icon as={previewMode ? Layout : Eye} sx={{ marginRight: 8 }} /
                         ><ButtonText>{previewMode ? 'Back to Editor' : 'Live Preview'}</ButtonText
                     ></Button
-                    <Button 
+                    ><Button >
                         action="primary" 
                         onPress={handlePublish}
                         isDisabled={isSaving}
-                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 12 }}>
+                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 12 }}
                     
                         <Icon as={Save} color="white" sx={{ marginRight: 8 }} /
                         ><ButtonText>{isSaving ? 'Syncing...' : 'Save & Publish'}</ButtonText
                     ></Button
-                </HStack>
+                ></HStack>
             </HStack>
 
             {/* Sub-navigation */}
             {!previewMode && (
-                <HStack sx={{ gap: 24, borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: 12 }}
+                <HStack sx={{ gap: 24, borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: 12 }}>
                     {['editor', 'logic', 'analytics'].map((tab) => (
                         <TouchableOpacity key={tab} onPress={() => setActiveTab(tab as any)}
                             <Text sx={{ 
                                 fontWeight: activeTab === tab ? '700' : '400',
                                 color: activeTab === tab ? Theme.colors.sanctuarySaffron : colors.textSecondary,
-                                textTransform: 'capitalize'>
-                            }}
+                                textTransform: 'capitalize'
+                            }}>
                                 {tab}
                             </Text>
                         </TouchableOpacity>
@@ -308,16 +308,16 @@ export const FormBuilder = ({
                     ...Theme.shadows.lg,
                     maxWidth: 600,
                     alignSelf: 'center',
-                    width: '100%'>
-                }}
+                    width: '100%'
+                }}>
                     <Heading size="md" sx={{ marginBottom: 24, textAlign: 'center' }}>Real-time Preview</Heading
                     ><NativeForm manager={previewManager} submitLabel="Register Interaction" /
                 ></Box
             >) : activeTab === 'editor' ? (
-                <HStack sx={{ gap: 32, flex: 1 }}
+                <HStack sx={{ gap: 32, flex: 1 }}>
                     <VStack sx={{ flex: 2, gap: 16 }}>
                         {fields.map((field, index) => (
-                            <Box 
+                            <Box >
                                 key={field.id}
                                 sx={{ 
                                     padding: 24, 
@@ -334,8 +334,8 @@ export const FormBuilder = ({
                                 <Icon as={GripVertical} color={colors.textTertiary} /
                                 
                                 ><VStack sx={{ flex: 1, gap: 4 }}
-                                    <HStack sx={{ justifyContent: 'space-between' }}
-                                        <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sanctuarySaffron, letterSpacing: 1 }}
+                                    <HStack sx={{ justifyContent: 'space-between' }}>
+                                        <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sanctuarySaffron, letterSpacing: 1 }}>
                                             FIELD {index + 1} " {field.type.toUpperCase()}>
                                         </Text>
                                         <TouchableOpacity onPress={() => removeField(field.id)}
@@ -343,7 +343,7 @@ export const FormBuilder = ({
                                         ></TouchableOpacity
                                     </HStack>
 
-                                    <HStack sx={{ gap: 16, marginTop: 12 }}
+                                    <HStack sx={{ gap: 16, marginTop: 12 }}>
                                         <VStack sx={{ flex: 1, gap: 6 }}>
                                             <Text sx={{ fontSize: 12, fontWeight: '600' }}>Label</Text
                                             ><input 
@@ -384,7 +384,7 @@ export const FormBuilder = ({
                             </Box>
                         ))}
 
-                        <Button 
+                        <Button >
                             variant="outline" 
                             action="secondary" 
                             onPress={addField}
@@ -392,28 +392,28 @@ export const FormBuilder = ({
                                 borderStyle: 'dashed', 
                                 height: 70, 
                                 borderRadius: 24,
-                                borderColor: colors.border>
+                                borderColor: colors.border
                             }}
                         
                             <Icon as={Plus} sx={{ marginRight: 8 }} /
                             ><ButtonText>Add Field to Repository</ButtonText
                         ></Button
-                    </VStack>
+                    ></VStack>
 
-                    <VStack sx={{ flex: 1, gap: 16 }}
+                    <VStack sx={{ flex: 1, gap: 16 }}>
                         <Box sx={{ 
                             padding: 24, 
                             backgroundColor: colors.tertiary, 
                             borderRadius: 24,
                             borderWidth: 1,
-                            borderColor: colors.border>
-                        }}
-                            <HStack sx={{ gap: 8, alignItems: 'center', marginBottom: 20 }}
+                            borderColor: colors.border
+                        }}>
+                            <HStack sx={{ gap: 8, alignItems: 'center', marginBottom: 20 }}>
                                 <Icon as={Settings2} size={20} color={colors.text} /
                                 ><Heading size="sm">Architecture Settings</Heading
                             ></HStack
                             
-                            <VStack sx={{ gap: 16 }}
+                            ><VStack sx={{ gap: 16 }}>
                                 <VStack sx={{ gap: 8 }}>
                                     <Text sx={{ fontSize: 12, fontWeight: '600' }}>Submission Strategy</Text
                                     ><Text sx={{ fontSize: 12, color: colors.textSecondary }}
@@ -425,7 +425,7 @@ export const FormBuilder = ({
                     </VStack>
                 </HStack>
             ) : activeTab === 'logic' ? (
-                <Box sx={{ padding: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}
+                <Box sx={{ padding: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}>
                     <Icon as={Settings2} size={48} color={colors.textTertiary} /
                     ><Heading size="md" sx={{ marginTop: 16 }}>Conditional Branching</Heading
                     ><Text sx={{ textAlign: 'center', maxWidth: 400, marginTop: 8, color: colors.textSecondary }}
@@ -433,14 +433,14 @@ export const FormBuilder = ({
                     </Text>
                 </Box>
             ) : (
-                <VStack sx={{ gap: 24, padding: 20 }}
+                <VStack sx={{ gap: 24, padding: 20 }}>
                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <VStack
+                        <VStack>
                             <Heading >size="md">Performance Dashboard</Heading
                             ><Text sx={{ color: colors.textSecondary }}>{responses.length} Resonance Submissions</Text
                         ></VStack
                         ><HStack sx={{ gap: 8 }}
-                            <Button 
+                            <Button >
                                 variant="outline" 
                                 action="secondary" 
                                 onPress={handlePrintReport}>
@@ -457,12 +457,12 @@ export const FormBuilder = ({
                                 <Icon as={Download} sx={{ marginRight: 8 }} /
                                 ><ButtonText>CSV</ButtonText
                             ></Button>
-                            <Button 
+                            <Button >
                                 variant="outline" 
                                 action="primary" 
                                 onPress={handleExportXLSX}
                                 isDisabled={responses.length === 0}
-                                sx={{ backgroundColor: Theme.colors.sageGreen, borderColor: Theme.colors.sageGreen }}>
+                                sx={{ backgroundColor: Theme.colors.sageGreen, borderColor: Theme.colors.sageGreen }}
                             
                                 <Icon as={Save} color="white" sx={{ marginRight: 8 }} /
                                 ><ButtonText>XLSX (Excel)</ButtonText
@@ -483,8 +483,8 @@ export const FormBuilder = ({
                                 borderStyle: 'dashed',
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                gap: 24>
-                            }}
+                                gap: 24
+                            }}>
                         
                             <Box sx={{ 
                                 width: 120, 
@@ -493,21 +493,21 @@ export const FormBuilder = ({
                                 padding: 8, 
                                 borderRadius: 12,
                                 borderWidth: 1,
-                                borderColor: colors.border>
-                            }}
-                                <QRCodeGenerator 
+                                borderColor: colors.border
+                            }}>
+                                <QRCodeGenerator >
                                     value={`${window.location.origin}/f/${templateId}`} 
                                     size={104} 
                                     backgroundColor="white"
                                     color={Theme.colors.obsidian}
                                 /
                             ></Box
-                            <VStack sx={{ flex: 1, gap: 8 }}
+                            ><VStack sx={{ flex: 1, gap: 8 }}>
                                 <Heading size="sm">Physical Distribution</Heading
                                 ><Text sx={{ fontSize: 13, color: colors.textSecondary }}
                                     Display this QR in your classroom or institution for instant resonance gathering.
                                 </Text>
-                                <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}
+                                <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
                                     SHORT URL: {window.location.origin}/>f/{templateId.substring(0, 8)}
                                 </Text>
                             </VStack>
@@ -515,37 +515,37 @@ export const FormBuilder = ({
                     )}
 
                     {!templateId ? (
-                        <Box sx={{ padding: 60, alignItems: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}
+                        <Box sx={{ padding: 60, alignItems: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}>
                             <Icon as={Clock} size={48} color={colors.textTertiary} /
                             ><Heading size="sm" sx={{ marginTop: 16 }}>AWaiting Cloud Sync</Heading
                             ><Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}>Save your form to start collecting responses.</Text
                         ></Box
                     ) : responses.length === 0 && !isFetchingResponses ? (
-                        <Box sx={{ padding: 60, alignItems: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}
+                        <Box sx={{ padding: 60, alignItems: 'center', backgroundColor: colors.tertiary, borderRadius: 32, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}>
                             <Icon as={BarChart3} size={48} color={colors.textTertiary} /
                             ><Heading size="sm" sx={{ marginTop: 16 }}>Listening for Resonance...</Heading
                             ><Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}>Share your form to see real-time student insights.</Text
                         ></Box
                     ) : (
-                        <VStack sx={{ gap: 20 }}
+                        <VStack sx={{ gap: 20 }}>
                             {formAnalytics.aggregate(fields, responses).map((stat, i) => (
-                                <Box 
+                                <Box >
                                     key={i} 
                                     // @ts-ignore
                                     className="analytics-card" 
-                                    sx={{ padding: 24, backgroundColor: 'white', borderRadius: 24, borderWidth: 1, borderColor: colors.border }}>
+                                    sx={{ padding: 24, backgroundColor: 'white', borderRadius: 24, borderWidth: 1, borderColor: colors.border }}
                                 
-                                    <HStack sx={{ justifyContent: 'space-between', marginBottom: 16 }}
+                                    <HStack sx={{ justifyContent: 'space-between', marginBottom: 16 }}>
                                         <Heading size="xs">{stat.label}</Heading
                                         ><Text sx={{ fontSize: 12, color: colors.textTertiary }}>{stat.type.toUpperCase()}</Text
                                     ></HStack
 
                                     >{stat.type === 'select' ? (
-                                        <VStack sx={{ gap: 12 }}
+                                        <VStack sx={{ gap: 12 }}>
                                             {Object.entries(stat.data).map(([option, count]: any) => {
                                                 const percentage = (count / stat.totalResponses) * 100;
                                                 return (
-                                                    <VStack key={option} sx={{ gap: 4 }}
+                                                    <VStack key={option} sx={{ gap: 4 }}>
                                                         <HStack sx={{ justifyContent: 'space-between' }}>
                                                             <Text sx={{ fontSize: 13, fontWeight: '500' }}>{option}</Text
                                                             ><Text sx={{ fontSize: 12, color: colors.textSecondary }}>{count} ({Math.round(percentage)}%)</Text
@@ -558,7 +558,7 @@ export const FormBuilder = ({
                                             })}
                                         </VStack>
                                     ) : stat.type === 'number' ? (
-                                        <HStack sx={{ gap: 32 }}
+                                        <HStack sx={{ gap: 32 }}>
                                             <VStack>
                                                 <Text >sx={{ fontSize: 12, color: colors.textTertiary }}>AVERAGE</Text
                                                 ><Heading size="lg">{stat.data.average.toFixed(1)}</Heading
@@ -569,9 +569,9 @@ export const FormBuilder = ({
                                             ></VStack>
                                         </HStack>
                                     ) : (
-                                        <VStack sx={{ gap: 8 }}
+                                        <VStack sx={{ gap: 8 }}>
                                             {(stat.data as string[]).map((entry, idx) => (
-                                                <Box key={idx} sx={{ padding: 12, backgroundColor: colors.tertiary, borderRadius: 12 }}
+                                                <Box key={idx} sx={{ padding: 12, backgroundColor: colors.tertiary, borderRadius: 12 }}>
                                                     <Text sx={{ fontSize: 13 }}>{entry}</Text
                                                 ></Box
                                             ))}
@@ -589,7 +589,7 @@ export const FormBuilder = ({
 
 function TouchableOpacity({ children, onPress, style }: any) {
     return (
-        <div onClick={onPress} style={{ cursor: 'pointer', ...style }}
+        <div onClick={onPress} style={{ cursor: 'pointer', ...style }}>
             {children}>
         </div>
     );

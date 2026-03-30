@@ -235,14 +235,14 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                                 leftIcon={Play}
                                 isDisabled={resource.link_status === 'broken'}>
                                                             {resource.link_status === 'broken' ? 'Broken Link' : 'Open Resonance'}
-                            </SanctuaryButton                        </Box                        {onOpenAnotherWay && resource.url && resource.link_status !== 'broken' && (
+                            </SanctuaryButton                        ></Box                        {onOpenAnotherWay && resource.url && resource.link_status !== 'broken' && (
                             <SanctuaryButton
                                 onPress={onOpenAnotherWay}
                                 variant="outline"
                                 action="secondary"
                                 leftIcon={ArrowLeftRight}>
                                                             {''}
-                            </SanctuaryButton                        )}
+                            </SanctuaryButton                        >)}
                         {resource.link_status !== 'broken' && (
                             <SanctuaryButton
                                 onPress={() => onReportBroken(resource.id)}
@@ -257,5 +257,5 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                             action="secondary"
                             leftIcon={X}>
                                                     {''}
-                        </SanctuaryButton                    </HStack                </VStack            </ActionsheetContent        </Actionsheet    );
+                        </SanctuaryButton                    ></HStack                </VStack            </ActionsheetContent        </Actionsheet    );
 }

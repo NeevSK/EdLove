@@ -189,12 +189,12 @@ export default function GlobalCreateModal({
                         
                             <ButtonText color={colors.textSecondary}>Cancel</ButtonText
                         ></Button
-                        <Button
+                        ><Button
                             action="primary"
                             onPress={handleSubmit}
                             sx={{
                                 flex: 1,
-                                backgroundColor: Theme.colors.sanctuarySaffron,>
+                                backgroundColor: Theme.colors.sanctuarySaffron,
                             }}
                             isDisabled={isSubmitting || !name.trim()}
                         
@@ -230,7 +230,7 @@ export default function GlobalCreateModal({
                         /
                     ></HStack
 
-                    {error && (
+                    >{error && (
                         <Box sx={{ padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, borderWidth: 1, borderColor: '#ef4444' }}
                             <Text sx={{ color: '#b91c1c', fontSize: 13 }}>{error}</Text
                         ></Box
@@ -243,7 +243,7 @@ export default function GlobalCreateModal({
                                 <FormControlLabel>
                                     <FormControlLabelText >color={colors.textSecondary}>Target Institution</FormControlLabelText
                                 ></FormControlLabel
-                                <Button
+                                ><Button
                                     variant="outline"
                                     onPress={() => setShowSchoolPicker(true)}
                                     sx={{
@@ -258,7 +258,7 @@ export default function GlobalCreateModal({
                                     </ButtonText>
                                     <ChevronDown size={18} color={colors.textSecondary} /
                                 ></Button
-                            </FormControl>
+                            ></FormControl>
                         )}
 
                         <FormControl isRequired
@@ -360,8 +360,8 @@ function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress
                 flex: 1,
                 gap: 4,
                 backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
-                borderColor: active ? Theme.colors.sanctuarySaffron : colors.border>
-            }}
+                borderColor: active ? Theme.colors.sanctuarySaffron : colors.border
+            }}>
             size="sm"
         
             {React.cloneElement(icon, { color: active ? '#fff' : colors.textSecondary })}

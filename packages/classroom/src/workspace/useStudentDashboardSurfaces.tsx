@@ -86,14 +86,14 @@ function QuickAction({
     colors: any;
 }) {
     return (
-        <VStack
+        <VStack>
             alignItems="center"
             sx={{
                 flex: 1,
                 gap: Theme.spacing.xs,
-                opacity: disabled ? 0.5 : 1,>
+                opacity: disabled ? 0.5 : 1,
             }}
-                    <Box
+                    <Box>
                 asChild
                 sx={{
                     width: 60,
@@ -103,9 +103,9 @@ function QuickAction({
                     justifyContent: 'center',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: colors.border,>
+                    borderColor: colors.border,
                 }}
-                            <button onClick={disabled ? undefined : onPress as any}                    <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} /                ></button            </Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700' }}                {label}
+                            <button onClick={disabled ? undefined : onPress as any}                    <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} /                ></button            ></Box            ><Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700' }}                {label}
             </Text        </VStack    );
 }
 
@@ -123,7 +123,7 @@ function StatWidget({
     colors: any;
 }) {
     return (
-        <Box
+        <Box>
             sx={{
                 flex: 1,
                 backgroundColor: colors.secondary,
@@ -131,10 +131,10 @@ function StatWidget({
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
                 borderColor: colors.border,
-                minHeight: 100,>
+                minHeight: 100,
             }}
                     <VStack sx={{ gap: 4 }}                <LucideIcon color={color || colors.textSecondary} size={20} /                ><Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}
-                </Text                <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700' }}                    {value}
+                </Text                ><Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700' }}                    {value}
                 </Text            </VStack        </Box    );
 }
 
@@ -223,7 +223,7 @@ export function useStudentDashboardSurfaces({
                             onClassroomPress={onOpenClassroom}
                             isNested={true}
                             emptyContent={
-                                <PositiveInvitation
+                                <PositiveInvitation>
                                     context="classroom"
                                     title={isDemoExperience ? 'Join Your First Sanctuary' : undefined}
                                     description={isDemoExperience ? 'Welcome to the student sanctuary. Ready to officially join your classes and begin your quest? Connect with your teachers to get started.' : undefined}

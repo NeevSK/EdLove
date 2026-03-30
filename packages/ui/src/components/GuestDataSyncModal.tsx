@@ -152,8 +152,8 @@ export default function GuestDataSyncModal({
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
                                 borderColor: glass.interact.border,
-                                padding: Theme.spacing.md>
-                            }}
+                                padding: Theme.spacing.md
+                            }}>
                         
                             <VStack {...({ space: "sm" } as any)}
                                 {summary.timetablePeriods > 0 && (
@@ -205,8 +205,8 @@ export default function GuestDataSyncModal({
                                 height: 8,
                                 backgroundColor: glass.interact.bg,
                                 borderRadius: 4,
-                                overflow: 'hidden'>
-                            }}
+                                overflow: 'hidden'
+                            }}>
                         
                             <Box
                                 sx={{
@@ -231,8 +231,8 @@ export default function GuestDataSyncModal({
                                 borderRadius: 32,
                                 backgroundColor: `${accent.action}20`,
                                 alignItems: 'center',
-                                justifyContent: 'center'>
-                            }}
+                                justifyContent: 'center'
+                            }}>
                         
                             <Check size={32} color={accent.action} /
                         ></Box
@@ -252,8 +252,8 @@ export default function GuestDataSyncModal({
                             backgroundColor: `${accent.danger}20`,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: accent.danger>
-                        }}
+                            borderColor: accent.danger
+                        }}>
                     
                         <HStack {...({ space: "sm" } as any)}
                             <AlertCircle size={20} color={accent.danger} /

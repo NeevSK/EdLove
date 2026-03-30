@@ -66,8 +66,8 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         paddingHorizontal: Theme.spacing.md,
                         height: 48,
                         borderWidth: 1,
-                        borderColor: colors.border>
-                    }}
+                        borderColor: colors.border
+                    }}>
                 
                     <Compass size={18} color={colors.textSecondary} /
                     ><TextInput
@@ -183,8 +183,8 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     <Box sx={{
                         padding: Theme.spacing.xl,
                         backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                        borderRadius: Theme.corners.full>
-                    }}
+                        borderRadius: Theme.corners.full
+                    }}>
                         <Shield size={48} color={Theme.colors.sanctuarySaffron} /
                     ></Box
                     <VStack space="sm" alignItems="center"
@@ -211,8 +211,8 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 <Box sx={{
                     padding: Theme.spacing.xl,
                     backgroundColor: Theme.colors.gurudeviViolet + '11',
-                    borderRadius: Theme.corners.full>
-                }}
+                    borderRadius: Theme.corners.full
+                }}>
                     <Compass size={48} color={Theme.colors.gurudeviViolet} /
                 ></Box
                 <VStack space="sm" alignItems="center"

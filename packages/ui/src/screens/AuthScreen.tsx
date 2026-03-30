@@ -45,7 +45,7 @@ const GoogleIcon = ({ size = 20 }: { size?: number }) => (
         borderRadius: size / 2,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',>
+        justifyContent: 'center',
     }}        <Text style={{
             fontSize: size * 0.65,
             fontWeight: '700',
@@ -430,14 +430,14 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     }
 
     return (
-        <ScreenWrapper scroll            <Box
+        <ScreenWrapper scroll            <Box>
                 sx={{
                     flex: 1,
                     backgroundColor: colors.primary,
                     paddingHorizontal: Theme.spacing.lg,
-                    paddingVertical: Theme.spacing.xl,>
+                    paddingVertical: Theme.spacing.xl,
                 }}
-                            <Box
+                            <Box>
                     sx={{
                         position: 'absolute',
                         top: -70,
@@ -445,7 +445,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         width: 210,
                         height: 210,
                         borderRadius: 105,
-                        backgroundColor: `${colors.action}14`,>
+                        backgroundColor: `${colors.action}14`,
                     }}
                 /                ><Box
                     sx={{
@@ -461,22 +461,22 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                 ><VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center' }}
                     {/* Back button row */}
                     {onBack && (
-                        <Box sx={{ alignSelf: 'flex-start' }}                            <Button variant="link" onPress={onBack} sx={{ pl: 0 }}                                <HStack space="xs" alignItems="center"                                    <Text color={colors.textSecondary} size="lg">\u2190</Text                                    ><ButtonText color={colors.textSecondary} size="sm">Back</ButtonText                                ></HStack                            </Button                        </Box                    )}
+                        <Box sx={{ alignSelf: 'flex-start' }}                            <Button variant="link" onPress={onBack} sx={{ pl: 0 }}                                <HStack space="xs" alignItems="center"                                    <Text color={colors.textSecondary} size="lg">\u2190</Text                                    ><ButtonText color={colors.textSecondary} size="sm">Back</ButtonText                                ></HStack                            ></Button                        ></Box                    )}
 
-                    <VStack space="lg" alignItems="center" sx={{ pt: Theme.spacing.md }}                        <BreathAnimation delay={100}                            <LivingGlow active size={132} glowColor={colors.glow} style={{ alignItems: 'center', justifyContent: 'center' }}                                <VStack space="sm" alignItems="center"                                    <Box
+                    <VStack space="lg" alignItems="center" sx={{ pt: Theme.spacing.md }}                        <BreathAnimation delay={100}                            <LivingGlow active size={132} glowColor={colors.glow} style={{ alignItems: 'center', justifyContent: 'center' }}                                <VStack space="sm" alignItems="center"                                    <Box>
                                         sx={{
                                             px: Theme.spacing.md,
                                             py: Theme.spacing.xs,
                                             borderRadius: Theme.corners.full,
                                             backgroundColor: `${colors.action}12`,
                                             borderWidth: 1,
-                                            borderColor: `${colors.action}28`,>
+                                            borderColor: `${colors.action}28`,
                                         }}
-                                                                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.5 }}                                            ENTER THE SANCTUARY
-                                        </Text                                    </Box                                    <Heading size="3xl" color={colors.text} textAlign="center" sx={{ fontFamily: '$english', fontWeight: '$bold', letterSpacing: -1.2 }}                                        Gurudevi>
+                                                                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.5 }}                                            ENTER THE SANCTUARY>
+                                        </Text                                    ></Box                                    <Heading size="3xl" color={colors.text} textAlign="center" sx={{ fontFamily: '$english', fontWeight: '$bold', letterSpacing: -1.2 }}                                        Gurudevi>
                                     </Heading                                ></VStack                            </LivingGlow                        </BreathAnimation                        <BreathAnimation delay={200}                            <Text color={colors.textSecondary} size="md" textAlign="center" sx={{ maxWidth: 320 }}                                {t('auth.tagline') || 'Enter the Sanctuary of Learning'}
                             </Text                        </BreathAnimation                        <HStack space="sm" sx={{ flexWrap: 'wrap', justifyContent: 'center' }}                            {ENTRY_PILLARS.map((pillar) => (
-                                <Box
+                                <Box>
                                     key={pillar}
                                     sx={{
                                         px: Theme.spacing.sm,
@@ -484,12 +484,12 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                         borderRadius: Theme.corners.full,
                                         backgroundColor: `${colors.secondary}CC`,
                                         borderWidth: 1,
-                                        borderColor: colors.border,>
+                                        borderColor: colors.border,
                                     }}
-                                                                    <Text size="xs" color={colors.textSecondary} bold                                        {pillar}
-                                    </Text                                </Box                            ))}>
+                                                                    <Text size="xs" color={colors.textSecondary} bold                                        {pillar}>
+                                    </Text                                ></Box                            ))}>
                         </HStack                    ></VStack
-                    <Box
+                    <Box>
                         sx={{
                             backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
@@ -500,16 +500,16 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                             shadowOffset: { width: 0, height: 10 },
                             shadowOpacity: 0.12,
                             shadowRadius: 24,
-                            elevation: 5,>
+                            elevation: 5,
                         }}
-                                            <VStack space="xl"                            <GlassCard
+                                            <VStack space="xl"                            <GlassCard>
                                 style={{
                                     padding: 18,
                                     borderRadius: Theme.corners.generous,
-                                    backgroundColor: colors.overlay,>
+                                    backgroundColor: colors.overlay,
                                 }}
-                                                            <VStack space="sm"                                    <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.8 }}                                        SANCTUARY ENTRY
-                                    </Text                                    <Heading size="sm" color={colors.text}                                        {isSignUp ? 'Begin with a held identity' : 'Return to your learning sanctuary'}>
+                                                            <VStack space="sm"                                    <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.8 }}                                        SANCTUARY ENTRY>
+                                    </Text                                    ><Heading size="sm" color={colors.text}                                        {isSignUp ? 'Begin with a held identity' : 'Return to your learning sanctuary'}>
                                     </Heading                                    ><Text color={colors.textSecondary} size="sm"                                        {isSignUp
                                             ? 'Choose the path that feels easiest now. You can start with Google or move more slowly with email.'
                                             : 'Reconnect with your profile, invitations, and saved learning flow without losing where you were.'}
@@ -522,7 +522,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                     flexDirection: 'row',
                                     alignSelf: 'center',
                                     borderWidth: 1,
-                                    borderColor: colors.border,>
+                                    borderColor: colors.border,
                                 }}                                    <Pressable
                                         onPress={() => { hapticLight(); setIsSignUp(true); setShowEmailAuth(false); setErrors({}); }}
                                         sx={{
@@ -533,10 +533,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                         }}
                                         accessibilityRole="button"
                                         accessibilityState={{ selected: isSignUp }}
-                                                                            <Text
+                                                                            <Text>
                                             size="sm"
                                             fontWeight={isSignUp ? '$bold' : '$medium'}
-                                            color={isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                            color={isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}
                                                                                     {t('auth.signup') || 'Sign Up'}
                                         </Text                                    ></Pressable                                    <Pressable
                                         onPress={() => { hapticLight(); setIsSignUp(false); setShowEmailAuth(false); setErrors({}); }}
@@ -548,18 +548,18 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                         }}
                                         accessibilityRole="button"
                                         accessibilityState={{ selected: !isSignUp }}
-                                                                            <Text
+                                                                            <Text>
                                             size="sm"
                                             fontWeight={!isSignUp ? '$bold' : '$medium'}
-                                            color={!isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                            color={!isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}
                                                                                     {t('auth.login') || 'Log In'}
                                         </Text                                    ></Pressable                                </Box                            )}
 
                             {!showEmailAuth && !shouldHideGeneralAuth && (
-                                <BreathAnimation delay={400}                                    <VStack space="md"                                        <VStack space="xs"                                            <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                                CHOOSE YOUR PATH
+                                <BreathAnimation delay={400}                                    <VStack space="md"                                        <VStack space="xs"                                            <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                                CHOOSE YOUR PATH>
                                             </Text                                            <Text color={colors.textSecondary}                                                Keep moving with Google, or enter with an email and password.>
                                             </Text                                        ></VStack
-                                        <Button
+                                        <Button>
                                             size="xl"
                                             onPress={() => handleOAuthSignIn('google')}
                                             isDisabled={loading}
@@ -572,7 +572,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                             }}
                                                                                     <HStack space="md" alignItems="center"                                                <Box sx={{ p: '$2', backgroundColor: Theme.colors.sacredWhite, borderRadius: Theme.corners.full }}                                                    <GoogleIcon size={24} /                                                ></Box                                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                                    {isSignUp ? "Sign up with Google" : t('auth.signInWithGoogle')}
                                                 </ButtonText                                            </HStack                                        </Button
-                                        <Button
+                                        <Button>
                                             size="lg"
                                             variant="outline"
                                             onPress={() => { hapticLight(); setShowEmailAuth(true); }}
@@ -582,10 +582,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                 </ButtonText                                            </HStack                                        </Button                                    </VStack                                </BreathAnimation                            )}
 
                             {showEmailAuth && (
-                                <BreathAnimation delay={400}                                    <GlassCard style={{ padding: 24, borderRadius: Theme.corners.generous, backgroundColor: colors.overlay }}                                        <VStack space="lg" sx={{ width: '100%' }}                                            <VStack space="xs"                                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                                    EMAIL PATH
+                                <BreathAnimation delay={400}                                    <GlassCard style={{ padding: 24, borderRadius: Theme.corners.generous, backgroundColor: colors.overlay }}                                        <VStack space="lg" sx={{ width: '100%' }}                                            <VStack space="xs"                                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                                    EMAIL PATH>
                                                 </Text                                                <Heading size="md" color={colors.text}                                                    {isSignUp ? t('auth.createAccount') : t('auth.signInEmail')}>
                                                 </Heading                                            ></VStack
-                                            <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary, borderColor: colors.border }}                                                <InputField
+                                            <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary, borderColor: colors.border }}                                                <InputField>
                                                     placeholder={t('auth.email')}
                                                     value={email}
                                                     onChangeText={setEmail}
@@ -603,7 +603,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                     onChangeText={setPassword}
                                                     secureTextEntry
                                                     autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                                                    textContentType={isSignUp ? 'newPassword' : 'password'}>
+                                                    textContentType={isSignUp ? 'newPassword' : 'password'}
                                                     returnKeyType="go"
                                                     onSubmitEditing={handleAuth}
                                                 /                                            ></Input
@@ -611,39 +611,39 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                                 size="lg"
                                                 onPress={handleAuth}
                                                 isDisabled={loading}
-                                                sx={{ backgroundColor: colors.action, borderRadius: Theme.corners.comfortable, mt: '$2' }}>
-                                                                                            <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold"                                                    {loading ? t('auth.processing') : (isSignUp ? t('auth.signup') : t('auth.login'))}
+                                                sx={{ backgroundColor: colors.action, borderRadius: Theme.corners.comfortable, mt: '$2' }}
+                                                                                            <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold"                                                    {loading ? t('auth.processing') : (isSignUp ? t('auth.signup') : t('auth.login'))}>
                                                 </ButtonText                                            ></Button>
                                             <Button variant="link" onPress={() => { setShowEmailAuth(false); setErrors({}); }}                                                <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText                                            ></Button                                        </VStack                                    </GlassCard                                </BreathAnimation                            )}
 
                             {!shouldHideGeneralAuth && !showEmailAuth && !isSignUp && (
-                                <Box
+                                <Box>
                                     sx={{
                                         px: Theme.spacing.md,
                                         py: Theme.spacing.sm,
                                         borderRadius: Theme.corners.comfortable,
                                         backgroundColor: `${Theme.colors.gurudeviBlue}12`,
                                         borderWidth: 1,
-                                        borderColor: `${Theme.colors.gurudeviBlue}28`,>
+                                        borderColor: `${Theme.colors.gurudeviBlue}28`,
                                     }}
-                                                                    <Text color={colors.textSecondary} size="sm"                                        You can still continue gently as a guest and create an account later when you want your sanctuary identity to persist.
-                                    </Text                                </Box                            )}>
+                                                                    <Text color={colors.textSecondary} size="sm"                                        You can still continue gently as a guest and create an account later when you want your sanctuary identity to persist.>
+                                    </Text                                ></Box                            )}>
 
                             {errors._form ? (
-                                <Box
+                                <Box>
                                     sx={{
                                         px: Theme.spacing.md,
                                         py: Theme.spacing.sm,
                                         borderRadius: Theme.corners.comfortable,
                                         backgroundColor: `${colors.error}12`,
                                         borderWidth: 1,
-                                        borderColor: `${colors.error}24`,>
+                                        borderColor: `${colors.error}24`,
                                     }}
-                                                                    <Text color={colors.error} size="sm"                                        {errors._form}
+                                                                    <Text color={colors.error} size="sm"                                        {errors._form}>
                                     </Text                                ></Box                            ) : null}>
                         </VStack                    </Box                </VStack            </Box
             {Scanner && (
-                <Scanner
+                <Scanner>
                     visible={showScanner}
                     onClose={() => setShowScanner(false)}
                     onScan={async (data) => {
@@ -663,7 +663,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     }}
                     title="Scan Invite Code"
                 /            >)}
-            <GuestDataSyncModal
+            <GuestDataSyncModal>
                 isOpen={showSyncModal}
                 userId={newUserId}
                 onSyncComplete={() => {

@@ -236,7 +236,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         });
 
         return (
-            <Box
+            <Box>
                 sx={{
                     backgroundColor: note.is_done ? colors.tertiary : colors.secondary,
                     borderRadius: Theme.corners.comfortable,
@@ -244,14 +244,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     borderLeftColor: note.is_done ? colors.border : meta.color,
                     padding: Theme.spacing.md,
                     marginBottom: Theme.spacing.sm,
-                    opacity: note.is_done ? 0.6 : 1,>
+                    opacity: note.is_done ? 0.6 : 1,
                 }}
             
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
-                    {/* Left: check-off (todos) or type icon */}>
-                    <HStack sx={{ gap: 8, alignItems: 'center', flex: 1 }}
+                <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    {/* Left: check-off (todos) or type icon */}
+                    <HStack sx={{ gap: 8, alignItems: 'center', flex: 1 }}>
                         {isTodo ? (>
-                            <TouchableOpacity
+                            <TouchableOpacity>
                                 onPress={() => handleToggleDone(note)}
                                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             
@@ -263,13 +263,13 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         ) : (
                             <NoteIcon size={14} color={note.is_done ? colors.textTertiary : meta.color} /
                         >)}
-                        <Text
+                        <Text>
                             sx={{
                                 fontSize: Theme.typography.fontSize.xs,
                                 fontWeight: '700',
                                 color: note.is_done ? colors.textTertiary : meta.color,
                                 textTransform: 'uppercase',
-                                letterSpacing: 0.5,>
+                                letterSpacing: 0.5,
                             }}
                         
                             {meta.label}
@@ -277,21 +277,21 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     </HStack>
 
                     {/* Right: time + actions */}
-                    <HStack sx={{ gap: 10, alignItems: 'center' }}
+                    <HStack sx={{ gap: 10, alignItems: 'center' }}>
                         <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text
                         >{!note.is_done && (
-                            <TouchableOpacity
+                            <TouchableOpacity>
                                 onPress={() => handleTogglePin(note)}
                                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             
-                                <Pin
+                                <Pin>
                                     size={14}
                                     color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
                                     fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
                                 /
                             ></TouchableOpacity
                         )}
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             onPress={() => handleDelete(note.id)}
                             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         
@@ -301,13 +301,13 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 </HStack>
 
                 {/* Content */}
-                <Text
+                <Text>
                     sx={{
                         fontSize: Theme.typography.fontSize.sm,
                         color: note.is_done ? colors.textTertiary : colors.text,
                         marginTop: Theme.spacing.xs,
                         lineHeight: 20,
-                        textDecorationLine: note.is_done ? 'line-through' : 'none',>
+                        textDecorationLine: note.is_done ? 'line-through' : 'none',
                     }}
                 
                     {note.content}
@@ -315,7 +315,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
                 {/* Context tag */}
                 {(note.context_teacher || note.context_classroom) && (
-                    <HStack sx={{ gap: 6, marginTop: Theme.spacing.xs, alignItems: 'center' }}
+                    <HStack sx={{ gap: 6, marginTop: Theme.spacing.xs, alignItems: 'center' }}>
                         <BookMarked size={11} color={colors.textTertiary} /
                         ><Text sx={{ fontSize: 11, color: colors.textTertiary }}
                             {note.context_teacher?.full_name || (note.context_classroom as any)?.name}
@@ -327,8 +327,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     };
 
     const renderGroup = ({ item: group }: { item: NoteGroup }) => (
-        <VStack sx={{ marginBottom: Theme.spacing.md }}
-            <Text
+        <VStack sx={{ marginBottom: Theme.spacing.md }}>
+            <Text>
                 sx={{
                     fontSize: Theme.typography.fontSize.xs,
                     fontWeight: '700',
@@ -336,12 +336,12 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     textTransform: 'uppercase',
                     letterSpacing: 1,
                     marginBottom: Theme.spacing.sm,
-                    paddingHorizontal: Theme.spacing.lg,>
+                    paddingHorizontal: Theme.spacing.lg,
                 }}
             
                 {group.label}
             </Text>
-            <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}
+            <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}>
                 {group.data.map((note) => renderNoteCard({ item: note }))}
             </VStack>
         </VStack>
@@ -350,8 +350,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     // \u2500\u2500 Render \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
     return (
-        <ScreenWrapper scroll={false}
-            <GlobalHeader
+        <ScreenWrapper scroll={false}>
+            <GlobalHeader>
                 title="My Logbook"
                 subtitle="Principal's private notes"
                 showBack
@@ -363,20 +363,20 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={100}
             
-                <VStack sx={{ flex: 1 }}
+                <VStack sx={{ flex: 1 }}>
                     {loading ? (>
-                        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
                         ></Box
                     ) : grouped.length === 0 ? (
-                        <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}
-                            <PositiveInvitation
+                        <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
+                            <PositiveInvitation>
                                 title="Your logbook is empty"
                                 description="Tap the button below to capture your first thought \u2014 a to-do for tomorrow, a classroom observation, or a decision you just made."
                             /
                         ></Box
                     ) : (
-                        <FlatList
+                        <FlatList>
                             data={grouped}
                             keyExtractor={(g) => g.label}
                             renderItem={renderGroup}
@@ -390,21 +390,21 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
                     {/* Compose sheet */}
                     {composing ? (
-                        <Box
+                        <Box>
                             sx={{
                                 backgroundColor: colors.secondary,
                                 borderTopWidth: 1,
                                 borderTopColor: colors.border,
-                                padding: Theme.spacing.md,>
+                                padding: Theme.spacing.md,
                             }}
                         
                             {/* Type selector */}
-                            <View style={styles.typeRow}
+                            <View style={styles.typeRow}>
                                 {(Object.entries(NOTE_TYPE_META) as [PrincipalNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][]).map(([type, meta]) => {
                                     const isActive = draftType === type;
                                     const Icon = meta.icon;
                                     return (
-                                        <TouchableOpacity
+                                        <TouchableOpacity>
                                             key={type}
                                             onPress={() => setDraftType(type)}
                                             style={[
@@ -431,7 +431,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                 })}
                             </View>
 
-                            <TextInput
+                            <TextInput>
                                 value={draft}
                                 onChangeText={setDraft}
                                 placeholder={NOTE_TYPE_META[draftType].placeholder}
@@ -449,15 +449,15 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             /
 
                             ><HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}
-                                <TouchableOpacity
+                                <TouchableOpacity>
                                     onPress={() => { setComposing(false); setDraft(''); }}
                                     style={styles.cancelBtn}
                                 
-                                    <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}
+                                    <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>
                                         Cancel>
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity
+                                <TouchableOpacity>
                                     onPress={handleSave}
                                     disabled={!draft.trim() || saving}
                                     style={[
@@ -473,8 +473,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             </HStack>
                         </Box>
                     ) : (
-                        <Box sx={{ position: 'absolute', bottom: 24, right: 20 }}
-                            <TouchableOpacity
+                        <Box sx={{ position: 'absolute', bottom: 24, right: 20 }}>
+                            <TouchableOpacity>
                                 onPress={() => setComposing(true)}
                                 style={[styles.fabButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                                 activeOpacity={0.85}

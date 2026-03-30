@@ -115,8 +115,8 @@ export default function AttendanceSheet({
                             alignItems: 'center',
                             width: 80,
                             borderRadius: Theme.corners.comfortable,
-                            marginVertical: Theme.spacing.xs,>
-                        }}
+                            marginVertical: Theme.spacing.xs,
+                        }}>
                     
                         <Check color={Theme.colors.sacredWhite} size={24} /
                     ></Box
@@ -129,8 +129,8 @@ export default function AttendanceSheet({
                             alignItems: 'center',
                             width: 80,
                             borderRadius: Theme.corners.comfortable,
-                            marginVertical: Theme.spacing.xs,>
-                        }}
+                            marginVertical: Theme.spacing.xs,
+                        }}>
                     
                         <X color={Theme.colors.sacredWhite} size={24} /
                     ></Box
@@ -149,8 +149,8 @@ export default function AttendanceSheet({
                             padding: Theme.spacing.md,
                             marginVertical: Theme.spacing.xs,
                             borderLeftWidth: 4,
-                            borderLeftColor: (STATUS_CONFIG as any)[item.status].color,>
-                        }}
+                            borderLeftColor: (STATUS_CONFIG as any)[item.status].color,
+                        }}>
                     
                         <HStack alignItems="center" justifyContent="space-between" sx={{ gap: 12 }}
                             <HStack alignItems="center" sx={{ flex: 1, gap: 12 }}>
@@ -162,8 +162,8 @@ export default function AttendanceSheet({
                                             borderRadius: Theme.corners.full,
                                             backgroundColor: colors.tertiary,
                                             justifyContent: 'center',
-                                            alignItems: 'center',>
-                                        }}
+                                            alignItems: 'center',
+                                        }}>
                                     
                                         <Text color={colors.textSecondary} sx={{ fontWeight: '700' }}
                                             {item.roll_number}>
@@ -189,8 +189,8 @@ export default function AttendanceSheet({
                                     borderRadius: Theme.corners.full,
                                     backgroundColor: (STATUS_CONFIG as any)[studentStatus].color,
                                     justifyContent: 'center',
-                                    alignItems: 'center',>
-                                }}
+                                    alignItems: 'center',
+                                }}>
                             
                                 <StatusIcon color={Theme.colors.sacredWhite} size={20} /
                             ></Box
@@ -223,8 +223,8 @@ export default function AttendanceSheet({
                                     padding: Theme.spacing.sm,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 3,
-                                    borderLeftColor: STATUS_CONFIG.present.color,>
-                                }}
+                                    borderLeftColor: STATUS_CONFIG.present.color,
+                                }}>
                             
                                 <Text color={colors.textSecondary} sx={{ fontSize: 12 }}
                                     {t('attendance.stats.present')}>
@@ -240,8 +240,8 @@ export default function AttendanceSheet({
                                     padding: Theme.spacing.sm,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 3,
-                                    borderLeftColor: STATUS_CONFIG.absent.color,>
-                                }}
+                                    borderLeftColor: STATUS_CONFIG.absent.color,
+                                }}>
                             
                                 <Text color={colors.textSecondary} sx={{ fontSize: 12 }}
                                     {t('attendance.stats.absent')}>
@@ -257,8 +257,8 @@ export default function AttendanceSheet({
                                     padding: Theme.spacing.sm,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 3,
-                                    borderLeftColor: STATUS_CONFIG.late.color,>
-                                }}
+                                    borderLeftColor: STATUS_CONFIG.late.color,
+                                }}>
                             
                                 <Text color={colors.textSecondary} sx={{ fontSize: 12 }}
                                     {t('attendance.stats.late')}>
@@ -319,8 +319,8 @@ export default function AttendanceSheet({
                         sx={{
                             backgroundColor: colors.secondary,
                             padding: Theme.spacing.md,
-                            borderRadius: Theme.corners.comfortable,>
-                        }}
+                            borderRadius: Theme.corners.comfortable,
+                        }}>
                     
                         <Text color={colors.textSecondary} sx={{ fontSize: 12, marginBottom: Theme.spacing.xs }}
                             {t('common.quickActions') || 'Quick Actions:'}>

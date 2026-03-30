@@ -225,7 +225,7 @@ export function LibraryThumbnailCard({
                         <                            {subject && <Text style={styles.metaText}>\u00C2\u00B7</Text>}
                             <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} /                            ><Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}                                {endorsements}
                             </Text                        </                    )}>
-                </View                {copyrightNotice && (
+                </View                >{copyrightNotice && (
                     <View style={styles.copyrightBadge}                        <Text style={styles.copyrightText} numberOfLines={1}>\u00C2\u00A9 {copyrightNotice}</Text                    ></View                )}
             </LinearGradient        </View    );
 
@@ -246,7 +246,7 @@ export function LibraryThumbnailCard({
             }}
                     <View style={styles.card}                {thumbnailUrl ? (
                     <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}>
-                    </ImageBackground                ) : (
+                    </ImageBackground                >) : (
                     <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        ></View                        {overlay}
                     </                )}
             </View        </Pressable    );

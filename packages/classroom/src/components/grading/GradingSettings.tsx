@@ -97,7 +97,7 @@ export default function GradingSettings({
                             
                                 <Radio value="marks"
                                     <RadioIndicator>
-                                        <RadioIcon >/
+                                        <RadioIcon />/
                                     ></RadioIndicator>
                                     <RadioLabel
                                         <VStack>
@@ -129,7 +129,7 @@ export default function GradingSettings({
                             
                                 <Radio value="gpa"
                                     <RadioIndicator>
-                                        <RadioIcon >/
+                                        <RadioIcon />/
                                     ></RadioIndicator>
                                     <RadioLabel
                                         <VStack>
@@ -161,7 +161,7 @@ export default function GradingSettings({
                             
                                 <Radio value="both"
                                     <RadioIndicator>
-                                        <RadioIcon >/
+                                        <RadioIcon />/
                                     ></RadioIndicator>
                                     <RadioLabel
                                         <VStack>

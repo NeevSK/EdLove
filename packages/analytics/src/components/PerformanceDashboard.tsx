@@ -72,7 +72,7 @@ export function PerformanceDashboard({
           <Card            <Text >style={styles.sectionTitle}>Recommendations</Text            ><VStack space="sm"              {recommendations.map((recommendation, index) => (
                 <Text key={index} style={styles.recommendationText}                  {index + 1}. {recommendation}
                 </Text              ))}>
-            </VStack          </Card        )}
+            </VStack          ></Card        )}
       </VStack    </ScrollView  );
 }
 

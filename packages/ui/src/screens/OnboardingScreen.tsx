@@ -38,7 +38,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         subtitle: string;
         children: React.ReactNode;
     }) => (
-        <VStack flex={1} px="$5" pt="$5" pb="$6"            <Box
+        <VStack flex={1} px="$5" pt="$5" pb="$6"            <Box>
                 sx={{
                     borderRadius: Theme.corners.generous,
                     borderWidth: 1,
@@ -49,18 +49,18 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     shadowOffset: { width: 0, height: 14 },
                     shadowOpacity: 0.1,
                     shadowRadius: 24,
-                    elevation: 4,>
+                    elevation: 4,
                 }}
-                            <Box
+                            <Box>
                     sx={{
                         px: Theme.spacing.lg,
                         py: Theme.spacing.lg,
                         backgroundColor: colors.overlay,
                         borderBottomWidth: 1,
-                        borderBottomColor: colors.border,>
+                        borderBottomColor: colors.border,
                     }}
                                     <VStack space="md"                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}                            {JOURNEY_PILLARS.map((pillar) => (
-                                <Box
+                                <Box>
                                     key={pillar}
                                     sx={{
                                         px: Theme.spacing.sm,
@@ -68,10 +68,10 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                         borderRadius: Theme.corners.full,
                                         backgroundColor: `${colors.primary}CC`,
                                         borderWidth: 1,
-                                        borderColor: colors.border,>
+                                        borderColor: colors.border,
                                     }}
-                                                                    <Text size="xs" color={colors.textSecondary} bold                                        {pillar}
-                                    </Text                                </Box                            ))}>
+                                                                    <Text size="xs" color={colors.textSecondary} bold                                        {pillar}>
+                                    </Text                                ></Box                            >))}>
                         </HStack                        ><ProgressIndicator currentStep={currentStep} totalSteps={7} /                        ><VStack space="xs"                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                                {step}
                             </Text                            <Heading size="2xl" color={colors.text}                                {title}
                             </Heading                            <Text color={colors.textSecondary}                                {subtitle}
@@ -295,11 +295,11 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     // --- Renderers ---
 
     const renderNameStep = () => (
-        <StepShell
+        <StepShell>
             step="STEP 1 \u00B7 ARRIVAL"
             title={t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
             subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}>
-                    <VStack space="lg"                <Input variant="outline" size="xl" sx={{ borderColor: colors.textTertiary, borderRadius: Theme.corners.comfortable }}                    <InputField
+                    <VStack space="lg"                <Input variant="outline" size="xl" sx={{ borderColor: colors.textTertiary, borderRadius: Theme.corners.comfortable }}                    <InputField>
                         placeholder={t('onboarding.namePlaceholder')}
                         value={name}
                         onChangeText={setName}
@@ -333,7 +333,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             </Text            <VStack space="md"                {ROLE_OPTIONS.map((r) => {
                     const selected = role === r.value;
                     return (
-                        <Pressable
+                        <Pressable>
                             key={r.value}
                             onPress={() => { setRole(r.value); hapticLight(); }}
                             accessibilityRole="radio"
@@ -354,16 +354,16 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                                                     {t(`role.${r.value}`)}
                                 </Text                                <Text size="sm" color={colors.textSecondary}                                    {t(r.descKey)}
                                 </Text                            </VStack                            {selected && (
-                                <Box
+                                <Box>
                                     sx={{
                                         width: 22,
                                         height: 22,
                                         borderRadius: 11,
                                         backgroundColor: colors.action,
                                         alignItems: 'center',
-                                        justifyContent: 'center',>
+                                        justifyContent: 'center',
                                     }}
-                                                                    <Text size="xs" color={Theme.colors.sacredWhite}>\u2713</Text                                ></Box                            )}
+                                                                    <Text size="xs" color={Theme.colors.sacredWhite}>\u2713</Text                                ></Box                            >)}
                         </Pressable                    );
                 })}
             </VStack            <HStack space="md" mt="$6"                <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}                    <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText                ></Button                <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText                ></Button            </HStack        </VStack    );
@@ -377,7 +377,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             <VStack space="xl" mt="$8" px="$6" flex={1}                <ProgressIndicator currentStep={index} totalSteps={7} /                ><VStack
                     space="md"
                     alignItems="center"
-                                    <Text
+                                    <Text>
                         size="6xl"
                         textAlign="center"
                         sx={{ lineHeight: 80 }}
@@ -414,7 +414,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         backgroundColor: `${Theme.colors.gurudeviBlue}12`,
                     }}
                 /                ><VStack flex={1}                    <VStack px="$6" pt="$5" pb="$2" space="sm"                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}                            {JOURNEY_PILLARS.map((pillar) => (
-                                <Box
+                                <Box>
                                     key={pillar}
                                     sx={{
                                         px: Theme.spacing.sm,
@@ -422,10 +422,10 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                         borderRadius: Theme.corners.full,
                                         backgroundColor: `${colors.secondary}CC`,
                                         borderWidth: 1,
-                                        borderColor: colors.border,>
+                                        borderColor: colors.border,
                                     }}
-                                                                    <Text size="xs" color={colors.textSecondary} bold                                        {pillar}
-                                    </Text                                </Box                            ))}>
+                                                                    <Text size="xs" color={colors.textSecondary} bold                                        {pillar}>
+                                    </Text                                ></Box                            ))}>
                         </HStack                        ><Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                            SANCTUARY JOURNEY
                         </Text                    </VStack                    {isCompleting ? (
                         <Center flex={1}                            <Text color={colors.text}>Finalizing your sanctuary...</Text                        ></Center                    ) : (

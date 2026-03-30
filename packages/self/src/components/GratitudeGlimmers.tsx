@@ -145,8 +145,8 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                       backgroundColor: Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable,
                       borderLeftWidth: 3,
-                      borderLeftColor: cat?.color || Theme.colors.sanctuarySaffron>
-                    }}
+                      borderLeftColor: cat?.color || Theme.colors.sanctuarySaffron
+                    }}>
                   
                     <HStack justifyContent="space-between" alignItems="flex-start"
                       <VStack space="xs" sx={{ flex: 1 }}>
@@ -207,8 +207,8 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                       borderColor:
                         category === cat.id
                           ? Theme.colors.sanctuarySaffron
-                          : 'transparent'>
-                    }}
+                          : 'transparent'
+                    }}>
                   
                     <Text fontSize="$xl">{cat.emoji}</Text
                     ><Text
@@ -240,8 +240,8 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
-                minHeight: 100>
-              }}
+                minHeight: 100
+              }}>
             
               <InputField
                 placeholder={t('self.whatSmiled')}
@@ -281,8 +281,8 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
               isDisabled={!content.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
-                borderRadius: Theme.corners.comfortable>
-              }}
+                borderRadius: Theme.corners.comfortable
+              }}>
             
               <ButtonText>{t('common.save')}</ButtonText
             ></Button

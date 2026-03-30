@@ -100,7 +100,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                         accessibilityHint={`Shows details and guidance for ${title}`}
                         style={{ padding: 4 }}
                                             <InfoIcon size="sm" color="var(--ink-ghost)" /                    ></Pressable
-                    {/* Add Icon (+) */}>
+                    >{/* Add Icon (+) */}>
                     {onAdd && (
                         <Pressable 
                             onPress={onAdd}
@@ -157,7 +157,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                     {scopeMeta && (
                         <Box style={{ background: 'var(--background-alt)', padding: '12px', borderRadius: '12px' }}                            <Text style={{ fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: 'var(--ink-ghost)' }}                                {scopeBadgeLabel}
                             </Text                            <Text style={{ fontSize: '13px', color: 'var(--ink-subtle)' }}                                {scopeHelpText}>
-                            </Text                        </Box                    )}
+                            </Text                        ></Box                    )}
                     
                     {featureInfo?.howToUse && (
                         <Box style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '12px' }}

@@ -41,13 +41,13 @@ export function SanctuaryTabBar<T extends string>({
     style,
 }: SanctuaryTabBarProps<T>) {
     return (
-        <div
+        <div>
             style={{
                 display: 'flex',
                 gap: '8px',
                 flexWrap: 'wrap',
                 marginBottom: '32px',
-                ...style,
+                ...style,>
             }}
         
             {tabs.map(tab => {
@@ -55,7 +55,7 @@ export function SanctuaryTabBar<T extends string>({
                 const activeBg = tab.activeColor ?? 'var(--moss)';
                 const activeText = tab.activeTextColor ?? 'white';
                 return (
-                    <button
+                    <button>
                         key={tab.id}
                         onClick={() => onSelect(tab.id)}
                         style={{
@@ -75,10 +75,10 @@ export function SanctuaryTabBar<T extends string>({
                         }}
                     
                         <tab.icon size={15} /
-                        {tab.label}
-                    </button
+                        >{tab.label}>
+                    </button>
                 );
             })}
-        </div
+        </div>
     );
 }

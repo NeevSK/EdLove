@@ -55,8 +55,8 @@ function ZoneIntro({
           fontWeight: '800',
           color: Theme.colors.gurudeviViolet,
           textTransform: 'uppercase',
-          letterSpacing: 1.2,>
-        }}
+          letterSpacing: 1.2,
+        }}>
               {eyebrow}
       </Text      <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.inkTruth }}>{title}</Heading      ><Text sx={{ fontSize: 13, lineHeight: 20, color: Theme.colors.bark }}>{copy}</Text    ></VStack  );
 }
@@ -71,8 +71,8 @@ function SnapshotTile({ label, value }: { label: string; value: number | string 
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: Theme.colors.border,
-        padding: Theme.spacing.md,>
-      }}
+        padding: Theme.spacing.md,
+      }}>
           <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.bark, textTransform: 'uppercase', letterSpacing: 0.6 }}        {label}
       </Text      <Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}        {value}>
       </Text    ></Box  );
@@ -110,8 +110,8 @@ function InstitutionLinks({
           borderRadius: Theme.corners.comfortable,
           borderWidth: 1,
           borderColor: colors.border,
-          padding: Theme.spacing.md,>
-        }}
+          padding: Theme.spacing.md,
+        }}>
               <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}          <Box
             sx={{
               width: 36,
@@ -119,8 +119,8 @@ function InstitutionLinks({
               borderRadius: Theme.corners.medium,
               backgroundColor: `${Theme.colors.gurudeviBlue}18`,
               alignItems: 'center',
-              justifyContent: 'center',>
-            }}
+              justifyContent: 'center',
+            }}>
                       <Icon size={18} color={Theme.colors.gurudeviBlue} /          ></Box          <VStack sx={{ flex: 1 }}            <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.text }}>{label}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}>{hint}</Text          ></VStack        </HStack      </Box    </TouchableOpacity  );
 
   return (

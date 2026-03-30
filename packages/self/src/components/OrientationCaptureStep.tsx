@@ -205,7 +205,7 @@ export const OrientationCaptureStep = ({
 
     return (
         <VStack style={{ flex: 1 }} space="md"
-            {/* Progress dots */}
+            {/* Progress dots */}>
             <HStack space="xs" justifyContent="center" style={{ paddingTop: Theme.spacing.md }}
                 {Array.from({ length: totalSteps }).map((_, i) => (
                     <Box
@@ -216,16 +216,16 @@ export const OrientationCaptureStep = ({
                             borderRadius: 3,
                             backgroundColor: i === currentStep
                                 ? Theme.colors.sanctuarySaffron
-                                : i < currentStep ? colors.action : colors.border,
+                                : i < currentStep ? colors.action : colors.border,>
                         }}
                     /
-                ))}
-            </HStack
+                >))}
+            </HStack>
 
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ padding: Theme.spacing.lg }}
-                showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}>
             
                 {/* Header */}
                 <VStack space="xs" style={{ marginBottom: Theme.spacing.lg }}
@@ -235,22 +235,22 @@ export const OrientationCaptureStep = ({
                             fontWeight: '700',
                             letterSpacing: 1.2,
                             color: Theme.colors.sanctuarySaffron,
-                            textTransform: 'uppercase',
+                            textTransform: 'uppercase',>
                         }}
                     
                         {`${questionIndex + 1} of ${QUESTIONS.length}`}
-                    </Text
+                    </Text>
                     <Heading
                         size="lg"
                         color={colors.text}
-                        style={{ lineHeight: 28 }}
+                        style={{ lineHeight: 28 }}>
                     
                         {question?.situation}
-                    </Heading
+                    </Heading>
                     <Text color={colors.textSecondary} size="sm"
-                        {question?.prompt}
-                    </Text
-                </VStack
+                        {question?.prompt}>
+                    </Text>
+                </VStack>
 
                 {/* Options */}
                 <VStack space="sm"
@@ -274,22 +274,22 @@ export const OrientationCaptureStep = ({
                             
                                 <HStack space="md" alignItems="center"
                                     <Text style={{ fontSize: 28 }}>{opt.emoji}</Text
-                                    <Text
+                                    ><Text
                                         style={{
                                             flex: 1,
                                             fontSize: Theme.typography.fontSize.sm,
                                             lineHeight: 20,
                                             color: isSelected ? colors.text : colors.textSecondary,
-                                            fontWeight: isSelected ? '600' : '400',
+                                            fontWeight: isSelected ? '600' : '400',>
                                         }}
                                     
                                         {opt.label}
-                                    </Text
-                                </HStack
-                            </Pressable
+                                    </Text>
+                                </HStack>
+                            </Pressable>
                         );
                     })}
-                </VStack
+                </VStack>
 
                 {/* Privacy note */}
                 <Text
@@ -298,12 +298,12 @@ export const OrientationCaptureStep = ({
                         fontSize: Theme.typography.fontSize.xs,
                         color: colors.textTertiary,
                         textAlign: 'center',
-                        lineHeight: 16,
+                        lineHeight: 16,>
                     }}
                 
                     \uD83D\uDD12 Your answers are private. They help the app feel more like you \u2014 we never label or categorize you.
-                </Text
-            </ScrollView
+                </Text>
+            </ScrollView>
 
             {/* Footer actions */}
             <HStack
@@ -311,7 +311,7 @@ export const OrientationCaptureStep = ({
                 style={{
                     paddingHorizontal: Theme.spacing.lg,
                     paddingBottom: Theme.spacing.xl,
-                    paddingTop: Theme.spacing.sm,
+                    paddingTop: Theme.spacing.sm,>
                 }}
             
                 <Pressable
@@ -325,25 +325,25 @@ export const OrientationCaptureStep = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexDirection: 'row',
-                        gap: 4,
+                        gap: 4,>
                     }}
                 
                     <ChevronLeft color={colors.textSecondary} size={16} /
-                    <Text color={colors.textSecondary} size="sm">Back</Text
-                </Pressable
+                    ><Text color={colors.textSecondary} size="sm">Back</Text
+                ></Pressable>
                 <Pressable
                     onPress={onSkip}
                     style={{
                         flex: 2,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',
+                        alignItems: 'center',>
                     }}
                 
                     <Text color={colors.textTertiary} size="sm">Skip for now</Text
-                </Pressable
-            </HStack
-        </VStack
+                ></Pressable>
+            </HStack>
+        </VStack>
     );
 }
 

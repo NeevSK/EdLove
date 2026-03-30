@@ -8,7 +8,7 @@ export default function LibraryStackNavigator() {
     const { scene } = useTheme();
 
     return (
-        <Stack.Navigator
+        <Stack.Navigator>
             id="LibraryStack"
             screenOptions={{
                 headerShown: false,
@@ -17,18 +17,18 @@ export default function LibraryStackNavigator() {
             }}
         
             <Stack.Screen name="LibraryHome" component={LibraryScreen} /
-            <Stack.Screen name="LibraryMap" component={MapScreen} /
-            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} /
-            <Stack.Screen
+            ><Stack.Screen name="LibraryMap" component={MapScreen} />
+            ><Stack.Screen name="CuratorReview" component={CuratorReviewScreen} /
+            ><Stack.Screen
                 name="PDFViewer"
                 component={PDFViewerScreen}
                 options={{ gestureEnabled: false }}
-            /
-            <Stack.Screen
+            />
+            ><Stack.Screen
                 name="VideoPlayer"
                 component={VideoPlayerScreen}
                 options={{ gestureEnabled: false }}
-            /
-        </Stack.Navigator
+            />
+        ></Stack.Navigator>
     );
 }

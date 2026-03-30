@@ -125,8 +125,8 @@ export default function FounderDashboard() {
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
                                     borderColor: Theme.colors.sanctuarySaffron,
-                                    marginBottom: Theme.spacing.md>
-                                }}
+                                    marginBottom: Theme.spacing.md
+                                }}>
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}
                                         <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
                                             <SchoolIcon size={24} color={Theme.colors.sanctuarySaffron} /
@@ -208,8 +208,8 @@ export default function FounderDashboard() {
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
                                 borderRadius: 12,
-                                backgroundColor: colors.secondary>
-                            }}
+                                backgroundColor: colors.secondary
+                            }}>
                                 <Text sx={{ fontSize: 12 }} color={colors.textSecondary}
                                     {filteredSchools.length} Registered>
                                 </Text>
@@ -244,8 +244,8 @@ export default function FounderDashboard() {
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
                                         borderColor: colors.border,
-                                        borderStyle: 'dashed'>
-                                    }}
+                                        borderStyle: 'dashed'
+                                    }}>
                                         <Text color={colors.textTertiary}>No institutions found</Text
                                     ></Box
                                 )}
@@ -311,8 +311,8 @@ function StatCard({ label, value, icon, color }: { label: string, value: number,
             backgroundColor: colors.secondary,
             borderRadius: Theme.corners.comfortable,
             borderLeftWidth: 4,
-            borderLeftColor: color>
-        }}
+            borderLeftColor: color
+        }}>
             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}
                 {icon}>
             </HStack>
@@ -338,8 +338,8 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                 backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: colors.border>
-            }}
+                borderColor: colors.border
+            }}>
                 <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}
                     <Box sx={{
                         width: 48,
@@ -347,8 +347,8 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                         borderRadius: 12,
                         backgroundColor: colors.action + '22',
                         justifyContent: 'center',
-                        alignItems: 'center'>
-                    }}
+                        alignItems: 'center'
+                    }}>
                         <SchoolIcon size={24} color={colors.action} /
                     ></Box
                     <VStack sx={{ flex: 1 }}

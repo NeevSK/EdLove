@@ -152,8 +152,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
-                    borderLeftColor: Theme.colors.sanctuarySaffron>
-                  }}
+                    borderLeftColor: Theme.colors.sanctuarySaffron
+                  }}>
                 
                   <HStack justifyContent="space-between" alignItems="flex-start"
                     <VStack space="xs" sx={{ flex: 1 }}>
@@ -202,8 +202,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
               sx={{
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
-                borderColor: Theme.colors.transparent>
-              }}
+                borderColor: Theme.colors.transparent
+              }}>
             
               <InputField
                 placeholder={t('self.exampleStudent')}
@@ -239,8 +239,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                         category === cat.id
                           ? Theme.colors.sanctuarySaffron
                           : Theme.colors.ink,
-                      borderRadius: Theme.corners.comfortable>
-                    }}
+                      borderRadius: Theme.corners.comfortable
+                    }}>
                   
                     <Text fontSize="$md">{cat.emoji}</Text
                     ><Text
@@ -271,8 +271,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
-                minHeight: 100>
-              }}
+                minHeight: 100
+              }}>
             
               <InputField
                 placeholder={t('self.momentDescriptionPlaceholder')}
@@ -313,8 +313,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
               isDisabled={!momentDescription.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
-                borderRadius: Theme.corners.comfortable>
-              }}
+                borderRadius: Theme.corners.comfortable
+              }}>
             
               <ButtonText>{t('common.save')}</ButtonText
             ></Button

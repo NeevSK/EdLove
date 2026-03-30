@@ -298,8 +298,8 @@ export function ResonancePatternCard({
                                     <View key={axis.key}
                                         <HStack justifyContent="space-between" alignItems="center">
                                             <Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.lo}</Text
-                                            <Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.hi}</Text
-                                        </HS>tack>
+                                            ><Text style={{ color: colors.textTertiary, fontSize: 10 }}>{axis.hi}</Text
+                                        ></HS>tack>
                                         ><View
                                             style={{
                                                 height: 4,
@@ -320,7 +320,7 @@ export function ResonancePatternCard({
                                                     transform: [{ translateX: -3 }],>
                                                 }}
                                             /
-                                        </View>
+                                        ></View>
                                     </Vi>ew>
                                 );
                             })}

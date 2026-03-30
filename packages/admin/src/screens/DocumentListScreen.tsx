@@ -154,11 +154,11 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}          Documents>
-        </Text        <TouchableOpacity
+        </Text        ><TouchableOpacity
           style={[styles.createButton, { backgroundColor: theme.accent.action }]}
           onPress={onCreateNew}
                   <Text style={[styles.createButtonText, { color: theme.text.inverse }]}            + New
-          </Text        </TouchableOpacity      </View>
+          </Text        ></TouchableOpacity      </View>
       {/* Status Filters */}
       <ScrollView 
         horizontal 
@@ -175,8 +175,8 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
               {filteredDocuments.length === 0 ? (
           <View style={styles.emptyState}            <Text style={[styles.emptyText, { color: theme.text.secondary }]}              {selectedStatus === 'all' 
                 ? 'No documents yet. Create your first document to get started.'
-                : `No ${selectedStatus} documents found.`>
-              }
+                : `No ${selectedStatus} documents found.`
+              }>
             </Text          </View        ) : (
           filteredDocuments.map(renderDocumentItem)
         )}

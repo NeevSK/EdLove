@@ -107,8 +107,8 @@ export default function ReportCard({
                                 padding: Theme.spacing.xl,
                                 backgroundColor: Theme.colors.sacredWhite,
                                 borderRadius: Theme.corners.comfortable,
-                                alignItems: 'center',>
-                            }}
+                                alignItems: 'center',
+                            }}>
                         
                             <Text color={Theme.colors.starlightGray} textAlign="center"
                                 {t('grades.noAssignments') || 'No assignments recorded.'}>
@@ -130,8 +130,8 @@ export default function ReportCard({
                                         borderRadius: Theme.corners.comfortable,
                                         ...Theme.shadows.sm,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.sanctuarySaffron,>
-                                    }}
+                                        borderLeftColor: Theme.colors.sanctuarySaffron,
+                                    }}>
                                 
                                     <VStack space="md"
                                         {/* Assignment Header */}>
@@ -162,8 +162,8 @@ export default function ReportCard({
                                                                 paddingHorizontal: Theme.spacing.sm,
                                                                 paddingVertical: Theme.spacing.xs,
                                                                 backgroundColor: Theme.colors.sanctuarySaffron,
-                                                                borderRadius: Theme.corners.tight,>
-                                                            }}
+                                                                borderRadius: Theme.corners.tight,
+                                                            }}>
                                                         
                                                             <Text size="sm" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}
                                                                 {letterGrade}>
@@ -185,8 +185,8 @@ export default function ReportCard({
                                                     paddingVertical: Theme.spacing.sm,
                                                     backgroundColor: Theme.colors.ink,
                                                     borderRadius: Theme.corners.tight,
-                                                    alignSelf: 'flex-start',>
-                                                }}
+                                                    alignSelf: 'flex-start',
+                                                }}>
                                             
                                                 <Text size="sm" sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}
                                                     {t('grades.rankInClass', { rank: grade.rank }) || `Rank: #${grade.rank}`}>

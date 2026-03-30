@@ -169,7 +169,7 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     Sleep tracking is available in the morning (5am - 11am)>
                 </Text>
                 <Text style={{ fontSize: 48 }}>\uD83C\uDF19</Text
-            </VStack>
+            ></VStack>
         );
     }
 
@@ -196,8 +196,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
-                    position: 'relative',>
-                }}
+                    position: 'relative',
+                }}>
             
                 {/* Animated stars */}
                 <Animated.View
@@ -225,8 +225,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                     size="2xl"
                     sx={{
                         fontWeight: typography.fontWeight.semibold,
-                        marginTop: Theme.spacing.md,>
-                    }}
+                        marginTop: Theme.spacing.md,
+                    }}>
                 
                     {currentQuality?.label}
                 </Text>
@@ -258,8 +258,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                             <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}
                                 <SliderFilledTrack
                                     sx={{
-                                        backgroundColor: currentQuality?.color,>
-                                    }}
+                                        backgroundColor: currentQuality?.color,
+                                    }}>
                                 /
                             ></SliderTrack>
                             <SliderThumb
@@ -268,8 +268,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                                     borderWidth: 4,
                                     borderColor: Theme.colors.sacredWhite,
                                     width: 36,
-                                    height: 36,>
-                                }}
+                                    height: 36,
+                                }}>
                             /
                         ></Slider>
 
@@ -294,8 +294,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                         isDisabled={isSaving || disabled}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: currentQuality?.color,>
-                        }}
+                            backgroundColor: currentQuality?.color,
+                        }}>
                     
                         <ButtonText
                             {isSaving ? t('common.loading') : t('sleepTracker.logButton')}>
@@ -310,8 +310,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                         padding: Theme.spacing.md,
                         backgroundColor: Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',>
-                    }}
+                        alignItems: 'center',
+                    }}>
                 
                     <Text color={Theme.colors.sageGreen} size="md"
                         \u2713 {t('sleepTracker.alreadyLogged')}>
@@ -327,8 +327,8 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,>
-                }}
+                    borderRadius: Theme.corners.comfortable,
+                }}>
             
                 <Text
                     color={Theme.colors.mistGray}

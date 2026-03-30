@@ -34,7 +34,7 @@ function AnalyticsWidget({
             </Text          )}
         </HStack        >
         <Text style={[styles.value, { color }]}>{value}</Text        
-        {subtitle && (
+        >{subtitle && (
           <Text style={styles.subtitle}>{subtitle}</Text        >)}
         
         {gradeInfo && (

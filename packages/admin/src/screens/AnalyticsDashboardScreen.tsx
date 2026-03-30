@@ -114,7 +114,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   };
 
   const renderMetricCard = (key: string, value: number, title: string, icon: string) => (
-    <TouchableOpacity
+    <TouchableOpacity>
       key={key}
       style={[
         styles.metricCard,>
@@ -125,7 +125,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
         }
       ]}
       onPress={() => onMetricDrillDown(key, { value, title })}
-          <View style={styles.metricHeader}        <Text 
+          <View style={styles.metricHeader}        <Text >
           style={[
             styles.metricIcon,>
             { 
@@ -145,7 +145,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           ]}
                   {title}
         </Text      </View      
-      <Text 
+      <Text >
         style={[
           styles.metricValue,>
           { 
@@ -158,7 +158,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               {typeof value === 'number' ? value.toFixed(1) : (value || 0)}
         {key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : ''}
       </Text      >
-      <Text 
+      <Text >
         style={[
           styles.metricChange,>
           { 
@@ -184,7 +184,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   };
 
   const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, color: string) => (
-    <View
+    <View>
       key={title}
       style={[
         styles.liveMetricCard,>
@@ -194,7 +194,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           borderWidth: 1,
         }
       ]}
-          <Text 
+          <Text >
         style={[
           styles.liveMetricTitle,>
           { 
@@ -229,7 +229,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
   const renderTimeRangeSelector = () => (
     <View style={styles.timeRangeSelector}      {(['week', 'month', 'quarter', 'year'] as const).map((range) => (
-        <TouchableOpacity
+        <TouchableOpacity>
           key={range}
           style={[
             styles.timeRangeButton,>
@@ -240,7 +240,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             }
           ]}
           onPress={() => setSelectedTimeRange(range)}
-                  <Text 
+                  <Text >
             style={[
               styles.timeRangeText,>
               { 
@@ -256,13 +256,13 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading analytics dashboard...
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading analytics dashboard...>
         </Text      </View    );>
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text 
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}>
+      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text >
             style={[
               styles.title,>
               { 
@@ -286,7 +286,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           </Text        </View        
         {renderTimeRangeSelector()}
       </View>
-      <ScrollView 
+      <ScrollView >
         style={styles.content}
         contentContainerStyle={[
           styles.contentContainer,
@@ -294,7 +294,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
         ]}
         showsVerticalScrollIndicator={false}
               {/* Key Metrics */}
-        <View style={styles.section}          <Text 
+        <View style={styles.section}          <Text >
             style={[
               styles.sectionHeader,>
               { 
@@ -306,7 +306,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             ]}
                       Key Performance Metrics
           </Text          >
-          <View style={[
+          <View style={[>
             styles.metricsGrid,
             isDesktop && styles.metricsGridDesktop>
           ]}            {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
@@ -346,7 +346,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
           </View        </View
         {/* Live System Metrics */}
         {liveMetrics && (
-          <View style={styles.section}            <Text 
+          <View style={styles.section}            <Text >
               style={[
                 styles.sectionHeader,>
                 { 
@@ -358,7 +358,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               ]}
                           Live System Metrics
             </Text            >
-            <View style={[
+            <View style={[>
               styles.liveMetricsGrid,
               isDesktop && styles.liveMetricsGridDesktop>
             ]}              {renderLiveMetricCard(
@@ -389,7 +389,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
         {/* Resource Usage */}
         {liveMetrics && (
-          <View style={styles.section}            <Text 
+          <View style={styles.section}            <Text >
               style={[
                 styles.sectionHeader,>
                 { 
@@ -401,7 +401,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               ]}
                           Resource Usage
             </Text            >
-            <View style={styles.resourceUsageContainer}              <View style={styles.resourceItem}                <Text 
+            <View style={styles.resourceUsageContainer}              <View style={styles.resourceItem}                <Text >
                   style={[
                     styles.resourceLabel,>
                     { 
@@ -431,7 +431,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                   ]}
                                   {liveMetrics.resource_usage.cpu.toFixed(1)}%
                 </Text              </View              
-              <View style={styles.resourceItem}                <Text 
+              <View style={styles.resourceItem}                <Text >
                   style={[
                     styles.resourceLabel,>
                     { 
@@ -461,7 +461,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                   ]}
                                   {liveMetrics.resource_usage.memory.toFixed(1)}%
                 </Text              </View              
-              <View style={styles.resourceItem}                <Text 
+              <View style={styles.resourceItem}                <Text >
                   style={[
                     styles.resourceLabel,>
                     { 

@@ -80,7 +80,7 @@ export default function FullProfileScreenWeb() {
                 title={t('profile.fullProfile')}
                 showBack
                 onBack={() => navigation.goBack()}
-            /            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}                <Box sx={{ maxWidth: 800, margin: '0 auto', width: '100%', padding: '$6' }}                    <VStack space="2xl"                        <HStack space="xl" alignItems="center"                            <AvatarDisplay
+            /            ><ScrollView contentContainerStyle={{ paddingBottom: 100 }}                <Box sx={{ maxWidth: 800, margin: '0 auto', width: '100%', padding: '$6' }}                    <VStack space="2xl"                        <HStack space="xl" alignItems="center"                            <AvatarDisplay
                                 userId={profile.id}
                                 avatarUrl={profile.avatar_url}
                                 fullName={profile.full_name}
@@ -93,48 +93,48 @@ export default function FullProfileScreenWeb() {
                                         hapticSuccess();
                                     }
                                 }}
-                            /                            <VStack                                <Heading size="xl">{profile.full_name}</Heading                                <Text color={colors.textTertiary}>@{profile.username || 'no-handle'}</Text                                {isTeacherProfile && profile.school_id ? (
-                                    <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} /                                ) : null}
-                            </VStack                        </HStack
+                            /                            ><VStack                                <Heading >size="xl">{profile.full_name}</Heading                                ><Text color={colors.textTertiary}>@{profile.username || 'no-handle'}</Text                                >{isTeacherProfile && profile.school_id ? (
+                                    <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} /                                >) : null}
+                            </VStack                        </HStack>
                         <Box
                             sx={{
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.generous,
                                 padding: '$6',
                                 borderWidth: 1,
-                                borderColor: colors.border,
+                                borderColor: colors.border,>
                             }}
-                                                    <Heading size="md" mb="$4">{t('profile.personalDetails')}</Heading                            <VStack space="lg"                                <EditableItem
+                                                    <Heading size="md" mb="$4">{t('profile.personalDetails')}</Heading                            ><VStack space="lg"                                <EditableItem
                                     icon={UserIcon}
                                     label={t('profile.fullName')}
                                     value={profile.full_name}
                                     field="full_name"
                                     onSave={handleSave}
                                     disabled={isOtherProfile}
-                                /                                <EditableItem
+                                /                                ><EditableItem
                                     icon={AtSign}
                                     label={t('profile.username')}
                                     value={profile.username}
                                     field="username"
                                     onSave={handleSave}
                                     disabled={isOtherProfile}
-                                /                            </VStack                        </Box
+                                /                            ></VStack                        </Box
                         <ContactLinktree
                             links={socialLinks || []}
                             userName={profile.full_name}
                             bio={profile.bio}
                             userId={profile.id}
                             isOwnProfile={!isOtherProfile}
-                        /
+                        />
                         {!isOtherProfile && (
-                            <SanctuaryButton onPress={() => setShowSocialModal(true)}                                <HStack space="sm" alignItems="center"                                    <Edit3 size={18} color="white" /                                    <Text color="white" bold>Manage Social Links</Text                                </HStack                            </SanctuaryButton                        )}
+                            <SanctuaryButton onPress={() => setShowSocialModal(true)}                                <HStack space="sm" alignItems="center"                                    <Edit3 size={18} color="white" /                                    ><Text color="white" bold>Manage Social Links</Text                                ></HStack                            </SanctuaryButton                        )}
                     </VStack                </Box            </ScrollView
             {!isOtherProfile && (
                 <AddSocialLinkModal
                     visible={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
-                /            )}
+                /            >)}
 
             {isOtherProfile && currentUserId && (
                 <GiveThuthimalModal
@@ -145,6 +145,6 @@ export default function FullProfileScreenWeb() {
                     recipientTier={profile.role ?? 'teacher'}
                     giverId={currentUserId}
                     giverName={currentUserName}
-                /            )}
+                /            >)}
         </ScreenWrapper    );
 }

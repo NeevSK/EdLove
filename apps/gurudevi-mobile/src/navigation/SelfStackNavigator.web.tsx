@@ -21,7 +21,7 @@ export default function SelfStackNavigatorWeb() {
 
     return (
         <React.Suspense fallback={<ScreenFallback />}
-        <Stack.Navigator
+        <Stack.Navigator>
             id="SelfStack"
             screenOptions={{
                 headerShown: false,
@@ -33,7 +33,7 @@ export default function SelfStackNavigatorWeb() {
             }}
         
             <Stack.Screen name="SelfMain" component={SelfScreenWeb} /
-            <Stack.Screen
+            ><Stack.Screen
                 name="AIAssistant"
                 component={AIAssistantScreen}
                 options={{
@@ -41,7 +41,7 @@ export default function SelfStackNavigatorWeb() {
                     animation: 'slide_from_bottom',
                 }}
             /
-        </Stack.Navigator
-        </React.Suspense
+        ></Stack.Navigator>
+        </React.Suspense>
     );
 }

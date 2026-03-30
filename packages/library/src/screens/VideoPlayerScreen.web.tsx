@@ -151,7 +151,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                             style={styles.closeBtn}>
                         
                             <Maximize size={20} color="#fff" /
-                        </Pressable>
+                        ></Pressable>
                     </View>
 
                     {/* Playback buttons */}
@@ -168,7 +168,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                         </Pressable>
                         <Pressable onPress={() => handleSeekBy(10)} style={styles.controlBtn} accessibilityLabel="Skip 10 seconds"
                             <RotateCw size={28} color="#fff" /
-                            <Text style={styles.seekLabel}>10</Text
+                            ><Text style={styles.seekLabel}>10</Text
                         ></Pressable>
                     </View>
 
@@ -188,7 +188,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                             <div style={{ ...styles.progressFill as any, width: `${progress}%` }} /
                         ></div>
                         <Text style={styles.timeText}>{formatTimeSecs(duration)}</Text
-                    </View>
+                    ></View>
                 </View>
             )}
         </Box>

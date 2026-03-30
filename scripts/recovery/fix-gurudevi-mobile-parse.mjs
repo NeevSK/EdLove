@@ -167,6 +167,70 @@ function fixMissingJsxAngles(text) {
   const lines = text.split(/\r?\n/);
   let changed = false;
 
+  // Remove clearly-stray `>` that got inserted into object-literal props lines.
+  // Example: `maxWidth: 400>` should be `maxWidth: 400`
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trimEnd().endsWith(">")) continue;
+    if (line.includes("<")) continue;
+    if (!line.includes(":")) continue;
+    if (/\=\>\s*$/.test(line)) continue;
+    // avoid touching HTML strings
+    const trimmed = line.trimEnd();
+    // only when the trailing `>` is the last non-space char
+    lines[i] = trimmed.slice(0, -1);
+    changed = true;
+  }
+
+  // Remove stray `>` from lines that are clearly *not* JSX tags (common after naive token insertion).
+  // Example: `}>` should usually be `}` inside JSX expressions.
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trimEnd();
+    if (!trimmed.endsWith(">")) continue;
+    if (line.includes("<")) continue;
+    if (!/^\s*[}\])]/.test(trimmed)) continue;
+    lines[i] = trimmed.slice(0, -1);
+    changed = true;
+  }
+
+  // Fix single-line opening JSX tags that are missing the closing `>`.
+  // Example:
+  //   <VStack space="sm"
+  //     <Text ...>
+  // becomes:
+  //   <VStack space="sm">
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (!/^\s*<[A-Za-z][\w.]*\b/.test(line)) continue;
+    if (trimmed.startsWith("</")) continue;
+    if (line.includes(">")) continue;
+    if (trimmed.endsWith("{")) continue; // likely multiline props object start
+    if (trimmed.endsWith("{{")) continue;
+
+    let j = i + 1;
+    while (j < lines.length && lines[j].trim() === "") j++;
+    const next = j < lines.length ? lines[j].trim() : "";
+    if (next === "") continue;
+
+    const nextLooksLikeChild =
+      next.startsWith("<") ||
+      next.startsWith("{") ||
+      next.startsWith("}") ||
+      next.startsWith("return") ||
+      next.startsWith("(") ||
+      next.startsWith("[") ||
+      next.startsWith(")") ||
+      next.startsWith(";") ||
+      /^[A-Za-z0-9'"]/.test(next);
+
+    if (!nextLooksLikeChild) continue;
+
+    lines[i] = line + ">";
+    changed = true;
+  }
+
   // 1) Fix obvious closing tags missing `>`: `</Text` -> `</Text>`
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -203,6 +267,15 @@ function fixMissingJsxAngles(text) {
       continue;
     }
 
+    // If this line clearly closes an object-literal prop (common `sx={{ ... }}` pattern),
+    // prefer closing the JSX tag *here*.
+    if (/^\s*}}[),]*\s*$/.test(line)) {
+      lines[i] = line + ">";
+      changed = true;
+      inTag = false;
+      continue;
+    }
+
     // Find next non-empty line (or end).
     let j = i + 1;
     while (j < lines.length && lines[j].trim() === "") j++;
@@ -214,9 +287,7 @@ function fixMissingJsxAngles(text) {
       nextTrimmed.startsWith("{") ||
       nextTrimmed.startsWith(")") ||
       nextTrimmed.startsWith(";") ||
-      nextTrimmed.startsWith("return") ||
-      nextTrimmed.startsWith("}") ||
-      nextTrimmed.startsWith("]");
+      nextTrimmed.startsWith("return");
 
     if (!nextLooksLikeChildOrNewElement) continue;
 
@@ -273,6 +344,14 @@ function tryFixMissingToken(text, diag) {
   const idx = indexFromLineCol(text, diag.line, diag.col);
 
   if (msg.includes("'>' expected")) {
+    // Only insert `>` when we're plausibly inside a JSX tag (avoid making non-JSX worse).
+    const searchStart = Math.max(0, idx - 400);
+    const before = text.slice(searchStart, idx);
+    const lastLt = before.lastIndexOf("<");
+    if (lastLt === -1) return { text, changed: false };
+    const afterLastLt = before.slice(lastLt);
+    if (afterLastLt.includes(">")) return { text, changed: false };
+    if (afterLastLt.includes("\n\n")) return { text, changed: false };
     return { text: insertAt(text, idx, ">"), changed: true };
   }
 
@@ -407,7 +486,21 @@ function main() {
     process.exit(0);
   }
 
-  const targets = ranked.slice(0, maxFiles).map((r) => r.file);
+  const appSrcPrefix = path.join(appDir, "src") + path.sep;
+  const appRanked = ranked.filter((r) => r.file.startsWith(appSrcPrefix));
+
+  // Always prioritize fixing gurudevi-mobile app source files, even if they aren't top-ranked,
+  // because a single broken app entrypoint can block bundling even when deps improve.
+  const targets = [];
+  for (const r of appRanked) {
+    if (targets.length >= maxFiles) break;
+    targets.push(r.file);
+  }
+  for (const r of ranked) {
+    if (targets.length >= maxFiles) break;
+    if (targets.includes(r.file)) continue;
+    targets.push(r.file);
+  }
   if (targets.length === 0) {
     console.log("No parse-like diagnostics found to target in this pass.");
     process.exit(1);

@@ -124,8 +124,8 @@ export default function GradebookTable({
                 borderWidth: 1,
                 borderColor: Theme.colors.linen,
                 ...Theme.shadows.md,
-                overflow: 'hidden',>
-            }}
+                overflow: 'hidden',
+            }}>
         
             <VStack
                 {/* Table Header */}>
@@ -135,8 +135,8 @@ export default function GradebookTable({
                         padding: Theme.spacing.md,
                         backgroundColor: Theme.colors.linen,
                         borderBottomWidth: 1,
-                        borderBottomColor: Theme.colors.mistGray,>
-                    }}
+                        borderBottomColor: Theme.colors.mistGray,
+                    }}>
                 
                     <Box sx={{ flex: 2 }}
                         <Text size="sm" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}>
@@ -201,8 +201,8 @@ const GradeRow = React.memo(({
             padding: Theme.spacing.md,
             borderBottomWidth: index < totalItems - 1 ? 1 : 0,
             borderBottomColor: Theme.colors.linen,
-            backgroundColor: index % 2 === 0 ? Theme.colors.sacredWhite : Theme.colors.silk,>
-        }}
+            backgroundColor: index % 2 === 0 ? Theme.colors.sacredWhite : Theme.colors.silk,
+        }}>
     
         <Box sx={{ flex: 2 }}
             <Text sx={{ color: Theme.colors.inkTruth }}>
@@ -219,15 +219,15 @@ const GradeRow = React.memo(({
                         paddingHorizontal: Theme.spacing.sm,
                         paddingVertical: Theme.spacing.xs,
                         backgroundColor: Theme.colors.sanctuarySaffron,
-                        borderRadius: Theme.corners.tight,>
-                    }}
+                        borderRadius: Theme.corners.tight,
+                    }}>
                 
                     <Text
                         size="sm"
                         sx={{
                             fontWeight: '700',
-                            color: Theme.colors.white>
-                        }}
+                            color: Theme.colors.white
+                        }}>
                     
                         #{grade.rank}
                     </Text>

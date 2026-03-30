@@ -148,38 +148,38 @@ export default function ThuthimalClaimScreen() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: Theme.spacing.xl,
-          backgroundColor: Theme.colors.obsidian,>
+          backgroundColor: Theme.colors.obsidian,
         }}
               {/* Flower */}
         <Animated.View style={[styles.flowerContainer, flowerStyle]}          <Text style={styles.flowerEmoji}>\uD83C\uDF38</Text        ></Animated.View
-        <Animated.View entering={FadeInDown.delay(400).duration(600)}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}            {/* Sinhala title */}
+        <Animated.View entering={FadeInDown.delay(400).duration(600)}          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}            {/* Sinhala title */}>
             <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}              {t('thuthimalClaim.flowerTitle')}>
             </Text>
-            <Heading
+            <Heading>
               sx={{
                 textAlign: 'center',
                 fontSize: Theme.typography.fontSize['2xl'],
-                fontWeight: '700',>
+                fontWeight: '700',
               }}
               color={Theme.colors.sacredWhite as any}
                           {t('thuthimalClaim.giftHeading')}
             </Heading>
             {/* Gift message */}
-            <Box
+            <Box>
               sx={{
                 backgroundColor: `${Theme.colors.sanctuarySaffron}18`,
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
                 borderColor: `${Theme.colors.sanctuarySaffron}40`,
                 padding: Theme.spacing.lg,
-                width: '100%',>
+                width: '100%',
               }}
-                          <Text
+                          <Text>
                 sx={{
                   color: Theme.colors.starlightGray,
                   textAlign: 'center',
                   lineHeight: 24,
-                  fontSize: 16,>
+                  fontSize: 16,
                 }}
                               {t('thuthimalClaim.giftFrom')}
               </Text              ><Text
@@ -191,7 +191,7 @@ export default function ThuthimalClaimScreen() {
                   marginTop: Theme.spacing.sm,
                 }}
                               {gifterName}
-              </Text              <Text
+              </Text              ><Text
                 sx={{
                   color: Theme.colors.mistGray,
                   textAlign: 'center',
@@ -201,7 +201,7 @@ export default function ThuthimalClaimScreen() {
                               {t('thuthimalClaim.giftRecognition')}
               </Text            </Box
             {/* Pro status confirmation */}
-            <HStack
+            <HStack>
               sx={{
                 backgroundColor: `${Theme.colors.sageGreen}20`,
                 borderRadius: Theme.corners.comfortable,
@@ -210,12 +210,12 @@ export default function ThuthimalClaimScreen() {
                 paddingHorizontal: Theme.spacing.lg,
                 paddingVertical: Theme.spacing.md,
                 alignItems: 'center',
-                gap: Theme.spacing.sm,>
+                gap: Theme.spacing.sm,
               }}
                           <Text sx={{ fontSize: 20 }}>\u2728</Text              ><Text sx={{ color: Theme.colors.sageGreen, fontWeight: '600' }}                {t('thuthimalClaim.proActive')}
-              </Text            </HStack
+              </Text            ></HStack
             {/* Continue button */}
-            <TouchableOpacity accessibilityRole="button"
+            <TouchableOpacity accessibilityRole="button">
               onPress={handleContinue}
               style={[
                 styles.button,>
@@ -225,7 +225,7 @@ export default function ThuthimalClaimScreen() {
                   marginTop: Theme.spacing.md,
                 },
               ]}
-                          <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}                {t('thuthimalClaim.enterSanctuary')}
+                          <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}                {t('thuthimalClaim.enterSanctuary')}>
               </Text            </TouchableOpacity          </VStack        </Animated.View      </Box    </ScreenWrapper  );>
 }
 

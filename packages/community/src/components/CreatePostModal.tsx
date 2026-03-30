@@ -180,34 +180,34 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
     };
 
     const footer = (
-        <Button
+        <Button>
             action="primary"
             onPress={handleSubmit}
             isDisabled={(!content.trim() && !selectedImage) || isSubmitting || isUploading}
             sx={{
                 backgroundColor: accent.action,
                 borderRadius: Theme.corners.comfortable,
-                width: '100%',>
+                width: '100%',
             }}
         
             <ButtonText {...({ color: text.inverse, bold: true } as any)}>Post Resonance</ButtonText
         ></Button
-    );
+    >);
 
     return (
-        <SanctuaryModal
+        <SanctuaryModal>
             isOpen={isOpen}
             onClose={handleClose}
             title="Share with the Circle"
             footer={footer}>
         
-            <VStack {...({ space: 'md' } as any)}
+            <VStack {...({ space: 'md' } as any)}>
                 <Textarea sx={{
                     backgroundColor: glass.interact.bg,
                     borderColor: glass.interact.border,
-                    minHeight: isPollMode ? 80 : 180,>
-                }}
-                    <TextareaInput
+                    minHeight: isPollMode ? 80 : 180,
+                }}>
+                    <TextareaInput/>
                         placeholder={isPollMode ? 'Ask your question\u2026' : "What's on your mind?"}
                         placeholderTextColor={text.muted}>
                         {...({ color: text.primary } as any)}
@@ -221,17 +221,17 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 {isPollMode && (
                     <VStack {...({ space: 'md' } as any)}>
                         {/* Options */}
-                        <VStack {...({ space: 'sm' } as any)}
+                        <VStack {...({ space: 'sm' } as any)}>
                             {pollOptions.map((opt, idx) => (
-                                <HStack key={idx} {...({ space: 'sm', alignItems: 'center' } as any)}
+                                <HStack key={idx} {...({ space: 'sm', alignItems: 'center' } as any)}>
                                     <Input sx={{
                                         flex: 1,
                                         backgroundColor: glass.interact.bg,
                                         borderColor: glass.interact.border,
                                         borderRadius: Theme.corners.comfortable,
-                                        height: 48,>
-                                    }}
-                                        <InputField
+                                        height: 48,
+                                    }}>
+                                        <InputField>
                                             placeholder={`Option ${idx + 1}`}
                                             value={opt}
                                             onChangeText={(val: string) => updatePollOption(idx, val)}
@@ -246,9 +246,9 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                 </HStack>
                             ))}
                             {pollOptions.length < 5 && (
-                                <TouchableOpacity
+                                <TouchableOpacity>
                                     onPress={addPollOption}
-                                    style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 6 }}>
+                                    style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 6 }}
                                 
                                     <Plus size={15} color={accent.action} /
                                     ><Text {...({ color: accent.action, size: '$sm' } as any)} sx={{ fontWeight: '600' }}
@@ -259,18 +259,18 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         </VStack>
 
                         {/* \u2500\u2500 Poll settings \u2500\u2500 */}
-                        <VStack
+                        <VStack>
                             {...({ space: 'sm' } as any)}
                             sx={{
                                 backgroundColor: glass.interact.bg,
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
                                 borderColor: glass.interact.border,
-                                padding: Theme.spacing.md,>
+                                padding: Theme.spacing.md,
                             }}
                         
                             {/* Anonymous votes */}
-                            <HStack justifyContent="space-between" alignItems="center"
+                            <HStack justifyContent="space-between" alignItems="center">
                                 <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
                                     <Lock size={14} color={text.secondary} /
                                     ><Text {...({ color: text.primary, size: '$sm' } as any)}>Anonymous votes</Text
@@ -284,12 +284,12 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             </HStack>
 
                             {/* Multiple choice */}
-                            <HStack justifyContent="space-between" alignItems="center"
+                            <HStack justifyContent="space-between" alignItems="center">
                                 <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
                                     <Users size={14} color={text.secondary} /
                                     ><Text {...({ color: text.primary, size: '$sm' } as any)}>Allow multiple choices</Text
                                 ></HStack
-                                <Switch
+                                <Switch>
                                     value={pollAllowMultiple}
                                     onValueChange={setPollAllowMultiple}
                                     trackColor={{ false: glass.interact.border, true: accent.action }}
@@ -298,22 +298,22 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             </HStack>
 
                             {/* End time */}
-                            <VStack {...({ space: 'xs' } as any)}
+                            <VStack {...({ space: 'xs' } as any)}>
                                 <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
                                     <Clock size={14} color={text.secondary} /
                                     ><Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}
                                         Poll closes
                                     </Text>
                                 </HStack>
-                                <ScrollView
+                                <ScrollView>
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={{ gap: 6 }}>
+                                    contentContainerStyle={{ gap: 6 }}
                                 
                                     {DURATION_PRESETS.map(p => {
                                         const isActive = !showCustomDate && pollDurationHours === p.hours;
                                         return (
-                                            <TouchableOpacity
+                                            <TouchableOpacity>
                                                 key={p.label}
                                                 onPress={() => {
                                                     setShowCustomDate(false);
@@ -328,7 +328,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                                     borderColor: isActive ? accent.action : glass.interact.border,
                                                 }}
                                             
-                                                <Text sx={{ fontSize: 12, color: isActive ? text.inverse : text.secondary, fontWeight: isActive ? '600' : '400' }}
+                                                <Text sx={{ fontSize: 12, color: isActive ? text.inverse : text.secondary, fontWeight: isActive ? '600' : '400' }}>
                                                     {p.label}>
                                                 </Text>
                                             </TouchableOpacity>
@@ -337,7 +337,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
 
                                     {/* Custom \u2014 web gets a real datetime-local input */}
                                     {Platform.OS === 'web' && (
-                                        <TouchableOpacity
+                                        <TouchableOpacity>
                                             onPress={() => { setShowCustomDate(true); setPollDurationHours(null); }}
                                             style={{
                                                 paddingHorizontal: 12,
@@ -348,7 +348,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                                 borderColor: showCustomDate ? accent.action : glass.interact.border,
                                             }}
                                         
-                                            <Text sx={{ fontSize: 12, color: showCustomDate ? text.inverse : text.secondary, fontWeight: showCustomDate ? '600' : '400' }}
+                                            <Text sx={{ fontSize: 12, color: showCustomDate ? text.inverse : text.secondary, fontWeight: showCustomDate ? '600' : '400' }}>
                                                 Custom>
                                             </Text>
                                         </TouchableOpacity>
@@ -357,7 +357,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
 
                                 {/* Web custom datetime input */}
                                 {Platform.OS === 'web' && showCustomDate && (
-                                    <input
+                                    <input>
                                         type="datetime-local"
                                         value={pollCustomEndsAt}
                                         onChange={e => setPollCustomEndsAt(e.target.value)}
@@ -381,19 +381,19 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 )}
 
                 {/* Education Tags */}
-                <VStack {...({ space: 'xs' } as any)}
-                    <Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}
+                <VStack {...({ space: 'xs' } as any)}>
+                    <Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}>
                         Tag this post (optional)>
                     </Text>
-                    <ScrollView
+                    <ScrollView>
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ gap: 8 }}>
+                        contentContainerStyle={{ gap: 8 }}
                     
                         {EDUCATION_TAGS.map((tag) => {
                             const active = selectedTags.includes(tag.id);
                             return (
-                                <TouchableOpacity
+                                <TouchableOpacity>
                                     key={tag.id}
                                     onPress={() => toggleTag(tag.id)}
                                     style={{
@@ -408,8 +408,8 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                     <Text sx={{
                                         fontSize: 12,
                                         color: active ? text.inverse : text.secondary,
-                                        fontWeight: active ? '600' : '400',>
-                                    }}
+                                        fontWeight: active ? '600' : '400',
+                                    }}>
                                         {tag.label}
                                     </Text>
                                 </TouchableOpacity>
@@ -419,8 +419,8 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 </VStack>
 
                 {selectedImage && (
-                    <Box sx={{ position: 'relative', borderRadius: Theme.corners.comfortable, overflow: 'hidden', height: 200 }}
-                        <Image
+                    <Box sx={{ position: 'relative', borderRadius: Theme.corners.comfortable, overflow: 'hidden', height: 200 }}>
+                        <Image>
                             source={{ uri: selectedImage }}
                             style={{ width: '100%', height: '100%', borderRadius: Theme.corners.comfortable }}
                             resizeMode="cover"
@@ -439,26 +439,26 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                             <Box sx={{
                                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                                 backgroundColor: 'rgba(107,100,128,0.40)',
-                                justifyContent: 'center', alignItems: 'center',>
-                            }}
+                                justifyContent: 'center', alignItems: 'center',
+                            }}>
                                 <ActivityIndicator color={accent.action} /
                             ></Box
-                        )}
+                        >)}
                     </Box>
                 )}
 
                 {/* Toolbar */}
-                <HStack {...({ space: 'md' } as any)}
-                    <TouchableOpacity
+                <HStack {...({ space: 'md' } as any)}>
+                    <TouchableOpacity>
                         onPress={pickImage}
-                        style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}>
+                        style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
                     
                         <ImageIcon size={20} color={selectedImage ? accent.action : text.secondary} /
                     ></TouchableOpacity
                     ><TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
                         <Mic size={20} color={text.secondary} /
                     ></TouchableOpacity
-                    <TouchableOpacity
+                    <TouchableOpacity>
                         onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
                         style={{
                             padding: 8,

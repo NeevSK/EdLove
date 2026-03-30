@@ -57,7 +57,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                             onSave={(field, val) => updateField(field as any, val)}
                             disabled={!isEditable}
                             multiline={true}
-                        /                    ></div                </div
+                        /                    ></div                ></div
                 <div                    <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '24px' }}                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}                            <User size={16} color="var(--ink-ghost)" /                            ><span style={{ fontSize: '13px', fontWeight: '700' }}>Teacher</span                        ></div                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                             <AvatarDisplay 
                                 userId={classroom.teacher_id || 'unknown'}
                                 size={40}

@@ -74,22 +74,22 @@ export default function GuestConversionPrompt({
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}
-            <ModalBackdrop /
-            <ModalContent
+            <ModalBackdrop />
+            ><ModalContent
                 sx={{
                     backgroundColor: colors.primary,
                     borderRadius: Theme.corners.comfortable,
-                    maxWidth: 400
+                    maxWidth: 400>
                 }}
             
                 <ModalHeader
-                    <ModalCloseButton
-                        <CloseIcon color={colors.textSecondary} /
-                    </ModalCloseButton
-                </ModalHeader
+                    <ModalCloseButton>
+                        ><CloseIcon color={colors.textSecondary} /
+                    ></ModalCloseButton>
+                </ModalHeader>
 
                 <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}
-                    <VStack space="lg" alignItems="center"
+                    <VStack space="lg" alignItems="center">
                         {/* Icon */}
                         <Box
                             sx={{
@@ -103,29 +103,29 @@ export default function GuestConversionPrompt({
                                 shadowOffset: { width: 0, height: 4 },
                                 shadowOpacity: 0.24,
                                 shadowRadius: 8,
-                                elevation: 4
+                                elevation: 4>
                             }}
                         
                             <IconComponent size={40} color={Theme.colors.sanctuarySaffron} /
-                        </Box
+                        ></Box>
 
                         {/* Title */}
                         <Heading
                             size="xl"
                             color={Theme.colors.sanctuarySaffron}
-                            textAlign="center"
+                            textAlign="center">
                         
                             {t(config.title)}
-                        </Heading
+                        </Heading>
 
                         {/* Description */}
                         <Text
                             size="md"
                             color={colors.textSecondary}
-                            textAlign="center"
+                            textAlign="center">
                         
                             {t(config.description)}
-                        </Text
+                        </Text>
 
                         {/* Local Data Count */}
                         {itemCount !== undefined && itemCount > 0 && (
@@ -135,13 +135,13 @@ export default function GuestConversionPrompt({
                                     backgroundColor: colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 4,
-                                    borderLeftColor: Theme.colors.sageGreen
+                                    borderLeftColor: Theme.colors.sageGreen>
                                 }}
                             
                                 <Text size="sm" color={colors.text} textAlign="center"
-                                    \uD83D\uDCBE {t('guest.dataSavedLocally', { count: itemCount })}
-                                </Text
-                            </Box
+                                    \uD83D\uDCBE {t('guest.dataSavedLocally', { count: itemCount })}>
+                                </Text>
+                            </Box>
                         )}
 
                         {/* Benefit */}
@@ -151,7 +151,7 @@ export default function GuestConversionPrompt({
                                 backgroundColor: `${Theme.colors.amberGlow}1A`, // 10% Opacity
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
-                                borderColor: Theme.colors.amberGlow
+                                borderColor: Theme.colors.amberGlow>
                             }}
                         
                             <Text
@@ -160,9 +160,9 @@ export default function GuestConversionPrompt({
                                 textAlign="center"
                                 fontWeight="$semibold"
                             
-                                \u2728 {t(config.benefit)}
-                            </Text
-                        </Box
+                                \u2728 {t(config.benefit)}>
+                            </Text>
+                        </Box>
 
                         {/* Actions */}
                         <VStack space="sm" sx={{ width: '100%' }}
@@ -171,27 +171,27 @@ export default function GuestConversionPrompt({
                                 onPress={onCreateAccount}
                                 sx={{
                                     backgroundColor: Theme.colors.sanctuarySaffron,
-                                    borderRadius: Theme.corners.comfortable
+                                    borderRadius: Theme.corners.comfortable>
                                 }}
                             
                                 <ButtonText color={Theme.colors.sacredWhite}
-                                    {t('guest.createAccount')}
-                                </ButtonText
-                            </Button
+                                    {t('guest.createAccount')}>
+                                </ButtonText>
+                            </Button>
 
                             <Button
                                 size="md"
                                 variant="link"
-                                onPress={onClose}
+                                onPress={onClose}>
                             
                                 <ButtonText color={colors.textSecondary}
-                                    {t('guest.continueBrowsing')}
-                                </ButtonText
-                            </Button
-                        </VStack
-                    </VStack
-                </ModalBody
-            </ModalContent
-        </Modal
+                                    {t('guest.continueBrowsing')}>
+                                </ButtonText>
+                            </Button>
+                        </VStack>
+                    </VStack>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
     );
 }

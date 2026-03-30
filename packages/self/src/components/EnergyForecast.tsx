@@ -84,10 +84,10 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
   if (dataLoading && userId) {
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}
-        <SkeletonCard height={80} /
-        <SkeletonCard height={80} /
-        <SkeletonCard height={80} /
-      </VStack
+        <SkeletonCard height={80} />
+        ><SkeletonCard height={80} /
+        ><SkeletonCard height={80} />
+      ></VStack>
     );
   }
 
@@ -97,31 +97,31 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
-    );
+    >);
   }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}
-      <VStack space="xs"
+      <VStack space="xs">
         <HStack space="sm" alignItems="center"
           <Battery
             color={(selectedLevel !== null && selectedLevel >= 1 && selectedLevel <= 5) ? energyLevels[selectedLevel - 1]?.color : colors.action}
             size={24}
           /
-          <Heading color={colors.text} size="lg"
-            {t('self.energyForecast')}
-          </Heading
-        </HStack
+          ><Heading color={colors.text} size="lg"
+            {t('self.energyForecast')}>
+          </Heading>
+        </HStack>
         <Text color={colors.textSecondary} size="sm"
-          {t('self.energyForecastDesc')}
-        </Text
-      </VStack
+          {t('self.energyForecastDesc')}>
+        </Text>
+      </VStack>
 
       {/* Emoji Energy Picker  always visible, current selection highlighted */}
       <Box sx={{ paddingHorizontal: Theme.spacing.sm }}
-        <Text color={colors.textSecondary} size="sm" textAlign="center" mb="$3"
+        <Text color={colors.textSecondary} size="sm" textAlign="center" mb="$3">
           {t('self.capacityToday')}
-        </Text
+        </Text>
         <HStack justifyContent="space-between" alignItems="center"
           {energyLevels.map((energy) => {
             const isActive = selectedLevel === energy.level;
@@ -142,26 +142,26 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
                       justifyContent: 'center',
                       backgroundColor: isActive ? energy.color + '33' : colors.secondary,
                       borderWidth: 2,
-                      borderColor: isActive ? energy.color : colors.border,
+                      borderColor: isActive ? energy.color : colors.border,>
                     }}
                   
                     <Text sx={{ fontSize: 26 }}>{energy.emoji}</Text
-                  </Box
+                  ></Box>
                   <Text
                     sx={{
                       fontSize: Theme.typography.fontSize.xs,
                       color: isActive ? energy.color : colors.textTertiary,
-                      fontWeight: isActive ? '700' : '400',
+                      fontWeight: isActive ? '700' : '400',>
                     }}
                   
                     {energy.label}
-                  </Text
-                </VStack
-              </Pressable
+                  </Text>
+                </VStack>
+              </Pressable>
             );
           })}
-        </HStack
-      </Box
+        </HStack>
+      </Box>
 
       {/* Last updated timestamp */}
       {todayForecast && (
@@ -169,14 +169,14 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
           p="$3"
           sx={{
             backgroundColor: colors.tertiary,
-            borderRadius: Theme.corners.comfortable
+            borderRadius: Theme.corners.comfortable>
           }}
         
           <Text color={colors.textSecondary} size="sm" textAlign="center"
-            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </Text
-        </Box
+            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}>
+          </Text>
+        </Box>
       )}
-    </VStack
+    </VStack>
   );
 }

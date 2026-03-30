@@ -93,7 +93,7 @@ export default function TeacherAnalysisWorkspace({
     }, [observations, students]);
 
     return (
-        <Box sx={{ flex: 1 }}            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}                <Box
+        <Box sx={{ flex: 1 }}            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}                <Box>
                     sx={{
                         backgroundColor: Theme.colors.silk,
                         borderRadius: Theme.corners.generous,
@@ -104,13 +104,13 @@ export default function TeacherAnalysisWorkspace({
                         shadowOffset: { width: 0, height: 8 },
                         shadowOpacity: 1,
                         shadowRadius: 18,
-                        elevation: 4,>
+                        elevation: 4,
                     }}
-                                    <VStack sx={{ gap: Theme.spacing.md }}                        <VStack sx={{ gap: 4 }}                            <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                Analysis
-                            </Text                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                Read the classroom before reacting>
+                                    <VStack sx={{ gap: Theme.spacing.md }}                        <VStack sx={{ gap: 4 }}                            <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}                                Analysis>
+                            </Text                            ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                                Read the classroom before reacting>
                             </Heading                            ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
                             </Text                        </VStack
-                        <HStack sx={{ gap: Theme.spacing.sm }}                            <StatCard
+                        <HStack sx={{ gap: Theme.spacing.sm }}                            <StatCard>
                                 label="Average GPA"
                                 value={stats.averageGpa}
                                 icon={<TrendingUp size={16} color={Theme.colors.sanctuarySaffron} />}
@@ -128,20 +128,20 @@ export default function TeacherAnalysisWorkspace({
                             /                        ></HStack                    </VStack                </Box
                 {isLoading ? (
                     <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}                        <Spinner color={Theme.colors.sanctuarySaffron} /                    ></Box                ) : (
-                    <Box
+                    <Box>
                         sx={{
                             backgroundColor: Theme.colors.silk,
                             borderRadius: Theme.corners.generous,
                             borderWidth: 1,
                             borderColor: colors.border,
-                            padding: Theme.spacing.lg,>
+                            padding: Theme.spacing.lg,
                         }}
-                                            <VStack sx={{ gap: Theme.spacing.md }}                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                Student analysis queue
-                            </Heading                            {studentSignals.length === 0 ? (>
-                                <Text sx={{ color: colors.textSecondary }}                                    No students available for analysis yet.
+                                            <VStack sx={{ gap: Theme.spacing.md }}                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                Student analysis queue>
+                            </Heading                            >{studentSignals.length === 0 ? (>
+                                <Text sx={{ color: colors.textSecondary }}                                    No students available for analysis yet.>
                                 </Text                            ) : (
                                 studentSignals.map((student, index) => (
-                                    <HStack
+                                    <HStack>
                                         key={student.id}
                                         sx={{
                                             alignItems: 'center',
@@ -149,22 +149,22 @@ export default function TeacherAnalysisWorkspace({
                                             gap: Theme.spacing.md,
                                             paddingBottom: Theme.spacing.sm,
                                             borderBottomWidth: index === studentSignals.length - 1 ? 0 : 1,
-                                            borderBottomColor: colors.border,>
+                                            borderBottomColor: colors.border,
                                         }}
-                                                                            <VStack sx={{ flex: 1 }}                                            <Text sx={{ color: colors.text, fontWeight: '700' as const }}                                                {student.full_name}
-                                            </Text                                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                                {student.observationCount} observations " {student.concernCount} concern signals>
+                                                                            <VStack sx={{ flex: 1 }}                                            <Text sx={{ color: colors.text, fontWeight: '700' as const }}                                                {student.full_name}>
+                                            </Text                                            ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                                {student.observationCount} observations " {student.concernCount} concern signals>
                                             </Text                                        </VStack                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}                                            {student.concernCount > 0 ? (
-                                                <SignalBadge
+                                                <SignalBadge>
                                                     label={`${student.concernCount} concern`}
                                                     tone="warning"
                                                     colors={colors}
-                                                /                                            >) : (>
-                                                <SignalBadge
+                                                /                                            >) : (
+                                                <SignalBadge>
                                                     label="steady"
                                                     tone="positive"
                                                     colors={colors}
                                                 /                                            >)}>
-                                            <Button
+                                            <Button>
                                                 size="sm"
                                                 action="primary"
                                                 onPress={() => setSelectedStudent({ id: student.id, full_name: student.full_name })}
@@ -174,7 +174,7 @@ export default function TeacherAnalysisWorkspace({
                         </VStack                    </Box                )}
             </VStack>
             {selectedStudent && (
-                <StudentAnalysisModal
+                <StudentAnalysisModal>
                     visible={!!selectedStudent}
                     onClose={() => setSelectedStudent(null)}
                     studentId={selectedStudent.id}
@@ -196,18 +196,18 @@ function StatCard({
     colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
-        <Box
+        <Box>
             sx={{
                 flex: 1,
                 backgroundColor: colors.primary,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
                 borderColor: colors.border,
-                padding: Theme.spacing.md,>
+                padding: Theme.spacing.md,
             }}
-                    <VStack sx={{ gap: Theme.spacing.xs }}                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                    {icon}
+                    <VStack sx={{ gap: Theme.spacing.xs }}                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}                    {icon}>
                     <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}                        {label}>
-                    </Text                ></HStack                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                    {value}
+                    </Text                ></HStack                ><Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}                    {value}
                 </Heading            </VStack        </Box    );
 }
 
@@ -224,7 +224,7 @@ function SignalBadge({
     const color = tone === 'positive' ? Theme.colors.sageGreen : Theme.colors.amberGlow;
 
     return (
-        <Box
+        <Box>
             sx={{
                 paddingHorizontal: Theme.spacing.sm,
                 paddingVertical: 6,
@@ -233,6 +233,6 @@ function SignalBadge({
                 borderColor: colors.border,
                 backgroundColor,>
             }}
-                    <Text sx={{ color, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                {label}
+                    <Text sx={{ color, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}                {label}>
             </Text        </Box    );>
 }

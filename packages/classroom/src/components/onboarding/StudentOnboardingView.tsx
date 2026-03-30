@@ -43,21 +43,21 @@ export default function StudentOnboardingView({
     const { glass } = useTheme();
 
     return (
-        <ScrollView 
+        <ScrollView >
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 padding: Theme.spacing.lg, 
                 maxWidth: 800, 
                 alignSelf: 'center',
-                width: '100%' >
+                width: '100%' 
             }}
-                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}
+                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}>
                 <VStack sx={{ gap: 8, alignItems: 'center' }}                    <Box sx={{ 
                         padding: 16, 
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
-                        marginBottom: 12>
-                    }}                        <Icon as={GraduationCap} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Student
+                        marginBottom: 12
+                    }}                        <Icon as={GraduationCap} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    ><Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Student
                     </Heading                    <Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
@@ -66,9 +66,9 @@ export default function StudentOnboardingView({
                     }}                        Join your sanctuary of learning. Connect with your mentors and peers to begin your journey.
                     </Text                </VStack
                 {/* Primary Actions Grid */}
-                <VStack sx={{ gap: Theme.spacing.lg }}                    
+                <VStack sx={{ gap: Theme.spacing.lg }}                    >
                     {/* Join Class Card */}>
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={() => {
                             hapticLight();
                             onJoinClass();
@@ -95,7 +95,7 @@ export default function StudentOnboardingView({
                                             </Text                                        </HStack                                    )}
                                 </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Find School Card */}
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={() => {
                             hapticLight();
                             onFindSchool();
@@ -107,7 +107,7 @@ export default function StudentOnboardingView({
                             borderRadius: 24, 
                             backgroundColor: colors.tertiary,
                             borderWidth: 1,
-                            borderColor: colors.border>
+                            borderColor: colors.border
                         }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
@@ -124,7 +124,7 @@ export default function StudentOnboardingView({
                         borderRadius: 32, 
                         backgroundColor: '#1A1A1A', 
                         overflow: 'hidden',
-                        position: 'relative'>
+                        position: 'relative'
                     }}                        <Box sx={{
                             position: 'absolute',
                             right: -20,
@@ -147,7 +147,7 @@ export default function StudentOnboardingView({
                                     maxWidth: 400 
                                 }}                                    Experience Gurudevi from a student's perspective. Join a demo class and explore your learning portal.
                                 </Text                            </VStack                            
-                            <Button 
+                            <Button >
                                 action="primary" 
                                 onPress={() => {
                                     hapticLight();
@@ -159,14 +159,14 @@ export default function StudentOnboardingView({
                                     height: 54,
                                     borderRadius: 27
                                 }}
-                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Start Learning Demo
+                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Start Learning Demo>
                                 </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
                 </VStack>
                 <Text sx={{ 
                     textAlign: 'center', 
                     color: colors.textTertiary, 
                     fontSize: 12,
-                    marginTop: 20 >
-                }}                    Gurudevi Portals are designed for joyful learning.
-                </Text            </VStack        </ScrollView    );
+                    marginTop: 20 
+                }}                    Gurudevi Portals are designed for joyful learning.>
+                </Text            ></VStack        </ScrollView    );
 }

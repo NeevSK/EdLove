@@ -30,18 +30,18 @@ export function GPAInsights({
 
   return (
     <Card style={styles.container}      <Text style={styles.title}>GPA Insights</Text      
-      <VStack space="md"        {/* Current GPA */}
-        <HStack style={styles.gpaRow}          <VStack flex={1}            <Text style={styles.gpaLabel}>Current GPA</Text            <Text style={[styles.gpaValue, { color: getGradeColor(currentGPA >= 3.5 ? 'A' : currentGPA >= 2.5 ? 'B' : 'C') }]}              {formatGPA(currentGPA)}
+      ><VStack space="md"        {/* Current GPA */}
+        <HStack style={styles.gpaRow}          <VStack flex={1}            <Text style={styles.gpaLabel}>Current GPA</Text            ><Text style={[styles.gpaValue, { color: getGradeColor(currentGPA >= 3.5 ? 'A' : currentGPA >= 2.5 ? 'B' : 'C') }]}              {formatGPA(currentGPA)}
             </Text          </VStack          
           {predictedGPA && (
-            <VStack flex={1}              <Text style={styles.gpaLabel}>Predicted GPA</Text              <Text style={[styles.gpaValue, { color: getGradeColor(predictedGPA >= 3.5 ? 'A' : predictedGPA >= 2.5 ? 'B' : 'C') }]}                {formatGPA(predictedGPA)}
+            <VStack flex={1}              <Text style={styles.gpaLabel}>Predicted GPA</Text              ><Text style={[styles.gpaValue, { color: getGradeColor(predictedGPA >= 3.5 ? 'A' : predictedGPA >= 2.5 ? 'B' : 'C') }]}                {formatGPA(predictedGPA)}
               </Text            </VStack          )}
-        </HStack
+        </HStack>
         {/* Trend */}
-        <View style={styles.trendContainer}          <Text style={styles.trendLabel}>Performance Trend</Text          <Text style={[styles.trendValue, { color: trendColor }]}            {trendDirection.charAt(0).toUpperCase() + trendDirection.slice(1)}
+        <View style={styles.trendContainer}          <Text style={styles.trendLabel}>Performance Trend</Text          ><Text style={[styles.trendValue, { color: trendColor }]}            {trendDirection.charAt(0).toUpperCase() + trendDirection.slice(1)}
           </Text        </View
         {/* Target Progress */}
-        <View style={styles.progressContainer}          <Text style={styles.progressLabel}>Target: {formatGPA(targetGPA)}</Text          <View style={styles.progressBar}            <View 
+        <View style={styles.progressContainer}          <Text style={styles.progressLabel}>Target: {formatGPA(targetGPA)}</Text          ><View style={styles.progressBar}            <View 
               style={[
                 styles.progressFill,
                 { 
@@ -49,12 +49,12 @@ export function GPAInsights({
                   backgroundColor: isOnTrack ? Theme.colors.success : Theme.colors.warning
                 }
               ]} 
-            /          </View          <Text style={styles.progressText}            {gapToTarget > 0 ? `${formatGPA(gapToTarget)} to target` : 'Target achieved!'}
+            /          ></View          <Text style={styles.progressText}            {gapToTarget > 0 ? `${formatGPA(gapToTarget)} to target` : 'Target achieved!'}
           </Text        </View
         {/* Recommendations */}
-        <View style={styles.recommendationsContainer}          <Text style={styles.recommendationsTitle}>Recommendations</Text          <VStack space="xs"            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map((rec, index) => (
+        <View style={styles.recommendationsContainer}          <Text style={styles.recommendationsTitle}>Recommendations</Text          ><VStack space="xs"            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map((rec, index) => (
               <Text key={index} style={styles.recommendationText}                " {rec}
-              </Text            ))}
+              </Text            ))}>
           </VStack        </View      </VStack    </Card  );
 }
 

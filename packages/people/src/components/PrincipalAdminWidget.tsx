@@ -40,8 +40,8 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
           sx={{
             padding: Theme.spacing.sm,
             borderRadius: Theme.corners.medium,
-            backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',>
-          }}
+            backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',
+          }}>
                   <LucideIcon size={24} color={color || Theme.colors.sanctuarySaffron} /        ></Box        <TrendingUp size={16} color={colors.textTertiary} opacity={0.3} /      ></HStack
       <VStack        <Text color={colors.text} sx={{ fontSize: 14, fontWeight: '700' }}          {label}>
         </Text        <Text color={colors.textSecondary} sx={{ fontSize: 11 }}          {description}
@@ -70,14 +70,14 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
             padding: Theme.spacing.lg,
             borderRadius: Theme.corners.generous,
             borderWidth: 1,
-            borderColor: colors.border,>
-          }}
+            borderColor: colors.border,
+          }}>
                   <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}            <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}              <Box
                 sx={{
                   padding: Theme.spacing.sm,
                   borderRadius: Theme.corners.medium,
-                  backgroundColor: colors.action + '22',>
-                }}
+                  backgroundColor: colors.action + '22',
+                }}>
                               <UserCheck size={24} color={colors.action} /              ></Box              <VStack                <Text color={colors.text} sx={{ fontSize: 14, fontWeight: '700' }}                  {t('principal.admin.leaves') || 'Staff Leave Requests'}
                 </Text                <Text color={colors.textSecondary} sx={{ fontSize: 11 }}                  {t('principal.admin.leavesDesc') || 'Review and approve staff absences'}>
                 </Text              </VStack            </HStack            <Pressable

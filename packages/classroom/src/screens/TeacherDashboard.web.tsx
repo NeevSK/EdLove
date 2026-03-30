@@ -101,14 +101,14 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                 contentContainerStyle={{
                     padding: Theme.spacing.lg,
                     gap: Theme.spacing.lg,
-                    paddingBottom: Theme.spacing.xl * 2,
+                    paddingBottom: Theme.spacing.xl * 2,>
                 }}
                             <Animated.View entering={FadeInDown.delay(50)}                    <WorkspaceCanvas
                         surfaces={dashboardSurfaces}
                         layout={layout}
                         title="Teacher Workspace"
                         subtitle={t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
-                        renderSurfaceContent={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.content ?? null
+                        renderSurfaceContent={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.content ?? null>
                         }
                         getSurfaceSubtitle={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.subtitle
                         }
@@ -138,7 +138,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                                         </Text                                    </TouchableOpacity                                    <TouchableOpacity
                                         onPress={() =                                            setSurfaceZone(
                                                 resolved.surfaceId,
-                                                resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'outlook' : 'work'
+                                                resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'outlook' : 'work'>
                                             )
                                         }
                                         style={{
@@ -150,9 +150,9 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
                                                                             <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone
-                                        </Text                                    </TouchableOpacity                                </HStack                            );
+                                        </Text                                    </TouchableOpacity                                </HStack                            );>
                         }}
-                    /                </Animated.View            </ScrollView
+                    /                ></Animated.View            </ScrollView
             <CreateClassroomModal
                 isOpen={isCreateModalOpen}
                 mode={modalMode}
@@ -166,24 +166,24 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                 title="Join Classroom"
                 accentColor={Theme.colors.sanctuarySaffron}
             /
-            <TeacherFeedbackModal
+            ><TeacherFeedbackModal
                 isOpen={isFeedbackModalOpen}
                 onClose={() => setIsFeedbackModalOpen(false)}
                 schoolId={schoolId || ''}
                 teacherId={userId || ''}
             /
-            <TeacherEchoHistoryModal
+            ><TeacherEchoHistoryModal
                 visible={showEchoHistory}
                 teacherId={userId || ''}
                 onClose={() => setShowEchoHistory(false)}
             /
-            <TeacherAdminPortalModal
+            ><TeacherAdminPortalModal
                 visible={isAdminModalOpen}
                 title={t('teacher.admin.portal') || 'Administrative Portal'}
                 onClose={() => setIsAdminModalOpen(false)}
                 onAction={handleAdminAction}
             /
-            <Modal
+            ><Modal
                 visible={isBreathingOpen}
                 animationType="slide"
                 presentationStyle="pageSheet"
@@ -194,7 +194,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                             paddingBottom: Theme.spacing.md,
                             paddingHorizontal: Theme.spacing.md,
                             borderBottomWidth: 1,
-                            borderBottomColor: colors.border,
+                            borderBottomColor: colors.border,>
                         }}
                                             <HStack justifyContent="space-between" alignItems="center"                            <Heading size="lg" color={colors.text}                                {t('self.breathingReset') || 'Breathing Reset'}
                             </Heading                            <TouchableOpacity
@@ -209,5 +209,5 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                                     borderColor: colors.border,
                                     borderWidth: 1,
                                 }}
-                                                            <X size={24} color={colors.text} /                            </TouchableOpacity                        </HStack                    </Box                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}                        <BreathGuide onComplete={completeBreathingReset} /                    </ScrollView                </Box            </Modal        </Box    );
+                                                            <X size={24} color={colors.text} /                            ></TouchableOpacity                        </HStack                    </Box                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}                        <BreathGuide onComplete={completeBreathingReset} /                    ></ScrollView                </Box            </Modal        </Box    );
 }

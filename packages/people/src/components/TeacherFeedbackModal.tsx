@@ -94,17 +94,17 @@ export default function TeacherFeedbackModal({
             sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.category')}
-          </Text          <Select onValueChange={setCategory} defaultValue={category}            <SelectTrigger
+          </Text          ><Select onValueChange={setCategory} defaultValue={category}            <SelectTrigger
               variant="outline"
               sx={{ borderColor: glass.interact.border, backgroundColor: glass.interact.bg }}
-                          <SelectInput placeholder="Select category" {...({ color: text.primary } as any)} /              ><SelectIcon sx={{ marginRight: Theme.spacing.md }} as={ChevronDown} /            ></SelectTrigger            <SelectPortal              <SelectBackdrop /              <SelectContent                {CATEGORIES.map((cat) => (
+                          <SelectInput placeholder="Select category" {...({ color: text.primary } as any)} /              ><SelectIcon sx={{ marginRight: Theme.spacing.md }} as={ChevronDown} /            ></SelectTrigger            ><SelectPortal              <SelectBackdrop >/              ><SelectContent                {CATEGORIES.map((cat) => (
                   <SelectItem key={cat.value} label={cat.label} value={cat.value} /                >))}
               </SelectContent            </SelectPortal          </Select        </VStack>
         <VStack sx={{ gap: Theme.spacing.xs }}          <Text
             sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.priority')}
-          </Text          <HStack sx={{ gap: Theme.spacing.sm }}            {(['low', 'medium', 'high'] as const).map((p) => (
+          </Text          ><HStack sx={{ gap: Theme.spacing.sm }}            {(['low', 'medium', 'high'] as const).map((p) => (
               <Button
                 key={p}
                 size="xs"
@@ -117,13 +117,13 @@ export default function TeacherFeedbackModal({
                 }}
                 onPress={() => setPriority(p)}
                               <ButtonText {...({ color: priority === p ? text.inverse : text.secondary } as any)}                  {p.toUpperCase()}
-                </ButtonText              </Button            ))}>
+                </ButtonText              ></Button            ))}>
           </HStack        </VStack
         <VStack sx={{ gap: Theme.spacing.xs }}          <Text
             sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
             {...({ color: text.primary } as any)}
                       {t('teacher.feedback.content')}
-          </Text          <Textarea
+          </Text          ><Textarea
             isReadOnly={false}
             isInvalid={false}
             isDisabled={false}
@@ -133,7 +133,7 @@ export default function TeacherFeedbackModal({
               value={content}
               onChangeText={setContent}>
               {...({ color: text.primary } as any)}
-            /          ></Textarea        </VStack
+            /          ></Textarea        ></VStack
         <Box
           sx={{
             padding: Theme.spacing.sm,
@@ -148,5 +148,5 @@ export default function TeacherFeedbackModal({
             sx={{ fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}>
             {...({ color: text.secondary } as any)}
                       {t('teacher.feedback.note')}
-          </Text        </Box      </VStack    </SanctuaryModal  );
+          </Text        ></Box      </VStack    </SanctuaryModal  );
 }

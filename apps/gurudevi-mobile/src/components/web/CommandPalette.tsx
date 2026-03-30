@@ -288,12 +288,12 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     let globalIndex = 0;
 
     return (
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none"
+        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
             {/* Backdrop */}>
-            <Animated.View
+            <Animated.View>
                 style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}>
             
-                <Pressable
+                <Pressable>
                     style={StyleSheet.absoluteFill}
                     onPress={close}
                     accessibilityLabel="Close command palette"
@@ -301,8 +301,8 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             ></Animated.View>
 
             {/* Palette card \u2014 dialog role for screen readers */}
-            <View style={styles.centeredWrap} pointerEvents="box-none"
-                <Animated.View
+            <View style={styles.centeredWrap} pointerEvents="box-none">
+                <Animated.View>
                     accessibilityViewIsModal
                     accessibilityRole="none"
                     style={[
@@ -318,7 +318,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     ]}
                 
                     {/* Search input \u2014 border glows Saffron when focused */}
-                    <View style={[
+                    <View style={[>
                         styles.searchRow,>
                         {
                             borderBottomColor: searchFocused
@@ -330,7 +330,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         <Text style={[styles.searchIcon, { color: Theme.colors.sanctuarySaffron }]}
                             \u2315>
                         </Text>
-                        <TextInput accessibilityLabel="Text input field"
+                        <TextInput accessibilityLabel="Text input field">
                             ref={inputRef}
                             style={[styles.searchInput, { color: inputColor }]}
                             placeholder="Navigate anywhere\u2026"
@@ -348,15 +348,15 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     </View>
 
                     {/* Commands */}
-                    <ScrollView
+                    <ScrollView>
                         style={styles.commandList}
                         showsVerticalScrollIndicator={false}
                         keyboardShouldPersistTaps="always">
                     
                         {Object.entries(sections).map(([sectionName, cmds]) => (
-                            <View key={sectionName}
+                            <View key={sectionName}>
                                 {/* Section header */}>
-                                <Text style={[styles.sectionHeader, { color: sectionColor }]}
+                                <Text style={[styles.sectionHeader, { color: sectionColor }]}>
                                     {sectionName.toUpperCase()}>
                                 </Text>
 
@@ -364,7 +364,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                     const idx = globalIndex++;
                                     const isSelected = idx === selectedIndex;
                                     return (
-                                        <Pressable accessibilityRole="button"
+                                        <Pressable accessibilityRole="button">
                                             key={cmd.id}
                                             onPress={cmd.action}
                                             onHoverIn={() => setSelectedIndex(idx)}
@@ -381,7 +381,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                             ]}
                                         
                                             {/* Active bar */}
-                                            <View
+                                            <View>
                                                 style={[
                                                     styles.activeBar,>
                                                     { opacity: isSelected ? 1 : 0 },
@@ -391,13 +391,13 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                             ><View style={[styles.glyphCircle, {
                                                 backgroundColor: isSelected
                                                     ? Theme.colors.sanctuarySaffron + '1A'
-                                                    : (isDark ? 'rgba(252,249,242,0.06)' : 'rgba(42,35,24,0.05)'),>
+                                                    : (isDark ? 'rgba(252,249,242,0.06)' : 'rgba(42,35,24,0.05)'),
                                             }]}
                                                 <Text style={styles.glyph}>{cmd.glyph}</Text
                                             ></View>
 
-                                            <View style={styles.labelWrap}
-                                                <Text style={[
+                                            <View style={styles.labelWrap}>
+                                                <Text style={[>
                                                     styles.commandLabel,>
                                                     {
                                                         color: isSelected
@@ -409,14 +409,14 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                                     {cmd.label}
                                                 </Text>
                                                 {cmd.subtitle && (
-                                                    <Text style={[styles.commandSubtitle, { color: sectionColor }]}
+                                                    <Text style={[styles.commandSubtitle, { color: sectionColor }]}>
                                                         {cmd.subtitle}>
                                                     </Text>
                                                 )}
                                             </View>
 
                                             {cmd.shortcut && (
-                                                <View style={[
+                                                <View style={[>
                                                     styles.shortcutBadge,>
                                                     {
                                                         backgroundColor: isSelected
@@ -427,7 +427,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                                             : border,
                                                     },
                                                 ]}
-                                                    <Text style={[
+                                                    <Text style={[>
                                                         styles.shortcutText,>
                                                         {
                                                             color: isSelected
@@ -446,7 +446,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         ))}
 
                         {filtered.length === 0 && (
-                            <View style={styles.emptyState}
+                            <View style={styles.emptyState}>
                                 <Text style={styles.emptyGlyph}>\uD83E\uDEB7</Text
                                 ><Text style={[styles.emptyText, { color: sectionColor }]}
                                     No results for "{query}">
@@ -456,7 +456,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     </ScrollView>
 
                     {/* Footer hint */}
-                    <View style={[styles.footer, { borderTopColor: border }]}
+                    <View style={[styles.footer, { borderTopColor: border }]}>
                         <Text style={[styles.footerHint, { color: sectionColor }]}
                             \u2191\u2193 navigate \u00B7 \u21B5 open \u00B7 \u2318K close>
                         </Text>

@@ -115,7 +115,7 @@ export default function FounderDashboardWeb() {
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             {/* \u2500\u2500\u2500 1. COMMAND HEADER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}                <div                    <div >style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}                        <div style={{ padding: '8px', background: 'rgba(255,166,0,0.1)', borderRadius: '8px', color: 'var(--sanctuary-saffron)' }}                            <Globe size={20} /                        ></div                        ><span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}                            Ecosystem Command
                         </span                    </div                    <h1 style={{ fontSize: '40px', fontWeight: '800', margin: 0 }}                        The Gurudevi <span style={{ color: 'var(--sanctuary-saffron)' }}>Ecology</span>.
@@ -169,9 +169,9 @@ export default function FounderDashboardWeb() {
                 gap: '8px',
                 borderBottom: '1px solid var(--border)',
                 paddingBottom: '2px',
-                marginBottom: '-20px'>
+                marginBottom: '-20px'
             }}                {(['pulse', 'institutions', 'staff', 'sentinel'] as const).map(tab => (
-                    <button
+                    <button>
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         style={{
@@ -190,7 +190,7 @@ export default function FounderDashboardWeb() {
                     </button                >))}
             </div>
             {activeTab === 'pulse' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}                    {/* Ecosystem Weather */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}                    {/* Ecosystem Weather */}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}                        <div style={{ position: 'relative' }}                            <FounderGlow active={ecoPulse?.weather === 'radiant'} intensity="subtle"                                <div className="sanctuary-card" style={{ 
                                     padding: '24px', 
                                     background: 'rgba(255,255,255,0.03)', 
@@ -199,22 +199,22 @@ export default function FounderDashboardWeb() {
                                     minHeight: '200px',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    justifyContent: 'center'>
-                                }}                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}                                        <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}                                            Ecosystem Resonance
-                                        </span                                        {ecoPulse?.weather === 'radiant' ? <Sun color="#F59E0B" size={24} /> : 
+                                    justifyContent: 'center'
+                                }}                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}                                        <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}                                            Ecosystem Resonance>
+                                        </span                                        >{ecoPulse?.weather === 'radiant' ? <Sun color="#F59E0B" size={24} /> : 
                                          ecoPulse?.weather === 'lush' ? <Cloudy color="#10B981" size={24} /> : 
                                          <CloudRain color="#6366f1" size={24} />}
                                     </div                                    <h2 style={{ fontSize: '42px', fontWeight: '900', margin: '0 0 8px 0', color: 'var(--ink)' }}                                        {ecoPulse?.weather?.toUpperCase() || 'STEADY'}
                                     </h2                                    <p style={{ opacity: 0.6, fontSize: '14px', lineHeight: '1.5' }}                                        Collective energy is {ecoPulse?.weather === 'radiant' ? 'vibrant and flourishing' : 'resting and quiet'} across {ecoPulse?.pulses?.length || 0} nodes.
                                     </p                                </div                            </FounderGlow                        </div
-                        <div className="sanctuary-card" style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(10px)' }}                            <div style={{ marginBottom: '20px' }}                                <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}                                    Strategic Growth
+                        <div className="sanctuary-card" style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(10px)' }}                            <div style={{ marginBottom: '20px' }}                                <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}                                    Strategic Growth>
                                 </span                            </div                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}                                <h2 style={{ fontSize: '36px', fontWeight: '900', margin: 0 }}>{stats?.total_users || 0}</h2                                ><span style={{ color: '#10B981', fontWeight: '800', fontSize: '14px' }}>+12%</span                            ></div                            <div style={{ height: '40px', display: 'flex', alignItems: 'flex-end', gap: '4px' }}                                {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
                                     <div key={i} style={{ flex: 1, height: `${h}%`, background: 'var(--sanctuary-saffron)', opacity: 0.3 + (i * 0.1), borderRadius: '2px' }} /                                >))}
                             </div                        </div
-                        <div className="sanctuary-card" style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(10px)' }}                            <div style={{ marginBottom: '20px' }}                                <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}                                    Knowledge & Flow
+                        <div className="sanctuary-card" style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(10px)' }}                            <div style={{ marginBottom: '20px' }}                                <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}                                    Knowledge & Flow>
                                 </span                            </div                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}                                <div                                    <div >style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_library_resources || 0}</div                                    ><div style={{ fontSize: '10px', fontWeight: '700', opacity: 0.5 }}>RESOURCES</div                                ></div                                <div                                    <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.growth_signals_7d || 0}</div                                    <div style={{ fontSize: '10px', fontWeight: '700', opacity: 0.5 }}>FLOWS (7D)</div                                </div                            </div                        </div                    </div
                     {/* \u2500\u2500\u2500 NEW AGGREGATION MODULES \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}                        
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}                        >
                         {/* 1. RESOURCE ECOLOGY (STOCKS) */}>
                         <div className="sanctuary-card" style={{ padding: '0', overflow: 'hidden', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)' }}                            <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}                                    <Zap size={18} color="var(--sanctuary-saffron)" /                                    ><h3 style={{ fontSize: '15px', fontWeight: '800', margin: 0 }}>Resource Ecology</h3                                ></div                                ><span style={{ fontSize: '11px', fontWeight: '700', padding: '2px 8px', background: 'rgba(255,166,0,0.1)', color: 'var(--sanctuary-saffron)', borderRadius: '4px' }}                                    STOCKS
                                 </span                            </div                            <div style={{ padding: '24px' }}                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '20px' }}                                    <div style={{ fontSize: '32px', fontWeight: '900' }}>{stats?.total_inventory_items || 0}</div                                    ><div style={{ fontSize: '12px', fontWeight: '700', opacity: 0.5 }}>TOTAL GLOBAL STOCK</div                                ></div                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px' }}                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}                                            <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--sanctuary-saffron)' }} /                                            ><span style={{ fontSize: '13px', fontWeight: '600' }}>Active Supply Requests</span                                        ></div                                        <span style={{ fontWeight: '800', color: (stats?.pending_inventory_requests || 0) > 0 ? '#F59E0B' : 'inherit' }}                                            {stats?.pending_inventory_requests || 0}
@@ -245,7 +245,7 @@ export default function FounderDashboardWeb() {
                             <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--background-alt)', borderRadius: '20px' }}                                <Building size={40} color="var(--ink-ghost)" style={{ marginBottom: 16 }} /                                ><h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}                                    {searchQuery ? 'No matching institutions' : 'No institutions yet'}
                                 </h3                                <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '24px' }}                                    {searchQuery ? 'Try a different search term.' : 'Initialize your first institution to begin building the Gurudevi ecology.'}
                                 </p                                {!searchQuery && (
-                                    <button
+                                    <button>
                                         onClick={() => setIsCreateModalOpen(true)}
                                         className="premium-button"
                                         style={{ background: 'var(--sanctuary-saffron)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
@@ -253,7 +253,7 @@ export default function FounderDashboardWeb() {
                                     </button                                )}
                             </div                        ) : (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '24px' }}                                {filteredSchools.map(school => (
-                                    <SchoolCard
+                                    <SchoolCard>
                                         key={school.id}
                                         school={school}
                                         onPress={() => (navigation as any).navigate('FounderSchoolDashboard', {
@@ -265,7 +265,7 @@ export default function FounderDashboardWeb() {
                     </div                </            )}
 
             {activeTab === 'staff' && (
-                <div className="sanctuary-card" style={{ background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.05)' }}                    {/* ... existing staff view ... */}
+                <div className="sanctuary-card" style={{ background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.05)' }}                    {/* ... existing staff view ... */}>
                     <div className="card-body-inner"                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}                            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0 }}>Global Staff Management</h2                            ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}                                {allUsers.length} Souls Registered
                             </div                        </div
                         {isLoadingUsers ? (
@@ -278,7 +278,7 @@ export default function FounderDashboardWeb() {
                                         background: 'var(--surface)',
                                         alignItems: 'center',
                                         fontSize: '14px',
-                                        transition: 'background 0.2s'>
+                                        transition: 'background 0.2s'
                                     }} className="staff-row"                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--background-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}                                                {u.avatar_url ? <img src={u.avatar_url} style={{ width: '100%', height: '100%', borderRadius: '50%' }} alt="" /> : '\uD83D\uDC64'}
                                             </div                                            <div style={{ display: 'flex', flexDirection: 'column' }}                                                <span style={{ fontWeight: '700' }}>{u.full_name}</span                                                ><span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{u.email}</span                                            ></div                                        </div                                        <span style={{ fontWeight: '600' }}>{u.schools?.name || '\u2014'}</span                                        <div                                            <span style={{
                                                 display: 'inline-block',
@@ -303,7 +303,7 @@ export default function FounderDashboardWeb() {
                         </div                    </div                </div            )}
 
             {/* Global Create Modal */}
-            <GlobalCreateModal
+            <GlobalCreateModal>
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 availableSchools={schools}
@@ -315,18 +315,18 @@ export default function FounderDashboardWeb() {
 
 function SchoolCard({ school, onPress }: { school: School; onPress: () => void }) {
     return (
-        <button
+        <button>
             className="sanctuary-card interactive"
             style={{
                 cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
                 width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0,
-                font: 'inherit',>
+                font: 'inherit',
             }}
             onClick={onPress}
-                    <div className="card-body-inner"                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}                    <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(255,166,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}                        <Building size={24} color="var(--sanctuary-saffron)" /                    ></div                    <ArrowUpRight size={18} color="var(--ink-ghost)" /                </div
+                    <div className="card-body-inner"                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}                    <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(255,166,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}                        <Building size={24} color="var(--sanctuary-saffron)" /                    ></div                    ><ArrowUpRight size={18} color="var(--ink-ghost)" /                ></div
                 <h3 style={{ fontSize: '16px', fontWeight: '900', marginBottom: '8px', lineHeight: '1.3' }}>{school.name}</h3
                 {school.type && (
-                    <span style={{ display: 'inline-block', padding: '3px 10px', background: 'rgba(255,166,0,0.1)', color: 'var(--sanctuary-saffron)', borderRadius: '6px', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '16px' }}                        {school.type}
+                    <span style={{ display: 'inline-block', padding: '3px 10px', background: 'rgba(255,166,0,0.1)', color: 'var(--sanctuary-saffron)', borderRadius: '6px', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '16px' }}                        {school.type}>
                     </span                )}>
 
                 <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid var(--border)', paddingTop: '16px', marginTop: 'auto' }}                    <div                        <div >style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Type</div                        ><div style={{ fontSize: '13px', fontWeight: '700', textTransform: 'capitalize' }}>{school.type ?? 'Institutional'}</div                    ></div                    <div                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Since</div                        <div style={{ fontSize: '13px', fontWeight: '700' }}                            {new Date(school.created_at).getFullYear()}

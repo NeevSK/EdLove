@@ -70,12 +70,12 @@ export default function AIAssistantScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={styles.container}>
                             {/* Header */}
-                <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}                    <TouchableOpacity accessibilityRole="button" onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: glass.surface.bg }]}                        <ChevronLeft color={text.primary} size={24} /                    ></TouchableOpacity                    <VStack                        <HStack space="xs" alignItems="center"                            <Sparkles color={Theme.colors.gurudeviViolet} size={18} /                            <Text sx={{
+                <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}                    <TouchableOpacity accessibilityRole="button" onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: glass.surface.bg }]}                        <ChevronLeft color={text.primary} size={24} /                    ></TouchableOpacity                    ><VStack                        <HStack >space="xs" alignItems="center"                            <Sparkles color={Theme.colors.gurudeviViolet} size={18} /                            ><Text sx={{
                                 fontWeight: '700',
                                 fontSize: '$lg' as any,
                                 color: text.primary
                             }}                                {t('aiAssistant.title')}
-                            </Text                        </HStack                        <Text color={text.secondary} size="xs"                            {t('aiAssistant.subtitle')}
+                            </Text                        ></HStack                        <Text color={text.secondary} size="xs"                            {t('aiAssistant.subtitle')}
                         </Text                    </VStack                </HStack
                 {/* Chat Area */}
                 <FlatList
@@ -93,7 +93,7 @@ export default function AIAssistantScreen() {
                 >{/* Input Area */}
                 <Box style={styles.inputContainer}                    {!userRole ? (
                         <VStack space="xs" alignItems="center" p="$4"                            <Text color={text.secondary} size="sm" textAlign="center"                                {t('aiAssistant.loginPrompt')}>
-                            </Text                            <TouchableOpacity accessibilityRole="button" onPress={() => (navigation as any).navigate('Welcome')}                                <Text color={accent.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text                            ></TouchableOpacity                        </VStack                    ) : (
+                            </Text                            ><TouchableOpacity accessibilityRole="button" onPress={() => (navigation as any).navigate('Welcome')}                                <Text color={accent.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text                            ></TouchableOpacity                        ></VStack                    ) : (
                         <HStack style={[styles.inputWrapper, { backgroundColor: glass.surface.bg, borderColor: glass.surface.border, borderWidth: 1 }]} space="sm"                            <TextInput accessibilityLabel="Text input field"
                                 style={[styles.input, { color: text.primary }]}
                                 placeholder={t('aiAssistant.placeholder')}

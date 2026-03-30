@@ -32,7 +32,7 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
 
   return (
     <
-      <style
+      <style>
         {`
           @keyframes sanctuary-shimmer {
             0% { background-position: -200% 0; }
@@ -44,7 +44,7 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
               90deg,
               rgba(232, 226, 207, 0.4) 25%,
               rgba(250, 247, 237, 0.8) 37%,
-              rgba(232, 226, 207, 0.4) 63%
+              rgba(232, 226, 207, 0.4) 63%>
             );
             background-size: 200% 100%;
             animation: sanctuary-shimmer 2.5s infinite linear;
@@ -63,12 +63,12 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
             border: 1px solid rgba(252, 249, 242, 0.05);
           }
         `}
-      </style
-      <div 
+      </style>
+      <div >
         className={`sanctuary-skeleton ${className}`} 
         style={baseStyle}
         aria-hidden="true"
-      /
+      />
     </
   );
 };

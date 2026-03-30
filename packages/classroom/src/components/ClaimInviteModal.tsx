@@ -90,7 +90,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                                                             <ButtonText>Continue to Classroom</ButtonText                            ></Button                        </VStack                    ) : (
                         <VStack sx={{ gap: 16, paddingBottom: 16 }}                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}                                <HStack sx={{ gap: 8, alignItems: 'center' }}                                    <QrCode size={20} color={Theme.colors.sanctuarySaffron} /                                    ><Text color={colors.textSecondary} sx={{ fontSize: 14 }}                                        Enter the 8-character invite code provided by your teacher.
                                     </Text                                </HStack                            </Box>
-                            <FormControl isRequired                                <FormControlLabel                                    <FormControlLabelText color={colors.textSecondary}>Invite Code</FormControlLabelText                                </FormControlLabel                                <Input sx={{ borderColor: colors.border, backgroundColor: colors.primary, height: 60 }}                                    <InputField
+                            <FormControl isRequired                                <FormControlLabel                                    <FormControlLabelText >color={colors.textSecondary}>Invite Code</FormControlLabelText                                ></FormControlLabel                                <Input sx={{ borderColor: colors.border, backgroundColor: colors.primary, height: 60 }}                                    <InputField
                                         placeholder="e.g. a1b2c3d4"
                                         color={colors.text}
                                         value={inviteCode}
@@ -102,7 +102,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                                 onPress={handleClaim}
                                 disabled={loading || inviteCode.length < 6}
                                 sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50 }}>
-                                                            {loading ? <Spinner {...({ color: text.inverse } as any)} /> : <ButtonText>Claim Record</ButtonText>}
+                                                            {loading ? <Spinner >{...({ color: text.inverse } as any)} /> : <ButtonText>Claim Record</ButtonText>}
                             </Button                        </VStack                    )}
                 </ModalBody            </ModalContent        </Modal    );
 }

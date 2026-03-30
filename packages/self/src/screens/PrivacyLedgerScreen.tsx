@@ -49,13 +49,13 @@ export default function PrivacyLedgerScreen() {
                             <VStack flex={1} space="xs"
                                 <HStack justifyContent="space-between" alignItems="center">
                                     <Text size="sm" bold color={colors.text}>{item.activity_type}</Text
-                                    <HStack space="xs" alignItems="center"
+                                    ><HStack space="xs" alignItems="center"
                                         <Clock size={12} color={colors.textTertiary} />
                                         <Text size="xs" color={colors.textTertiary}>{time}</Text
                                     ></HStack>
                                 </HStack>
                                 <Text size="xs" color={colors.textSecondary}>{item.description}</Text
-                                <HStack space="xs" alignItems="center" mt="$1"
+                                ><HStack space="xs" alignItems="center" mt="$1"
                                     <FileText size={12} color={colors.textTertiary} />
                                     <Text size="xs" italic color={colors.textTertiary}>{item.resource_name}</Text
                                 ></HStack>

@@ -31,9 +31,9 @@ import {
 
 function Spin({ size = 16 }: { size?: number }) {
     return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
             stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-            style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}>
+            style={{ animation: 'spin 0.7s linear infinite', display: 'block' }}
             <path d="M21 12a9 9 0 1 1-6.219-8.56" /
         ></svg
     >);
@@ -43,8 +43,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
         <p style={{
             margin: '0 0 8px', fontSize: '11px', fontWeight: '800',
-            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'>
-        }}
+            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'
+        }}>
             {children}
         </p>
     );
@@ -53,9 +53,9 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string }) {
     const { label, error, ...rest } = props;
     return (
-        <div
+        <div>
             {label && <SectionLabel>{label}</SectionLabel>}
-            <input
+            <input>
                 {...rest}
                 style={{
                     width: '100%', boxSizing: 'border-box' as const,
@@ -79,11 +79,11 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
     emoji: string; title: string; body: string; cta: string; onCta: () => void;
 }) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}>
             <div style={{
                 width: '64px', height: '64px', borderRadius: '50%',
-                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'>
-            }}
+                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
                 <CheckCircle2 size={32} color="var(--moss)" /
             ></div
             ><div style={{ fontSize: '28px' }}>{emoji}</div
@@ -91,7 +91,7 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
                 <h3 >style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3
                 ><p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p
             ></div>
-            <button className="premium-button"
+            <button className="premium-button">
                 style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}
                 onClick={onCta}>
                 {cta} <ArrowRight size={14} /
@@ -145,7 +145,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
     };
 
     if (step === 'done') return (
-        <SuccessCard
+        <SuccessCard>
             emoji="\uD83C\uDFDB\uFE0F"
             title={`${schoolName} is live!`}
             body="Your school sanctuary is ready. Invite teachers, create classrooms and start your journey."
@@ -155,7 +155,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
     >);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {step === 'details' && (>
                 <
                     <FieldInput label="School Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Gurudevi Life School" /
@@ -169,7 +169,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
 
             {step === 'type' && (
                 <
-                    <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px' }}
+                    <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px' }}>
                         What kind of school is <strong style={{ color: 'var(--ink)' }}>{name}</strong>?
                     </p>
                     {SCHOOL_TYPES.map(t => (
@@ -188,7 +188,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                         </button>
                     ))}
                     {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-                    <div style={{ display: 'flex', gap: '10px' }}
+                    <div style={{ display: 'flex', gap: '10px' }}>
                         <button className="secondary-button" onClick={() => setStep('details')} style={{ flex: 1 }}>\u2190 Back</button
                         ><button className="premium-button"
                             style={{ flex: 2, background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
@@ -268,7 +268,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     };
 
     if (reqSent) return (
-        <SuccessCard
+        <SuccessCard>
             emoji="\uD83D\uDCEC"
             title="Request Sent!"
             body="Your join request has been sent to the Principal. You'll be notified once approved."
@@ -278,9 +278,9 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     >);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Method tabs */}>
-            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '10px' }}
+            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '10px' }}>
                 {([{ id: 'code', label: '\uD83D\uDD11 Invite Code' }, { id: 'search', label: '\uD83D\uDD0D Search School' }] as const).map(m => (
                     <button key={m.id} onClick={() => setMethod(m.id)} style={{
                         flex: 1, padding: '8px 12px', borderRadius: '8px', border: 'none',
@@ -294,8 +294,8 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
 
             {/* Invite code */}
             {method === 'code' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
-                    <FieldInput
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <FieldInput>
                         label="Invite Code from Principal"
                         value={code} onChange={e => setCode(fmtCode(e.target.value))}
                         placeholder="GURU-ABC123-TEACH"
@@ -314,7 +314,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
 
             {/* Search */}
             {method === 'search' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <input value={query} onChange={e => setQuery(e.target.value)}
                             onKeyDown={(e: any) => e.key === 'Enter' && handleSearch()}
@@ -325,9 +325,9 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                             {searching ? <Spin size={13} /> : <Search size={13} />} Search
                         </button>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
                         {results.map(s => (
-                            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}
+                            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}>
                                 <div>
                                     <div >style={{ fontSize: '14px', fontWeight: '700' }}>{s.name}</div
                                     ><div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.type}</div
@@ -382,7 +382,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
     };
 
     if (created) return (
-        <SuccessCard
+        <SuccessCard>
             emoji="\uD83D\uDCDA"
             title={`"${created.name}" is ready!`}
             body="Your personal classroom is live. Start adding students and lessons."
@@ -392,7 +392,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
     >);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ padding: '12px 16px', background: 'rgba(212,132,58,0.06)', borderRadius: '10px', border: '1px solid rgba(212,132,58,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}
                 \uD83D\uDCA1 A <strong style={{ color: 'var(--ink)' }}>standalone classroom</strong> is personal \u2014 it's not linked to any school.
                 You can join a school later and move classrooms under it.
@@ -400,7 +400,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
             <FieldInput label="Classroom Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grade 10B Science" /
             ><FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" /
             >{error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-            <button className="premium-button"
+            <button className="premium-button">
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 onClick={handleCreate} disabled={!name.trim() || loading}>
                 {loading ? <><Spin /> Creating\u2026</> : <><BookOpen size={14} /> Create Classroom</>}
@@ -425,9 +425,9 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Tab bar */}>
-            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '12px' }}
+            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '12px' }}>
                 {TABS.map(t => (
                     <button key={t.id} onClick={() => setTab(t.id)} style={{
                         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
@@ -486,7 +486,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
     };
 
     if (done) return (
-        <SuccessCard
+        <SuccessCard>
             emoji="\uD83C\uDF31"
             title="Enrolled!"
             body="You've been linked to your classroom. Your teacher will see you in the roll."
@@ -496,16 +496,16 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
     >);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
                 <Users size={13} color="var(--water)" style={{ marginRight: 6 }} /
                 >Ask your teacher for your classroom invite code.
                 It's typically 8 characters, like <code style={{ fontWeight: '800', letterSpacing: '1px' }}>a1b2c3d4</code>.
             </div>
 
-            <div
+            <div>
                 <SectionLabel>Your Classroom Code</SectionLabel
-                <input
+                <input>
                     value={code}
                     onChange={e => setCode(e.target.value.toLowerCase().slice(0, 12))}
                     onKeyDown={(e: any) => e.key === 'Enter' && code.length >= 6 && handleClaim()}
@@ -522,7 +522,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
                 >{error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
             </div>
 
-            <button className="premium-button"
+            <button className="premium-button">
                 style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 onClick={handleClaim} disabled={code.length < 6 || loading}>
                 {loading ? <><Spin /> Joining\u2026</> : <><BookOpen size={14} /> Join Classroom</>}
@@ -554,7 +554,7 @@ export default function NoSchoolView() {
             : { emoji: '\uD83C\uDF31', heading: 'Join your classroom', sub: 'Enter the invite code your teacher gave you to link your account.' };
 
     return (
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}
+        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}>
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <div style={{ fontSize: '48px', marginBottom: '10px' }}>{META.emoji}</div
                 ><h1 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '800' }}>{META.heading}</h1
@@ -563,7 +563,7 @@ export default function NoSchoolView() {
                 </p>
             </div>
 
-            <div className="sanctuary-card" style={{ padding: '28px 32px' }}
+            <div className="sanctuary-card" style={{ padding: '28px 32px' }}>
                 {canCreateSchool && <PrincipalCreateSchool onSuccess={handleSuccess} />}
                 {canCreateClassroom && <TeacherFlow onSuccess={handleSuccess} />}
                 {canJoinClassroom && !canCreateClassroom && <StudentJoinClassroom onSuccess={handleSuccess} />}

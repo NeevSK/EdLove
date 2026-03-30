@@ -209,21 +209,21 @@ export default function LibraryScreenWeb() {
     useRegisterFAB(fabConfig);
 
     return (
-        <div className="sanctuary-screen"            <div className="sanctuary-container"                {/* 1. GREETING */}
-                <WebScreenHeader
+        <div className="sanctuary-screen"            <div className="sanctuary-container"                {/* 1. GREETING */}>
+                <WebScreenHeader>
                     title="The Sanctuary"
                     note="Gurudevi Knowledge Hub"
                     timeText="Curated Wisdom"
                     actions={(>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}                            {canContribute && (
-                                <button
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}                            {canContribute && (>
+                                <button>
                                     className='premium-button'
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                     onClick={handleAddResourcePress}
                                     disabled={isPastView}>
                                                                     <Plus size={15} /                                    >{t('library.contributeResource') || 'Contribute Resource'}
                                 </button                            >)}
-                            <button
+                            <button>
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                 onClick={() => navigation.navigate('LibraryMap')}
@@ -231,10 +231,10 @@ export default function LibraryScreenWeb() {
                             </button                        </div                    )}
                 /                <div style={{ marginBottom: '20px' }}                    <TemporalNavigator /                </div
                 {/* 2. FILTERS & SEARCH */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}                    {/* Search + Sort row */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}                    {/* Search + Sort row */}>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}                        <div className="sanctuary-search-shell" style={{
                             flex: 1,
-                            minWidth: '200px',>
+                            minWidth: '200px',
                         }}                            <Search size={18} color="var(--ink-ghost)" /                            ><input
                                 className="search-input"
                                 style={{ padding: '8px 0' }}
@@ -242,7 +242,7 @@ export default function LibraryScreenWeb() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             /                            >{searchQuery && (
-                                <button
+                                <button>
                                     onClick={() => setSearchQuery('')}
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', padding: '0 4px', lineHeight: 1 }}
                                     aria-label="Clear search"
@@ -250,7 +250,7 @@ export default function LibraryScreenWeb() {
                                 </button                            )}
                         </div>
                         {/* Sort selector */}
-                        <select
+                        <select>
                             value={selectedSort}
                             onChange={(e) => setSelectedSort(e.target.value as typeof selectedSort)}
                             style={{
@@ -269,7 +269,7 @@ export default function LibraryScreenWeb() {
                             aria-label={t('library.sort.label')}
                                                     <option value="recent">{t('library.sort.recent')}</option                            ><option value="popular">{t('library.sort.popular')}</option                            ><option value="most_endorsed">{t('library.sort.endorsed')}</option                            ><option value="most_bookmarked">{t('library.sort.bookmarked')}</option                        ></select
                         {/* View mode toggle (Always visible in search, relevant for results) */}
-                        <div style={{ display: 'flex', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}                            <button
+                        <div style={{ display: 'flex', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}                            <button>
                                 onClick={() => setViewMode('shelf')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'shelf' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'shelf' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Shelf view"
@@ -279,27 +279,27 @@ export default function LibraryScreenWeb() {
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'grid' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'grid' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Grid view"
                                 title="Grid view"
-                                                            <LayoutGrid size={16} /                            </button                            <button
+                                                            <LayoutGrid size={16} /                            </button                            <button>
                                 onClick={() => setViewMode('list')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'list' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'list' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="List view"
                                 title="List view"
-                                                            <List size={16} /                            </button                            <button
+                                                            <List size={16} /                            </button                            <button>
                                 onClick={() => setViewMode('map')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'map' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'map' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Map view"
                                 title="Map view"
-                                                            <MapIcon size={16} /                            </button                        </div                    </div
+                                                            <MapIcon size={16} /                            </button                        </div                    </div>
                     <div className="filter-scroll" style={{
                         display: 'flex',
                         gap: '8px',
                         overflowX: 'auto',
                         paddingBottom: '8px',
-                        scrollbarWidth: 'none'>
+                        scrollbarWidth: 'none'
                     }}                        {['All', 'trending', 'bookmarks', 'activity'].map(id => {
                             const Icon = id === 'All' ? Globe : id === 'trending' ? Flame : id === 'bookmarks' ? Bookmark : Clock;
                             return (
-                                <button
+                                <button>
                                     key={id}
                                     className={`top-tab ${selectedCategoryId === id ? 'active' : ''}`}
                                     onClick={() => setSelectedCategoryId(id)}
@@ -308,7 +308,7 @@ export default function LibraryScreenWeb() {
                                 </button                            );
                         })}
                         <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} /                        >{LIBRARY_UI_CATEGORIES.map(cat => (
-                            <button
+                            <button>
                                 key={cat.id}
                                 className={`top-tab ${selectedCategoryId === cat.id ? 'active' : ''}`}
                                 onClick={() => setSelectedCategoryId(cat.id)}
@@ -319,7 +319,7 @@ export default function LibraryScreenWeb() {
                 {/* 3. CONTENT AREA */}
                 {loading && resources.length === 0 ? (
                     <StackFallback /                >) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}                        
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}                        >
                         {/* HERO BANNER (Only in default mode) */}>
                         {!isSearchMode && heroResource && (
                             <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} /                        >)}
@@ -328,25 +328,25 @@ export default function LibraryScreenWeb() {
                             /* SEARCH / FILTERED RESULTS VIEW - Switches between modes */
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                                <div style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '16px' }}                                    {debouncedSearchQuery 
                                         ? t('library.foundResults', { count: resources.length, query: debouncedSearchQuery })
-                                        : t('library.showingCurated', { category: selectedCategoryId })>
-                                    }
+                                        : t('library.showingCurated', { category: selectedCategoryId })
+                                    }>
                                 </div                                >
                                 {viewMode === 'shelf' && (
                                     <                                        {collections.length > 0 && (
                                             <SmartShelf title="Matching Collections"                                                <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}                                                    {collections.map(col => (
-                                                        <div key={`search-col-${col.id}`} style={{ width: '320px', flexShrink: 0 }}                                                            <LibraryThumbnailCard
+                                                        <div key={`search-col-${col.id}`} style={{ width: '320px', flexShrink: 0 }}                                                            <LibraryThumbnailCard>
                                                                 title={col.name}
                                                                 type="collection"
                                                                 subject={col.subjects?.[0] || 'Curated'}
                                                                 onPress={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
-                                                            /                                                        ></div                                                    ))}
+                                                            /                                                        ></div                                                    >))}
                                                 </div                                            </SmartShelf                                        )}
                                         {orderedShelfDefs.map(shelf => {
                                             const shelfItems = resources.filter(res => shelf.types.includes(res.type));
                                             if (shelfItems.length === 0) return null;
                                             return (
                                                 <SmartShelf key={`search-shelf-${shelf.id}`} title={shelf.label}                                                    <div style={{ display: 'flex', gap: '20px' }}                                                        {shelfItems.map(res => (
-                                                            <div key={`search-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                                 <LibraryThumbnailCard
+                                                            <div key={`search-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                                 <LibraryThumbnailCard>
                                                                     title={res.title}
                                                                     type={res.type}
                                                                     subject={res.subjects?.[0] ?? 'General'}
@@ -364,7 +364,7 @@ export default function LibraryScreenWeb() {
                                         {/* Fallback for items that don't match any shelf */}
                                         {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).length > 0 && (
                                             <SmartShelf title="Diverse Findings"                                                <div style={{ display: 'flex', gap: '20px' }}                                                    {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).map(res => (
-                                                        <div key={`search-other-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                            <LibraryThumbnailCard
+                                                        <div key={`search-other-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                            <LibraryThumbnailCard>
                                                                 title={res.title}
                                                                 type={res.type}
                                                                 subject={res.subjects?.[0] ?? 'General'}
@@ -379,7 +379,7 @@ export default function LibraryScreenWeb() {
 
                                 {viewMode === 'grid' && (
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}                                        {resources.map(res => (
-                                            <LibraryThumbnailCard
+                                            <LibraryThumbnailCard>
                                                 key={`grid-${res.id}`}
                                                 title={res.title}
                                                 type={res.type}
@@ -394,7 +394,7 @@ export default function LibraryScreenWeb() {
 
                                 {viewMode === 'list' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}                                        {resources.map(res => (
-                                            <div 
+                                            <div >
                                                 key={`list-${res.id}`}
                                                 onClick={() => handleOpenResource(res)}
                                                 style={{ 
@@ -408,7 +408,7 @@ export default function LibraryScreenWeb() {
                                                     alignItems: 'center'
                                                 }}
                                                 className="sanctuary-card"
-                                                                                            <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', background: 'var(--action-soft)', flexShrink: 0 }}                                                    {(res.media?.url || getYoutubeThumbnail(res.url)) ? (
+                                                                                            <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', background: 'var(--action-soft)', flexShrink: 0 }}                                                    {(res.media?.url || getYoutubeThumbnail(res.url)) ? (>
                                                         <img src={res.media?.url || getYoutubeThumbnail(res.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                    >) : (
                                                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action)' }}                                                            <Plus size={24} /                                                        ></div                                                    )}
                                                 </div                                                <div style={{ flex: 1 }}                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)', marginBottom: '4px' }}>{res.type.toUpperCase()}</div                                                    ><div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}>{res.title}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{res.subjects?.[0]} \u00E2\u20AC\u00A2 {res.creator_name}</div                                                ></div                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}                                                    <Play size={14} fill="currentColor" /                                                    >{t('library.view')}
@@ -416,7 +416,7 @@ export default function LibraryScreenWeb() {
                                     </div                                )}
 
                                 {viewMode === 'map' && (
-                                    <div className="sanctuary-map-stage" style={{ height: '600px' }}                                        <UniversalPerspective 
+                                    <div className="sanctuary-map-stage" style={{ height: '600px' }}                                        <UniversalPerspective >
                                             topology={{
                                                 nodes: resources.map(res => ({
                                                     id: res.id,
@@ -446,10 +446,10 @@ export default function LibraryScreenWeb() {
                                         /                                    ></div                                )}
                             </div                        ) : (
                             /* DEFAULT VIEW - Netflix Style Shelves */
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}                                {/* Featured Collections */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}                                {/* Featured Collections */}>
                                 {collections.length > 0 && (
                                     <SmartShelf title="Featured Collections"                                        <div style={{ display: 'flex', gap: '20px' }}                                            {collections.map((col: import('../types').LibraryCollection) => (
-                                                <div 
+                                                <div >
                                                     key={`col-${col.id}`} 
                                                     style={{ 
                                                         width: '240px', 
@@ -464,12 +464,12 @@ export default function LibraryScreenWeb() {
                                                         border: '1px solid var(--border)',
                                                         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                                         position: 'relative',
-                                                        overflow: 'hidden'>
+                                                        overflow: 'hidden'
                                                     }}
                                                     className="sanctuary-card"
                                                     onClick={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
-                                                                                                    <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}
-                                                    </div                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
+                                                                                                    <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}>
+                                                    </div                                                    ><div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
                                                     </div                                                    >
                                                     {/* Subtle accent line */}
                                                     <div style={{ 
@@ -479,7 +479,7 @@ export default function LibraryScreenWeb() {
                                                         right: 0, 
                                                         height: '4px', 
                                                         background: 'var(--action)', 
-                                                        opacity: 0.3 >
+                                                        opacity: 0.3 
                                                     }} /                                                ></div                                            >))}
                                         </div                                    </SmartShelf                                )}
 
@@ -489,7 +489,7 @@ export default function LibraryScreenWeb() {
                                     if (shelfItems.length === 0) return null;
                                     return (
                                         <SmartShelf key={`default-shelf-${shelf.id}`} title={shelf.label}                                            <div style={{ display: 'flex', gap: '20px' }}                                                {shelfItems.map(res => (
-                                                    <div key={`res-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                        <LibraryThumbnailCard
+                                                    <div key={`res-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                        <LibraryThumbnailCard>
                                                             title={res.title}
                                                             type={res.type}
                                                             subject={res.subjects?.[0] ?? 'General'}
@@ -506,7 +506,7 @@ export default function LibraryScreenWeb() {
                             </div                        )}
 
                         {hasNextResources && (
-                            <button
+                            <button>
                                 className="top-tab"
                                 style={{ alignSelf: 'center', padding: '12px 32px' }}
                                 onClick={() => fetchNextResources()}
@@ -518,7 +518,7 @@ export default function LibraryScreenWeb() {
 
             {/* Add Resource Modal \u2014 teachers/curators can contribute */}
             {can('create', 'LibraryResource') && can('create', 'LibraryResource') && (
-                <AddResourceModal
+                <AddResourceModal>
                     isOpen={showAddResource && !isPastView}
                     onClose={() => setShowAddResource(false)}
                     onAdd={async (data) => {
@@ -561,7 +561,7 @@ export default function LibraryScreenWeb() {
 
 function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick: () => void }) {
     return (
-        <div
+        <div>
             className="sanctuary-hero-panel"
             onClick={onClick}
             style={{
@@ -571,10 +571,10 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                 position: 'relative',
                 cursor: 'pointer',
                 marginBottom: '40px',
-                background: 'linear-gradient(180deg, var(--action-soft) 0%, var(--scene-surface) 100%)',>
+                background: 'linear-gradient(180deg, var(--action-soft) 0%, var(--scene-surface) 100%)',
             }}
                     {resource.media?.url && (
-                <img 
+                <img >
                     src={resource.media.url} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     alt={resource.title}
@@ -589,7 +589,7 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
-                zIndex: 1,>
+                zIndex: 1,
             }}                <div style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -600,6 +600,6 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                     color: 'var(--sanctuary-saffron)',
                 }}                    {resource.subjects?.[0] && <span>| {resource.subjects[0].toUpperCase()}</span>}
                     {resource.subjects?.[0] && <span>&bull; {resource.subjects[0].toUpperCase()}</span>}
-                </div                <h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1                ><p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p                ><div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                        <Play size={16} fill="currentColor" /                        >Open Now
+                </div                ><h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1                ><p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p                ><div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                        <Play size={16} fill="currentColor" /                        >Open Now
                     </button                </div            </div        </div    );
 }

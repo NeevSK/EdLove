@@ -123,17 +123,17 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                         <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.error, borderRadius: Theme.corners.comfortable }}                            <Text color={colors.text}>{error}</Text                        ></Box                    )}
 
                     {!isLoading && sections.map((section) => (
-                        <Box
+                        <Box>
                             key={section.id}
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
-                                borderLeftColor: colors.action,>
+                                borderLeftColor: colors.action,
                             }}
-                                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.md }}                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: 18 }}                                    {section.name}
-                                </Text                                <Button
+                                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.md }}                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: 18 }}                                    {section.name}>
+                                </Text                                ><Button
                                     variant="link"
                                     size="sm"
                                     onPress={() => {
@@ -141,28 +141,28 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                         setShowAddGrade(true);
                                     }}
                                                                     <ButtonText color={colors.action}>{t('principal.hierarchy.addGrade')}</ButtonText                                ></Button                            </HStack
-                            <VStack space="sm" sx={{ paddingLeft: Theme.spacing.lg }}                                {gradesBySection[section.id]?.length ? (
+                            <VStack space="sm" sx={{ paddingLeft: Theme.spacing.lg }}                                {gradesBySection[section.id]?.length ? (>
                                     gradesBySection[section.id]?.map((grade) => (
-                                        <HStack
+                                        <HStack>
                                             key={grade.id}
                                             space="sm"
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: colors.tertiary,
-                                                borderRadius: Theme.corners.tight,>
+                                                borderRadius: Theme.corners.tight,
                                             }}
                                                                                     <Text color={colors.textTertiary}>-</Text                                            ><Text color={colors.text}                                                {t('principal.hierarchy.grade')} {grade.number}
-                                            </Text                                        </HStack                                    ))
+                                            </Text                                        ></HStack                                    ))
                                 ) : (
-                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}                                        {t('principal.hierarchy.noGrades')}
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}                                        {t('principal.hierarchy.noGrades')}>
                                     </Text                                )}>
                             </VStack                        ></Box                    ))}
 
                     {!isLoading && sections.length === 0 && (
-                        <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}                            <Text color={colors.textSecondary} textAlign="center" sx={{ fontSize: 18 }}                                {t('principal.hierarchy.noSections')}
+                        <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}                            <Text color={colors.textSecondary} textAlign="center" sx={{ fontSize: 18 }}                                {t('principal.hierarchy.noSections')}>
                             </Text                        </Box                    )}>
                 </VStack            </ScrollView
-            <Modal
+            <Modal>
                 isOpen={showAddSection}
                 onClose={() => {
                     setShowAddSection(false);
@@ -182,7 +182,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                     setNewSectionName('');
                                 }}
                                                             <ButtonText color={colors.text}>{t('common.cancel')}</ButtonText                            ></Button                            <Button sx={{ flex: 1, backgroundColor: colors.action }} onPress={handleAddSection}                                <ButtonText color={Theme.colors.sacredWhite}>{t('common.add') || 'Add'}</ButtonText                            </Button                        </HStack                    </ModalFooter                </ModalContent            </Modal
-            <Modal
+            <Modal>
                 isOpen={showAddGrade}
                 onClose={() => {
                     setShowAddGrade(false);

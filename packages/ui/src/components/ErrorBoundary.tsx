@@ -54,23 +54,23 @@ export default class ErrorBoundary extends Component<Props, State> {
 
             return (
                 <Box sx={{ flex: 1, backgroundColor: Theme.colors.ink }}
-                    <Center sx={{ flex: 1, padding: Theme.spacing.xl }}
+                    <Center sx={{ flex: 1, padding: Theme.spacing.xl }}>
                         <VStack space="xl" alignItems="center" maxWidth={300}
                             <Box sx={{
                                 padding: Theme.spacing.xl,
                                 backgroundColor: 'rgba(255, 99, 71, 0.1)', // Ember red, low opacity
-                                borderRadius: Theme.corners.full,
+                                borderRadius: Theme.corners.full,>
                             }}
                                 <AlertTriangle size={64} color={Theme.colors.emberRed} /
-                            </Box
+                            ></Box>
 
                             <Heading color={Theme.colors.sacredWhite} textAlign="center" size="2xl"
-                                Something went wrong
-                            </Heading
+                                Something went wrong>
+                            </Heading>
 
                             <Text color={Theme.colors.starlightGray} textAlign="center"
-                                We&apos;ve encountered an unexpected issue. The sanctuary is momentarily disrupted.
-                            </Text
+                                We&apos;ve encountered an unexpected issue. The sanctuary is momentarily disrupted.>
+                            </Text>
 
                             <Button
                                 onPress={this.handleReset}
@@ -78,14 +78,14 @@ export default class ErrorBoundary extends Component<Props, State> {
                                 action="primary"
                                 sx={{
                                     backgroundColor: Theme.colors.emberRed,
-                                    borderRadius: Theme.corners.comfortable,
+                                    borderRadius: Theme.corners.comfortable,>
                                 }}
                             
                                 <ButtonIcon as={RefreshCw} color={Theme.colors.sacredWhite} /
-                                <ButtonText color={Theme.colors.sacredWhite}
-                                    Try Again
-                                </ButtonText
-                            </Button
+                                ><ButtonText color={Theme.colors.sacredWhite}
+                                    Try Again>
+                                </ButtonText>
+                            </Button>
 
                             {/* Dev-only error details */}
                             {__DEV__ && this.state.error && (
@@ -94,19 +94,19 @@ export default class ErrorBoundary extends Component<Props, State> {
                                     backgroundColor: Theme.colors.shroud,
                                     borderRadius: Theme.corners.comfortable,
                                     marginTop: Theme.spacing.lg,
-                                    width: '100%'
+                                    width: '100%'>
                                 }}
                                     <Text color={Theme.colors.dimGray} size="xs" mb="$1"
-                                        Boundary: {this.props.name}
-                                    </Text
+                                        Boundary: {this.props.name}>
+                                    </Text>
                                     <Text color={Theme.colors.emberRed} size="xs" fontFamily="monospace"
-                                        {this.state.error.toString()}
-                                    </Text
-                                </Box
+                                        {this.state.error.toString()}>
+                                    </Text>
+                                </Box>
                             )}
-                        </VStack
-                    </Center
-                </Box
+                        </VStack>
+                    </Center>
+                </Box>
             );
         }
 

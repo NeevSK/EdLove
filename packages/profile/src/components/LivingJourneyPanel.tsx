@@ -121,29 +121,29 @@ interface PathRowProps {
 
 function PathRow({ emoji, pathName, stageLabel, narrative, colors }: PathRowProps) {
     return (
-        <Box
+        <Box>
             sx={{
                 paddingVertical: Theme.spacing.md,
                 borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,>
+                borderBottomColor: `${colors.border}60`,
             }}
         
-            <HStack space="md" alignItems="flex-start"
+            <HStack space="md" alignItems="flex-start">
                 <Text style={styles.pathEmoji}>{emoji}</Text
                 ><VStack flex={1} space="xs"
-                    <HStack justifyContent="space-between" alignItems="center"
-                        <Text
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <Text>
                             size="xs"
                             color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         
                             {pathName}
                         </Text>
-                        <Text size="sm" bold color={colors.text}
+                        <Text size="sm" bold color={colors.text}>
                             {stageLabel}>
                         </Text>
                     </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
                         {narrative}>
                     </Text>
                 </VStack>
@@ -164,33 +164,33 @@ interface MoonRowProps {
 
 function MoonRow({ moon, colors, t }: MoonRowProps) {
     return (
-        <Box
+        <Box>
             sx={{
                 paddingVertical: Theme.spacing.md,
                 borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,>
+                borderBottomColor: `${colors.border}60`,
             }}
         
-            <HStack space="md" alignItems="flex-start"
+            <HStack space="md" alignItems="flex-start">
                 <Text style={styles.pathEmoji}>{moon.emoji}</Text
                 ><VStack flex={1} space="xs"
-                    <HStack justifyContent="space-between" alignItems="center"
-                        <Text
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <Text>
                             size="xs"
                             color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         
                             {t('journey.moonTonight')}
                         </Text>
-                        <Text size="sm" bold color={colors.text}
+                        <Text size="sm" bold color={colors.text}>
                             {moon.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </Text>
                     </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18, fontStyle: 'italic' }}
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18, fontStyle: 'italic' }}>
                         {moon.invitation_en}>
                     </Text>
                     {moon.is_poya && (
-                        <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}
+                        <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}>
                             {t('journey.poyaDay')}>
                         </Text>
                     )}
@@ -226,36 +226,36 @@ function ResonanceRow({ stats, colors }: ResonanceRowProps) {
     }
 
     return (
-        <Box
+        <Box>
             sx={{
                 paddingVertical: Theme.spacing.md,
                 borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,>
+                borderBottomColor: `${colors.border}60`,
             }}
         
-            <HStack space="md" alignItems="flex-start"
+            <HStack space="md" alignItems="flex-start">
                 <Text style={styles.pathEmoji}>\u2728</Text
                 ><VStack flex={1} space="xs"
-                    <HStack justifyContent="space-between" alignItems="center"
-                        <Text
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <Text>
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         
                             COMMUNITY RESONANCE>
                         </Text>
-                        <Text size="sm" bold color={colors.text}
+                        <Text size="sm" bold color={colors.text}>
                             {label}>
                         </Text>
                     </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
                         {narrative}>
                     </Text>
-                    <HStack space="sm" mt={4}
+                    <HStack space="sm" mt={4}>
                         <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
                             {stats.likes} Likes
                         </Text>
-                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}
+                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
                             {stats.comments} Comments>
                         </Text>
                     </HStack>
@@ -282,22 +282,22 @@ function RecognitionRow({ badges, colors }: RecognitionRowProps) {
         : `Your path has already left ${badges.length} memorable ${badges.length === 1 ? 'signal' : 'signals'} in the platform.`;
 
     return (
-        <Box
+        <Box>
             sx={{
                 paddingVertical: Theme.spacing.md,
                 borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,>
+                borderBottomColor: `${colors.border}60`,
             }}
                     <HStack space="md" alignItems="flex-start"                <Text style={styles.pathEmoji}>\uD83C\uDFC5</Text                ><VStack flex={1} space="xs"                    <HStack justifyContent="space-between" alignItems="center"                        <Text
                             size="xs"
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                                                     JOURNEY RECOGNITION
-                        </Text                        <Text size="sm" bold color={colors.text}                            {label}
+                        </Text                        ><Text size="sm" bold color={colors.text}                            {label}
                         </Text                    </HStack                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}                        {narrative}
                     </Text                    {visibleBadges.length > 0 && (
                         <HStack flexWrap="wrap" style={{ gap: 6, marginTop: 4 }}                            {visibleBadges.map((badge) => (
-                                <Box
+                                <Box>
                                     key={badge}
                                     sx={{
                                         paddingHorizontal: Theme.spacing.sm,
@@ -305,10 +305,10 @@ function RecognitionRow({ badges, colors }: RecognitionRowProps) {
                                         backgroundColor: `${colors.action}15`,
                                         borderRadius: Theme.corners.full,
                                         borderWidth: 1,
-                                        borderColor: `${colors.action}30`,>
+                                        borderColor: `${colors.action}30`,
                                     }}
-                                                                    <Text size="xs" color={colors.text}                                        {badge}
-                                    </Text                                </Box                            ))}>
+                                                                    <Text size="xs" color={colors.text}                                        {badge}>
+                                    </Text                                ></Box                            ))}>
                         </HStack                    >)}
                 </VStack            </HStack        </Box    );
 }
@@ -328,18 +328,18 @@ interface WhisperedMomentsRowProps {
 function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
     if (moments.length === 0) {
         return (
-            <Box sx={{ paddingVertical: Theme.spacing.md }}
+            <Box sx={{ paddingVertical: Theme.spacing.md }}>
                 <HStack space="md" alignItems="center">
                     <Text style={styles.pathEmoji}>\u2728</Text
                     ><VStack flex={1} space="xs"
-                        <Text
+                        <Text>
                             size="xs"
                             color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         
                             {t('journey.whisperedMoments')}
                         </Text>
-                        <Text size="sm" color={colors.textSecondary} style={{ fontStyle: 'italic' }}
+                        <Text size="sm" color={colors.textSecondary} style={{ fontStyle: 'italic' }}>
                             {t('journey.noMoments')}>
                         </Text>
                     </VStack>
@@ -349,25 +349,25 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
     }
 
     return (
-        <Box sx={{ paddingVertical: Theme.spacing.md }}
+        <Box sx={{ paddingVertical: Theme.spacing.md }}>
             <HStack space="md" alignItems="flex-start">
                 <Text style={styles.pathEmoji}>\u2728</Text
                 ><VStack flex={1} space="sm"
-                    <HStack justifyContent="space-between" alignItems="center"
-                        <Text
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <Text>
                             size="xs"
                             color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         
                             {t('journey.whisperedMoments')}
                         </Text>
-                        <Text size="xs" color={colors.textTertiary}
-                            {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}>
+                        <Text size="xs" color={colors.textTertiary}>
+                            {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}
                         </Text>
                     </HStack>
-                    <HStack flexWrap="wrap" style={{ gap: 6 }}
+                    <HStack flexWrap="wrap" style={{ gap: 6 }}>
                         {moments.map(m => (
-                            <Box
+                            <Box>
                                 key={m.key}
                                 sx={{
                                     paddingHorizontal: Theme.spacing.sm,
@@ -375,10 +375,10 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
                                     backgroundColor: `${colors.action}15`,
                                     borderRadius: Theme.corners.full,
                                     borderWidth: 1,
-                                    borderColor: `${colors.action}30`,>
+                                    borderColor: `${colors.action}30`,
                                 }}
                             
-                                <Text size="xs" color={colors.text}
+                                <Text size="xs" color={colors.text}>
                                     {m.name_en}>
                                 </Text>
                             </Box>
@@ -443,7 +443,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
 
     if (loading) {
         return (
-            <Box
+            <Box>
                 sx={{
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.generous,
@@ -454,18 +454,18 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     marginTop: Theme.spacing.lg,
                     minHeight: 180,
                     alignItems: 'center',
-                    justifyContent: 'center',>
+                    justifyContent: 'center',
                 }}
             
                 <ActivityIndicator color={colors.action} /
             ></Box
-        );
+        >);
     }
 
     // 1. Data Guards (Defensive Coding)
     if (!growth) {
         return (
-            <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}
+            <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}>
                 <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text
             ></Box
         );
@@ -487,8 +487,8 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         : FadeInDown.springify();
 
     return (
-        <Animated.View entering={enteringAnimation}
-            <Box
+        <Animated.View entering={enteringAnimation}>
+            <Box>
                 sx={{
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.generous,
@@ -501,31 +501,31 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     elevation: 5,
                     marginHorizontal: Theme.spacing.md,
                     marginTop: Theme.spacing.lg,
-                    overflow: 'hidden',>
+                    overflow: 'hidden',
                 }}
             
                 {/* Header */}
-                <Box
+                <Box>
                     sx={{
                         paddingHorizontal: Theme.spacing.xl,
                         paddingTop: Theme.spacing.xl,
                         paddingBottom: Theme.spacing.md,
                         borderBottomWidth: 1,
-                        borderBottomColor: `${colors.border}60`,>
+                        borderBottomColor: `${colors.border}60`,
                     }}
                 
-                    <Heading size="sm" color={colors.textSecondary as string}
+                    <Heading size="sm" color={colors.textSecondary as string}>
                         {t('journey.title')}>
                     </Heading>
-                    <Text size="xs" color={colors.textTertiary} style={{ marginTop: 4 }}                        {t('journey.subtitle')}
-                    </Text                    {phase !== 'present' && (>
-                        <Text size="xs" color={colors.textTertiary} style={{ marginTop: 6 }}                            Journey state, discoveries, moon context, and community resonance follow the selected time.
-                        </Text                    )}>
+                    <Text size="xs" color={colors.textTertiary} style={{ marginTop: 4 }}                        {t('journey.subtitle')}>
+                    </Text                    >{phase !== 'present' && (>
+                        <Text size="xs" color={colors.textTertiary} style={{ marginTop: 6 }}                            Journey state, discoveries, moon context, and community resonance follow the selected time.>
+                        </Text                    >)}>
                 </Box>
                 {/* Path rows */}
-                <Box sx={{ paddingHorizontal: Theme.spacing.xl }}
+                <Box sx={{ paddingHorizontal: Theme.spacing.xl }}>
                     {/* Bhumi (Lotus) \u2014 all users */}>
-                    <PathRow
+                    <PathRow>
                         emoji="\uD83C\uDF38"
                         pathName={t('journey.lotusPath')}
                         stageLabel={bhumiData.label}
@@ -535,7 +535,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
 
                     >{/* Banyan \u2014 teachers and principals */}
                     {isTeacherRole && (
-                        <PathRow
+                        <PathRow>
                             emoji="\uD83C\uDF33"
                             pathName={t('journey.banyanPath')}
                             stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -546,7 +546,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
 
                     {/* River \u2014 students */}
                     {isStudentRole && (
-                        <PathRow
+                        <PathRow>
                             emoji="\uD83C\uDF0A"
                             pathName={t('journey.riverPath')}
                             stageLabel={river.charAt(0).toUpperCase() + river.slice(1)}
@@ -557,7 +557,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
 
                     {/* Crystal \u2014 students */}
                     {isStudentRole && (
-                        <PathRow
+                        <PathRow>
                             emoji="\uD83D\uDC8E"
                             pathName={t('journey.crystalPath')}
                             stageLabel={crystal.charAt(0).toUpperCase() + crystal.slice(1)}
@@ -574,7 +574,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     >{/* Rewards / recognition \u2014 shown as narrative signals rather than a score */}
                     <RecognitionRow badges={journeyRewards?.badges ?? []} colors={colors} /
                     >{/* Whispered Moments \u2014 all users */}
-                    <WhisperedMomentsRow
+                    <WhisperedMomentsRow>
                         moments={moments}
                         colors={colors}
                         t={t}

@@ -33,7 +33,7 @@ export default function CommunityStackNavigatorWeb() {
 
     return (
         <React.Suspense fallback={<ScreenFallback />}
-        <Stack.Navigator
+        <Stack.Navigator>
             id="CommunityStack"
             screenOptions={{
                 headerShown: false,
@@ -41,14 +41,14 @@ export default function CommunityStackNavigatorWeb() {
             }}
         
             <Stack.Screen name="CommunityMain" component={CommunityScreenWeb} /
-            <Stack.Screen name="UserProfile" component={UserPublicProfileScreen} /
-            <Stack.Screen name="PublicProfile" component={UserPublicProfileScreen} /
-            <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} /
-            <Stack.Screen name="GroupChat" component={GroupChatScreen} /
-            <Stack.Screen name="DirectMessagesList" component={DirectMessagesListScreen} /
-            <Stack.Screen name="DirectMessage" component={DirectMessageScreen} /
-            <Stack.Screen name="Announcements" component={AnnouncementsScreen} /
-        </Stack.Navigator
-        </React.Suspense
+            ><Stack.Screen name="UserProfile" component={UserPublicProfileScreen} />
+            ><Stack.Screen name="PublicProfile" component={UserPublicProfileScreen} /
+            ><Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />
+            ><Stack.Screen name="GroupChat" component={GroupChatScreen} /
+            ><Stack.Screen name="DirectMessagesList" component={DirectMessagesListScreen} />
+            ><Stack.Screen name="DirectMessage" component={DirectMessageScreen} /
+            ><Stack.Screen name="Announcements" component={AnnouncementsScreen} />
+        ></Stack.Navigator>
+        </React.Suspense>
     );
 }

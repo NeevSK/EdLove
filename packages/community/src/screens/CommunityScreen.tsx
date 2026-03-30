@@ -167,7 +167,7 @@ export default function CommunityScreen() {
                         paddingHorizontal={Theme.spacing.md}
                         center={true}
                     /
-                </Animated.View>
+                ></Animated.View>
 
                 {/* Main Content Area with Capability-Based Gating */}
                 {activeTab === 'feed' && (
@@ -185,7 +185,7 @@ export default function CommunityScreen() {
                                             description={t('community.guestDesc')}
                                             onAction={() => navigation.navigate('Auth' as never)}
                                         /
-                                    </Box>
+                                    ></Box>
                                 </VS>tack>
                             </ScrollView>
                         }
@@ -219,7 +219,7 @@ export default function CommunityScreen() {
                                         isSample={item.id.startsWith('stub-') || item.id.startsWith('mock-')}
                                         currentUserId={userId ?? undefined}
                                     /
-                                </Animated.View>
+                                ></Animated.View>
                             )}
                             ListEmptyComponent={
                                 !loading ? (
@@ -227,10 +227,10 @@ export default function CommunityScreen() {
                                         <Box sx={{
                                             padding: Theme.spacing.xl,
                                             backgroundColor: Theme.colors.gurudeviViolet + '11',
-                                            borderRadius: Theme.corners.full>
-                                        }}
+                                            borderRadius: Theme.corners.full
+                                        }}>
                                             <PenTool size={48} color={Theme.colors.gurudeviViolet} /
-                                        </Box>
+                                        ></Box>
                                         ><VStack space="sm" alignItems="center"
                                             <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
                                                 {t('community.empty.title') || 'Your Sanctuary is Waiting for its First Spark'}
@@ -265,10 +265,10 @@ export default function CommunityScreen() {
                             ListFooterComponent={
                                 isFetchingNextPosts ? (
                                     <ActivityIndicator style={{ marginVertical: Theme.spacing.md }} color={Theme.colors.sanctuarySaffron} /
-                                ) : null>
+                                ) : null
                             }
                             contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                        /
+                        />
                     </FeatureGuard>
                 )}
 
@@ -284,7 +284,7 @@ export default function CommunityScreen() {
                                     description={t('community.groups.guestDesc')}
                                     onAction={() => navigation.navigate('Auth' as never)}
                                 /
-                            </VStack>
+                            ></VStack>
                         }
                     
                         <GroupsScreen
@@ -296,7 +296,7 @@ export default function CommunityScreen() {
                                 navigation.navigate('GroupDetails', { groupId });
                             }}
                         /
-                    </FeatureGuard>
+                    ></FeatureGuard>
                 )}
 
                 {activeTab === 'dms' && (
@@ -311,11 +311,11 @@ export default function CommunityScreen() {
                                     description={t('community.dms.guestDesc')}
                                     onAction={() => navigation.navigate('Auth' as never)}
                                 /
-                            </VStack>
+                            ></VStack>
                         }
                     
                         <DirectMessagesListScreen /
-                    </FeatureGuard>
+                    ></FeatureGuard>
                 )}
 
                 <CreatePostModal
@@ -323,7 +323,7 @@ export default function CommunityScreen() {
                     onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
                     groupId={createPostGroupId}
                 /
-                <CreateGroupModal
+                ><CreateGroupModal
                 >    isOpen={showCreateGroupModal && !isPastView}
                     onClose={() => setShowCreateGroupModal(false)}
                     onCreated={(groupId) => {

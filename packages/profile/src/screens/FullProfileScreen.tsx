@@ -109,13 +109,13 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
     };
 
     return (
-        <ScreenWrapper scroll={false}            <GlobalHeader
+        <ScreenWrapper scroll={false}            <GlobalHeader>
                 title={t('profile.fullProfile')}
                 showBack
                 onBack={() => navigation.goBack()}
             /            ><ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}                <VStack space="2xl" sx={{ paddingVertical: Theme.spacing.md }}
                     <Center                        <Box                            <IdentityCard >>data={profile} /                        ></Box                    </Center
-                    <Center mt={Theme.spacing.lg}                        <AvatarDisplay
+                    <Center mt={Theme.spacing.lg}                        <AvatarDisplay>
                             userId={profile.id}
                             avatarUrl={profile.avatar_url}
                             fullName={profile.full_name}
@@ -129,7 +129,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 }
                             }}
                         /                        {!isOtherProfile && (
-                            <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}                                Tap to update your photo
+                            <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}                                Tap to update your photo>
                             </Text                        )}>
                     </Center>
                     {isOtherProfile && isTeacherProfile && currentUserId && (
@@ -140,16 +140,16 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                             </SanctuaryButton                        </Center                    )}
 
                     {!isOtherProfile && (
-                        <Reanimated.View style={barAnimStyle}                            <SanctuaryProgressBar
+                        <Reanimated.View style={barAnimStyle}                            <SanctuaryProgressBar>
                                 percentage={completionResult.percentage}
                                 isComplete={completionResult.isComplete}
                                 nextHint={completionResult.nextHint}
                                 style={{
                                     paddingHorizontal: Theme.spacing.xl,
                                     marginTop: Theme.spacing.md,
-                                    marginBottom: Theme.spacing.xs,>
+                                    marginBottom: Theme.spacing.xs,
                                 }}
-                            /                        ></Reanimated.View                    )}
+                            /                        ></Reanimated.View                    >)}
 
                     <Center                        <Box
                             >sx={{
@@ -161,9 +161,9 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 width: CARD_WIDTH,
                                 ...Theme.shadows.md
                             }}
-                                                    <Heading size="md" color={colors.text} mb="$4"                                {t('profile.personalDetails')}
+                                                    <Heading size="md" color={colors.text} mb="$4"                                {t('profile.personalDetails')}>
                             </Heading>
-                            <VStack space="xl"                                <EditableItem
+                            <VStack space="xl"                                <EditableItem>
                                     icon={UserIcon}
                                     label={t('profile.fullName')}
                                     value={profile.full_name}
@@ -191,7 +191,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                     onSave={isOtherProfile ? async () => { } : handleSave}
                                 /
                                 >{isStudentProfile ? (
-                                    <EditableItem
+                                    <EditableItem>
                                         icon={Fingerprint}
                                         label={t('profile.indexNumber')}
                                         value={profile.index_number}
@@ -199,7 +199,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                         placeholder="STU-XXXXX"
                                         onSave={isOtherProfile ? async () => { } : handleSave}
                                     /                                >) : (
-                                    <EditableItem
+                                    <EditableItem>
                                         icon={Fingerprint}
                                         label={t('profile.nicNumber')}
                                         value={profile.nic_number}
@@ -219,9 +219,9 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                     width: CARD_WIDTH,
                                     ...Theme.shadows.md
                                 }}
-                                                            <Heading size="md" color={colors.text} mb="$4"                                    {t('profile.professionalDetails')}
+                                                            <Heading size="md" color={colors.text} mb="$4"                                    {t('profile.professionalDetails')}>
                                 </Heading>
-                                <VStack space="xl"                                    <EditableItem
+                                <VStack space="xl"                                    <EditableItem>
                                         icon={School}
                                         label={t('profile.currentSchool')}
                                         value={profile.school_name || ''}
@@ -264,7 +264,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 width: CARD_WIDTH,
                                 ...Theme.shadows.md
                             }}
-                                                    <Heading size="md" color={colors.text} mb="$4"                                {t('profile.aboutMe')}
+                                                    <Heading size="md" color={colors.text} mb="$4"                                {t('profile.aboutMe')}>
                             </Heading                            <EditableItem
                                 field="bio"
                                 label={t('profile.bio')}
@@ -274,7 +274,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 onSave={isOtherProfile ? async () => { } : handleSave}
                                 multiline={true}
                             /                        ></Box                    </Center
-                    <Center                        <Box sx={{ width: CARD_WIDTH }}                            <ContactLinktree
+                    <Center                        <Box sx={{ width: CARD_WIDTH }}                            <ContactLinktree>
                                 links={socialLinks || []}
                                 userName={profile.full_name}
                                 bio={profile.bio}
@@ -282,7 +282,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                 isOwnProfile={!isOtherProfile}
                             /
                             >{!isOtherProfile && (
-                                <TouchableOpacity accessibilityRole="button"
+                                <TouchableOpacity accessibilityRole="button">
                                     onPress={() => setShowSocialModal(true)}
                                     style={styles.manageSocialsBtn}
                                                                     <HStack space="sm" alignItems="center"                                        <Edit3 size={18} color={colors.action} /                                        ><Text color={colors.action} bold>Manage Social Hub</Text                                    ></HStack                                </TouchableOpacity                            )}
@@ -293,17 +293,17 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                     schoolId={profile.school_id}
                                 /                            ></Box                        </Center                    )}
 
-                    <Box alignItems="center" mt="$4"                        <Text size="xs" color={colors.textTertiary}                            v1.2.0 " Sanctuary ID: {profile.id?.substring(0, 8)}
+                    <Box alignItems="center" mt="$4"                        <Text size="xs" color={colors.textTertiary}                            v1.2.0 " Sanctuary ID: {profile.id?.substring(0, 8)}>
                         </Text                    </Box                </VStack            </ScrollView>
             {!isOtherProfile && (
-                <AddSocialLinkModal
+                <AddSocialLinkModal>
                     visible={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
                 /            >)}
 
             {isOtherProfile && currentUserId && (
-                <GiveThuthimalModal
+                <GiveThuthimalModal>
                     isOpen={showThuthimalModal}
                     onClose={() => setShowThuthimalModal(false)}
                     recipientId={profile.id}
@@ -314,7 +314,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                 /            >)}
 
             {!isOtherProfile && (
-                <AchievementUnlockOverlay
+                <AchievementUnlockOverlay>
                     title="( Profile Complete!"
                     visible={showCelebration}
                     onHide={() => setShowCelebration(false)}

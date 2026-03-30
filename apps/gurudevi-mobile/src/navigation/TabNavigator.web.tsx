@@ -140,8 +140,8 @@ function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' 
       position: 'absolute', 
       top: dim.top, 
       right: dim.right,
-      zIndex: 1>
-    }}
+      zIndex: 1
+    }}>
       {count > 99 ? '99+' : String(count)}
     </div>
   );
@@ -297,22 +297,22 @@ export default function TabNavigator({
   };
 
   return (
-    <div className="vellum-app-shell"
+    <div className="vellum-app-shell">
       <div className="world-bg" aria-hidden="true" /
 
       >{/* \u2500\u2500 TOP BAR \u2500\u2500 */}
-      <header className="top-bar"
-        <div
+      <header className="top-bar">
+        <div>
           className="top-bar-left"
           style={{
             paddingLeft: 24,
             display: "flex",
             alignItems: "center",
-            gap: "16px",>
+            gap: "16px",
           }}
         
           {isMobileView && (
-            <button
+            <button>
               className="mobile-menu-toggle"
               onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
               aria-label={t("webNav.toggleNavigation")}
@@ -335,10 +335,10 @@ export default function TabNavigator({
         ><div className="top-bar-right" /
       ></header>
 
-      <div className="shell-body-core"
+      <div className="shell-body-core">
         {/* \u2500\u2500 MOBILE SIDEBAR OVERLAY \u2500\u2500 */}>
         {isMobileView && isSidebarExpanded && (
-          <div
+          <div>
             className="sidebar-overlay visible"
             onClick={closeSidebar}
             aria-hidden="true"
@@ -346,7 +346,7 @@ export default function TabNavigator({
         >)}
 
         {/* \u2500\u2500 SIDEBAR \u2500\u2500 */}
-        <aside
+        <aside>
           ref={sidebarRef}
           className={`sidebar ${isSidebarExpanded ? "open expanded" : "collapsed"}`}
           aria-hidden={isMobileView && !isSidebarExpanded}
@@ -364,7 +364,7 @@ export default function TabNavigator({
             boxShadow:
               isMobileView && isSidebarExpanded
                 ? "4px 0 40px rgba(107,100,128,0.2)"
-                : "none",>
+                : "none",
           }}
         
           <div className="sidebar-header" style={{ 
@@ -372,17 +372,17 @@ export default function TabNavigator({
             justifyContent: isSidebarExpanded ? 'space-between' : 'center', 
             alignItems: 'center', 
             padding: isSidebarExpanded ? '0 16px' : '0',
-            height: '60px'>
-          }}
+            height: '60px'
+          }}>
             {(isSidebarExpanded || isMobileView) && (
-              <span
+              <span>
                 className="sidebar-group-label"
-                style={{ marginLeft: "0", fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', opacity: 0.6 }}>
+                style={{ marginLeft: "0", fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', opacity: 0.6 }}
               
                 {t("webNav.menu") || "MENU"}
               </span>
             )}
-            <button
+            <button>
               className="sidebar-toggle"
               onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
               aria-label={
@@ -405,12 +405,12 @@ export default function TabNavigator({
             </button>
           </div>
 
-          <nav className="sidebar-nav" aria-label="Main navigation"
+          <nav className="sidebar-nav" aria-label="Main navigation">
             {TAB_CONFIG.map((conf) => {
               const isActive = activeTab === conf.name;
               const Icon = conf.icon;
               return (
-                <button
+                <button>
                   key={conf.name}
                   className={`sidebar-item ${isActive ? "active" : ""}`}
                   onClick={() => {
@@ -422,12 +422,12 @@ export default function TabNavigator({
                   aria-current={isActive ? "page" : undefined}
                   style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
                 
-                  <Icon
+                  <Icon>
                     size={20}
                     color={isActive ? "var(--water)" : "var(--ink-ghost)"}
                   /
                   >{(isSidebarExpanded || isMobileView) && (
-                    <span className="sidebar-label"
+                    <span className="sidebar-label">
                       {getLabel(conf.name, conf.labelKey)}>
                     </span>
                   )}
@@ -436,7 +436,7 @@ export default function TabNavigator({
             })}
           </nav>
 
-          <div className="sidebar-footer"
+          <div className="sidebar-footer">
             <div className="sidebar-divider" /
             ><button
               className={`sidebar-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
@@ -450,23 +450,23 @@ export default function TabNavigator({
               }}
               style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
             
-              <div style={{ position: "relative" }}
-                <Bell
+              <div style={{ position: "relative" }}>
+                <Bell>
                   size={20}
                   color={
                     activeTab === "NotificationsPanel"
                       ? "var(--water)"
-                      : "var(--ink-ghost)">
+                      : "var(--ink-ghost)"
                   }
                 /
                 ><NotificationBadge count={unreadCount} /
               ></div
-              {(isSidebarExpanded || isMobileView) && (
+              >{(isSidebarExpanded || isMobileView) && (
                 <span className="sidebar-label">Notifications</span
               >)}
             </button>
 
-            <button
+            <button>
               className={`sidebar-profile-btn ${activeTab === "SettingsPanel" ? "active" : ""}`}
               title={t("common.settings")}
               onClick={() => {
@@ -478,15 +478,15 @@ export default function TabNavigator({
               }}
               style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
             
-              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Settings size={20} color="var(--ink-ghost)" /
               ></div
               {(isSidebarExpanded || isMobileView) && (
-                <div className="profile-info" style={{ marginLeft: '12px' }}
+                <div className="profile-info" style={{ marginLeft: '12px' }}>
                   <span className="profile-nm" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}>
                     {role?.split("_").join(" ") || "Guest"}
                   </span>
-                  <span className="profile-status" style={{ fontSize: '11px', opacity: 0.6 }}
+                  <span className="profile-status" style={{ fontSize: '11px', opacity: 0.6 }}>
                     {t("common.settings")}>
                   </span>
                 </div>
@@ -496,8 +496,8 @@ export default function TabNavigator({
         </aside>
 
         {/* \u2500\u2500 MAIN CONTENT CANVAS \u2500\u2500 */}
-        <main className="main-content-canvas"
-            <Tab.Navigator
+        <main className="main-content-canvas">
+            <Tab.Navigator>
               id="MainTabs"
               initialRouteName="Self"
               tabBar={() => null}
@@ -520,10 +520,10 @@ export default function TabNavigator({
               }}
               screenOptions={{ headerShown: false }}
             
-              <Tab.Screen name="Self"
+              <Tab.Screen name="Self">
                 {() => (
-                  <ErrorBoundary name="Self"
-                    <React.Suspense
+                  <ErrorBoundary name="Self">
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       <SelfStackNavigatorWeb /
@@ -531,10 +531,10 @@ export default function TabNavigator({
                   </ErrorBoundary>
                 )}
               </Tab.Screen>
-              <Tab.Screen name="Community"
+              <Tab.Screen name="Community">
                 {() => (
-                  <ErrorBoundary name="Community"
-                    <React.Suspense
+                  <ErrorBoundary name="Community">
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       <CommunityStackNavigatorWeb /
@@ -542,10 +542,10 @@ export default function TabNavigator({
                   </ErrorBoundary>
                 )}
               </Tab.Screen>
-              <Tab.Screen name="Classroom"
+              <Tab.Screen name="Classroom">
                 {() => (
-                  <ErrorBoundary name={isFounderLane ? "Founder" : "Classroom"}
-                    <React.Suspense
+                  <ErrorBoundary name={isFounderLane ? "Founder" : "Classroom"}>
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       {isFounderLane ? (
@@ -557,10 +557,10 @@ export default function TabNavigator({
                   </ErrorBoundary>
                 )}
               </Tab.Screen>
-              <Tab.Screen name="Library"
+              <Tab.Screen name="Library">
                 {() => (
-                  <ErrorBoundary name="Library"
-                    <React.Suspense
+                  <ErrorBoundary name="Library">
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       <LibraryStackNavigatorWeb /
@@ -568,10 +568,10 @@ export default function TabNavigator({
                   ></ErrorBoundary>
                 )}
               </Tab.Screen>
-              <Tab.Screen name="Profile"
+              <Tab.Screen name="Profile">
                 {() => (
-                  <ErrorBoundary name="Profile"
-                    <React.Suspense
+                  <ErrorBoundary name="Profile">
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       <ProfileStackNavigatorWeb /
@@ -580,10 +580,10 @@ export default function TabNavigator({
                 )}
               </Tab.Screen>
               {/* Panel screens \u2014 rendered within shell, URL-native via React Navigation */}
-              <Tab.Screen name="NotificationsPanel"
+              <Tab.Screen name="NotificationsPanel">
                 {() => (
-                  <ErrorBoundary name="Notifications"
-                    <React.Suspense
+                  <ErrorBoundary name="Notifications">
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       <NotificationsScreenWeb /
@@ -591,10 +591,10 @@ export default function TabNavigator({
                   </ErrorBoundary>
                 )}
               </Tab.Screen>
-              <Tab.Screen name="SettingsPanel"
+              <Tab.Screen name="SettingsPanel">
                 {() => (
-                  <ErrorBoundary name="Settings"
-                    <React.Suspense
+                  <ErrorBoundary name="Settings">
+                    <React.Suspense>
                       fallback={<StackFallback />}
                     
                       <AppSettingsScreenWeb /
@@ -611,7 +611,7 @@ export default function TabNavigator({
                 users always have a path back. Tab buttons return to 'none' subview
                 first; Alerts button toggles notifications. */}
       {isMobileView && !isSidebarExpanded && (
-        <nav
+        <nav>
           className="mobile-bottom-nav"
           aria-label={t("webNav.tabNavigation")}>
         
@@ -619,7 +619,7 @@ export default function TabNavigator({
             const isActive = activeTab === conf.name;
             const Icon = conf.icon;
             return (
-              <button
+              <button>
                 key={conf.name}
                 className={`mobile-nav-item ${isActive ? "active" : ""}`}
                 onClick={() => {
@@ -628,7 +628,7 @@ export default function TabNavigator({
                 }}
                 aria-current={isActive ? "page" : undefined}
               
-                <Icon
+                <Icon>
                   size={22}
                   color={isActive ? "var(--water)" : "var(--ink-ghost)"}
                 /
@@ -638,33 +638,33 @@ export default function TabNavigator({
               </button>
             );
           })}
-          <button
+          <button>
             className={`mobile-nav-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
             onClick={() =
               // @ts-expect-error - Main and screen are valid but not in local type
               navigation.navigate("Main", {
-                screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",>
+                screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
               })
             }
             aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}
           
-            <div style={{ position: "relative" }}
-              <Bell
+            <div style={{ position: "relative" }}>
+              <Bell>
                 size={22}
                 color={
                   activeTab === "NotificationsPanel"
                     ? "var(--water)"
-                    : "var(--ink-ghost)">
+                    : "var(--ink-ghost)"
                 }
               /
               ><NotificationBadge count={unreadCount} size="sm" /
             ></div
-            <span className="mobile-nav-label">{t("webNav.alerts")}</span
+            ><span className="mobile-nav-label">{t("webNav.alerts")}</span
           ></button
         </nav>
       )}
 
-      <AchievementUnlockOverlay
+      <AchievementUnlockOverlay>
         title={currentAchievement}
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
@@ -683,13 +683,13 @@ export default function TabNavigator({
           padding: Theme.spacing.xl, 
           alignItems: 'center',
           maxWidth: 600,
-          width: '90%'>
-        }}
-          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}
+          width: '90%'
+        }}>
+          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}>
             <Text color={text.onElevated} sx={{ fontSize: '$lg' as string, fontWeight: '700' }}>
               {t('self.breathingReset') || 'Breathing Reset'}
             </Text>
-            <button 
+            <button >
               onClick={() => setBreathingOpen(false)}
               style={{
                 background: scene.interactive.bg,
@@ -705,7 +705,7 @@ export default function TabNavigator({
             
               <X size={24} /
             ></button
-          </HStack>
+          ></HStack>
           <BreathGuide onComplete={() => setBreathingOpen(false)} /
         ></Box>
       </UniversalModal>

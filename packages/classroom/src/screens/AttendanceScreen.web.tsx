@@ -115,7 +115,7 @@ export default function AttendanceScreenWeb() {
   });
 
   return (
-    <div className="sanctuary-screen"      <div className="sanctuary-container" style={{ maxWidth: '700px' }}        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}          <button
+    <div className="sanctuary-screen"      <div className="sanctuary-container" style={{ maxWidth: '700px' }}        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}          <button>
             onClick={() => navigation.goBack()}
             style={{
               display: 'flex',
@@ -135,14 +135,14 @@ export default function AttendanceScreenWeb() {
         {loading && <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>Loading class list...</div>}
 
         {!loading && error && (
-          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}            {error}
+          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}            {error}>
           </div        )}>
 
         {!loading && !error && (
           <            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => {
                 const Icon = STATUS_CONFIG[status].Icon;
                 return (
-                  <div
+                  <div>
                     key={status}
                     style={{
                       display: 'flex',
@@ -151,16 +151,16 @@ export default function AttendanceScreenWeb() {
                       padding: '8px 16px',
                       borderRadius: '100px',
                       background: STATUS_CONFIG[status].bg,
-                      border: `1px solid ${STATUS_CONFIG[status].color}33`,>
+                      border: `1px solid ${STATUS_CONFIG[status].color}33`,
                     }}
                                       <Icon size={13} color={STATUS_CONFIG[status].color} /                    ><span style={{ fontSize: '13px', fontWeight: '700', color: STATUS_CONFIG[status].color }}                      {counts[status] ?? 0} {STATUS_CONFIG[status].label}
-                    </span                  </div                );>
+                    </span                  ></div                );>
               })}
-              <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}                {students.length} students total
+              <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}                {students.length} students total>
               </span            ></div>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}                Mark all:
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}                Mark all:>
               </span              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
-                <button
+                <button>
                   key={status}
                   onClick={() => setAll(status)}
                   style={{
@@ -180,7 +180,7 @@ export default function AttendanceScreenWeb() {
             <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}              {students.map((student, index) => {
                 const config = STATUS_CONFIG[student.status as Status];
                 return (
-                  <div
+                  <div>
                     key={student.id}
                     onClick={() => toggle(student.id)}
                     style={{
@@ -199,7 +199,7 @@ export default function AttendanceScreenWeb() {
                     onMouseOut={(event) => {
                       event.currentTarget.style.background = 'transparent';
                     }}
-                                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', minWidth: '32px' }}                      {student.roll_number ?? index + 1}
+                                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', minWidth: '32px' }}                      {student.roll_number ?? index + 1}>
                     </span                    ><span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}>{student.full_name}</span                    ><div
                       style={{
                         display: 'flex',
@@ -216,7 +216,7 @@ export default function AttendanceScreenWeb() {
               })}
             </div>
             {saved ? (
-              <div
+              <div>
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -227,11 +227,11 @@ export default function AttendanceScreenWeb() {
                   background: 'rgba(34,197,94,0.10)',
                   color: 'var(--moss)',
                   fontWeight: '700',
-                  fontSize: '14px',>
+                  fontSize: '14px',
                 }}
                               <Check size={18} /> Attendance saved for today
               </div            ) : (
-              <button
+              <button>
                 className="premium-button"
                 style={{
                   width: '100%',
@@ -240,12 +240,12 @@ export default function AttendanceScreenWeb() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  padding: '14px',>
+                  padding: '14px',
                 }}
                 onClick={handleSave}
                 disabled={saving}
                               {saving ? '... Saving...' : <><Save size={15} /> Complete Marking</>}
-              </button            )}
+              </button            >)}
           </        )}
       </div    </div  );
 }

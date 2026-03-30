@@ -244,8 +244,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                             alignItems: 'center',
                             justifyContent: 'center',
                             padding: Theme.spacing.xl,
-                            height: 280, // Fixed height to prevent jump>
-                        }}
+                            height: 280, // Fixed height to prevent jump
+                        }}>
                     
                         <Animated.View style={lotusStyle}
                             <Image
@@ -275,8 +275,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                 textAlign: 'center',
                                 textShadowColor: currentMood.color,
                                 textShadowOffset: { width: 0, height: 0 },
-                                textShadowRadius: 10,>
-                            }}
+                                textShadowRadius: 10,
+                            }}>
                         
                             {currentMood.label}
                         </Animated.Text>
@@ -311,8 +311,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                                     justifyContent: 'center',
                                                     backgroundColor: isActive ? state.color + '33' : colors.secondary,
                                                     borderWidth: 2,
-                                                    borderColor: isActive ? state.color : colors.border,>
-                                                }}
+                                                    borderColor: isActive ? state.color : colors.border,
+                                                }}>
                                             
                                                 <Text sx={{ fontSize: 26 }}>{state.emoji}</Text
                                             ></Box>
@@ -321,8 +321,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                                 sx={{
                                                     fontSize: Theme.typography.fontSize.xs,
                                                     color: isActive ? state.color : colors.textTertiary,
-                                                    fontWeight: isActive ? '700' : '400',>
-                                                }}
+                                                    fontWeight: isActive ? '700' : '400',
+                                                }}>
                                             
                                                 {state.label}
                                             </Text>
@@ -342,8 +342,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                             marginTop: Theme.spacing.md,
                             borderWidth: 1,
                             borderColor: colors.border,
-                            borderStyle: 'dashed' // Subtle boundary>
-                        }}
+                            borderStyle: 'dashed' // Subtle boundary
+                        }}>
                     
                         <Text color={colors.textSecondary} size="xs" textAlign="center"
                             {t('self.privacyNote') || '= Your mood data is private and only visible to you'}>

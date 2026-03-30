@@ -152,7 +152,7 @@ export function RadarChart({
           left: centerX - 4, 
           top: centerY - 4,
           width: 8,
-          height: 8>
+          height: 8
         }]} /        
         >{/* Labels */}
         {showLabels && data.map((point, index) => {
@@ -175,8 +175,8 @@ export function RadarChart({
                 }
               ]}
                           <Text style={styles.labelText}                {point.label}
-              </Text              <Text style={styles.labelValue}                {point.value}>
-              </Text            </View          );
+              </Text              ><Text style={styles.labelValue}                {point.value}>
+              </Text            ></View          );
         })}
       </View    </Card  );
 }
@@ -283,7 +283,7 @@ export function SpiderChart({
                 ]}
                               <Text style={styles.pointLabel}                  {point.label}
                 </Text                <Text style={styles.pointValue}                  {point.value}>
-                </Text              </View            </View          );
+                </Text              ></View            </View          );
         })}
         
         {/* Center point */}
@@ -291,7 +291,7 @@ export function SpiderChart({
           left: centerX - 4, 
           top: centerY - 4,
           width: 8,
-          height: 8>
+          height: 8
         }]} /      ></View    </Card  );
 }
 

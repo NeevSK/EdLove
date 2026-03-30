@@ -54,7 +54,7 @@ function QuickAction({
     colors: any;
 }) {
     return (
-        <Pressable
+        <Pressable>
             onPress={disabled ? undefined : onPress}
             disabled={disabled}
             sx={{
@@ -67,17 +67,17 @@ function QuickAction({
                 borderWidth: 1,
                 borderColor: colors.border,
                 opacity: disabled ? 0.5 : 1,
-                minHeight: 112,>
+                minHeight: 112,
             }}
-                    <Box
+                    <Box>
                 sx={{
                     padding: Theme.spacing.sm,
                     borderRadius: Theme.corners.comfortable,
                     backgroundColor: colors.tertiary,
-                    marginBottom: Theme.spacing.sm,>
+                    marginBottom: Theme.spacing.sm,
                 }}
-                            <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} /            ></Box            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 12, fontWeight: '700' }}                {label}
-            </Text        </Pressable    );
+                            <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} /            ></Box            ><Text color={colors.text} sx={{ textAlign: 'center', fontSize: 12, fontWeight: '700' }}                {label}
+            </Text        ></Pressable    );
 }
 
 function StatCard({
@@ -94,7 +94,7 @@ function StatCard({
     colors: any;
 }) {
     return (
-        <Box
+        <Box>
             sx={{
                 flex: 1,
                 backgroundColor: colors.secondary,
@@ -103,21 +103,21 @@ function StatCard({
                 borderWidth: 1,
                 borderColor: colors.border,
                 position: 'relative',
-                overflow: 'hidden',>
+                overflow: 'hidden',
             }}
-                    <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}                <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}
-                </Text                <Text color={colors.text} sx={{ fontSize: 32, fontWeight: '700' }}                    {value}>
+                    <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}                <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}>
+                </Text                ><Text color={colors.text} sx={{ fontSize: 32, fontWeight: '700' }}                    {value}>
                     {isDemoMode ? '*' : ''}
                 </Text            ></VStack            {isDemoMode ? (
                 <Box sx={{ position: 'absolute', top: 5, right: 5 }}                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} /                ></Box            ) : null}
-            <Box
+            <Box>
                 sx={{
                     position: 'absolute',
                     right: -10,
                     bottom: -10,
-                    opacity: 0.1,>
+                    opacity: 0.1,
                 }}
-                            <LucideIcon color={colors.text} size={80} /            ></Box        </Box    );
+                            <LucideIcon color={colors.text} size={80} /            ></Box        ></Box    );
 }
 
 type Args = {
@@ -245,7 +245,7 @@ export function useTeacherDashboardSurfaces({
                             isNested={true}
                             refreshTrigger={refreshTrigger}
                             emptyContent={
-                                <PositiveInvitation
+                                <PositiveInvitation>
                                     context="classroom"
                                     title={isDemoMode ? 'Create Your First Sanctuary' : undefined}
                                     description={isDemoMode ? 'Ready to lead your first classroom? Generate a sanctuary for your students to begin their journey.' : undefined}

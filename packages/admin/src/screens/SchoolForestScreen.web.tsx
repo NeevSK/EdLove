@@ -131,8 +131,8 @@ export default function SchoolForestScreen() {
                             padding: '28px',
                             marginBottom: '24px',
                             background: 'linear-gradient(135deg, var(--moss-soft) 0%, var(--background-alt) 100%)',
-                            border: '1px solid var(--moss-soft)',>
-                        }}
+                            border: '1px solid var(--moss-soft)',
+                        }}>
                     
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}
                             <span style={{ fontSize: '36px' }}>
@@ -162,8 +162,8 @@ export default function SchoolForestScreen() {
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
-                            gap: '16px',>
-                        }}
+                            gap: '16px',
+                        }}>
                     
                         {forest.trees.map(tree => (
                             <div
@@ -172,8 +172,8 @@ export default function SchoolForestScreen() {
                                 style={{
                                     padding: '20px',
                                     border: tree.needs_rain ? '1px solid rgba(192,57,43,0.3)' : undefined,
-                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined,>
-                                }}
+                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined,
+                                }}>
                             
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}
                                     <span style={{ fontSize: '32px' }}>{HEALTH_EMOJI[tree.tree_health] ?? '\uD83C\uDF31'}</span
@@ -191,8 +191,8 @@ export default function SchoolForestScreen() {
                                                 fontWeight: '700',
                                                 color: HEALTH_COLOR[tree.tree_health],
                                                 textTransform: 'uppercase',
-                                                letterSpacing: '0.5px',>
-                                            }}
+                                                letterSpacing: '0.5px',
+                                            }}>
                                         
                                             {tree.tree_health}
                                         </div>
@@ -205,8 +205,8 @@ export default function SchoolForestScreen() {
                                                 borderRadius: '6px',
                                                 fontSize: '10px',
                                                 fontWeight: '800',
-                                                color: '#c0392b',>
-                                            }}
+                                                color: '#c0392b',
+                                            }}>
                                         
                                             \uD83D\uDCA7 Needs care
                                         </div>

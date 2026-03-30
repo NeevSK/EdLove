@@ -43,21 +43,21 @@ export default function PrincipalOnboardingView({
     const { glass } = useTheme();
 
     return (
-        <ScrollView 
+        <ScrollView >
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 padding: Theme.spacing.lg, 
                 maxWidth: 800, 
                 alignSelf: 'center',
-                width: '100%' >
+                width: '100%' 
             }}
-                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}
+                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}>
                 <VStack sx={{ gap: 8, alignItems: 'center' }}                    <Box sx={{ 
                         padding: 16, 
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
-                        marginBottom: 12>
-                    }}                        <Icon as={Building2} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Principal
+                        marginBottom: 12
+                    }}                        <Icon as={Building2} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    ><Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Principal
                     </Heading                    <Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
@@ -66,9 +66,9 @@ export default function PrincipalOnboardingView({
                     }}                        Your journey to digitize and empower your institution begins here. Choose how you'd like to proceed.
                     </Text                </VStack
                 {/* Primary Actions Grid */}
-                <VStack sx={{ gap: Theme.spacing.lg }}                    
+                <VStack sx={{ gap: Theme.spacing.lg }}                    >
                     {/* Establish Sanctuary Card */}>
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={() => {
                             hapticLight();
                             onCreateSchool();
@@ -95,7 +95,7 @@ export default function PrincipalOnboardingView({
                                             </Text                                        </HStack                                    )}
                                 </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
                     {/* Join School Card */}
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={() => {
                             hapticLight();
                             onJoinSchool();
@@ -107,7 +107,7 @@ export default function PrincipalOnboardingView({
                             borderRadius: 24, 
                             backgroundColor: colors.tertiary,
                             borderWidth: 1,
-                            borderColor: colors.border>
+                            borderColor: colors.border
                         }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
@@ -124,8 +124,8 @@ export default function PrincipalOnboardingView({
                         borderRadius: 32, 
                         backgroundColor: '#1A1A1A', // Dark premium look for demo
                         overflow: 'hidden',
-                        position: 'relative'>
-                    }}                        {/* Decorative background element */}
+                        position: 'relative'
+                    }}                        {/* Decorative background element */}>
                         <Box sx={{
                             position: 'absolute',
                             right: -20,
@@ -134,13 +134,13 @@ export default function PrincipalOnboardingView({
                             height: 150,
                             borderRadius: 75,
                             backgroundColor: 'rgba(212,132,58,0.15)',
-                            zIndex: 0>
+                            zIndex: 0
                         }} /
                         ><VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}                            <Box sx={{ 
                                 padding: 12, 
                                 borderRadius: 16, 
                                 backgroundColor: 'rgba(255,255,255,0.1)'
-                            }}                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} /                            ></Box                            <VStack sx={{ gap: 8, alignItems: 'center' }}                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}                                    Experience the Future
+                            }}                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} /                            ></Box                            ><VStack sx={{ gap: 8, alignItems: 'center' }}                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}                                    Experience the Future
                                 </Heading                                <Text sx={{ 
                                     color: 'rgba(255,255,255,0.7)', 
                                     fontSize: 15, 
@@ -148,7 +148,7 @@ export default function PrincipalOnboardingView({
                                     maxWidth: 400 
                                 }}                                    Explore a fully populated sample dashboard to see how Gurudevi transforms school management.
                                 </Text                            </VStack                            
-                            <Button 
+                            <Button >
                                 action="primary" 
                                 onPress={() => {
                                     hapticLight();
@@ -160,7 +160,7 @@ export default function PrincipalOnboardingView({
                                     height: 54,
                                     borderRadius: 27
                                 }}
-                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Demo Sandbox
+                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Demo Sandbox>
                                 </ButtonText                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        </VStack                    </Box
                 </VStack>
                 {/* Footer Info */}
@@ -168,7 +168,7 @@ export default function PrincipalOnboardingView({
                     textAlign: 'center', 
                     color: colors.textTertiary, 
                     fontSize: 12,
-                    marginTop: 20 >
-                }}                    Gurudevi Sanctuaries are designed for dignified growth.
+                    marginTop: 20 
+                }}                    Gurudevi Sanctuaries are designed for dignified growth.>
                 </Text            </VStack        </ScrollView    );
 }

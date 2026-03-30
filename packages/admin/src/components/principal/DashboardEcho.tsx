@@ -160,7 +160,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                             <VStack sx={{ gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}
                                                 <Input>
                                                     <InputField
-                                                        >value={replyText}
+                                                        />value={replyText}
                                                         onChangeText={setReplyText}
                                                         placeholder="Write your response\u2026"
                                                         multiline

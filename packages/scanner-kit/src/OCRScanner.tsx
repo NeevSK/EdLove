@@ -184,8 +184,8 @@ export default function OCRScanner({
             zIndex: 999,
             backgroundColor: colors.accent,
             padding: 12,
-            borderRadius: 8,>
-          }}
+            borderRadius: 8,
+          }}>
         
           <Text style={{ color: "#fff", textAlign: "center" }}
             {toastMessage}>
@@ -203,8 +203,8 @@ export default function OCRScanner({
           paddingTop: 48,
           paddingBottom: 16,
           borderBottomWidth: 1,
-          borderBottomColor: colors.border,>
-        }}
+          borderBottomColor: colors.border,
+        }}>
       
         <Text
           style={{ color: colors.accent, fontSize: 20, fontWeight: "bold" }}>
@@ -230,8 +230,8 @@ export default function OCRScanner({
                 backgroundColor: colors.accent,
                 padding: 16,
                 borderRadius: 12,
-                alignItems: "center",>
-              }}
+                alignItems: "center",
+              }}>
             
               <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}
                 \uD83D\uDCF7 {t("ocr.takePhoto")}>
@@ -245,8 +245,8 @@ export default function OCRScanner({
                 borderColor: colors.border,
                 padding: 16,
                 borderRadius: 12,
-                alignItems: "center",>
-              }}
+                alignItems: "center",
+              }}>
             
               <Text style={{ color: colors.text, fontSize: 16 }}
                 {t("ocr.chooseFromGallery")}>
@@ -260,15 +260,15 @@ export default function OCRScanner({
                 borderRadius: 12,
                 borderWidth: 1,
                 borderColor: colors.border,
-                gap: 6,>
-              }}
+                gap: 6,
+              }}>
             
               <Text
                 style={{
                   color: colors.accent,
                   fontWeight: "600",
-                  fontSize: 13,>
-                }}
+                  fontSize: 13,
+                }}>
               
                 {t("ocr.tipsTitle")}
               </Text>
@@ -333,15 +333,15 @@ export default function OCRScanner({
                       ? colors.warning
                       : colors.success,
                     borderWidth: 1,
-                    borderColor: colors.border,>
-                  }}
+                    borderColor: colors.border,
+                  }}>
                 
                   <View
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      alignItems: "center",>
-                    }}
+                      alignItems: "center",
+                    }}>
                   
                     <View style={{ flex: 1, gap: 4 }}
                       <Text style={{ color: colors.text, fontWeight: "600" }}>
@@ -370,8 +370,8 @@ export default function OCRScanner({
                         color: student.uncertain
                           ? colors.warning
                           : colors.success,
-                        fontSize: 18,>
-                      }}
+                        fontSize: 18,
+                      }}>
                     
                       {student.uncertain ? "?" : "\u2713"}
                     </Text>
@@ -387,15 +387,15 @@ export default function OCRScanner({
                   padding: 16,
                   borderRadius: 12,
                   borderWidth: 1,
-                  borderColor: colors.border,>
-                }}
+                  borderColor: colors.border,
+                }}>
               
                 <Text
                   style={{
                     color: colors.textSecondary,
                     fontSize: 11,
-                    fontFamily: "monospace",>
-                  }}
+                    fontFamily: "monospace",
+                  }}>
                 
                   {scannedText.substring(0, 200)}
                   {scannedText.length > 200 && "..."}
@@ -412,8 +412,8 @@ export default function OCRScanner({
                   borderColor: colors.border,
                   padding: 16,
                   borderRadius: 12,
-                  alignItems: "center",>
-                }}
+                  alignItems: "center",
+                }}>
               
                 <Text style={{ color: colors.text }}>{t("ocr.tryAgain")}</Text
               ></TouchableOpacity
@@ -424,8 +424,8 @@ export default function OCRScanner({
                   backgroundColor: colors.accent,
                   padding: 16,
                   borderRadius: 12,
-                  alignItems: "center",>
-                }}
+                  alignItems: "center",
+                }}>
               
                 <Text style={{ color: "#fff", fontWeight: "bold" }}
                   Confirm ({parsedStudents.length})>

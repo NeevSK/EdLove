@@ -79,7 +79,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                                     ><span style={{ fontSize: '14px' }}>@{school.handle}</span
                                 ></div
 
-                                <div style={{ display: 'flex', gap: '12px' }}
+                                ><div style={{ display: 'flex', gap: '12px' }}
                                     {isEditable && (>
                                         <button className="premium-button" style={{ padding: '10px 20px' }}
                                             Manage School>
@@ -96,19 +96,19 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                             <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}
                                 <Users size={24} color="var(--water)" /
                             ></div
-                            <div
-                                <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_students || 0}</div
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Students</div
-                            </div>
+                            ><div
+                                <div >style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_students || 0}</div
+                                ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Students</div
+                            ></div>
                         </div>
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}
                             <div style={{ padding: '12px', background: 'var(--moss-soft)', borderRadius: '12px' }}>
                                 <BookOpen size={24} color="var(--moss)" /
                             ></div
-                            <div
-                                <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_teachers || 0}</div
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Teachers</div
-                            </div>
+                            ><div
+                                <div >style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_teachers || 0}</div
+                                ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Teachers</div
+                            ></div>
                         </div>
                     </div>
 
@@ -147,7 +147,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                             <Layout size={16} color="var(--ink-ghost)" /
                             ><span style={{ fontSize: '13px', fontWeight: '700' }}>School Structure</span
                         ></div
-                        <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}
+                        ><div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}
                              {stats?.total_sections || 0} Sections " {stats?.total_classrooms || 0} Classrooms>
                         </div>
                     </div>

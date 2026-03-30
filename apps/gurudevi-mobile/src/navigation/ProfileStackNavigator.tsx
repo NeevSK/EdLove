@@ -19,7 +19,7 @@ function ProfileStackCapabilities({ children }: { children: React.ReactNode }) {
     const navigation = useNavigation<any>();
 
     return (
-        <ProfileNavigationProvider
+        <ProfileNavigationProvider>
             value={{
                 openFullProfile: (profile: FullProfileParams) => navigation.navigate('FullProfile', { profile }),
                 openSettings: () => navigation.navigate('AppSettings'),
@@ -37,14 +37,14 @@ export default function ProfileStackNavigator() {
     const { scene } = useTheme();
 
     return (
-        <Stack.Navigator
+        <Stack.Navigator>
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: scene.canvas.bg }, // contentStyle for native-stack
             }}
                     <Stack.Screen name="ProfileMain"                {() => withProfileNavigationCapabilities(<ProfileScreen />)}
-            </Stack.Screen            <Stack.Screen
+            </Stack.Screen            ><Stack.Screen
                 name="FullProfile"
                 options={{
                     headerShown: false,
@@ -60,7 +60,7 @@ export default function ProfileStackNavigator() {
                     presentation: 'modal',
                     animation: 'slide_from_right',
                 }}
-            /            <Stack.Screen
+            /            ><Stack.Screen
                 name="PrivacyLedger"
                 component={PrivacyLedgerScreen}
                 options={{
@@ -68,14 +68,14 @@ export default function ProfileStackNavigator() {
                     presentation: 'modal',
                     animation: 'slide_from_bottom',
                 }}
-            /            <Stack.Screen
+            /            ><Stack.Screen
                 name="PublicProfile"
                 component={UserPublicProfileScreen}
                 options={{
                     headerShown: false,
                     animation: 'slide_from_right',
                 }}
-            /            <Stack.Screen
+            /            ><Stack.Screen
                 name="MuteHub"
                 component={MuteHubScreen}
                 options={{
@@ -83,5 +83,5 @@ export default function ProfileStackNavigator() {
                     presentation: 'modal',
                     animation: 'slide_from_bottom',
                 }}
-            /        </Stack.Navigator    );
+            /        ></Stack.Navigator    );
 }

@@ -87,7 +87,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
     }
 
     return (
-        <div className="sanctuary-screen"            <div className="sanctuary-container"                <div
+        <div className="sanctuary-screen"            <div className="sanctuary-container"                <div>
                     className="profile-hero sanctuary-card"
                     style={{
                         padding: '40px',
@@ -95,9 +95,9 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                         background: 'linear-gradient(135deg, var(--glass-surface) 0%, var(--background-alt) 100%)',
                         border: '1px solid var(--border)',
                         position: 'relative',
-                        overflow: 'hidden',>
+                        overflow: 'hidden',
                     }}
-                                    <div
+                                    <div>
                         style={{
                             position: 'absolute',
                             top: '-60px',
@@ -105,7 +105,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                             width: '200px',
                             height: '200px',
                             background: 'radial-gradient(circle, var(--action-soft) 0%, transparent 70%)',
-                            pointerEvents: 'none',>
+                            pointerEvents: 'none',
                         }}
                     /
                     ><div className="profile-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '32px', position: 'relative', zIndex: 1, alignItems: 'start' }}                        <div className="profile-identity-column" style={{ display: 'flex', alignItems: 'flex-start', gap: '28px', flexWrap: 'wrap' }}                            <div style={{ flexShrink: 0 }}                                <AvatarDisplay
@@ -123,28 +123,28 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                     peekable={!isOwnProfile || isPublic}
                                     peekType="user"
                                 /                            ></div
-                            <div className="profile-identity-copy" style={{ flex: 1, minWidth: '180px' }}                                <div className="profile-title-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px', flexWrap: 'wrap' }}                                    <h1 style={{ margin: 0, fontSize: '30px', fontWeight: '800', color: 'var(--ink)' }}                                        {profile.full_name}
-                                    </h1                                    {profile.is_thuthimal && (>
-                                        <span
+                            ><div className="profile-identity-copy" style={{ flex: 1, minWidth: '180px' }}                                <div className="profile-title-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px', flexWrap: 'wrap' }}                                    <h1 style={{ margin: 0, fontSize: '30px', fontWeight: '800', color: 'var(--ink)' }}                                        {profile.full_name}>
+                                    </h1                                    >{profile.is_thuthimal && (>
+                                        <span>
                                             style={{
                                                 padding: '4px 10px',
                                                 background: 'var(--sanctuary-saffron)',
                                                 color: 'var(--text-on-action)',
                                                 borderRadius: '8px',
                                                 fontSize: '11px',
-                                                fontWeight: '800',>
+                                                fontWeight: '800',
                                             }}
                                                                                     Thuthimal
-                                        </span                                    )}
+                                        </span                                    >)}
                                 </div>
-                                <div className="profile-context-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}                                    <span style={{ fontSize: '15px', color: 'var(--action)', fontWeight: '600', textTransform: 'capitalize' }}                                        {profile.role?.split('_').join(' ')}
+                                <div className="profile-context-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}                                    <span style={{ fontSize: '15px', color: 'var(--action)', fontWeight: '600', textTransform: 'capitalize' }}                                        {profile.role?.split('_').join(' ')}>
                                     </span                                    >{profile.school_name && (>
                                         <                                            <span style={{ color: 'var(--border)', fontWeight: '300' }}>\u00B7</span                                            ><span style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}>{profile.school_name}</span                                        ></                                    )}
                                 </div>
                                 {!completionResult.isComplete && (
-                                    <div style={{ marginBottom: '16px' }}                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}                                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}                                                Profile Completion
+                                    <div style={{ marginBottom: '16px' }}                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}                                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}                                                Profile Completion>
                                             </span                                            ><span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)' }}                                                {completionResult.percentage}%>
-                                            </span                                        </div                                        <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}                                            <div
+                                            </span                                        ></div                                        <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}                                            <div
                                                 style={{
                                                     width: `${completionResult.percentage}%`,
                                                     height: '100%',
@@ -153,17 +153,17 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                                     transition: 'width 0.6s ease',
                                                 }}
                                             /                                        ></div                                        {completionResult.nextHint && (
-                                            <p style={{ fontSize: '11px', color: 'var(--ink-ghost)', margin: '6px 0 0' }}                                                {completionResult.nextHint}
+                                            <p style={{ fontSize: '11px', color: 'var(--ink-ghost)', margin: '6px 0 0' }}                                                {completionResult.nextHint}>
                                             </p                                        )}>
-                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}                                            {completionResult.isComplete ? (
+                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}                                            {completionResult.isComplete ? (>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success)', fontSize: '14px', fontWeight: 600 }}                                                    <CheckCircle2 size={18} /                                                    >{t('profile.completion.done')}
                                                 </div                                            ) : (
-                                                <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}                                                    {t('profile.completion.incomplete')}
+                                                <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}                                                    {t('profile.completion.incomplete')}>
                                                 </div                                            )}>
                                         </div                                    ></div                                )}
 
                                 {isOwnProfile && !context.isAnonymous && (
-                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}                                        <button
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}                                        <button>
                                             className="secondary-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                                             onClick={openInlineEdit}>
@@ -191,7 +191,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                         </button                                    </div                                )}
 
                                 {isOwnProfile && context.isAnonymous && (
-                                    <div style={{ marginTop: '12px' }}                                        <CitizenGate
+                                    <div style={{ marginTop: '12px' }}                                        <CitizenGate>
                                             context="profile"
                                             title="Upgrade to edit your profile"
                                             description="Create an account to save your identity across devices and unlock citizen features."
@@ -200,7 +200,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                         /                                    ></div                                )}
                             </div                        </div
                         {context.isAnonymous ? null : (
-                            <div
+                            <div>
                                 className="profile-qr-panel"
                                 style={{
                                     display: 'flex',
@@ -212,9 +212,9 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                     borderRadius: '16px',
                                     border: '1px solid var(--border)',
                                     flexShrink: 0,
-                                    minWidth: '140px',>
+                                    minWidth: '140px',
                                 }}
-                                                            <div style={{ borderRadius: '8px', overflow: 'hidden', background: '#fff', padding: '8px' }}                                    <QRCodeGenerator value={profilePublicUrl} size={104} label={profile.full_name} /                                ></div                                <p style={{ margin: 0, fontSize: '11px', fontWeight: '600', color: 'var(--ink-ghost)', textAlign: 'center', lineHeight: 1.4 }}                                    Scan to view profile
+                                                            <div style={{ borderRadius: '8px', overflow: 'hidden', background: '#fff', padding: '8px' }}                                    <QRCodeGenerator value={profilePublicUrl} size={104} label={profile.full_name} /                                ></div                                ><p style={{ margin: 0, fontSize: '11px', fontWeight: '600', color: 'var(--ink-ghost)', textAlign: 'center', lineHeight: 1.4 }}                                    Scan to view profile
                                 </p                                <button
                                     style={{
                                         background: 'none',
@@ -274,7 +274,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                             <div className="sanctuary-card" style={{ padding: '32px' }}                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}                                    <Briefcase size={18} color="var(--ink-ghost)" /                                    ><h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}                                        Professional Credentials
                                     </h3                                </div                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}                                    {subjectsTaught.length > 0 && (
                                         <div                                            <div >style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Subjects Taught</div                                            ><div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}                                                {subjectsTaught.map((subject: string) => (
-                                                    <span key={subject} style={{ padding: '4px 12px', background: 'var(--action-soft)', color: 'var(--action)', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}                                                        {subject}
+                                                    <span key={subject} style={{ padding: '4px 12px', background: 'var(--action-soft)', color: 'var(--action)', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}                                                        {subject}>
                                                     </span                                                ))}>
                                             </div                                        ></div                                    )}
                                     {qualifications.length > 0 && (
@@ -283,13 +283,13 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                                     </span                                                ))}
                                             </div                                        </div                                    )}
                                     {profile.experience_years && (
-                                        <div style={{ fontSize: '14px', color: 'var(--ink)', fontWeight: '600' }}                                            {profile.experience_years} years of teaching experience
+                                        <div style={{ fontSize: '14px', color: 'var(--ink)', fontWeight: '600' }}                                            {profile.experience_years} years of teaching experience>
                                         </div                                    )}>
                                 </div                            ></div                        )}
 
                         <div className="sanctuary-card" style={{ padding: '32px' }}                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}                                    <Globe size={18} color="var(--ink-ghost)" /                                    ><h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}                                        Social Sanctuary
                                     </h3                                </div                            </div
-                            <ContactLinktree
+                            <ContactLinktree>
                                 links={socialLinks || []}
                                 userName={profile.full_name}
                                 userId={profile.id}
@@ -297,7 +297,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                 editable={isOwnProfile}
                                 inline
                             /                        ></div                    </div
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                        {isStaff && profile.school_id && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                        {isStaff && profile.school_id && (>
                             <div className="sanctuary-card" style={{ padding: '24px' }}                                <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} /                            ></div                        )}
 
                         <div style={{ width: '100%' }}                            <LivingJourneyPanel userId={profile.id} authority={profile.role as any} /                        ></div                    </div                </div                <style>{`

@@ -39,7 +39,7 @@ function ZoneButton({
           backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}16` : Theme.colors.silk,
           minHeight: 74,
         }}
-              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>{label}</Text          <Box
+              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>{label}</Text          ><Box
             sx={{
               paddingHorizontal: 8,
               paddingVertical: 2,
@@ -47,7 +47,7 @@ function ZoneButton({
               backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}24` : Theme.colors.linen,
             }}
                       <Text sx={{ fontSize: 10, fontWeight: '800', color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark }}              {count}
-            </Text          </Box        </HStack        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}          {detail}
+            </Text          </Box        </HStack        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}          {detail}>
         </Text      </Box    </TouchableOpacity  );
 }
 
@@ -79,13 +79,13 @@ export function PrincipalNativeDashboardShell({
   return (
     <      {showSandboxBanner ? <SandboxBanner /> : null}
       <GlobalHeader title={title} subtitle={subtitle} /
-      <Box
+      ><Box
         sx={{
           paddingHorizontal: Theme.spacing.lg,
           paddingBottom: Theme.spacing.md,
           borderBottomWidth: 1,
           borderBottomColor: colors.border,
-          backgroundColor: Theme.colors.vellum,
+          backgroundColor: Theme.colors.vellum,>
         }}
               <HStack sx={{ gap: Theme.spacing.xs }}          <ZoneButton
             id="today"
@@ -94,21 +94,21 @@ export function PrincipalNativeDashboardShell({
             count={zoneCounts.today}
             isActive={activeZone === 'today'}
             onPress={onZoneChange}
-          /          <ZoneButton
+          /          ><ZoneButton
             id="institution"
             label="Institution"
             detail="Hierarchy, governance, and official school work."
             count={zoneCounts.institution}
             isActive={activeZone === 'institution'}
             onPress={onZoneChange}
-          /          <ZoneButton
+          /          ><ZoneButton
             id="outlook"
             label="Outlook"
             detail="Signals, resource pressure, and future ERP families."
             count={zoneCounts.outlook}
             isActive={activeZone === 'outlook'}
             onPress={onZoneChange}
-          /        </HStack      </Box
+          /        ></HStack      </Box>
       <ScrollView        <VStack sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}          {error ? (
             <Box
               sx={{
@@ -116,13 +116,13 @@ export function PrincipalNativeDashboardShell({
                 backgroundColor: Theme.colors.errorBackground,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: Theme.colors.emberRed,
+                borderColor: Theme.colors.emberRed,>
               }}
-                          <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text            </Box          ) : null}
+                          <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text            ></Box          ) : null}
 
           {isLoading ? (
-            <VStack sx={{ gap: Theme.spacing.md }}              <SkeletonCard height={120} /              <SkeletonCard height={220} /              <SkeletonCard height={220} /            </VStack          ) : (
-            children
+            <VStack sx={{ gap: Theme.spacing.md }}              <SkeletonCard height={120} /              ><SkeletonCard height={220} /              ><SkeletonCard height={220} /            ></VStack          ) : (
+            children>
           )}
         </VStack      </ScrollView    </  );
 }

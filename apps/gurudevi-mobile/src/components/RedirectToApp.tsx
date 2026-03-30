@@ -58,18 +58,18 @@ export const RedirectToApp = () => {
             mb: '$4',
             width: '100%',
             maxWidth: 400
-        }}
-            <VStack space="sm"
-                <Text fontWeight="$bold" color={Theme.colors.bark}
+        }}>
+            <VStack space="sm">
+                <Text fontWeight="$bold" color={Theme.colors.bark}>
                     {session ? (t('auth.continueInApp') || "Continue your journey in the App") : (t('auth.betterOnApp') || "Better on the App")}
-                </Text
-                <Text size="sm" color={Theme.colors.bark}
+                </Text>
+                <Text size="sm" color={Theme.colors.bark}>
                     {session
                         ? (t('auth.handoffDesc') || "You're logged in here. Tap below to securely transfer your sanctuary soul to the native app.")
                         : (t('auth.openInAppDesc') || "Experience the full Sanctuary features by opening our native mobile app.")
                     }
-                </Text
-                <Button
+                </Text>
+                <Button>
                     size="sm"
                     onPress={handleOpenApp}
                     sx={{
@@ -79,11 +79,11 @@ export const RedirectToApp = () => {
                         alignSelf: 'flex-start'
                     }}
                 
-                    <ButtonText fontWeight="$bold"
+                    <ButtonText fontWeight="$bold">
                         {session ? (t('auth.openAppAndSync') || "Open App & Sync") : (t('auth.openApp') || "Open App")}
-                    </ButtonText
-                </Button
-            </VStack
-        </Box
+                    </ButtonText>
+                </Button>
+            </VStack>
+        </Box>
     );
 };

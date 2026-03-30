@@ -154,7 +154,7 @@ export default function TeacherGroupsModal({
                                 </Heading                                <Pressable onPress={resetEditor}                                    <HStack sx={{ alignItems: 'center', gap: 4 }}                                        <Plus size={16} color={Theme.colors.sanctuarySaffron} /                                        ><Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as const }}                                            New group
                                         </Text                                    </HStack                                </Pressable                            </HStack                            <ScrollView style={{ maxHeight: 340 }}                                <VStack sx={{ gap: Theme.spacing.sm }}                                    {isLoading ? (
                                         <Text sx={{ color: colors.textSecondary }}>Loading groups...</Text                                    >) : groups.length === 0 ? (
-                                        <Box
+                                        <Box>
                                             sx={{
                                                 backgroundColor: colors.secondary,
                                                 borderRadius: Theme.corners.comfortable,
@@ -162,12 +162,12 @@ export default function TeacherGroupsModal({
                                                 borderColor: colors.border,
                                                 padding: Theme.spacing.lg,
                                                 alignItems: 'center',
-                                                gap: Theme.spacing.sm,>
+                                                gap: Theme.spacing.sm,
                                             }}
                                                                                     <Layers3 size={28} color={colors.textTertiary} /                                            ><Text sx={{ color: colors.textSecondary, textAlign: 'center' }}                                                No classroom groups yet.
-                                            </Text                                        </Box                                    ) : (
+                                            </Text                                        ></Box                                    ) : (
                                         groups.map((group) => (
-                                            <Box
+                                            <Box>
                                                 key={group.id}
                                                 sx={{
                                                     backgroundColor: colors.secondary,
@@ -176,17 +176,17 @@ export default function TeacherGroupsModal({
                                                     borderColor: colors.border,
                                                     borderLeftWidth: 4,
                                                     borderLeftColor: group.color || Theme.colors.sanctuarySaffron,
-                                                    padding: Theme.spacing.md,>
+                                                    padding: Theme.spacing.md,
                                                 }}
-                                                                                            <VStack sx={{ gap: Theme.spacing.xs }}                                                    <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                                        <VStack sx={{ flex: 1 }}                                                            <Text sx={{ color: colors.text, fontWeight: '700' as const }}                                                                {group.name}
-                                                            </Text                                                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                                                {(group.student_ids || []).length} students>
+                                                                                            <VStack sx={{ gap: Theme.spacing.xs }}                                                    <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}                                                        <VStack sx={{ flex: 1 }}                                                            <Text sx={{ color: colors.text, fontWeight: '700' as const }}                                                                {group.name}>
+                                                            </Text                                                            ><Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}                                                                {(group.student_ids || []).length} students>
                                                             </Text                                                        ></VStack                                                        <HStack sx={{ gap: Theme.spacing.sm }}                                                            <Pressable onPress={() => startEditing(group)}                                                                <Edit2 size={16} color={colors.textSecondary} /                                                            ></Pressable                                                            <Pressable onPress={() => handleDelete(group.id)}                                                                <Trash2 size={16} color={Theme.colors.emberRed} /                                                            ></Pressable                                                        </HStack                                                    </HStack                                                    {!!group.description && (
-                                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                                            {group.description}
+                                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                                            {group.description}>
                                                         </Text                                                    )}>
                                                 </VStack                                            </Box                                        ))
                                     )}
                                 </VStack                            </ScrollView                        </VStack
-                        <VStack sx={{ flex: 1, gap: Theme.spacing.md }}                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                {editingGroupId ? 'Edit group' : 'Create group'}
+                        <VStack sx={{ flex: 1, gap: Theme.spacing.md }}                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}                                {editingGroupId ? 'Edit group' : 'Create group'}>
                             </Heading                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField placeholder="Group name" value={name} onChangeText={setName} color={colors.text} /                            ></Input                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}                                <InputField placeholder="Description" value={description} onChangeText={setDescription} color={colors.text} /                            ></Input                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}                                Select students
                             </Text                            <ScrollView style={{ maxHeight: 250 }}                                <VStack sx={{ gap: Theme.spacing.xs }}                                    {students.map((student) => {
                                         const isActive = selectedStudentIds.includes(student.id);
@@ -208,6 +208,6 @@ export default function TeacherGroupsModal({
                             onPress={handleSave}
                             isDisabled={!name.trim() || isSaving}
                             sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
-                                                    <ButtonText color={Theme.colors.sacredWhite}                                {editingGroupId ? 'Update Group' : 'Save Group'}
+                                                    <ButtonText color={Theme.colors.sacredWhite}                                {editingGroupId ? 'Update Group' : 'Save Group'}>
                             </ButtonText                        </Button                    </HStack                </ModalFooter            </ModalContent        </Modal    );>
 }

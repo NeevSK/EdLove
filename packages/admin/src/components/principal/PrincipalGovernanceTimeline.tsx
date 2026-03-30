@@ -129,23 +129,23 @@ export default function PrincipalGovernanceTimeline({
   };
 
   return (
-    <VStack sx={{ gap: Theme.spacing.sm }}      <Text sx={{ fontSize: 16, fontWeight: '700', color: Theme.colors.inkTruth }}        Governance timeline
+    <VStack sx={{ gap: Theme.spacing.sm }}      <Text sx={{ fontSize: 16, fontWeight: '700', color: Theme.colors.inkTruth }}        Governance timeline>
       </Text      <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}        Official institutional events for invites and principal observations as of {viewDate}.>
       </Text>
       {!isLoading && !error && observationSnapshot.length > 0 ? (
-        <Box
+        <Box>
           sx={{
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             backgroundColor: Theme.colors.silk,
             borderWidth: 1,
             borderColor: colors.border,
-            gap: Theme.spacing.sm,>
+            gap: Theme.spacing.sm,
           }}
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}            Active governance snapshot
-          </Text          <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}            Latest official observation state as of {viewDate}. This is the current institutional surface, not the full history.>
+                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}            Active governance snapshot>
+          </Text          ><Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}            Latest official observation state as of {viewDate}. This is the current institutional surface, not the full history.>
           </Text          >{observationSnapshot.map((event) => (
-            <Box
+            <Box>
               key={`snapshot-${event.id}`}
               sx={{
                 borderRadius: Theme.corners.comfortable,
@@ -153,10 +153,10 @@ export default function PrincipalGovernanceTimeline({
                 backgroundColor: colors.primary,
                 borderWidth: 1,
                 borderColor: colors.border,
-                gap: Theme.spacing.xs,>
+                gap: Theme.spacing.xs,
               }}
-                          <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}                <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.inkTruth }}                  Observation {event.entity_id}
-                </Text                <Text sx={{ fontSize: 11, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}                  {EVENT_LABELS[event.event_type]}>
+                          <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}                <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.inkTruth }}                  Observation {event.entity_id}>
+                </Text                ><Text sx={{ fontSize: 11, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}                  {EVENT_LABELS[event.event_type]}>
                 </Text              ></HStack              <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}                {(event.snapshot?.content as string) || 'Official observation state is available.'}
               </Text              <TouchableOpacity onPress={() => setFollowUpTarget(event.entity_id)} activeOpacity={0.85}                <Box
                   sx={{
@@ -169,56 +169,56 @@ export default function PrincipalGovernanceTimeline({
                     borderWidth: 1,
                     borderColor: colors.border,
                   }}
-                                  <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.gurudeviBlue }}                    Add follow-up
+                                  <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.gurudeviBlue }}                    Add follow-up>
                   </Text                </Box              </TouchableOpacity            </Box          ))}>
         </Box      >) : null}
 
       {isLoading ? (
-        <Box
+        <Box>
           sx={{
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             backgroundColor: Theme.colors.silk,
             borderWidth: 1,
-            borderColor: colors.border,>
+            borderColor: colors.border,
           }}
-                  <Text sx={{ color: colors.textSecondary }}>Loading governance history...</Text        ></Box      ) : null}
+                  <Text sx={{ color: colors.textSecondary }}>Loading governance history...</Text        ></Box      >) : null}
 
       {!isLoading && error ? (
-        <Box
+        <Box>
           sx={{
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             backgroundColor: Theme.colors.errorBackground,
             borderWidth: 1,
-            borderColor: Theme.colors.emberRed,>
+            borderColor: Theme.colors.emberRed,
           }}
-                  <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text        ></Box      ) : null}
+                  <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text        ></Box      >) : null}
 
       {!isLoading && !error && events.length === 0 ? (
-        <Box
+        <Box>
           sx={{
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             backgroundColor: Theme.colors.silk,
             borderWidth: 1,
-            borderColor: colors.border,>
+            borderColor: colors.border,
           }}
-                  <Text sx={{ color: colors.textSecondary }}            No official governance events are recorded for this view yet.
-          </Text        </Box      ) : null}>
+                  <Text sx={{ color: colors.textSecondary }}            No official governance events are recorded for this view yet.>
+          </Text        ></Box      ) : null}>
 
       {!isLoading && !error
         ? events.map((event) => (
-            <Box
+            <Box>
               key={event.id}
               sx={{
                 borderRadius: Theme.corners.comfortable,
                 padding: Theme.spacing.md,
                 backgroundColor: Theme.colors.silk,
                 borderWidth: 1,
-                borderColor: colors.border,>
+                borderColor: colors.border,
               }}
-                          <VStack sx={{ gap: Theme.spacing.xs }}                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}                    {ENTITY_LABELS[event.entity_type]} {EVENT_LABELS[event.event_type]}
+                          <VStack sx={{ gap: Theme.spacing.xs }}                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}                    {ENTITY_LABELS[event.entity_type]} {EVENT_LABELS[event.event_type]}>
                   </Text                  ><Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.gurudeviBlue }}                    {event.entity_type === 'school_invite' ? 'Invite' : 'Official'}>
                   </Text                ></HStack                <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}                  {formatWhen(event.occurred_at)}
                 </Text                <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}                  {event.entity_type === 'school_invite'
@@ -230,17 +230,17 @@ export default function PrincipalGovernanceTimeline({
         : null}
 
       {followUpTarget ? (
-        <Box
+        <Box>
           sx={{
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             backgroundColor: colors.primary,
             borderWidth: 1,
             borderColor: colors.border,
-            gap: Theme.spacing.sm,>
+            gap: Theme.spacing.sm,
           }}
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}            Follow up on observation {followUpTarget}
-          </Text          <TextInput
+                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}            Follow up on observation {followUpTarget}>
+          </Text          ><TextInput
             value={followUpContent}
             onChangeText={setFollowUpContent}
             placeholder="Record the next official step, decision, or resolution..."
@@ -254,7 +254,7 @@ export default function PrincipalGovernanceTimeline({
               padding: Theme.spacing.sm,
               color: colors.text,
               backgroundColor: Theme.colors.silk,
-              textAlignVertical: 'top',>
+              textAlignVertical: 'top',
             }}
           /          ><HStack sx={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}            {(['noted', 'escalated', 'resolved'] as const).map((status) => (
               <TouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}                <Box
@@ -266,8 +266,8 @@ export default function PrincipalGovernanceTimeline({
                     borderWidth: 1,
                     borderColor: colors.border,
                   }}
-                                  <Text sx={{ fontSize: 11, fontWeight: '700', color: followUpStatus === status ? Theme.colors.sacredWhite : colors.textSecondary }}                    {status}
-                  </Text                </Box              </TouchableOpacity            ))}>
+                                  <Text sx={{ fontSize: 11, fontWeight: '700', color: followUpStatus === status ? Theme.colors.sacredWhite : colors.textSecondary }}                    {status}>
+                  </Text                ></Box              </TouchableOpacity            ))}>
           </HStack          ><HStack sx={{ gap: Theme.spacing.sm }}            <TouchableOpacity onPress={() => {
               setFollowUpTarget(null);
               setFollowUpContent('');
@@ -289,7 +289,7 @@ export default function PrincipalGovernanceTimeline({
                   backgroundColor: Theme.colors.sanctuarySaffron,
                   opacity: savingFollowUp ? 0.65 : 1,
                 }}
-                              <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sacredWhite }}                  {savingFollowUp ? 'Saving...' : 'Save follow-up'}
+                              <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sacredWhite }}                  {savingFollowUp ? 'Saving...' : 'Save follow-up'}>
                 </Text              </Box            </TouchableOpacity          </HStack        </Box      ) : null}>
     </VStack  >);
 }

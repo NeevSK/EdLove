@@ -44,21 +44,21 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
 
     return (
         <VStack space="lg"            {/* Province Select */}
-            <FormControl                <FormControlLabel sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.province')}
+            <FormControl                <FormControlLabel >sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.province')}>
                     </FormControlLabelText                </FormControlLabel                <Select
                     selectedValue={data.provinceId}
                     onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}
-                                    <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}                        <SelectInput placeholder={t('schoolSetup.selectProvince')} color={colors.text} sx={{ flex: 1 }} /                        <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} /                    </SelectTrigger                    <SelectPortal                        <SelectBackdrop /                        <SelectContent sx={{ backgroundColor: colors.secondary }}                            <SelectDragIndicatorWrapper                                <SelectDragIndicator /                            </SelectDragIndicatorWrapper                            {SRI_LANKAN_PROVINCES.map(province => (
-                                <SelectItem key={province.id} label={province[lang] ?? province.en} value={province.id} /                            ))}
-                        </SelectContent                    </SelectPortal                </Select            </FormControl
+                                    <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}                        <SelectInput placeholder={t('schoolSetup.selectProvince')} color={colors.text} sx={{ flex: 1 }} /                        ><SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} /                    ></SelectTrigger                    <SelectPortal                        <SelectBackdrop /                        <SelectContent sx={{ backgroundColor: colors.secondary }}                            <SelectDragIndicatorWrapper                                <SelectDragIndicator >/                            ></SelectDragIndicatorWrapper                            {SRI_LANKAN_PROVINCES.map(province => (
+                                <SelectItem key={province.id} label={province[lang] ?? province.en} value={province.id} /                            >))}
+                        </SelectContent                    </SelectPortal                </Select            </FormControl>
             {/* District Select */}
             <FormControl isDisabled={!data.provinceId}                <FormControlLabel sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.district')}
                     </FormControlLabelText                </FormControlLabel                <Select
                     selectedValue={data.districtId}
                     onValueChange={(value: string) => onUpdate({ districtId: value })}
-                                    <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}                        <SelectInput placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} color={colors.text} sx={{ flex: 1 }} /                        <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} /                    </SelectTrigger                    <SelectPortal                        <SelectBackdrop /                        <SelectContent sx={{ backgroundColor: colors.secondary }}                            <SelectDragIndicatorWrapper                                <SelectDragIndicator /                            </SelectDragIndicatorWrapper                            {filteredDistricts.map(district => (
-                                <SelectItem key={district.id} label={district[lang] ?? district.en} value={district.id} /                            ))}
-                        </SelectContent                    </SelectPortal                </Select            </FormControl
+                                    <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}                        <SelectInput placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} color={colors.text} sx={{ flex: 1 }} /                        ><SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} /                    ></SelectTrigger                    <SelectPortal                        <SelectBackdrop /                        <SelectContent sx={{ backgroundColor: colors.secondary }}                            <SelectDragIndicatorWrapper                                <SelectDragIndicator >/                            ></SelectDragIndicatorWrapper                            {filteredDistricts.map(district => (
+                                <SelectItem key={district.id} label={district[lang] ?? district.en} value={district.id} /                            >))}
+                        </SelectContent                    </SelectPortal                </Select            </FormControl>
             <SanctuaryInput
                 label={t('schoolSetup.city')}
                 placeholder={t('schoolSetup.cityPlaceholder')}
@@ -74,5 +74,5 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                 leftIcon={MapPin}
                 multiline
                 numberOfLines={3}
-            /        </VStack    );
+            /        ></VStack    );
 }
