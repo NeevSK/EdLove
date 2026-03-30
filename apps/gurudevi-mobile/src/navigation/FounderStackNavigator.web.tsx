@@ -20,11 +20,20 @@ export default function FounderStackNavigatorWeb() {
     const { scene } = useTheme();
 
     return (
-        <React.Suspense fallback={<ScreenFallback />}            <Stack.Navigator
+        <React.Suspense fallback={<ScreenFallback />}>
+            <Stack.Navigator
                 id="FounderStack"
                 screenOptions={{
                     headerShown: false,
                     contentStyle: { backgroundColor: scene.canvas.bg },
                 }}
-                            <Stack.Screen name="FounderDashboard" component={FounderDashboard} /                ><Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} /                ><Stack.Screen name="PrincipalDashboard" component={PrincipalDashboardWeb} /                ><Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} /                ><Stack.Screen name="SchoolForest" component={SchoolForestScreen} /            ></Stack.Navigator        </React.Suspense    );
+            >
+                <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
+                <Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} />
+                <Stack.Screen name="PrincipalDashboard" component={PrincipalDashboardWeb} />
+                <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
+                <Stack.Screen name="SchoolForest" component={SchoolForestScreen} />
+            </Stack.Navigator>
+        </React.Suspense>
+    );
 }
