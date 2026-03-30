@@ -1,53 +1,33 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useNavigation, type NavigationProp } from '@react-navigation/native';
-import { useTheme } from '@repo/ui';
-const AppSettingsScreenWeb = React.lazy(
-    () => import('@repo/ui/screens/AppSettingsScreen.web')
-);
-import { MuteHubScreen } from '@repo/profile';
-import { ProfileStackParamList, type FullProfileParams } from '@repo/core';
-import { FullProfileScreenWeb, ProfileNavigationProvider, ProfileScreenWeb } from '@repo/profile';
-import { UserPublicProfileScreen } from '@repo/community';
-import PrivacyLedgerScreen from '@repo/self/screens/PrivacyLedgerScreen';
+import { Theme, useThemedColors } from '@repo/ui';
+import { ProfileStackParamList } from '@repo/core';
+import { StackFallback } from '../components/web/WebScreenShimmer';
+
+// Static imports instead of React.lazy for stability on web
+import ProfileScreenWeb from '../screens/ProfileScreen.web';
+import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
+import FullProfileScreen from '../screens/profile/FullProfileScreen';
+import { PrivacyLedgerScreen } from '@repo/self';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
-function withProfileNavigationCapabilities(element: React.ReactNode) {
-    return <ProfileStackCapabilities>{element}</ProfileStackCapabilities>;
-}
-
-function ProfileStackCapabilities({ children }: { children: React.ReactNode }) {
-    const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
-
-    return (
-        <ProfileNavigationProvider>
-            value={{
-                openFullProfile: (profile: FullProfileParams) => navigation.navigate('FullProfile', { profile }),
-                openSettings: () => navigation.navigate('AppSettings'),
-                openPrivacyLedger: () => navigation.navigate('PrivacyLedger'),
-                openMuteHub: () => navigation.navigate('MuteHub'),
-                openPublicProfile: (target) => navigation.navigate('PublicProfile', target),
-                // @ts-expect-error - Auth is in RootNavigator but not in local param list
-                openAuth: () => navigation.navigate('Auth'),
-                goBack: () => navigation.goBack(),
-            }}
-                    {children}
-        </ProfileNavigationProvider    >);
-}
-
 export default function ProfileStackNavigatorWeb() {
-    const { scene } = useTheme();
+    const colors = useThemedColors();
 
     return (
-        <Stack.Navigator>
+        <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: scene.canvas.bg },
+                contentStyle: { backgroundColor: colors.primary },
                 animation: 'slide_from_right',
             }}
-                    <Stack.Screen name="ProfileMain"                {() => withProfileNavigationCapabilities(<ProfileScreenWeb />)}
-            </Stack.Screen            ><Stack.Screen name="FullProfile"                {() => withProfileNavigationCapabilities(<FullProfileScreenWeb />)}
-            </Stack.Screen            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} /            ><Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} /            ><Stack.Screen name="PublicProfile" component={UserPublicProfileScreen} /            ><Stack.Screen name="MuteHub" component={MuteHubScreen} /        ></Stack.Navigator    );
+        >
+            <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
+            <Stack.Screen name="FullProfile" component={FullProfileScreen} />
+            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />
+            <Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} />
+        </Stack.Navigator>
+    );
 }

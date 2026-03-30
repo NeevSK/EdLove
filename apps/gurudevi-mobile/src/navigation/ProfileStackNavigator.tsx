@@ -1,66 +1,36 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
-import { FullProfileScreen, ProfileNavigationProvider, ProfileScreen } from '@repo/profile';
-import { UserPublicProfileScreen } from '@repo/community';
-import { ProfileStackParamList, type FullProfileParams } from '@repo/core';
-import PrivacyLedgerScreen from '@repo/self/screens/PrivacyLedgerScreen';
-import AppSettingsScreen from '@repo/ui/screens/AppSettingsScreen';
-import { useTheme } from '@repo/ui';
-import { MuteHubScreen } from '@repo/profile';
+import { useTranslation } from 'react-i18next';
+import ProfileScreen from '../screens/ProfileScreen';
+import FullProfileScreen from '../screens/profile/FullProfileScreen';
+import { PrivacyLedgerScreen } from '@repo/self';
+import { useThemedColors } from '@repo/ui';
 
-const Stack = createNativeStackNavigator<ProfileStackParamList>();
-
-function withProfileNavigationCapabilities(element: React.ReactNode) {
-    return <ProfileStackCapabilities>{element}</ProfileStackCapabilities>;
-}
-
-function ProfileStackCapabilities({ children }: { children: React.ReactNode }) {
-    const navigation = useNavigation<any>();
-
-    return (
-        <ProfileNavigationProvider>
-            value={{
-                openFullProfile: (profile: FullProfileParams) => navigation.navigate('FullProfile', { profile }),
-                openSettings: () => navigation.navigate('AppSettings'),
-                openPrivacyLedger: () => navigation.navigate('PrivacyLedger'),
-                openMuteHub: () => navigation.navigate('MuteHub'),
-                openPublicProfile: (target) => navigation.navigate('PublicProfile', target),
-                openAuth: () => navigation.navigate('Auth'),
-                goBack: () => navigation.goBack(),
-            }}
-                    {children}
-        </ProfileNavigationProvider    >);
-}
+const Stack = createNativeStackNavigator();
 
 export default function ProfileStackNavigator() {
-    const { scene } = useTheme();
+    const { t } = useTranslation();
+    const colors = useThemedColors();
 
     return (
-        <Stack.Navigator>
+        <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: scene.canvas.bg }, // contentStyle for native-stack
+                contentStyle: { backgroundColor: colors.secondary }, // contentStyle for native-stack
             }}
-                    <Stack.Screen name="ProfileMain"                {() => withProfileNavigationCapabilities(<ProfileScreen />)}
-            </Stack.Screen            ><Stack.Screen
+        >
+            <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+            <Stack.Screen
                 name="FullProfile"
+                component={FullProfileScreen}
                 options={{
                     headerShown: false,
                     presentation: 'modal',
                     animation: 'slide_from_bottom',
                 }}
-                            {() => withProfileNavigationCapabilities(<FullProfileScreen />)}
-            </Stack.Screen            <Stack.Screen
-                name="AppSettings"
-                component={AppSettingsScreen}
-                options={{
-                    headerShown: false,
-                    presentation: 'modal',
-                    animation: 'slide_from_right',
-                }}
-            /            ><Stack.Screen
+            />
+            <Stack.Screen
                 name="PrivacyLedger"
                 component={PrivacyLedgerScreen}
                 options={{
@@ -68,20 +38,7 @@ export default function ProfileStackNavigator() {
                     presentation: 'modal',
                     animation: 'slide_from_bottom',
                 }}
-            /            ><Stack.Screen
-                name="PublicProfile"
-                component={UserPublicProfileScreen}
-                options={{
-                    headerShown: false,
-                    animation: 'slide_from_right',
-                }}
-            /            ><Stack.Screen
-                name="MuteHub"
-                component={MuteHubScreen}
-                options={{
-                    headerShown: false,
-                    presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
-            /        ></Stack.Navigator    );
+            />
+        </Stack.Navigator>
+    );
 }
