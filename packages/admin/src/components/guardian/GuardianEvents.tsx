@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@repo/ui';
 
 interface GuardianEventsProps {
@@ -10,16 +10,12 @@ interface GuardianEventsProps {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export const GuardianEvents: React.FC<GuardianEventsProps> = ({
-  events,
-  onEventPress,
-  limit = 5
-}) => {
+export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventPress, limit = 5 }) => {
   const theme = useTheme();
   const isDesktop = screenWidth > 1024;
 
   const renderEventItem = (event: any) => (
-    <TouchableOpacity>
+    <TouchableOpacity
       key={event.id}
       style={[
         styles.eventItem,
@@ -27,67 +23,77 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
           backgroundColor: theme.glass.surface.bg,
           borderColor: theme.glass.surface.border,
           borderWidth: 1,
-        }
+        },
       ]}
       onPress={() => onEventPress(event)}
-          <View style={styles.eventDate}        <Text >
+      activeOpacity={0.85}
+    >
+      <View style={styles.eventDate}>
+        <Text
           style={[
             styles.eventDateDay,
-            { 
+            {
               color: theme.accent.action,
               fontFamily: 'System',
               fontWeight: '700',
-              fontSize: isDesktop ? 18 : 14
-            }
+              fontSize: isDesktop ? 18 : 14,
+            },
           ]}
-                  {new Date(event.date).getDate()}
-        </Text        ><Text 
+        >
+          {new Date(event.date).getDate()}
+        </Text>
+        <Text
           style={[
             styles.eventDateMonth,
-            { 
+            {
               color: theme.text.secondary,
               fontFamily: 'System',
-              fontSize: isDesktop ? 10 : 8
-            }
+              fontSize: isDesktop ? 10 : 8,
+            },
           ]}
-                  {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
-        </Text      ></View      <View style={styles.eventDetails}        <Text 
+        >
+          {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
+        </Text>
+      </View>
+
+      <View style={styles.eventDetails}>
+        <Text
           style={[
             styles.eventTitle,
-            { 
+            {
               color: theme.text.primary,
               fontFamily: 'System',
               fontWeight: '600',
-              fontSize: isDesktop ? 14 : 12
-            }
+              fontSize: isDesktop ? 14 : 12,
+            },
           ]}
-                  {event.title}
-        </Text        <Text 
+        >
+          {event.title}
+        </Text>
+        <Text
           style={[
             styles.eventTime,
-            { 
+            {
               color: theme.text.secondary,
               fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10
-            }
+              fontSize: isDesktop ? 12 : 10,
+            },
           ]}
-                  {event.time} " {event.location}
-        </Text      </View      {event.requiresRsvp && (
-        <View style={[>
-          styles.rsvpBadge,
-          { backgroundColor: theme.accent.action + '20' }
-        ]}          <Text 
-            style={[
-              styles.rsvpText,
-              { color: theme.accent.action }
-            ]}
-                      RSVP
-          </Text        </View      )}
-    </TouchableOpacity  );
+        >
+          {event.time}
+          {event.location ? ` · ${event.location}` : ''}
+        </Text>
+      </View>
 
-  return (
-    <View style={styles.eventsList}      {events.slice(0, limit).map(renderEventItem)}>
-    </View  >);
+      {event.requiresRsvp ? (
+        <View style={[styles.rsvpBadge, { backgroundColor: theme.accent.action + '20' }]}>
+          <Text style={[styles.rsvpText, { color: theme.accent.action }]}>RSVP</Text>
+        </View>
+      ) : null}
+    </TouchableOpacity>
+  );
+
+  return <View style={styles.eventsList}>{events.slice(0, limit).map(renderEventItem)}</View>;
 };
 
 const styles = StyleSheet.create({
