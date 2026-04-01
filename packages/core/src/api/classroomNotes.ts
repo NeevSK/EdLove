@@ -12,14 +12,14 @@ export const classroomNotesAPI = {
      * @authority read ClassroomNote
      */
     async getAll(classroomId: string): Promise<ClassroomNote[]> {
-        return classroomNotesServices.listVisibleNotes(classroomId);
+        return (await classroomNotesServices.listVisibleNotes(classroomId)) as ClassroomNote[];
     },
 
     /**
      * @authority read ClassroomNote
      */
     async getSnapshotAsOf(classroomId: string, viewDate: string): Promise<ClassroomNote[]> {
-        return classroomNotesServices.listVisibleNotesAsOf(classroomId, viewDate);
+        return (await classroomNotesServices.listVisibleNotesAsOf(classroomId, viewDate)) as ClassroomNote[];
     },
 
     /**
@@ -33,7 +33,7 @@ export const classroomNotesAPI = {
     }): Promise<ClassroomNote> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-        return classroomNotesServices.createNote(myId, note);
+        return (await classroomNotesServices.createNote(myId, note)) as ClassroomNote;
     },
 
     /**
@@ -41,8 +41,9 @@ export const classroomNotesAPI = {
      */
     async update(
         id: string,
-        updates: Partial<Pick<ClassroomNote, 'content' | 'is_pinned' | 'visibility'>    ): Promise<ClassroomNote> {
-        return classroomNotesServices.updateNote(id, updates);
+        updates: Partial<Pick<ClassroomNote, 'content' | 'is_pinned' | 'visibility'>>
+    ): Promise<ClassroomNote> {
+        return (await classroomNotesServices.updateNote(id, updates)) as ClassroomNote;
     },
 
     /**

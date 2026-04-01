@@ -49,13 +49,13 @@ export default function SanctuaryModal({
             case 'sm': return 500;
             case 'md': return 650;
             case 'lg': return 800;
-            case 'full': return '90% text';
+            case 'full': return '90%' as any;
             default: return 650;
         }
     };
 
     return (
-        <UniversalModal isOpen={isOpen} onClose={onClose}
+        <UniversalModal isOpen={isOpen} onClose={onClose}>
             {/* Backdrop styling handled by UniversalModal, but we can wrap content here */}
             <Box
                 sx={{
@@ -72,7 +72,7 @@ export default function SanctuaryModal({
                     elevation: 10,
                     overflow: 'hidden',
                 }}
-            
+            >
                 {/* Header */}
                 <HStack
                     sx={{
@@ -82,23 +82,24 @@ export default function SanctuaryModal({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                     }}
-                
-                    <HStack sx={{ space: 'sm', alignItems: 'center', flex: 1 } as any}
+                >
+                    <HStack sx={{ gap: '$sm', alignItems: 'center', flex: 1 } as any}>
                         {icon && icon}
-                        <VStack sx={{ flex: 1 } as any}
-                            <Heading size="md" sx={{ color: text.onElevated } as any}
+                        <VStack sx={{ flex: 1 } as any}>
+                            <Heading size="md" sx={{ color: text.onElevated } as any}>
                                 {title}
-                            </Heading
+                            </Heading>
                             {subtitle && (
-                                <Text sx={{ size: 'xs', color: text.secondary } as any}
+                                <Text sx={{ fontSize: '$xs', color: text.secondary } as any}>
                                     {subtitle}
-                                </Text
+                                </Text>
                             )}
-                        </VStack
-                    </HStack
+                        </VStack>
+                    </HStack>
 
                     {showCloseButton && (
-                        <TouchableOpacity accessibilityRole="button"
+                        <TouchableOpacity
+                            accessibilityRole="button"
                             onPress={onClose}
                             style={[
                                 styles.closeBtn,
@@ -107,16 +108,16 @@ export default function SanctuaryModal({
                                     borderColor: scene.interactive.border,
                                 },
                             ]}
-                        
-                            <Icon as={CloseIcon} sx={{ color: text.onElevated, size: 'xl' } as any} /
-                        </TouchableOpacity
+                        >
+                            <Icon as={CloseIcon} sx={{ color: text.onElevated, size: 'xl' } as any} />
+                        </TouchableOpacity>
                     )}
-                </HStack
+                </HStack>
 
                 {/* Body */}
-                <Box sx={{ p: 24, maxHeight: Dimensions.get('window').height * 0.7 }}
+                <Box sx={{ p: 24, maxHeight: Dimensions.get('window').height * 0.7 }}>
                     {children}
-                </Box
+                </Box>
 
                 {/* Footer */}
                 {footer && (
@@ -127,12 +128,12 @@ export default function SanctuaryModal({
                             borderTopWidth: 1,
                             borderColor: scene.interactive.border,
                         }}
-                    
+                    >
                         {footer}
-                    </Box
+                    </Box>
                 )}
-            </Box
-        </UniversalModal
+            </Box>
+        </UniversalModal>
     );
 }
 
@@ -143,4 +144,3 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     }
 });
-

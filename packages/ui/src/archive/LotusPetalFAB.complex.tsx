@@ -324,55 +324,56 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             accessibilityState={{ disabled, expanded: showActions }}
             accessibilityActions={[{ name: 'activate', label: 'Activate' }]}
             onAccessibilityAction={handlePress}
-        
-            <View style={styles.contentContainer}
+        >
+            <View style={styles.contentContainer}>
                 {/* Glow Behind */}
-                <View style={styles.glow} /
+                <View style={styles.glow} />
 
                 {/* Lotus Image */}
                 <Image
                     source={LOTUS_IMAGE}
                     style={styles.lotusImage}
                     resizeMode="contain"
-                /
+                />
 
                 {/* Optional Icon Overlay */}
                 {icon && (
-                    <View style={styles.iconOverlay}
-                        <>{icon}</
-                    </View
+                    <View style={styles.iconOverlay}>
+                        <>{icon}</>
+                    </View>
                 )}
-            </View
+            </View>
 
             {/* Action Menu */}
             {actions && actions.length > 0 && (
-                <Animated.View style={[styles.actionMenu, actionMenuStyle]}
+                <Animated.View style={[styles.actionMenu, actionMenuStyle]}>
                     {actions.map((action, index) => (
                         <Pressable
                             key={index}
                             style={styles.actionBubble}
                             onPress={() => {
                                 triggerHaptic();
+                                action.onPress();
                             }}
                             accessible={true}
                             accessibilityRole="button"
                             accessibilityLabel={action.label}
-                        
-                            <View style={styles.actionBubbleContent}
+                        >
+                            <View style={styles.actionBubbleContent}>
                                 {action.icon && (
                                     <action.icon
                                         size={18}
                                         color={Theme.colors.lotusDeepPink}
                                         strokeWidth={2}
-                                    /
+                                    />
                                 )}
-                                <Text style={styles.actionLabel}>{action.label}</Text
-                            </View
-                        </Pressable
+                                <Text style={styles.actionLabel}>{action.label}</Text>
+                            </View>
+                        </Pressable>
                     ))}
-                </Animated.View
+                </Animated.View>
             )}
-        </Animated.View
+        </Animated.View>
     );
 };
 
@@ -455,4 +456,3 @@ const styles = StyleSheet.create({
 });
 
 export default LotusPetalFAB;
-

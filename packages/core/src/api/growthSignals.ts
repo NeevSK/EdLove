@@ -307,7 +307,7 @@ async function checkWhisperedMoments(
     userId: string,
     signalType: GrowthSignalType
 ): Promise<void> {
-    const relevantMoments = WHISPERED_MOMENT_SPECS.filter(m =
+    const relevantMoments = WHISPERED_MOMENT_SPECS.filter(m =>
         m.triggerSignals.includes(signalType)
     );
     if (relevantMoments.length === 0) return;

@@ -159,14 +159,14 @@ export const createEducationalServices = (
     },
     classroomGroups: {
         getAll: (classroomId) => repository.getClassroomGroups(classroomId),
-        create: (classroomId, input) =            repository.createClassroomGroup({
+        create: (classroomId, input) => repository.createClassroomGroup({
                 classroom_id: classroomId,
                 name: input.name.trim(),
                 description: input.description?.trim() || null,
                 student_ids: input.student_ids ?? [],
                 color: input.color ?? null,
             }),
-        update: (id, updates) =            repository.updateClassroomGroup(id, {
+        update: (id, updates) => repository.updateClassroomGroup(id, {
                 ...updates,
                 name: updates.name?.trim(),
                 description: updates.description === undefined ? undefined : updates.description?.trim() || null,
@@ -182,7 +182,7 @@ export const createEducationalServices = (
     },
     classroomStudents: {
         getAll: (classroomId) => repository.getEnrollmentRecords(classroomId),
-        addShadowStudent: (classroomId, fullName, rollNumber, notes) =            repository.addShadowStudent(classroomId, fullName, rollNumber, notes),
+        addShadowStudent: (classroomId, fullName, rollNumber, notes) => repository.addShadowStudent(classroomId, fullName, rollNumber, notes),
         async claimStudent(inviteCode) {
             const myId = await sideEffects.getCurrentUserId();
             if (!myId) throw new APIError('Authentication required to claim record', 'UNAUTHORIZED');

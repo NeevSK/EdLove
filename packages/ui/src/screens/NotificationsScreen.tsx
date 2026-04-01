@@ -9,9 +9,15 @@ export default function NotificationsScreen() {
     const isDark = phase === 'night';
 
     return (
-        <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#FFFFFF' }]}            <Text style={[styles.text, { color: isDark ? '#FFFFFF' : '#000000' }]}                {t('notifications.title') || 'Notifications'}>
-            </Text            ><Text style={[styles.subtext, { color: isDark ? '#AAAAAA' : '#666666' }]}                {t('notifications.empty') || 'No new notifications'}
-            </Text        </View    );
+        <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#FFFFFF' }]}>
+            <Text style={[styles.text, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                {t('notifications.title') || 'Notifications'}
+            </Text>
+            <Text style={[styles.subtext, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+                {t('notifications.empty') || 'No new notifications'}
+            </Text>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

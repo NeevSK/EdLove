@@ -48,49 +48,58 @@ export const TemporalNavigator = () => {
     const isToday = phase === 'present';
 
     return (
-        <Animated.View >
+        <Animated.View 
             layout={Layout} 
             entering={FadeIn}
             style={styles.container}
-        
+        >
             <View style={styles.leftGroup}>
-                <TouchableOpacity accessibilityRole="button" >
+                <TouchableOpacity 
+                    accessibilityRole="button" 
                     style={styles.actionBtn} 
                     onPress={() => adjustDate(-1)}
                     activeOpacity={0.7}
-                
+                >
                     <ChevronLeft size={20} color={Theme.colors.textSecondary} />
                 </TouchableOpacity>
                 
                 {!isToday && (
-                    <TouchableOpacity accessibilityRole="button" >
-                        style={[styles.resetBtn]} 
+                    <TouchableOpacity 
+                        accessibilityRole="button" 
+                        style={styles.resetBtn} 
                         onPress={resetToToday}
                         activeOpacity={0.7}
-                    
+                    >
                         <RotateCcw size={14} color={Theme.colors.gurudeviBlue} />
-                        <Text style={styles.resetText}>Today</Text
-                    ></TouchableOpacity>
+                        <Text style={styles.resetText}>Today</Text>
+                    </TouchableOpacity>
                 )}
             </View>
 
-            <TouchableOpacity accessibilityRole="button" >
+            <TouchableOpacity 
+                accessibilityRole="button" 
                 style={styles.dateDisplay}
                 onPress={() => {/* In a real app, this triggers a DatePicker modal */}}
                 activeOpacity={0.7}
-            
+            >
                 <Calendar size={16} color={Theme.colors.gurudeviBlue} style={{ marginRight: 6 }} />
                 <View>
-                    <Text style={styles.dateText}                        {formatDate(viewDate)}>
-                    </Text                    >{/* Temporal pulse (Phase 2 delighter) */}
-                    <View style={styles.pulseDot} /                ></View            ></TouchableOpacity>
+                    <Text style={styles.dateText}>
+                        {formatDate(viewDate)}
+                    </Text>
+                    {/* Temporal pulse (Phase 2 delighter) */}
+                    <View style={styles.pulseDot} />
+                </View>
+            </TouchableOpacity>
+
             <View style={styles.rightGroup}>
-                <TouchableOpacity accessibilityRole="button" >
+                <TouchableOpacity 
+                    accessibilityRole="button" 
                     style={[styles.actionBtn, { opacity: isToday ? 0.2 : 1 }]} 
                     onPress={() => !isToday && adjustDate(1)}
                     disabled={isToday}
                     activeOpacity={0.7}
-                
+                >
                     <ChevronRight size={20} color={Theme.colors.textSecondary} />
                 </TouchableOpacity>
             </View>

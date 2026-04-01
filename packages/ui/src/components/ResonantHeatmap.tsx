@@ -44,8 +44,8 @@ export const ResonantHeatmap: React.FC<ResonantHeatmapProps> = ({ data, loading 
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Visualizing growth arc...</Text
-            ></View>
+                <Text style={styles.loadingText}>Visualizing growth arc...</Text>
+            </View>
         );
     }
 
@@ -55,13 +55,13 @@ export const ResonantHeatmap: React.FC<ResonantHeatmapProps> = ({ data, loading 
                 {weeks.map((week, wIndex) => (
                     <View key={wIndex} style={styles.weekColumn}>
                         {week.map((intensity, dIndex) => (
-                            <View >
+                            <View 
                                 key={dIndex} 
                                 style={[
                                     styles.dayCell, 
                                     { backgroundColor: getIntensityColor(intensity) }
                                 ]} 
-                            /
+                            />
                         ))}
                     </View>
                 ))}

@@ -1,18 +1,18 @@
 /**
  * ONBOARDING SCREEN - Web Edition
  * 
- * \u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
- * \u2502  LEFT PANEL (desktop)\u2502  RIGHT PANEL (always)       \u2502
- * \u2502  Branding + pillars  \u2502  Current step content       \u2502
- * \u2502  Step progress tracker\u2502  Input / Role / Tour / Auth \u2502
- * \u2502  Language selector   \u2502  Primary/Back actions       \u2502
- * \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+ * ┌──────────────────────┬─────────────────────────────┐
+ * │  LEFT PANEL (desktop)│  RIGHT PANEL (always)       │
+ * │  Branding + pillars  │  Current step content       │
+ * │  Step progress tracker│  Input / Role / Tour / Auth │
+ * │  Language selector   │  Primary/Back actions       │
+ * └──────────────────────┴─────────────────────────────┘
  * 
  * Flow:
  * 0. Name Entry
  * Narrow (< 900px): single-column scroll with compact header.
  * Same API as native: onComplete(name, role, wantsAccount?) and isAnonymous.
- * Roles: teacher \u00B7 student \u00B7 principal (NOT founder / admin / developer).
+ * Roles: teacher · student · principal (NOT founder / admin / developer).
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -24,27 +24,27 @@ import { AuthorityTier, identityAPI, authAPI, supabase } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 // Using direct i18n calls for language switching on web.
 
-// \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+// ──────────────────────────────────────────────────────────
 // Constants
-// \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+// ──────────────────────────────────────────────────────────
 const LANGUAGES = [
     { code: 'en', label: 'EN' },
-    { code: 'si', label: '\u0DC3\u0DD2\u0D82' },
-    { code: 'ta', label: '\u0BA4\u0BAE\u00BF\u0BB4\u0BCD' },
+    { code: 'si', label: 'සිං' },
+    { code: 'ta', label: 'தமிழ்' },
 ];
 
 const PILLARS = [
-    { name: 'Self', emoji: '\uD83E\uDDD8' },
-    { name: 'Classroom', emoji: '\uD83C\uDFEB' },
-    { name: 'Community', emoji: '\uD83E\uDD1D' },
-    { name: 'Library', emoji: '\uD83D\uDCDA' },
-    { name: 'Profile', emoji: '\uD83D\uDC64' },
+    { name: 'Self', emoji: '🧘' },
+    { name: 'Classroom', emoji: '🏫' },
+    { name: 'Community', emoji: '🤝' },
+    { name: 'Library', emoji: '📚' },
+    { name: 'Profile', emoji: '👤' },
 ];
 
 const ROLES = [
-    { value: 'teacher', emoji: '\uD83E\uDDD1\u200D\uD83C\uDFEB', descKey: 'onboarding.roleDesc.teacher' },
-    { value: 'student', emoji: '\uD83C\uDF93', descKey: 'onboarding.roleDesc.student' },
-    { value: 'principal', emoji: '\uD83C\uDFEB', descKey: 'onboarding.roleDesc.principal' },
+    { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
+    { value: 'student', emoji: '🎓', descKey: 'onboarding.roleDesc.student' },
+    { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
 ];
 
 const TOTAL_STEPS = 7; // 0: Name, 1: Role, 2-6: Tour
@@ -56,17 +56,17 @@ const TRACKED_STEPS = [
     { idx: 2, label: 'Tour' },
 ] as const;
 
-// \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+// ──────────────────────────────────────────────────────────
 // Props
-// \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+// ──────────────────────────────────────────────────────────
 interface OnboardingScreenProps {
     onComplete: (name: string, authority: AuthorityTier, wantsAccount?: boolean) => void;
     isAnonymous?: boolean;
 }
 
-// \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+// ──────────────────────────────────────────────────────────
 // Main Component
-// \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+// ──────────────────────────────────────────────────────────
 export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
     const { t, i18n } = useTranslation();
     const { width } = useWindowDimensions();
@@ -79,7 +79,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
 
     const isNarrow = width < 900;
 
-    // \u00E2\u201D\u20AC\u00E2\u201D\u20AC Restore saved progress or pre-fill from existing auth \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+    // ── Restore saved progress or pre-fill from existing auth ────────────────────
     useEffect(() => {
         const initOnboarding = async () => {
             try {
@@ -104,7 +104,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 if (!internalId) {
                     // This is likely a deep-link where the session wasn't initialized yet.
                     // We trigger an anonymous sign-in here to ensure the wizard has an ID.
-                    console.log('\uD83D\u00A7\u00AD OnboardingScreen.web: No internalId found, initiating anonymous session...');
+                    console.log('🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...');
                     await authAPI.signInAnonymously();
                     // Re-run the initialization once signed in
                     return initOnboarding();
@@ -130,41 +130,41 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         initOnboarding();
     }, [isAnonymous]);
 
-    // \u00E2\u201D\u20AC\u00E2\u201D\u20AC Tour content \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+    // ── Tour content ────────────────────
     const tourScreens = useMemo(() => [
         {
-            emoji: '\uD83E\uDEB7',
+            emoji: '🪷',
             title: t('onboarding.philosophyTitle'),
             subtitle: t('onboarding.philosophySubtitle'),
             content: t('onboarding.philosophyContent'),
         },
         {
-            emoji: '\uD83C\uDFEB',
+            emoji: '🏫',
             title: t('onboarding.sectionsTitle'),
             subtitle: t('onboarding.sectionsSubtitle'),
             content: t('onboarding.sectionsContent'),
         },
         {
-            emoji: '\uD83C\uDF31',
+            emoji: '🌱',
             title: t('onboarding.ecologyTitle'),
             subtitle: t('onboarding.ecologySubtitle'),
             content: t('onboarding.ecologyContent'),
         },
         {
-            emoji: '\uD83D\uDD12',
+            emoji: '🔒',
             title: t('onboarding.privacyTitle'),
             subtitle: t('onboarding.privacySubtitle'),
             content: t('onboarding.privacyContent'),
         },
         {
-            emoji: '\uD83E\uDDED',
+            emoji: '🧭',
             title: t('onboarding.navigationTitle'),
             subtitle: t('onboarding.navigationSubtitle'),
             content: t('onboarding.navigationContent'),
         },
     ], [t]);
 
-    // \u00E2\u201D\u20AC\u00E2\u201D\u20AC Navigation helpers \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+    // ── Navigation helpers ────────────────────
     const handleNext = () => {
         if (currentStep === 6) { // Final step (Tour 4)
             handleCompleteOnboarding();
@@ -191,16 +191,16 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         await i18n.changeLanguage(code);
     };
 
-    // \u00E2\u201D\u20AC\u00E2\u201D\u20AC Complete onboarding \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+    // ── Complete onboarding ────────────────────
     const handleCompleteOnboarding = async () => {
-        console.log('\uD83E\uDEB7 OnboardingScreen.web: handleCompleteOnboarding started...', { name, authority, isAnonymous });
+        console.log('🪷 OnboardingScreen.web: handleCompleteOnboarding started...', { name, authority, isAnonymous });
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            console.log('\uD83D\u00AA\u00B7 [Onboarding] Resolved internalId:', internalId);
+            console.log('⭕· [Onboarding] Resolved internalId:', internalId);
             
             if (!internalId) {
-                console.error('[OnboardingScreen.web] No internal user ID \u2014 anonymous session may not have been created yet.');
+                console.error('[OnboardingScreen.web] No internal user ID — anonymous session may not have been created yet.');
                 throw new Error('Failed to resolve internal user ID during onboarding completion');
             }
 
@@ -212,14 +212,14 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 .maybeSingle();
 
             if (fetchError) {
-                console.warn('\uD83D\u00AA\u00B7 [Onboarding] Error fetching existing profile:', fetchError);
+                console.warn('⭕· [Onboarding] Error fetching existing profile:', fetchError);
             }
 
-            console.log('\uD83D\u00AA\u00B7 [Onboarding] Existing profile state:', existingProfile);
+            console.log('⭕· [Onboarding] Existing profile state:', existingProfile);
 
             let schoolId = existingProfile?.school_id;
             if (!schoolId) {
-                console.log('\uD83C\uDF00 [Onboarding] No existing workspace found, attempting creation...');
+                console.log('🌀 [Onboarding] No existing workspace found, attempting creation...');
                 const schoolName = `${name || 'My'}'s Workspace`;
                 
                 // Note: The schools table currently has a broken trigger referencing 
@@ -236,16 +236,16 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     .single();
                 
                 if (schoolError) {
-                    console.warn('\u26A0\uFE0F [Onboarding] Workspace creation failed (likely broken DB trigger):', schoolError.message);
+                    console.warn('⚠️ [Onboarding] Workspace creation failed (likely broken DB trigger):', schoolError.message);
                     // We continue with schoolId = null. The app will render the "Guest Gate" 
                     // (Join/Create Workspace) as a fallback, which is a stable state.
                 } else {
                     schoolId = schoolData?.id;
-                    console.log('\u2705 [Onboarding] Personal workspace created:', schoolId);
+                    console.log('✅ [Onboarding] Personal workspace created:', schoolId);
                 }
             }
 
-            console.log('\uD83D\u00AA\u00B7 [Onboarding] Finalizing profile update...');
+            console.log('⭕· [Onboarding] Finalizing profile update...');
             const { error: profileError } = await supabase
                 .from('users')
                 .upsert({
@@ -259,23 +259,23 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 });
 
             if (profileError) {
-                console.error('\uD83D\u00AA\u00B7 [Onboarding] Profile update failed:', profileError);
+                console.error('⭕· [Onboarding] Profile update failed:', profileError);
                 throw profileError;
             }
 
-            console.log('\uD83D\u00AA\u00B7 [Onboarding] Profile updated successfully. Cleaning up storage...');
+            console.log('⭕· [Onboarding] Profile updated successfully. Cleaning up storage...');
             await AsyncStorage.removeItem('onboarding_progress');
             
             hapticSuccess();
-            console.log('\uD83D\u00AA\u00B7 [Onboarding] Calling onComplete callback...');
+            console.log('⭕· [Onboarding] Calling onComplete callback...');
             
             // Artificial delay to ensure DB replication / state synchronization
             await new Promise(resolve => setTimeout(resolve, 300));
             
             onComplete(name, authority, false);
-            console.log('\uD83D\u00AA\u00B7 [Onboarding] onComplete called successfully.');
+            console.log('⭕· [Onboarding] onComplete called successfully.');
         } catch (error: any) {
-            console.error('\u00E2\u009D\u0152 Error completing onboarding:', error);
+            console.error('❌ Error completing onboarding:', error);
             hapticError();
             setIsCompleting(false);
             setCompletionError(error?.message || 'Failed to save your profile. Please try again.');
@@ -286,31 +286,31 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         if (!completionError) return null;
         return (
             <div className="ob-error-banner">
-                <span className="ob-error-icon">\u00E2\u0161 \u00EF\u00B8 </span
-                ><span className="ob-error-text">{completionError}</span
-            ></div
-        >);
+                <span className="ob-error-icon">⚠️ </span>
+                <span className="ob-error-text">{completionError}</span>
+            </div>
+        );
     };
 
 
-    // \u00E2\u201D\u20AC\u00E2\u201D\u20AC Step content renderer \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+    // ── Step content renderer ────────────────────
     const renderStep = () => {
         // Step 0: Name
         if (currentStep === 0) {
             return (
                 <div className="ob-step">
                     <div className="ob-step-shell">
-                        <div className="ob-step-meta">Step 1 \u00C2\u00B7 Arrival</div
-                        ><div className="ob-step-icon">\uD83D\u2018\u2039</div
-                    ></div
-                    ><h2 className="ob-step-title"
-                        {t('onboarding.nameTitle')}>
+                        <div className="ob-step-meta">Step 1 · Arrival</div>
+                        <div className="ob-step-icon">👋🏻</div>
+                    </div>
+                    <h2 className="ob-step-title">
+                        {t('onboarding.nameTitle')}
                     </h2>
                     <p className="ob-step-subtitle">
-                        {t('onboarding.nameSubtitle')}>
+                        {t('onboarding.nameSubtitle')}
                     </p>
                     {renderError()}
-                    <input/>
+                    <input
                         className="ob-input"
                         type="text"
                         placeholder={t('onboarding.namePlaceholder')}
@@ -319,14 +319,14 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         onKeyDown={(e) => { if (e.key === 'Enter' && name.trim()) handleNext(); }}
                         autoFocus
                         autoComplete="given-name"
-                    /
-                    ><div className="ob-actions"
-                        <button>
+                    />
+                    <div className="ob-actions">
+                        <button
                             className="ob-btn-primary"
                             onClick={handleNext}
-                            disabled={!name.trim()}>
-                        
-                            {t('onboarding.continue')} \u00E2\u2020\u2019
+                            disabled={!name.trim()}
+                        >
+                            {t('onboarding.continue')} →
                         </button>
                     </div>
                 </div>
@@ -338,34 +338,34 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
             return (
                 <div className="ob-step">
                     <div className="ob-step-shell">
-                        <div className="ob-step-meta">Step 2 \u00C2\u00B7 Belonging</div
-                        ><div className="ob-step-icon">\uD83D\u017D\u00AF</div
-                    ></div
-                    ><h2 className="ob-step-title"
-                        {t('onboarding.roleTitle')}>
+                        <div className="ob-step-meta">Step 2 · Belonging</div>
+                        <div className="ob-step-icon">🎯</div>
+                    </div>
+                    <h2 className="ob-step-title">
+                        {t('onboarding.roleTitle')}
                     </h2>
                     <p className="ob-step-subtitle">
-                        {t('onboarding.roleSubtitle')}>
+                        {t('onboarding.roleSubtitle')}
                     </p>
                     {renderError()}
                     <div className="ob-role-grid">
                         {ROLES.map((r) => (
-                            <button>
+                            <button
                                 key={r.value}
                                 className={`ob-role-card ${authority === r.value ? 'selected' : ''}`}
                                 onClick={() => { setAuthority(r.value as AuthorityTier); hapticLight(); }}
-                            
-                                <span className="ob-role-emoji">{r.emoji}</span
-                                ><span className="ob-role-name">{t(`authority.${r.value}`)}</span
-                                ><span className="ob-role-desc">{t(r.descKey)}</span
-                            ></button
-                        >))}
+                            >
+                                <span className="ob-role-emoji">{r.emoji}</span>
+                                <span className="ob-role-name">{t(`authority.${r.value}`)}</span>
+                                <span className="ob-role-desc">{t(r.descKey)}</span>
+                            </button>
+                        ))}
                     </div>
                     <div className="ob-actions">
-                        <button className="ob-btn-secondary" onClick={handleBack}
-                            \u00E2\u2020\u0090 {t('onboarding.back')}>
+                        <button className="ob-btn-secondary" onClick={handleBack}>
+                            ← {t('onboarding.back')}
                         </button>
-                        <button>
+                        <button
                             className="ob-btn-primary"
                             onClick={async () => {
                                 if (!isAnonymous && authority) {
@@ -376,8 +376,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                 }
                             }}
                             disabled={isCompleting}
-                        
-                            {(isCompleting) ? t('onboarding.saving') : (!isAnonymous && authority) ? t('onboarding.complete') : t('onboarding.continue')} \u00E2\u2020\u2019
+                        >
+                            {(isCompleting) ? t('onboarding.saving') : (!isAnonymous && authority) ? t('onboarding.complete') : t('onboarding.continue')} →
                         </button>
                     </div>
                 </div>
@@ -385,34 +385,33 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         }
 
 
-        // Steps 2\u20136: Tour slides
+        // Steps 2–6: Tour slides
         if (currentStep >= 2 && currentStep <= 6) {
             const screen = tourScreens[currentStep - 2];
             if (!screen) return null;
             return (
                 <div className="ob-step">
                     <div className="ob-step-shell">
-                        <div className="ob-step-meta">Sanctuary Tour</div
-                        ><div className="ob-step-icon">{screen.emoji}</div
-                    ></div
-                    ><h2 className="ob-step-title">{screen.title}</h2
-                    ><p className="ob-step-subtitle">{screen.subtitle}</p
-                    >{renderError()}
-                    <div className="ob-tour-content">{screen.content}</div
-                    ><div className="ob-actions"
-                        <button className="ob-btn-secondary" onClick={handleBack}
-                            \u00E2\u2020\u0090 {t('onboarding.back')}>
+                        <div className="ob-step-meta">Sanctuary Tour</div>
+                        <div className="ob-step-icon">{screen.emoji}</div>
+                    </div>
+                    <h2 className="ob-step-title">{screen.title}</h2>
+                    <p className="ob-step-subtitle">{screen.subtitle}</p>
+                    {renderError()}
+                    <div className="ob-tour-content">{screen.content}</div>
+                    <div className="ob-actions">
+                        <button className="ob-btn-secondary" onClick={handleBack}>
+                            ← {t('onboarding.back')}
                         </button>
-                        <button >
+                        <button 
                             className="ob-btn-primary" 
                             onClick={handleNext}
                             disabled={isCompleting}>
-                        
-                            {isCompleting ? t('onboarding.saving') : currentStep === 6 ? t('onboarding.complete') : t('onboarding.next')} \u00E2\u2020\u2019
+                            {isCompleting ? t('onboarding.saving') : currentStep === 6 ? t('onboarding.complete') : t('onboarding.next')} →
                         </button>
                     </div>
                     <button className="ob-btn-link" onClick={handleSkipTour}>
-                        {t('onboarding.skip')}>
+                        {t('onboarding.skip')}
                     </button>
                 </div>
             );
@@ -421,23 +420,23 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         return null;
     };
 
-    // \u00E2\u201D\u20AC\u00E2\u201D\u20AC Layout \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC
+    // ── Layout ────────────────────
     return (
         <div className="ob-root">
-            <div className="ob-atmosphere ob-atmosphere-one" /
-            ><div className="ob-atmosphere ob-atmosphere-two" /
-            >{isNarrow ? (
-                /* \u00E2\u201D\u20AC\u00E2\u201D\u20AC Narrow: single-column scroll \u00E2\u201D\u20AC\u00E2\u201D\u20AC */
+            <div className="ob-atmosphere ob-atmosphere-one" />
+            <div className="ob-atmosphere ob-atmosphere-two" />
+            {isNarrow ? (
+                /* ── Narrow: single-column scroll ── */
                 <div className="ob-narrow">
                     <div className="ob-narrow-header">
-                        <span className="ob-brand-name">\uD83E\uDEB7 Gurudevi</span
-                        ><div className="ob-lang-row"
+                        <span className="ob-brand-name">🪷 Gurudevi</span>
+                        <div className="ob-lang-row">
                             {LANGUAGES.map((lang) => (
-                                <button>
+                                <button
                                     key={lang.code}
                                     className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
                                     onClick={() => changeLanguage(lang.code)}
-                                
+                                >
                                     {lang.label}
                                 </button>
                             ))}
@@ -446,28 +445,28 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
 
                     {/* Progress bar */}
                     <div className="ob-progress-track" role="progressbar" aria-valuenow={currentStep} aria-valuemax={TOTAL_STEPS - 1}>
-                        <div className="ob-progress-fill" style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }} /
-                    ></div
+                        <div className="ob-progress-fill" style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }} />
+                    </div>
 
                     <div className="ob-narrow-content">
-                        {renderStep()}>
+                        {renderStep()}
                     </div>
                 </div>
             ) : (
-                /* \u00E2\u201D\u20AC\u00E2\u201D\u20AC Wide: two-column split \u00E2\u201D\u20AC\u00E2\u201D\u20AC */
+                /* ── Wide: two-column split ── */
                 <div className="ob-split">
                     {/* Left: Branding + progress tracker */}
                     <div className="ob-left">
                         <div className="ob-left-inner">
                             <div className="ob-brand">
-                                <span className="ob-brand-icon">\uD83E\uDEB7</span
-                                ><span className="ob-brand-name">Gurudevi</span
-                            ></div
+                                <span className="ob-brand-icon">🪷</span>
+                                <span className="ob-brand-name">Gurudevi</span>
+                            </div>
 
-                            ><div
-                                <h1 >className="ob-left-headline">Your Sacred<br />Sanctuary</h1
-                                ><p className="ob-left-tagline"
-                                    A healing ecosystem for educators \u2014 built in Sri Lanka, breathing worldwide.>
+                            <div>
+                                <h1 className="ob-left-headline">Your Sacred<br />Sanctuary</h1>
+                                <p className="ob-left-tagline">
+                                    A healing ecosystem for educators — built in Sri Lanka, breathing worldwide.
                                 </p>
                             </div>
 
@@ -475,33 +474,33 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                             <div className="ob-pillars">
                                 {PILLARS.map((p) => (
                                     <div key={p.name} className="ob-pillar">
-                                        <span>{p.emoji}</span
-                                        ><span>{p.name}</span
-                                    ></div
-                                >))}
+                                        <span>{p.emoji}</span>
+                                        <span>{p.name}</span>
+                                    </div>
+                                ))}
                             </div>
 
                             {/* Step progress tracker */}
                             <div className="ob-tracker">
                                 {TRACKED_STEPS.map((s) => (
-                                    <div>
+                                    <div
                                         key={s.idx}
                                         className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
-                                    
-                                        <div className="ob-tracker-dot" /
-                                        ><span className="ob-tracker-label">{s.label}</span
-                                    ></div
-                                >))}
+                                    >
+                                        <div className="ob-tracker-dot" />
+                                        <span className="ob-tracker-label">{s.label}</span>
+                                    </div>
+                                ))}
                             </div>
 
                             {/* Language picker */}
                             <div className="ob-lang-row ob-lang-bottom">
                                 {LANGUAGES.map((lang) => (
-                                    <button>
+                                    <button
                                         key={lang.code}
                                         className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
                                         onClick={() => changeLanguage(lang.code)}
-                                    
+                                    >
                                         {lang.label}
                                     </button>
                                 ))}
@@ -515,11 +514,11 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                             {/* Step progress dots */}
                             <div className="ob-dots" role="progressbar" aria-valuenow={currentStep} aria-valuemax={TOTAL_STEPS - 1}>
                                 {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-                                    <div>
+                                    <div
                                         key={i}
                                         className={`ob-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}`}
-                                    /
-                                >))}
+                                    />
+                                ))}
                             </div>
 
                             {renderStep()}
@@ -528,7 +527,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 </div>
             )}
 
-            {/* \u00E2\u201D\u20AC\u00E2\u201D\u20AC Scoped CSS \u00E2\u201D\u20AC\u00E2\u201D\u20AC */}
+            {/* ── Scoped CSS ── */}
             <style>{`
                 .ob-root {
                     position: fixed;
@@ -562,7 +561,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     background: radial-gradient(circle, rgba(125,212,192,0.2), transparent 70%);
                 }
 
-                /* \u00E2\u201D\u20AC\u00E2\u201D\u20AC NARROW (single-column) \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC */
+                /* ── NARROW (single-column) ──────────────────── */
                 .ob-narrow {
                     display: flex;
                     flex-direction: column;
@@ -595,7 +594,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     overflow-y: auto;
                 }
 
-                /* \u00E2\u201D\u20AC\u00E2\u201D\u20AC SPLIT (two-column) \u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC\u00E2\u201D\u20AC */
+                /* ── SPLIT (two-column) ──────────────────── */
                 .ob-split {
                     display: flex;
                     height: 100%;
@@ -762,7 +761,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     to { opacity: 1; transform: translateY(0); }
                 }
 
-                /* \u2500\u2500 RESPONSIVE BITS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+                /* ── RESPONSIVE BITS ────────────────────────────────── */
                 .ob-step {
                     display: flex;
                     flex-direction: column;
@@ -999,7 +998,8 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         flex-direction: column;
                     }
                 }
-            `}</style
-        ></div
+            `}</style>
+        </div>
     );
 }
+

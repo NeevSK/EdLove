@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
     openExternalURL,
     showExternalLinkOptions,
@@ -41,6 +41,7 @@ import { UniversalPerspective } from '../components/perspectives/UniversalPerspe
 import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 import type { LibraryResource, CreateResourceInput, ResourceType } from '../types';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+
 function StackFallback() {
     return <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}>Loading the sanctuary...</div>;
 }
@@ -62,7 +63,7 @@ export default function LibraryScreenWeb() {
     const [showAddResource, setShowAddResource] = useState(false);
 
     // Search Debouncing
-    React.useEffect(() => {
+    useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedSearchQuery(searchQuery);
         }, 500);
@@ -70,7 +71,7 @@ export default function LibraryScreenWeb() {
     }, [searchQuery]);
 
     // Resume-after-upgrade: open Add Resource modal if it was the gated action.
-    React.useEffect(() => {
+    useEffect(() => {
         if (!pending.action) return;
         if (pending.action.kind !== 'library_open_add_resource') return;
         if (!can('create', 'LibraryResource')) return;
@@ -100,10 +101,11 @@ export default function LibraryScreenWeb() {
         hasNextResources,
         isFetchingNextResources,
         collections,
-    } = useLibrary(libraryFilters as import('../types').ResourceFilters, libraryFilters as import('../types').CollectionFilters);
+    } = useLibrary(libraryFilters as any, libraryFilters as any);
 
     // Grouping logic for shelves
-    const trending = useMemo(() =        [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
+    const trending = useMemo(() => 
+        [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
         [resources]);
 
     const heroResource = useMemo(() => trending[0] ?? resources[0] ?? null, [trending, resources]);
@@ -119,7 +121,6 @@ export default function LibraryScreenWeb() {
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
         if (resource.type === 'pdf') {
-            // Navigate to the full inline PDFViewerScreen (packages/library/src/screens/PDFViewerScreen.web.tsx)
             navigation.navigate('PDFViewer', {
                 resourceId: resource.id,
                 title: resource.title,
@@ -129,7 +130,6 @@ export default function LibraryScreenWeb() {
             return;
         }
         if (resource.type === 'video' || resource.type === 'movie_trailer') {
-            // Navigate to the full VideoPlayerScreen (packages/library/src/screens/VideoPlayerScreen.web.tsx)
             navigation.navigate('VideoPlayer', {
                 resourceId: resource.id,
                 title: resource.title,
@@ -146,7 +146,8 @@ export default function LibraryScreenWeb() {
             return;
         }
 
-        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: Error) =            console.error("Couldn't show external link options", err)
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: Error) => 
+            console.error("Couldn't show external link options", err)
         );
     }, []);
 
@@ -160,7 +161,6 @@ export default function LibraryScreenWeb() {
         });
         try {
             await libraryAPI.bookmarkResource(resource.id, user.id);
-            // Growth signal + Impact Ripple \u2014 fire-and-forget (errors logged, don't block UX)
             growthSignalsAPI.emitSignal(user.id, 'resource_read').catch((err) => console.warn('[LibraryScreen] growth signal failed:', err));
             if (resource.creator_id && resource.creator_id !== user.id) {
                 impactRipplesAPI.createRipple({
@@ -174,7 +174,6 @@ export default function LibraryScreenWeb() {
             }
         } catch (err) {
             console.error('[LibraryScreen] bookmark failed:', err);
-            // Revert optimistic update
             setBookmarkedIds(prev => {
                 const next = new Set(prev);
                 if (next.has(resource.id)) { next.delete(resource.id); } else { next.add(resource.id); }
@@ -198,7 +197,6 @@ export default function LibraryScreenWeb() {
         setShowAddResource(true);
     }, [canCreate, isPastView, navigation, showToast]);
     
-    // Register FAB globally - memoized to prevent infinite loop or excessive updates
     const fabConfig = useMemo(() => ({
         tabType: 'library' as const,
         onPress: handleAddResourcePress,
@@ -209,50 +207,66 @@ export default function LibraryScreenWeb() {
     useRegisterFAB(fabConfig);
 
     return (
-        <div className="sanctuary-screen"            <div className="sanctuary-container"                {/* 1. GREETING */}>
-                <WebScreenHeader/>
+        <div className="sanctuary-screen">
+            <div className="sanctuary-container">
+                <WebScreenHeader
                     title="The Sanctuary"
                     note="Gurudevi Knowledge Hub"
                     timeText="Curated Wisdom"
-                    actions={(>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}                            {canContribute && (>
-                                <button>
+                    actions={(
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                            {canContribute && (
+                                <button
                                     className='premium-button'
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                     onClick={handleAddResourcePress}
-                                    disabled={isPastView}>
-                                                                    <Plus size={15} /                                    >{t('library.contributeResource') || 'Contribute Resource'}
-                                </button                            >)}
-                            <button>
+                                    disabled={isPastView}
+                                >
+                                    <Plus size={15} />
+                                    {t('library.contributeResource') || 'Contribute Resource'}
+                                </button>
+                            )}
+                            <button
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                 onClick={() => navigation.navigate('LibraryMap')}
-                                                            <MapIcon size={15} /                                >Knowledge Map
-                            </button                        ></div                    >)}
-                /                <div style={{ marginBottom: '20px' }}                    <TemporalNavigator /                </div
+                            >
+                                <MapIcon size={15} />
+                                Knowledge Map
+                            </button>
+                        </div>
+                    )}
+                />
+                <div style={{ marginBottom: '20px' }}>
+                    <TemporalNavigator />
+                </div>
+
                 {/* 2. FILTERS & SEARCH */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}                    {/* Search + Sort row */}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}                        <div className="sanctuary-search-shell" style={{
-                            flex: 1,
-                            minWidth: '200px',
-                        }}                            <Search size={18} color="var(--ink-ghost)" /                            ><input
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div className="sanctuary-search-shell" style={{ flex: 1, minWidth: '200px' }}>
+                            <Search size={18} color="var(--ink-ghost)" />
+                            <input
                                 className="search-input"
                                 style={{ padding: '8px 0' }}
                                 placeholder={t('library.searchPlaceholder') || 'Explore the sanctuary...'}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                            /                            >{searchQuery && (
-                                <button>
+                            />
+                            {searchQuery && (
+                                <button
                                     onClick={() => setSearchQuery('')}
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', padding: '0 4px', lineHeight: 1 }}
                                     aria-label="Clear search"
-                                                                    &#10005;
-                                </button                            >)}
+                                >
+                                    &#10005;
+                                </button>
+                            )}
                         </div>
-                        {/* Sort selector */}
-                        <select>
+
+                        <select
                             value={selectedSort}
-                            onChange={(e) => setSelectedSort(e.target.value as typeof selectedSort)}
+                            onChange={(e) => setSelectedSort(e.target.value as any)}
                             style={{
                                 padding: '10px 14px',
                                 borderRadius: '14px',
@@ -267,86 +281,123 @@ export default function LibraryScreenWeb() {
                                 flexShrink: 0,
                             }}
                             aria-label={t('library.sort.label')}
-                                                    <option value="recent">{t('library.sort.recent')}</option                            ><option value="popular">{t('library.sort.popular')}</option                            ><option value="most_endorsed">{t('library.sort.endorsed')}</option                            ><option value="most_bookmarked">{t('library.sort.bookmarked')}</option                        ></select
-                        >{/* View mode toggle (Always visible in search, relevant for results) */}
-                        <div style={{ display: 'flex', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}                            <button>
+                        >
+                            <option value="recent">{t('library.sort.recent')}</option>
+                            <option value="popular">{t('library.sort.popular')}</option>
+                            <option value="most_endorsed">{t('library.sort.endorsed')}</option>
+                            <option value="most_bookmarked">{t('library.sort.bookmarked')}</option>
+                        </select>
+
+                        <div style={{ display: 'flex', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}>
+                            <button
                                 onClick={() => setViewMode('shelf')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'shelf' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'shelf' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Shelf view"
                                 title="Shelf view"
-                                                            <Layers size={16} /                            ></button                            ><button
+                            >
+                                <Layers size={16} />
+                            </button>
+                            <button
                                 onClick={() => setViewMode('grid')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'grid' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'grid' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Grid view"
                                 title="Grid view"
-                                                            <LayoutGrid size={16} /                            ></button                            <button>
+                            >
+                                <LayoutGrid size={16} />
+                            </button>
+                            <button
                                 onClick={() => setViewMode('list')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'list' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'list' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="List view"
                                 title="List view"
-                                                            <List size={16} /                            </button                            <button>
+                            >
+                                <List size={16} />
+                            </button>
+                            <button
                                 onClick={() => setViewMode('map')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'map' ? 'var(--action)' : 'var(--scene-interactive)', color: viewMode === 'map' ? 'var(--text-on-action)' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
                                 aria-label="Map view"
                                 title="Map view"
-                                                            <MapIcon size={16} /                            </button                        </div                    </div>
-                    <div className="filter-scroll" style={{
-                        display: 'flex',
-                        gap: '8px',
-                        overflowX: 'auto',
-                        paddingBottom: '8px',
-                        scrollbarWidth: 'none'
-                    }}                        {['All', 'trending', 'bookmarks', 'activity'].map(id => {
+                            >
+                                <MapIcon size={16} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="filter-scroll" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
+                        {['All', 'trending', 'bookmarks', 'activity'].map(id => {
                             const Icon = id === 'All' ? Globe : id === 'trending' ? Flame : id === 'bookmarks' ? Bookmark : Clock;
                             return (
-                                <button>
+                                <button
                                     key={id}
                                     className={`top-tab ${selectedCategoryId === id ? 'active' : ''}`}
                                     onClick={() => setSelectedCategoryId(id)}
                                     style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                                                    <Icon size={14} /                                    >{id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
-                                </button                            >);
+                                >
+                                    <Icon size={14} />
+                                    {id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
+                                </button>
+                            );
                         })}
-                        <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} /                        >{LIBRARY_UI_CATEGORIES.map(cat => (
-                            <button>
+                        <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} />
+                        {LIBRARY_UI_CATEGORIES.map(cat => (
+                            <button
                                 key={cat.id}
                                 className={`top-tab ${selectedCategoryId === cat.id ? 'active' : ''}`}
                                 onClick={() => setSelectedCategoryId(cat.id)}
                                 style={{ whiteSpace: 'nowrap' }}
-                                                            {cat.en}
-                            </button                        >))}
-                    </div                </div
+                            >
+                                {cat.en}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* 3. CONTENT AREA */}
                 {loading && resources.length === 0 ? (
-                    <StackFallback /                >) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}                        >
-                        {/* HERO BANNER (Only in default mode) */}>
+                    <StackFallback />
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}>
                         {!isSearchMode && heroResource && (
-                            <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} /                        >)}
+                            <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} />
+                        )}
 
                         {isSearchMode ? (
-                            /* SEARCH / FILTERED RESULTS VIEW - Switches between modes */
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}                                <div style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '16px' }}                                    {debouncedSearchQuery 
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
+                                    {debouncedSearchQuery 
                                         ? t('library.foundResults', { count: resources.length, query: debouncedSearchQuery })
                                         : t('library.showingCurated', { category: selectedCategoryId })
-                                    }>
-                                </div                                >
+                                    }
+                                </div>
+                                
                                 {viewMode === 'shelf' && (
-                                    <                                        {collections.length > 0 && (
-                                            <SmartShelf title="Matching Collections"                                                <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}                                                    {collections.map(col => (
-                                                        <div key={`search-col-${col.id}`} style={{ width: '320px', flexShrink: 0 }}                                                            <LibraryThumbnailCard>
+                                    <>
+                                        {collections.length > 0 && (
+                                            <SmartShelf title="Matching Collections">
+                                                <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
+                                                    {collections.map(col => (
+                                                        <div key={`search-col-${col.id}`} style={{ width: '320px', flexShrink: 0 }}>
+                                                            <LibraryThumbnailCard
                                                                 title={col.name}
                                                                 type="collection"
                                                                 subject={col.subjects?.[0] || 'Curated'}
                                                                 onPress={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
-                                                            /                                                        ></div                                                    >))}
-                                                </div                                            ></SmartShelf                                        )}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </SmartShelf>
+                                        )}
                                         {orderedShelfDefs.map(shelf => {
                                             const shelfItems = resources.filter(res => shelf.types.includes(res.type));
                                             if (shelfItems.length === 0) return null;
                                             return (
-                                                <SmartShelf key={`search-shelf-${shelf.id}`} title={shelf.label}                                                    <div style={{ display: 'flex', gap: '20px' }}                                                        {shelfItems.map(res => (
-                                                            <div key={`search-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                                 <LibraryThumbnailCard>
+                                                <SmartShelf key={`search-shelf-${shelf.id}`} title={shelf.label}>
+                                                    <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
+                                                        {shelfItems.map(res => (
+                                                            <div key={`search-${res.id}`} style={{ width: '280px', flexShrink: 0 }}>
+                                                                 <LibraryThumbnailCard
                                                                     title={res.title}
                                                                     type={res.type}
                                                                     subject={res.subjects?.[0] ?? 'General'}
@@ -357,14 +408,20 @@ export default function LibraryScreenWeb() {
                                                                     onBookmarkToggle={() => handleBookmark(res)}
                                                                     onPress={() => handleOpenResource(res)}
                                                                     onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                                                /                                                            ></div                                                        >))}
-                                                    </div                                                </SmartShelf                                            );
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </SmartShelf>
+                                            );
                                         })}
 
-                                        {/* Fallback for items that don't match any shelf */}
                                         {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).length > 0 && (
-                                            <SmartShelf title="Diverse Findings"                                                <div style={{ display: 'flex', gap: '20px' }}                                                    {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).map(res => (
-                                                        <div key={`search-other-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                            <LibraryThumbnailCard>
+                                            <SmartShelf title="Diverse Findings">
+                                                <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
+                                                    {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).map(res => (
+                                                        <div key={`search-other-${res.id}`} style={{ width: '280px', flexShrink: 0 }}>
+                                                            <LibraryThumbnailCard
                                                                 title={res.title}
                                                                 type={res.type}
                                                                 subject={res.subjects?.[0] ?? 'General'}
@@ -373,13 +430,19 @@ export default function LibraryScreenWeb() {
                                                                 verified={res.verified}
                                                                 onPress={() => handleOpenResource(res)}
                                                                 onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                                            /                                                        ></div                                                    >))}
-                                                </div                                            </SmartShelf                                        )}
-                                    </                                )}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </SmartShelf>
+                                        )}
+                                    </>
+                                )}
 
                                 {viewMode === 'grid' && (
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}                                        {resources.map(res => (
-                                            <LibraryThumbnailCard>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                                        {resources.map(res => (
+                                            <LibraryThumbnailCard
                                                 key={`grid-${res.id}`}
                                                 title={res.title}
                                                 type={res.type}
@@ -389,12 +452,15 @@ export default function LibraryScreenWeb() {
                                                 verified={res.verified}
                                                 onPress={() => handleOpenResource(res)}
                                                 onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                            /                                        >))}
-                                    </div                                >)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
 
                                 {viewMode === 'list' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}                                        {resources.map(res => (
-                                            <div >
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                        {resources.map(res => (
+                                            <div 
                                                 key={`list-${res.id}`}
                                                 onClick={() => handleOpenResource(res)}
                                                 style={{ 
@@ -408,15 +474,33 @@ export default function LibraryScreenWeb() {
                                                     alignItems: 'center'
                                                 }}
                                                 className="sanctuary-card"
-                                                                                            <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', background: 'var(--action-soft)', flexShrink: 0 }}                                                    {(res.media?.url || getYoutubeThumbnail(res.url)) ? (>
-                                                        <img src={res.media?.url || getYoutubeThumbnail(res.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /                                                    >) : (
-                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action)' }}                                                            <Plus size={24} /                                                        ></div                                                    >)}
-                                                </div                                                <div style={{ flex: 1 }}                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)', marginBottom: '4px' }}>{res.type.toUpperCase()}</div                                                    ><div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}>{res.title}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{res.subjects?.[0]} \u00E2\u20AC\u00A2 {res.creator_name}</div                                                ></div                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}                                                    <Play size={14} fill="currentColor" /                                                    >{t('library.view')}
-                                                </div                                            </div                                        ))}
-                                    </div                                )}
+                                            >
+                                                <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', background: 'var(--action-soft)', flexShrink: 0 }}>
+                                                    {(res.media?.url || getYoutubeThumbnail(res.url)) ? (
+                                                        <img src={res.media?.url || getYoutubeThumbnail(res.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={res.title} />
+                                                    ) : (
+                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action)' }}>
+                                                            <Plus size={24} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)', marginBottom: '4px' }}>{res.type.toUpperCase()}</div>
+                                                    <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}>{res.title}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{res.subjects?.[0]} &bull; {res.creator_name}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}>
+                                                    <Play size={14} fill="currentColor" />
+                                                    {t('library.view')}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
                                 {viewMode === 'map' && (
-                                    <div className="sanctuary-map-stage" style={{ height: '600px' }}                                        <UniversalPerspective >
+                                    <div className="sanctuary-map-stage" style={{ height: '600px' }}>
+                                        <UniversalPerspective 
                                             topology={{
                                                 nodes: resources.map(res => ({
                                                     id: res.id,
@@ -436,20 +520,25 @@ export default function LibraryScreenWeb() {
                                                             value: 1,
                                                         };
                                                     })
-                                                    .filter(Boolean),
+                                                    .filter((link): link is any => link !== null),
                                                 context: { title: t('library.knowledgeConstellation') }
-                                            } as import('../types').KnowledgeTopology}
+                                            } as any}
                                             onNodePress={(node) => {
                                                 const res = resources.find(r => r.id === node.id);
                                                 if (res) handleOpenResource(res);
                                             }}
-                                        /                                    ></div                                >)}
-                            </div                        ) : (
-                            /* DEFAULT VIEW - Netflix Style Shelves */
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}                                {/* Featured Collections */}>
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            /* DEFAULT VIEW */
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
                                 {collections.length > 0 && (
-                                    <SmartShelf title="Featured Collections"                                        <div style={{ display: 'flex', gap: '20px' }}                                            {collections.map((col: import('../types').LibraryCollection) => (
-                                                <div >
+                                    <SmartShelf title="Featured Collections">
+                                        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
+                                            {collections.map((col: any) => (
+                                                <div 
                                                     key={`col-${col.id}`} 
                                                     style={{ 
                                                         width: '240px', 
@@ -468,10 +557,14 @@ export default function LibraryScreenWeb() {
                                                     }}
                                                     className="sanctuary-card"
                                                     onClick={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
-                                                                                                    <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}>
-                                                    </div                                                    ><div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div                                                    ><div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
-                                                    </div                                                    >
-                                                    {/* Subtle accent line */}
+                                                >
+                                                    <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}>
+                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}
+                                                    </div>
+                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}>
+                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
+                                                    </div>
                                                     <div style={{ 
                                                         position: 'absolute', 
                                                         bottom: 0, 
@@ -480,16 +573,22 @@ export default function LibraryScreenWeb() {
                                                         height: '4px', 
                                                         background: 'var(--action)', 
                                                         opacity: 0.3 
-                                                    }} /                                                ></div                                            >))}
-                                        </div                                    </SmartShelf                                )}
+                                                    }} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </SmartShelf>
+                                )}
 
-                                {/* Categorized Shelves */}
                                 {orderedShelfDefs.map(shelf => {
                                     const shelfItems = resources.filter(res => shelf.types.includes(res.type));
                                     if (shelfItems.length === 0) return null;
                                     return (
-                                        <SmartShelf key={`default-shelf-${shelf.id}`} title={shelf.label}                                            <div style={{ display: 'flex', gap: '20px' }}                                                {shelfItems.map(res => (
-                                                    <div key={`res-${res.id}`} style={{ width: '280px', flexShrink: 0 }}                                                        <LibraryThumbnailCard>
+                                        <SmartShelf key={`default-shelf-${shelf.id}`} title={shelf.label}>
+                                            <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
+                                                {shelfItems.map(res => (
+                                                    <div key={`res-${res.id}`} style={{ width: '280px', flexShrink: 0 }}>
+                                                        <LibraryThumbnailCard
                                                             title={res.title}
                                                             type={res.type}
                                                             subject={res.subjects?.[0] ?? 'General'}
@@ -500,40 +599,46 @@ export default function LibraryScreenWeb() {
                                                             onBookmarkToggle={() => handleBookmark(res)}
                                                             onPress={() => handleOpenResource(res)}
                                                             onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
-                                                        /                                                    ></div                                                >))}
-                                            </div                                        </SmartShelf                                    );
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </SmartShelf>
+                                    );
                                 })}
-                            </div                        )}
+                            </div>
+                        )}
 
                         {hasNextResources && (
-                            <button>
+                            <button
                                 className="top-tab"
                                 style={{ alignSelf: 'center', padding: '12px 32px' }}
                                 onClick={() => fetchNextResources()}
                                 disabled={isFetchingNextResources}
-                                                            {isFetchingNextResources ? t('library.loadingMore') : t('library.loadMoreFindings')}
-                            </button                        >)}
-                    </div                )}
+                            >
+                                {isFetchingNextResources ? t('library.loadingMore') : t('library.loadMoreFindings')}
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* Add Resource Modal \u2014 teachers/curators can contribute */}
-            {can('create', 'LibraryResource') && can('create', 'LibraryResource') && (
-                <AddResourceModal>
+            {can('create', 'LibraryResource') && (
+                <AddResourceModal
                     isOpen={showAddResource && !isPastView}
                     onClose={() => setShowAddResource(false)}
                     onAdd={async (data) => {
                         if (!user?.id) return;
                         try {
-                            // Map AddResourceModal's simplified data shape \u00E2\u2020\u2019 CreateResourceInput
                             const input: CreateResourceInput = {
                                 title: data.title,
                                 description: data.description,
-                                type: data.type as import('../types').ResourceType,
+                                type: data.type as any,
                                 format: (data.url.includes('youtube') || data.url.includes('youtu.be') || data.url.includes('vimeo'))
                                     ? 'video'
                                     : data.url.match(/\.pdf(\?|$)/i)
                                         ? 'document'
-                                        : 'document', // Mapped to 'document' as 'link' is not a ResourceFormat
+                                        : 'document',
                                 url: data.url,
                                 subject: data.tags[0] ?? 'General',
                                 topics: data.tags,
@@ -542,26 +647,26 @@ export default function LibraryScreenWeb() {
                                 language: 'english',
                                 visibility: 'school',
                             };
-                            const created = await libraryAPI.createResource(input, user.id, user.authority || 'student');
-                            // Trigger ETL enrichment asynchronously (topic extraction + embedding)
+                            const created = await libraryAPI.createResource(input, user.id, (user as any).authority || 'student');
                             supabase.functions.invoke('library-etl', {
                                 body: { resourceId: created.id, action: 'enrich' },
                             }).catch((err) => console.warn('[LibraryScreen] ETL enrichment failed:', err));
                             setShowAddResource(false);
                             showToast('Resource contributed! It will be reviewed before publishing.', 'success');
-                            // Refresh library list
                             fetchResources();
                         } catch (err: unknown) {
                             showToast((err as Error).message ?? 'Failed to add resource', 'error');
                         }
                     }}
-                /            >)}
-        </div    >);
+                />
+            )}
+        </div>
+    );
 }
 
 function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick: () => void }) {
     return (
-        <div>
+        <div 
             className="sanctuary-hero-panel"
             onClick={onClick}
             style={{
@@ -573,24 +678,28 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                 marginBottom: '40px',
                 background: 'linear-gradient(180deg, var(--action-soft) 0%, var(--scene-surface) 100%)',
             }}
-                    {resource.media?.url && (
-                <img >
+        >
+            {resource.media?.url && (
+                <img 
                     src={resource.media.url} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     alt={resource.title}
-                /            >)}
+                />
+            )}
             <div style={{
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
                 right: 0,
                 padding: '40px',
-                color: 'var(--text-on-danger)',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+                color: '#FCF9F2',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
                 zIndex: 1,
-            }}                <div style={{ 
+            }}>
+                <div style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: '8px',
@@ -598,8 +707,19 @@ function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick:
                     fontWeight: '800',
                     letterSpacing: '1px',
                     color: 'var(--sanctuary-saffron)',
-                }}                    {resource.subjects?.[0] && <span>| {resource.subjects[0].toUpperCase()}</span>}
+                }}>
+                    {resource.subjects?.[0] && <span>| {resource.subjects[0].toUpperCase()}</span>}
                     {resource.subjects?.[0] && <span>&bull; {resource.subjects[0].toUpperCase()}</span>}
-                </div                ><h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1                ><p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p                ><div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}                        <Play size={16} fill="currentColor" /                        >Open Now
-                    </button                ></div            </div        </div    );
+                </div>
+                <h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1>
+                <p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p>
+                <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Play size={16} fill="currentColor" />
+                        Open Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 }

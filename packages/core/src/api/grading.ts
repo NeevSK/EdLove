@@ -430,7 +430,8 @@ export const gradingAPI = {
      */
     async updateGradingSettings(
         classroomId: string,
-        settings: Partial<ClassroomGradingSettings    ): Promise<ClassroomGradingSettings> {
+        settings: Partial<ClassroomGradingSettings>
+    ): Promise<ClassroomGradingSettings> {
         return educationalServices.grading.updateGradingSettings(classroomId, settings);
     },
 

@@ -15,7 +15,7 @@ export interface UserAvatarProps {
     authority?: string | null;
 }
 
-const DEFAULT_ICON = '\uD83C\uDF3F';
+const DEFAULT_ICON = '🌿';
 
 /** Deterministic background colour from user's name using theme palette */
 const AVATAR_COLORS = [
@@ -33,8 +33,8 @@ function getAvatarColor(name?: string | null): string {
 }
 
 /**
- * UserAvatar \u2014 display-only avatar component.
- * Fallback hierarchy: profile photo \u2192 initials \u2192 authority emoji \u2192 default emoji.
+ * UserAvatar — display-only avatar component.
+ * Fallback hierarchy: profile photo → initials → authority emoji → default emoji.
  * Lives in @repo/ui to be safely consumed by GlobalHeader without circular deps.
  */
 export const UserAvatar: React.FC<UserAvatarProps> = ({
@@ -53,7 +53,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
     if (avatarUrl) {
         return (
-            <Image/>
+            <Image
                 source={{ uri: avatarUrl }}
                 accessible={true}
                 accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
@@ -64,12 +64,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                     style as any,
                 ]}
                 resizeMode="cover"
-            /
+            />
         );
     }
 
     return (
-        <View>
+        <View
             accessible={true}
             accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
             accessibilityRole="image"
@@ -78,7 +78,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                 { width: size, height: size, borderRadius: radius, backgroundColor: bgColor },
                 style as any,
             ]}
-        
+        >
             <Text style={[styles.label, { fontSize: size * 0.35 }]}>
                 {initials || finalFallback}
             </Text>
@@ -98,3 +98,5 @@ const styles = StyleSheet.create({
         includeFontPadding: false,
     },
 });
+
+export default UserAvatar;

@@ -12,16 +12,16 @@ import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 
 /**
- * ScannerModal \u2014 QR code scanner for Gurudevi
+ * ScannerModal — QR code scanner for Gurudevi
  *
- * Live camera:  expo-camera \u2192 CameraView.onBarcodeScanned
- *               \u21B3 Android: Google ML Kit Barcode API (on-device, free, fast)
- *                  The "Scanned by Google" OS toast is expected \u2014 it is ML Kit's attribution.
- *               \u21B3 iOS:     Apple Vision / AVFoundation
+ * Live camera:  expo-camera → CameraView.onBarcodeScanned
+ *               ↳ Android: Google ML Kit Barcode API (on-device, free, fast)
+ *                  The "Scanned by Google" OS toast is expected — it is ML Kit's attribution.
+ *               ↳ iOS:     Apple Vision / AVFoundation
  *
  * Gallery pick: @react-native-ml-kit/barcode-scanning
- *               \u21B3 Same ML Kit quality for static images (replaces jsQR + jpeg-js)
- *               \u21B3 On-device, free, handles curved/damaged QR codes well
+ *               ↳ Same ML Kit quality for static images (replaces jsQR + jpeg-js)
+ *               ↳ On-device, free, handles curved/damaged QR codes well
  *
  * No API keys. No network calls. No billing. Works offline.
  */
@@ -35,12 +35,10 @@ interface MLKitBarcode {
 }
 let BarcodeScanning: any = null;
 try {
-   
   // @ts-ignore - Module may not be available in all environments/configurations
-  BarcodeScanning = require("@react-native-ml-kit/barcode-scanning")
-    .default as any;
+  BarcodeScanning = require("@react-native-ml-kit/barcode-scanning").default as any;
 } catch {
-  // Not installed or not linked \u2014 will fall back gracefully
+  // Not installed or not linked — will fall back gracefully
   BarcodeScanning = null;
 }
 
@@ -77,7 +75,7 @@ export default function ScannerModal({
   }, [visible]);
 
   /**
-   * Gallery scan \u2014 uses ML Kit barcode scanning (same engine as live camera).
+   * Gallery scan — uses ML Kit barcode scanning (same engine as live camera).
    * Falls back to a clear error message if the native module is not linked.
    */
   const processImage = async (uri: string) => {
@@ -148,19 +146,19 @@ export default function ScannerModal({
           <View style={styles.permissionContainer}>
             <View style={{ gap: 10, alignItems: "center" }}>
               <Text style={{ textAlign: "center", color: "#fff" }}>
-                {t("scanner.permission.message")}>
+                {t("scanner.permission.message")}
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity
                 onPress={requestPermission}
                 style={[styles.button, { backgroundColor: accentColor }]}
-              
+              >
                 <Text style={styles.buttonText}>
-                  {t("scanner.permission.grant")}>
+                  {t("scanner.permission.grant")}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={onClose}>
-                <Text style={{ color: "#888" }}>{t("common.cancel")}</Text
-              ></TouchableOpacity>
+                <Text style={{ color: "#888" }}>{t("common.cancel")}</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -169,105 +167,105 @@ export default function ScannerModal({
   }
 
   return (
-    <Modal>
+    <Modal
       visible={visible}
       animationType="slide"
       onRequestClose={onClose}
-      presentationStyle="pageSheet">
-    
+      presentationStyle="pageSheet"
+    >
       <View style={styles.container}>
-        <CameraView>
+        <CameraView
           style={styles.camera}
           facing={facing}
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
           barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-        
+        >
           <View style={styles.overlay}>
-            <View style={styles.header}>
-              <Text style={styles.heading}>{modalTitle}</Text
-              ><TouchableOpacity onPress={onClose} style={styles.closeButton}
-                <Text style={{ color: "white", fontSize: 20 }}>\u2715</Text
-              ></TouchableOpacity>
-            </View>
+            <div style={styles.header}>
+              <Text style={styles.heading}>{modalTitle}</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Text style={{ color: "white", fontSize: 20 }}>✕</Text>
+              </TouchableOpacity>
+            </div>
 
             <View style={styles.scannerArea}>
-              {processing ? (>
-                <View>
+              {processing ? (
+                <View
                   style={{
                     backgroundColor: "rgba(0,0,0,0.7)",
                     padding: 20,
                     borderRadius: 10,
                     alignItems: "center",
                   }}
-                
-                  <ActivityIndicator size="large" color={accentColor} /
-                  ><Text style={{ color: "white", marginTop: 10 }}>
+                >
+                  <ActivityIndicator size="large" color={accentColor} />
+                  <Text style={{ color: "white", marginTop: 10 }}>
                     {t("scanner.status.mlKit")}
                   </Text>
                 </View>
               ) : galleryError ? (
-                <View>
+                <View
                   style={{
                     backgroundColor: "rgba(220,50,50,0.85)",
                     padding: 14,
                     borderRadius: 10,
                     maxWidth: 260,
                   }}
-                
-                  <Text>
+                >
+                  <Text
                     style={{
                       color: "white",
                       textAlign: "center",
                       fontSize: 13,
                     }}
-                  
+                  >
                     {galleryError}
                   </Text>
-                  <TouchableOpacity>
+                  <TouchableOpacity
                     onPress={() => setGalleryError(null)}
                     style={{ marginTop: 8, alignSelf: "center" }}
-                  
-                    <Text>
+                  >
+                    <Text
                       style={{
                         color: "white",
                         textDecorationLine: "underline",
                         fontSize: 12,
                       }}
-                    
+                    >
                       {t("scanner.dismiss")}
                     </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
                 <Text style={styles.instructionText}>
-                  {t("scanner.instructions")}>
+                  {t("scanner.instructions")}
                 </Text>
               )}
             </View>
 
             <View style={styles.controls}>
-              <TouchableOpacity>
+              <TouchableOpacity
                 onPress={pickImage}
                 style={[styles.controlButton, { marginRight: 20 }]}
-                disabled={processing}>
-              
-                <Text style={{ fontSize: 24 }}>\uD83D\uDDBC</Text
-                ><Text>
+                disabled={processing}
+              >
+                <Text style={{ fontSize: 24 }}>🖼️</Text>
+                <Text
                   style={[styles.controlLabel, processing && { color: "gray" }]}
-                
+                >
                   {t("scanner.controls.gallery")}
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity
                 onPress={toggleCameraFacing}
                 style={styles.controlButton}
-                disabled={processing}>
-              
-                <Text style={{ fontSize: 24 }}>\uD83D\uDD04</Text
-                ><Text>
+                disabled={processing}
+              >
+                <Text style={{ fontSize: 24 }}>🔄</Text>
+                <Text
                   style={[styles.controlLabel, processing && { color: "gray" }]}
-                
+                >
                   {t("scanner.controls.flip")}
                 </Text>
               </TouchableOpacity>
@@ -340,4 +338,4 @@ const styles = StyleSheet.create({
   },
   button: { paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8 },
   buttonText: { color: "white", fontWeight: "bold" },
-});
+}) as any;

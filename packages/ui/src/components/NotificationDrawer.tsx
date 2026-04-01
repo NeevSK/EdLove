@@ -69,31 +69,32 @@ export default function NotificationDrawer({
     const insets = useSafeAreaInsets();
 
     return (
-        <Modal>
+        <Modal
             visible={isVisible}
             transparent
             animationType="none"
-            onRequestClose={onClose}>
-        
-            <Box>
+            onRequestClose={onClose}
+        >
+            <Box
                 sx={{
                     flex: 1,
                     backgroundColor: 'rgba(0,0,0,0.4)',
                 }}
-            
-                <Pressable accessibilityRole="button">
+            >
+                <Pressable 
+                    accessibilityRole="button"
                     style={StyleSheet.absoluteFill}
                     onPress={() => {
                         hapticLight();
                         onClose();
                     }}
-                /
+                />
 
-                ><Animated.View
+                <Animated.View
                     entering={SlideInLeft.duration(800).easing(Easing.out(Easing.exp))}
                     exiting={SlideOutLeft.duration(500)}
                     style={[
-                        styles.drawer,>
+                        styles.drawer,
                         {
                             backgroundColor: colors.primary,
                             borderColor: colors.border,
@@ -101,14 +102,14 @@ export default function NotificationDrawer({
                             paddingBottom: insets.bottom,
                         }
                     ]}
-                
+                >
                     <VStack sx={{ gap: '$md' as any, flex: 1, padding: Theme.spacing.lg }}>
-                        {/* Header */}>
+                        {/* Header */}
                         <HStack justifyContent="space-between" alignItems="center" sx={{ height: 60 }}>
                             <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
-                                <Bell size={24} color={colors.action} /
-                                ><Heading color={colors.text} sx={{ fontSize: '$lg' as any }}
-                                    Notifications>
+                                <Bell size={24} color={colors.action} />
+                                <Heading color={colors.text} sx={{ fontSize: '$lg' as any }}>
+                                    Notifications
                                 </Heading>
                                 {unreadCount > 0 && (
                                     <Box sx={{
@@ -128,36 +129,38 @@ export default function NotificationDrawer({
                             </HStack>
                             <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
                                 {unreadCount > 0 && onMarkAllRead && (
-                                    <Pressable accessibilityRole="button">
+                                    <Pressable 
+                                        accessibilityRole="button"
                                         onPress={() => { hapticLight(); onMarkAllRead(); }}
                                         hitSlop={10}
-                                    
-                                        <Check size={18} color={colors.action} /
-                                    ></Pressable>
+                                    >
+                                        <Check size={18} color={colors.action} />
+                                    </Pressable>
                                 )}
-                                <Pressable accessibilityRole="button">
+                                <Pressable 
+                                    accessibilityRole="button"
                                     onPress={() => { hapticLight(); onClose(); }}
                                     hitSlop={10}
-                                
-                                    <X size={28} color={colors.textSecondary} /
-                                ></Pressable>
+                                >
+                                    <X size={28} color={colors.textSecondary} />
+                                </Pressable>
                             </HStack>
                         </HStack>
 
-                        <ScrollView>
+                        <ScrollView
                             showsVerticalScrollIndicator={false}
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={{ paddingBottom: Theme.spacing.xl }}
-                        
+                        >
                             {isLoading ? (
                                 <Box sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl }}>
                                     <ActivityIndicator color={colors.action} />
-                                ></Box>
+                                </Box>
                             ) : notifications.length === 0 ? (
                                 <VStack sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl, gap: 8 }}>
                                     <Bell size={40} color={colors.textTertiary} />
-                                    ><Text color={colors.textTertiary} sx={{ textAlign: 'center', fontSize: '$sm' as any }}
-                                        You're all caught up \uD83D\u2122\u008F>
+                                    <Text color={colors.textTertiary} sx={{ textAlign: 'center', fontSize: '$sm' as any }}>
+                                        You're all caught up ✨
                                     </Text>
                                 </VStack>
                             ) : (
@@ -165,13 +168,14 @@ export default function NotificationDrawer({
                                     {notifications.map((n) => {
                                         const Icon = notificationIcon(n.type);
                                         return (
-                                            <Pressable accessibilityRole="button">
+                                            <Pressable 
+                                                accessibilityRole="button"
                                                 key={n.id}
                                                 onPress={() => {
                                                     hapticLight();
                                                     if (!n.is_read && onMarkRead) onMarkRead(n.id);
                                                 }}
-                                            
+                                            >
                                                 <Box sx={{
                                                     padding: Theme.spacing.md,
                                                     borderRadius: Theme.corners.comfortable,
@@ -185,19 +189,19 @@ export default function NotificationDrawer({
                                                             borderRadius: 20,
                                                             backgroundColor: colors.secondary
                                                         }}>
-                                                            <Icon size={16} color={n.is_read ? colors.textTertiary : colors.action} /
-                                                        ></Box>
+                                                            <Icon size={16} color={n.is_read ? colors.textTertiary : colors.action} />
+                                                        </Box>
                                                         <VStack sx={{ flex: 1, gap: 2 }}>
                                                             <Text color={colors.text} sx={{ fontWeight: n.is_read ? '400' : '700', fontSize: '$sm' as any }}>
                                                                 {n.title}
                                                             </Text>
                                                             {n.body ? (
                                                                 <Text color={colors.textSecondary} sx={{ fontSize: '$xs' as any }} numberOfLines={2}>
-                                                                    {n.body}>
+                                                                    {n.body}
                                                                 </Text>
                                                             ) : null}
                                                             <Text color={colors.textTertiary} sx={{ fontSize: 10 }}>
-                                                                {relativeTime(n.created_at)}>
+                                                                {relativeTime(n.created_at)}
                                                             </Text>
                                                         </VStack>
                                                     </HStack>
@@ -209,12 +213,16 @@ export default function NotificationDrawer({
                             )}
                         </ScrollView>
 
-                        <Text>
-                            color={colors.textTertiary}
-                            textAlign="center"
-                            sx={{ fontSize: '$xs' as any, fontStyle: 'italic', marginBottom: Theme.spacing.sm }}
-                        
-                            Your sanctuary stays updated.>
+                        <Text
+                            sx={{ 
+                                color: colors.textTertiary,
+                                textAlign: 'center',
+                                fontSize: '$xs' as any, 
+                                fontStyle: 'italic', 
+                                marginBottom: Theme.spacing.sm 
+                            }}
+                        >
+                            Your sanctuary stays updated.
                         </Text>
                     </VStack>
                 </Animated.View>
@@ -238,4 +246,3 @@ const styles = StyleSheet.create({
         elevation: 10,
     }
 });
-

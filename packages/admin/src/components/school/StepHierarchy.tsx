@@ -6,66 +6,96 @@ import {
     Pressable,
     useThemedColors,
     Theme,
-    Box,
-    Heading
+    Box
 } from '@repo/ui';
-import { Plus, Trash2 } from 'lucide-react-native';
+import { CheckCircle2, Circle, ChevronRight, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-interface StepHierarchyProps {
-    data: {
-        levels: string[];
-        sections: { name: string; headName?: string }[];
-    };
-    onUpdate: (hier: Partial<StepHierarchyProps['data']>) => void;
+interface Step {
+    id: string;
+    title: string;
+    description?: string;
+    isCompleted: boolean;
+    isActive: boolean;
 }
 
-const COMMON_LEVELS: { id: string; labelKey: string }[] = [
-    { id: 'Primary (1-5)', labelKey: 'schoolSetup.levels.primary' },
-    { id: 'Junior Secondary (6-9)', labelKey: 'schoolSetup.levels.juniorSecondary' },
-    { id: 'Secondary (10-11)', labelKey: 'schoolSetup.levels.secondary' },
-    { id: 'Advanced Level (12-13)', labelKey: 'schoolSetup.levels.advancedLevel' },
-];
+interface StepHierarchyProps {
+    steps: Step[];
+    onStepPress?: (id: string) => void;
+}
 
-export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
-    const colors = useThemedColors();
+export const StepHierarchy: React.FC<StepHierarchyProps> = ({ 
+    steps = [], 
+    onStepPress 
+}) => {
     const { t } = useTranslation();
-
-    const toggleLevel = (level: string) => {
-        const newLevels = data.levels.includes(level)
-            ? data.levels.filter(l => l !== level)
-            : [...data.levels, level];
-        onUpdate({ levels: newLevels });
-    };
+    const colors = useThemedColors();
 
     return (
-        <VStack sx={{ gap: '$lg' as any }}            <Box                <Heading >size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.academicLevels')}</Heading                ><Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}                    {t('schoolSetup.academicLevelsDesc')}
-                </Text                <VStack sx={{ gap: '$2' as any }}                    {COMMON_LEVELS.map(level => (
-                        <Pressable accessibilityRole="button">
-                            key={level.id}
-                            onPress={() => toggleLevel(level.id)}
-                            sx={{
-                                padding: '$3' as any,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.border,
-                                backgroundColor: data.levels.includes(level.id) ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
-                            }}
-                                                    <HStack justifyContent="space-between" alignItems="center"                                <Text color={data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.text}>{t(level.labelKey)}</Text                                >{data.levels.includes(level.id) && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />}
-                            </HStack                        ></Pressable                    ))}
-                </VStack            </Box
-            <Box sx={{ marginTop: '$4' as any }}                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.orgSections')}</Heading                ><Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}                    {t('schoolSetup.orgSectionsDesc')}
-                </Text>
-                {/* Placeholder for section adding - will enhance in future phases if needed */}
-                <Box>
+        <VStack space="md" sx={{ width: '100%' }}>
+            {steps.map((step, index) => (
+                <Pressable 
+                    key={step.id} 
+                    onPress={() => onStepPress?.(step.id)}
                     sx={{
-                        padding: '$8' as any,
-                        borderRadius: Theme.corners.comfortable,
-                        borderWidth: 2,
-                        borderStyle: 'dashed',
-                        borderColor: colors.border,
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                        opacity: step.isActive || step.isCompleted ? 1 : 0.5
                     }}
-                                    <Plus size={24} color={colors.textTertiary} /                    ><Text size="sm" color={colors.textTertiary} sx={{ marginTop: '$2' as any }}>{t('schoolSetup.addCustomSection')}</Text                ></Box            ></Box        ></VStack    );
-}
+                >
+                    <HStack space="md" sx={{ alignItems: 'flex-start' }}>
+                        <VStack sx={{ alignItems: 'center', width: 24 }}>
+                            {step.isCompleted ? (
+                                <CheckCircle2 size={24} color={Theme.colors.sageGreen} />
+                            ) : (
+                                <Circle 
+                                    size={24} 
+                                    color={step.isActive ? Theme.colors.skyBlue : colors.textTertiary} 
+                                />
+                            )}
+                            {index < steps.length - 1 && (
+                                <Box 
+                                    sx={{ 
+                                        width: 2, 
+                                        flex: 1, 
+                                        bg: step.isCompleted ? Theme.colors.sageGreen : colors.border,
+                                        my: 4,
+                                        minHeight: 20
+                                    }} 
+                                />
+                            )}
+                        </VStack>
+
+                        <VStack sx={{ flex: 1, pb: index < steps.length - 1 ? 20 : 0 }}>
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text 
+                                    fontWeight="700" 
+                                    color={step.isActive ? colors.text : colors.textSecondary}
+                                >
+                                    {step.title}
+                                </Text>
+                                {step.isActive && <ChevronRight size={16} color={colors.textTertiary} />}
+                            </HStack>
+                            {step.description && (
+                                <Text size="xs" color={colors.textTertiary} sx={{ mt: 2 }}>
+                                    {step.description}
+                                </Text>
+                            )}
+                        </VStack>
+                    </HStack>
+                </Pressable>
+            ))}
+
+            <Box sx={{ mt: 10, pt: 10, borderTopWidth: 1, borderTopColor: colors.border }}>
+                <Pressable>
+                    <HStack space="sm" sx={{ alignItems: 'center' }}>
+                        <Box sx={{ bg: `${Theme.colors.skyBlue}20`, p: 6, borderRadius: 8 }}>
+                            <Plus size={16} color={Theme.colors.skyBlue} />
+                        </Box>
+                        <Text size="sm" fontWeight="600" color={Theme.colors.skyBlue}>
+                            {t('schoolSetup.addCustomSection') || 'Add Custom Section'}
+                        </Text>
+                    </HStack>
+                </Pressable>
+            </Box>
+        </VStack>
+    );
+};

@@ -1,7 +1,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SanctuaryCanvas } from '../components/SanctuaryCanvas';
-import { Text, Theme } from '@repo/ui';
+import { Text, Theme, useThemedColors } from '@repo/ui';
+
+// —————————————————————————————————————————————————————————————————————————————
+// SIMPLE BAR CHART
+// —————————————————————————————————————————————————————————————————————————————
 
 interface SimpleBarChartProps {
   data: { label: string; value: number; color?: string }[];
@@ -16,27 +20,49 @@ export function SimpleBarChart({
   height = 200,
   showValues = true 
 }: SimpleBarChartProps) {
-  const maxValue = Math.max(...data.map(d => d.value));
+  const colors = useThemedColors();
+  const maxValue = Math.max(...data.map(d => d.value), 1);
   const barWidth = Math.max(20, (300 - data.length * 40) / data.length);
 
   return (
-    <SanctuaryCanvas height={height} render={{ standard: () => <View /> }}      <View style={[styles.container, { height }]}        {title && <Text style={styles.title}>{title}</Text>}
-        <View style={styles.chartContainer}          {data.map((item, index) => (
-            <View key={index} style={styles.barContainer}              <View >
-                style={[
-                  styles.bar,>
-                  { 
-                    height: (item.value / maxValue) * (height - 40),
-                    width: barWidth,
-                    backgroundColor: item.color || Theme.colors.gurudeviBlue,
-                    marginBottom: showValues ? Theme.spacing.xs : 0
-                  }
-                ]} 
-              /              >{showValues && (
-                <Text style={styles.valueLabel}>{item.value}</Text              >)}
-              <Text style={styles.barLabel}>{item.label}</Text            ></View          >))}
-        </View      </View    </SanctuaryCanvas  );
+    <View style={[styles.container, { height }]}>
+      {title && (
+        <Text style={[styles.title, { color: colors.text }]}>
+          {title}
+        </Text>
+      )}
+      <View style={styles.chartContainer}>
+        {data.map((item, index) => (
+          <View key={index} style={styles.barContainer}>
+            <View 
+              style={[
+                styles.bar,
+                { 
+                  height: (item.value / maxValue) * (height - 60),
+                  width: barWidth,
+                  backgroundColor: item.color || colors.primary,
+                  marginBottom: showValues ? 4 : 0
+                }
+              ]} 
+            />
+            {showValues && (
+              <Text style={[styles.valueLabel, { color: colors.text }]}>
+                {item.value}
+              </Text>
+            )}
+            <Text style={[styles.barLabel, { color: colors.textSecondary }]}>
+              {item.label}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
 }
+
+// —————————————————————————————————————————————————————————————————————————————
+// SIMPLE LINE CHART
+// —————————————————————————————————————————————————————————————————————————————
 
 interface SimpleLineChartProps {
   data: { x: string; y: number }[];
@@ -49,51 +75,90 @@ export function SimpleLineChart({
   data, 
   title, 
   height = 200,
-  color = Theme.colors.gurudeviBlue 
+  color
 }: SimpleLineChartProps) {
-  const maxValue = Math.max(...data.map(d => d.y));
-  const minValue = Math.min(...data.map(d => d.y));
+  const colors = useThemedColors();
+  const chartColor = color || colors.primary;
+  const values = data.map(d => d.y);
+  const maxValue = Math.max(...values, 1);
+  const minValue = Math.min(...values, 0);
   const range = maxValue - minValue || 1;
 
+  const chartWidth = 280;
+  const chartHeight = height - 60;
+
   return (
-    <View style={[styles.container, { height }]}      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.chartContainer}        {data.map((point, index) => {
-          const y = height - 40 - ((point.y - minValue) / range) * (height - 40);
-          const x = (index / (data.length - 1)) * 250;
+    <View style={[styles.container, { height }]}>
+      {title && (
+        <Text style={[styles.title, { color: colors.text }]}>
+          {title}
+        </Text>
+      )}
+      <View style={[styles.chartContainer, { width: chartWidth, height: chartHeight, alignItems: 'flex-start' }]}>
+        {data.map((point, index) => {
+          const y = chartHeight - ((point.y - minValue) / range) * chartHeight;
+          const x = (index / (data.length - 1 || 1)) * chartWidth;
           
           return (
-            <View key={index} style={styles.lineChartContainer}              {/* Line */}>
+            <View key={index} style={StyleSheet.absoluteFill}>
+              {/* Line segment to previous point */}
               {index > 0 && (
-                <View >
+                <View 
                   style={[
-                    styles.line,>
+                    styles.line,
                     {
-                      left: x - 250 / (data.length - 1),
-                      top: y,
-                      width: 250 / (data.length - 1),
+                      left: ((index - 1) / (data.length - 1)) * chartWidth,
+                      top: chartHeight - ((data[index - 1].y - minValue) / range) * chartHeight,
+                      width: chartWidth / (data.length - 1),
                       height: 2,
-                      backgroundColor: color
+                      backgroundColor: chartColor,
+                      transform: [
+                        { translateY: (y - (chartHeight - ((data[index - 1].y - minValue) / range) * chartHeight)) / 2 },
+                        { rotate: '${Math.atan2(y - (chartHeight - ((data[index - 1].y - minValue) / range) * chartHeight), chartWidth / (data.length - 1)) * (180 / Math.PI)}deg' }
+                      ]
                     }
                   ]} 
-                /              >)}
+                />
+              )}
               
-              {/* Point */}
-              <View >
+              {/* Point dot */}
+              <View 
                 style={[
-                  styles.point,>
+                  styles.point,
                   {
-                    left: x - 6,
-                    top: y - 6,
-                    backgroundColor: color
+                    left: x - 4,
+                    top: y - 4,
+                    backgroundColor: chartColor
                   }
                 ]} 
-              /              
-              >{/* Label */}
-              <Text style={[styles.pointLabel, { left: x - 30 }]}                {point.x}>
-              </Text            ></View          >);>
+              />
+              
+              {/* X-Axis Label */}
+              <Text 
+                style={[
+                  styles.pointLabel, 
+                  { 
+                    left: x - 20, 
+                    width: 40, 
+                    textAlign: 'center', 
+                    top: chartHeight + 10,
+                    color: colors.textSecondary
+                  }
+                ]}
+              >
+                {point.x}
+              </Text>
+            </View>
+          );
         })}
-      </View    ></View  >);
+      </View>
+    </View>
+  );
 }
+
+// —————————————————————————————————————————————————————————————————————————————
+// SIMPLE PIE CHART
+// —————————————————————————————————————————————————————————————————————————————
 
 interface SimplePieChartProps {
   data: { label: string; value: number; color?: string }[];
@@ -106,37 +171,51 @@ export function SimplePieChart({
   title, 
   size = 200 
 }: SimplePieChartProps) {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const colors = useThemedColors();
+  const total = data.reduce((sum, item) => sum + item.value, 0) || 1;
   const radius = size / 2 - 20;
 
   return (
-    <View style={[styles.container, { height: size, width: size }]}      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={[styles.pieContainer, { width: size - 40, height: size - 40 }]}        {data.map((item, index) => {
+    <View style={[styles.container, { height: size, width: '100%' }]}>
+      {title && (
+        <Text style={[styles.title, { color: colors.text }]}>
+          {title}
+        </Text>
+      )}
+      <View style={[styles.pieContainer, { width: size, height: size - 40 }]}>
+        {data.map((item, index) => {
           const percentage = (item.value / total) * 100;
           const startAngle = data.slice(0, index).reduce((sum, prev) => sum + prev.value, 0) / total * 360;
-          const endAngle = startAngle + (percentage / 100) * 360;
           
           return (
-            <View key={index} style={styles.pieSliceContainer}              {/* Pie slice visualization - simplified as arc */}>
-              <View >
+            <View key={index} style={styles.pieSliceContainer}>
+              <View 
                 style={[
-                  styles.pieSlice,>
+                  styles.pieSlice,
                   {
-                    backgroundColor: item.color || Theme.colors.gurudeviBlue,
-                    transform: `rotate(${startAngle}deg)`,
+                    backgroundColor: item.color || colors.primary,
+                    transform: [{ rotate: '${startAngle}deg' }],
                     width: radius * 2,
                     height: radius * 2,
-                    borderRadius: radius
+                    borderRadius: radius,
+                    opacity: 0.8
                   }
                 ]} 
-              /              
-              >{/* Label */}
-              <Text style={styles.pieLabel}                {item.label}>
-                {percentage > 5 && ` (${percentage.toFixed(1)}%)`}
-              </Text            ></View          >);
+              />
+              <Text style={[styles.pieLabel, { color: colors.text }]}>
+                {item.label}{percentage > 5 ? ' (${percentage.toFixed(0)}%)' : ''}
+              </Text>
+            </View>
+          );
         })}
-      </View    ></View  );
+      </View>
+    </View>
+  );
 }
+
+// —————————————————————————————————————————————————————————————————————————————
+// PROGRESS RING
+// —————————————————————————————————————————————————————————————————————————————
 
 interface ProgressRingProps {
   value: number;
@@ -150,105 +229,111 @@ export function ProgressRing({
   value, 
   max, 
   size = 120,
-  color = Theme.colors.gurudeviBlue,
+  color,
   showLabel = true 
 }: ProgressRingProps) {
-  const percentage = Math.min(100, (value / max) * 100);
-  const radius = size / 2 - 10;
-  const strokeWidth = 8;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+  const colors = useThemedColors();
+  const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  const progressColor = color || colors.primary;
 
   return (
-    <View style={[styles.container, { width: size, height: size }]}      <View style={styles.ringContainer}        {/* Background ring */}>
-        <View >
+    <View style={[styles.container, { width: size, height: size }]}>
+      <View style={styles.ringContainer}>
+        {/* Background ring */}
+        <View 
           style={[
-            styles.ring,>
+            styles.ring,
             {
-              borderColor: Theme.colors.border,
-              borderWidth: strokeWidth,
-              width: size - strokeWidth,
-              height: size - strokeWidth,
-              borderRadius: size / 2
-            }
-          ]} 
-        /        
-        >{/* Progress ring */}
-        <View >
-          style={[
-            styles.ring,>
-            {
-              borderColor: color,
-              borderWidth: strokeWidth,
-              width: size - strokeWidth,
-              height: size - strokeWidth,
+              borderColor: colors.border,
+              borderWidth: 8,
+              width: size,
+              height: size,
               borderRadius: size / 2,
-              borderStyle: 'dashed'
+              opacity: 0.3
             }
           ]} 
-        /        
-        >{/* Center content */}
-        <View style={styles.ringCenter}          {showLabel && (>
-            <Text style={styles.percentageText}>{percentage.toFixed(0)}%</Text          >)}
-        </View      ></View    ></View  >);
+        />
+        
+        {/* Progress ring visualization (Simulated with dashed/solid borders) */}
+        <View 
+          style={[
+            styles.ring,
+            {
+              position: 'absolute',
+              borderColor: progressColor,
+              borderWidth: 8,
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              borderLeftColor: 'transparent',
+              borderBottomColor: 'transparent',
+              transform: [{ rotate: '${(percentage / 100) * 360 - 45}deg' }]
+            }
+          ]} 
+        />
+        
+        {/* Center content */}
+        <View style={styles.ringCenter}>
+          {showLabel && (
+            <Text style={[styles.percentageText, { color: colors.text }]}>
+              {percentage.toFixed(0)}%
+            </Text>
+          )}
+        </View>
+      </View>
+    </View>
+  );
 }
+
+// —————————————————————————————————————————————————————————————————————————————
+// STYLES
+// —————————————————————————————————————————————————————————————————————————————
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    padding: Theme.spacing.md,
+    padding: 16,
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.md,
+    fontWeight: '700',
+    marginBottom: 16,
     textAlign: 'center',
   },
   chartContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-around',
-    paddingHorizontal: Theme.spacing.md,
+    width: '100%',
   },
   barContainer: {
     alignItems: 'center',
-    marginRight: Theme.spacing.sm,
   },
   bar: {
-    borderTopLeftRadius: 2,
-    borderTopRightRadius: 2,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
   },
   valueLabel: {
     fontSize: 10,
-    color: Theme.colors.text,
-    textAlign: 'center',
-    marginBottom: Theme.spacing.xs,
+    fontWeight: '600',
+    marginBottom: 2,
   },
   barLabel: {
     fontSize: 10,
-    color: Theme.colors.textSecondary,
-    textAlign: 'center',
-    marginTop: Theme.spacing.xs,
-  },
-  lineChartContainer: {
-    position: 'relative',
+    marginTop: 4,
   },
   line: {
     position: 'absolute',
-    backgroundColor: Theme.colors.gurudeviBlue,
   },
   point: {
     position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   pointLabel: {
     position: 'absolute',
     fontSize: 10,
-    color: Theme.colors.textSecondary,
-    top: 15,
   },
   pieContainer: {
     justifyContent: 'center',
@@ -258,17 +343,15 @@ const styles = StyleSheet.create({
   pieSliceContainer: {
     position: 'absolute',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   pieSlice: {
     position: 'absolute',
-    top: 0,
-    left: 0,
   },
   pieLabel: {
     fontSize: 10,
-    color: Theme.colors.text,
+    fontWeight: '700',
     textAlign: 'center',
-    fontWeight: '600',
   },
   ringContainer: {
     justifyContent: 'center',
@@ -284,8 +367,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   percentageText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Theme.colors.text,
+    fontSize: 18,
+    fontWeight: '800',
   },
 });

@@ -51,7 +51,7 @@ export const LivingCard: React.FC<LivingCardProps> = ({
                 },
                 style,
             ]}
-        
+        >
             {/* High-fidelity CSS/SVG "Un-shimming" Layer */}
             {warmCenter && (
                 <View
@@ -61,7 +61,7 @@ export const LivingCard: React.FC<LivingCardProps> = ({
                             backgroundImage: `radial-gradient(circle at 50% 30%, ${warmCenterColor} 0%, ${coolEdgeColor} 100%)`,
                         } as any, // BackgroundImage is web-only in RNW
                     ]}
-                /
+                />
             )}
 
             {/* Organic Grain Texture (SVG Filter) */}
@@ -73,20 +73,20 @@ export const LivingCard: React.FC<LivingCardProps> = ({
                         pointerEvents: 'none',
                     } as any,
                 ]}
-            
-                <svg width="100%" height="100%" style={{ position: 'absolute' }}
-                    <filter id={filterId}
-                        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" /
-                        <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" /
-                    </filter
-                    <rect width="100%" height="100%" filter={`url(#${filterId})`} /
-                </svg
-            </View
+            >
+                <svg width="100%" height="100%" style={{ position: 'absolute' }}>
+                    <filter id={filterId}>
+                        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+                        <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+                    </filter>
+                    <rect width="100%" height="100%" filter={`url(#${filterId})`} />
+                </svg>
+            </View>
 
             {/* Card Content layer */}
-            <View style={StyleSheet.absoluteFill}
+            <View style={StyleSheet.absoluteFill}>
                 {children}
-            </View
-        </View
+            </View>
+        </View>
     );
 };

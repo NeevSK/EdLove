@@ -1,10 +1,10 @@
 /**
  * Principal Notes API
  *
- * The principal's private school logbook \u2014 a personal memory-offload
+ * The principal's private school logbook — a personal memory-offload
  * layer scoped to school_id. Mirrors the classroom notes topology:
- *   classroom \u2192 ClassroomNote  (teacher + student, per classroom)
- *   school    \u2192 PrincipalNote  (principal only, per school)
+ *   classroom → ClassroomNote  (teacher + student, per classroom)
+ *   school    → PrincipalNote  (principal only, per school)
  *
  * Notes are never deleted. Todos are checked off with is_done=true
  * but remain in the record forever (the history matters).
@@ -44,7 +44,7 @@ export const principalNotesAPI = {
     },
 
     /**
-     * Fetch only the most recent N notes \u2014 used for the compact
+     * Fetch only the most recent N notes — used for the compact
      * dashboard preview strip.
      */
     async getRecent(schoolId: string, limit = 3): Promise<PrincipalNote[]> {
@@ -94,12 +94,12 @@ export const principalNotesAPI = {
     },
 
     /**
-     * Update a note \u2014 content, pinned state, or done state.
+     * Update a note — content, pinned state, or done state.
      * Only the author can update (enforced by RLS).
      */
     async update(
         id: string,
-        updates: Partial<Pick<PrincipalNote, 'content' | 'is_pinned' | 'is_done'>
+        updates: Partial<Pick<PrincipalNote, 'content' | 'is_pinned' | 'is_done'>>
     ): Promise<PrincipalNote> {
         const { data, error } = await supabase
             .from('principal_notes')

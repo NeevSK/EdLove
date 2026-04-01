@@ -6,9 +6,9 @@
  * - Horizontal ScrollView for child card components
  *
  * Usage:
- *   <SmartShelf title="Featured Collections" onSeeAll={() => navigate('collections')}
+ *   <SmartShelf title="Featured Collections" onSeeAll={() => navigate('collections')}>
  *     {collections.map(c => <CollectionCard key={c.id} {...c} />)}
- *   </SmartShelf
+ *   </SmartShelf>
  */
 
 import React from 'react';
@@ -47,65 +47,67 @@ export function SmartShelf({
 }: SmartShelfProps) {
     const colors = useThemedColors();
 
-    const styles = StyleSheet.create({
-        container: {
-            marginBottom: Theme.spacing.lg,
-        },
-        header: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: horizontalPadding,
-            marginBottom: Theme.spacing.sm,
-        },
-        title: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '700',
-            color: colors.text,
-            letterSpacing: 0.2,
-        },
-        seeAllRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 2,
-        },
-        seeAllText: {
-            fontSize: Theme.typography.fontSize.sm,
-            color: Theme.colors.sanctuarySaffron,
-            fontWeight: '600',
-        },
-        scrollContent: {
-            paddingHorizontal: horizontalPadding,
-            paddingVertical: Theme.spacing.xs,
-        },
-    });
-
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.title}>{title}</Text
-                >{onSeeAll && (
-                    <Pressable accessibilityRole="button" onPress={onSeeAll} style={styles.seeAllRow} hitSlop={8}>
-                        <Text style={styles.seeAllText}>See All</Text
-                        ><ChevronRight>
+            <View style={[styles.header, { paddingHorizontal: horizontalPadding }]}>
+                <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+                {onSeeAll && (
+                    <Pressable 
+                        accessibilityRole="button" 
+                        onPress={onSeeAll} 
+                        style={styles.seeAllRow} 
+                        hitSlop={8}
+                    >
+                        <Text style={styles.seeAllText}>See All</Text>
+                        <ChevronRight
                             color={Theme.colors.sanctuarySaffron}
                             size={16}
-                        /
+                        />
                     </Pressable>
                 )}
             </View>
 
             {/* Horizontal Scroll */}
-            <ScrollView>
+            <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            
+                contentContainerStyle={[styles.scrollContent, { paddingHorizontal: horizontalPadding }]}
+            >
                 {children}
             </ScrollView>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        marginBottom: Theme.spacing.lg,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: Theme.spacing.sm,
+    },
+    title: {
+        fontSize: Theme.typography.fontSize.md,
+        fontWeight: '700',
+        letterSpacing: 0.2,
+    },
+    seeAllRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 2,
+    },
+    seeAllText: {
+        fontSize: Theme.typography.fontSize.sm,
+        color: Theme.colors.sanctuarySaffron,
+        fontWeight: '600',
+    },
+    scrollContent: {
+        paddingVertical: Theme.spacing.xs,
+    },
+});
 
 export default SmartShelf;

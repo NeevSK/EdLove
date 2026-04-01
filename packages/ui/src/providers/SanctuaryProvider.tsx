@@ -23,6 +23,14 @@ interface SanctuaryProviderProps {
  */
 export const SanctuaryProvider: React.FC<SanctuaryProviderProps> = ({ children }) => {
   return (
-    <EnvironmentProvider      <ToastProvider        <ExternalLinkProvider          <FABProvider            >{children}>
-          </FABProvider        ></ExternalLinkProvider      </ToastProvider    </EnvironmentProvider  );
+    <EnvironmentProvider>
+      <ToastProvider>
+        <ExternalLinkProvider>
+          <FABProvider>
+            {children}
+          </FABProvider>
+        </ExternalLinkProvider>
+      </ToastProvider>
+    </EnvironmentProvider>
+  );
 };

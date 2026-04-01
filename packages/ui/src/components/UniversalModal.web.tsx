@@ -11,7 +11,7 @@ export interface UniversalModalProps {
 }
 
 /**
- * UniversalModal.web  Web-optimized overlay.
+ * UniversalModal.web - Web-optimized overlay.
  * 
  * Uses fixed-positioning instead of native Modals to ensure
  * reliable rendering in nested layouts and portal-like behavior.
@@ -25,19 +25,19 @@ export const UniversalModal = ({
     if (!isOpen) return null;
 
     return (
-        <View style={styles.webOverlay}
+        <View style={styles.webOverlay}>
             {hasBackdrop && (
                 <Pressable
                     style={styles.webBackdrop}
                     onPress={onClose}
                     accessibilityRole="button"
                     accessibilityLabel="Close modal"
-                /
+                />
             )}
-            <View style={styles.webContent}
+            <View style={styles.webContent}>
                 {children}
-            </View
-        </View
+            </View>
+        </View>
     );
 };
 

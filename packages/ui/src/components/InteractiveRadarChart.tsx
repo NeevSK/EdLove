@@ -58,8 +58,8 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
     const bgPolygonPointsString = bgPoints.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <View style={[styles.container, { width: size, height: size }]}
-            <Svg width={size} height={size}
+        <View style={[styles.container, { width: size, height: size }]}>
+            <Svg width={size} height={size}>
                 {/* Background Grid - Circular Levels */}
                 {[20, 40, 60, 80, 100].map((level) => (
                     <Polygon
@@ -74,7 +74,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                         stroke={Theme.colors.border}
                         strokeWidth="0.5"
                         strokeDasharray="2,2"
-                    /
+                    />
                 ))}
 
                 {/* Axis Lines */}
@@ -88,7 +88,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                         stroke={Theme.colors.border}
                         strokeWidth="1"
                         opacity={0.3}
-                    /
+                    />
                 ))}
 
                 {/* Background Full Polygon */}
@@ -96,7 +96,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                     points={bgPolygonPointsString}
                     fill={Theme.colors.linen}
                     opacity={0.1}
-                /
+                />
 
                 {/* Data Polygon */}
                 <Polygon
@@ -105,7 +105,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                     fillOpacity={0.3}
                     stroke={Theme.colors.sanctuarySaffron}
                     strokeWidth="2"
-                /
+                />
 
                 {/* Vertices and Labels */}
                 {dataPoints.map((p, i) => {
@@ -119,7 +119,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                     const labelY = centerY + Math.sin(angle) * labelDist;
 
                     return (
-                        <G key={`vertex-group-${i}`}
+                        <G key={`vertex-group-${i}`}>
                             {/* Label */}
                             <SvgText
                                 x={labelX}
@@ -129,9 +129,9 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                                 fontWeight="600"
                                 textAnchor="middle"
                                 alignmentBaseline="middle"
-                            
+                            >
                                 {dim.label}
-                            </SvgText
+                            </SvgText>
 
                             {/* Interaction point */}
                             <Circle
@@ -141,15 +141,15 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
                                 fill={Theme.colors.sanctuarySaffron}
                                 stroke="white"
                                 strokeWidth="1"
-                            /
-                        </G
+                            />
+                        </G>
                     );
                 })}
-            </Svg
+            </Svg>
 
             {/* Glow Effect Overlay (subtle) */}
-            <View style={[styles.glow, { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3 }]} pointerEvents="none" /
-        </View
+            <View style={[styles.glow, { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3 }]} pointerEvents="none" />
+        </View>
     );
 };
 

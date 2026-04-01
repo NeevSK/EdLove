@@ -226,7 +226,7 @@ export const staffManagementAPI = {
           reference_type: 'staff_leave',
         }).then(
           () => {},
-          (notificationError: Error) =            console.warn('[staffManagement] leave notification failed:', notificationError?.message)
+          (notificationError: Error) => console.warn('[staffManagement] leave notification failed:', notificationError?.message)
         );
       }
 
@@ -309,6 +309,6 @@ export const staffManagementAPI = {
     endDate: string,
     classroomId?: string,
   ): Promise<AttendanceReport> {
-    return attendanceProjectionServices.getAttendanceReport(schoolId, startDate, endDate, classroomId);
+    return (await attendanceProjectionServices.getAttendanceReport(schoolId, startDate, endDate, classroomId)) as AttendanceReport;
   },
 };

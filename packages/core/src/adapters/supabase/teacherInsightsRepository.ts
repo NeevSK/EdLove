@@ -133,7 +133,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     const { data, error } = await query;
     if (error) throw new APIError('Failed to fetch teacher private notes', error.code, error);
 
-    return (data ?? []).map((row) =      TeacherPrivateNoteSchema.parse({
+    return (data ?? []).map((row) => TeacherPrivateNoteSchema.parse({
         ...row,
         visibility: 'private',
         audit: privateAudit(String(row.teacher_id)),
@@ -215,7 +215,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch student observations', error.code, error);
 
-    return (data ?? []).map((row) =      TeacherStudentObservationSchema.parse({
+    return (data ?? []).map((row) => TeacherStudentObservationSchema.parse({
         ...row,
         audit: {
           audit_required: true,
@@ -235,7 +235,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch enrollment observations', error.code, error);
 
-    return (data ?? []).map((row) =      TeacherStudentObservationSchema.parse({
+    return (data ?? []).map((row) => TeacherStudentObservationSchema.parse({
         ...row,
         audit: {
           audit_required: true,
@@ -255,7 +255,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch student observations for student', error.code, error);
 
-    return (data ?? []).map((row) =      TeacherStudentObservationSchema.parse({
+    return (data ?? []).map((row) => TeacherStudentObservationSchema.parse({
         ...row,
         audit: {
           audit_required: true,

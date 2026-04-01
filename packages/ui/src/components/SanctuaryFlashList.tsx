@@ -32,7 +32,7 @@ export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'ref
  *   data={resources}
  *   renderItem={({ item }) => <ResourceRow resource={item} />}
  *   estimatedItemSize={Theme.listSizes.resourceRow}
- * /
+ * />
  */
 export function SanctuaryFlashList<T>({
     data,
@@ -58,16 +58,16 @@ export function SanctuaryFlashList<T>({
         }
 
         return (
-            <EmptyState>
+            <EmptyState
                 icon={BookOpen}
                 title="Silence in the Sanctuary"
                 description="Your first discovery is waiting to be found here."
-            /
+            />
         );
     }, [emptyComponent, ListEmptyComponent]);
 
     return (
-        <FlashList>
+        <FlashList
             {...(props as any)}
             data={data}
             renderItem={renderItem}
@@ -79,17 +79,16 @@ export function SanctuaryFlashList<T>({
             ]}
             refreshControl={
                 onRefresh ? (
-                    <RefreshControl>
+                    <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
                         tintColor={refreshColor || Theme.colors.sanctuarySaffron}
                         colors={[refreshColor || Theme.colors.sanctuarySaffron]}
-                    /
+                    />
                 ) : undefined
             }
-        /
+        />
     );
 }
 
 export default SanctuaryFlashList;
-

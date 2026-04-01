@@ -44,7 +44,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       const tenantMetrics = await multiTenantAnalyticsAPI.aggregateTenantMetrics([tenantId], timeRange);
       setMetrics(tenantMetrics[0] || null);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load analytics dashboard');
+           console.error('Failed to load analytics dashboard:', error);
     } finally {
       setIsLoading(false);
     }
@@ -113,63 +113,6 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     }
   };
 
-  const renderMetricCard = (key: string, value: number, title: string, icon: string) => (
-    <TouchableOpacity>
-      key={key}
-      style={[
-        styles.metricCard,>
-        {
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          borderWidth: 1,
-        }
-      ]}
-      onPress={() => onMetricDrillDown(key, { value, title })}
-          <View style={styles.metricHeader}        <Text >
-          style={[
-            styles.metricIcon,>
-            { 
-              color: theme.accent.action,
-              fontSize: isDesktop ? 24 : 20
-            }
-          ]}
-                  {icon}
-        </Text        ><Text 
-          style={[
-            styles.metricTitle,
-            { 
-              color: theme.text.secondary,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10
-            }
-          ]}
-                  {title}
-        </Text      ></View      
-      <Text >
-        style={[
-          styles.metricValue,>
-          { 
-            color: getMetricColor(value, key),
-            fontFamily: 'System',
-            fontWeight: '700',
-            fontSize: isDesktop ? 28 : 24
-          }
-        ]}
-              {typeof value === 'number' ? value.toFixed(1) : (value || 0)}
-        {key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : ''}
-      </Text      >
-      <Text >
-        style={[
-          styles.metricChange,>
-          { 
-            color: theme.text.muted,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 11 : 9
-          }
-        ]}
-              {getChangeIndicator(key)}
-      </Text    ></TouchableOpacity  );
-
   const getChangeIndicator = (metric: string) => {
     // Placeholder for trend indicators
     const trends = {
@@ -183,28 +126,103 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     return trends[metric as keyof typeof trends] || '\u2192 0.0%';
   };
 
-  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, color: string) => (
-    <View>
-      key={title}
+  const renderMetricCard = (key: string, value: number, title: string, icon: string) => (
+    <TouchableOpacity
+      key={key}
       style={[
-        styles.liveMetricCard,>
+        styles.metricCard,
         {
           backgroundColor: theme.glass.surface.bg,
           borderColor: theme.glass.surface.border,
           borderWidth: 1,
         }
       ]}
-          <Text >
+      onPress={() => onMetricDrillDown(key, { value, title })}
+    >
+      <View style={styles.metricHeader}>
+        <Text 
+          style={[
+            styles.metricIcon,
+            { 
+              color: theme.accent.action,
+              fontSize: isDesktop ? 24 : 20
+            }
+          ]}
+        >
+          {icon}
+        </Text>
+        <Text 
+          style={[
+            styles.metricTitle,
+            { 
+              color: theme.text.secondary,
+              fontFamily: 'System',
+              fontSize: isDesktop ? 12 : 10
+            }
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
+      <Text 
         style={[
-          styles.liveMetricTitle,>
+          styles.metricValue,
+          { 
+            color: getMetricColor(value, key),
+            fontFamily: 'System',
+            fontWeight: '700',
+            fontSize: isDesktop ? 28 : 24
+          }
+        ]}
+      >
+        {linkText(value, key)}
+      </Text>
+      <Text 
+        style={[
+          styles.metricChange,
+          { 
+            color: theme.text.muted,
+            fontFamily: 'System',
+            fontSize: isDesktop ? 11 : 9
+          }
+        ]}
+      >
+        {getChangeIndicator(key)}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const linkText = (value: number, key: string) => {
+    const formatted = typeof value === 'number' ? value.toFixed(1) : (value || 0);
+    const suffix = key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : '';
+    return `${formatted}${suffix}`;
+  };
+
+  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, color: string) => (
+    <View
+      key={title}
+      style={[
+        styles.liveMetricCard,
+        {
+          backgroundColor: theme.glass.surface.bg,
+          borderColor: theme.glass.surface.border,
+          borderWidth: 1,
+        }
+      ]}
+    >
+      <Text 
+        style={[
+          styles.liveMetricTitle,
           { 
             color: theme.text.secondary,
             fontFamily: 'System',
             fontSize: isDesktop ? 12 : 10
           }
         ]}
-              {title}
-      </Text      ><Text 
+      >
+        {title}
+      </Text>
+      <Text 
         style={[
           styles.liveMetricValue,
           { 
@@ -214,8 +232,10 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             fontSize: isDesktop ? 20 : 16
           }
         ]}
-              {value}
-      </Text      ><Text 
+      >
+        {value}
+      </Text>
+      <Text 
         style={[
           styles.liveMetricSubtitle,
           { 
@@ -224,15 +244,19 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             fontSize: isDesktop ? 10 : 8
           }
         ]}
-              {subtitle}
-      </Text    </View  );
+      >
+        {subtitle}
+      </Text>
+    </View>
+  );
 
   const renderTimeRangeSelector = () => (
-    <View style={styles.timeRangeSelector}      {(['week', 'month', 'quarter', 'year'] as const).map((range) => (
-        <TouchableOpacity>
+    <View style={styles.timeRangeSelector}>
+      {(['week', 'month', 'quarter', 'year'] as const).map((range) => (
+        <TouchableOpacity
           key={range}
           style={[
-            styles.timeRangeButton,>
+            styles.timeRangeButton,
             {
               backgroundColor: selectedTimeRange === range ? theme.accent.action : theme.glass.surface.bg,
               borderColor: selectedTimeRange === range ? theme.accent.action : theme.glass.surface.border,
@@ -240,9 +264,10 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             }
           ]}
           onPress={() => setSelectedTimeRange(range)}
-                  <Text >
+        >
+          <Text 
             style={[
-              styles.timeRangeText,>
+              styles.timeRangeText,
               { 
                 color: selectedTimeRange === range ? theme.text.inverse : theme.text.primary,
                 fontFamily: 'System',
@@ -250,21 +275,32 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 fontSize: isDesktop ? 14 : 12
               }
             ]}
-                      {range.charAt(0).toUpperCase() + range.slice(1)}
-          </Text        ></TouchableOpacity      >))}
-    </View  );
+          >
+            {range.charAt(0).toUpperCase() + range.slice(1)}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading analytics dashboard...>
-        </Text      ></View    );>
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
+        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
+          Loading analytics dashboard...
+        </Text>
+      </View>
+    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}>
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text >
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
+      {/* Header */}
+      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
+        <View style={styles.headerLeft}>
+          <Text 
             style={[
-              styles.title,>
+              styles.title,
               { 
                 color: theme.text.primary,
                 fontFamily: 'System',
@@ -272,8 +308,10 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 fontSize: isDesktop ? 32 : 24
               }
             ]}
-                      Analytics Dashboard
-          </Text          ><Text 
+          >
+            Analytics Dashboard
+          </Text>
+          <Text 
             style={[
               styles.subtitle,
               { 
@@ -282,21 +320,25 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 fontSize: isDesktop ? 16 : 14
               }
             ]}
-                      {tenantName}
-          </Text        ></View        
+          >
+            {tenantName}
+          </Text>
+        </View>
         {renderTimeRangeSelector()}
       </View>
-      <ScrollView >
+      <ScrollView 
         style={styles.content}
         contentContainerStyle={[
           styles.contentContainer,
-          isDesktop && styles.contentContainerDesktop>
+          isDesktop && styles.contentContainerDesktop
         ]}
         showsVerticalScrollIndicator={false}
-              {/* Key Metrics */}
-        <View style={styles.section}          <Text >
+      >
+        {/* Key Metrics */}
+        <View style={styles.section}>
+          <Text 
             style={[
-              styles.sectionHeader,>
+              styles.sectionHeader,
               { 
                 color: theme.text.primary,
                 fontFamily: 'System',
@@ -304,12 +346,14 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 fontSize: isDesktop ? 20 : 16
               }
             ]}
-                      Key Performance Metrics
-          </Text          >
-          <View style={[>
+          >
+            Key Performance Metrics
+          </Text>
+          <View style={[
             styles.metricsGrid,
-            isDesktop && styles.metricsGridDesktop>
-          ]}            {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
+            isDesktop && styles.metricsGridDesktop
+          ]}>
+            {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
               const metricTitles = {
                 attendance_rate: 'Attendance Rate',
                 grade_average: 'Grade Average',
@@ -338,17 +382,20 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
               
               return renderMetricCard(
                 key, 
-                value, 
+                value as number, 
                 metricTitles[key as keyof typeof metricTitles] || key,
                 metricIcons[key as keyof typeof metricIcons] || '\uD83D\uDCCA'
               );
             })}
-          </View        ></View
+          </View>
+        </View>
+
         {/* Live System Metrics */}
         {liveMetrics && (
-          <View style={styles.section}            <Text >
+          <View style={styles.section}>
+            <Text 
               style={[
-                styles.sectionHeader,>
+                styles.sectionHeader,
                 { 
                   color: theme.text.primary,
                   fontFamily: 'System',
@@ -356,12 +403,14 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                   fontSize: isDesktop ? 20 : 16
                 }
               ]}
-                          Live System Metrics
-            </Text            >
-            <View style={[>
+            >
+              Live System Metrics
+            </Text>
+            <View style={[
               styles.liveMetricsGrid,
-              isDesktop && styles.liveMetricsGridDesktop>
-            ]}              {renderLiveMetricCard(
+              isDesktop && styles.liveMetricsGridDesktop
+            ]}>
+              {renderLiveMetricCard(
                 'Active Users',
                 liveMetrics.active_users,
                 'Currently online',
@@ -385,13 +434,16 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                 `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`,
                 getSystemHealthColor(liveMetrics.system_health)
               )}
-            </View          ></View        >)}
+            </View>
+          </View>
+        )}
 
         {/* Resource Usage */}
         {liveMetrics && (
-          <View style={styles.section}            <Text >
+          <View style={styles.section}>
+            <Text 
               style={[
-                styles.sectionHeader,>
+                styles.sectionHeader,
                 { 
                   color: theme.text.primary,
                   fontFamily: 'System',
@@ -399,19 +451,25 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                   fontSize: isDesktop ? 20 : 16
                 }
               ]}
-                          Resource Usage
-            </Text            >
-            <View style={styles.resourceUsageContainer}              <View style={styles.resourceItem}                <Text >
+            >
+              Resource Usage
+            </Text>
+            <View style={styles.resourceUsageContainer}>
+              <View style={styles.resourceItem}>
+                <Text 
                   style={[
-                    styles.resourceLabel,>
+                    styles.resourceLabel,
                     { 
                       color: theme.text.secondary,
                       fontFamily: 'System',
                       fontSize: isDesktop ? 12 : 10
                     }
                   ]}
-                                  CPU Usage
-                </Text                ><View style={styles.resourceBar}                  <View 
+                >
+                  CPU Usage
+                </Text>
+                <View style={styles.resourceBar}>
+                  <View 
                     style={[
                       styles.resourceFill,
                       { 
@@ -419,7 +477,9 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                         backgroundColor: liveMetrics.resource_usage.cpu > 80 ? theme.accent.danger : theme.sageGreen
                       }
                     ]}
-                  /                ></View                <Text 
+                  />
+                </View>
+                <Text 
                   style={[
                     styles.resourceValue,
                     { 
@@ -429,19 +489,26 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                       fontSize: isDesktop ? 14 : 12
                     }
                   ]}
-                                  {liveMetrics.resource_usage.cpu.toFixed(1)}%
-                </Text              </View              
-              <View style={styles.resourceItem}                <Text >
+                >
+                  {liveMetrics.resource_usage.cpu.toFixed(1)}%
+                </Text>
+              </View>
+              
+              <View style={styles.resourceItem}>
+                <Text 
                   style={[
-                    styles.resourceLabel,>
+                    styles.resourceLabel,
                     { 
                       color: theme.text.secondary,
                       fontFamily: 'System',
                       fontSize: isDesktop ? 12 : 10
                     }
                   ]}
-                                  Memory Usage
-                </Text                <View style={styles.resourceBar}                  <View 
+                >
+                  Memory Usage
+                </Text>
+                <View style={styles.resourceBar}>
+                  <View 
                     style={[
                       styles.resourceFill,
                       { 
@@ -449,7 +516,9 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                         backgroundColor: liveMetrics.resource_usage.memory > 85 ? theme.accent.danger : theme.sageGreen
                       }
                     ]}
-                  /                ></View                <Text 
+                  />
+                </View>
+                <Text 
                   style={[
                     styles.resourceValue,
                     { 
@@ -459,19 +528,26 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                       fontSize: isDesktop ? 14 : 12
                     }
                   ]}
-                                  {liveMetrics.resource_usage.memory.toFixed(1)}%
-                </Text              </View              
-              <View style={styles.resourceItem}                <Text >
+                >
+                  {liveMetrics.resource_usage.memory.toFixed(1)}%
+                </Text>
+              </View>
+              
+              <View style={styles.resourceItem}>
+                <Text 
                   style={[
-                    styles.resourceLabel,>
+                    styles.resourceLabel,
                     { 
                       color: theme.text.secondary,
                       fontFamily: 'System',
                       fontSize: isDesktop ? 12 : 10
                     }
                   ]}
-                                  Storage Usage
-                </Text                <View style={styles.resourceBar}                  <View 
+                >
+                  Storage Usage
+                </Text>
+                <View style={styles.resourceBar}>
+                  <View 
                     style={[
                       styles.resourceFill,
                       { 
@@ -479,7 +555,9 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                         backgroundColor: liveMetrics.resource_usage.storage > 90 ? theme.accent.danger : theme.accent.action
                       }
                     ]}
-                  /                </View                <Text 
+                  />
+                </View>
+                <Text 
                   style={[
                     styles.resourceValue,
                     { 
@@ -489,9 +567,16 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                       fontSize: isDesktop ? 14 : 12
                     }
                   ]}
-                                  {(liveMetrics.resource_usage.storage || 0).toFixed(1)}%
-                </Text              </View            </View          </View        )}
-      </ScrollView    </View  );
+                >
+                  {(liveMetrics.resource_usage.storage || 0).toFixed(1)}%
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
 };
 
 // Mobile-first responsive styles

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { EntityDefinition, EntityMode, EntityInstance } from '@repo/core';
 import SanctuaryModal from './SanctuaryModal.web';
@@ -29,20 +28,20 @@ export default function EntityModal({
             onClose={onClose}
             title={displayTitle}
             size="md"
-        
-            <VStack space="md"
+        >
+            <VStack space="md">
                 {mode === 'view' ? (
-                    <Box
-                        <Text>Web View for {definition.type}</Text
+                    <Box>
+                        <Text>Web View for {definition.type}</Text>
                         {/* Web-optimized view component */}
-                    </Box
+                    </Box>
                 ) : (
-                    <Box
-                        <Text>Web Form for {definition.type}</Text
+                    <Box>
+                        <Text>Web Form for {definition.type}</Text>
                         {/* Web-optimized form component */}
-                    </Box
+                    </Box>
                 )}
-            </VStack
-        </SanctuaryModal
+            </VStack>
+        </SanctuaryModal>
     );
 }

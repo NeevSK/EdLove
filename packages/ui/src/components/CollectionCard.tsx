@@ -8,7 +8,7 @@
  * - "Verified" badge when the collection is verified
  * - "Pull to Desk" bookmark action
  *
- * Philosophy: Engaging, visual, and curated  inspired by streaming services.
+ * Philosophy: Engaging, visual, and curated — inspired by streaming services.
  */
 
 import React, { useMemo } from 'react';
@@ -65,7 +65,7 @@ export function CollectionCard<T = any>({
     const colors = useThemedColors();
 
     const styles = useMemo(
-        () =
+        () =>
             StyleSheet.create({
                 pressable: {
                     borderRadius: Theme.corners.generous,
@@ -181,13 +181,13 @@ export function CollectionCard<T = any>({
 
     const cardContent = (
         <View style={styles.container}>
-            {thumbnailUrl ? (>
-                <ImageBackground>
+            {thumbnailUrl ? (
+                <ImageBackground
                     source={{ uri: thumbnailUrl }}
                     style={styles.image}
-                    resizeMode="cover">
-                
-                    <CardOverlay>
+                    resizeMode="cover"
+                >
+                    <CardOverlay
                         styles={styles}
                         gradientColors={gradientColors}
                         title={title}
@@ -196,12 +196,12 @@ export function CollectionCard<T = any>({
                         subjectTag={subjectTag}
                         verified={verified}
                         onPullToDesk={onPullToDesk ? () => onPullToDesk(contextData as T) : undefined}
-                    /
-                ></ImageBackground>
+                    />
+                </ImageBackground>
             ) : (
                 <View style={styles.fallbackCenter}>
                     <BookOpen color={Theme.colors.sanctuarySaffron} size={44} />
-                    ><CardOverlay
+                    <CardOverlay
                         styles={styles}
                         gradientColors={gradientColors}
                         title={title}
@@ -209,17 +209,17 @@ export function CollectionCard<T = any>({
                         resourceCount={resourceCount}
                         subjectTag={subjectTag}
                         verified={verified}
-                        onPullToDesk={onPullToDesk ? () =/> onPullToDesk(contextData as T) : undefined}
+                        onPullToDesk={onPullToDesk ? () => onPullToDesk(contextData as T) : undefined}
                         absolute
-                    /
-                ></View>
+                    />
+                </View>
             )}
         </View>
     );
 
     if (onPress) {
         return (
-            <Pressable onPress={() => onPress(contextData as T)} style={styles.pressable}
+            <Pressable onPress={() => onPress(contextData as T)} style={styles.pressable}>
                 {cardContent}
             </Pressable>
         );
@@ -232,7 +232,7 @@ export function CollectionCard<T = any>({
 // ============================================================================
 
 interface OverlayProps {
-    styles: ReturnType<typeof StyleSheet.create>;
+    styles: any;
     gradientColors: [string, string, string];
     title: string;
     creator: string;
@@ -271,32 +271,32 @@ function CardOverlay({
 
     return (
         <View style={overlayStyle}>
-            {/* Top Row */}>
+            {/* Top Row */}
             <View style={styles.topRow}>
                 <View style={styles.subjectBadge}>
-                    <Text style={styles.subjectText}>{subjectTag}</Text
-                ></View>
+                    <Text style={styles.subjectText}>{subjectTag}</Text>
+                </View>
                 {verified && (
                     <View style={styles.verifiedBadge}>
                         <BadgeCheck color={Theme.colors.sageGreen} size={11} />
-                        ><Text style={styles.verifiedText}>Verified</Text
-                    ></View>
+                        <Text style={styles.verifiedText}>Verified</Text>
+                    </View>
                 )}
             </View>
 
             {/* Bottom Gradient with title, creator, count */}
             <LinearGradient colors={gradientColors} style={styles.gradient}>
-                <Text style={styles.title} numberOfLines={2}>{title}</Text
-                ><Text style={styles.creator} numberOfLines={1}>{creator}</Text
-                ><View style={styles.bottomRow}
+                <Text style={styles.title} numberOfLines={2}>{title}</Text>
+                <Text style={styles.creator} numberOfLines={1}>{creator}</Text>
+                <View style={styles.bottomRow}>
                     <View style={styles.countBadge}>
-                        <BookOpen color={Theme.colors.starlightGray} size={11} /
-                        ><Text style={styles.countText}>{resourceCount} Items</Text
-                    ></View>
+                        <BookOpen color={Theme.colors.starlightGray} size={11} />
+                        <Text style={styles.countText}>{resourceCount} Items</Text>
+                    </View>
                     {onPullToDesk && (
                         <Pressable onPress={onPullToDesk} style={styles.deskButton} hitSlop={8}>
                             <Bookmark color={Theme.colors.sanctuarySaffron} size={14} />
-                        ></Pressable>
+                        </Pressable>
                     )}
                 </View>
             </LinearGradient>

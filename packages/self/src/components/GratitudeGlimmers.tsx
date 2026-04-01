@@ -31,15 +31,13 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
   const { t } = useTranslation();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
+  
   // Resilient Data Hook
   const { entries, refreshData, isLoading } = useGratitude(activeUserId ?? undefined);
 
   const [showForm, setShowForm] = useState(false);
-
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<'student-said' | 'colleague-kindness' | 'personal-win'>('student-said');
-
-  // Removed manual loadEntries as it's handled by the hook
 
   const { mutate, isLoading: isSaving } = useSafeMutation(
     async (variables: { content: string, category: string }) => {
@@ -64,7 +62,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
   );
 
   const handleSave = async () => {
-    if (!userId || !content.trim()) return;
+    if (!activeUserId || !content.trim()) return;
 
     hapticLight();
     await mutate({
@@ -74,49 +72,48 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
   };
 
   const categories = [
-    { id: 'student-said', label: t('self.studentSaid'), emoji: '\uD83D\uDCAC', color: Theme.colors.templeGold },
-    { id: 'colleague-kindness', label: t('self.colleagueKindness'), emoji: '\uD83E\uDD1D', color: Theme.colors.skyBlue },
-    { id: 'personal-win', label: t('self.personalWin'), emoji: '\uD83C\uDF1F', color: Theme.colors.sageGreen }
+    { id: 'student-said', label: t('self.studentSaid') || 'Student Said', emoji: '💬', color: Theme.colors.templeGold },
+    { id: 'colleague-kindness', label: t('self.colleagueKindness') || 'Colleague Kindness', emoji: '🤝', color: Theme.colors.skyBlue },
+    { id: 'personal-win', label: t('self.personalWin') || 'Personal Win', emoji: '🌟', color: Theme.colors.sageGreen }
   ];
 
   if (isLoading && activeUserId) {
     return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
-        <SkeletonCard height={48} /
-        ><SkeletonCard height={80} /
-        ><SkeletonCard height={80} /
-      ></VStack
-    >);
+      <VStack sx={{ gap: Theme.spacing.lg, flex: 1, padding: Theme.spacing.lg }}>
+        <SkeletonCard height={48} />
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+      </VStack>
+    );
   }
 
   if (!activeUserId) {
     return (
-      <PositiveInvitation>
+      <PositiveInvitation
         type="guest"
-        onAction={() => navigation.navigate('Auth' as never)}
-      /
-    >);
+        onAction={() => navigation.navigate('Auth')}
+      />
+    );
   }
 
   return (
-    <VStack space="lg" sx={{ flex: 1 }}>
-      <VStack space="xs">
-        <HStack space="sm" alignItems="center">
-          <Heart color={Theme.colors.sanctuarySaffron} size={24} /
-          ><Heading color={Theme.colors.sacredWhite} size="lg"
-            {t('self.gratitude')}
+    <VStack sx={{ gap: Theme.spacing.lg, flex: 1 }}>
+      <VStack sx={{ gap: Theme.spacing.xs }}>
+        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+          <Heart color={Theme.colors.sanctuarySaffron} size={24} />
+          <Heading sx={{ color: Theme.colors.sacredWhite }} size="lg">
+            {t('self.gratitude') || 'Gratitude Glimmers'}
           </Heading>
         </HStack>
-        <Text color={Theme.colors.mistGray} size="sm">
-          {t('self.gratitudeDesc')}>
+        <Text sx={{ color: Theme.colors.mistGray }} size="sm">
+          {t('self.gratitudeDesc') || 'Small moments that made you smile today.'}
         </Text>
       </VStack>
 
       {!showForm ? (
-        <
-          <Button>
+        <VStack sx={{ gap: Theme.spacing.md, flex: 1 }}>
+          <Button
             size="md"
-            action="primary"
             onPress={() => {
               if (disabled) return;
               hapticLight();
@@ -128,98 +125,92 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
               borderRadius: Theme.corners.comfortable,
               opacity: disabled ? 0.6 : 1
             }}
-          
-            <Plus color={Theme.colors.sacredWhite} size={20} /
-            ><ButtonText ml="$2">{t('self.addGratitude')}</ButtonText
-          ></Button
+          >
+            <HStack sx={{ gap: 8, alignItems: 'center' }}>
+              <Plus color={Theme.colors.obsidian} size={20} />
+              <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}>
+                {t('self.addGratitude') || 'Record a Glimmer'}
+              </ButtonText>
+            </HStack>
+          </Button>
 
           <ScrollView sx={{ flex: 1, maxHeight: 400 }}>
-            <VStack space="md">
+            <VStack sx={{ gap: Theme.spacing.md }}>
               {entries.map((entry) => {
                 const cat = categories.find(c => c.id === entry.category);
                 return (
-                  <Box>
+                  <Box
                     key={entry.id}
-                    p={Theme.spacing.md}
                     sx={{
+                      padding: Theme.spacing.md,
                       backgroundColor: Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable,
                       borderLeftWidth: 3,
                       borderLeftColor: cat?.color || Theme.colors.sanctuarySaffron
                     }}
-                  
-                    <HStack justifyContent="space-between" alignItems="flex-start">
-                      <VStack space="xs" sx={{ flex: 1 }}>
-                        <HStack space="xs" alignItems="center">
-                          <Text fontSize="$md">{cat?.emoji}</Text
-                          ><Text color={Theme.colors.dimGray} size="xs"
-                            {cat?.label}
-                          </Text>
-                        </HStack>
-                        <Text color={Theme.colors.sacredWhite} size="md">
-                          {entry.content}>
+                  >
+                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                      <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
+                        <Text sx={{ fontSize: 16 }}>{cat?.emoji}</Text>
+                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                          {cat?.label}
                         </Text>
-                        <Text color={Theme.colors.dimGray} size="xs">
-                          {new Date(entry.created_at).toLocaleDateString()}>
-                        </Text>
-                      </VStack>
-                    </HStack>
+                      </HStack>
+                      <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 16 }}>
+                        {entry.content}
+                      </Text>
+                      <Text sx={{ color: Theme.colors.dimGray, fontSize: 10 }}>
+                        {new Date(entry.created_at).toLocaleDateString()}
+                      </Text>
+                    </VStack>
                   </Box>
                 );
               })}
 
               {entries.length === 0 && (
-                <PositiveInvitation>
-                  icon={Heart}
-                  title={t('self.whatSmiledToday')}
-                /
-              >)}
+                <PositiveInvitation
+                   icon={Heart}
+                   title={t('self.whatSmiledToday') || "What made you smile today?"}
+                />
+              )}
             </VStack>
           </ScrollView>
-        </
+        </VStack>
       ) : (
-        <VStack space="md">
-          {/* Category Selection */}>
+        <VStack sx={{ gap: Theme.spacing.md }}>
+          {/* Category Selection */}
           <Box>
-            <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
-              {t('self.category')}
+            <Text sx={{ color: Theme.colors.mistGray, fontSize: 14, marginBottom: 8 }}>
+              {t('self.category') || 'Category'}
             </Text>
-            <VStack space="sm">
+            <VStack sx={{ gap: Theme.spacing.sm }}>
               {categories.map((cat) => (
-                <Pressable>
+                <Pressable
                   key={cat.id}
                   onPress={() => {
                     hapticLight();
                     setCategory(cat.id as any);
                   }}
-                
-                  <HStack>
-                    space="sm"
-                    alignItems="center"
-                    p="$3"
+                >
+                  <HStack
                     sx={{
-                      backgroundColor:
-                        category === cat.id
-                          ? Theme.colors.sanctuarySaffron
-                          : Theme.colors.ink,
+                      gap: Theme.spacing.sm,
+                      alignItems: 'center',
+                      padding: Theme.spacing.md,
+                      backgroundColor: category === cat.id ? Theme.colors.sanctuarySaffron : Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable,
                       borderWidth: 2,
-                      borderColor:
-                        category === cat.id
-                          ? Theme.colors.sanctuarySaffron
-                          : 'transparent'
+                      borderColor: category === cat.id ? Theme.colors.sanctuarySaffron : 'transparent'
                     }}
-                  
-                    <Text fontSize="$xl">{cat.emoji}</Text
-                    ><Text
-                      color={
-                        category === cat.id
-                          ? Theme.colors.sacredWhite
-                          : Theme.colors.mistGray
-                      }
-                      size="md"
-                      bold={category === cat.id}
-                    
+                  >
+                    <Text sx={{ fontSize: 20 }}>{cat.emoji}</Text>
+                    <Text
+                      sx={{
+                        color: category === cat.id ? Theme.colors.obsidian : Theme.colors.mistGray,
+                        fontSize: 14,
+                        fontWeight: category === cat.id ? '700' : '400'
+                      }}
+                    >
                       {cat.label}
                     </Text>
                   </HStack>
@@ -230,63 +221,60 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
 
           {/* Content */}
           <Box>
-            <Text >color={Theme.colors.mistGray} size="sm" mb="$2"
-              {t('self.whatSmiled')}
+            <Text sx={{ color: Theme.colors.mistGray, fontSize: 14, marginBottom: 8 }}>
+              {t('self.whatSmiled') || 'Detail it here...'}
             </Text>
-            <Input>
-              variant="outline"
-              size="md"
+            <Input
               sx={{
                 backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
-                borderColor: Theme.colors.transparent,
-                minHeight: 100
+                borderColor: 'rgba(255,255,255,0.1)',
+                minHeight: 100,
+                borderRadius: Theme.corners.comfortable
               }}
-            
-              <InputField/>
-                placeholder={t('self.whatSmiled')}
+            >
+              <InputField
+                placeholder={t('self.whatSmiled') || "I'm grateful for..."}
                 value={content}
                 onChangeText={setContent}
                 multiline
-                color={Theme.colors.sacredWhite}
+                sx={{ color: Theme.colors.sacredWhite, textAlignVertical: 'top' }}
                 placeholderTextColor={Theme.colors.dimGray}
-                sx={{ textAlignVertical: 'top' }}
-              /
-            ></Input
-          ></Box>
+              />
+            </Input>
+          </Box>
 
           {/* Actions */}
-          <HStack space="md" justifyContent="flex-end">
-            <Button>
-              size="md"
-              variant="outline"
+          <HStack sx={{ gap: Theme.spacing.md, justifyContent: 'flex-end' }}>
+            <Button
               onPress={() => {
                 hapticLight();
                 setShowForm(false);
                 setContent('');
               }}
+              variant="outline"
               sx={{
                 borderColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable
               }}
-            
-              <ButtonText color={Theme.colors.mistGray}>
-                {t('common.cancel')}>
+            >
+              <ButtonText sx={{ color: Theme.colors.mistGray }}>
+                {t('common.cancel') || 'Cancel'}
               </ButtonText>
             </Button>
-            <Button>
-              size="md"
-              action="primary"
+            <Button
               onPress={handleSave}
               isDisabled={!content.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable
               }}
-            
-              <ButtonText>{t('common.save')}</ButtonText
-            ></Button
-          ></HStack>
+            >
+              <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}>
+                {t('common.save') || 'Save'}
+              </ButtonText>
+            </Button>
+          </HStack>
         </VStack>
       )}
     </VStack>

@@ -1,16 +1,16 @@
 /**
- * QRHandlerScreen \u2014 Modal screen that executes an incoming QR action
+ * QRHandlerScreen — Modal screen that executes an incoming QR action
  *
  * Mounted as a modal in RootStack.Navigator. Receives a QRPayload via route params
  * (injected by useQRDeepLink) and executes the appropriate action with visual feedback.
  *
  * Handles:
- *   join_school   \u2192 joins school + community group, navigates to Classroom tab
- *   join_class    \u2192 joins classroom, navigates to Classroom tab
- *   join_group    \u2192 joins community group, navigates to Community tab
- *   claim_invite  \u2192 claims role-specific school invite
- *   user_invite   \u2192 stores attribution, navigates to Auth if needed
- *   thuthimal_gift \u2192 navigated from here to ThuthimalClaimScreen
+ *   join_school   → joins school + community group, navigates to Classroom tab
+ *   join_class    → joins classroom, navigates to Classroom tab
+ *   join_group    → joins community group, navigates to Community tab
+ *   claim_invite  → claims role-specific school invite
+ *   user_invite   → stores attribution, navigates to Auth if needed
+ *   thuthimal_gift → navigated from here to ThuthimalClaimScreen
  */
 
 import React, { useEffect, useState } from 'react';
@@ -110,26 +110,33 @@ export default function QRHandlerScreen() {
 
   return (
     <ScreenWrapper>
-      <Box >sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+      <Box 
+        sx={{ 
+          flex: 1, 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          padding: Theme.spacing.xl 
+        }}
+      >
         <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
           {status === 'processing' && (
             <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
           )}
           {status === 'success' && (
-            <Text sx={{ fontSize: 56 }}>\u2705</Text
-          >)}
+            <Text sx={{ fontSize: 56 }}>✅</Text>
+          )}
           {status === 'error' && (
-            <Text sx={{ fontSize: 56 }}>\u26A0\uFE0F</Text
-          >)}
-          <Heading>
+            <Text sx={{ fontSize: 56 }}>⚠️</Text>
+          )}
+          <Heading
             sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize.xl }}
             color={statusColor as any}
-          
+          >
             {status === 'processing' ? t('qrHandler.processing') : status === 'success' ? t('qrHandler.done') : t('qrHandler.error')}
           </Heading>
-          <Text>
+          <Text
             sx={{ textAlign: 'center', color: colors.textSecondary }}
-          
+          >
             {status === 'processing' ? t('qrHandler.processingMessage') : message}
           </Text>
         </VStack>

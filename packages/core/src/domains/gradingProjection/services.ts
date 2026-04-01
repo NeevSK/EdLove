@@ -10,7 +10,7 @@ export function createGradingProjectionServices(
     repository: GradingProjectionRepository
 ): GradingProjectionServices {
     return {
-        getSchoolGradingCompletion: (schoolId, viewDate) =            repository.getSchoolGradingCompletion(schoolId, viewDate),
-        getSchoolPublishedGradingCompletion: (schoolId, viewDate) =            repository.getSchoolPublishedGradingCompletion(schoolId, viewDate),
+        getSchoolGradingCompletion: (schoolId, viewDate) => repository.getSchoolGradingCompletion(schoolId, viewDate),
+        getSchoolPublishedGradingCompletion: (schoolId, viewDate) => repository.getSchoolPublishedGradingCompletion(schoolId, viewDate),
     };
 }

@@ -61,18 +61,18 @@ export default class ErrorBoundary extends Component<Props, State> {
                                 backgroundColor: 'rgba(255, 99, 71, 0.1)', // Ember red, low opacity
                                 borderRadius: Theme.corners.full,
                             }}>
-                                <AlertTriangle size={64} color={Theme.colors.emberRed} /
-                            ></Box>
+                                <AlertTriangle size={64} color={Theme.colors.emberRed} />
+                            </Box>
 
                             <Heading color={Theme.colors.sacredWhite} textAlign="center" size="2xl">
-                                Something went wrong>
+                                Something went wrong
                             </Heading>
 
                             <Text color={Theme.colors.starlightGray} textAlign="center">
-                                We&apos;ve encountered an unexpected issue. The sanctuary is momentarily disrupted.>
+                                We&apos;ve encountered an unexpected issue. The sanctuary is momentarily disrupted.
                             </Text>
 
-                            <Button>
+                            <Button
                                 onPress={this.handleReset}
                                 size="lg"
                                 action="primary"
@@ -80,10 +80,10 @@ export default class ErrorBoundary extends Component<Props, State> {
                                     backgroundColor: Theme.colors.emberRed,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
-                            
-                                <ButtonIcon as={RefreshCw} color={Theme.colors.sacredWhite} /
-                                ><ButtonText color={Theme.colors.sacredWhite}
-                                    Try Again>
+                            >
+                                <ButtonIcon as={RefreshCw} color={Theme.colors.sacredWhite} />
+                                <ButtonText color={Theme.colors.sacredWhite}>
+                                    Try Again
                                 </ButtonText>
                             </Button>
 
@@ -100,7 +100,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                                         Boundary: {this.props.name}
                                     </Text>
                                     <Text color={Theme.colors.emberRed} size="xs" fontFamily="monospace">
-                                        {this.state.error.toString()}>
+                                        {this.state.error.toString()}
                                     </Text>
                                 </Box>
                             )}

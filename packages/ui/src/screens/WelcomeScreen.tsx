@@ -56,7 +56,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
         toast.show({
             placement: "top",
             render: ({ id }: { id: string }) => (
-                <Toast nativeID={id} action="error" variant="solid"                    <VStack space="xs"                        <ToastTitle>{t('auth.acceptTermsRequired') || "Please accept the Terms and Privacy Pact to continue in the sanctuary"}</ToastTitle                    ></VStack                </Toast            ),
+                <Toast nativeID={id} action="error" variant="solid">
+                    <VStack space="xs">
+                        <ToastTitle>
+                            {t('auth.acceptTermsRequired') || "Please accept the Terms and Privacy Pact to continue in the sanctuary"}
+                        </ToastTitle>
+                    </VStack>
+                </Toast>
+            ),
         });
     };
 
@@ -90,7 +97,8 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
     };
 
     return (
-        <ScreenWrapper scroll            <Box>
+        <ScreenWrapper scroll>
+            <Box
                 sx={{
                     flex: 1,
                     backgroundColor: colors.primary,
@@ -98,7 +106,8 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                     paddingTop: Theme.spacing.xl,
                     paddingBottom: Theme.spacing['2xl'],
                 }}
-                            <Box>
+            >
+                <Box
                     sx={{
                         position: 'absolute',
                         top: -56,
@@ -108,7 +117,8 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         borderRadius: 110,
                         backgroundColor: `${colors.action}14`,
                     }}
-                /                ><Box
+                />
+                <Box
                     sx={{
                         position: 'absolute',
                         right: -44,
@@ -118,7 +128,8 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         borderRadius: 90,
                         backgroundColor: `${Theme.colors.gurudeviBlue}16`,
                     }}
-                /                ><Box
+                />
+                <Box
                     sx={{
                         position: 'absolute',
                         left: 28,
@@ -128,28 +139,39 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                         borderRadius: 70,
                         backgroundColor: `${Theme.colors.gurudeviViolet}10`,
                     }}
-                /
-                ><Box sx={{ alignItems: 'flex-end', mb: Theme.spacing.lg }}                    <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}                    {LANGUAGES.map(lang => (
-                        <Pressable>
-                            key={lang.code}
-                            onPress={() => changeLanguage(lang.code)}
-                            accessibilityRole="button"
-                            accessibilityLabel={t('accessibility.switchLanguage', { lang: lang.label })}
-                            accessibilityState={{ selected: i18n.language?.startsWith(lang.code) }}
-                            sx={{
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 16,
-                                backgroundColor: i18n.language?.startsWith(lang.code) ? colors.action : 'transparent'
-                            }}
-                                                    <Text>
-                                size="xs"
-                                color={i18n.language?.startsWith(lang.code) ? Theme.colors.sacredWhite : colors.textSecondary}
-                                bold={i18n.language?.startsWith(lang.code)}>
-                                                            {lang.code.toUpperCase()}
-                            </Text                        ></Pressable                    >))}
-                    </HStack                ></Box
-                ><VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}                        <Box>
+                />
+
+                <Box sx={{ alignItems: 'flex-end', mb: Theme.spacing.lg }}>
+                    <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}>
+                        {LANGUAGES.map(lang => (
+                            <Pressable
+                                key={lang.code}
+                                onPress={() => changeLanguage(lang.code)}
+                                accessibilityRole="button"
+                                accessibilityLabel={t('accessibility.switchLanguage', { lang: lang.label })}
+                                accessibilityState={{ selected: i18n.language?.startsWith(lang.code) }}
+                                sx={{
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 6,
+                                    borderRadius: 16,
+                                    backgroundColor: i18n.language?.startsWith(lang.code) ? colors.action : 'transparent'
+                                }}
+                            >
+                                <Text
+                                    size="xs"
+                                    color={i18n.language?.startsWith(lang.code) ? Theme.colors.sacredWhite : colors.textSecondary}
+                                    bold={i18n.language?.startsWith(lang.code)}
+                                >
+                                    {lang.code.toUpperCase()}
+                                </Text>
+                            </Pressable>
+                        ))}
+                    </HStack>
+                </Box>
+
+                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center', flex: 1 }}>
+                    <VStack space="lg" sx={{ pt: Theme.spacing.md }}>
+                        <Box
                             sx={{
                                 alignSelf: 'flex-start',
                                 px: Theme.spacing.md,
@@ -159,9 +181,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                 borderWidth: 1,
                                 borderColor: `${colors.action}30`,
                             }}
-                                                    <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.6 }}                                SANCTUARY FOR TEACHERS>
-                            </Text                        ></Box>
-                        <VStack space="md"                            <Box>
+                        >
+                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.6 }}>
+                                SANCTUARY FOR TEACHERS
+                            </Text>
+                        </Box>
+
+                        <VStack space="md">
+                            <Box
                                 sx={{
                                     width: 156,
                                     height: 156,
@@ -178,39 +205,51 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                     shadowRadius: 24,
                                     elevation: 10,
                                 }}
-                                                            <Box>
+                            >
+                                <Box
                                     sx={{
                                         position: 'absolute',
                                         inset: 10,
                                         borderRadius: 32,
                                         backgroundColor: `${colors.action}08`,
                                     }}
-                                /                                ><Image
+                                />
+                                <Image
                                     source={LOGO}
                                     style={{ width: 96, height: 96, borderRadius: 18 }}
                                     accessible={true}
                                     accessibilityLabel={t('accessibility.appLogo')}
-                                /                            ></Box
-                            ><VStack space="sm" alignItems="center"                                <Heading
+                                />
+                            </Box>
+
+                            <VStack space="sm" alignItems="center">
+                                <Heading
                                     color={colors.text}
                                     size="4xl"
                                     textAlign="center"
                                     sx={{ letterSpacing: -1.8, fontWeight: '$bold' }}
-                                                                    Gurudevi>
-                                </Heading                                ><Text
+                                >
+                                    Gurudevi
+                                </Heading>
+                                <Text
                                     color={colors.textSecondary}
                                     size="lg"
                                     textAlign="center"
                                     sx={{ maxWidth: 320, lineHeight: '$lg' }}
-                                                                    {t('welcome.subtitle')}
-                                </Text                            ></VStack                        </VStack
-                        <HStack space="sm" justifyContent="center" sx={{ flexWrap: 'wrap' }}                            {[>
+                                >
+                                    {t('welcome.subtitle')}
+                                </Text>
+                            </VStack>
+                        </VStack>
+
+                        <HStack space="sm" justifyContent="center" sx={{ flexWrap: 'wrap' }}>
+                            {[
                                 { label: 'Self', tone: colors.action },
                                 { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
                                 { label: 'Community', tone: Theme.colors.gurudeviViolet },
                                 { label: 'Library', tone: Theme.colors.success },
                             ].map((pillar) => (
-                                <Box>
+                                <Box
                                     key={pillar.label}
                                     sx={{
                                         px: Theme.spacing.md,
@@ -220,10 +259,16 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         borderWidth: 1,
                                         borderColor: `${pillar.tone}30`,
                                     }}
-                                                                    <Text size="xs" color={pillar.tone} bold                                        {pillar.label}>
-                                    </Text                                ></Box                            >))}>
-                        </HStack                    ></VStack
-                    <Box>
+                                >
+                                    <Text size="xs" color={pillar.tone} bold>
+                                        {pillar.label}
+                                    </Text>
+                                </Box>
+                            ))}
+                        </HStack>
+                    </VStack>
+
+                    <Box
                         sx={{
                             backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
@@ -236,38 +281,61 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                             shadowRadius: 20,
                             elevation: 4,
                         }}
-                                            <VStack space="xl"                            <VStack space="sm"                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}                                    BEGIN QUIETLY>
-                                </Text                                ><Text color={colors.textSecondary} size="md"                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.>
-                                </Text                            ></VStack
-                            <VStack space="lg"                                <HStack space="md" alignItems="center" justifyContent="center"                                <Checkbox>
-                                    size="md"
-                                    value="terms"
-                                    isChecked={acceptedTerms}
-                                    onToggle={(checked: boolean) => {
-                                        hapticLight();
-                                        setAcceptedTerms(checked);
-                                    }}
-                                    aria-label="Accept Terms"
-                                                                    <CheckboxIndicator>
-                                        sx={{
-                                            borderColor: colors.action,
-                                            backgroundColor: 'transparent',
-                                            borderRadius: '$sm',
-                                            borderWidth: 2,
-                                            ':checked': {
-                                                backgroundColor: 'transparent',
-                                                borderColor: colors.action,
-                                            },
-                                            ':active': {
-                                                backgroundColor: 'transparent',
-                                            },
-                                            ':hover': {
-                                                backgroundColor: 'transparent',
-                                            }
+                    >
+                        <VStack space="xl">
+                            <VStack space="sm">
+                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}>
+                                    BEGIN QUIETLY
+                                </Text>
+                                <Text color={colors.textSecondary} size="md">
+                                    Enter as a guest to explore the sanctuary, or return to the account that already holds your path.
+                                </Text>
+                            </VStack>
+
+                            <VStack space="lg">
+                                <HStack space="md" alignItems="center" justifyContent="center">
+                                    <Checkbox
+                                        size="md"
+                                        value="terms"
+                                        isChecked={acceptedTerms}
+                                        onToggle={(checked: boolean) => {
+                                            hapticLight();
+                                            setAcceptedTerms(checked);
                                         }}
-                                                                            <CheckboxIcon as={CheckIcon} color={colors.action} sx={{ boxSize: '$4' }} /                                    ></CheckboxIndicator                                </Checkbox                                <HStack space="xs" flexShrink={1}                                    <Text size="sm" color={colors.textTertiary}>{t('welcome.acceptTerms')}</Text                                    <Link href="https://neevsk.org/privacy"                                        <LinkText size="sm" color={colors.action} sx={{ textDecorationLine: 'none', fontWeight: '$medium' }}                                            {t('welcome.privacyPactLink')}
-                                        </LinkText                                    </Link                                </HStack                                </HStack
-                                <Button>
+                                        aria-label="Accept Terms"
+                                    >
+                                        <CheckboxIndicator
+                                            sx={{
+                                                borderColor: colors.action,
+                                                backgroundColor: 'transparent',
+                                                borderRadius: '$sm',
+                                                borderWidth: 2,
+                                                ':checked': {
+                                                    backgroundColor: 'transparent',
+                                                    borderColor: colors.action,
+                                                },
+                                                ':active': {
+                                                    backgroundColor: 'transparent',
+                                                },
+                                                ':hover': {
+                                                    backgroundColor: 'transparent',
+                                                }
+                                            }}
+                                        >
+                                            <CheckboxIcon as={CheckIcon} color={colors.action} sx={{ boxSize: '$4' }} />
+                                        </CheckboxIndicator>
+                                    </Checkbox>
+                                    <HStack space="xs" flexShrink={1}>
+                                        <Text size="sm" color={colors.textTertiary}>{t('welcome.acceptTerms')}</Text>
+                                        <Link href="https://neevsk.org/privacy">
+                                            <LinkText size="sm" color={colors.action} sx={{ textDecorationLine: 'none', fontWeight: '$medium' }}>
+                                                {t('welcome.privacyPactLink')}
+                                            </LinkText>
+                                        </Link>
+                                    </HStack>
+                                </HStack>
+
+                                <Button
                                     size="xl"
                                     variant="solid"
                                     onPress={handleStartExploring}
@@ -282,9 +350,13 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                             opacity: 0.8
                                         }
                                     }}
-                                                                    <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg"                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}>
-                                    </ButtonText                                ></Button>
-                                <Button>
+                                >
+                                    <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">
+                                        {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}
+                                    </ButtonText>
+                                </Button>
+
+                                <Button
                                     size="lg"
                                     variant="outline"
                                     onPress={handleLogin}
@@ -296,8 +368,20 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                                         width: '100%',
                                         backgroundColor: 'transparent',
                                     }}
-                                                                    <ButtonText color={colors.textSecondary} fontWeight="$medium"                                        {t('welcome.login')}>
-                                    </ButtonText                                ></Button                            ></VStack>
-                            <Text color={colors.textTertiary} size="xs" textAlign="center"                                {t('welcome.footer')}>
-                            </Text                        ></VStack                    </Box                </VStack            </Box        </ScreenWrapper    );>
+                                >
+                                    <ButtonText color={colors.textSecondary} fontWeight="$medium">
+                                        {t('welcome.login')}
+                                    </ButtonText>
+                                </Button>
+                            </VStack>
+
+                            <Text color={colors.textTertiary} size="xs" textAlign="center">
+                                {t('welcome.footer')}
+                            </Text>
+                        </VStack>
+                    </Box>
+                </VStack>
+            </Box>
+        </ScreenWrapper>
+    );
 }

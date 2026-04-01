@@ -19,7 +19,7 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
     description,
     actionLabel,
     onAction,
-    icon = '('
+    icon = '✨'
 }) => {
     const colors = useThemedColors();
 
@@ -40,14 +40,14 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
                         {renderIcon()}
                     </View>
                     <View style={styles.textContainer}>
-                        <Text style={styles.title}>{title}</Text
-                        <Text style={styles.description}>{description}</Text
+                        <Text style={styles.title}>{title}</Text>
+                        <Text style={styles.description}>{description}</Text>
                     </View>
-                    <SanctuaryButton>
+                    <SanctuaryButton
                         onPress={onAction}
                         variant="solid"
                         size="sm"
-                    
+                    >
                         {actionLabel}
                     </SanctuaryButton>
                 </View>
@@ -102,4 +102,3 @@ const styles = StyleSheet.create({
         opacity: 0.9,
     },
 });
-

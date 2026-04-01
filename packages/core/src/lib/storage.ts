@@ -46,7 +46,7 @@ class RobustAsyncStorage implements StorageInterface {
 
     set(key: string, value: string | boolean | number) {
         this.cache.set(key, value);
-        AsyncStorage.setItem(key, String(value)).catch(e =
+        AsyncStorage.setItem(key, String(value)).catch(e =>
             console.error(`\uD83D\uDCE6 Storage: Failed to persist ${key}`, e)
         );
     }

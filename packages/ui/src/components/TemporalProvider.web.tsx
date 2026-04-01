@@ -42,13 +42,17 @@ export const TemporalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, [viewDate, viewMode]);
 
     return (
-        <TemporalContext.Provider value={value}            <div style={{ 
+        <TemporalContext.Provider value={value}>
+            <div style={{ 
                 filter: value.blurAmount > 0 ? `blur(${value.blurAmount}px)` : 'none',
                 backgroundColor: value.colorShift,
                 transition: 'filter 0.5s ease, background-color 0.5s ease',
                 minHeight: '100%'
-            }}                {children}
-            </div        </TemporalContext.Provider    );
+            }}>
+                {children}
+            </div>
+        </TemporalContext.Provider>
+    );
 };
 
 export const useTemporalAesthetics = () => {

@@ -32,7 +32,7 @@ function leaveTypeColor(type: string): string {
 }
 
 function shortId(id: string): string {
-  return id.substring(0, 8);
+  return id?.substring(0, 8) || 'Unknown';
 }
 
 export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApprovalSectionProps) {
@@ -42,9 +42,14 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   async function fetchLeaves() {
-    const data = await approvalsAPI.listPendingLeaveApprovals(schoolId);
-    setLeaves(data);
-    setLoading(false);
+    try {
+      const data = await approvalsAPI.listPendingLeaveApprovals(schoolId);
+      setLeaves(data);
+    } catch (error) {
+      console.error('[LeaveApprovalSection] Fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -54,86 +59,145 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
 
   async function handleDecision(leaveId: string, approve: boolean) {
     setProcessingId(leaveId);
-    if (approve) {
-      await approvalsAPI.approveLeave(leaveId, principalId);
-    } else {
-      await approvalsAPI.rejectLeave(leaveId, principalId);
+    try {
+      if (approve) {
+        await approvalsAPI.approveLeave(leaveId, principalId);
+      } else {
+        await approvalsAPI.rejectLeave(leaveId, principalId);
+      }
+      await fetchLeaves();
+    } catch (error) {
+      console.error('[LeaveApprovalSection] Decision error:', error);
+    } finally {
+      setProcessingId(null);
     }
-    setProcessingId(null);
-    await fetchLeaves();
   }
 
   return (
-    <Box>
+    <Box
       sx={{
-        backgroundColor: colors.primary,
+        backgroundColor: colors?.primary || '#000',
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
-        borderColor: colors.border,
+        borderColor: colors?.border || 'rgba(255,255,255,0.1)',
         padding: Theme.spacing.md,
       }}
-          <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Leave Requests</Text        >{leaves.length > 0 && (
-          <Box>
+    >
+      <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}>
+        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors?.text || '#fff' }}>
+          Leave Requests
+        </Text>
+        {leaves.length > 0 && (
+          <Box
             sx={{
               backgroundColor: Theme.colors.amberGlow ?? '#ffc107',
               borderRadius: 10,
               paddingHorizontal: 8,
               paddingVertical: 2,
             }}
-                      <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{leaves.length}</Text          ></Box        >)}
+          >
+            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
+              {leaves.length}
+            </Text>
+          </Box>
+        )}
       </HStack>
-      {loading && <SkeletonCard height={70} />}
 
-      {!loading && leaves.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No pending leave requests>
-        </Text      >)}>
-
-      {!loading &&
-        leaves.map((leave) => {
-          const isProcessing = processingId === leave.id;
-          return (
-            <VStack>
-              key={leave.id}
-              sx={{
-                paddingVertical: Theme.spacing.sm,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-                gap: 6,
-              }}
-                          <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}                <Box>
+      {loading ? (
+        <SkeletonCard height={70} />
+      ) : (
+        <>
+          {leaves.length === 0 ? (
+            <Text sx={{ fontSize: 13, color: colors?.textSecondary || '#aaa', textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+              No pending leave requests
+            </Text>
+          ) : (
+            leaves.map((leave) => {
+              const isProcessing = processingId === leave.id;
+              return (
+                <VStack
+                  key={leave.id}
                   sx={{
-                    backgroundColor: leaveTypeColor(leave.leave_type),
-                    borderRadius: 8,
-                    paddingHorizontal: 7,
-                    paddingVertical: 2,
+                    paddingVertical: Theme.spacing.sm,
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors?.border || 'rgba(255,255,255,0.1)',
+                    gap: 6,
                   }}
-                                  <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>{leave.leave_type}</Text                ></Box                ><Text sx={{ flex: 1, fontSize: 13, color: colors.text, fontWeight: '600' }}>{shortId(leave.user_id)}...</Text                ><Text sx={{ fontSize: 11, color: colors.textSecondary }}                  {formatShortDate(leave.start_date)} - {formatShortDate(leave.end_date)}
-                </Text              ></HStack
-              {leave.reason ? (
-                <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}                  {leave.reason}>
-                </Text              >) : null}>
+                >
+                  <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+                    <Box
+                      sx={{
+                        backgroundColor: leaveTypeColor(leave.leave_type),
+                        borderRadius: 8,
+                        paddingHorizontal: 7,
+                        paddingVertical: 2,
+                      }}
+                    >
+                      <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>
+                        {leave.leave_type}
+                      </Text>
+                    </Box>
+                    <Text sx={{ flex: 1, fontSize: 13, color: colors?.text || '#fff', fontWeight: '600' }}>
+                      {shortId(leave.user_id)}...
+                    </Text>
+                    <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa' }}>
+                      {formatShortDate(leave.start_date)} - {formatShortDate(leave.end_date)}
+                    </Text>
+                  </HStack>
+                  
+                  {leave.reason ? (
+                    <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa' }} numberOfLines={1}>
+                      {leave.reason}
+                    </Text>
+                  ) : null}
 
-              <HStack sx={{ gap: Theme.spacing.sm }}                <TouchableOpacity onPress={() => handleDecision(leave.id, true)} activeOpacity={0.8} disabled={isProcessing} style={{ flex: 1 }}                  <Box
-                    sx={{
-                      backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
-                      borderRadius: Theme.corners.medium ?? 8,
-                      padding: Theme.spacing.xs,
-                      alignItems: 'center',
-                      opacity: isProcessing ? 0.5 : 1,
-                    }}
-                                      <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text                  ></Box                </TouchableOpacity
-                <TouchableOpacity onPress={() => handleDecision(leave.id, false)} activeOpacity={0.8} disabled={isProcessing} style={{ flex: 1 }}                  <Box
-                    sx={{
-                      backgroundColor: colors.border,
-                      borderRadius: Theme.corners.medium ?? 8,
-                      padding: Theme.spacing.xs,
-                      alignItems: 'center',
-                      opacity: isProcessing ? 0.5 : 1,
-                      borderWidth: 1,
-                      borderColor: Theme.colors.emberRed ?? '#f44336',
-                    }}
-                                      <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.emberRed ?? '#f44336' }}>Reject</Text                  ></Box                </TouchableOpacity              </HStack            </VStack          );
-        })}
-    </Box  );
+                  <HStack sx={{ gap: Theme.spacing.sm, marginTop: 4 }}>
+                    <TouchableOpacity 
+                      onPress={() => handleDecision(leave.id, true)} 
+                      activeOpacity={0.8} 
+                      disabled={isProcessing} 
+                      style={{ flex: 1 }}
+                    >
+                      <Box
+                        sx={{
+                          backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
+                          borderRadius: Theme.corners.medium ?? 8,
+                          padding: Theme.spacing.xs,
+                          alignItems: 'center',
+                          opacity: isProcessing ? 0.5 : 1,
+                        }}
+                      >
+                        <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text>
+                      </Box>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      onPress={() => handleDecision(leave.id, false)} 
+                      activeOpacity={0.8} 
+                      disabled={isProcessing} 
+                      style={{ flex: 1 }}
+                    >
+                      <Box
+                        sx={{
+                          backgroundColor: colors?.border || 'rgba(255,255,255,0.1)',
+                          borderRadius: Theme.corners.medium ?? 8,
+                          padding: Theme.spacing.xs,
+                          alignItems: 'center',
+                          opacity: isProcessing ? 0.5 : 1,
+                          borderWidth: 1,
+                          borderColor: Theme.colors.emberRed ?? '#f44336',
+                        }}
+                      >
+                        <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.emberRed ?? '#f44336' }}>Reject</Text>
+                      </Box>
+                    </TouchableOpacity>
+                  </HStack>
+                </VStack>
+              );
+            })
+          )}
+        </>
+      )}
+    </Box>
+  );
 }
-

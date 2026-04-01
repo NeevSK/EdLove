@@ -8,29 +8,6 @@
  * - Matches LotusTextInput styling
  * 
  * Philosophy: Consistent, accessible dropdown that matches sanctuary aesthetic
- * 
- * @example
- * ```tsx
- * import LotusDropdown from './components/LotusDropdown';
- * 
- * function MyForm() {
- *   const [category, setCategory] = useState('');
-    const styles = useMemo(() => StyleSheet.create({'');
- *   const options = [
- *     { label: 'Self', value: 'self' },
- *     { label: 'Classroom', value: 'classroom' },
- *   ];
- * 
- *   return (
- *     <LotusDropdown
- *       label="Category"
- *       value={category}
- *       options={options}
- *       onChange={setCategory}
- *     /
- *   );
- * }
- * ```
  */
 
 import React, { FC, useMemo } from 'react';
@@ -46,7 +23,7 @@ import {
     SelectItem
 } from '../gluestack';
 import { ChevronDown } from 'lucide-react-native';
-import { Theme, typography } from '../theme/Theme';
+import { Theme } from '../theme/Theme';
 
 // ============================================================================
 // TYPES
@@ -89,7 +66,6 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            // height: 48, // Default height
         },
         triggerError: {
             borderColor: Theme.colors.emberRed,
@@ -122,31 +98,30 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
     return (
         <View style={styles.container}>
             {/* Label */}
-            <Text style={styles.label}>{label}</Text
+            <Text style={styles.label}>{label}</Text>
 
             {/* Select Dropdown */}
-            <Select>
+            <Select
                 selectedValue={value}
                 onValueChange={onChange}
-            
-                <SelectTrigger>
+            >
+                <SelectTrigger
                     style={[
                         styles.trigger,
                         error && styles.triggerError,
                     ]}
-                
-                    <SelectInput/>
+                >
+                    <SelectInput
                         placeholder="Select an option"
-                        style={styles.input}
-                    /
+                        style={styles.input as any}
+                    />
                     {/* @ts-ignore */}
                     <SelectIcon style={styles.icon}>
                         <View>
-                            {/* @ts-ignore */}
-                            <ChevronDown/>
+                            <ChevronDown
                                 size={20}
                                 color={Theme.colors.sacredWhite}
-                            /
+                            />
                         </View>
                     </SelectIcon>
                 </SelectTrigger>
@@ -155,12 +130,12 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
                     <SelectBackdrop />
                     <SelectContent style={styles.content}>
                         {options.map((option) => (
-                            <SelectItem>
+                            <SelectItem
                                 key={option.value}
                                 label={option.label}
                                 value={option.value}
                                 style={styles.item}
-                            /
+                            />
                         ))}
                     </SelectContent>
                 </SelectPortal>
@@ -168,8 +143,10 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
 
             {/* Error Message */}
             {error && (
-                <Text style={styles.errorText}>{error}</Text
-            >)}
+                <Text style={styles.errorText}>
+                    {error}
+                </Text>
+            )}
         </View>
     );
 };

@@ -22,7 +22,7 @@ export default function StepIndicator({
 
                     return (
                         <React.Fragment key={index}>
-                            <Box>
+                            <Box
                                 sx={{
                                     flex: 1,
                                     height: 4,
@@ -32,17 +32,28 @@ export default function StepIndicator({
                                     borderRadius: Theme.corners.full,
                                     opacity: isActive ? 1 : isCompleted ? 0.8 : 0.3,
                                 }}
-                            /
+                            />
                             {index < totalSteps - 1 && <Box sx={{ width: 4 }} />}
                         </React.Fragment>
                     );
                 })}
             </HStack>
             <HStack sx={{ justifyContent: 'space-between', width: '100%' }}>
-                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>
+                <Text 
+                    sx={{ 
+                        color: Theme.colors.sanctuarySaffron,
+                        fontWeight: '700', 
+                        fontSize: Theme.typography.fontSize.sm 
+                    }}
+                >
                     Step {currentStep} of {totalSteps}
                 </Text>
-                <Text color={Theme.colors.mistGray} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                <Text 
+                    sx={{ 
+                        color: Theme.colors.mistGray,
+                        fontSize: Theme.typography.fontSize.sm 
+                    }}
+                >
                     {stepLabels[currentStep - 1]}
                 </Text>
             </HStack>

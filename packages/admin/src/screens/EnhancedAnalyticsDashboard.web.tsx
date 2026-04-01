@@ -31,37 +31,79 @@ export default function EnhancedAnalyticsDashboard({
   });
 
   return (
-    <ScrollView style={styles.container}      <VStack space="md"        {/* Header */}
-        <Card style={styles.headerCard}          <Text style={styles.title}>\uD83D\uDCCA Analytics Dashboard</Text          <Text style={styles.subtitle}            {studentId ? 'Student Performance' : 
+    <ScrollView style={styles.container}>
+      <VStack space="md">
+        {/* Header */}
+        <Card style={styles.headerCard}>
+          <Text style={styles.title}>{'\uD83D\uDCCA'} Analytics Dashboard</Text>
+          <Text style={styles.subtitle}>
+            {studentId ? 'Student Performance' : 
              classId ? 'Class Analytics' : 
              'School Overview'}
-          </Text        </Card
+          </Text>
+        </Card>
+
         {/* Student Performance View */}
         {studentId && studentPerformance && (
-          <Card            <PerformanceDashboard 
+          <Card>
+            <PerformanceDashboard 
               metrics={studentPerformance}
               insights={[]} // Will be populated by InsightGenerator
               recommendations={[]} // Will be populated by InsightGenerator
-            /          </Card        )}
+            />
+          </Card>
+        )}
 
         {/* Class Performance View */}
         {classId && classPerformance && (
-          <Card            <VStack space="md"              <Text style={styles.sectionTitle}>\uD83D\uDCC8 Class Performance</Text              
-              <HStack style={styles.metricsRow}                <VStack flex={1} alignItems="center"                  <Text style={styles.metricValue}>{classPerformance.averageGPA.toFixed(2)}</Text                  <Text style={styles.metricLabel}>Average GPA</Text                </VStack                <VStack flex={1} alignItems="center"                  <Text style={styles.metricValue}>{classPerformance.totalStudents}</Text                  <Text style={styles.metricLabel}>Total Students</Text                </VStack                <VStack flex={1} alignItems="center"                  <Text style={styles.metricValue}>{classPerformance.topPerformers.length}</Text                  <Text style={styles.metricLabel}>Top Performers</Text                </VStack              </HStack
-              <Text style={styles.sectionTitle}>\u26A0\uFE0F At-Risk Students</Text              {classPerformance.atRiskStudents.length > 0 ? (
-                <VStack space="xs"                  {classPerformance.atRiskStudents.slice(0, 5).map((studentId: string, index: number) => (
-                    <Text key={index} style={styles.atRiskText}                      \u2022 Student {studentId}
-                    </Text                  ))}
-                  {classPerformance.atRiskStudents.length > 5 && (
-                    <Text style={styles.moreText}                      ...and {classPerformance.atRiskStudents.length - 5} more
-                    </Text                  )}
-                </VStack              ) : (
-                <Text style={styles.noRiskText}>\u2705 No at-risk students identified</Text              )}
+          <Card>
+            <VStack space="md">
+              <Text style={styles.sectionTitle}>{'\uD83D\uDCC8'} Class Performance</Text>
+              
+              <HStack style={styles.metricsRow}>
+                <VStack flex={1} alignItems="center">
+                  <Text style={styles.metricValue}>{classPerformance.averageGPA.toFixed(2)}</Text>
+                  <Text style={styles.metricLabel}>Average GPA</Text>
+                </VStack>
+                <VStack flex={1} alignItems="center">
+                  <Text style={styles.metricValue}>{classPerformance.totalStudents}</Text>
+                  <Text style={styles.metricLabel}>Total Students</Text>
+                </VStack>
+                <VStack flex={1} alignItems="center">
+                  <Text style={styles.metricValue}>{classPerformance.topPerformers.length}</Text>
+                  <Text style={styles.metricLabel}>Top Performers</Text>
+                </VStack>
+              </HStack>
 
-              <Text style={styles.sectionTitle}>\uD83D\uDCA1 Key Insights</Text              <VStack space="xs"                {classPerformance.insights.map((insight: string, index: number) => (
-                  <Text key={index} style={styles.insightText}                    \u2022 {insight}
-                  </Text                ))}
-              </VStack            </VStack          </Card        )}
+              <Text style={styles.sectionTitle}>{'\u26A0\uFE0F'} At-Risk Students</Text>
+              {classPerformance.atRiskStudents.length > 0 ? (
+                <VStack space="xs">
+                  {classPerformance.atRiskStudents.slice(0, 5).map((sId: string, index: number) => (
+                    <Text key={index} style={styles.atRiskText}>
+                      {'\u2022'} Student {sId}
+                    </Text>
+                  ))}
+                  {classPerformance.atRiskStudents.length > 5 && (
+                    <Text style={styles.moreText}>
+                      ...and {classPerformance.atRiskStudents.length - 5} more
+                    </Text>
+                  )}
+                </VStack>
+              ) : (
+                <Text style={styles.noRiskText}>{'\u2705'} No at-risk students identified</Text>
+              )}
+
+              <Text style={styles.sectionTitle}>{'\uD83D\uDCA1'} Key Insights</Text>
+              <VStack space="xs">
+                {classPerformance.insights.map((insight: string, index: number) => (
+                  <Text key={index} style={styles.insightText}>
+                    {'\u2022'} {insight}
+                  </Text>
+                ))}
+              </VStack>
+            </VStack>
+          </Card>
+        )}
 
         {/* GPA Insights */}
         {studentId && studentPerformance && (
@@ -70,14 +112,30 @@ export default function EnhancedAnalyticsDashboard({
             currentGPA={studentPerformance.currentGPA}
             trendDirection={studentPerformance.trendDirection}
             predictedGPA={predictions?.prediction}
-          /        )}
+          />
+        )}
 
         {/* Quick Stats */}
-        <Card          <Text style={styles.sectionTitle}>\uD83C\uDFAF Quick Actions</Text          <VStack space="sm"            <Text style={styles.actionText}              \uD83D\uDCE4 Generate detailed performance reports
-            </Text            <Text style={styles.actionText}              \uD83D\uDC65 Schedule parent-teacher conferences
-            </Text            <Text style={styles.actionText}              \uD83D\uDCC8 View benchmark comparisons
-            </Text            <Text style={styles.actionText}              \uD83D\uDEA8 Set up at-risk alerts
-            </Text          </VStack        </Card      </VStack    </ScrollView  );
+        <Card>
+          <Text style={styles.sectionTitle}>{'\uD83C\uDFAF'} Quick Actions</Text>
+          <VStack space="sm">
+            <Text style={styles.actionText}>
+              {'\uD83D\uDCE4'} Generate detailed performance reports
+            </Text>
+            <Text style={styles.actionText}>
+              {'\uD83D\uDC65'} Schedule parent-teacher conferences
+            </Text>
+            <Text style={styles.actionText}>
+              {'\uD83D\uDCC8'} View benchmark comparisons
+            </Text>
+            <Text style={styles.actionText}>
+              {'\uD83D\uDEA8'} Set up at-risk alerts
+            </Text>
+          </VStack>
+        </Card>
+      </VStack>
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -177,9 +177,9 @@ export const createGuardianServices = (repository: GuardianRepository): Guardian
     },
     verifyGuardian: (guardianId, documents) => repository.verifyGuardian(guardianId, documents),
     updateProfile: (guardianId, updates) => repository.updateGuardianProfile(guardianId, updates),
-    linkGuardianToStudent: (guardianId, studentId, relationshipType, schoolId) =        repository.linkGuardianToStudent(guardianId, studentId, relationshipType, schoolId),
-    updatePermissions: (guardianId, studentId, permissions) =        repository.updateGuardianPermissions(guardianId, studentId, permissions),
-    terminateRelationship: (guardianId, studentId) =        repository.terminateGuardianRelationship(guardianId, studentId),
+    linkGuardianToStudent: (guardianId, studentId, relationshipType, schoolId) => repository.linkGuardianToStudent(guardianId, studentId, relationshipType, schoolId),
+    updatePermissions: (guardianId, studentId, permissions) => repository.updateGuardianPermissions(guardianId, studentId, permissions),
+    terminateRelationship: (guardianId, studentId) => repository.terminateGuardianRelationship(guardianId, studentId),
     async getStudents(guardianId) {
         const dashboard = await repository.getGuardianDashboard(guardianId);
         const relationships = await repository.getGuardianRelationships(guardianId);
@@ -191,5 +191,5 @@ export const createGuardianServices = (repository: GuardianRepository): Guardian
         const relationships = await repository.getGuardianRelationships(guardianId);
         return applyGuardianTemporalPolicy(applyGuardianRelationshipPolicy(dashboard, relationships));
     },
-    updateNotificationSettings: (guardianId, settings) =        repository.updateGuardianNotificationSettings(guardianId, settings),
+    updateNotificationSettings: (guardianId, settings) => repository.updateGuardianNotificationSettings(guardianId, settings),
 });

@@ -19,43 +19,81 @@ export function GPAInsights({
   predictedGPA, 
   targetGPA = 3.0 
 }: GPAInsightsProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const gpaCalculator = new GPACalculator();
   
   const gapToTarget = targetGPA - currentGPA;
   const isOnTrack = predictedGPA ? predictedGPA >= targetGPA : currentGPA >= targetGPA;
   
-  const trendColor = trendDirection === 'improving' ? Theme.colors.success :
-                   trendDirection === 'declining' ? Theme.colors.error :
-                   Theme.colors.warning;
+  const trendColor = trendDirection === 'improving' ? (Theme.colors.success || '#4caf50') :
+                   trendDirection === 'declining' ? (Theme.colors.error || '#f44336') :
+                   (Theme.colors.warning || '#ff9800');
 
   return (
-    <Card style={styles.container}      <Text style={styles.title}>GPA Insights</Text      
-      ><VStack space="md"        {/* Current GPA */}
-        <HStack style={styles.gpaRow}          <VStack flex={1}            <Text style={styles.gpaLabel}>Current GPA</Text            ><Text style={[styles.gpaValue, { color: getGradeColor(currentGPA >= 3.5 ? 'A' : currentGPA >= 2.5 ? 'B' : 'C') }]}              {formatGPA(currentGPA)}
-            </Text          </VStack          
-          {predictedGPA && (
-            <VStack flex={1}              <Text style={styles.gpaLabel}>Predicted GPA</Text              ><Text style={[styles.gpaValue, { color: getGradeColor(predictedGPA >= 3.5 ? 'A' : predictedGPA >= 2.5 ? 'B' : 'C') }]}                {formatGPA(predictedGPA)}
-              </Text            </VStack          )}
+    <Card style={styles.container}>
+      <Text style={styles.title}>GPA Insights</Text>
+      
+      <VStack space="md">
+        {/* Current & Predicted GPA Row */}
+        <HStack style={styles.gpaRow}>
+          <VStack sx={{ flex: 1 }}>
+            <Text style={styles.gpaLabel}>Current GPA</Text>
+            <Text style={[styles.gpaValue, { color: getGradeColor(currentGPA >= 3.5 ? 'A' : currentGPA >= 2.5 ? 'B' : 'C') }]}>
+              {formatGPA(currentGPA)}
+            </Text>
+          </VStack>
+          
+          {predictedGPA !== undefined && (
+            <VStack sx={{ flex: 1 }}>
+              <Text style={styles.gpaLabel}>Predicted GPA</Text>
+              <Text style={[styles.gpaValue, { color: getGradeColor(predictedGPA >= 3.5 ? 'A' : predictedGPA >= 2.5 ? 'B' : 'C') }]}>
+                {formatGPA(predictedGPA)}
+              </Text>
+            </VStack>
+          )}
         </HStack>
-        {/* Trend */}
-        <View style={styles.trendContainer}          <Text style={styles.trendLabel}>Performance Trend</Text          ><Text style={[styles.trendValue, { color: trendColor }]}            {trendDirection.charAt(0).toUpperCase() + trendDirection.slice(1)}
-          </Text        ></View
-        {/* Target Progress */}
-        <View style={styles.progressContainer}          <Text style={styles.progressLabel}>Target: {formatGPA(targetGPA)}</Text          ><View style={styles.progressBar}            <View 
+
+        {/* Trend Info */}
+        <View style={styles.trendContainer}>
+          <Text style={styles.trendLabel}>Performance Trend</Text>
+          <Text style={[styles.trendValue, { color: trendColor }]}>
+            {trendDirection.charAt(0).toUpperCase() + trendDirection.slice(1)}
+          </Text>
+        </View>
+
+        {/* Target Progress Bar */}
+        <View style={styles.progressContainer}>
+          <Text style={styles.progressLabel}>Target: {formatGPA(targetGPA)}</Text>
+          <View style={styles.progressBar}>
+            <View 
               style={[
                 styles.progressFill,
                 { 
-                  width: `${Math.min(100, (currentGPA / 4.0) * 100)}%`,
-                  backgroundColor: isOnTrack ? Theme.colors.success : Theme.colors.warning
+                  width: `${Math.min(100, Math.max(0, (currentGPA / 4.0) * 100))}%`,
+                  backgroundColor: isOnTrack ? (Theme.colors.success || '#4caf50') : (Theme.colors.warning || '#ff9800')
                 }
               ]} 
-            /          ></View          <Text style={styles.progressText}            {gapToTarget > 0 ? `${formatGPA(gapToTarget)} to target` : 'Target achieved!'}
-          </Text        </View
-        {/* Recommendations */}
-        <View style={styles.recommendationsContainer}          <Text style={styles.recommendationsTitle}>Recommendations</Text          ><VStack space="xs"            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map((rec, index) => (
-              <Text key={index} style={styles.recommendationText}                " {rec}>
-              </Text            ))}>
-          </VStack        </View      </VStack    </Card  );
+            />
+          </View>
+          <Text style={styles.progressText}>
+            {gapToTarget > 0 ? `${formatGPA(gapToTarget)} to target` : 'Target achieved!'}
+          </Text>
+        </View>
+
+        {/* Recommendations List */}
+        <View style={styles.recommendationsContainer}>
+          <Text style={styles.recommendationsTitle}>Recommendations</Text>
+          <VStack space="xs">
+            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map((rec, index) => (
+              <Text key={index} style={styles.recommendationText}>
+                • {rec}
+              </Text>
+            ))}
+          </VStack>
+        </View>
+      </VStack>
+    </Card>
+  );
 }
 
 function generateRecommendations(
@@ -99,6 +137,7 @@ const styles = StyleSheet.create({
   gpaRow: {
     justifyContent: 'space-around',
     marginBottom: Theme.spacing.md,
+    width: '100%',
   },
   gpaLabel: {
     fontSize: 12,
@@ -136,6 +175,8 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.border,
     borderRadius: 4,
     marginBottom: Theme.spacing.xs,
+    width: '100%',
+    overflow: 'hidden',
   },
   progressFill: {
     height: '100%',

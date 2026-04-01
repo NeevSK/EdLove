@@ -70,7 +70,8 @@ describe('founder and guardian POA coverage', () => {
     });
 
     test('guardian coverage fails fast when alias mapping is missing', () => {
-        expect(() =            assertContractCoverage(
+        expect(() =>
+            assertContractCoverage(
                 rawGuardianAPI,
                 defineContractCoverage({
                     moduleName: 'guardian-test-missing-aliases',

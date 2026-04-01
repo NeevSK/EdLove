@@ -43,7 +43,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
     }));
 
     return (
-        <Animated.View>
+        <Animated.View
             style={[
                 styles.skeleton,
                 {
@@ -56,34 +56,34 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
                 animatedStyle,
                 style
             ]}
-        /
+        />
     );
 };
 
 export const SkeletonCard = ({ height = 150, width = '100%', style }: { height?: number; width?: number | string; style?: any }) => (
-    <SkeletonLoader>
+    <SkeletonLoader
         width={width}
         height={height}
         borderRadius={Theme.corners.generous}
         style={[{ marginBottom: Theme.spacing.md, maxWidth: 800 }, style]}
-    /
+    />
 );
 
 export const SkeletonAvatar = ({ size = 50 }: { size?: number }) => (
-    <SkeletonLoader>
+    <SkeletonLoader
         width={size}
         height={size}
         borderRadius={size / 2}
-    /
+    />
 );
 
 export const SkeletonTextLine = ({ width = '100%', mb = 8 }: { width?: string | number, mb?: number }) => (
-    <SkeletonLoader>
+    <SkeletonLoader
         width={width}
         height={16}
         borderRadius={4}
         style={{ marginBottom: mb }}
-    /
+    />
 );
 
 const styles = StyleSheet.create({
@@ -94,4 +94,3 @@ const styles = StyleSheet.create({
 
 export { SkeletonLoader };
 export default SkeletonLoader;
-

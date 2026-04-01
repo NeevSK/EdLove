@@ -41,7 +41,7 @@ export const resourcesAPI = {
             );
         }
 
-        const { owner_context, ...classroomResource } = resource;
+        const { owner_context, ...classroomResource } = resource as any;
         const { data, error } = await supabase
             .from('classroom_resources')
             .insert([classroomResource])
@@ -60,7 +60,8 @@ export const resourcesAPI = {
      */
     async update(
         id: string,
-        updates: Partial<ClassroomResource    ): Promise<ClassroomResource> {
+        updates: Partial<ClassroomResource>
+    ): Promise<ClassroomResource> {
         const { data, error } = await supabase
             .from('classroom_resources')
             .update(updates)

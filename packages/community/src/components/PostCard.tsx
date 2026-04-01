@@ -1,18 +1,54 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator, Animated } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator, Animated, View } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage, openExternalURL } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Sparkles, Share2, CheckCircle2, AlertTriangle, FileText, Video, Music, Link2, BookOpen, Lock, Clock, Check, Trophy, X as XIcon } from 'lucide-react-native';
+import { 
+    MoreHorizontal, 
+    Heart, 
+    MessageCircle, 
+    Sparkles, 
+    Share2, 
+    CheckCircle2, 
+    AlertTriangle, 
+    FileText, 
+    Video, 
+    Music, 
+    Link2, 
+    BookOpen, 
+    Lock, 
+    Clock, 
+    Check, 
+    Trophy, 
+    X as XIcon,
+    ShieldAlert, 
+    UserX 
+} from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
-import { useCommunity } from '../hooks/useCommunity';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { communityAPI } from '../api/community';
-import { ShieldAlert, UserX } from 'lucide-react-native';
-import { PostType, FeedbackStatus, PollData, Urgency } from '../types/Community';
+import type { CommunityPost } from '../types';
+import type { PostType, FeedbackStatus, PollData, Urgency } from '../types/Community';
 
-import { CommunityPost } from '../types';
+// —————————————————————————————————————————————————————————————————————————————
+// CONSTANTS
+// —————————————————————————————————————————————————————————————————————————————
+
+const MEDIA_HEIGHT = 260;
+
+const TYPE_BADGE: Record<string, { label: string; color: string; bg: string; border: string; text: string }> = {
+    announcement: { label: 'Announcement', color: '#F6BF8C', bg: 'rgba(246,191,140,0.1)', border: '#F6BF8C', text: '#F6BF8C' },
+    question: { label: 'Question', color: '#6366F1', bg: 'rgba(99,102,241,0.1)', border: '#6366F1', text: '#6366F1' },
+    resource: { label: 'Resource', color: '#10B981', bg: 'rgba(16,185,129,0.1)', border: '#10B981', text: '#10B981' },
+    feedback: { label: 'Feedback', color: '#F43F5E', bg: 'rgba(244,63,94,0.1)', border: '#F43F5E', text: '#F43F5E' },
+    discussion: { label: 'Discussion', color: '#94A3B8', bg: 'rgba(148,163,184,0.1)', border: '#94A3B8', text: '#94A3B8' },
+    poll: { label: 'Poll', color: '#A855F7', bg: 'rgba(168,85,247,0.1)', border: '#A855F7', text: '#A855F7' },
+};
+
+// —————————————————————————————————————————————————————————————————————————————
+// TYPES
+// —————————————————————————————————————————————————————————————————————————————
 
 interface PostCardProps {
     post: CommunityPost;
@@ -21,17 +57,17 @@ interface PostCardProps {
     onResonate?: () => void;
     onComment?: () => void;
     onReport?: () => void;
-    /** Called when the author avatar/name is tapped \u2014 use to navigate to the author's public profile */
     onAuthorPress?: () => void;
-    /** Called when the share button is tapped on native. On web, the post link is copied to clipboard automatically. */
     onShare?: () => void;
     isSample?: boolean;
     currentUserId?: string;
 }
 
-const MEDIA_HEIGHT = 260;
+// —————————————————————————————————————————————————————————————————————————————
+// COMPONENT: PostCard
+// —————————————————————————————————————————————————————————————————————————————
 
-const PostCard = React.memo(function PostCard({
+export const PostCard = React.memo(function PostCard({
     post,
     onPress,
     onLike,
@@ -62,14 +98,13 @@ const PostCard = React.memo(function PostCard({
         feedback_status,
         feedback_response,
     } = post;
+    
     const colors = useThemedColors();
-
     const isAnnouncement = post_type === 'announcement';
     const isQuestion = post_type === 'question';
     const isResource = post_type === 'resource';
     const isFeedback = post_type === 'feedback';
-    const isDiscussion = post_type === 'discussion';
-    const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
+    const totalReactions = Object.values(reactions).reduce((a, b) => (a as number) + (b as number), 0);
 
     const renderMediaContent = () => {
         if (!media_url) return null;
@@ -77,7 +112,7 @@ const PostCard = React.memo(function PostCard({
         if (media_type === 'image') {
             return (
                 <Box sx={{ marginTop: Theme.spacing.sm }}>
-                    <Box>
+                    <Box
                         sx={{
                             height: MEDIA_HEIGHT,
                             borderRadius: Theme.corners.comfortable,
@@ -86,60 +121,49 @@ const PostCard = React.memo(function PostCard({
                             borderColor: colors.overlay,
                             backgroundColor: colors.secondary,
                         }}
-                    
-                        <Image/>
+                    >
+                        <Image
                             source={{ uri: media_url }}
                             style={StyleSheet.absoluteFill}
                             resizeMode="cover"
-                        /
-                        ><Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} /
-                    ></Box
-                ></Box>
+                        />
+                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.2)' }} />
+                    </Box>
+                </Box>
             );
         }
 
-        // Non-image attachments: document / video / audio \u2014 render a tappable link chip
         const mediaIcon = media_type === 'video'
-            ? <Video size={16} color={colors.action} /
-            >: media_type === 'audio'
-                ? <Music size={16} color={colors.action} /
-                >: <FileText size={16} color={colors.action} />;
+            ? <Video size={16} color={colors.action} />
+            : media_type === 'audio'
+                ? <Music size={16} color={colors.action} />
+                : <FileText size={16} color={colors.action} />;
 
         const mediaLabel = media_type === 'video' ? 'Video'
             : media_type === 'audio' ? 'Audio'
             : 'Attachment';
 
         return (
-            <TouchableOpacity>
+            <TouchableOpacity
                 onPress={() => {
-                    if (!media_url) {
-                        return;
-                    }
+                    if (!media_url) return;
                     openExternalURL(media_url, {
                         title: mediaLabel,
                         sourceLabel: 'Community',
                         sourceBadge: 'Shared attachment',
                         trustLevel: 'external',
-                    }).catch(() => {
-                        // Non-fatal: attachment open failures should not destabilize the feed
-                    });
+                    }).catch(() => {});
                 }}
-                style={[styles.attachmentChip, { borderColor: colors.action }]}
+                style={[styles.attachmentChip, { borderColor: colors.action, marginTop: 8 }]}
                 accessibilityLabel={`Open ${mediaLabel}`}
-            
+            >
                 {mediaIcon}
-                <Text color={colors.action} size="sm" sx={{ marginLeft: 6 }}>{mediaLabel}</Text
-                ><Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} /
-            ></TouchableOpacity
-        >);
+                <Text sx={{ color: colors.action, fontSize: 13, marginLeft: 6 }}>{mediaLabel}</Text>
+                <Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
+        );
     };
 
-    /**
-     * Renders type-specific metadata above the post content.
-     * - question: urgency badge + accepted-answer checkmark
-     * - resource: resource-type chip
-     * - feedback: status badge + authority response if present
-     */
     const renderTypeMetadata = () => {
         if (isQuestion) {
             const urgencyConfig: Record<Urgency, { label: string; color: string; bg: string }> = {
@@ -147,34 +171,33 @@ const PostCard = React.memo(function PostCard({
                 medium: { label: 'Medium',  color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
                 low:    { label: 'Low',     color: colors.textTertiary, bg: colors.overlay },
             };
-            const urgencyLevel: Urgency = urgency ?? 'low';
-            const urg = urgencyConfig[urgencyLevel];
+            const urg = urgencyConfig[urgency ?? 'low'];
             return (
-                <HStack space="sm" alignItems="center" sx={{ marginBottom: 4 }}>
-                    {urgency && urgency !== 'low' && (>
+                <HStack space="sm" sx={{ alignItems: 'center', marginBottom: 8 }}>
+                    {urgency && urgency !== 'low' && (
                         <Box sx={{ backgroundColor: urg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <AlertTriangle size={11} color={urg.color} /
-                            ><Text size="xs" bold sx={{ color: urg.color }}>{urg.label}</Text
-                        ></Box
-                    >)}
+                            <AlertTriangle size={11} color={urg.color} />
+                            <Text sx={{ fontSize: 11, fontWeight: '700', color: urg.color }}>{urg.label}</Text>
+                        </Box>
+                    )}
                     {has_accepted_answer && (
                         <Box sx={{ backgroundColor: 'rgba(22,163,74,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <CheckCircle2 size={11} color="#16A34A" /
-                            ><Text size="xs" bold sx={{ color: '#16A34A' }}>Answered</Text
-                        ></Box
-                    >)}
+                            <CheckCircle2 size={11} color="#16A34A" />
+                            <Text sx={{ fontSize: 11, fontWeight: '700', color: '#16A34A' }}>Answered</Text>
+                        </Box>
+                    )}
                 </HStack>
             );
         }
 
         if (isResource) {
             return (
-                <Box sx={{ marginBottom: 4 }}>
+                <Box sx={{ marginBottom: 8 }}>
                     <Box sx={{ backgroundColor: 'rgba(99,102,241,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                        <BookOpen size={11} color="#6366F1" /
-                        ><Text size="xs" bold sx={{ color: '#6366F1' }}>Resource</Text
-                    ></Box
-                ></Box>
+                        <BookOpen size={11} color="#6366F1" />
+                        <Text sx={{ fontSize: 11, fontWeight: '700', color: '#6366F1' }}>Resource</Text>
+                    </Box>
+                </Box>
             );
         }
 
@@ -186,17 +209,17 @@ const PostCard = React.memo(function PostCard({
                 implemented:  { label: 'Implemented',  color: Theme.colors.sanctuarySaffron, bg: 'rgba(246,191,140,0.15)' },
                 declined:     { label: 'Declined',     color: '#DC2626',              bg: 'rgba(220,38,38,0.1)' },
             };
-            const cfg = feedback_status ? statusConfig[feedback_status] : statusConfig.pending;
+            const cfg = statusConfig[feedback_status ?? 'pending'];
             return (
-                <VStack space="xs" sx={{ marginBottom: 4 }}>
+                <VStack space="xs" sx={{ marginBottom: 8 }}>
                     <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}>
-                        <Text size="xs" bold sx={{ color: cfg.color }}>{cfg.label}</Text
-                    ></Box
-                    >{!!feedback_response && (
+                        <Text sx={{ fontSize: 11, fontWeight: '700', color: cfg.color }}>{cfg.label}</Text>
+                    </Box>
+                    {!!feedback_response && (
                         <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: Theme.colors.sanctuarySaffron }}>
-                            <Text color={colors.textSecondary} size="xs" italic>{feedback_response}</Text
-                        ></Box
-                    >)}
+                            <Text sx={{ color: colors.textSecondary, fontSize: 12, fontStyle: 'italic' }}>{feedback_response}</Text>
+                        </Box>
+                    )}
                 </VStack>
             );
         }
@@ -204,18 +227,18 @@ const PostCard = React.memo(function PostCard({
         return null;
     };
 
-    // Optimistic local like state \u2014 re-sync when post data changes (e.g. feed refresh)
     const [liked, setLiked] = React.useState(false);
-    const [localLikeCount, setLocalLikeCount] = React.useState(reactions['\u2764\uFE0F'] || 0);
+    const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
     const [hasResonated, setHasResonated] = React.useState(false);
     const [isResonating, setIsResonating] = React.useState(false);
+    const [menuOpen, setMenuOpen] = React.useState(false);
+    const { blockUser } = useSocialShield();
 
     React.useEffect(() => {
-        setLocalLikeCount(reactions['\u2764\uFE0F'] || 0);
+        setLocalLikeCount(reactions['❤️'] || 0);
         setLiked(false);
-    }, [id, reactions['\u2764\uFE0F']]);
+    }, [id, reactions['❤️']]);
 
-    // Fetch initial resonance state for current user
     React.useEffect(() => {
         if (!currentUserId) return;
         communityAPI.hasResonated(id).then(setHasResonated).catch(() => null);
@@ -251,21 +274,14 @@ const PostCard = React.memo(function PostCard({
         }
     };
 
-    const isLiked = liked;
-
-    const [menuOpen, setMenuOpen] = React.useState(false);
-    const { blockUser } = useSocialShield();
-
     const handleShare = async () => {
-        // Include the post ID so the share link is post-specific (deep link ready)
         const shareUrl = `https://app.gurudevi.edlove.org/app?post=${id}`;
         if (Platform.OS === 'web') {
             if (typeof navigator !== 'undefined' && navigator.share) {
                 try {
                     await navigator.share({ title: `Post by ${is_anonymous ? 'Anonymous' : author_name}`, url: shareUrl });
                 } catch {
-                    // User cancelled or share unavailable \u2014 fall back to clipboard silently
-                    try { await Clipboard.setStringAsync(shareUrl); } catch { /* ignore */ }
+                    await Clipboard.setStringAsync(shareUrl);
                 }
             } else {
                 await Clipboard.setStringAsync(shareUrl);
@@ -290,7 +306,7 @@ const PostCard = React.memo(function PostCard({
         setMenuOpen(false);
         const confirm = Platform.OS === 'web'
             ? window.confirm('Delete this post? This cannot be undone.')
-            : await new Promise<boolean>(resolve =
+            : await new Promise<boolean>(resolve =>
                 require('react-native').Alert.alert(
                     'Delete post',
                     'Are you sure? This cannot be undone.',
@@ -303,60 +319,43 @@ const PostCard = React.memo(function PostCard({
         if (!confirm) return;
         try {
             await communityAPI.deletePost(id);
-            // Parent list will refresh via React Query invalidation
         } catch (err) {
             console.error('[PostCard] deletePost failed:', err);
         }
     };
 
-    const renderPollContent = () => {
-        if (post_type === 'poll' && poll_data) {
-            return (
-                <PollWidget/>
-                    postId={id}
-                    pollData={poll_data}
-                    currentUserId={currentUserId}
-                    isAuthor={author_id === currentUserId}
-                /
-            >);
-        }
-        return null;
-    };
-
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
             <VStack space="md">
-                {/* Header: Author & Meta */}
-                <HStack justifyContent="space-between" alignItems="center">
-                    <HStack space="md" alignItems="center">
-                        <TouchableOpacity>
+                {/* Header */}
+                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <HStack space="md" sx={{ alignItems: 'center' }}>
+                        <TouchableOpacity
                             onPress={!is_anonymous ? onAuthorPress : undefined}
                             disabled={is_anonymous || !onAuthorPress}
                             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                        
+                        >
                             <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
-                                <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText
-                                >{!is_anonymous && author_avatar && (
-                                    <AvatarImage source={{ uri: author_avatar }} alt={author_name} /
-                                >)}
+                                <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
+                                {!is_anonymous && author_avatar && (
+                                    <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
+                                )}
                             </Avatar>
                         </TouchableOpacity>
                         <VStack>
-                            <HStack >space="xs" alignItems="center">
-                                <Text color={colors.text} bold size="sm">
-                                    {is_anonymous ? 'Anonymous' : author_name}
-                                </Text>
-                            </HStack>
-                            <Text color={colors.textSecondary} size="xs">
+                            <Text sx={{ color: colors.text, fontWeight: '700', fontSize: 13 }}>
+                                {is_anonymous ? 'Anonymous' : author_name}
+                            </Text>
+                            <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>
                                 {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
                             </Text>
                         </VStack>
                     </HStack>
 
                     <Box>
-                        <TouchableOpacity >onPress={() => setMenuOpen(!menuOpen)}
-                            <MoreHorizontal color={colors.textTertiary} size={20} /
-                        ></TouchableOpacity
+                        <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)} style={{ padding: 4 }}>
+                            <MoreHorizontal color={colors.textTertiary} size={20} />
+                        </TouchableOpacity>
 
                         {menuOpen && (
                             <Box sx={{
@@ -367,48 +366,41 @@ const PostCard = React.memo(function PostCard({
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
                                 borderColor: colors.border,
-                                minWidth: 150,
+                                minWidth: 160,
                                 zIndex: 10,
                                 overflow: 'hidden',
                                 elevation: 4,
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 3.84,
                             }}>
                                 <VStack>
-                                    {/* Own post: Delete */}
                                     {author_id === currentUserId && (
-                                        <TouchableOpacity>
-                                            style={styles.menuItem}
-                                            onPress={handleDelete}>
-                                        
-                                            <HStack space="md" alignItems="center">
-                                                <XIcon size={16} color={colors.error} /
-                                                ><Text size="sm" color={colors.error}>Delete Post</Text
-                                            ></HStack
-                                        ></TouchableOpacity>
+                                        <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
+                                            <HStack space="md" sx={{ alignItems: 'center' }}>
+                                                <XIcon size={16} color={colors.error} />
+                                                <Text sx={{ fontSize: 13, color: colors.error }}>Delete Post</Text>
+                                            </HStack>
+                                        </TouchableOpacity>
                                     )}
 
-                                    {/* Report (other people's posts) */}
                                     {author_id !== currentUserId && (
-                                        <TouchableOpacity >
-                                            style={styles.menuItem} 
-                                            onPress={() => { onReport?.(); setMenuOpen(false); }}
-                                        
-                                            <HStack space="md" alignItems="center">
-                                                <ShieldAlert size={16} color={colors.text} /
-                                                ><Text size="sm" color={colors.text}>Report Post</Text
-                                            ></HStack
-                                        ></TouchableOpacity>
+                                        <TouchableOpacity style={styles.menuItem} onPress={() => { onReport?.(); setMenuOpen(false); }}>
+                                            <HStack space="md" sx={{ alignItems: 'center' }}>
+                                                <ShieldAlert size={16} color={colors.text} />
+                                                <Text sx={{ fontSize: 13, color: colors.text }}>Report Post</Text>
+                                            </HStack>
+                                        </TouchableOpacity>
                                     )}
 
                                     {!is_anonymous && author_id !== currentUserId && (
-                                        <TouchableOpacity >
-                                            style={[styles.menuItem, { borderBottomWidth: 0 }]} 
-                                            onPress={handleBlock}>
-                                        
-                                            <HStack space="md" alignItems="center">
-                                                <UserX size={16} color={Theme.colors.sanctuarySaffron} /
-                                                ><Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text
-                                            ></HStack
-                                        ></TouchableOpacity>
+                                        <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={handleBlock}>
+                                            <HStack space="md" sx={{ alignItems: 'center' }}>
+                                                <UserX size={16} color={Theme.colors.sanctuarySaffron} />
+                                                <Text sx={{ fontSize: 13, color: Theme.colors.sanctuarySaffron }}>Block User</Text>
+                                            </HStack>
+                                        </TouchableOpacity>
                                     )}
                                 </VStack>
                             </Box>
@@ -416,87 +408,92 @@ const PostCard = React.memo(function PostCard({
                     </Box>
                 </HStack>
 
-                {/* Type-specific metadata (urgency, feedback status, resource chip) */}
+                {/* Metadata */}
                 {renderTypeMetadata()}
 
-                {/* Content */}
-                <Text color={colors.textPrimary} size="md" sx={{ lineHeight: 22 }} numberOfLines={onPress ? 4 : undefined}>
-                    {content}>
+                {/* Post Content */}
+                <Text 
+                    numberOfLines={onPress ? 4 : undefined}
+                    sx={{ color: colors.text, fontSize: 15, lineHeight: 22 }}
+                >
+                    {content}
                 </Text>
 
-                {/* Media Content */}
+                {/* Attachments */}
                 {renderMediaContent()}
 
-                {/* Poll Content */}
-                {renderPollContent()}
+                {/* Polls */}
+                {post_type === 'poll' && poll_data && (
+                    <PollWidget
+                        postId={id}
+                        pollData={poll_data}
+                        currentUserId={currentUserId}
+                        isAuthor={author_id === currentUserId}
+                    />
+                )}
 
-                {/* Footer: Actions */}
-                <HStack justifyContent="space-between" alignItems="center" mt="$1">
+                {/* Footer Actions */}
+                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
                     <HStack space="lg">
-                        {/* Like / Heart Reaction */}
                         <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
-                            <Heart/>
+                            <Heart
                                 size={20}
-                                color={isLiked ? colors.error : colors.textTertiary}
-                                fill={isLiked ? colors.error : 'none'}
-                            /
-                            >{localLikeCount > 0 && (
-                                <Text color={isLiked ? colors.error : colors.textTertiary} size="xs" sx={{ marginLeft: 4 }}>
-                                    {localLikeCount}>
+                                color={liked ? colors.error : colors.textTertiary}
+                                fill={liked ? colors.error : 'none'}
+                            />
+                            {localLikeCount > 0 && (
+                                <Text sx={{ color: liked ? colors.error : colors.textTertiary, fontSize: 12, marginLeft: 4 }}>
+                                    {localLikeCount}
                                 </Text>
                             )}
                         </TouchableOpacity>
 
-                        {/* Resonance Reaction */}
                         <TouchableOpacity onPress={handleResonate} style={styles.actionButton} disabled={isResonating}>
                             <LivingGlow active={hasResonated}>
-                                <Sparkles/>
+                                <Sparkles
                                     size={20}
                                     color={hasResonated ? colors.action : colors.textTertiary}
-                                /
-                            ></LivingGlow
-                        ></TouchableOpacity>
+                                />
+                            </LivingGlow>
+                        </TouchableOpacity>
 
                         <TouchableOpacity onPress={onComment} style={styles.actionButton}>
                             <MessageCircle size={20} color={colors.textTertiary} />
-                            <Text color={colors.textTertiary} size="sm" sx={{ marginLeft: 4 }}>
-                                {comment_count}>
+                            <Text sx={{ color: colors.textTertiary, fontSize: 12, marginLeft: 4 }}>
+                                {comment_count}
                             </Text>
                         </TouchableOpacity>
 
-                        {/* Share button \u2014 clipboard on web, native share sheet otherwise */}
                         <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post">
-                            <Share2 size={18} color={colors.textTertiary} /
-                        ></TouchableOpacity
-                    ></HStack>
+                            <Share2 size={18} color={colors.textTertiary} />
+                        </TouchableOpacity>
+                    </HStack>
 
-                    {/* Engagement Count */}
-                    {totalReactions > 0 && (
-                        <Text color={colors.textTertiary} size="xs">
-                            {totalReactions} {isQuestion ? 'Upvotes' : 'Resonances'}
-                        </Text>
-                    )}
-
-                    {/* Type Badge \u2014 contextual label per post type */}
-                    <LivingGlow active={isAnnouncement}>
-                        <Box sx={{
-                            backgroundColor: TYPE_BADGE[post_type]?.bg ?? colors.overlay,
-                            borderWidth: 1,
-                            borderColor: TYPE_BADGE[post_type]?.border ?? colors.action,
-                            paddingHorizontal: 8,
-                            paddingVertical: 2,
-                            borderRadius: Theme.corners.tight,
-                        }}>
-                            <Text sx={{ color: TYPE_BADGE[post_type]?.text ?? colors.action }} size="xs" bold>
-                                {TYPE_BADGE[post_type]?.label ?? 'Post'}>
-                            </Text>
-                        </Box>
-                    </LivingGlow>
+                    <HStack sx={{ alignItems: 'center' }}>
+                        <LivingGlow active={isAnnouncement}>
+                            <Box sx={{
+                                backgroundColor: TYPE_BADGE[post_type]?.bg ?? colors.overlay,
+                                borderWidth: 1,
+                                borderColor: TYPE_BADGE[post_type]?.border ?? colors.action,
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: Theme.corners.tight,
+                            }}>
+                                <Text sx={{ color: TYPE_BADGE[post_type]?.text ?? colors.action, fontSize: 10, fontWeight: '700' }}>
+                                    {TYPE_BADGE[post_type]?.label ?? 'Post'}
+                                </Text>
+                            </Box>
+                        </LivingGlow>
+                    </HStack>
                 </HStack>
             </VStack>
         </SanctuaryCard>
     );
 });
+
+// —————————————————————————————————————————————————————————————————————————————
+// COMPONENT: PollWidget
+// —————————————————————————————————————————————————————————————————————————————
 
 function PollWidget({
     postId,
@@ -512,26 +509,21 @@ function PollWidget({
     const {
         options = [],
         allow_multiple = false,
-        is_anonymous = false,
+        is_anonymous: pollAnon = false,
         ends_at,
     } = pollData;
 
     const colors = useThemedColors();
-
-    // \u2500\u2500 Vote state \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-    const [counts, setCounts] = React.useState<Record<string, number/>>({});
-    const [userVotes, setUserVotes] = React.useState<Set<string/>>(new Set());
+    const [counts, setCounts] = React.useState<Record<string, number>>({});
+    const [userVotes, setUserVotes] = React.useState<Set<string>>(new Set());
     const [totalVotes, setTotalVotes] = React.useState(0);
     const [isLoading, setIsLoading] = React.useState(true);
     const [isVoting, setIsVoting] = React.useState(false);
     const [isRemoving, setIsRemoving] = React.useState(false);
-
-    // \u2500\u2500 Time state \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     const [timeLeft, setTimeLeft] = React.useState<string | null>(null);
     const [isExpired, setIsExpired] = React.useState(false);
 
-    // \u2500\u2500 Animated progress bars (one Animated.Value per option, 0\u2013100) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-    const progressAnims = React.useRef<Record<string, Animated.Value/>>({});
+    const progressAnims = React.useRef<Record<string, Animated.Value>>({});
     options.forEach(opt => {
         if (!progressAnims.current[opt.id]) {
             progressAnims.current[opt.id] = new Animated.Value(0);
@@ -539,14 +531,11 @@ function PollWidget({
     });
 
     const hasVoted = userVotes.size > 0;
-    // Results are revealed once user has voted, poll has ended, or author is viewing.
     const showResults = hasVoted || isExpired || isAuthor;
     const maxCount = options.reduce((m, o) => Math.max(m, counts[o.id] ?? 0), 0);
 
-    // \u2500\u2500 Fetch votes from DB \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     const fetchVotes = React.useCallback(async () => {
         try {
-            // First, fetch aggregated counts without exposing user identifiers
             const { data: countData, error: countError } = await supabase
                 .from('community_poll_votes')
                 .select('option_id')
@@ -555,16 +544,13 @@ function PollWidget({
 
             const newCounts: Record<string, number> = {};
             let total = 0;
-
-            (countData ?? []).forEach((v: { option_id: string }) => {
+            (countData ?? []).forEach((v: any) => {
                 newCounts[v.option_id] = (newCounts[v.option_id] ?? 0) + 1;
                 total++;
             });
-
             setCounts(newCounts);
             setTotalVotes(total);
 
-            // Then, fetch only the current user's votes (if we have a user id)
             if (currentUserId) {
                 const { data: myVotesData, error: myVotesError } = await supabase
                     .from('community_poll_votes')
@@ -574,13 +560,8 @@ function PollWidget({
                 if (myVotesError) throw myVotesError;
 
                 const myVotes = new Set<string>();
-                (myVotesData ?? []).forEach((v: { option_id: string }) => {
-                    myVotes.add(v.option_id);
-                });
+                (myVotesData ?? []).forEach((v: any) => myVotes.add(v.option_id));
                 setUserVotes(myVotes);
-            } else {
-                // No current user; ensure we clear any previous selection state
-                setUserVotes(new Set<string/>());
             }
         } catch (err) {
             console.error('[PollWidget] fetchVotes error:', err);
@@ -591,20 +572,6 @@ function PollWidget({
 
     React.useEffect(() => { fetchVotes(); }, [fetchVotes]);
 
-    // \u2500\u2500 Supabase realtime subscription \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-    React.useEffect(() => {
-        const channel = supabase
-            .channel(`poll-${postId}`)
-            .on(
-                'postgres_changes' as any,
-                { event: '*', schema: 'public', table: 'community_poll_votes', filter: `post_id=eq.${postId}` },
-                () => fetchVotes(),
-            )
-            .subscribe();
-        return () => { supabase.removeChannel(channel); };
-    }, [postId, fetchVotes]);
-
-    // \u2500\u2500 Animate progress bars whenever results change \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     React.useEffect(() => {
         if (!showResults) return;
         options.forEach(opt => {
@@ -615,15 +582,12 @@ function PollWidget({
                 useNativeDriver: false,
             }).start();
         });
-    }, [counts, totalVotes, showResults]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [counts, totalVotes, showResults, options]);
 
-    // \u2500\u2500 Countdown timer \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     React.useEffect(() => {
         if (!ends_at) return;
-        const end = new Date(ends_at).getTime();
-
         const tick = () => {
-            const diff = end - Date.now();
+            const diff = new Date(ends_at).getTime() - Date.now();
             if (diff <= 0) { setIsExpired(true); setTimeLeft(null); return; }
             const totalMins = Math.floor(diff / 60_000);
             const d = Math.floor(totalMins / (60 * 24));
@@ -631,83 +595,21 @@ function PollWidget({
             const m = totalMins % 60;
             setTimeLeft(d > 0 ? `${d}d ${h}h left` : h > 0 ? `${h}h ${m}m left` : `${m}m left`);
         };
-
-        if (end <= Date.now()) { setIsExpired(true); return; }
         tick();
         const timer = setInterval(tick, 30_000);
         return () => clearInterval(timer);
     }, [ends_at]);
 
-    // \u2500\u2500 Vote handler \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     const handleVote = async (optionId: string) => {
         if (isExpired || !currentUserId || isVoting || isRemoving) return;
         setIsVoting(true);
-
-        // --- Optimistic update ---
-        const wasSelected = userVotes.has(optionId);
-
-        if (allow_multiple) {
-            // Toggle this option on/off
-            setUserVotes(prev => {
-                const next = new Set(prev);
-                wasSelected ? next.delete(optionId) : next.add(optionId);
-                return next;
-            });
-            setCounts(prev => ({ ...prev, [optionId]: Math.max(0, (prev[optionId] ?? 0) + (wasSelected ? -1 : 1)) }));
-            setTotalVotes(prev => Math.max(0, prev + (wasSelected ? -1 : 1)));
-        } else {
-            // Single-choice: tap same \u2192 retract; tap different \u2192 replace
-            const prevId = [...userVotes][0] as string | undefined;
-            const isSame = prevId === optionId;
-
-            const newCounts = { ...counts };
-            if (isSame) {
-                // Retract
-                newCounts[optionId] = Math.max(0, (newCounts[optionId] ?? 0) - 1);
-                setUserVotes(new Set());
-                setTotalVotes(prev => Math.max(0, prev - 1));
-            } else {
-                // Replace
-                if (prevId) newCounts[prevId] = Math.max(0, (newCounts[prevId] ?? 0) - 1);
-                newCounts[optionId] = (newCounts[optionId] ?? 0) + 1;
-                setUserVotes(new Set([optionId]));
-                if (!prevId) setTotalVotes(prev => prev + 1);
-            }
-            setCounts(newCounts);
-        }
-
         try {
             await communityAPI.voteInPoll(postId, optionId, allow_multiple);
+            await fetchVotes();
         } catch (err) {
             console.error('[PollWidget] vote error:', err);
-            fetchVotes(); // revert on error
         } finally {
             setIsVoting(false);
-        }
-    };
-
-    // \u2500\u2500 Remove ALL votes \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-    const handleRemoveVote = async () => {
-        if (isExpired || !currentUserId || isVoting || isRemoving || !hasVoted) return;
-        setIsRemoving(true);
-
-        // Optimistic: subtract user's votes from counts then clear
-        const removedVotes = new Set(userVotes);
-        setCounts(prev => {
-            const next = { ...prev };
-            removedVotes.forEach(id => { next[id] = Math.max(0, (next[id] ?? 0) - 1); });
-            return next;
-        });
-        setTotalVotes(prev => Math.max(0, prev - removedVotes.size));
-        setUserVotes(new Set());
-
-        try {
-            await communityAPI.retractAllVotes(postId);
-        } catch (err) {
-            console.error('[PollWidget] retract error:', err);
-            fetchVotes(); // revert on error
-        } finally {
-            setIsRemoving(false);
         }
     };
 
@@ -717,209 +619,141 @@ function PollWidget({
 
     return (
         <VStack space="sm" sx={{ marginTop: Theme.spacing.sm }}>
-            {/* Poll header: meta badges + countdown */}
-            <HStack justifyContent="space-between" alignItems="center">
-                <HStack space="xs" alignItems="center">
-                    {is_anonymous && (
-                        <HStack space="xs" alignItems="center">
-                            style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}
-                            <Lock size={11} color={colors.textTertiary} /
-                            ><Text color={colors.textTertiary} size="xs">Anonymous</Text
-                        ></HStack
-                    >)}
+            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <HStack space="xs" sx={{ alignItems: 'center' }}>
+                    {pollAnon && (
+                        <Box sx={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Lock size={11} color={colors.textTertiary} />
+                            <Text sx={{ color: colors.textTertiary, fontSize: 10 }}>Anonymous</Text>
+                        </Box>
+                    )}
                     {allow_multiple && (
-                        <Box style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}>
-                            <Text color={colors.textTertiary} size="xs">Multi-select</Text
-                        ></Box
-                    >)}
+                        <Box sx={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}>
+                            <Text sx={{ color: colors.textTertiary, fontSize: 10 }}>Multi-select</Text>
+                        </Box>
+                    )}
                 </HStack>
 
                 {isExpired ? (
-                    <HStack space="xs" alignItems="center">
-                        <Clock size={12} color={colors.textTertiary} /
-                        ><Text color={colors.textTertiary} size="xs">Poll ended</Text
-                    ></HStack
-                >) : timeLeft ? (
-                    <HStack space="xs" alignItems="center">
-                        <Clock size={12} color={colors.action} /
-                        ><Text color={colors.action} size="xs">{timeLeft}</Text
-                    ></HStack
-                >) : null}
+                    <HStack space="xs" sx={{ alignItems: 'center' }}>
+                        <Clock size={12} color={colors.textTertiary} />
+                        <Text sx={{ color: colors.textTertiary, fontSize: 11 }}>Poll ended</Text>
+                    </HStack>
+                ) : timeLeft ? (
+                    <HStack space="xs" sx={{ alignItems: 'center' }}>
+                        <Clock size={12} color={colors.action} />
+                        <Text sx={{ color: colors.action, fontSize: 11 }}>{timeLeft}</Text>
+                    </HStack>
+                ) : null}
             </HStack>
 
-            {/* Options */}
             {options.map(opt => {
                 const count = counts[opt.id] ?? 0;
-                const percentage = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
                 const isSelected = userVotes.has(opt.id);
                 const isWinner = isExpired && count > 0 && count === maxCount;
                 const canTap = !isExpired && !!currentUserId && !isVoting && !isRemoving;
 
                 return (
-                    <TouchableOpacity>
+                    <TouchableOpacity
                         key={opt.id}
                         onPress={() => handleVote(opt.id)}
                         disabled={!canTap}
-                        activeOpacity={canTap ? 0.7 : 1}
-                        style={{
-                            borderRadius: Theme.corners.comfortable,
-                            overflow: 'hidden',
-                            borderWidth: isSelected ? 2 : 1,
-                            borderColor: isWinner
-                                ? Theme.colors.sanctuarySaffron
-                                : isSelected ? colors.action : colors.overlay,
-                            backgroundColor: colors.secondary,
-                            minHeight: 48,
-                            justifyContent: 'center',
-                        }}
-                    
-                        {/* Animated fill bar \u2014 only shown after voting/expiry */}
+                        activeOpacity={0.7}
+                        style={[
+                            styles.pollOption,
+                            { 
+                                borderColor: isWinner ? Theme.colors.sanctuarySaffron : isSelected ? colors.action : colors.overlay,
+                                backgroundColor: colors.secondary,
+                                borderWidth: isSelected ? 2 : 1
+                            }
+                        ]}
+                    >
                         {showResults && (
-                            <Animated.View>
-                                style={{
-                                    position: 'absolute',
-                                    left: 0, top: 0, bottom: 0,
-                                    width: progressAnims.current[opt.id]!.interpolate({
-                                        inputRange: [0, 100],
-                                        outputRange: ['0%', '100%'],
-                                    }),
-                                    backgroundColor: isWinner
-                                        ? `${Theme.colors.sanctuarySaffron}28`
-                                        : isSelected
-                                            ? `${colors.action}22`
-                                            : `${colors.overlay}88`,
-                                }}
-                            /
-                        >)}
-
-                        <HStack justifyContent="space-between" style={{ paddingHorizontal: 12, zIndex: 1 }} alignItems="center">
-                            <HStack space="sm" alignItems="center" style={{ flex: 1 }}>
-                                {/* Checkbox (multi) or radio dot (single) \u2014 hidden when poll is closed */}
-                                {!isExpired && (
-                                    <Box style={{
-                                        width: 20, height: 20,
-                                        borderRadius: allow_multiple ? 5 : 10,
-                                        borderWidth: isSelected ? 0 : 1.5,
-                                        borderColor: colors.overlay,
-                                        backgroundColor: isSelected ? colors.action : 'transparent',
+                            <Animated.View
+                                style={[
+                                    styles.pollProgress,
+                                    {
+                                        width: progressAnims.current[opt.id]!.interpolate({
+                                            inputRange: [0, 100],
+                                            outputRange: ['0%', '100%'],
+                                        }),
+                                        backgroundColor: isWinner ? `${Theme.colors.sanctuarySaffron}20` : isSelected ? `${colors.action}15` : `${colors.overlay}40`
+                                    }
+                                ]}
+                            />
+                        )}
+                        <HStack sx={{ justifyContent: 'space-between', paddingHorizontal: 12, zIndex: 1, alignItems: 'center', width: '100%' }}>
+                            <HStack space="sm" sx={{ alignItems: 'center', flex: 1 }}>
+                                {!isExpired && currentUserId && (
+                                    <Box sx={{
+                                        width: 18, height: 18, borderRadius: allow_multiple ? 4 : 9,
+                                        borderWidth: 2, borderColor: isSelected ? colors.action : colors.textTertiary,
                                         alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: isSelected ? colors.action : 'transparent'
                                     }}>
-                                        {isSelected && (
-                                            allow_multiple
-                                                ? <Check size={12} color="#fff" strokeWidth={3} /
-                                                >: <Box style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' }} /
-                                        >)}
+                                        {isSelected && <Check size={12} color="white" />}
                                     </Box>
                                 )}
-                                {isWinner && <Trophy size={14} color={Theme.colors.sanctuarySaffron} />}
-                                <Text>
-                                    color={isSelected ? colors.textPrimary : colors.textSecondary}
-                                    size="sm"
-                                    bold={isSelected || isWinner}
-                                    style={{ flex: 1, paddingVertical: 12 }}
-                                    numberOfLines={3}>
-                                
+                                <Text sx={{ color: colors.text, fontSize: 14, fontWeight: isSelected ? '700' : '400' }}>
                                     {opt.text}
                                 </Text>
                             </HStack>
-
-                            {/* Percentage + count \u2014 only after voting/expiry */}
                             {showResults && (
-                                <VStack alignItems="flex-end" style={{ marginLeft: 8 }}>
-                                    <Text>
-                                        size="sm"
-                                        bold={isSelected || isWinner}
-                                        style={{
-                                            color: isWinner
-                                                ? Theme.colors.sanctuarySaffron
-                                                : isSelected ? colors.action : colors.textTertiary,
-                                        }}
-                                    
-                                        {Math.round(percentage)}%
-                                    </Text>
-                                    {!is_anonymous && (
-                                        <Text color={colors.textTertiary} size="xs">{count}</Text
-                                    >)}
-                                </VStack>
+                                <Text sx={{ color: isSelected ? colors.action : colors.textSecondary, fontSize: 12, fontWeight: '700' }}>
+                                    {totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0}%
+                                </Text>
                             )}
                         </HStack>
                     </TouchableOpacity>
                 );
             })}
-
-            {/* Footer row: total responses + contextual hints */}
-            <HStack justifyContent="space-between" alignItems="center" style={{ marginTop: 2 }}>
-                <Text color={colors.textTertiary} size="xs">
-                    {totalVotes} {totalVotes === 1 ? 'response' : 'responses'}
+            
+            <HStack sx={{ justifyContent: 'space-between', marginTop: 4 }}>
+                <Text sx={{ color: colors.textTertiary, fontSize: 11 }}>
+                    {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
                 </Text>
-
-                <HStack space="md" alignItems="center">
-                    {/* Change-vote hint \u2014 visible when voted + poll open */}>
-                    {hasVoted && !isExpired && (
-                        <Text color={colors.textTertiary} size="xs" italic>
-                            {allow_multiple ? 'Tap to toggle' : 'Tap to change'}
-                        </Text>
-                    )}
-
-                    {/* Remove vote \u2014 explicit retract button */}
-                    {hasVoted && !isExpired && (
-                        <TouchableOpacity>
-                            onPress={handleRemoveVote}
-                            disabled={isRemoving}
-                            style={{
-                                flexDirection: 'row', alignItems: 'center', gap: 3,
-                                paddingHorizontal: 8, paddingVertical: 4,
-                                borderRadius: Theme.corners.tight,
-                                borderWidth: 1, borderColor: colors.overlay,
-                            }}
-                            accessibilityLabel="Remove my vote"
-                        
-                            {isRemoving
-                                ? <ActivityIndicator size="small" color={colors.textTertiary} /
-                                >: <XIcon size={11} color={colors.textTertiary} /
-                            >}
-                            <Text color={colors.textTertiary} size="xs">
-                                {isRemoving ? 'Removing\u2026' : 'Remove vote'}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                </HStack>
+                {hasVoted && !isExpired && (
+                    <TouchableOpacity onPress={fetchVotes}>
+                        <Text sx={{ color: colors.action, fontSize: 11, fontWeight: '600' }}>Change vote</Text>
+                    </TouchableOpacity>
+                )}
             </HStack>
         </VStack>
     );
 }
 
-export default PostCard;
-
-/** Maps each canonical PostType to its footer badge config. */
-const TYPE_BADGE: Record<PostType, { label: string; bg: string; border: string; text: string }>/> = {
-    announcement: { label: 'Sacred Bulletin', bg: '$amber100',          border: '$amber400',           text: '$amber700' },
-    question:     { label: 'Question',        bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.5)', text: '#3B82F6' },
-    resource:     { label: 'Resource',        bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.5)', text: '#6366F1' },
-    feedback:     { label: 'Feedback',        bg: 'rgba(168,85,247,0.1)', border: 'rgba(168,85,247,0.5)', text: '#A855F7' },
-    discussion:   { label: 'Discussion',      bg: 'rgba(20,184,166,0.1)', border: 'rgba(20,184,166,0.5)', text: '#14B8A6' },
-    poll:         { label: 'Poll',            bg: 'rgba(246,191,140,0.15)', border: 'rgba(246,143,15,0.4)', text: '#F68F0F' },
-};
-
 const styles = StyleSheet.create({
-    actionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 4,
-    },
-    menuItem: {
-        padding: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(0,0,0,0.05)',
-    },
     attachmentChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: Theme.spacing.sm,
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         alignSelf: 'flex-start',
     },
+    menuItem: {
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(255,255,255,0.05)',
+    },
+    actionButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 4,
+    },
+    pollOption: {
+        height: 48,
+        borderRadius: Theme.corners.comfortable,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        position: 'relative',
+    },
+    pollProgress: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+    }
 });

@@ -1,17 +1,17 @@
 /**
- * SanctuaryModal  Phase-aware base modal for the Gurudevi ecosystem.
+ * SanctuaryModal - Phase-aware base modal for the Gurudevi ecosystem.
  *
  * Design laws enforced here:
- * - Backdrop uses Shadow Violet rgba(107,100,128,x)  NEVER black
+ * - Backdrop uses Shadow Violet rgba(107,100,128,x) - NEVER black
  * - Background resolves from glass.modal tokens (phase + world aware)
- * - All text uses token-resolved colors  no hardcoded hex
- * - Border radius: Theme.corners.generous (24)  organic, never sharp
+ * - All text uses token-resolved colors - no hardcoded hex
+ * - Border radius: Theme.corners.generous (24) - organic, never sharp
  * - Shadow: Shadow Violet only
  *
  * Usage:
- *   <SanctuaryModal isOpen={open} onClose={close} title="Confirm"
- *     <Text>Your content</Text
- *   </SanctuaryModal
+ *   <SanctuaryModal isOpen={open} onClose={close} title="Confirm">
+ *     <Text>Your content</Text>
+ *   </SanctuaryModal>
  */
 
 import React from 'react';
@@ -38,7 +38,7 @@ export interface SanctuaryModalProps {
     isOpen: boolean;
     /** Called when the modal requests to close */
     onClose: () => void;
-    /** Modal title  shown in header */
+    /** Modal title - shown in header */
     title: string;
     /** Optional subtitle below the title */
     subtitle?: string;
@@ -68,51 +68,51 @@ export default function SanctuaryModal({
     const { scene, text, isDark } = useTheme();
 
     return (
-        <Modal>
+        <Modal
             isOpen={isOpen}
             onClose={onClose}
-            {...({ size } as any)}
-        
-            {/* Backdrop: Shadow Violet  NEVER black */}
-            <ModalBackdrop/>
+            size={size}
+        >
+            {/* Backdrop: Shadow Violet - NEVER black */}
+            <ModalBackdrop
                 sx={{
-                    backgroundColor: isDark
-                        ? 'rgba(107,100,128,0.65)'
-                        : 'rgba(107,100,128,0.45)',
+                    _dark: {
+                        backgroundColor: 'rgba(107,100,128,0.65)',
+                    },
+                    backgroundColor: 'rgba(107,100,128,0.45)',
                 }}
-            /
+            />
 
-            <ModalContent>
+            <ModalContent
                 sx={{
                     width: '90%',
                     backgroundColor: scene.elevated.bg,
                     borderColor: scene.elevated.border,
                     borderWidth: 1,
                     borderRadius: Theme.corners.generous,
-                    // Shadow Violet only  never black
+                    // Shadow Violet only - never black
                     shadowColor: Theme.colors.shadowViolet,
                     shadowOffset: { width: 0, height: isDark ? 0 : 4 },
                     shadowOpacity: isDark ? 0.28 : 0.10,
                     shadowRadius: isDark ? 20 : 12,
                     elevation: 8,
                 }}
-            
+            >
                 <ModalHeader>
-                    <HStack>
-                        {...({ space: 'sm', alignItems: 'center', flex: 1 } as any)}
-                    
+                    <HStack space="sm" alignItems="center" flex={1}>
                         {icon && icon}
-                        <VStack {...({ flex: 1 } as any)}>
-                            <Heading>
+                        <VStack flex={1}>
+                            <Heading
                                 size="md"
-                                {...({ color: text.onElevated } as any)}
-                            
+                                sx={{ color: text.onElevated }}
+                            >
                                 {title}
                             </Heading>
                             {subtitle ? (
-                                <Text>
-                                    {...({ size: 'xs', color: text.secondary } as any)}
-                                
+                                <Text
+                                    size="xs"
+                                    sx={{ color: text.secondary }}
+                                >
                                     {subtitle}
                                 </Text>
                             ) : null}
@@ -121,15 +121,15 @@ export default function SanctuaryModal({
 
                     {showCloseButton && (
                         <ModalCloseButton>
-                            <Icon/>
+                            <Icon
                                 as={CloseIcon}
-                                {...({ color: text.onElevated } as any)}
-                            /
+                                sx={{ color: text.onElevated }}
+                            />
                         </ModalCloseButton>
                     )}
                 </ModalHeader>
 
-                <ModalBody>{children}</ModalBody
+                <ModalBody>{children}</ModalBody>
 
                 {footer ? <ModalFooter>{footer}</ModalFooter> : null}
             </ModalContent>

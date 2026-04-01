@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
+import { useActivityPulse } from '@repo/core';
 
 interface TemporalGlassProps {
     children: React.ReactNode;
@@ -21,8 +22,6 @@ const PHASE_EDGES = {
     dusk: { top: 'rgba(184,169,224,0.35)', bottom: 'rgba(107,100,128,0.12)' },
     night: { top: 'rgba(184,169,224,0.35)', bottom: 'rgba(125,212,192,0.08)' },
 };
-
-import { useActivityPulse } from '@repo/core';
 
 export const TemporalGlass: React.FC<TemporalGlassProps> = ({
     children,
@@ -46,15 +45,16 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                     overflow: 'hidden',
                     // High-fidelity web "Un-shimming" layer with Quantum Resonance
                     boxShadow: `inset 0 1px 0 0 ${edges.top}, 0 0 0 1px ${edges.bottom}, 0 4px 24px 0 rgba(0,0,0,${0.1 + resonanceShift})`,
+                    // @ts-ignore
                     backdropFilter: `blur(${20 + resonanceShift * 20}px) saturate(${180 + resonanceShift * 100}%)`,
                     backgroundColor: `rgba(255, 255, 255, ${0.05 + resonanceShift * 0.05})`,
                 } as any,
                 style,
             ]}
-        
-            <View style={StyleSheet.absoluteFill}
+        >
+            <View style={StyleSheet.absoluteFill}>
                 {children}
-            </View
-        </View
+            </View>
+        </View>
     );
 };

@@ -25,88 +25,106 @@ export const TemporalPilot: React.FC = () => {
 
 
     return (
-        <View style={styles.container}
+        <View style={styles.container}>
             {/* Tactical Switcher */}
-            <View style={styles.header}
-                <View style={styles.scales}
+            <View style={styles.header}>
+                <View style={styles.scales}>
                     {(['day', 'week', 'month'] as const).map((s) => (
-                        <TouchableOpacity accessibilityRole="button"
+                        <TouchableOpacity
+                            accessibilityRole="button"
                             key={s}
                             onPress={() => setScale(s)}
                             style={[styles.scaleButton, viewScale === s && styles.scaleButtonActive]}
-                        
-                            <Text style={[styles.scaleText, viewScale === s && styles.scaleTextActive]}
+                        >
+                            <Text style={[styles.scaleText, viewScale === s && styles.scaleTextActive]}>
                                 {s.toUpperCase()}
-                            </Text
-                        </TouchableOpacity
+                            </Text>
+                        </TouchableOpacity>
                     ))}
-                </View
+                </View>
 
-                <View style={styles.actions}
+                <View style={styles.actions}>
                     {/* View Mode Toggle */}
-                    <TouchableOpacity accessibilityRole="button" 
-                        onPress={() => setViewMode(viewMode === 'spotlight' ? 'timeline' : 'spotlight')} 
+                    <TouchableOpacity
+                        accessibilityRole="button"
+                        onPress={() => setViewMode(viewMode === 'spotlight' ? 'timeline' : 'spotlight')}
                         style={[styles.iconButton, viewMode === 'timeline' && styles.iconButtonActive]}
-                    
+                    >
                         {viewMode === 'spotlight' ? (
-                            <Zap size={20} color={Theme.colors.resonance.present} /
+                            <Zap size={20} color={Theme.colors.resonance.present} />
                         ) : (
-                            <Layout size={20} color={Theme.colors.resonance.present} /
+                            <Layout size={20} color={Theme.colors.resonance.present} />
                         )}
-                    </TouchableOpacity
+                    </TouchableOpacity>
 
-                    <TouchableOpacity accessibilityRole="button" onPress={() => setOffline(!isOffline)} style={styles.iconButton}
-
+                    <TouchableOpacity
+                        accessibilityRole="button"
+                        onPress={() => setOffline(!isOffline)}
+                        style={styles.iconButton}
+                    >
                         {isOffline ? (
-                            <WifiOff size={20} color="#FF6B6B" /
+                            <WifiOff size={20} color="#FF6B6B" />
                         ) : (
-                            <Wifi size={20} color={Theme.colors.resonance.present} /
+                            <Wifi size={20} color={Theme.colors.resonance.present} />
                         )}
-                    </TouchableOpacity
-                    <TouchableOpacity accessibilityRole="button" onPress={() => setCalendarVisible(true)} style={styles.iconButton}
+                    </TouchableOpacity>
 
-                        <Calendar size={20} color={Theme.colors.resonance.present} /
-                    </TouchableOpacity
-                    <TouchableOpacity accessibilityRole="button" style={styles.iconButton}
-                        <Search size={20} color={Theme.colors.resonance.present} /
-                    </TouchableOpacity
-                </View
-            </View
+                    <TouchableOpacity
+                        accessibilityRole="button"
+                        onPress={() => setCalendarVisible(true)}
+                        style={styles.iconButton}
+                    >
+                        <Calendar size={20} color={Theme.colors.resonance.present} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity accessibilityRole="button" style={styles.iconButton}>
+                        <Search size={20} color={Theme.colors.resonance.present} />
+                    </TouchableOpacity>
+                </View>
+            </View>
 
             {/* Focus Selector (Only in Timeline Mode) */}
             {viewMode === 'timeline' && (
-                <View style={styles.focusContainer}
+                <View style={styles.focusContainer}>
                     {(['all', 'mood', 'journal'] as const).map((f) => (
-                        <TouchableOpacity accessibilityRole="button"
+                        <TouchableOpacity
+                            accessibilityRole="button"
                             key={f}
                             onPress={() => setTimelineFocus(f)}
                             style={[styles.focusButton, timelineFocus === f && styles.focusButtonActive]}
-                        
-                            <Text style={[styles.focusText, timelineFocus === f && styles.focusTextActive]}
+                        >
+                            <Text style={[styles.focusText, timelineFocus === f && styles.focusTextActive]}>
                                 {f.toUpperCase()}
-                            </Text
-                        </TouchableOpacity
+                            </Text>
+                        </TouchableOpacity>
                     ))}
-                </View
+                </View>
             )}
 
             {/* Intuitive Flow */}
-            <TemporalScrubber /
+            <TemporalScrubber />
 
 
             {/* Tactical Calendar Modal (Mock for now, to be populated with real library) */}
-            <Modal visible={isCalendarVisible} transparent animationType="fade"
-                <View style={styles.modalBackdrop}
-                    <View style={styles.calendarContainer}
-                        <Text style={styles.modalTitle}>Select Temporal Point</Text                        {/* Placeholder for real calendar component */}
-                        <View style={styles.calendarPlaceholder}
-                           <Text style={{ color: '#fff', opacity: 0.5 }}>[Tactical Calendar Utility]</Text
-                        </View
-                        <TouchableOpacity accessibilityRole="button" 
+            <Modal visible={isCalendarVisible} transparent animationType="fade">
+                <View style={styles.modalBackdrop}>
+                    <View style={styles.calendarContainer}>
+                        <Text style={styles.modalTitle}>Select Temporal Point</Text>
+                        {/* Placeholder for real calendar component */}
+                        <View style={styles.calendarPlaceholder}>
+                            <Text style={{ color: '#fff', opacity: 0.5 }}>[Tactical Calendar Utility]</Text>
+                        </View>
+                        <TouchableOpacity
+                            accessibilityRole="button"
                             onPress={() => setCalendarVisible(false)}
                             style={styles.closeButton}
-                        
-                            <Text style={styles.closeButtonText}>LOCK TEMPORAL VIEW</Text                        </TouchableOpacity                    </View                </View            </Modal        </View
+                        >
+                            <Text style={styles.closeButtonText}>LOCK TEMPORAL VIEW</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        </View>
     );
 };
 

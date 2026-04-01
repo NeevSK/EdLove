@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -73,23 +73,23 @@ export default function LotusLoader({
     const content = (
         <VStack space="md" alignItems="center" justifyContent="center">
             <Animated.View style={animatedStyle}>
-                <Flower>
+                <Flower
                     size={SIZES[size]}
                     color={Theme.colors.sanctuarySaffron}
                     strokeWidth={1.5}
-                /
+                />
             </Animated.View>
-            <ActivityIndicator>
+            <ActivityIndicator
                 size="large"
                 color={Theme.colors.starlightGray}
-            /
+            />
             {text && (
-                <Text>
+                <Text
                     color={Theme.colors.starlightGray}
                     fontFamily={Theme.typography.fontFamily.english}
                     size="sm"
                     sx={{ letterSpacing: 1 }}
-                
+                >
                     {text}
                 </Text>
             )}

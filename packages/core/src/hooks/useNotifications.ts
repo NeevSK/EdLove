@@ -109,7 +109,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
           const updated = payload.new as AppNotification;
           const old = payload.old as AppNotification | undefined;
           
-          setNotifications((prev) =
+          setNotifications((prev) =>
             prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n))
           );
 
@@ -136,7 +136,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         .eq('id', id)
         .eq('user_id', userId);
       
-      setNotifications((prev) =
+      setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
       );
       await loadUnreadCount();

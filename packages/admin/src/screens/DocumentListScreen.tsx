@@ -73,10 +73,10 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   };
 
   const renderDocumentItem = (document: DocumentWorkflow, index: number) => (
-    <TouchableOpacity>
+    <TouchableOpacity
       key={document.id}
       style={[
-        styles.documentItem,>
+        styles.documentItem,
         { 
           backgroundColor: theme.glass.surface.bg,
           borderColor: theme.glass.surface.border,
@@ -84,36 +84,50 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
         }
       ]}
       onPress={() => onDocumentPress(document)}
-          <View style={styles.documentHeader}        <Text >
+    >
+      <View style={styles.documentHeader}>
+        <Text
           style={[
-            styles.documentTitle, >
+            styles.documentTitle,
             { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
           ]}
           numberOfLines={2}
-                  {document.title}
-        </Text        ><View 
+        >
+          {document.title}
+        </Text>
+        <View 
           style={[
             styles.statusBadge,
             { backgroundColor: getStatusColor(document.status) }
           ]}
-                  <Text >
+        >
+          <Text
             style={[
-              styles.statusText,>
+              styles.statusText,
               { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
             ]}
-                      {document.status.toUpperCase()}
-          </Text        ></View      ></View      
-      <Text >
+          >
+            {document.status.toUpperCase()}
+          </Text>
+        </View>
+      </View>
+      <Text
         style={[
-          styles.documentMeta,>
+          styles.documentMeta,
           { color: theme.text.secondary, fontFamily: 'System' }
         ]}
-              Version {document.version} " Updated {formatDate(document.updatedAt)}
-      </Text      >
+      >
+        Version {document.version} • Updated {formatDate(document.updatedAt)}
+      </Text>
       {document.status === 'review' && document.authorId !== user.userId && (
-        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}          <Text style={[styles.reviewText, { color: theme.accent.action }]}            Pending Review>
-          </Text        ></View      )}>
-    </TouchableOpacity  );
+        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
+          <Text style={[styles.reviewText, { color: theme.accent.action }]}>
+            Pending Review
+          </Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 
   const renderStatusFilter = (status: DocumentStatus | 'all') => {
     const isActive = selectedStatus === status;
@@ -122,68 +136,94 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       : documents.filter(doc => doc.status === status).length;
 
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
         key={status}
         style={[
-          styles.filterChip,>
+          styles.filterChip,
           {
             backgroundColor: isActive ? theme.accent.action : theme.glass.surface.bg,
             borderColor: isActive ? theme.accent.action : theme.glass.surface.border
           }
         ]}
         onPress={() => setSelectedStatus(status)}
-              <Text >
+      >
+        <Text
           style={[
-            styles.filterText,>
+            styles.filterText,
             { 
               color: isActive ? theme.text.inverse : theme.text.primary,
-              fontFamily: 'System', fontWeight: '500'
+              fontFamily: 'System', 
+              fontWeight: '500'
             }
           ]}
-                  {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+        >
+          {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
-        </Text      ></TouchableOpacity    >);
+        </Text>
+      </TouchableOpacity>
+    );
   };
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...>
-        </Text      ></View    );>
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] || '#000' }]}>
+        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
+          Loading documents...
+        </Text>
+      </View>
+    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header */}>
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}          Documents>
-        </Text        ><TouchableOpacity
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] || '#000' }]}>
+      {/* Header */}
+      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
+        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}>
+          Documents
+        </Text>
+        <TouchableOpacity
           style={[styles.createButton, { backgroundColor: theme.accent.action }]}
           onPress={onCreateNew}
-                  <Text style={[styles.createButtonText, { color: theme.text.inverse }]}            + New>
-          </Text        ></TouchableOpacity      </View>
+        >
+          <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
+            + New
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Status Filters */}
-      <ScrollView >
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}>
-              {statusFilters.map(renderStatusFilter)}
-      </ScrollView>
+      <View style={styles.filterContainer}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterContent}
+        >
+          {statusFilters.map(renderStatusFilter)}
+        </ScrollView>
+      </View>
+
       {/* Documents List */}
-      <ScrollView >
+      <ScrollView 
         style={styles.documentsContainer}
         contentContainerStyle={styles.documentsContent}
-        showsVerticalScrollIndicator={false}>
-              {filteredDocuments.length === 0 ? (
-          <View style={styles.emptyState}            <Text style={[styles.emptyText, { color: theme.text.secondary }]}              {selectedStatus === 'all' 
+        showsVerticalScrollIndicator={false}
+      >
+        {filteredDocuments.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
+              {selectedStatus === 'all' 
                 ? 'No documents yet. Create your first document to get started.'
                 : `No ${selectedStatus} documents found.`
-              }>
-            </Text          ></View        ) : (
+              }
+            </Text>
+          </View>
+        ) : (
           filteredDocuments.map(renderDocumentItem)
         )}
-      </ScrollView    </View  );
+      </ScrollView>
+    </View>
+  );
 };
-
-export default DocumentListScreen;
 
 // Mobile-first responsive styles
 const styles = StyleSheet.create({
@@ -212,7 +252,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   filterContainer: {
-    maxHeight: 60,
+    height: 60,
   },
   filterContent: {
     paddingHorizontal: 16,
@@ -291,3 +331,5 @@ const styles = StyleSheet.create({
     marginTop: 60,
   },
 });
+
+export default DocumentListScreen;

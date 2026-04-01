@@ -153,7 +153,7 @@ export const createSupabaseEducationalRepository = (): EducationalRepository => 
 
         const submittedIds = new Set((submissions ?? []).map((submission: any) => submission.assignment_id));
 
-        return assignmentRows.map((assignment, index) =            StudentAssignmentSchema.parse({
+        return assignmentRows.map((assignment, index) => StudentAssignmentSchema.parse({
                 ...assignment,
                 classroom: (data?.[index] as any)?.classrooms?.name ?? null,
                 submitted: submittedIds.has(assignment.id),

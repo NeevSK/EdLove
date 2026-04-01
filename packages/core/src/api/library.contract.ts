@@ -5,7 +5,7 @@ import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
-const authority = (action: 'create' | 'read' | 'update' | 'delete') =  POAMetadataSchema.parse({ authority: { action, subject: 'Library' } });
+const authority = (action: 'create' | 'read' | 'update' | 'delete') => POAMetadataSchema.parse({ authority: { action, subject: 'Library' } });
 
 export const libraryContract = c.router({
   getResources: {

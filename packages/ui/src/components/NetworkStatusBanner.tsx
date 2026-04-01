@@ -31,7 +31,7 @@ export default function NetworkStatusBanner() {
         : Theme.colors.sanctuarySaffron;
 
     return (
-        <Animated.View>
+        <Animated.View
             entering={SlideInDown.duration(500)}
             exiting={SlideOutUp.duration(500)}
             style={{
@@ -42,7 +42,7 @@ export default function NetworkStatusBanner() {
                 zIndex: Theme.zIndex.modal + 1,
                 paddingTop: Platform.OS !== 'web' ? insets.top : 0,
             }}
-        
+        >
             <Box sx={{
                 backgroundColor: backgroundColor,
                 paddingVertical: 8,
@@ -51,19 +51,19 @@ export default function NetworkStatusBanner() {
             }}>
                 <HStack space="sm" alignItems="center">
                     {isOffline ? (
-                        <
+                        <>
                             <WifiOff color={Theme.colors.white} size={16} />
                             <Text color={Theme.colors.white} size="xs" bold>
                                 Offline Mode {queue.length > 0 ? `(${queue.length} pending actions)` : ''}
                             </Text>
-                        </
+                        </>
                     ) : (
-                        <
-                            <Spinner >color={Theme.colors.white} size="small" />
+                        <>
+                            <Spinner color={Theme.colors.white} size="small" />
                             <Text color={Theme.colors.white} size="xs" bold>
                                 Syncing {queue.length} pending actions...
                             </Text>
-                        </
+                        </>
                     )}
                 </HStack>
             </Box>

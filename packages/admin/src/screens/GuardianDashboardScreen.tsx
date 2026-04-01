@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
 import { useTheme } from '@repo/ui';
-import { type StudentOverview } from '../guardian';
+import type { StudentOverview } from '../guardian';
 import { useGuardianWorkspaceData } from '../guardian/useGuardianWorkspaceData';
 import { GuardianHeader } from '../components/poa/GuardianHeader';
 import { GuardianChildrenList } from '../components/poa/GuardianChildrenList';
@@ -36,107 +36,144 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading dashboard...>
-        </Text      ></View    );>
+      <View style={[styles.container, { backgroundColor: theme?.gradientNodes?.[0] || '#000' }]}>
+        <Text style={[styles.loadingText, { color: theme?.text?.secondary || '#aaa' }]}>
+          Loading dashboard...
+        </Text>
+      </View>
+    );
   }
 
   if (!dashboard) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.errorText, { color: theme.accent.danger }]}          {error || 'Failed to load dashboard'}>
-        </Text      ></View    );>
+      <View style={[styles.container, { backgroundColor: theme?.gradientNodes?.[0] || '#000' }]}>
+        <Text style={[styles.errorText, { color: theme?.accent?.danger || '#f44336' }]}>
+          {error || 'Failed to load dashboard'}
+        </Text>
+      </View>
+    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Header (Direct Component) */}>
-      <GuardianHeader />
+    <View style={[styles.container, { backgroundColor: theme?.gradientNodes?.[0] || '#000' }]}>
+      {/* Header (Direct Component) */}
+      <GuardianHeader 
         studentCount={dashboard.students.length} 
         isDesktop={isDesktop} 
       />
-      ><ScrollView 
+
+      <ScrollView 
         style={styles.content}
         contentContainerStyle={[
           styles.contentContainer,
-          isDesktop && styles.contentContainerDesktop>
+          isDesktop && styles.contentContainerDesktop
         ]}
         showsVerticalScrollIndicator={false}
-              {/* Students Section (Direct Component) */}
-        <GuardianChildrenList />
+      >
+        {/* Students Section (Direct Component) */}
+        <GuardianChildrenList 
           students={dashboard.students}
           onStudentPress={onStudentPress}
           isDesktop={isDesktop}
         />
-        >{/* Notifications and Events Row (POA) */}
+
+        {/* Notifications and Events Row (POA) */}
         {isDesktop ? (
-          <View style={styles.desktopRow}            <View style={[styles.desktopColumn, { flex: 1 }]}              <Text >
+          <View style={styles.desktopRow}>
+            <View style={[styles.desktopColumn, { flex: 1 }]}>
+              <Text 
                 style={[
-                  styles.sectionHeader,>
+                  styles.sectionHeader,
                   { 
-                    color: theme.text.primary,
+                    color: theme?.text?.primary || '#fff',
                     fontFamily: 'System',
                     fontWeight: '700',
                     fontSize: 18
                   }
                 ]}
-                              Recent Notifications
-              </Text              ><GuardianNotifications 
+              >
+                Recent Notifications
+              </Text>
+              <GuardianNotifications 
                 notifications={dashboard.notifications}
                 onNotificationPress={onNotificationPress}
                 limit={5}
-              /            ></View
-            ><View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}              <Text >
+              />
+            </View>
+
+            <View style={[styles.desktopColumn, { flex: 1, marginLeft: 20 }]}>
+              <Text 
                 style={[
-                  styles.sectionHeader,>
+                  styles.sectionHeader,
                   { 
-                    color: theme.text.primary,
+                    color: theme?.text?.primary || '#fff',
                     fontFamily: 'System',
                     fontWeight: '700',
                     fontSize: 18
                   }
                 ]}
-                              Upcoming Events
-              </Text              ><GuardianEvents 
+              >
+                Upcoming Events
+              </Text>
+              <GuardianEvents 
                 events={dashboard.upcomingEvents}
                 onEventPress={onEventPress}
                 limit={5}
-              /            ></View          ></View        ) : (
-          <            {/* Mobile Notifications (POA) */}
-            <View style={styles.section}              <Text >
+              />
+            </View>
+          </View>
+        ) : (
+          <View style={{ gap: 24 }}>
+            {/* Mobile Notifications (POA) */}
+            <View style={styles.section}>
+              <Text 
                 style={[
-                  styles.sectionHeader,>
+                  styles.sectionHeader,
                   { 
-                    color: theme.text.primary,
+                    color: theme?.text?.primary || '#fff',
                     fontFamily: 'System',
                     fontWeight: '700',
                     fontSize: 16
                   }
                 ]}
-                              Recent Notifications
-              </Text              <GuardianNotifications 
+              >
+                Recent Notifications
+              </Text>
+              <GuardianNotifications 
                 notifications={dashboard.notifications}
                 onNotificationPress={onNotificationPress}
                 limit={3}
-              /            </View
+              />
+            </View>
+
             {/* Mobile Events (POA) */}
-            <View style={styles.section}              <Text >
+            <View style={styles.section}>
+              <Text 
                 style={[
-                  styles.sectionHeader,>
+                  styles.sectionHeader,
                   { 
-                    color: theme.text.primary,
+                    color: theme?.text?.primary || '#fff',
                     fontFamily: 'System',
                     fontWeight: '700',
                     fontSize: 16
                   }
                 ]}
-                              Upcoming Events
-              </Text              ><GuardianEvents 
+              >
+                Upcoming Events
+              </Text>
+              <GuardianEvents 
                 events={dashboard.upcomingEvents}
                 onEventPress={onEventPress}
                 limit={3}
-              /            ></View          </        )}
-      </ScrollView    </View  );
+              />
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
 };
 
-// Mobile-first responsive styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,7 +193,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 0,
   },
   sectionHeader: {
     marginBottom: 16,

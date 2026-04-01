@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAuth, useStore, AuthorityTier } from '@repo/core';
 import OnboardingScreen from './OnboardingScreen';
 
@@ -18,5 +19,6 @@ export function OnboardingWrapper() {
         if (role) store.setUserRole(role);
         store.setOnboardingCompleted(true);
       }}
-    /  );
+    />
+  );
 }

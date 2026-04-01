@@ -26,11 +26,11 @@ export const createPrincipalWorkspaceServices = (
 ): PrincipalWorkspaceServices => ({
   listInviteCodes: (schoolId) => repository.listInviteCodes(schoolId),
   generateInviteCode: (schoolId, role, createdBy) => repository.generateInviteCode(schoolId, role, createdBy),
-  listObservationsByDate: (principalId, viewDate, limit = 10) =    repository.listObservationsByDate(principalId, viewDate, limit),
+  listObservationsByDate: (principalId, viewDate, limit = 10) => repository.listObservationsByDate(principalId, viewDate, limit),
   listRecentObservations: (principalId, limit = 5) => repository.listRecentObservations(principalId, limit),
   createObservation: (input) => repository.createObservation(input),
   recordInviteEvent: (input) => repository.recordInviteEvent(input),
   recordObservationFollowUp: (input) => repository.recordObservationFollowUp(input),
-  getGovernanceTimeline: (principalId, viewDate, limit = 25) =    repository.getGovernanceTimeline(principalId, viewDate, limit),
-  getGovernanceSnapshotAsOf: (principalId, viewDate, limit = 100) =    repository.getGovernanceSnapshotAsOf(principalId, viewDate, limit),
+  getGovernanceTimeline: (principalId, viewDate, limit = 25) => repository.getGovernanceTimeline(principalId, viewDate, limit),
+  getGovernanceSnapshotAsOf: (principalId, viewDate, limit = 100) => repository.getGovernanceSnapshotAsOf(principalId, viewDate, limit),
 });

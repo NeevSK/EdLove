@@ -4,7 +4,7 @@ import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
-const authority = (action: 'create' | 'read' | 'update' | 'delete', subject: 'User' | 'Group' | 'School') =  POAMetadataSchema.parse({ authority: { action, subject } });
+const authority = (action: 'create' | 'read' | 'update' | 'delete', subject: 'User' | 'Group' | 'School') => POAMetadataSchema.parse({ authority: { action, subject } });
 
 const SocialLinkSchema = z.object({
   id: z.string(),

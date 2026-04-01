@@ -56,10 +56,11 @@ function DailyRhythmContent() {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const { isGuest } = useFeatureAccess();
-    const [activeDay, setActiveDay] = useState(new Date().getDay() || 1);
-    if (activeDay > 5 || activeDay === 0) setActiveDay(1); // Set to Monday if weekend
+    const [activeDay, setActiveDay] = useState(() => {
+        const d = new Date().getDay();
+        return (d === 0 || d === 6) ? 1 : d;
+    });
 
-    // Using our new "Senior Dev" Hook
     const { periods, loading, error, addPeriod, updatePeriod, deletePeriod } = useTimetable(activeDay);
 
     const [showFullWeek, setShowFullWeek] = useState(false);
@@ -68,7 +69,6 @@ function DailyRhythmContent() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const toast = useToast();
 
-    // Live clock for active period highlighting
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
         return () => clearInterval(timer);
@@ -80,9 +80,9 @@ function DailyRhythmContent() {
                 placement: "top",
                 render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('self.missingFields')}</ToastTitle
-                    ></Toast
-                >)
+                        <ToastTitle>{t('self.missingFields') || 'Please fill required fields'}</ToastTitle>
+                    </Toast>
+                )
             });
             return;
         }
@@ -93,7 +93,7 @@ function DailyRhythmContent() {
             } else {
                 await addPeriod({
                     day_of_week: activeDay,
-                    period_number: periods.length + 1,
+                    period_number: (periods?.length || 0) + 1,
                     subject: editingPeriod.subject!,
                     class_name: editingPeriod.class_name || '',
                     type: editingPeriod.type || 'subject',
@@ -107,167 +107,189 @@ function DailyRhythmContent() {
                 placement: "top",
                 render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="success" variant="solid">
-                        <ToastTitle>{t('self.timetableUpdated')}</ToastTitle
-                    ></Toast
-                >)
+                        <ToastTitle>{t('self.timetableUpdated') || 'Timetable Updated'}</ToastTitle>
+                    </Toast>
+                )
             });
         } catch (err) {
-            // Error handled in hook/toast
+            console.error('[DailyRhythm] Save error:', err);
         }
     };
 
     const isPeriodActive = (start: string, end: string) => {
-        const startParts = (start || '').split(':');
-        const endParts = (end || '').split(':');
+        if (!start || !end) return false;
+        const startParts = start.split(':');
+        const endParts = end.split(':');
 
-        const startH = startParts[0] ? Number(startParts[0]) : 0;
-        const startM = startParts[1] ? Number(startParts[1]) : 0;
-        const endH = endParts[0] ? Number(endParts[0]) : 0;
-        const endM = endParts[1] ? Number(endParts[1]) : 0;
-        const startD = new Date(); startD.setHours(startH, startM, 0);
-        const endD = new Date(); endD.setHours(endH, endM, 0);
-        return currentTime >= startD && currentTime < endD;
+        const startH = Number(startParts[0]) || 0;
+        const startM = Number(startParts[1]) || 0;
+        const endH = Number(endParts[0]) || 0;
+        const endM = Number(endParts[1]) || 0;
+        
+        const nowH = currentTime.getHours();
+        const nowM = currentTime.getMinutes();
+        
+        const nowTotal = nowH * 60 + nowM;
+        const startTotal = startH * 60 + startM;
+        const endTotal = endH * 60 + endM;
+        
+        return nowTotal >= startTotal && nowTotal < endTotal;
     };
 
     return (
-        <VStack space="md" sx={{ flex: 1 }}>
-            {/* Guest Mode Banner */}>
+        <VStack sx={{ gap: Theme.spacing.md, flex: 1 }}>
+            {/* Guest Mode Banner */}
             {isGuest && (
-                <Box>
-                    p="$3"
+                <Box
                     sx={{
-                        backgroundColor: colors.secondary,
+                        padding: Theme.spacing.md,
+                        backgroundColor: colors?.secondary || Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         borderLeftWidth: 4,
                         borderLeftColor: Theme.colors.sanctuarySaffron
                     }}
-                
-                    <HStack space="sm" alignItems="center">
-                        <Cloud size={20} color={Theme.colors.sanctuarySaffron} /
-                        ><Text size="sm" color={colors.text} sx={{ flex: 1 }}
-                            \uD83D\uDCBE {t('self.guestMode', { defaultValue: 'Guest Mode - Data saved locally' })}
+                >
+                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+                        <Cloud size={20} color={Theme.colors.sanctuarySaffron} />
+                        <Text sx={{ fontSize: 14, color: colors?.text || '#fff', flex: 1 }}>
+                            {t('self.guestMode') || 'Guest Mode - Data saved locally'}
                         </Text>
                     </HStack>
                 </Box>
             )}
 
             {/* Header & Day Picker */}
-            <HStack space="sm" justifyContent="space-between" alignItems="center">
-                <HStack space="xs">
+            <HStack sx={{ gap: Theme.spacing.sm, justifyContent: 'space-between', alignItems: 'center' }}>
+                <HStack sx={{ gap: Theme.spacing.xs }}>
                     {DAYS.map((day) => (
-                        <Pressable>
+                        <Pressable
                             key={day.id}
                             onPress={() => setActiveDay(day.id)}
                             sx={{
                                 width: 40,
                                 height: 40,
-                                borderRadius: '$full',
-                                backgroundColor: activeDay === day.id ? Theme.colors.sanctuarySaffron : Theme.colors.obsidian,
+                                borderRadius: 20,
+                                backgroundColor: activeDay === day.id ? Theme.colors.sanctuarySaffron : (colors?.primary || '#333'),
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderWidth: 1,
                                 borderColor: activeDay === day.id ? Theme.colors.sanctuarySaffron : 'transparent',
                             }}
-                        
-                            <Text bold={activeDay === day.id} color={activeDay === day.id ? Theme.colors.sacredWhite : Theme.colors.mistGray}>
-                                {day.label}>
+                        >
+                            <Text sx={{ 
+                                fontWeight: activeDay === day.id ? '700' : '400', 
+                                color: activeDay === day.id ? Theme.colors.sacredWhite : (colors?.textSecondary || '#aaa') 
+                            }}>
+                                {day.label}
                             </Text>
                         </Pressable>
                     ))}
                 </HStack>
-                <HStack space="sm">
-                    <Button>
-                        size="sm"
-                        variant="link"
+                <HStack sx={{ gap: Theme.spacing.sm }}>
+                    <Button
                         onPress={() => {
-                            setEditingPeriod({ type: 'subject', period_number: (periods.length + 1) });
+                            setEditingPeriod({ type: 'subject', period_number: (periods?.length || 0) + 1 });
                             setShowEditor(true);
                         }}
-                    
-                        <Plus size={20} color={Theme.colors.sanctuarySaffron} /
-                    ></Button
-                    ><Button>
                         variant="link"
+                        sx={{ padding: 0 }}
+                    >
+                        <Plus size={20} color={Theme.colors.sanctuarySaffron} />
+                    </Button>
+                    <Button
                         onPress={() => setShowFullWeek(true)}
-                        sx={{ paddingRight: 0 }}
-                    
-                        <Maximize2 size={20} color={Theme.colors.sanctuarySaffron} /
-                    ></Button
-                ></HStack>
+                        variant="link"
+                        sx={{ padding: 0 }}
+                    >
+                        <Maximize2 size={20} color={Theme.colors.sanctuarySaffron} />
+                    </Button>
+                </HStack>
             </HStack>
 
             {/* List */}
-            {loading && periods.length === 0 ? (
-                <VStack space="md" sx={{ flex: 1 }}>
-                    <SkeletonCard height={80} /
-                    ><SkeletonCard height={80} /
-                    ><SkeletonCard height={80} /
-                ></VStack
-            >) : periods.length === 0 ? (
-                <PositiveInvitation>
+            {loading && (!periods || periods.length === 0) ? (
+                <VStack sx={{ gap: Theme.spacing.md, flex: 1 }}>
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={80} />
+                </VStack>
+            ) : (!periods || periods.length === 0) ? (
+                <PositiveInvitation
                     icon={Clock}
-                    title={t('self.noClasses')}
-                    description={t('self.addLesson')}
-                /
-            >) : (
+                    title={t('self.noClasses') || "No classes scheduled"}
+                    description={t('self.addLesson') || "Tap + to add your first lesson."}
+                />
+            ) : (
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <VStack space="md">
+                    <VStack sx={{ gap: Theme.spacing.md }}>
                         {periods.map((period) => {
                             const active = isPeriodActive(period.start_time || '', period.end_time || '');
                             const endHour = (period.end_time || '00:00').split(':')[0];
-                            const passed = !active && new Date().getHours() > parseInt(endHour || '0', 10);
+                            const passed = !active && currentTime.getHours() > parseInt(endHour || '0', 10);
 
-                            let bgColor: string = Theme.colors.obsidian;
+                            let bgColor: string = (colors?.primary || Theme.colors.obsidian) as string;
                             let borderColor: string = 'transparent';
                             if (active) {
-                                bgColor = Theme.colors.ink as string;
+                                bgColor = (colors?.primary || Theme.colors.ink) as string;
                                 borderColor = Theme.colors.sanctuarySaffron as string;
                             } else if (period.type === 'interval') {
                                 bgColor = 'rgba(76, 175, 80, 0.1)';
                             }
 
                             return (
-                                <Pressable>
+                                <Pressable
                                     key={period.id}
                                     onLongPress={() => {
                                         setEditingPeriod(period);
                                         setShowEditor(true);
                                     }}
-                                
-                                    <Box>
-                                        p="$4"
+                                >
+                                    <Box
                                         sx={{
+                                            padding: Theme.spacing.md,
                                             backgroundColor: bgColor,
                                             borderRadius: Theme.corners.comfortable,
                                             borderWidth: 1,
                                             borderColor: borderColor,
                                             opacity: passed ? 0.6 : 1,
-                                            ... (active ? Theme.shadows.md : {})
                                         }}
-                                    
-                                        <HStack space="md" alignItems="center">
-                                            <VStack alignItems="center" sx={{ width: 60 }}>
-                                                <Text size="xs" color={Theme.colors.mistGray}>{period.start_time?.slice(0, 5)}</Text
-                                                ><Box sx={{ width: 1, height: 10, backgroundColor: Theme.colors.dimGray, my: 2 }} /
-                                                ><Text size="xs" color={Theme.colors.mistGray}>{period.end_time?.slice(0, 5)}</Text
-                                            ></VStack
+                                    >
+                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
+                                            <VStack sx={{ alignItems: 'center', width: 60 }}>
+                                                <Text sx={{ fontSize: 12, color: Theme.colors.mistGray }}>
+                                                    {period.start_time?.slice(0, 5)}
+                                                </Text>
+                                                <Box sx={{ width: 1, height: 10, backgroundColor: Theme.colors.dimGray, marginVertical: 2 }} />
+                                                <Text sx={{ fontSize: 12, color: Theme.colors.mistGray }}>
+                                                    {period.end_time?.slice(0, 5)}
+                                                </Text>
+                                            </VStack>
 
-                                            ><VStack sx={{ flex: 1 }}
-                                                <HStack justifyContent="space-between" alignItems="center">
-                                                    <Heading size="sm" color={active ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite}>
-                                                        {period.subject || period.activity}>
+                                            <VStack sx={{ flex: 1 }}>
+                                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Heading 
+                                                        size="sm" 
+                                                        sx={{ color: active ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite }}
+                                                    >
+                                                        {period.subject || period.activity}
                                                     </Heading>
                                                     {active && (
-                                                        <Box px="$2" py="$0.5" sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: '$full' }}>
-                                                            <Text size="2xs" color={Theme.colors.sacredWhite} bold>{t('common.now') || 'NOW'}</Text
-                                                        ></Box
-                                                    >)}
+                                                        <Box sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 }}>
+                                                            <Text sx={{ fontSize: 10, color: Theme.colors.obsidian, fontWeight: '700' }}>
+                                                                {t('common.now') || 'NOW'}
+                                                            </Text>
+                                                        </Box>
+                                                    )}
                                                 </HStack>
-                                                <HStack space="xs" alignItems="center">
-                                                    <Text size="xs" color={Theme.colors.mistGray}>{period.class_name}</Text
-                                                    >{period.type === 'relief' && (
-                                                        <Text size="xs" color={Theme.colors.emberRed} italic>({t('self.relief')})</Text
-                                                    >)}
+                                                <HStack sx={{ gap: 4, alignItems: 'center' }}>
+                                                    <Text sx={{ fontSize: 12, color: Theme.colors.mistGray }}>
+                                                        {period.class_name}
+                                                    </Text>
+                                                    {period.type === 'relief' && (
+                                                        <Text sx={{ fontSize: 12, color: Theme.colors.emberRed, fontStyle: 'italic' }}>
+                                                            ({t('self.relief') || 'Relief'})
+                                                        </Text>
+                                                    )}
                                                 </HStack>
                                             </VStack>
                                         </HStack>
@@ -280,105 +302,123 @@ function DailyRhythmContent() {
             )}
 
             {/* Editor Modal */}
-            <Modal isOpen={showEditor} onClose={() => setShowEditor(false)}
-                <ModalBackdrop /
-                ><ModalContent sx={{ backgroundColor: Theme.colors.obsidian }}
+            <Modal isOpen={showEditor} onClose={() => setShowEditor(false)}>
+                <ModalBackdrop />
+                <ModalContent sx={{ backgroundColor: (colors?.primary || Theme.colors.obsidian) as string }}>
                     <ModalHeader>
-                        <Heading >size="lg" color={Theme.colors.sanctuarySaffron}
-                            {editingPeriod?.id ? t('self.editPeriod') : t('self.newPeriod')}
+                        <Heading size="lg" sx={{ color: Theme.colors.sanctuarySaffron }}>
+                            {editingPeriod?.id ? (t('self.editPeriod') || 'Edit Period') : (t('self.newPeriod') || 'New Period')}
                         </Heading>
                         <ModalCloseButton>
-                            <CloseIcon />color={Theme.colors.mistGray} /
-                        ></ModalCloseButton
-                    ></ModalHeader>
+                            <Icon as={CloseIcon} sx={{ color: Theme.colors.mistGray }} />
+                        </ModalCloseButton>
+                    </ModalHeader>
                     <ModalBody>
-                        <VStack >space="lg" pb="$6">
-                            <Input>
+                        <VStack sx={{ gap: Theme.spacing.lg, paddingBottom: 24 }}>
+                            <Input variant="outline">
                                 <InputField
-                                    >placeholder={t('self.subjectPlaceholder')}
+                                    placeholder={t('self.subjectPlaceholder') || 'Subject Name'}
                                     value={editingPeriod?.subject || ''}
-                                    onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, subject: val })}
-                                    color={Theme.colors.sacredWhite}
-                                /
-                            ></Input>
-                            <Input>
+                                    onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, subject: val }))}
+                                    sx={{ color: Theme.colors.sacredWhite }}
+                                    placeholderTextColor={Theme.colors.dimGray}
+                                />
+                            </Input>
+                            <Input variant="outline">
                                 <InputField
-                                    />placeholder={t('self.classPlaceholder')}
+                                    placeholder={t('self.classPlaceholder') || 'Class/Room'}
                                     value={editingPeriod?.class_name || ''}
-                                    onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, class_name: val })}
-                                    color={Theme.colors.sacredWhite}
-                                /
-                            ></Input>
+                                    onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, class_name: val }))}
+                                    sx={{ color: Theme.colors.sacredWhite }}
+                                    placeholderTextColor={Theme.colors.dimGray}
+                                />
+                            </Input>
 
-                            <HStack space="md">
-                                <Input style={{ flex: 1 }}>
-                                    <InputField/>
-                                        placeholder={t('self.startPlaceholder')}
+                            <HStack sx={{ gap: Theme.spacing.md }}>
+                                <Input variant="outline" sx={{ flex: 1 }}>
+                                    <InputField
+                                        placeholder={t('self.startPlaceholder') || 'Start (HH:MM)'}
                                         value={editingPeriod?.start_time || ''}
-                                        onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, start_time: val })}
-                                        color={Theme.colors.sacredWhite}
-                                    /
-                                ></Input
-                                ><Input style={{ flex: 1 }}
-                                    <InputField/>
-                                        placeholder={t('self.endPlaceholder')}
+                                        onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, start_time: val }))}
+                                        sx={{ color: Theme.colors.sacredWhite }}
+                                        placeholderTextColor={Theme.colors.dimGray}
+                                    />
+                                </Input>
+                                <Input variant="outline" sx={{ flex: 1 }}>
+                                    <InputField
+                                        placeholder={t('self.endPlaceholder') || 'End (HH:MM)'}
                                         value={editingPeriod?.end_time || ''}
-                                        onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, end_time: val })}
-                                        color={Theme.colors.sacredWhite}
-                                    /
-                                ></Input
-                            ></HStack>
+                                        onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, end_time: val }))}
+                                        sx={{ color: Theme.colors.sacredWhite }}
+                                        placeholderTextColor={Theme.colors.dimGray}
+                                    />
+                                </Input>
+                            </HStack>
 
-                            <Select>
+                            <Select
                                 selectedValue={editingPeriod?.type}
-                                onValueChange={(val: string) => setEditingPeriod({ ...editingPeriod, type: val as any })}
-                            
+                                onValueChange={(val: string) => setEditingPeriod(prev => ({ ...prev, type: val as any }))}
+                            >
                                 <SelectTrigger variant="outline" size="md">
-                                    <SelectInput placeholder={t('self.type')} color={Theme.colors.sacredWhite} /
-                                    ><SelectIcon as={ChevronDown} mr="$3" /
-                                ></SelectTrigger
-                                ><SelectPortal>
+                                    <SelectInput 
+                                        placeholder={t('self.type') || 'Type'} 
+                                        sx={{ color: Theme.colors.sacredWhite }} 
+                                    />
+                                    <SelectIcon as={() => <ChevronDown size={16} color={Theme.colors.mistGray} />} sx={{ marginRight: 12 }} />
+                                </SelectTrigger>
+                                <SelectPortal>
                                     <SelectBackdrop />
                                     <SelectContent>
-                                        <SelectItem >label={t('self.subject')} value="subject" /
-                                        ><SelectItem label={t('self.relief')} value="relief" /
-                                        ><SelectItem label={t('self.interval')} value="interval" /
-                                    />/>/>/>/></SelectContent
-                                ></SelectPortal>
+                                        <SelectItem label={t('self.subject') || 'Subject'} value="subject" />
+                                        <SelectItem label={t('self.relief') || 'Relief'} value="relief" />
+                                        <SelectItem label={t('self.interval') || 'Break/Interval'} value="interval" />
+                                    </SelectContent>
+                                </SelectPortal>
                             </Select>
 
-                            <HStack space="md" mt="$4">
-                                {editingPeriod?.id && (>
-                                    <Button>
+                            <HStack sx={{ gap: Theme.spacing.md, marginTop: 16 }}>
+                                {editingPeriod?.id && (
+                                    <Button
                                         variant="outline"
                                         action="negative"
-                                        sx={{ flex: 1 }}
-                                        onPress={() => deletePeriod(editingPeriod.id!)} // Note: Hook handles optimistic UI but here we just call it
-                                    
-                                        <Trash size={18} color={Theme.colors.emberRed} /
-                                        ><ButtonText ml="$2" color={Theme.colors.emberRed}>{t('common.delete')}</ButtonText
-                                    ></Button
-                                >)}
-                                <Button>
+                                        sx={{ flex: 1, borderColor: Theme.colors.emberRed }}
+                                        onPress={() => {
+                                            if (editingPeriod.id) {
+                                                deletePeriod(editingPeriod.id);
+                                                setShowEditor(false);
+                                            }
+                                        }}
+                                    >
+                                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                            <Trash size={18} color={Theme.colors.emberRed} />
+                                            <ButtonText sx={{ color: Theme.colors.emberRed }}>
+                                                {t('common.delete') || 'Delete'}
+                                            </ButtonText>
+                                        </HStack>
+                                    </Button>
+                                )}
+                                <Button
                                     action="primary"
                                     sx={{ flex: 2, backgroundColor: Theme.colors.sanctuarySaffron }}
-                                    onPress={handleSave}>
-                                
-                                    <ButtonText color={Theme.colors.sacredWhite}>{t('common.save')}</ButtonText
-                                ></Button
-                            ></HStack>
+                                    onPress={handleSave}
+                                >
+                                    <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}>
+                                        {t('common.save') || 'Save'}
+                                    </ButtonText>
+                                </Button>
+                            </HStack>
                         </VStack>
                     </ModalBody>
                 </ModalContent>
             </Modal>
-        </VStack >
+        </VStack>
     );
 }
 
 export default function DailyRhythm() {
     return (
         <ErrorBoundary name="Daily Rhythm">
-            <DailyRhythmContent /
-        ></ErrorBoundary
-    >);
+            <DailyRhythmContent />
+        </ErrorBoundary>
+    );
 }

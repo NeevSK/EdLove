@@ -20,7 +20,7 @@ export function useBottomTabPadding() {
 }
 
 /**
- * ScreenWrapper.web.tsx  High-fidelity web implementation
+ * ScreenWrapper.web.tsx - High-fidelity web implementation
  * 
  * Unlike the native version, this implementation:
  * 1. Restores native browser scrollbars (showsVerticalScrollIndicator={true}).
@@ -41,7 +41,7 @@ export default function ScreenWrapper({
     const resolvedBackground = backgroundColor || scene.canvas.bg;
 
     return (
-        <View style={[styles.container, { backgroundColor: resolvedBackground }]}
+        <View style={[styles.container, { backgroundColor: resolvedBackground }]}>
             {isScrollable ? (
                 <ScrollView
                     style={styles.scrollView}
@@ -53,15 +53,15 @@ export default function ScreenWrapper({
                     showsVerticalScrollIndicator={true}
                     refreshControl={refreshControl}
                     scrollEventThrottle={16}
-                
+                >
                     {children}
-                </ScrollView
+                </ScrollView>
             ) : (
-                <View style={[styles.contentContainer, styles.flex1, style]}
+                <View style={[styles.contentContainer, styles.flex1, style]}>
                     {children}
-                </View
+                </View>
             )}
-        </View
+        </View>
     );
 }
 
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentContainer: {
-        // Shared base styles
+        flexGrow: 1,
     },
     flex1: {
         flex: 1,

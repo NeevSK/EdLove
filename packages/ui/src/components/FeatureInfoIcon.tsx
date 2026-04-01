@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, Icon, InfoIcon, Box } from '../gluestack';
+import { Pressable, Icon, InfoIcon } from '../gluestack';
 import FeatureDiscoveryModal from './FeatureDiscoveryModal';
 import { Theme } from '../theme/Theme';
 
@@ -13,7 +13,7 @@ export interface FeatureInfoIconProps {
 }
 
 /**
- * FeatureInfoIcon  A subtle info icon that triggers the discovery modal.
+ * FeatureInfoIcon - A subtle info icon that triggers the discovery modal.
  * Uses a soft ripple effect and identity-aware coloring.
  */
 export default function FeatureInfoIcon({
@@ -26,7 +26,9 @@ export default function FeatureInfoIcon({
     if (!discoveryInfo) return null;
 
     return (
-        <            <Pressable accessibilityRole="button"
+        <>
+            <Pressable 
+                accessibilityRole="button"
                 onPress={() => setIsOpen(true)}
                 sx={{
                     padding: 4,
@@ -38,12 +40,16 @@ export default function FeatureInfoIcon({
                         transform: [{ scale: 0.92 }],
                     }
                 }}
-                            <Icon as={InfoIcon} color={color} size="sm" /            ></Pressable>
-            <FeatureDiscoveryModal>
+            >
+                <Icon as={InfoIcon} color={color} size="sm" />
+            </Pressable>
+            <FeatureDiscoveryModal
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 title={title}
                 whatIsIt={discoveryInfo.whatIsIt}
                 whereToFind={discoveryInfo.whereToFind}
-            /        </    );
+            />
+        </>
+    );
 }

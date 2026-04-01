@@ -57,12 +57,12 @@ export default function MuteHubScreen() {
 
     const handleUnmute = async (userId: string, userName: string) => {
         Alert.alert(
-            t('profile.safety.unmuteTitle'),
-            t('profile.safety.unmuteConfirm', { name: userName }),
+            t('profile.safety.unmuteTitle') || 'Unmute User',
+            t('profile.safety.unmuteConfirm', { name: userName }) || `Are you sure you want to unmute ${userName}?`,
             [
-                { text: t('common.cancel'), style: 'cancel' },
+                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
                 {
-                    text: t('profile.safety.unmuteAction'),
+                    text: t('profile.safety.unmuteAction') || 'Unmute',
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -84,43 +84,86 @@ export default function MuteHubScreen() {
     };
 
     return (
-        <ScreenWrapper scroll={false}            <GlobalHeader>
-                title={t('profile.safety_hub')}
+        <ScreenWrapper scroll={false}>
+            <GlobalHeader
+                title={t('profile.safety_hub') || 'Safety Hub'}
                 showBack
                 onBack={() => navigation.goBack()}
-            /
-            ><ScrollView
+            />
+            <ScrollView
                 contentContainerStyle={{ padding: Theme.spacing.md, paddingBottom: 100 }}
-                refreshControl={>
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.action} /                >}
-                            <VStack space="lg"                    <Box sx={{ 
-                        p: Theme.spacing.md, 
-                        bg: Theme.colors.glass.light.surface, 
-                        borderRadius: Theme.corners.comfortable, 
-                        borderWidth: 1, 
-                        borderColor: Theme.colors.glass.light.border 
-                    }}                        <HStack space="md" alignItems="center"                            <Shield size={24} color={colors.action} /                            ><VStack flex={1}                                <Text bold color={colors.text}>{t('profile.safety.mutedTotal')}</Text                                ><Text size="xs" color={colors.textSecondary}>{t('profile.safety.mutedDesc')}</Text                            ></VStack                        ></HStack                    </Box
-                    <Heading size="sm" color={colors.textSecondary} mt={Theme.spacing.md}                        {t('profile.safety.mutedList')} ({mutedUsers.length})>
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors?.action || '#2196f3'} />
+                }
+            >
+                <VStack space="lg">
+                    <Box 
+                        sx={{ 
+                            p: Theme.spacing.md, 
+                            bg: colors?.primary || Theme.colors.ink, 
+                            borderRadius: Theme.corners.comfortable, 
+                            borderWidth: 1, 
+                            borderColor: colors?.border || 'rgba(255,255,255,0.1)' 
+                        }}
+                    >
+                        <HStack space="md" sx={{ alignItems: 'center' }}>
+                            <Shield size={24} color={colors?.action || '#2196f3'} />
+                            <VStack sx={{ flex: 1 }}>
+                                <Text sx={{ fontWeight: '700', color: colors?.text || '#fff' }}>
+                                    {t('profile.safety.mutedTotal') || 'Muted Connections'}
+                                </Text>
+                                <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa' }}>
+                                    {t('profile.safety.mutedDesc') || 'People whose updates are hidden from your feed.'}
+                                </Text>
+                            </VStack>
+                        </HStack>
+                    </Box>
+
+                    <Heading size="sm" sx={{ color: colors?.textSecondary || '#aaa', marginTop: Theme.spacing.md }}>
+                        {t('profile.safety.mutedList') || 'Muted List'} ({mutedUsers.length})
                     </Heading>
+
                     {mutedUsers.length === 0 && !loading ? (
-                        <Center h={200}                            <VStack space="md" alignItems="center"                                <XCircle size={48} color={colors.textTertiary} opacity={0.5} /                                ><Text color={colors.textTertiary}>{t('profile.safety.noMutes')}</Text                            ></VStack                        </Center                    ) : (
-                        <VStack space="sm"                            {mutedUsers.map((user) => (
-                                <Box>
+                        <Center sx={{ height: 200 }}>
+                            <VStack space="md" sx={{ alignItems: 'center' }}>
+                                <XCircle size={48} color={colors?.textTertiary || '#666'} style={{ opacity: 0.5 }} />
+                                <Text sx={{ color: colors?.textTertiary || '#666' }}>
+                                    {t('profile.safety.noMutes') || 'Your list is empty.'}
+                                </Text>
+                            </VStack>
+                        </Center>
+                    ) : (
+                        <VStack space="sm">
+                            {mutedUsers.map((user) => (
+                                <Box
                                     key={user.id}
                                     sx={{
                                         p: Theme.spacing.md,
-                                        bg: Theme.colors.glass.light.surface,
+                                        bg: colors?.primary || Theme.colors.ink,
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
-                                        borderColor: Theme.colors.glass.light.border,
+                                        borderColor: colors?.border || 'rgba(255,255,255,0.1)',
                                     }}
-                                                                    <HStack justifyContent="space-between" alignItems="center"                                        <HStack space="md" alignItems="center"                                            <UserAvatar>
+                                >
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <HStack space="md" sx={{ alignItems: 'center', flex: 1 }}>
+                                            <UserAvatar
                                                 avatarUrl={user.avatar_url}
                                                 fullName={user.full_name}
                                                 size={40}
                                                 authority={user.authority}
-                                            /                                            ><VStack                                                <Text >bold color={colors.text}>{user.full_name}</Text                                                ><Text size="xs" color={colors.textTertiary}>@{user.id.substring(0, 8)}</Text                                            ></VStack                                        ></HStack                                        
-                                        ><TouchableOpacity >
+                                            />
+                                            <VStack>
+                                                <Text sx={{ fontWeight: '700', color: colors?.text || '#fff' }}>
+                                                    {user.full_name}
+                                                </Text>
+                                                <Text sx={{ fontSize: 12, color: colors?.textTertiary || '#666' }}>
+                                                    @{user.id.substring(0, 8)}
+                                                </Text>
+                                            </VStack>
+                                        </HStack>
+                                        
+                                        <TouchableOpacity 
                                             onPress={() => {
                                                 hapticLight();
                                                 handleUnmute(user.id, user.full_name);
@@ -131,9 +174,18 @@ export default function MuteHubScreen() {
                                             style={{
                                                 padding: 8,
                                                 borderRadius: Theme.corners.tight,
-                                                backgroundColor: `${colors.error}15`
+                                                backgroundColor: (colors?.error || '#f44336') + '15'
                                             }}
-                                                                                    <Trash2 size={20} color={colors.error} /                                        ></TouchableOpacity                                    ></HStack                                </Box                            ))}
-                        </VStack                    )}>
-                </VStack            </ScrollView        </ScreenWrapper    );
+                                        >
+                                            <Trash2 size={20} color={colors?.error || '#f44336'} />
+                                        </TouchableOpacity>
+                                    </HStack>
+                                </Box>
+                            ))}
+                        </VStack>
+                    )}
+                </VStack>
+            </ScrollView>
+        </ScreenWrapper>
+    );
 }

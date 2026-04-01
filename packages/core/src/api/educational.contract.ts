@@ -9,13 +9,20 @@ import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
-const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'Classroom' } });
-const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'Lesson' } });
-const assignmentAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'Assignment' } });
-const assignmentSubmissionAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'AssignmentSubmission' } });
-const classroomGroupAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'ClassroomGroup' } });
-const materialAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'Material' } });
-const gradeAuthority = (action: 'create' | 'read' | 'update' | 'delete') =    POAMetadataSchema.parse({ authority: { action, subject: 'Grade' } });
+const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'Classroom' } });
+const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'Lesson' } });
+const assignmentAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'Assignment' } });
+const assignmentSubmissionAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'AssignmentSubmission' } });
+const classroomGroupAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'ClassroomGroup' } });
+const materialAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'Material' } });
+const gradeAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+    POAMetadataSchema.parse({ authority: { action, subject: 'Grade' } });
 
 export const educationalContract = c.router({
     getByTeacher: {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity, FlatList, ActivityIndicator, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, useWindowDimensions, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import {
     ScreenWrapper,
     GlobalHeader,
@@ -7,7 +7,6 @@ import {
     Theme,
     Box,
     Text,
-    HorizontalChipRow,
     HStack,
     VStack,
 } from '@repo/ui';
@@ -15,8 +14,6 @@ import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withSpring,
-    FadeIn,
-    FadeOut,
     FadeInDown
 } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -30,24 +27,21 @@ import {
     Network,
     BarChart3,
     Wind,
-    FileCheck,
-    Compass,
-    Search
+    FileCheck
 } from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
 import { usePermissions } from '@repo/core';
-import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
 import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
 import { AstroView } from '../components/perspectives/AstroView';
 import { VastuView } from '../components/perspectives/VastuView';
 import { JyotiView } from '../components/perspectives/JyotiView';
 import { TerraView } from '../components/perspectives/TerraView';
 import { DharmaView } from '../components/perspectives/DharmaView';
-import { VatyaView } from '../components/perspectives/VatyaView'; // Added VatyaView import
+import { VatyaView } from '../components/perspectives/VatyaView';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import { getAvailablePerspectives as getEnginePerspectives, KnowledgeParser, CaptureEngine } from '@repo/graphics';
 
-type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya'; // Added 'vatya'
+type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 
 interface Perspective {
     id: PerspectiveId;
@@ -63,7 +57,7 @@ const PERSPECTIVES: Perspective[] = [
     { id: 'dharma', label: 'Path', icon: Route, description: 'Sequential learning pathways' },
     { id: 'vastu', label: 'Structure', icon: Network, description: 'Mind maps & hierarchies' },
     { id: 'jyoti', label: 'Insight', icon: BarChart3, description: 'Analytic charts & metrics' },
-    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' }, // Added Vatya perspective
+    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' },
 ];
 
 const getAvailablePerspectives = (topology: any) => {
@@ -86,16 +80,11 @@ export default function MapScreen() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<KnowledgeTopology | null>(null);
     const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
-    const [geoData, setGeoData] = useState<any[] | null>(null);
-    const [geoQueryLoading, setGeoQueryLoading] = useState(false);
 
-    // Zoom and Pan state
+    // Zoom and Pan state for layout reference (though views handle their own state)
     const scale = useSharedValue(1);
-    const savedScale = useSharedValue(1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
-    const savedTranslateX = useSharedValue(0);
-    const savedTranslateY = useSharedValue(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -110,27 +99,11 @@ export default function MapScreen() {
             }
         };
 
-        const fetchGeoData = async () => {
-            if (geoData) return;
-            setGeoQueryLoading(true);
-            try {
-                const schools = await libraryAPI.getGeoTopology();
-                setGeoData(schools);
-            } catch (err) {
-                console.error('Failed to load geo data', err);
-            } finally {
-                setGeoQueryLoading(false);
-            }
-        };
-
         fetchData();
-        if (activePerspective === 'terra') fetchGeoData();
-    }, [activePerspective]);
+    }, []);
 
-    // Simulation: Load Mermaid data if AI mode is active
     const activeData = useMemo(() => {
-        if (activePerspective === 'astro' && !data?.nodes.length) {
-            // Demonstration of Mermaid Parsing
+        if (activePerspective === 'astro' && !data?.nodes?.length) {
             return KnowledgeParser.fromMermaid(`
                 graph TD
                 A[Retina Engine] --> B[Astro View]
@@ -153,7 +126,6 @@ export default function MapScreen() {
     const handleExport = async () => {
         setIsExporting(true);
         try {
-            // In native, we demonstrate the isomorphic intent with the layout data
             const snapshot = CaptureEngine.prepareForCapture(activeData as any);
             console.log('--- NATIVE VISUALIZATION CAPTURED ---');
             console.log('Snapshot Nodes:', snapshot.nodes.length);
@@ -177,25 +149,21 @@ export default function MapScreen() {
             translateX.value = withSpring(width / 2 - pos.x);
             translateY.value = withSpring(height / 2.5 - pos.y);
             scale.value = withSpring(2);
-            
-            savedTranslateX.value = width / 2 - pos.x;
-            savedTranslateY.value = height / 2.5 - pos.y;
-            savedScale.value = 2;
         }
     };
 
-    const renderContent = () => {
+    const renderTodayZone = () => {
         if (loading) {
             return (
                 <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
-                ></Box>
+                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron || '#ff9800'} />
+                </Box>
             );
         }
 
         if (activePerspective === 'astro' && data && layout) {
             return (
-                <AstroView />
+                <AstroView 
                     data={data as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -203,45 +171,45 @@ export default function MapScreen() {
                     width={width}
                     height={height}
                 />
-            >);
+            );
         }
 
         if (activePerspective === 'jyoti' && data) {
             return (
-                <JyotiView />
+                <JyotiView 
                     data={data as any} 
                     layout={layout!} 
                     width={width}
                     height={height}
                 />
-            >);
+            );
         }
 
         if (activePerspective === 'terra' && data) {
             return (
-                <TerraView />
+                <TerraView 
                     data={data as any} 
                     layout={layout!} 
                     width={width}
                     height={height}
                 />
-            >);
+            );
         }
 
         if (activePerspective === 'dharma' && data) {
             return (
-                <DharmaView />
+                <DharmaView 
                     data={data as any} 
                     layout={layout!} 
                     width={width}
                     height={height}
                 />
-            >);
+            );
         }
 
         if (activePerspective === 'vastu' && data && layout) {
             return (
-                <VastuView >
+                <VastuView 
                     data={data as any} 
                     layout={layout} 
                     onNodePress={handleNodePress as any}
@@ -249,47 +217,59 @@ export default function MapScreen() {
                     width={width}
                     height={height}
                 />
-            >);
+            );
+        }
+
+        if (activePerspective === 'vatya' && data && layout) {
+            return (
+                <VatyaView 
+                    data={data as any} 
+                    layout={layout} 
+                    width={width}
+                    height={height}
+                />
+            );
         }
 
         return (
             <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-            ></Box>
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron || '#ff9800'} />
+            </Box>
         );
     };
 
     return (
         <ScreenWrapper scroll={false}>
-            <GlobalHeader>
+            <GlobalHeader
                 title="Knowledge Cosmos"
                 subtitle="Isomorphic Visualization Engine"
                 showBack
                 onBack={() => navigation.goBack()}
                 rightAction={
-                    <TouchableOpacity >
+                    <TouchableOpacity 
                         onPress={handleExport}
                         disabled={isExporting}
+                        activeOpacity={0.7}
                         style={{ 
                             paddingHorizontal: 16, 
                             paddingVertical: 8, 
                             borderRadius: 12, 
-                            backgroundColor: colors.action + '20',
+                            backgroundColor: (colors?.action || '#2196f3') + '20',
                             flexDirection: 'row',
                             alignItems: 'center',
                             opacity: isExporting ? 0.5 : 1,
                             marginRight: 12
                         }}
-                    
-                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} /
-                        ><Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
+                    >
+                        <FileCheck size={18} color={colors?.action || '#2196f3'} style={{ marginRight: 8 }} />
+                        <Text sx={{ color: colors?.action || '#2196f3', fontSize: 13, fontWeight: '700' }}>
                             {isExporting ? '...' : 'EXPORT'}
                         </Text>
                     </TouchableOpacity>
                 }
-            /
+            />
 
-            ><Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}
+            <Box sx={{ p: 12, backgroundColor: colors?.backgroundDark || '#000' }}>
                 <View style={styles.perspectiveSwitcherContainer}>
                     <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
@@ -298,24 +278,25 @@ export default function MapScreen() {
                                 const isDisabled = p.disabled;
                                 const Icon = p.icon;
                                 return (
-                                    <TouchableOpacity >
+                                    <TouchableOpacity 
                                         key={p.id}
                                         onPress={() => !isDisabled && setActivePerspective(p.id)}
                                         disabled={isDisabled}
+                                        activeOpacity={0.8}
                                         style={[
                                             styles.perspectiveButton,
                                             isActive && styles.activePerspectiveButton,
                                             isDisabled && { opacity: 0.3 }
                                         ]}
-                                    
-                                        <Icon >
+                                    >
+                                        <Icon 
                                             size={18} 
-                                            color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
+                                            color={isActive ? (Theme.colors.sanctuarySaffron || '#ff9800') : (Theme.colors.starlightGray || '#aaa')} 
                                         />
-                                        ><Text style={[
+                                        <Text style={[
                                             styles.perspectiveLabel,
-                                            isActive && styles.activePerspectiveLabel>
-                                        ]}
+                                            isActive && styles.activePerspectiveLabel
+                                        ]}>
                                             {p.label}
                                         </Text>
                                     </TouchableOpacity>
@@ -329,51 +310,50 @@ export default function MapScreen() {
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <Box sx={{ 
                     flex: 1, 
-                    backgroundColor: colors.obsidian || colors.black,
+                    backgroundColor: colors?.obsidian || '#000',
                     overflow: 'hidden'
                 }}>
-                    {renderContent()}
+                    {renderTodayZone()}
 
                     {selectedNode && (
-                        <Animated.View >
+                        <Animated.View 
                             entering={FadeInDown}
-                            style={styles.nodeSheetContainer}>
-                        
+                            style={styles.nodeSheetContainer}
+                        >
                             <BlurView intensity={30} tint="dark" style={styles.blurSheet}>
-                                <VStack spacing={12}>
+                                <VStack sx={{ gap: 12 }}>
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                         <VStack>
-                                            <Text >sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}
-                                                {selectedNode.label}>
+                                            <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite || '#fff' }}>
+                                                {selectedNode.label}
                                             </Text>
-                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
-                                                {selectedNode.type} " {selectedNode.group}>
+                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron || '#ff9800', textTransform: 'uppercase' }}>
+                                                {selectedNode.type} • {selectedNode.group}
                                             </Text>
                                         </VStack>
-                                        <TouchableOpacity onPress={() => setSelectedNode(null)}
+                                        <TouchableOpacity onPress={() => setSelectedNode(null)} activeOpacity={0.8}>
                                             <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                                <X size={20} color={colors.textPrimary} />
-                                            ></Box>
+                                                <X size={20} color={colors?.textPrimary || '#FFF'} />
+                                            </Box>
                                         </TouchableOpacity>
                                     </HStack>
 
                                     {selectedNode.metadata?.description && (
-                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
-                                            {selectedNode.metadata.description}>
+                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray || '#aaa', lineHeight: 20 }}>
+                                            {selectedNode.metadata.description}
                                         </Text>
                                     )}
 
-                                    <TouchableOpacity >
-                                        style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                    <TouchableOpacity 
+                                        style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron || '#ff9800' }]}
+                                        activeOpacity={0.9}
                                         onPress={() => {
-                                            // @ts-ignore
                                             if (selectedNode.type === 'resource') {
-                                                // @ts-ignore
-                                                navigation.navigate('ResourceDetail', { id: selectedNode.id });
+                                                (navigation as any).navigate('ResourceDetail', { id: selectedNode.id });
                                             }
                                         }}
-                                    
-                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                    >
+                                        <Text sx={{ color: colors?.obsidian || '#000', fontWeight: '800' }}>
                                             {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                         </Text>
                                     </TouchableOpacity>
@@ -414,11 +394,11 @@ const styles = StyleSheet.create({
     perspectiveLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: Theme.colors.starlightGray,
+        color: Theme.colors.starlightGray || '#aaa',
     },
     activePerspectiveLabel: {
         fontWeight: '800',
-        color: Theme.colors.sanctuarySaffron,
+        color: Theme.colors.sanctuarySaffron || '#ff9800',
     },
     nodeSheetContainer: {
         position: 'absolute',
@@ -453,12 +433,11 @@ function StatCardNative({ label, value, icon: Icon }: { label: string; value: nu
             alignItems: 'center',
             gap: 12
         }}>
-            <Icon size={20} color={Theme.colors.sanctuarySaffron} /
-            ><VStack>
-                <Text >sx={{ fontSize: 10, color: Theme.colors.starlightGray }}>{label}</Text
-                ><Text sx={{ fontSize: 18, fontWeight: '900', color: Theme.colors.sacredWhite }}>{value}</Text
-            ></VStack>
+            <Icon size={20} color={Theme.colors.sanctuarySaffron || '#ff9800'} />
+            <VStack>
+                <Text sx={{ fontSize: 10, color: Theme.colors.starlightGray || '#aaa' }}>{label}</Text>
+                <Text sx={{ fontSize: 18, fontWeight: '900', color: Theme.colors.sacredWhite || '#fff' }}>{value}</Text>
+            </VStack>
         </Box>
     );
 }
-

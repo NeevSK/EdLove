@@ -11,8 +11,8 @@ import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
 
 export interface SanctuaryProgressBarProps {
-  percentage: number;        // 0\u2013100
-  isComplete?: boolean;      // true \u00E2\u2020\u2019 gold/reward state
+  percentage: number;        // 0–100
+  isComplete?: boolean;      // true — gold/reward state
   nextHint?: string;         // text shown below bar
   showPercentage?: boolean;  // default true
   compact?: boolean;         // 4px bar instead of 8px
@@ -29,7 +29,7 @@ export function SanctuaryProgressBar({
 }: SanctuaryProgressBarProps) {
   const { accent, glow, glass, text } = useTheme();
 
-  // Animated.Value for fill width \u2014 useNativeDriver must be false (width interpolation)
+  // Animated.Value for fill width — useNativeDriver must be false (width interpolation)
   const fillAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export function SanctuaryProgressBar({
       {/* Track */}
       <View style={[styles.track, { height: barHeight, backgroundColor: glass.surface.bg }]}>
         {/* Animated fill */}
-        <Animated.View>
+        <Animated.View
           style={[
             StyleSheet.absoluteFillObject,
             {
@@ -98,16 +98,16 @@ export function SanctuaryProgressBar({
               borderRadius: barHeight / 2,
             },
           ]}
-        /
+        />
         {/* Reanimated glow overlay on completion */}
         {isComplete && (
-          <Reanimated.View>
+          <Reanimated.View
             style={[
               StyleSheet.absoluteFillObject,
               { backgroundColor: glowColor, borderRadius: barHeight / 2 },
               glowAnimStyle,
             ]}
-          /
+          />
         )}
       </View>
 
@@ -117,8 +117,8 @@ export function SanctuaryProgressBar({
           {nextHint}
         </Text>
       ) : isComplete ? (
-        <Text style={[styles.hint, { color: accent.reward }]}
-          \uD83D\u017D\u2030 Profile complete!>
+        <Text style={[styles.hint, { color: accent.reward }]}>
+          🏅 Profile complete!
         </Text>
       ) : null}
     </View>
@@ -154,4 +154,3 @@ const styles = StyleSheet.create({
     marginTop: Theme.spacing.xs,
   },
 });
-

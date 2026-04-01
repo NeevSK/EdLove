@@ -31,8 +31,14 @@ export const TemporalShield: React.FC<TemporalShieldProps> = ({ children, style,
             <View style={[styles.overlay, { opacity: 0.1 * intensity }]} />
             
             {/* Contextual Signal */}
-            <View style={styles.badge}                <Shield size={12} color={Theme.colors.resonance.past} /                ><Text style={styles.badgeText}                    {label || 'PAST VIEW'}>
-                </Text            ></View        ></View    );
+            <View style={styles.badge}>
+                <Shield size={12} color={Theme.colors.resonance.past} />
+                <Text style={styles.badgeText}>
+                    {label || 'PAST VIEW'}
+                </Text>
+            </View>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({

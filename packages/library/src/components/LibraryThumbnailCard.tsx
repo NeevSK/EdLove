@@ -1,12 +1,5 @@
 /**
- * LibraryThumbnailCard \u2014 Netflix-Style Cover-Art Card for Individual Resources
- *
- * A 140 \u00C3\u2014 180 visual card used inside horizontal SmartShelf rows.
- * Each resource type gets a distinct accent colour and icon.
- * Shows title, type badge, endorsement count, and an optional thumbnail image.
- *
- * Designed to be visually consistent with CollectionCard but optimised for
- * individual resources rather than collections.
+ * LibraryThumbnailCard — Netflix-Style Cover-Art Card for Individual Resources
  */
 
 import React, { useMemo } from 'react';
@@ -71,7 +64,8 @@ const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<{ size?: nu
 };
 
 function resolveType(type: string): ThumbnailType {
-    if (type in TYPE_CONFIG) return type as ThumbnailType;
+    const t = type?.toLowerCase();
+    if (t in TYPE_CONFIG) return t as ThumbnailType;
     return 'other';
 }
 
@@ -88,7 +82,6 @@ export interface LibraryThumbnailCardProps {
     verified?: boolean;
     isLocked?: boolean;
     has_bookmarked?: boolean;
-    /** Copyright/usage notice \u2013 shown as a subtle footer badge on externally-sourced content */
     copyrightNotice?: string;
     onPress: () => void;
     onLongPress?: () => void;
@@ -165,18 +158,18 @@ export function LibraryThumbnailCard({
         title: {
             fontSize: 12,
             fontWeight: '700',
-            color: colors.text,
+            color: '#fff',
             lineHeight: 16,
             marginBottom: 4,
         },
         meta: {
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 4,
+            flexWrap: 'wrap',
         },
         metaText: {
             fontSize: 10,
-            color: colors.textSecondary,
+            color: 'rgba(255,255,255,0.7)',
         },
         copyrightBadge: {
             marginTop: 4,
@@ -193,63 +186,105 @@ export function LibraryThumbnailCard({
         },
     }), [colors, cfg]);
 
-    const gradientColors: [string, string, string] = [
+    const gradientColors: string[] = [
         'transparent',
-        colors.secondary + 'BB',
-        colors.primary,
+        'rgba(0,0,0,0.6)',
+        'rgba(0,0,0,0.9)',
     ];
 
     const overlay = (
-        <View style={styles.overlay}            {/* Top: type badge + bookmark + verified */}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}                <View style={styles.typeBadge}                    <Text style={styles.typeText}>{cfg.label}</Text                ></View                ><View style={{ flexDirection: 'row', alignItems: 'center' }}                    {onBookmarkToggle && (
-                        <TouchableOpacity >
+        <View style={styles.overlay}>
+            {/* Top Row: Type Badge + Actions */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <View style={styles.typeBadge}>
+                    <Text style={styles.typeText}>{cfg.label}</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {onBookmarkToggle && (
+                        <TouchableOpacity 
                             onPress={(e) => {
-                                if (Platform.OS === 'web') (e as unknown as { stopPropagation: () => void }).stopPropagation();
+                                if (Platform.OS === 'web') (e as any).stopPropagation();
                                 onBookmarkToggle();
                             }}
                             style={{ margin: 8, padding: 4 }}
                             accessibilityRole="button"
-                            accessibilityLabel={has_bookmarked ? "Unbookmark" : "Bookmark"}
-                            accessibilityHint={has_bookmarked ? "Removes this resource from your bookmarks" : "Adds this resource to your bookmarks"}
-                                                    <Bookmark />
+                        >
+                            <Bookmark 
                                 size={16} 
                                 color={has_bookmarked ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.8)'}
                                 fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
-                            /                        ></TouchableOpacity                    >)}>
+                            />
+                        </TouchableOpacity>
+                    )}
                     {verified && (
-                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}                            <BadgeCheck color={Theme.colors.sageGreen} size={14} /                        ></View                    >)}
-                </View            </View>
-            {/* Bottom: gradient + title + meta */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}                <Text style={styles.title} numberOfLines={2}>{title}</Text                ><View style={styles.meta}                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
+                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}>
+                            <BadgeCheck color={Theme.colors.sageGreen} size={14} />
+                        </View>
+                    )}
+                </View>
+            </View>
+
+            {/* Bottom Section: Gradient + Title + Meta */}
+            <LinearGradient colors={gradientColors} style={styles.gradient}>
+                <Text style={styles.title} numberOfLines={2}>{title}</Text>
+                <View style={styles.meta}>
+                    {subject && (
+                        <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>
+                    )}
                     {endorsements > 0 && (
-                        <                            {subject && <Text style={styles.metaText}>\u00C2\u00B7</Text>}
-                            <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} /                            ><Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}                                {endorsements}
-                            </Text                        </                    )}>
-                </View                >{copyrightNotice && (
-                    <View style={styles.copyrightBadge}                        <Text style={styles.copyrightText} numberOfLines={1}>\u00C2\u00A9 {copyrightNotice}</Text                    ></View                )}
-            </LinearGradient        </View    );
+                        <>
+                            {subject && <Text style={[styles.metaText, { marginHorizontal: 4 }]}>•</Text>}
+                            <HStack space="xs" sx={{ alignItems: 'center' }}>
+                                <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
+                                <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron, fontWeight: '700' }]}>
+                                    {endorsements}
+                                </Text>
+                            </HStack>
+                        </>
+                    )}
+                </View>
+                {copyrightNotice && (
+                    <View style={styles.copyrightBadge}>
+                        <Text style={styles.copyrightText} numberOfLines={1}>© {copyrightNotice}</Text>
+                    </View>
+                )}
+            </LinearGradient>
+        </View>
+    );
 
     return (
-        <Pressable>
+        <Pressable
             onPress={onPress}
             onLongPress={onLongPress}
-            style={(state: { hovered?: boolean; pressed?: boolean }) => [
+            style={(state: any) => [
                 styles.pressable,
-                Platform.OS === 'web' && state.hovered && { opacity: 0.9, cursor: 'pointer' }
+                Platform.OS === 'web' && state.hovered && { opacity: 0.9, transform: [{ scale: 1.02 }] }
             ]}
             accessibilityRole={href ? 'link' : 'button'}
-            // @ts-expect-error: href is web-only for Pressable (react-native-web)
+            // @ts-ignore
             href={href}
             hrefAttrs={{
                 target: target,
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,
             }}
-                    <View style={styles.card}                {thumbnailUrl ? (>
-                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover"                        {overlay}>
-                    </ImageBackground                >) : (
-                    <                        <View style={styles.fallback}                            <Icon color={cfg.color} size={36} /                        ></View                        >{overlay}
-                    </                )}
-            </View        </Pressable    );
+        >
+            <View style={styles.card}>
+                {thumbnailUrl ? (
+                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">
+                        {overlay}
+                    </ImageBackground>
+                ) : (
+                    <View style={{ flex: 1 }}>
+                        <View style={styles.fallback}>
+                            <Icon color={cfg.color} size={36} />
+                        </View>
+                        {overlay}
+                    </View>
+                )}
+            </View>
+        </Pressable>
+    );
 }
 
 export default LibraryThumbnailCard;

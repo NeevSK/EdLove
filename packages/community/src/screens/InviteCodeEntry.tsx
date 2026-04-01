@@ -47,25 +47,35 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
         setLoading(true);
         hapticLight();
 
-        const result = await validateInviteCode(code.trim());
+        try {
+            const result = await validateInviteCode(code.trim());
 
-        if (result.valid && result.data) {
-            hapticSuccess();
-            showToast(t('invite.success.joining', { school: result.data.school_name }) || `Joining ${result.data.school_name}!`, 'success');
-            onCodeValidated(result.data);
-        } else {
+            if (result.valid && result.data) {
+                hapticSuccess();
+                showToast(t('invite.success.joining', { school: result.data.school_name }) || `Joining ${result.data.school_name}!`, 'success');
+                onCodeValidated(result.data);
+            } else {
+                hapticError();
+                showToast(result.error || t('invite.error.invalid') || 'Invalid code', 'error');
+            }
+        } catch (err) {
             hapticError();
-            showToast(result.error || t('invite.error.invalid') || 'Invalid code', 'error');
+            showToast('An unexpected error occurred', 'error');
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     }
 
     function showToast(message: string, action: 'error' | 'success') {
         toast.show({
             placement: 'bottom',
             render: ({ id }: { id: string }) => (
-                <Toast nativeID={id} action={action} variant="solid"                    <ToastTitle>{message}</ToastTitle                ></Toast            ),
+                <Toast nativeID={id} action={action} variant="solid">
+                    <VStack space="xs">
+                        <ToastTitle>{message}</ToastTitle>
+                    </VStack>
+                </Toast>
+            ),
         });
     }
 
@@ -87,13 +97,25 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
     }
 
     return (
-        <ScreenWrapper            <Box >sx={{ flex: 1, backgroundColor: Theme.colors.obsidian, padding: Theme.spacing.xl, justifyContent: 'center' }}                <VStack sx={{ gap: 24, maxWidth: 400, width: '100%', alignSelf: 'center' }}                    {/* Header */}
-                    <VStack sx={{ gap: 12, marginBottom: 24 }}                        <Heading sx={{ fontSize: 32, color: Theme.colors.sanctuarySaffron, textAlign: 'center' }}                            {t('invite.enterCode') || 'Enter Invite Code'}>
-                        </Heading                        ><Text sx={{ color: Theme.colors.starlightGray, fontSize: 16, textAlign: 'center' }}                            {t('invite.codeDesc') || 'Join your school with an invite code'}
-                        </Text                    </VStack
+        <ScreenWrapper scroll={true}>
+            <Box sx={{ flex: 1, backgroundColor: Theme.colors.obsidian, padding: Theme.spacing.xl, justifyContent: 'center', minHeight: '100%' }}>
+                <VStack space="xl" sx={{ maxWidth: 400, width: '100%', alignSelf: 'center' }}>
+                    {/* Header */}
+                    <VStack space="sm" sx={{ marginBottom: 24 }}>
+                        <Heading sx={{ fontSize: 32, color: Theme.colors.sanctuarySaffron, textAlign: 'center' }}>
+                            {t('invite.enterCode') || 'Enter Invite Code'}
+                        </Heading>
+                        <Text sx={{ color: Theme.colors.starlightGray, fontSize: 16, textAlign: 'center' }}>
+                            {t('invite.codeDesc') || 'Join your school with an invite code'}
+                        </Text>
+                    </VStack>
+
                     {/* Code Input */}
-                    <VStack sx={{ gap: 8 }}                        <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}                            {t('invite.inviteCode') || 'Invite Code'}>
-                        </Text                        ><Input
+                    <VStack space="xs">
+                        <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}>
+                            {t('invite.inviteCode') || 'Invite Code'}
+                        </Text>
+                        <Input
                             variant="outline"
                             size="lg"
                             sx={{
@@ -101,7 +123,8 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                                 borderRadius: Theme.corners.comfortable,
                                 backgroundColor: Theme.colors.ink,
                             }}
-                                                    <InputField>
+                        >
+                            <InputField
                                 placeholder="GURU-ABC123-TEACH"
                                 value={code}
                                 onChangeText={handleCodeChange}
@@ -110,40 +133,75 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                                 sx={{ color: Theme.colors.sacredWhite }}
                                 placeholderTextColor={Theme.colors.dimGray}
                                 onSubmitEditing={handleValidateCode}
-                            /                        ></Input                        ><Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}                            {t('invite.codeFormat') || 'Format: GURU-XXXXXX-TEACH'}>
-                        </Text                    ></VStack
+                            />
+                        </Input>
+                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                            {t('invite.codeFormat') || 'Format: GURU-XXXXXX-TEACH'}
+                        </Text>
+                    </VStack>
+
                     {/* Validate Button */}
-                    <Button>
+                    <Button
                         size="lg"
                         onPress={handleValidateCode}
-                        isDisabled={loading || code.length < 15}
+                        isDisabled={loading || code.length < 5}
                         sx={{
                             backgroundColor: Theme.colors.sanctuarySaffron,
                             borderRadius: Theme.corners.comfortable,
+                            height: 56,
                         }}
-                                            {loading ? (
-                            <Spinner color={colors.sacredWhite} /                        >) : (
-                            <                                <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}                                    {t('invite.validate') || 'Validate Code'}>
-                                </ButtonText                                ><ButtonIcon as={ArrowRight} color={colors.obsidian} sx={{ marginLeft: 8 }} /                            ></                        )}
+                    >
+                        {loading ? (
+                            <Spinner color="white" />
+                        ) : (
+                            <HStack space="xs" sx={{ alignItems: 'center' }}>
+                                <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}>
+                                    {t('invite.validate') || 'Validate Code'}
+                                </ButtonText>
+                                <ButtonIcon as={ArrowRight} sx={{ color: Theme.colors.obsidian }} />
+                            </HStack>
+                        )}
                     </Button>
+
                     {/* Info Box */}
-                    <Box>
+                    <Box
                         sx={{
                             padding: Theme.spacing.lg,
                             backgroundColor: Theme.colors.shroud,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
                             borderColor: Theme.colors.mistGray,
+                            marginTop: Theme.spacing.md,
                         }}
-                                            <HStack sx={{ gap: 12, alignItems: 'flex-start' }}                            <HelpCircle color={Theme.colors.sanctuarySaffron} size={20} /                            ><VStack sx={{ gap: 4, flex: 1 }}                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14, fontWeight: '700' }}                                    {t('invite.whereToFind') || 'Where to find your code?'}
-                                </Text                                ><Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}                                    {t('invite.whereDesc') || 'Ask your principal or administrator for an invite code'}>
-                                </Text                            ></VStack                        ></HStack                    </Box
+                    >
+                        <HStack space="md" sx={{ alignItems: 'flex-start' }}>
+                            <HelpCircle color={Theme.colors.sanctuarySaffron} size={20} />
+                            <VStack space="xs" sx={{ flex: 1 }}>
+                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14, fontWeight: '700' }}>
+                                    {t('invite.whereToFind') || 'Where to find your code?'}
+                                </Text>
+                                <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                                    {t('invite.whereDesc') || 'Ask your principal or administrator for an invite code'}
+                                </Text>
+                            </VStack>
+                        </HStack>
+                    </Box>
+
                     {/* Skip / Create School */}
-                    <VStack sx={{ gap: 8, marginTop: 16 }}                        <Pressable accessibilityRole="button">
+                    <VStack sx={{ marginTop: 16 }}>
+                        <Pressable 
                             onPress={() => {
                                 hapticLight();
                                 onSkip();
                             }}
-                                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 14, textAlign: 'center', fontWeight: '700' }}                                {t('invite.createSchool') || "I'm a Principal - Create my school \u2192"}>
-                            </Text                        ></Pressable                    ></VStack                </VStack            </Box        </ScreenWrapper    );>
+                        >
+                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 14, textAlign: 'center', fontWeight: '700' }}>
+                                {t('invite.createSchool') || "I'm a Principal - Create my school →"}
+                            </Text>
+                        </Pressable>
+                    </VStack>
+                </VStack>
+            </Box>
+        </ScreenWrapper>
+    );
 }

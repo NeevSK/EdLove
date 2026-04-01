@@ -14,7 +14,7 @@ import {
 
 const c = initContract();
 
-const guardianAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =  POAMetadataSchema.parse({ authority: { action, subject } });
+const guardianAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) => POAMetadataSchema.parse({ authority: { action, subject } });
 
 export const guardianContract = c.router({
   createGuardianProfile: {

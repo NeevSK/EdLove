@@ -10,8 +10,8 @@ import { WebScreenHeader } from '../components/WebScreenHeader.web';
 const StackFallback = ({ variant }: { variant?: string }) => (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {[1, 2, 3].map(i => (
-            <div key={i} style={{ height: variant === 'list' ? '80px' : '100px', backgroundColor: 'var(--background-alt)', borderRadius: '12px', opacity: 0.5 }} /
-        >))}>
+            <div key={i} style={{ height: variant === 'list' ? '80px' : '100px', backgroundColor: 'var(--background-alt)', borderRadius: '12px', opacity: 0.5 }} />
+        ))}
     </div>
 );
 
@@ -47,23 +47,23 @@ export default function NotificationsScreenWeb() {
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* GREETING */}
-                <WebScreenHeader/>
+                <WebScreenHeader
                     title={t('notifications.title')}
                     timeText={t('notifications.stream')}
                     note={unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : ''}
-                /
+                />
 
-                >{/* CONTENT */}
+                {/* CONTENT */}
                 <div style={{ maxWidth: '800px' }}>
-                    {/* Actions bar */}>
+                    {/* Actions bar */}
                     {notifications.length > 0 && unreadCount > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
-                            <button>
+                            <button
                                 className="sanctuary-button-ghost"
                                 onClick={() => markAllRead()}
-                            
-                                <CheckCircle2 size={14} /
-                                >{t('notifications.markAllRead')}>
+                            >
+                                <CheckCircle2 size={14} />
+                                {t('notifications.markAllRead')}
                             </button>
                         </div>
                     )}
@@ -82,10 +82,10 @@ export default function NotificationsScreenWeb() {
                                 background: 'var(--action-soft)', display: 'flex',
                                 alignItems: 'center', justifyContent: 'center'
                             }}>
-                                <Inbox size={28} color="var(--action)" /
-                            ></div>
+                                <Inbox size={28} color="var(--action)" />
+                            </div>
                             <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic', maxWidth: '320px', lineHeight: 1.6 }}>
-                                {t('notifications.empty')}>
+                                {t('notifications.empty')}
                             </p>
                         </div>
                     )}
@@ -94,12 +94,12 @@ export default function NotificationsScreenWeb() {
                     {!isLoading && notifications.length > 0 && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {notifications.map((notif: AppNotification) => (
-                                <NotificationRow>
+                                <NotificationRow
                                     key={notif.id}
                                     notif={notif}
                                     onRead={markAsRead}
                                 />
-                            >))}
+                            ))}
                         </div>
                     )}
                 </div>
@@ -113,7 +113,7 @@ function NotificationRow({
     onRead,
 }: {
     notif: AppNotification;
-    onRead: (id: string) => Promise<void/>;
+    onRead: (id: string) => Promise<void>;
 }) {
     const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
 
@@ -122,7 +122,7 @@ function NotificationRow({
     }, [notif.id, notif.is_read, onRead]);
 
     return (
-        <div>
+        <div
             role="button"
             tabIndex={0}
             onClick={handleClick}
@@ -142,9 +142,9 @@ function NotificationRow({
                 cursor: notif.is_read ? 'default' : 'pointer',
                 transition: 'opacity 0.3s ease',
             }}
-        
+        >
             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                {/* Icon */}>
+                {/* Icon */}
                 <div style={{
                     width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
                     background: 'var(--glass-interact)',
@@ -157,15 +157,15 @@ function NotificationRow({
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
                         <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--ink)', lineHeight: 1.3 }}>
-                            {notif.title}>
+                            {notif.title}
                         </h3>
                         <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', flexShrink: 0 }}>
-                            {timeAgo(notif.created_at)}>
+                            {timeAgo(notif.created_at)}
                         </span>
                     </div>
                     {notif.body && (
                         <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-soft)', lineHeight: 1.5 }}>
-                            {notif.body}>
+                            {notif.body}
                         </p>
                     )}
                 </div>
@@ -175,8 +175,8 @@ function NotificationRow({
                     <div style={{
                         width: '8px', height: '8px', borderRadius: '50%',
                         background: 'var(--action)', flexShrink: 0, marginTop: '6px',
-                    }} /
-                >)}
+                    }} />
+                )}
             </div>
         </div>
     );

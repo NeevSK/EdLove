@@ -67,6 +67,7 @@ export default function PrincipalObservationsSection({
       });
     } catch (error) {
       saveError = error;
+      console.error('[PrincipalObservationsSection] Save error:', error);
     }
     setSaving(false);
 
@@ -80,11 +81,11 @@ export default function PrincipalObservationsSection({
 
   const inputStyle = {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors?.border || 'rgba(255,255,255,0.1)',
     borderRadius: Theme.corners.medium ?? 8,
     padding: Theme.spacing.sm,
-    color: colors.text,
-    backgroundColor: colors.primary,
+    color: colors?.text || '#fff',
+    backgroundColor: colors?.primary || '#000',
     fontSize: 14,
     marginBottom: Theme.spacing.sm,
     minHeight: 72,
@@ -92,74 +93,120 @@ export default function PrincipalObservationsSection({
   };
 
   return (
-    <Box>
+    <Box
       sx={{
-        backgroundColor: colors.primary,
+        backgroundColor: colors?.primary || '#000',
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
-        borderColor: colors.border,
+        borderColor: colors?.border || 'rgba(255,255,255,0.1)',
         padding: Theme.spacing.md,
       }}
-          <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}          Observation Notes>
-        </Text        ><TouchableOpacity onPress={() => setShowForm(!showForm)} activeOpacity={0.8}          <Box
+    >
+      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
+        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors?.text || '#fff' }}>
+          Observation Notes
+        </Text>
+        <TouchableOpacity onPress={() => setShowForm(!showForm)} activeOpacity={0.8}>
+          <Box
             sx={{
               backgroundColor: Theme.colors.sanctuarySaffron ?? '#ff9800',
               borderRadius: Theme.corners.medium ?? 8,
               paddingHorizontal: 10,
               paddingVertical: 4,
             }}
-                      <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ New</Text          ></Box        ></TouchableOpacity      </HStack
-      {loading && <SkeletonCard height={60} />}
+          >
+            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
+              {showForm ? 'Cancel' : '+ New'}
+            </Text>
+          </Box>
+        </TouchableOpacity>
+      </HStack>
 
-      {!loading && observations.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No observations yet. Start your first classroom walkthrough note.>
-        </Text      >)}>
+      {loading ? (
+        <SkeletonCard height={60} />
+      ) : (
+        <>
+          {observations.length === 0 && !showForm && (
+            <Text sx={{ fontSize: 13, color: colors?.textSecondary || '#aaa', textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+              No observations yet. Start your first classroom walkthrough note.
+            </Text>
+          )}
 
-      {!loading && observations.map((obs) => (
-        <VStack>
-          key={obs.id}
-          sx={{ paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border, gap: 4 }}
-                  <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}            <Box>
-              sx={{
-                backgroundColor: obsBadgeColor(obs.type),
-                borderRadius: 8,
-                paddingHorizontal: 7,
-                paddingVertical: 2,
+          {!showForm && observations.map((obs) => (
+            <VStack
+              key={obs.id}
+              sx={{ 
+                paddingVertical: 8, 
+                borderBottomWidth: 1, 
+                borderBottomColor: colors?.border || 'rgba(255,255,255,0.1)', 
+                gap: 4 
               }}
-                          <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}                {obs.type}>
-              </Text            ></Box            ><Text sx={{ fontSize: 11, color: colors.textSecondary, marginLeft: 'auto' }}              {formatShortDate(obs.created_at)}>
-            </Text          ></HStack          ><Text sx={{ fontSize: 13, color: colors.text }} numberOfLines={2}            {obs.content}
-          </Text        </VStack      ))}
+            >
+              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+                <Box
+                  sx={{
+                    backgroundColor: obsBadgeColor(obs.type),
+                    borderRadius: 8,
+                    paddingHorizontal: 7,
+                    paddingVertical: 2,
+                  }}
+                >
+                  <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>
+                    {obs.type}
+                  </Text>
+                </Box>
+                <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa', marginLeft: 'auto' }}>
+                  {formatShortDate(obs.created_at)}
+                </Text>
+              </HStack>
+              <Text sx={{ fontSize: 13, color: colors?.text || '#fff' }} numberOfLines={2}>
+                {obs.content}
+              </Text>
+            </VStack>
+          ))}
+        </>
+      )}
 
       {showForm && (
-        <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}          <TextInput>
+        <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}>
+          <TextInput
             placeholder="Write your observation..."
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors?.textSecondary || '#aaa'}
             value={content}
             onChangeText={setContent}
             multiline
             numberOfLines={3}
             style={inputStyle}
           />
-          ><HStack sx={{ gap: Theme.spacing.xs, marginBottom: Theme.spacing.sm, flexWrap: 'wrap' }}            {OBS_TYPE_OPTIONS.map((type) => (
-              <TouchableOpacity key={type} onPress={() => setObsType(type)} activeOpacity={0.8}                <Box
+          
+          <HStack sx={{ gap: Theme.spacing.xs, marginBottom: Theme.spacing.sm, flexWrap: 'wrap' }}>
+            {OBS_TYPE_OPTIONS.map((type) => (
+              <TouchableOpacity key={type} onPress={() => setObsType(type)} activeOpacity={0.8}>
+                <Box
                   sx={{
                     borderRadius: 14,
                     paddingHorizontal: 10,
                     paddingVertical: 4,
-                    backgroundColor: obsType === type ? obsBadgeColor(type) : colors.border,
+                    backgroundColor: obsType === type ? obsBadgeColor(type) : (colors?.border || 'rgba(255,255,255,0.1)'),
                   }}
-                                  <Text>
+                >
+                  <Text
                     sx={{
                       fontSize: 12,
                       fontWeight: '600',
-                      color: obsType === type ? '#fff' : colors.textSecondary,
+                      color: obsType === type ? '#fff' : (colors?.textSecondary || '#aaa'),
                       textTransform: 'capitalize',
                     }}
-                                      {type}
-                  </Text                ></Box              ></TouchableOpacity            ))}
+                  >
+                    {type}
+                  </Text>
+                </Box>
+              </TouchableOpacity>
+            ))}
           </HStack>
-          <TouchableOpacity onPress={handleSave} activeOpacity={0.8} disabled={saving}            <Box>
+
+          <TouchableOpacity onPress={handleSave} activeOpacity={0.8} disabled={saving}>
+            <Box
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron ?? '#ff9800',
                 borderRadius: Theme.corners.medium ?? 8,
@@ -167,7 +214,14 @@ export default function PrincipalObservationsSection({
                 alignItems: 'center',
                 opacity: saving ? 0.6 : 1,
               }}
-                          <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}                {saving ? 'Saving...' : 'Save'}>
-              </Text            ></Box          ></TouchableOpacity        </VStack      )}>
-    </Box  >);
+            >
+              <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}>
+                {saving ? 'Saving...' : 'Save'}
+              </Text>
+            </Box>
+          </TouchableOpacity>
+        </VStack>
+      )}
+    </Box>
+  );
 }

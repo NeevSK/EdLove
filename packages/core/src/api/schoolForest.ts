@@ -161,7 +161,7 @@ function computeTreeHealth(
 
 function forestWeather(trees: TeacherTree[]): SchoolForestState['forest_weather'] {
     if (trees.length === 0) return 'quiet';
-    const flourishing = trees.filter(t =
+    const flourishing = trees.filter(t =>
         t.tree_health === 'flowering' || t.tree_health === 'flourishing' || t.tree_health === 'ancient'
     ).length;
     const fraction = flourishing / trees.length;
@@ -336,7 +336,7 @@ export const schoolForestAPI = {
                 : 0;
 
             const lastSignal = signals.length > 0
-                ? signals.slice().sort((a, b) =
+                ? signals.slice().sort((a, b) =>
                     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                 )[0]?.created_at ?? null
                 : null;

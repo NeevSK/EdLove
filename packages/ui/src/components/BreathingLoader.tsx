@@ -56,20 +56,20 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
             -1,
             true
         );
-    }, [isReduceMotionEnabled]);
+    }, [isReduceMotionEnabled, scale]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
     }));
 
     return (
-        <View>
+        <View
             style={styles.container}
             accessible={true}
             accessibilityRole="progressbar"
             accessibilityLabel={t('accessibility.loading')}
-        
-            <Animated.View>
+        >
+            <Animated.View
                 style={[
                     styles.circle,
                     {
@@ -80,7 +80,7 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
                     },
                     animatedStyle,
                 ]}
-            /
+            />
         </View>
     );
 };
@@ -94,4 +94,3 @@ const styles = StyleSheet.create({
 });
 
 export default BreathingLoader;
-

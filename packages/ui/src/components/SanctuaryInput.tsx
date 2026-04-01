@@ -64,16 +64,19 @@ export default function SanctuaryInput({
         <FormControl isInvalid={hasError} isDisabled={isDisabled}>
             {label && (
                 <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText>
-                        color={text.secondary}
-                        sx={{ fontSize: '$sm' as any, fontWeight: '$medium' }}
-                    
+                    <FormControlLabelText
+                        sx={{ 
+                            color: text.secondary,
+                            fontSize: '$sm' as any, 
+                            fontWeight: '$medium' 
+                        }}
+                    >
                         {label}
                     </FormControlLabelText>
                 </FormControlLabel>
             )}
 
-            <Input>
+            <Input
                 variant="outline"
                 isDisabled={isDisabled}
                 isInvalid={hasError}
@@ -85,7 +88,7 @@ export default function SanctuaryInput({
                     disabled: isDisabled,
                     invalid: hasError
                 }}
-                {...({ size: 'md' } as any)}
+                size="md"
                 sx={{
                     borderColor: hasError ? Theme.colors.error : scene.interactive.border,
                     backgroundColor: scene.interactive.bg,
@@ -103,30 +106,30 @@ export default function SanctuaryInput({
                         backgroundColor: scene.surface.bg
                     }
                 }}
-            
+            >
                 {leftIcon && (
                     <InputSlot sx={{ paddingLeft: '$0' as any, paddingRight: '$3' as any }}>
                         <InputIcon as={leftIcon} color={Theme.colors.dimGray} />
                     </InputSlot>
                 )}
 
-                <InputField>
+                <InputField
                     placeholder={placeholder}
                     value={value}
                     onChangeText={onChangeText}
                     autoFocus={autoFocus}
                     type={type}
                     keyboardType={keyboardType as any}
-                    color={text.onInteractive}
+                    sx={{
+                        color: text.onInteractive,
+                        fontFamily: Theme.typography.fontFamily.english,
+                        paddingVertical: multiline ? Theme.spacing.sm : 0,
+                    }}
                     placeholderTextColor={text.muted}
                     multiline={multiline}
                     numberOfLines={numberOfLines}
                     textAlignVertical={multiline ? 'top' : 'center'}
-                    sx={{
-                        fontFamily: Theme.typography.fontFamily.english,
-                        paddingVertical: multiline ? Theme.spacing.sm : 0,
-                    }}
-                /
+                />
 
                 {rightIcon && (
                     <InputSlot sx={{ paddingRight: '$0' as any, paddingLeft: '$3' as any }} onPress={onRightIconPress}>
@@ -137,8 +140,14 @@ export default function SanctuaryInput({
 
             {hasError && (
                 <FormControlError sx={{ marginTop: '$1' as any }}>
-                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} {...({ size: 'xs' } as any)} />
-                    <FormControlErrorText color={Theme.colors.error} sx={{ fontSize: '$xs' as any, marginLeft: '$1' as any }}>
+                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} size="xs" />
+                    <FormControlErrorText 
+                        sx={{ 
+                            color: Theme.colors.error,
+                            fontSize: '$xs' as any, 
+                            marginLeft: '$1' as any 
+                        }}
+                    >
                         {error || 'Invalid input'}
                     </FormControlErrorText>
                 </FormControlError>
@@ -146,4 +155,3 @@ export default function SanctuaryInput({
         </FormControl>
     );
 }
-

@@ -10,19 +10,27 @@ import {
   Button,
   ButtonText,
   Progress,
-  ProgressFilledTrack
+  ProgressFilledTrack,
+  Theme,
+  hapticLight,
+  hapticSuccess,
+  PositiveInvitation
 } from '@repo/ui';
 import { Moon, CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui';
-import { PositiveInvitation } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
+
+// —————————————————————————————————————————————————————————————————————————————
+// TYPES
+// —————————————————————————————————————————————————————————————————————————————
 
 interface WindDownRitualProps {
   userId?: string;
 }
+
+// —————————————————————————————————————————————————————————————————————————————
+// COMPONENT
+// —————————————————————————————————————————————————————————————————————————————
 
 export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const navigation = useNavigation<any>();
@@ -30,7 +38,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
 
-  // Wind-down steps
+  // Wind-down steps state
   const [wentWell, setWentWell] = useState('');
   const [toRelease, setToRelease] = useState('');
   const [tomorrowIntent, setTomorrowIntent] = useState('');
@@ -68,7 +76,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
     }
   ];
 
-  const currentStepData = (steps[currentStep] || steps[0]) as typeof steps[number];
+  const currentStepData = steps[currentStep] || steps[0];
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleNext = () => {
@@ -99,100 +107,92 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
   if (completed) {
     return (
-      <VStack space="lg" sx={{ flex: 1 }}>
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.md }}>
         <VStack space="xs">
-          <HStack space="sm" alignItems="center">
-            <Moon color={Theme.colors.sanctuarySaffron} size={24} /
-            ><Heading color={Theme.colors.sacredWhite} size="lg"
+          <HStack space="sm" sx={{ alignItems: 'center' }}>
+            <Moon color={Theme.colors.sanctuarySaffron} size={24} />
+            <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: 20 }}>
               {t('self.windDown')}
             </Heading>
           </HStack>
-          <Text color={Theme.colors.mistGray} size="sm">
-            {t('self.windDownDesc')}>
+          <Text sx={{ color: Theme.colors.mistGray, fontSize: 14 }}>
+            {t('self.windDownDesc')}
           </Text>
         </VStack>
 
-        <Box>
-          p={Theme.spacing.xl}
+        <Box
           sx={{
+            padding: Theme.spacing.xl,
             backgroundColor: Theme.colors.ink,
-            borderRadius: Theme.corners.comfortable
+            borderRadius: Theme.corners.comfortable,
+            alignItems: 'center'
           }}
-        
-          <VStack space="lg" alignItems="center">
-            <CheckCircle color={Theme.colors.sanctuarySaffron} size={64} /
+        >
+          <VStack space="lg" sx={{ alignItems: 'center', width: '100%' }}>
+            <CheckCircle color={Theme.colors.sanctuarySaffron} size={64} />
 
-            ><VStack space="xs" alignItems="center"
-              <Text>
-                color={Theme.colors.sacredWhite}
-                size="xl"
-                bold
-                textAlign="center">
-              
+            <VStack space="xs" sx={{ alignItems: 'center' }}>
+              <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 18, fontWeight: '700', textAlign: 'center' }}>
                 {t('self.windDownComplete')}
               </Text>
-              <Text>
-                color={Theme.colors.mistGray}
-                size="md"
-                textAlign="center">
-              
+              <Text sx={{ color: Theme.colors.mistGray, fontSize: 14, textAlign: 'center' }}>
                 {t('self.windDownCompleteDesc')}
               </Text>
             </VStack>
 
-            {/* Summary */}
-            <VStack space="md" w="$full" mt="$4">
-              {wentWell && (>
-                <Box>
-                  p="$3"
+            {/* Summary Section */}
+            <VStack space="md" sx={{ width: '100%', marginTop: 16 }}>
+              {wentWell && (
+                <Box
                   sx={{
-                    backgroundColor: Theme.colors.ink,
+                    padding: Theme.spacing.md,
+                    backgroundColor: 'rgba(255,255,255,0.05)',
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
                   }}
-                
-                  <Text color={Theme.colors.dimGray} size="xs" mb="$1">
-                    {t('self.wentWell')}>
+                >
+                  <Text sx={{ color: Theme.colors.dimGray, fontSize: 10, marginBottom: 4, fontWeight: '700', textTransform: 'uppercase' }}>
+                    {t('self.wentWell')}
                   </Text>
-                  <Text color={Theme.colors.sacredWhite} size="sm">
-                    {wentWell}>
+                  <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}>
+                    {wentWell}
                   </Text>
                 </Box>
               )}
 
               {tomorrowIntent && (
-                <Box>
-                  p="$3"
+                <Box
                   sx={{
-                    backgroundColor: Theme.colors.ink,
+                    padding: Theme.spacing.md,
+                    backgroundColor: 'rgba(255,255,255,0.05)',
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
                   }}
-                
-                  <Text color={Theme.colors.dimGray} size="xs" mb="$1">
-                    {t('self.tomorrowIntentLabel')}>
+                >
+                  <Text sx={{ color: Theme.colors.dimGray, fontSize: 10, marginBottom: 4, fontWeight: '700', textTransform: 'uppercase' }}>
+                    {t('self.tomorrowIntentLabel')}
                   </Text>
-                  <Text color={Theme.colors.sacredWhite} size="sm">
-                    {tomorrowIntent}>
+                  <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}>
+                    {tomorrowIntent}
                   </Text>
                 </Box>
               )}
             </VStack>
 
-            <Button>
-              size="md"
+            <Button
               variant="outline"
               onPress={handleReset}
-              mt="$4"
               sx={{
+                marginTop: 16,
                 borderColor: Theme.colors.dimGray,
-                borderRadius: Theme.corners.comfortable
+                borderRadius: Theme.corners.comfortable,
+                width: '100%'
               }}
-            
-              <ButtonText color={Theme.colors.mistGray}>
-                {t('self.startAnother')}>
+            >
+              <ButtonText sx={{ color: Theme.colors.mistGray }}>
+                {t('self.startAnother')}
               </ButtonText>
             </Button>
           </VStack>
@@ -203,112 +203,115 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
   if (!userId) {
     return (
-      <PositiveInvitation>
-        type="guest"
-        onAction={() => navigation.navigate('Auth' as never)}
-      /
-    >);
+      <Box sx={{ flex: 1, padding: Theme.spacing.md }}>
+        <PositiveInvitation
+          type="guest"
+          onAction={() => navigation.navigate('Auth' as never)}
+        />
+      </Box>
+    );
   }
 
   return (
-    <VStack space="lg" sx={{ flex: 1 }}>
+    <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.md }}>
       <VStack space="xs">
-        <HStack space="sm" alignItems="center">
-          <Moon color={Theme.colors.sanctuarySaffron} size={24} /
-          ><Heading color={Theme.colors.sacredWhite} size="lg"
+        <HStack space="sm" sx={{ alignItems: 'center' }}>
+          <Moon color={Theme.colors.sanctuarySaffron} size={24} />
+          <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: 20 }}>
             {t('self.windDown')}
           </Heading>
         </HStack>
-        <Text color={Theme.colors.mistGray} size="sm">
-          {t('self.windDownDesc')}>
+        <Text sx={{ color: Theme.colors.mistGray, fontSize: 14 }}>
+          {t('self.windDownDesc')}
         </Text>
       </VStack>
 
       {/* Progress Bar */}
       <VStack space="xs">
-        <HStack justifyContent="space-between">
-          <Text color={Theme.colors.mistGray} size="xs">
-            {t('self.step')} {currentStep + 1} {t('self.stepOf')} {steps.length}>
+        <HStack sx={{ justifyContent: 'space-between' }}>
+          <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
+            {t('self.step')} {currentStep + 1} {t('self.stepOf')} {steps.length}
           </Text>
-          <Text color={Theme.colors.mistGray} size="xs">
-            {Math.round(progress)}%>
+          <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
+            {Math.round(progress)}%
           </Text>
         </HStack>
-        <Progress value={progress}>
-          <ProgressFilledTrack/>
-            sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
-          />
+        <Progress value={progress} sx={{ height: 6, backgroundColor: 'rgba(255,255,255,0.1)' }}>
+          <ProgressFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} />
         </Progress>
       </VStack>
 
-      {/* Current Step */}
-      <Box>
-        p={Theme.spacing.xl}
+      {/* Current Step Content */}
+      <Box
         sx={{
+          padding: Theme.spacing.xl,
           backgroundColor: Theme.colors.ink,
           borderRadius: Theme.corners.comfortable,
-          minHeight: 250
+          minHeight: 300,
+          justifyContent: 'center'
         }}
-      
-        <VStack space="lg" sx={{ flex: 1 }}>
+      >
+        <VStack space="xl">
           <VStack space="xs">
-            <Text>
-              color={Theme.colors.sanctuarySaffron}
-              size="sm"
-              bold>
-            
-              {currentStepData.id === 'breathe' ? '<' : ''} Step {currentStep + 1}
+            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 12, fontWeight: '700', textTransform: 'uppercase' }}>
+              Step {currentStep + 1}
             </Text>
-            <Heading color={Theme.colors.sacredWhite} size="md">
-              {currentStepData.title}>
+            <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: 22 }}>
+              {currentStepData.title}
             </Heading>
             {currentStepData.description && (
-              <Text color={Theme.colors.mistGray} size="md">
-                {currentStepData.description}>
+              <Text sx={{ color: Theme.colors.mistGray, fontSize: 16, lineHeight: 24 }}>
+                {currentStepData.description}
               </Text>
             )}
           </VStack>
 
           {currentStepData.input && (
-            <Box>
-              <Input>
+            <Box sx={{ marginTop: 8 }}>
+              <Input
                 variant="outline"
-                >>>>>>>size="md"
                 sx={{
-                  backgroundColor: Theme.colors.ink,
+                  backgroundColor: 'rgba(255,255,255,0.03)',
                   borderWidth: 1,
-                  borderColor: Theme.colors.transparent,
-                  minHeight: 100
+                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderRadius: Theme.corners.comfortable,
+                  minHeight: 120,
+                  padding: 8
                 }}
-              
-                <InputField/>
+              >
+                <InputField
                   placeholder={currentStepData.placeholder}
-                  value={currentStepData.value || ''}
-                  onChangeText={currentStepData.setValue || (() => { })}
+                  value={currentStepData.value}
+                  onChangeText={(text) => currentStepData.setValue?.(text)}
                   multiline
-                  color={Theme.colors.sacredWhite}
+                  sx={{ 
+                    color: Theme.colors.sacredWhite,
+                    textAlignVertical: 'top',
+                    fontSize: 15
+                  }}
                   placeholderTextColor={Theme.colors.dimGray}
-                  sx={{ textAlignVertical: 'top' }}
-                /
+                />
               </Input>
-            </>>>>>>>>Box
+            </Box>
           )}
 
           {currentStepData.id === 'breathe' && (
-            <VStack space="md" alignItems="center" mt="$4">
-              <Box>
+            <VStack space="md" sx={{ alignItems: 'center', marginTop: 16 }}>
+              <Box
                 sx={{
                   width: 100,
                   height: 100,
                   borderRadius: 50,
                   backgroundColor: Theme.colors.sanctuarySaffron + '20',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  borderWidth: 2,
+                  borderColor: Theme.colors.sanctuarySaffron + '40'
                 }}
-              
-                <Text fontSize="$4xl"><</Text
+              >
+                <Moon color={Theme.colors.sanctuarySaffron} size={40} />
               </Box>
-              >>>>>><Text color={Theme.colors.mistGray} size="sm" textAlign="center"
+              <Text sx={{ color: Theme.colors.mistGray, fontSize: 14, textAlign: 'center', maxWidth: 200 }}>
                 {t('self.breatheInstructions')}
               </Text>
             </VStack>
@@ -316,37 +319,32 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         </VStack>
       </Box>
 
-      {/* Navigation */}
-      <HStack space="md" justifyContent="space-between">
-        <Button>
-          size="md"
+      {/* Navigation Controls */}
+      <HStack space="md" sx={{ justifyContent: 'space-between', marginTop: 'auto', paddingBottom: Theme.spacing.lg }}>
+        <Button
           variant="outline"
           onPress={handleBack}
           isDisabled={currentStep === 0}
           sx={{
-            borderColor: Theme.colors.ink,
+            borderColor: 'rgba(255,255,255,0.1)',
             borderRadius: Theme.corners.comfortable,
             flex: 1
           }}
-        
-          <ButtonText color={Theme.colors.mistGray}>
-            {t('common.back')}>
+        >
+          <ButtonText sx={{ color: Theme.colors.mistGray }}>
+            {t('common.back')}
           </ButtonText>
         </Button>
-        <Button>
-          size="md"
-          action="primary"
+        <Button
           onPress={handleNext}
-          isDisabled={
-            currentStepData.input && !(currentStepData.value as string)?.trim()>
-          }
+          isDisabled={currentStepData.input && !currentStepData.value?.trim()}
           sx={{
             backgroundColor: Theme.colors.sanctuarySaffron,
             borderRadius: Theme.corners.comfortable,
             flex: 1
           }}
-        
-          <ButtonText>
+        >
+          <ButtonText sx={{ color: Theme.colors.sacredBlack, fontWeight: '700' }}>
             {currentStep === steps.length - 1 ? t('common.complete') : t('common.next')}
           </ButtonText>
         </Button>

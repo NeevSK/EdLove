@@ -21,7 +21,7 @@ function SanctuaryFlashListWeb<T>({
     data,
     renderItem,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    estimatedItemSize: _estimatedItemSize, // API compatibility only  FlatList doesn't require it
+    estimatedItemSize: _estimatedItemSize, // API compatibility only - FlatList doesn't require it
     refreshing = false,
     onRefresh,
     emptyComponent,
@@ -46,7 +46,7 @@ function SanctuaryFlashListWeb<T>({
                 icon={BookOpen}
                 title="Silence in the Sanctuary"
                 description="Your first discovery is waiting to be found here."
-            /
+            />
         );
     }, [emptyComponent, ListEmptyComponent]);
 
@@ -67,12 +67,11 @@ function SanctuaryFlashListWeb<T>({
                         onRefresh={onRefresh}
                         tintColor={refreshColor || Theme.colors.sanctuarySaffron}
                         colors={[refreshColor || Theme.colors.sanctuarySaffron]}
-                    /
+                    />
                 ) : undefined
             }
-        /
+        />
     );
 }
 
 export default SanctuaryFlashListWeb;
-

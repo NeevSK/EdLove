@@ -23,24 +23,24 @@ export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
                     opacity: opacity * 2, // Adjust for web intensity
                 } as any,
             ]}
-        
-            <svg width="100%" height="100%" style={{ position: 'absolute' }}
-                <filter id={filterId}
+        >
+            <svg width="100%" height="100%" style={{ position: 'absolute' }}>
+                <filter id={filterId}>
                     <feTurbulence 
                         type="fractalNoise" 
                         baseFrequency={frequency} 
                         numOctaves="3" 
                         stitchTiles="stitch" 
-                    /
+                    />
                     {warm && (
                         <feColorMatrix 
                             type="matrix" 
                             values="1.1 0 0 0 0  0 1.05 0 0 0  0 0 0.9 0 0  0 0 0 1 0" 
-                        /
+                        />
                     )}
-                </filter
-                <rect width="100%" height="100%" filter={`url(#${filterId})`} /
-            </svg
-        </View
+                </filter>
+                <rect width="100%" height="100%" filter={`url(#${filterId})`} />
+            </svg>
+        </View>
     );
 };

@@ -9,9 +9,9 @@ import {
 } from '@shopify/react-native-skia';
 
 interface NoiseOverlayProps {
-    opacity?: number;        // Default 0.03  3% warm grain
-    warm?: boolean;          // Default true  warm tinted grain
-    frequency?: number;      // Default 0.65  grain fineness
+    opacity?: number;        // Default 0.03 - 3% warm grain
+    warm?: boolean;          // Default true - warm tinted grain
+    frequency?: number;      // Default 0.65 - grain fineness
 }
 
 export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
@@ -21,7 +21,7 @@ export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
 }) => {
     const { width, height } = useWindowDimensions();
 
-    // Warm grain color matrix  slight saffron tint
+    // Warm grain color matrix - slight saffron tint
     const warmMatrix = [
         1, 0, 0, 0, 0.02,   // R: slight warm boost
         0, 1, 0, 0, 0.01,   // G: slight warm boost  
@@ -29,7 +29,7 @@ export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
         0, 0, 0, opacity, 0, // A: controlled opacity
     ];
 
-    // Cool grain color matrix  slight aurora tint
+    // Cool grain color matrix - slight aurora tint
     const coolMatrix = [
         1, 0, 0, 0, -0.01,   // R: slight cool reduction
         0, 1, 0, 0, 0.01,   // G: neutral
@@ -38,18 +38,18 @@ export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
     ];
 
     return (
-        <Canvas>
+        <Canvas
             style={[StyleSheet.absoluteFill, styles.canvas]}
             pointerEvents="none"  // Never intercepts touches
-        
+        >
             <Rect x={0} y={0} width={width} height={height}>
                 <Paint>
-                    <Turbulence>
+                    <Turbulence
                         freqX={frequency}
                         freqY={frequency}
                         octaves={4}
                         seed={2}
-                    /
+                    />
                     <ColorMatrix matrix={warm ? warmMatrix : coolMatrix} />
                 </Paint>
             </Rect>

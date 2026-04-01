@@ -45,7 +45,8 @@ const getExistingAttendanceMap = async (
         classroom_id: string;
         student_id: string;
         date: string;
-    }) => {
+    }>
+) => {
     const existingEntries = await Promise.all(
         records.map(async (record) => {
             const existing = await educationalServices.attendance.getByDate(record.classroom_id, record.date);
@@ -72,7 +73,7 @@ export const attendanceAPI = {
      */
     async getByDate(classroomId: string, date: string): Promise<AttendanceRecord[]> {
         const snapshot = await attendanceAPI.getClassroomAttendanceSnapshot(classroomId, date);
-        return snapshot.records;
+        return snapshot.records as AttendanceRecord[];
     },
 
     /**
@@ -160,7 +161,8 @@ export const attendanceAPI = {
             });
 
             await Promise.all(
-                overriddenRecords.map((entry) =                    logAttendanceAudit({
+                overriddenRecords.map((entry) =>
+                    logAttendanceAudit({
                         action: 'attendance_overridden',
                         entityId: entry.id,
                         executorId: audit.actorId,

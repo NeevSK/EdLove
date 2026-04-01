@@ -8,7 +8,7 @@ import { CommunityGroupSchema } from './schemas/community.schema';
 
 const c = initContract();
 
-const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =  POAMetadataSchema.parse({ authority: { action, subject } });
+const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) => POAMetadataSchema.parse({ authority: { action, subject } });
 
 export const founderContract = c.router({
   getEcosystemStats: {

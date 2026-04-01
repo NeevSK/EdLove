@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { VStack, GlobalHeader, FeatureInfoIcon, HStack, TemporalNavigator } from '@repo/ui';
 import { BaseSelfViewProps } from './BaseSelfView.types';
-import { Theme } from '@repo/ui';
 import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
@@ -13,7 +12,6 @@ import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
  */
 export function BaseSelfView({
     perspective,
-    description,
     domains,
     sideBar,
     reminders,
@@ -25,7 +23,7 @@ export function BaseSelfView({
     const surfaceBg = perspective === 'student' ? '#F5F3FF' : '#FFF7ED';
 
     const allFeatures = React.useMemo(() => [
-        ...domains.flatMap(domain =
+        ...domains.flatMap(domain =>
             (domain.features || []).map(feature => ({
                 ...feature,
                 domainId: domain.id,
@@ -46,7 +44,7 @@ export function BaseSelfView({
             label: 'Reflections',
             content: sideBar,
             domainId: 'reflections',
-            domainColor: '#8B5CF6' // Purple for deep reflection
+            domainColor: '#8B5CF6'
         }] : []),
         // Inject Reminders if provided
         ...(reminders ? [{
@@ -54,7 +52,7 @@ export function BaseSelfView({
             label: 'Reminders',
             content: reminders,
             domainId: 'reminders',
-            domainColor: '#F59E0B' // Amber for attention
+            domainColor: '#F59E0B'
         }] : [])
     ], [domains, sideBar, reminders]);
 
@@ -79,91 +77,90 @@ export function BaseSelfView({
 
     return (
         <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}>
-            {/* Global Header Restored */}>
-            <GlobalHeader>
+            <GlobalHeader
                 isSelfView={true}
                 subtitle={perspective.toUpperCase()}
                 title="Sadhana"
             />
 
-            ><TemporalNavigator />
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}
-            >    {voiceJournal && (>
+            <TemporalNavigator />
+            
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+                {voiceJournal && (
                     <View style={nativeStyles.ritualWrapper}>
-                        {voiceJournal}>
+                        {voiceJournal}
                     </View>
                 )}
 
                 {morningRitual && (
                     <View style={nativeStyles.ritualWrapper}>
-                        {morningRitual}>
+                        {morningRitual}
                     </View>
                 )}
 
                 {/* Horizontal Circular Carousel with Domain Rings */}
                 <View style={nativeStyles.carouselContainer}>
-                    <ScrollView>
+                    <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={nativeStyles.carouselContent}>
-                    
+                        contentContainerStyle={nativeStyles.carouselContent}
+                    >
                         {sortedFeatures.map((feature) => {
                             const isActive = activeFeatureId === feature.id;
                             const isPinned = pinned.includes(feature.id);
                             const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
 
                             return (
-                                <Pressable>
+                                <Pressable
                                     key={feature.id}
                                     onPress={() => handleFeaturePress(feature.id)}
                                     onLongPress={() => togglePin(feature.id)}
                                     style={nativeStyles.circleItem}
-                                
-                                    <View>
+                                >
+                                    <View
                                         style={[
-                                            nativeStyles.circleRing,>
+                                            nativeStyles.circleRing,
                                             {
                                                 borderColor: isActive ? feature.domainColor : 'rgba(0,0,0,0.05)',
                                                 borderWidth: 2,
-                                                // Insights get a subtle dash or glow if needed
                                                 borderStyle: isInsight && !isActive ? 'dashed' : 'solid',
                                             }
                                         ]}
-                                    
-                                        <View>
+                                    >
+                                        <View
                                             style={[
-                                                nativeStyles.circle,>
+                                                nativeStyles.circle,
                                                 {
-                                                    backgroundColor: isActive ? 'white' : 'white',
+                                                    backgroundColor: 'white',
                                                     shadowColor: feature.domainColor,
                                                     shadowOpacity: isActive ? 0.3 : 0.05,
                                                 }
                                             ]}
-                                        
+                                        >
                                             <Text style={nativeStyles.circleIcon}>
-                                                {getEmoji(feature)}>
+                                                {getEmoji(feature)}
                                             </Text>
                                             {isPinned && (
                                                 <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}>
-                                                    <Text style={{ fontSize: 10, color: 'white' }}>\uD83D\uDCCC</Text
-                                                ></View>
+                                                    <Text style={{ fontSize: 10, color: 'white' }}>\uD83D\uDCCC</Text>
+                                                </View>
                                             )}
                                         </View>
                                     </View>
-                                    <View style={[>
-                                        nativeStyles.activeIndicator,>
+                                    <View style={[
+                                        nativeStyles.activeIndicator,
                                         { backgroundColor: isActive ? feature.domainColor : 'transparent' }
-                                    ]} /
-                                    ><Text
+                                    ]} />
+                                    <Text
                                         numberOfLines={1}
                                         style={[
-                                            nativeStyles.circleLabel,>
+                                            nativeStyles.circleLabel,
                                             {
                                                 color: isActive ? '#000' : 'rgba(0,0,0,0.4)',
                                                 fontWeight: isActive ? '800' : '600'
                                             }
                                         ]}
-                                    
+                                    >
                                         {feature.label}
                                     </Text>
                                 </Pressable>
@@ -174,30 +171,30 @@ export function BaseSelfView({
 
                 {/* Active Feature Content */}
                 <View style={nativeStyles.activeFeatureContainer}>
-                    {activeFeature && (>
-                        <VStack sx={{ space: 'md', mb: 16 } as any}>
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' } as any}>
-                                <HStack sx={{ alignItems: 'center', space: 'sm' } as any}>
+                    {activeFeature && (
+                        <VStack style={{ marginBottom: 16 }}>
+                            <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                <HStack style={{ alignItems: 'center' }}>
                                     <Text style={nativeStyles.activeLabel}>
                                         {activeFeature.label}
                                     </Text>
-                                    <FeatureInfoIcon >
+                                    <FeatureInfoIcon 
                                         title={activeFeature.label}
                                         discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
                                         color={activeFeature.domainColor}
                                     />
                                     {activeFeature.id !== 'holistic_history' && (
-                                    >    <Pressable 
+                                        <Pressable 
                                             onPress={() => handleFeaturePress('holistic_history')}
                                             style={{ padding: 4, marginLeft: 4 }}
-                                        
-                                            <Text style={{ fontSize: 16 }}>\u23F3</Text
-                                        ></Pressable>
+                                        >
+                                            <Text style={{ fontSize: 16 }}>\u23F3</Text>
+                                        </Pressable>
                                     )}
                                 </HStack>
                                 {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
                                     <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}>
-                                        ACTIVE FEATURE>
+                                        ACTIVE FEATURE
                                     </Text>
                                 )}
                             </HStack>
@@ -208,7 +205,7 @@ export function BaseSelfView({
 
                 {nightRitual && (
                     <View style={nativeStyles.ritualWrapper}>
-                        {nightRitual}>
+                        {nightRitual}
                     </View>
                 )}
             </ScrollView>
@@ -230,8 +227,9 @@ const nativeStyles = StyleSheet.create({
     },
     carouselContent: {
         paddingHorizontal: 20,
+        flexDirection: 'row',
         gap: 12,
-    } as any,
+    },
     circleItem: {
         alignItems: 'center',
         width: 72,
@@ -293,38 +291,11 @@ const nativeStyles = StyleSheet.create({
         paddingTop: 12,
         minHeight: 400,
     },
-    insightsSection: {
-        marginTop: 40,
-        paddingHorizontal: 20,
-        paddingBottom: 40,
-    },
-    insightsHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    insightsLine: {
-        flex: 1,
-        height: 1,
-        opacity: 0.2,
-    },
-    insightsTitle: {
-        marginHorizontal: 12,
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 1.5,
-        textTransform: 'uppercase',
-        color: '#8B5CF6',
-        opacity: 0.6,
-    },
-    insightsContent: {
-        gap: 16,
-    } as any,
     activeLabel: {
         fontSize: 18,
         fontWeight: '800',
         color: '#1A1610',
         letterSpacing: -0.5,
+        marginRight: 8,
     },
 });
->>

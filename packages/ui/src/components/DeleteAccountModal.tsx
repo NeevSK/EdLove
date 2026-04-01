@@ -16,7 +16,7 @@ interface DeleteAccountModalProps {
 /**
  * A destructive confirmation modal for account deletion.
  * Uses SanctuaryModal for phase-aware glass styling (light + dark world).
- * Danger accent follows design-token danger color  never pure red on white.
+ * Danger accent follows design-token danger color - never pure red on white.
  */
 export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoading }: DeleteAccountModalProps) {
     const { text, accent, glass } = useTheme();
@@ -25,20 +25,20 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
     const footer = (
         <HStack {...({ space: "md", width: "100%" } as any)}>
             <Box sx={{ flex: 1 }}>
-                <SanctuaryButton>
+                <SanctuaryButton
                     action="secondary"
                     onPress={onClose}
                     isDisabled={isLoading}
-                
-                    Cancel>
+                >
+                    Cancel
                 </SanctuaryButton>
             </Box>
             <Box sx={{ flex: 1.5 }}>
-                <SanctuaryButton>
+                <SanctuaryButton
                     action="negative"
                     onPress={onDelete}
-                    isLoading={isLoading}>
-                
+                    isLoading={isLoading}
+                >
                     {isLoading ? "Processing..." : "Delete Permanently"}
                 </SanctuaryButton>
             </Box>
@@ -46,14 +46,14 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
     );
 
     return (
-        <SanctuaryModal>
+        <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
             title="Delete Account"
             icon={<AlertTriangle color={dangerColor} size={22} />}
             footer={footer}
             size="md"
-        
+        >
             <VStack {...({ space: "md", py: "$2" } as any)}>
                 <Text {...({ color: text.secondary, size: "md" } as any)}>
                     This action is <Text {...({ bold: true, color: text.primary } as any)}>irreversible</Text>. Your personal profile, settings, and private data will be permanently removed from the Gurudevi sanctuary.
@@ -67,7 +67,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
                     borderColor: glass.interact.border,
                 }}>
                     <Text {...({ color: text.secondary, size: "sm" } as any)}>
-                        School records (attendance, grades, community posts) are retained for institutional integrity and cannot be removed by individuals.>
+                        School records (attendance, grades, community posts) are retained for institutional integrity and cannot be removed by individuals.
                     </Text>
                 </Box>
                 <Box sx={{
@@ -78,12 +78,10 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
                     borderColor: `${dangerColor}33`,
                 }}>
                     <Text {...({ color: dangerColor, bold: true, size: "sm" } as any)}>
-                        Just need a break? You can sign out instead  your sanctuary will be waiting for you.>
+                        Just need a break? You can sign out instead - your sanctuary will be waiting for you.
                     </Text>
                 </Box>
             </VStack>
         </SanctuaryModal>
     );
 }
-
-

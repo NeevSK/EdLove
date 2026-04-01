@@ -31,7 +31,6 @@ import {
 } from '@repo/ui';
 import { formatFileSize, formatDuration } from '@repo/core';
 import type { BaseResource } from '@repo/core';
-import type { LibraryResource } from '../types';
 
 // ============================================================================
 // CONFIG
@@ -42,7 +41,8 @@ export type DisplayResourceType =
     | 'map' | 'infographic' | 'story' | 'circular' | 'movie_trailer' | 'tech_guide'
     | 'form' | 'graphic';
 
-export const RESOURCE_TYPE_CONFIG: Record    DisplayResourceType,
+export const RESOURCE_TYPE_CONFIG: Record<
+    DisplayResourceType,
     { icon: React.ComponentType<any>; color: string; label: string }
 > = {
     pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
@@ -72,7 +72,14 @@ export function resolveResourceDisplayType(type: string): DisplayResourceType {
 // ============================================================================
 
 export interface ResourceRowProps {
-    resource: BaseResource & { subjects?: string[]; verified?: boolean; is_community?: boolean; link_status?: string };
+    resource: BaseResource & { 
+        subjects?: string[]; 
+        verified?: boolean; 
+        is_community?: boolean; 
+        link_status?: string 
+        format?: string;
+        metadata?: { size?: number; duration?: number };
+    };
     onOpen: () => void;
     onOpenAnotherWay?: () => void;
     onFlashPlay?: () => void;
@@ -83,9 +90,19 @@ export interface ResourceRowProps {
     onGenerateGraphic?: () => void;
 }
 
-export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, onPullToDesk, onDelete, onAISparkle, onGenerateQuiz, onGenerateGraphic }: ResourceRowProps) {
+export function ResourceRow({ 
+    resource, 
+    onOpen, 
+    onOpenAnotherWay, 
+    onFlashPlay, 
+    onPullToDesk, 
+    onDelete, 
+    onAISparkle, 
+    onGenerateQuiz, 
+    onGenerateGraphic 
+}: ResourceRowProps) {
     const colors = useThemedColors();
-    const displayType = resolveResourceDisplayType(resource.type);
+    const displayType = resolveResourceDisplayType(resource.type || '');
     const config = RESOURCE_TYPE_CONFIG[displayType];
     const Icon = config.icon;
 
@@ -99,8 +116,11 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
     ].filter(Boolean);
 
     return (
-        <Box sx={{ marginBottom: Theme.spacing.sm }}            <SanctuaryCard onPress={onOpen}                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}                    {/* File Type Icon - Refined Glass Effect */}>
-                    <Box>
+        <Box sx={{ marginBottom: Theme.spacing.sm }}>
+            <SanctuaryCard onPress={onOpen}>
+                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}>
+                    {/* File Type Icon - Refined Glass Effect */}
+                    <Box
                         sx={{
                             width: 48,
                             height: 48,
@@ -111,83 +131,137 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                             borderWidth: 1,
                             borderColor: `${config.color}30`,
                         }}
-                                            <Icon color={config.color} size={20} /                        ><Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text                    ></Box
-                    >{/* Content */}
-                    <VStack sx={{ flex: 1, gap: 2 }}                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text                        ><HStack space="xs" alignItems="center"                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text                            >{metaParts.length > 0 && (
-                                <                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} /                                    ><Text size="xs" color={colors.textTertiary}>{metaParts.join(' \u00B7 ')}</Text                                ></                            )}
-                        </HStack                        ><HStack space="xs" alignItems="center"                            {resource.verified && (
-                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>VERIFIED</Text                                ></Box                            )}
+                    >
+                        <Icon color={config.color} size={20} />
+                        <Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>
+                            {config.label}
+                        </Text>
+                    </Box>
+
+                    {/* Content */}
+                    <VStack sx={{ flex: 1, gap: 2 }}>
+                        <Text color={colors.text} size="sm" bold numberOfLines={1}>
+                            {resource.title}
+                        </Text>
+                        <HStack space="xs" alignItems="center">
+                            <Text size="xs" color={colors.textSecondary}>
+                                {resource.subjects?.[0] || ''}
+                            </Text>
+                            {metaParts.length > 0 && (
+                                <HStack space="xs" alignItems="center">
+                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} />
+                                    <Text size="xs" color={colors.textTertiary}>
+                                        {metaParts.join(' \u00B7 ')}
+                                    </Text>
+                                </HStack>
+                            )}
+                        </HStack>
+                        <HStack space="xs" alignItems="center">
+                            {resource.verified && (
+                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}>
+                                    <Text size="2xs" color="white" bold>VERIFIED</Text>
+                                </Box>
+                            )}
                             {resource.is_community && (
-                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>COMMUNITY</Text                                ></Box                            )}
+                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}>
+                                    <Text size="2xs" color="white" bold>COMMUNITY</Text>
+                                </Box>
+                            )}
                             {resource.link_status === 'broken' && (
-                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text                                ></Box                            )}
-                        </HStack                    </VStack
+                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}>
+                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text>
+                                </Box>
+                            )}
+                        </HStack>
+                    </VStack>
+
                     {/* Actions */}
-                    <HStack space="xs" alignItems="center"                        {onFlashPlay && (>
-                            <SanctuaryButton>
+                    <HStack space="xs" alignItems="center">
+                        {onFlashPlay && (
+                            <SanctuaryButton
                                 onPress={onFlashPlay}
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={Play}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
+                                leftIcon={Play}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
                         {onPullToDesk && (
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={onPullToDesk}
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={Bookmark}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
+                                leftIcon={Bookmark}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
                         {onOpenAnotherWay && (
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={onOpenAnotherWay}
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={ArrowLeftRight}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
+                                leftIcon={ArrowLeftRight}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
                         {onDelete && (
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={onDelete}
                                 variant="ghost"
                                 size="xs"
                                 action="negative"
-                                leftIcon={Trash2}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
+                                leftIcon={Trash2}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
 
                         {onAISparkle && (
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={onAISparkle}
                                 variant="ghost"
                                 size="xs"
                                 action="primary"
-                                leftIcon={Sparkles}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
+                                leftIcon={Sparkles}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
 
                         {onGenerateQuiz && (
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={onGenerateQuiz}
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={ClipboardCheck}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
+                                leftIcon={ClipboardCheck}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
 
                         {onGenerateGraphic && (
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={onGenerateGraphic}
                                 variant="ghost"
                                 size="xs"
                                 action="secondary"
-                                leftIcon={Brain}>
-                                                            {''}
-                            </SanctuaryButton                        >)}
-                    </HStack                </HStack            </SanctuaryCard        </Box    );
+                                leftIcon={Brain}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
+                    </HStack>
+                </HStack>
+            </SanctuaryCard>
+        </Box>
+    );
 }
+
+export default ResourceRow;

@@ -85,35 +85,34 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
         <SkeletonCard height={80} />
-        ><SkeletonCard height={80} /
-        ><SkeletonCard height={80} />
-      ></VStack>
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+      </VStack>
     );
   }
 
   if (!userId) {
     return (
-      <PositiveInvitation/>
+      <PositiveInvitation
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
-      /
-    >);
-  }
+      />
+    );
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
       <VStack space="xs">
         <HStack space="sm" alignItems="center">
-          <Battery/>
+          <Battery
             color={(selectedLevel !== null && selectedLevel >= 1 && selectedLevel <= 5) ? energyLevels[selectedLevel - 1]?.color : colors.action}
             size={24}
-          /
-          ><Heading color={colors.text} size="lg"
-            {t('self.energyForecast')}>
+          />
+          <Heading color={colors.text} size="lg">
+            {t('self.energyForecast')}
           </Heading>
         </HStack>
         <Text color={colors.textSecondary} size="sm">
-          {t('self.energyForecastDesc')}>
+          {t('self.energyForecastDesc')}
         </Text>
       </VStack>
 
@@ -126,14 +125,14 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
           {energyLevels.map((energy) => {
             const isActive = selectedLevel === energy.level;
             return (
-              <Pressable>
+              <Pressable
                 key={energy.level}
                 onPress={() => handleSelectEnergy(energy.level as any)}
                 disabled={isLoading || disabled}
                 sx={{ alignItems: 'center' }}
-              
+              >
                 <VStack alignItems="center" space="xs">
-                  <Box>
+                  <Box
                     sx={{
                       width: 54,
                       height: 54,
@@ -144,16 +143,16 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
                       borderWidth: 2,
                       borderColor: isActive ? energy.color : colors.border,
                     }}
-                  
-                    <Text sx={{ fontSize: 26 }}>{energy.emoji}</Text
-                  ></Box>
-                  <Text>
+                  >
+                    <Text sx={{ fontSize: 26 }}>{energy.emoji}</Text>
+                  </Box>
+                  <Text
                     sx={{
                       fontSize: Theme.typography.fontSize.xs,
                       color: isActive ? energy.color : colors.textTertiary,
                       fontWeight: isActive ? '700' : '400',
                     }}
-                  
+                  >
                     {energy.label}
                   </Text>
                 </VStack>
@@ -165,13 +164,13 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
 
       {/* Last updated timestamp */}
       {todayForecast && (
-        <Box>
+        <Box
           p="$3"
           sx={{
             backgroundColor: colors.tertiary,
             borderRadius: Theme.corners.comfortable
           }}
-        
+        >
           <Text color={colors.textSecondary} size="sm" textAlign="center">
             {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </Text>
@@ -180,3 +179,5 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
     </VStack>
   );
 }
+
+export default EnergyForecast;

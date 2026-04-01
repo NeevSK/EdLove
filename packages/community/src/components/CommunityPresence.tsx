@@ -1,8 +1,6 @@
 /**
  * COMMUNITY PRESENCE
  * Shows how many teachers/students are currently online based on role.
- * Provides instant comfort and combats isolation.
- * Follows TAIL_FIN resonance principles with glass-morphic status indicator.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -59,7 +57,7 @@ export default function CommunityPresence({
             -1,
             true
         );
-    }, [pulseOpacity, pulseScale]);
+    }, []);
 
     const pulseStyle = useAnimatedStyle(() => ({
         transform: [{ scale: pulseScale.value }],
@@ -83,43 +81,59 @@ export default function CommunityPresence({
     );
 
     const roleLabel = useMemo(() => {
-        if (perspective === 'student') return t('community.students');
-        if (perspective === 'principal') return t('community.members');
-        return t('community.educators');
+        if (perspective === 'student') return t('community.students') || 'Students';
+        if (perspective === 'principal') return t('community.members') || 'Members';
+        return t('community.educators') || 'Educators';
     }, [perspective, t]);
 
     const motivationText = useMemo(() => {
-        if (perspective === 'student') return t('community.studentMotivation');
-        if (perspective === 'principal') return t('community.principalMotivation');
-        return t('community.teacherMotivation');
+        if (perspective === 'student') return t('community.studentMotivation') || 'You are not alone in your journey.';
+        if (perspective === 'principal') return t('community.principalMotivation') || 'Maintaining the sanctuary together.';
+        return t('community.teacherMotivation') || 'Guiding the future, together.';
     }, [perspective, t]);
 
     if (isLoading) {
         return (
-            <HStack space="md" alignItems="center" p={hidePadding || compact ? 0 : "$4"} opacity={0.6}                <Spinner size="small" color={colors.action} /                ><Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>Locating Sanctuary Presence...</Text            ></HStack        );
+            <HStack space="md" sx={{ alignItems: 'center', padding: hidePadding || compact ? 0 : 16, opacity: 0.6 }}>
+                <Spinner size="small" color={colors.action} />
+                <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                    Locating Sanctuary Presence...
+                </Text>
+            </HStack>
+        );
     }
 
     if (compact) {
         return (
-            <HStack space="xs" alignItems="center"                <Box>
+            <HStack space="xs" sx={{ alignItems: 'center' }}>
+                <Box
                     style={{
                         width: 8,
                         height: 8,
                         borderRadius: 4,
                         backgroundColor: vibeColor,
                     }}
-                /                ><Text size="xs" color={colors.textSecondary} bold                    {isOffline ? t('community.offline') : `${onlineCount} ${roleLabel}`}
-                </Text            ></HStack        );
+                />
+                <Text sx={{ fontSize: 12, color: colors.textSecondary, fontWeight: 'bold' }}>
+                    {isOffline ? t('community.offline') || 'Offline' : `${onlineCount} ${roleLabel}`}
+                </Text>
+            </HStack>
+        );
     }
 
     return (
-        <VStack space="md" p={hidePadding || compact ? 0 : "$4"}            <HStack space="md" alignItems="center"                <Box sx={{ position: 'relative' }}                    {isOffline ? (>
-                        <WifiOff color={colors.textTertiary} size={28} /                    >) : (>
-                        <Users color={vibeColor} size={28} /                    >)}>
+        <VStack space="md" sx={{ padding: hidePadding || compact ? 0 : 16 }}>
+            <HStack space="md" sx={{ alignItems: 'center' }}>
+                <Box sx={{ position: 'relative' }}>
+                    {isOffline ? (
+                        <WifiOff color={colors.textTertiary} size={28} />
+                    ) : (
+                        <Users color={vibeColor} size={28} />
+                    )}
                     {!isOffline && (
-                        <Animated.View>
+                        <Animated.View
                             style={[
-                                pulseStyle,>
+                                pulseStyle,
                                 {
                                     position: 'absolute',
                                     top: -4,
@@ -130,29 +144,43 @@ export default function CommunityPresence({
                                     backgroundColor: vibeColor,
                                 },
                             ]}
-                        /                    )}
-                </Box                ><VStack >                   <Heading size="sm" color={colors.text}                        {isOffline ? t('community.offlineTitle') : t('community.sanctuaryPulse')}
-                    </Heading                    ><Text color={colors.text>Secondary} size="sm"                        {isOffline
-                            ? t('community.offlineDesc')
-                            : `${onlineCount} ${roleLabel} ${t('community.onlineNow')}`}
-                    </Text                    >{!isOffline && (
-                        <Text>
-                            color={colors.textTertiary}
-                            size="xs"
-                            sx={{ mt: '$1' }}
-                                                    {t('community.dominantVibe')}: {dominantVibe}
-                        </Text                    >)}
-                </VStack            </HStack
+                        />
+                    )}
+                </Box>
+                <VStack>
+                    <Heading size="sm" sx={{ color: colors.text }}>
+                        {isOffline ? t('community.offlineTitle') || 'Connection Lost' : t('community.sanctuaryPulse') || 'Sanctuary Pulse'}
+                    </Heading>
+                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                        {isOffline
+                            ? t('community.offlineDesc') || 'You are viewing a static instance.'
+                            : `${onlineCount} ${roleLabel} ${t('community.onlineNow') || 'present now'}`}
+                    </Text>
+                    {!isOffline && (
+                        <Text
+                            sx={{ color: colors.textTertiary, fontSize: 12, marginTop: 4 }}
+                        >
+                            {t('community.dominantVibe') || 'Dominant Vibe'}: {dominantVibe}
+                        </Text>
+                    )}
+                </VStack>
+            </HStack>
+            
             {!isOffline && onlineCount > 0 && (
-                <Box>
+                <Box
                     sx={{
-                        bg: colors.secondary,
-                        p: '$3',
+                        backgroundColor: colors.secondary,
+                        padding: 12,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
                         borderColor: colors.border,
                     }}
-                                    <Text size="xs" color={colors.textSecondary} italic                        {motivationText}>
-                    </Text                ></Box            >)}>
-        </VStack    >);
+                >
+                    <Text sx={{ fontSize: 12, color: colors.textSecondary, fontStyle: 'italic' }}>
+                        {motivationText}
+                    </Text>
+                </Box>
+            )}
+        </VStack>
+    );
 }

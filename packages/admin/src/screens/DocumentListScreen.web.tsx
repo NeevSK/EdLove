@@ -102,65 +102,80 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   };
 
   const isDesktop = screenWidth > 1024;
-  const isTablet = screenWidth > 768 && screenWidth <= 1024;
 
   const renderDocumentItem = (document: DocumentWorkflow, index: number) => {
     if (viewMode === 'grid' && isDesktop) {
       return (
-        <TouchableOpacity>
+        <TouchableOpacity
           key={document.id}
           style={[
-            styles.documentCardGrid,>
+            styles.documentCardGrid,
             { 
               backgroundColor: theme.glass.surface.bg,
               borderColor: theme.glass.surface.border,
             }
           ]}
           onPress={() => onDocumentPress(document)}
-                  <View style={styles.cardHeader}            <Text >
+        >
+          <View style={styles.cardHeader}>
+            <Text 
               style={[
-                styles.documentTitleGrid,>
+                styles.documentTitleGrid,
                 { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
               ]}
               numberOfLines={3}
-                          {document.title}
-            </Text            ><View 
+            >
+              {document.title}
+            </Text>
+            <View 
               style={[
                 styles.statusBadge,
                 { backgroundColor: getStatusColor(document.status) }
               ]}
-                          <Text >
+            >
+              <Text 
                 style={[
-                  styles.statusText,>
+                  styles.statusText,
                   { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
                 ]}
-                              {document.status.toUpperCase()}
-              </Text            ></View          ></View          
-          <Text >
+              >
+                {document.status.toUpperCase()}
+              </Text>
+            </View>
+          </View>
+          
+          <Text 
             style={[
-              styles.documentMeta,>
+              styles.documentMeta,
               { color: theme.text.secondary, fontFamily: 'System' }
             ]}
-                      Version {document.version}
-          </Text          >
-          <Text >
+          >
+            Version {document.version}
+          </Text>
+          <Text 
             style={[
-              styles.documentMeta,>
+              styles.documentMeta,
               { color: theme.text.secondary, fontFamily: 'System' }
             ]}
-                      Updated {formatDate(document.updatedAt)}
-          </Text          >
+          >
+            Updated {formatDate(document.updatedAt)}
+          </Text>
           {document.status === 'review' && document.authorId !== user.userId && (
-            <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}              <Text style={[styles.reviewText, { color: theme.accent.action }]}                Pending Review>
-              </Text            ></View          )}>
-        </TouchableOpacity      );
+            <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
+              <Text style={[styles.reviewText, { color: theme.accent.action }]}>
+                Pending Review
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      );
     }
 
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
         key={document.id}
         style={[
-          styles.documentItem,>
+          styles.documentItem,
           { 
             backgroundColor: theme.glass.surface.bg,
             borderColor: theme.glass.surface.border,
@@ -168,36 +183,51 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           }
         ]}
         onPress={() => onDocumentPress(document)}
-              <View style={styles.documentHeader}          <Text >
+      >
+        <View style={styles.documentHeader}>
+          <Text 
             style={[
-              styles.documentTitle, >
+              styles.documentTitle, 
               { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
             ]}
             numberOfLines={2}
-                      {document.title}
-          </Text          ><View 
+          >
+            {document.title}
+          </Text>
+          <View 
             style={[
               styles.statusBadge,
               { backgroundColor: getStatusColor(document.status) }
             ]}
-                      <Text >
+          >
+            <Text 
               style={[
-                styles.statusText,>
+                styles.statusText,
                 { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
               ]}
-                          {document.status.toUpperCase()}
-            </Text            ></View        ></View        
-        <Text >
+            >
+              {document.status.toUpperCase()}
+            </Text>
+          </View>
+        </View>
+        
+        <Text 
           style={[
-            styles.documentMeta,>
+            styles.documentMeta,
             { color: theme.text.secondary, fontFamily: 'System' }
           ]}
-                  Version {document.version} " Updated {formatDate(document.updatedAt)}
-        </Text        >
+        >
+          Version {document.version} • Updated {formatDate(document.updatedAt)}
+        </Text>
         {document.status === 'review' && document.authorId !== user.userId && (
-          <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}            <Text style={[styles.reviewText, { color: theme.accent.action }]}              Pending Review>
-            </Text          ></View        )}>
-      </TouchableOpacity    );
+          <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
+            <Text style={[styles.reviewText, { color: theme.accent.action }]}>
+              Pending Review
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
   };
 
   const renderStatusFilter = (status: DocumentStatus | 'all') => {
@@ -207,108 +237,166 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       : documents.filter(doc => doc.status === status).length;
 
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
         key={status}
         style={[
-          styles.filterChip,>
+          styles.filterChip,
           {
             backgroundColor: isActive ? theme.accent.action : theme.glass.surface.bg,
             borderColor: isActive ? theme.accent.action : theme.glass.surface.border
           }
         ]}
         onPress={() => setSelectedStatus(status)}
-              <Text >
+      >
+        <Text 
           style={[
-            styles.filterText,>
+            styles.filterText,
             { 
               color: isActive ? theme.text.inverse : theme.text.primary,
               fontFamily: 'System', fontWeight: '500'
             }
           ]}
-                  {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+        >
+          {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
-        </Text      ></TouchableOpacity    >);
+        </Text>
+      </TouchableOpacity>
+    );
   };
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}        <Text style={[styles.loadingText, { color: theme.text.secondary }]}          Loading documents...>
-        </Text      ></View    );>
+      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
+        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
+          Loading documents...
+        </Text>
+      </View>
+    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}      {/* Enhanced Header */}>
-      <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}        <View style={styles.headerLeft}          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}            Documents>
-          </Text          ><Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
-          </Text        ></View        
-        <View style={styles.headerActions}          <TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
+      {/* Enhanced Header */}
+      <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}>
+        <View style={styles.headerLeft}>
+          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}>
+            Documents
+          </Text>
+          <Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}>
+            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
+          </Text>
+        </View>
+        
+        <View style={styles.headerActions}>
+          <TouchableOpacity
             style={[styles.createButton, { backgroundColor: theme.accent.action }]}
-            onPress={onCreateNew}>
-                      <Text style={[styles.createButtonText, { color: theme.text.inverse }]}              + New Document>
-            </Text          </TouchableOpacity        </View      </View>
+            onPress={onCreateNew}
+          >
+            <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
+              + New Document
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Web Controls */}
-      <View style={[styles.webControls, { backgroundColor: theme.glass.surface.bg }]}        <View style={styles.searchSection}          <input>
+      <View style={[styles.webControls, { backgroundColor: theme.glass.surface.bg, borderColor: theme.glass.surface.border }]}>
+        <View style={styles.searchSection}>
+          <input
             type="text"
             placeholder="Search documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInputWeb}
-          /        ></View
-        <View style={styles.controlGroup}          <select>
+            style={styles.searchInputWeb as any}
+          />
+        </View>
+
+        <View style={styles.controlGroup}>
+          <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            style={styles.sortSelectWeb}
-                      <option value="updatedAt">Last Updated</option            <option value="title">Title</option            <option value="status">Status</option          </select
+            style={styles.sortSelectWeb as any}
+          >
+            <option value="updatedAt">Last Updated</option>
+            <option value="title">Title</option>
+            <option value="status">Status</option>
+          </select>
+
           {isDesktop && (
-            <View style={styles.viewToggle}              <TouchableOpacity>
+            <View style={styles.viewToggle}>
+              <TouchableOpacity
                 style={[
                   styles.viewButton,
                   viewMode === 'list' && { backgroundColor: theme.accent.action }
                 ]}
                 onPress={() => setViewMode('list')}
-                              <Text style={[>
-                  styles.viewButtonText,>
-                  { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
-                ]}                  List
-                </Text              ></TouchableOpacity              <TouchableOpacity
+              >
+                <Text 
+                  style={[
+                    styles.viewButtonText,
+                    { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
+                  ]}
+                >
+                  List
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[
                   styles.viewButton,
                   viewMode === 'grid' && { backgroundColor: theme.accent.action }
                 ]}
                 onPress={() => setViewMode('grid')}
-                              <Text style={[>
-                  styles.viewButtonText,>
-                  { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
-                ]}                  Grid
-                </Text              </TouchableOpacity            </View          )}
-        </View      </View
+              >
+                <Text 
+                  style={[
+                    styles.viewButtonText,
+                    { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
+                  ]}
+                >
+                  Grid
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </View>
+
       {/* Status Filters */}
-      <ScrollView >
+      <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}>
-              {statusFilters.map(renderStatusFilter)}
+        contentContainerStyle={styles.filterContent}
+      >
+        {statusFilters.map(renderStatusFilter)}
       </ScrollView>
+
       {/* Documents List/Grid */}
-      <ScrollView >
+      <ScrollView 
         style={styles.documentsContainer}
         contentContainerStyle={[
           styles.documentsContent,
-          viewMode === 'grid' && styles.documentsGrid>
+          viewMode === 'grid' && styles.documentsGrid
         ]}
         showsVerticalScrollIndicator={false}
-              {filteredDocuments.length === 0 ? (
-          <View style={styles.emptyState}            <Text style={[styles.emptyText, { color: theme.text.secondary }]}              {searchQuery 
+      >
+        {filteredDocuments.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
+              {searchQuery 
                 ? `No documents found matching "${searchQuery}"`
                 : selectedStatus === 'all' 
                   ? 'No documents yet. Create your first document to get started.'
                   : `No ${selectedStatus} documents found.`
-              }>
-            </Text          ></View        >) : (
-          filteredDocuments.map(renderDocumentItem)
+              }
+            </Text>
+          </View>
+        ) : (
+          filteredDocuments.map((doc, idx) => renderDocumentItem(doc, idx))
         )}
-      </ScrollView    </View  );
+      </ScrollView>
+    </View>
+  );
 };
 
 export default DocumentListScreenWeb;
@@ -385,6 +473,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5EDD6',
     borderColor: '#E8E2CF',
     color: '#2A2318',
+    width: '100%',
+    outline: 'none',
   },
   controlGroup: {
     flexDirection: 'row',
@@ -409,12 +499,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5EDD6',
     borderColor: '#E8E2CF',
     color: '#2A2318',
+    outline: 'none',
   },
   viewToggle: {
     flexDirection: 'row',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#E8E2CF',
   },
   viewButton: {
     paddingHorizontal: 12,
@@ -438,6 +529,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
+    marginRight: 8,
   },
   filterText: {
     fontSize: 14,
@@ -466,6 +558,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   documentHeader: {
@@ -485,6 +580,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 8,
     lineHeight: 22,
+    flex: 1,
+    marginRight: 8,
   },
   statusBadge: {
     paddingHorizontal: 8,

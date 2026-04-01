@@ -13,7 +13,7 @@ export interface SanctuaryCarouselProps<T> {
 }
 
 /**
- * SanctuaryCarousel  generic horizontal card scroller backed by FlatList.
+ * SanctuaryCarousel - generic horizontal card scroller backed by FlatList.
  * Use as a DRY alternative to ad-hoc horizontal ScrollViews containing card lists.
  */
 export function SanctuaryCarousel<T>({
@@ -24,7 +24,7 @@ export function SanctuaryCarousel<T>({
     paddingHorizontal = Theme.spacing.lg,
 }: SanctuaryCarouselProps<T>) {
     return (
-        <FlatList>
+        <FlatList
             horizontal
             data={data}
             keyExtractor={(item, index) => keyExtractor(item, index)}
@@ -38,7 +38,7 @@ export function SanctuaryCarousel<T>({
                 styles.container,
                 { paddingHorizontal },
             ]}
-        /
+        />
     );
 }
 

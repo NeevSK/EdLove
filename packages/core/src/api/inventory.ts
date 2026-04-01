@@ -38,7 +38,8 @@ export const inventoryAPI = {
      */
     async update(
         id: string,
-        updates: Partial<InventoryItem    ): Promise<InventoryItem> {
+        updates: Partial<InventoryItem>
+    ): Promise<InventoryItem> {
         const { data, error } = await supabase
             .from('classroom_inventory')
             .update(updates)

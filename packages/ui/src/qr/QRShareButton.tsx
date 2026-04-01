@@ -1,9 +1,9 @@
 /**
- * QRShareButton \u2014 QR code display + share controls
+ * QRShareButton — QR code display + share controls
  *
  * Wraps QRCodeGenerator and adds:
- *   - "Share Image" \u2192 captures QR as PNG via react-native-view-shot \u2192 expo-sharing
- *   - "Copy Link"   \u2192 copies the QR URL to clipboard via expo-clipboard
+ *   - "Share Image" → captures QR as PNG via react-native-view-shot → expo-sharing
+ *   - "Copy Link"   → copies the QR URL to clipboard via expo-clipboard
  *
  * Optional `shortUrl` prop: if provided, the copied/shared URL is the short URL
  * rather than the full gurudevi://qr?... scheme URL.
@@ -21,7 +21,7 @@ import QRCodeGenerator from '../components/QRCodeGenerator';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const loadViewShot = async (): Promise<any> => {
   try {
-    // @ts-ignore \u2014 optional peer dependency; may not be installed
+    // @ts-ignore — optional peer dependency; may not be installed
     return await import('react-native-view-shot');
   } catch {
     return null;
@@ -57,7 +57,7 @@ export default function QRShareButton({
 
   const shareUrl = shortUrl ?? value;
 
-  // \u2500\u2500 Share as image \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ── Share as image ────────────────────────────────────────────────────────────
 
   const handleShareImage = async () => {
     try {
@@ -81,7 +81,7 @@ export default function QRShareButton({
     }
   };
 
-  // \u2500\u2500 Copy link \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ── Copy link ─────────────────────────────────────────────────────────────────
 
   const handleCopyLink = async () => {
     try {
@@ -94,27 +94,27 @@ export default function QRShareButton({
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      {/* QR code \u2014 captured by ViewShot */}
+      {/* QR code — captured by ViewShot */}
       <View ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
         <QRCodeGenerator value={value} size={size} label={label} />
       </View>
 
       {/* Action buttons */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity>
+        <TouchableOpacity
           onPress={handleShareImage}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Share QR code as image"
-        
-          <Text style={[styles.buttonText, { color: accentColor }]}>\uD83D\uDCE4 Share Image</Text
-        ></TouchableOpacity>
+        >
+          <Text style={[styles.buttonText, { color: accentColor }]}>📤 Share Image</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
           onPress={handleCopyLink}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Copy QR link to clipboard"
-        
-          <Text style={[styles.buttonText, { color: accentColor }]}>\uD83D\uDD17 Copy Link</Text
+        >
+          <Text style={[styles.buttonText, { color: accentColor }]}>🔗 Copy Link</Text>
         </TouchableOpacity>
       </View>
     </View>

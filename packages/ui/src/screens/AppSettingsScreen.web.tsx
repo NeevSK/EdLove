@@ -62,7 +62,7 @@ function SettingsOption({
   colors,
 }: SettingsOptionProps) {
   return (
-    <Pressable>
+    <Pressable
       onPress={() => {
         hapticLight();
         onPress();
@@ -80,7 +80,9 @@ function SettingsOption({
         borderWidth: 1,
         borderColor: colors.border as any,
       }}
-          <HStack space="md" alignItems="center"        <Box>
+    >
+      <HStack space="md" alignItems="center">
+        <Box
           sx={{
             width: 40,
             height: 40,
@@ -89,33 +91,46 @@ function SettingsOption({
             alignItems: 'center',
             justifyContent: 'center',
           }}
-                  {icon}
+        >
+          {icon}
         </Box>
-        <VStack flex={1} space="xs"          <Text>
+        <VStack flex={1} space="xs">
+          <Text
             sx={{
               fontSize: Theme.typography.fontSize.md,
               fontWeight: Theme.typography.fontWeight.semibold,
               color: colors.text as any,
             }}
-                      {title}
-          </Text          ><Text
+          >
+            {title}
+          </Text>
+          <Text
             sx={{
               fontSize: Theme.typography.fontSize.sm,
               color: colors.textSecondary as any,
               lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
             }}
-                      {description}
-          </Text        ></VStack
-        <HStack space="xs" alignItems="center"          {value && (>
-            <Text>
+          >
+            {description}
+          </Text>
+        </VStack>
+        <HStack space="xs" alignItems="center">
+          {value && (
+            <Text
               sx={{
                 fontSize: Theme.typography.fontSize.sm,
                 color: colors.textSecondary as any,
                 marginRight: Theme.spacing.xs,
               }}
-                          {value}
-            </Text          >)}
-          <ChevronRight size={20} color={colors.textTertiary} /        ></HStack      </HStack    </Pressable  );
+            >
+              {value}
+            </Text>
+          )}
+          <ChevronRight size={20} color={colors.textTertiary} />
+        </HStack>
+      </HStack>
+    </Pressable>
+  );
 }
 
 /**
@@ -123,22 +138,28 @@ function SettingsOption({
  */
 function SectionHeader({ title, description, colors }: { title: string; description?: string; colors: any }) {
   return (
-    <VStack space="xs" sx={{ marginBottom: Theme.spacing.md, marginTop: Theme.spacing.lg }}      <Heading>
+    <VStack space="xs" sx={{ marginBottom: Theme.spacing.md, marginTop: Theme.spacing.lg }}>
+      <Heading
         size="lg"
         sx={{
           color: colors.text as any,
         }}
-              {title}
-      </Heading      >{description && (
-        <Text>
+      >
+        {title}
+      </Heading>
+      {description && (
+        <Text
           sx={{
             fontSize: Theme.typography.fontSize.sm,
             color: colors.textSecondary as any,
             lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
           }}
-                  {description}
-        </Text      >)}
-    </VStack  );
+        >
+          {description}
+        </Text>
+      )}
+    </VStack>
+  );
 }
 
 export default function AppSettingsScreen({ navigation }: any) {
@@ -197,7 +218,7 @@ export default function AppSettingsScreen({ navigation }: any) {
       dusk: t('settings.temporal.dusk'),
       night: t('settings.temporal.night'),
     };
-    return `${phases[temporalPhase]} \u2022 ${time}`;
+    return `${phases[temporalPhase as keyof typeof phases]} \u2022 ${time}`;
   };
 
   const handleThemeChange = (mode: 'light' | 'dark' | 'auto') => {
@@ -220,17 +241,19 @@ export default function AppSettingsScreen({ navigation }: any) {
   };
 
   return (
-    <Box flex={1} sx={{ backgroundColor: colors.primary as any }}      <ScrollView>
+    <Box flex={1} sx={{ backgroundColor: colors.primary as any }}>
+      <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: Theme.spacing.md }}
-              {/* Appearance Section */}
-        <SectionHeader>
+      >
+        {/* Appearance Section */}
+        <SectionHeader
           colors={colors}
           title={t('settings.appearance.title')}
           description={t('settings.appearance.description')}
-        /
-        ><SettingsOption
+        />
+        <SettingsOption
           colors={colors}
           icon={<Sparkles size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.fidelity.title')}
@@ -245,8 +268,8 @@ export default function AppSettingsScreen({ navigation }: any) {
           onPress={() => setShowFidelityModal(true)}
           accessibilityLabel={t('settings.fidelity.title')}
           accessibilityHint={t('settings.fidelity.hint')}
-        /
-        >{/* Living Theme Toggle */}
+        />
+        {/* Living Theme Toggle */}
         <Box sx={{
           backgroundColor: colors.secondary as any,
           borderRadius: Theme.corners.comfortable,
@@ -254,17 +277,30 @@ export default function AppSettingsScreen({ navigation }: any) {
           marginBottom: Theme.spacing.sm,
           borderWidth: 1,
           borderColor: (enableLivingTheme ? colors.action : colors.border) as any,
-        }}          <HStack space="md" alignItems="center" justifyContent="space-between"            <HStack space="md" alignItems="center" flex={1}              <Box sx={{
+        }}>
+          <HStack space="md" alignItems="center" justifyContent="space-between">
+            <HStack space="md" alignItems="center" flex={1}>
+              <Box sx={{
                 width: 40, height: 40,
                 borderRadius: Theme.corners.comfortable,
                 backgroundColor: (enableLivingTheme ? colors.action : colors.tertiary) as any,
                 alignItems: 'center', justifyContent: 'center',
-              }}                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.sacredWhite : (colors.textTertiary as any)}
-                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} /              ></Box              ><VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('settings.living_theme.title')}
-                </Text                ><Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {enableLivingTheme
+              }}>
+                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.sacredWhite : (colors.textTertiary as any)}
+                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} />
+              </Box>
+              <VStack flex={1} space="xs">
+                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}>
+                  {t('settings.living_theme.title')}
+                </Text>
+                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}>
+                  {enableLivingTheme
                     ? t('settings.living_theme.on')
                     : t('settings.living_theme.off')}
-                </Text              </VStack            </HStack            <Switch
+                </Text>
+              </VStack>
+            </HStack>
+            <Switch
               value={enableLivingTheme}
               onValueChange={async (val) => {
                 await setEnableLivingTheme(val);
@@ -276,14 +312,17 @@ export default function AppSettingsScreen({ navigation }: any) {
               accessibilityRole="switch"
               accessibilityLabel={t('settings.living_theme.title')}
               accessibilityState={{ checked: enableLivingTheme }}
-            /          ></HStack        </Box
+            />
+          </HStack>
+        </Box>
+
         {/* Language & Localization */}
-        <SectionHeader>
+        <SectionHeader
           colors={colors}
           title={t('settings.language.title')}
           description={t('settings.language.description')}
-        /
-        ><SettingsOption
+        />
+        <SettingsOption
           colors={colors}
           icon={<Globe size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.language.current')}
@@ -292,30 +331,44 @@ export default function AppSettingsScreen({ navigation }: any) {
           onPress={() => setShowLanguageModal(true)}
           accessibilityLabel={t('settings.language.current')}
           accessibilityHint={t('settings.language.hint')}
-        /
-        >{/* Profile Visibility & Preview */}
-        <SectionHeader>
+        />
+
+        {/* Profile Visibility & Preview */}
+        <SectionHeader
           colors={colors}
           title={t('profile.privacy.title', 'Profile & Visibility')}
           description={t('profile.privacy.description', 'Manage how others see your profile')}
-        /
-        ><Box sx={{
+        />
+        <Box sx={{
           backgroundColor: colors.secondary as any,
           borderRadius: Theme.corners.comfortable,
           padding: Theme.spacing.md,
           marginBottom: Theme.spacing.sm,
           borderWidth: 1,
           borderColor: (user?.public_profile !== false ? colors.action : colors.border) as any,
-        }}          <HStack space="md" alignItems="center" justifyContent="space-between"            <HStack space="md" alignItems="center" flex={1}              <Box sx={{
+        }}>
+          <HStack space="md" alignItems="center" justifyContent="space-between">
+            <HStack space="md" alignItems="center" flex={1}>
+              <Box sx={{
                 width: 40, height: 40,
                 borderRadius: Theme.corners.comfortable,
                 backgroundColor: (user?.public_profile !== false ? colors.action : colors.tertiary) as any,
                 alignItems: 'center', justifyContent: 'center',
-              }}                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} /              ></Box              ><VStack flex={1} space="xs"                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
-                </Text                ><Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}                  {user?.public_profile !== false
+              }}>
+                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} />
+              </Box>
+              <VStack flex={1} space="xs">
+                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text as any }}>
+                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
+                </Text>
+                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary as any }}>
+                  {user?.public_profile !== false
                     ? t('profile.privacy.public_on', 'Others can find and view your profile')
                     : t('profile.privacy.public_off', 'Your profile is hidden from the community')}
-                </Text              </VStack            </HStack            <Switch
+                </Text>
+              </VStack>
+            </HStack>
+            <Switch
               value={user?.public_profile !== false}
               onValueChange={async (val) => {
                 hapticLight();
@@ -323,8 +376,10 @@ export default function AppSettingsScreen({ navigation }: any) {
               }}
               trackColor={{ false: colors.tertiary, true: colors.action }}
               thumbColor={Theme.colors.sacredWhite}
-            /          </HStack        </Box
-        <SettingsOption>
+            />
+          </HStack>
+        </Box>
+        <SettingsOption
           colors={colors}
           icon={<Eye size={24} color={Theme.colors.sacredWhite} />}
           title={t('profile.privacy.previewProfile', 'See how others see you')}
@@ -339,14 +394,15 @@ export default function AppSettingsScreen({ navigation }: any) {
               }
             });
           }}
-        /
+        />
+
         {/* Device Info Section */}
-        <SectionHeader>
+        <SectionHeader
           colors={colors}
           title={t('settings.device.title')}
           description={t('settings.device.description')}
-        /
-        ><Box
+        />
+        <Box
           sx={{
             backgroundColor: colors.secondary as any,
             borderRadius: Theme.corners.comfortable,
@@ -355,56 +411,79 @@ export default function AppSettingsScreen({ navigation }: any) {
             borderWidth: 1,
             borderColor: colors.border as any,
           }}
-                  <VStack space="sm"            <HStack justifyContent="space-between" alignItems="center"              <Text sx={{ color: colors.textSecondary as any }}                {t('settings.device.tier')}>
-              </Text              ><Text
+        >
+          <VStack space="sm">
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text sx={{ color: colors.textSecondary as any }}>
+                {t('settings.device.tier')}
+              </Text>
+              <Text
                 sx={{
                   color: colors.text as any,
                   fontWeight: Theme.typography.fontWeight.semibold,
                 }}
-                              {reality.deviceTier.charAt(0).toUpperCase() + reality.deviceTier.slice(1)}
-              </Text            ></HStack
-            <HStack justifyContent="space-between" alignItems="center"              <Text sx={{ color: colors.textSecondary as any }}                {t('settings.device.memory')}>
-              </Text              <Text
+              >
+                {reality.deviceTier.charAt(0).toUpperCase() + reality.deviceTier.slice(1)}
+              </Text>
+            </HStack>
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text sx={{ color: colors.textSecondary as any }}>
+                {t('settings.device.memory')}
+              </Text>
+              <Text
                 sx={{
                   color: colors.text as any,
                   fontWeight: Theme.typography.fontWeight.semibold,
                 }}
-                              {reality.totalMemoryGB.toFixed(1)} GB
-              </Text            </HStack
-            <HStack justifyContent="space-between" alignItems="center"              <Text sx={{ color: colors.textSecondary as any }}                {t('settings.device.network')}>
-              </Text              <Text
+              >
+                {reality.totalMemoryGB.toFixed(1)} GB
+              </Text>
+            </HStack>
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text sx={{ color: colors.textSecondary as any }}>
+                {t('settings.device.network')}
+              </Text>
+              <Text
                 sx={{
                   color: colors.text as any,
                   fontWeight: Theme.typography.fontWeight.semibold,
                 }}
-                              {reality.networkQuality.charAt(0).toUpperCase() + reality.networkQuality.slice(1)}
-              </Text            </HStack
+              >
+                {reality.networkQuality.charAt(0).toUpperCase() + reality.networkQuality.slice(1)}
+              </Text>
+            </HStack>
             {reality.isDataSaverMode && (
-              <Box>
+              <Box
                 sx={{
                   backgroundColor: colors.warning as any,
                   padding: Theme.spacing.sm,
                   borderRadius: Theme.corners.tight,
                   marginTop: Theme.spacing.xs,
                 }}
-                              <HStack space="xs" alignItems="center"                  <Info size={16} color={colors.text as any} /                  ><Text
+              >
+                <HStack space="xs" alignItems="center">
+                  <Info size={16} color={colors.text as any} />
+                  <Text
                     sx={{
                       fontSize: Theme.typography.fontSize.sm,
                       color: colors.text as any,
                     }}
-                                      {t('settings.device.data_saver')}
-                  </Text                ></HStack              </Box            )}
-          </VStack        </Box
+                  >
+                    {t('settings.device.data_saver')}
+                  </Text>
+                </HStack>
+              </Box>
+            )}
+          </VStack>
+        </Box>
+
         {/* Support Section */}
-        <SectionHeader>
+        <SectionHeader
           colors={colors}
           title={t('settings.support.title', 'Support')}
-          description={t(
-            'settings.support.description',
-            'Help us improve Gurudevi'>
-          )}
-        /
-        ><SettingsOption
+          description={t('settings.support.description', 'Help us improve Gurudevi')}
+        />
+        <SettingsOption
           colors={colors}
           icon={<Zap size={24} color={Theme.colors.sacredWhite} />}
           title="Trube Lab"
@@ -412,38 +491,48 @@ export default function AppSettingsScreen({ navigation }: any) {
           onPress={() => navigation.navigate('TrubeLab')}
           accessibilityLabel="Open Trube Lab"
           accessibilityHint="Experiment with living surface compositions and lighting."
-        /
-        >{/* Gentle guidance footer */}
-        <Box>
-          sx={{
-            padding: Theme.spacing.md,
-            backgroundColor: colors.tertiary as any,
-            borderRadius: Theme.corners.comfortable,
-            marginTop: Theme.spacing.lg,
-            marginBottom: Theme.spacing.xl,
-          }}
-                  <HStack space="sm" alignItems="flex-start"            <Info size={20} color={colors.action as any} /            ><VStack flex={1} space="xs"              <Text
+        />
+
+        {/* Gentle guidance footer */}
+        <Box sx={{
+          padding: Theme.spacing.md,
+          backgroundColor: colors.tertiary as any,
+          borderRadius: Theme.corners.comfortable,
+          marginTop: Theme.spacing.lg,
+          marginBottom: Theme.spacing.xl,
+        }}>
+          <HStack space="sm" alignItems="flex-start">
+            <Info size={20} color={colors.action as any} />
+            <VStack flex={1} space="xs">
+              <Text
                 sx={{
                   fontSize: Theme.typography.fontSize.sm,
                   color: colors.text as any,
                   fontWeight: Theme.typography.fontWeight.semibold,
                 }}
-                              {t('settings.tip.title')}
-              </Text              ><Text
+              >
+                {t('settings.tip.title')}
+              </Text>
+              <Text
                 sx={{
                   fontSize: Theme.typography.fontSize.sm,
                   color: colors.textSecondary as any,
                   lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
                 }}
-                              {t('settings.tip.message')}
-              </Text            ></VStack          </HStack        </Box      </ScrollView
+              >
+                {t('settings.tip.message')}
+              </Text>
+            </VStack>
+          </HStack>
+        </Box>
+      </ScrollView>
 
       {/* Fidelity Selection Modal */}
       {showFidelityModal && (
-        <SelectionModal>
+        <SelectionModal
           colors={colors}
           title={t('settings.fidelity.select')}
-          options={[>
+          options={[
             {
               id: 'auto',
               label: t('settings.fidelity.auto'),
@@ -468,14 +557,15 @@ export default function AppSettingsScreen({ navigation }: any) {
           ]}
           onSelect={(id) => handleFidelityChange(id as any)}
           onClose={() => setShowFidelityModal(false)}
-        /      >)}
+        />
+      )}
 
       {/* Language Selection Modal */}
       {showLanguageModal && (
-        <SelectionModal>
+        <SelectionModal
           colors={colors}
           title={t('settings.language.select')}
-          options={[>
+          options={[
             {
               id: 'en',
               label: 'English',
@@ -500,8 +590,10 @@ export default function AppSettingsScreen({ navigation }: any) {
           ]}
           onSelect={(id) => handleLanguageChange(id as any)}
           onClose={() => setShowLanguageModal(false)}
-        /      >)}
-    </Box  >);
+        />
+      )}
+    </Box>
+  );
 }
 
 /**
@@ -524,7 +616,7 @@ interface SelectionModalProps {
 
 function SelectionModal({ title, options, onSelect, onClose, colors }: SelectionModalProps) {
   return (
-    <Box>
+    <Box
       sx={{
         position: 'absolute',
         top: 0,
@@ -534,12 +626,13 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'flex-end',
       }}
-          <Pressable>
+    >
+      <Pressable
         sx={{ flex: 1 }}
         onPress={onClose}
         accessible={false}
-      /
-      ><Box
+      />
+      <Box
         sx={{
           backgroundColor: colors.primary as any,
           borderTopLeftRadius: Theme.corners.generous,
@@ -547,17 +640,20 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
           padding: Theme.spacing.lg,
           paddingBottom: Theme.spacing.xl,
         }}
-              <Text>
+      >
+        <Text
           sx={{
             fontSize: Theme.typography.fontSize.xl,
             fontWeight: Theme.typography.fontWeight.bold,
             color: colors.text as any,
             marginBottom: Theme.spacing.md,
           }}
-                  {title}
+        >
+          {title}
         </Text>
-        ><VStack space="sm"          {options.map((option) => (
-            <Pressable>
+        <VStack space="sm">
+          {options.map((option) => (
+            <Pressable
               key={option.id}
               onPress={() => {
                 hapticLight();
@@ -580,27 +676,37 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
                   : colors.border) as any,
                 minHeight: 72,
               }}
-                          <HStack space="md" alignItems="center"                {option.icon}>
-                <VStack flex={1} space="xs"                  <Text>
+            >
+              <HStack space="md" alignItems="center">
+                {option.icon}
+                <VStack flex={1} space="xs">
+                  <Text
                     sx={{
                       fontSize: Theme.typography.fontSize.md,
                       fontWeight: Theme.typography.fontWeight.semibold,
                       color: colors.text as any,
                     }}
-                                      {option.label}
-                  </Text                  ><Text
+                  >
+                    {option.label}
+                  </Text>
+                  <Text
                     sx={{
                       fontSize: Theme.typography.fontSize.sm,
                       color: colors.textSecondary as any,
                       lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
                     }}
-                                      {option.description}
-                  </Text                ></VStack
-                >{option.isSelected && (
-                  <Check size={24} color={colors.action as any} /                >)}
-              </HStack            ></Pressable          >))}
+                  >
+                    {option.description}
+                  </Text>
+                </VStack>
+                {option.isSelected && (
+                  <Check size={24} color={colors.action as any} />
+                )}
+              </HStack>
+            </Pressable>
+          ))}
         </VStack>
-        <Button>
+        <Button
           onPress={onClose}
           sx={{
             marginTop: Theme.spacing.md,
@@ -609,6 +715,12 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
           accessible={true}
           accessibilityRole="button"
           accessibilityLabel="Close"
-                  <ButtonText sx={{ color: colors.text as any }}            Close>
-          </ButtonText        ></Button      ></Box    </Box  );>
+        >
+          <ButtonText sx={{ color: colors.text as any }}>
+            Close
+          </ButtonText>
+        </Button>
+      </Box>
+    </Box>
+  );
 }

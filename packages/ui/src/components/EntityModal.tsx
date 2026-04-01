@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { EntityDefinition, EntityMode, EntityInstance } from '@repo/core';
 import SanctuaryModal from './SanctuaryModal';
@@ -31,14 +30,14 @@ export default function EntityModal({
 
         if (specializedComponent) {
             return (
-                <EntityView />
+                <EntityView 
                     definition={definition} 
                     instance={instance} 
                     mode={mode} 
                     onAction={(action: string) => {
                         if (action === 'complete' || action === 'close') onClose();
                     }}
-                /
+                />
             );
         }
 
@@ -46,30 +45,30 @@ export default function EntityModal({
         if (mode === 'create' || mode === 'edit') {
             return (
                 <VStack space="md">
-                    <Text>{mode === 'create' ? 'Creating' : 'Editing'} {definition.type}</Text
-                    >{/* Default FormManager-powered form or generic FormBuilder */}
+                    <Text>{mode === 'create' ? 'Creating' : 'Editing'} {definition.type}</Text>
+                    {/* Default FormManager-powered form or generic FormBuilder */}
                     <Box bg="$backgroundLight100" p={20} rounded="$md">
-                        <Text color="$textLight500">Standard Form for {definition.type}</Text
-                    ></Box>
+                        <Text color="$textLight500">Standard Form for {definition.type}</Text>
+                    </Box>
                 </VStack>
             );
         }
 
         return (
-            <EntityView />
+            <EntityView 
                 definition={definition} 
                 instance={instance} 
                 mode={mode} 
-            /
+            />
         );
     };
 
     return (
-        <SanctuaryModal>
+        <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
             title={displayTitle}
-        
+        >
             <Box p={16}>
                 {renderContent()}
             </Box>

@@ -15,8 +15,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { session, loading, isProfileLoading, refreshProfile } = useAuthorityLifecycle();
 
   return (
-    <AuthContext.Provider value={{ session, loading, isProfileLoading, refreshProfile }}      {children}>
-    </AuthContext.Provider  );
+    <AuthContext.Provider value={{ session, loading, isProfileLoading, refreshProfile }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
@@ -26,4 +28,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

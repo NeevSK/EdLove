@@ -1,13 +1,6 @@
 /**
  * FIRE JOURNAL
  * "Burn" negative thoughts - A cathartic release mechanism
- * 
- * Features:
- * - Large text area for writing
- * - Voice input option (UI only)
- * - "Burn" button with smoke animation
- * - Distortion and fade-out effect using Reanimated
- * - Saves to fire_journal table with is_burned = true
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -21,6 +14,13 @@ import {
     InputField,
     Button,
     ButtonText,
+    Theme,
+    typography,
+    hapticLight,
+    hapticMedium,
+    SkeletonCard,
+    SkeletonLoader,
+    PositiveInvitation
 } from '@repo/ui';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -30,15 +30,11 @@ import Animated, {
     withTiming,
     withSpring,
     Easing,
-    runOnJS,
     FadeIn,
 } from 'react-native-reanimated';
 import { Mic, Flame } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { usePermissions } from '@repo/core';
-import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
+import { usePermissions, useTemporalStore } from '@repo/core';
 import { useFireJournal } from '../hooks/useFireJournal';
-import { useTemporalStore } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 
@@ -61,8 +57,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
     const { t } = useTranslation();
 
     // Refs for timeout cleanup
-    const burnTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-    const successTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+    const burnTimeoutRef = useRef<any>(undefined);
+    const successTimeoutRef = useRef<any>(undefined);
 
     // Animation values
     const opacity = useSharedValue(1);
@@ -81,12 +77,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
     // Cleanup timeouts on unmount
     useEffect(() => {
         return () => {
-            if (burnTimeoutRef.current) {
-                clearTimeout(burnTimeoutRef.current);
-            }
-            if (successTimeoutRef.current) {
-                clearTimeout(successTimeoutRef.current);
-            }
+            if (burnTimeoutRef.current) clearTimeout(burnTimeoutRef.current);
+            if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
         };
     }, []);
 
@@ -97,11 +89,10 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                 { scale: scale.value },
                 { translateY: translateY.value },
                 { rotate: `${rotation.value}deg` },
-            ] as any,
+            ],
         };
     });
 
-    // Ember particle styles
     const ember1Style = useAnimatedStyle(() => ({
         opacity: ember1Opacity.value,
         transform: [{ translateY: ember1Y.value }],
@@ -118,58 +109,38 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
     }));
 
     const handleBurn = async () => {
-        if (!content.trim()) return;
-        if (!activeUserId) return;
+        if (!content.trim() || !activeUserId || isPastView) return;
 
         hapticMedium();
         setBurnError(null);
-        setIsBurning(true); // Trigger animation immediately
+        setIsBurning(true); 
 
-        // Start burn animation (Visuals first)
         performBurnAnimation();
 
         try {
             await burnEntry(content);
         } catch (error) {
             console.error('Failed to burn journal entry:', error);
-            setBurnError(t('fireJournal.errorSaving', 'We could not save this release safely.'));
+            setBurnError(t('fireJournal.errorSaving') || 'We could not save this release safely.');
         }
     };
 
     const performBurnAnimation = () => {
-        // Distortion and smoke effect
         opacity.value = withSequence(
-            // Brief flash
             withTiming(1.2, { duration: 100 }),
-            // Start fading and distorting
-            withTiming(0.8, {
-                duration: 300,
-                easing: Easing.inOut(Easing.ease),
-            }),
-            // Fade to smoke
-            withTiming(0, {
-                duration: 700,
-                easing: Easing.in(Easing.ease),
-            })
+            withTiming(0.8, { duration: 300, easing: Easing.inOut(Easing.ease) }),
+            withTiming(0, { duration: 700, easing: Easing.in(Easing.ease) })
         );
 
         scale.value = withSequence(
-            // Slight grow
             withTiming(1.05, { duration: 100 }),
-            // Distort
             withTiming(0.95, { duration: 300 }),
-            // Shrink to point
             withTiming(0.7, { duration: 700 })
         );
 
         translateY.value = withSequence(
-            // Stay in place briefly
             withTiming(0, { duration: 400 }),
-            // Rise like smoke
-            withTiming(-100, {
-                duration: 700,
-                easing: Easing.out(Easing.ease),
-            })
+            withTiming(-100, { duration: 700, easing: Easing.out(Easing.ease) })
         );
 
         rotation.value = withSequence(
@@ -178,40 +149,26 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
             withTiming(-5, { duration: 350 })
         );
 
-        // Animate embers floating upward
-        // Ember 1 - left side
         ember1Opacity.value = withSequence(
             withTiming(0.8, { duration: 100 }),
             withTiming(0, { duration: 1200 })
         );
-        ember1Y.value = withTiming(-150, {
-            duration: 1300,
-            easing: Easing.out(Easing.ease),
-        });
+        ember1Y.value = withTiming(-150, { duration: 1300, easing: Easing.out(Easing.ease) });
 
-        // Ember 2 - center
         ember2Opacity.value = withSequence(
-            withTiming(0, { duration: 200 }), // Delay start
+            withTiming(0, { duration: 200 }), 
             withTiming(0.9, { duration: 100 }),
             withTiming(0, { duration: 1100 })
         );
-        ember2Y.value = withTiming(-180, {
-            duration: 1400,
-            easing: Easing.out(Easing.ease),
-        });
+        ember2Y.value = withTiming(-180, { duration: 1400, easing: Easing.out(Easing.ease) });
 
-        // Ember 3 - right side
         ember3Opacity.value = withSequence(
-            withTiming(0, { duration: 300 }), // Delay start
+            withTiming(0, { duration: 300 }), 
             withTiming(0.7, { duration: 100 }),
             withTiming(0, { duration: 1000 })
         );
-        ember3Y.value = withTiming(-160, {
-            duration: 1400,
-            easing: Easing.out(Easing.ease),
-        });
+        ember3Y.value = withTiming(-160, { duration: 1400, easing: Easing.out(Easing.ease) });
 
-        // Reset after animation completes
         burnTimeoutRef.current = setTimeout(() => {
             resetAfterBurn();
         }, 1500);
@@ -222,13 +179,11 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
         setIsBurning(false);
         setShowSuccess(true);
 
-        // Reset animation values
         opacity.value = withSpring(1);
         scale.value = withSpring(1);
         translateY.value = withSpring(0);
         rotation.value = withSpring(0);
 
-        // Reset ember positions
         ember1Y.value = 0;
         ember2Y.value = 0;
         ember3Y.value = 0;
@@ -236,7 +191,6 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
         ember2Opacity.value = 0;
         ember3Opacity.value = 0;
 
-        // Hide success message after delay
         successTimeoutRef.current = setTimeout(() => {
             setShowSuccess(false);
             onBurned?.();
@@ -247,74 +201,75 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
         return (
             <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                 <SkeletonCard height={40} />
-                ><SkeletonCard height={200} /
-                ><HStack space="md" justifyContent="flex-end">
-                    <SkeletonLoader width={48} height={48} borderRadius={24} /
-                    ><SkeletonLoader width={100} height={48} borderRadius={24} />
-                ></HStack>
+                <SkeletonCard height={200} />
+                <HStack space="md" sx={{ justifyContent: 'flex-end' }}>
+                    <SkeletonLoader width={48} height={48} sx={{ borderRadius: 24 }} />
+                    <SkeletonLoader width={100} height={48} sx={{ borderRadius: 24 }} />
+                </HStack>
             </VStack>
         );
     }
 
     if (!activeUserId) {
         return (
-            <PositiveInvitation>
+            <PositiveInvitation
                 type="guest"
                 onAction={() => navigation.navigate('Auth' as never)}
-            /
-        >);
+            />
+        );
     }
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-            {/* Header */}>
             <VStack space="xs">
-                <Heading color={Theme.colors.sacredWhite} size="lg">
-                    {t('fireJournal.title')}
+                <Heading sx={{ color: Theme.colors.sacredWhite }} size="lg">
+                    {t('fireJournal.title') || 'Fire Journal'}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm">
-                    {isPastView ? t('fireJournal.pastRecord') : t('fireJournal.subtitle')}
+                <Text sx={{ color: Theme.colors.mistGray }} size="sm">
+                    {isPastView ? t('fireJournal.pastRecord') || 'Historical Release' : t('fireJournal.subtitle') || 'Release what no longer serves you.'}
                 </Text>
             </VStack>
 
-            {/* Success Message */}
             {showSuccess && (
-                <Animated.View entering={FadeIn.duration(Theme.motion.quick)}                    <Box>
+                <Animated.View entering={FadeIn.duration(Theme.motion.quick)}>
+                    <Box
                         sx={{
                             backgroundColor: Theme.colors.sageGreen,
                             padding: Theme.spacing.md,
                             borderRadius: Theme.corners.comfortable,
                             alignItems: 'center',
                         }}
-                    
-                        <Text>
-                            color={Theme.colors.obsidian}
+                    >
+                        <Text
+                            sx={{ color: Theme.colors.obsidian, fontWeight: '600' }}
                             size="md"
-                            sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
-                        
-                            {t('fireJournal.released')}
+                        >
+                            {t('fireJournal.released') || 'Released to the winds.'}
                         </Text>
                     </Box>
-                </Animated.View            >)}
+                </Animated.View>
+            )}
 
             {burnError && (
-                <Box>
+                <Box
                     sx={{
                         backgroundColor: Theme.colors.emberRed,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
                     }}
-                                    <Text color={Theme.colors.sacredWhite} size="sm" textAlign="center"                        {burnError}>
-                    </Text                ></Box            >)}>
+                >
+                    <Text sx={{ color: Theme.colors.sacredWhite, textAlign: 'center' }} size="sm">
+                        {burnError}
+                    </Text>
+                </Box>
+            )}
 
-            {/* Text Input Area with Ember Particles */}
             <Box sx={{ position: 'relative' }}>
-                {/* Floating Embers */}>
                 {isBurning && (
-                    <
-                        <Animated.View>
+                    <React.Fragment>
+                        <Animated.View
                             style={[
-                                ember1Style,>
+                                ember1Style,
                                 {
                                     position: 'absolute',
                                     left: '20%',
@@ -326,10 +281,10 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                                     zIndex: 10,
                                 },
                             ]}
-                        /
-                        ><Animated.View
+                        />
+                        <Animated.View
                             style={[
-                                ember2Style,>
+                                ember2Style,
                                 {
                                     position: 'absolute',
                                     left: '50%',
@@ -341,10 +296,10 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                                     zIndex: 10,
                                 },
                             ]}
-                        /
-                        ><Animated.View
+                        />
+                        <Animated.View
                             style={[
-                                ember3Style,>
+                                ember3Style,
                                 {
                                     position: 'absolute',
                                     left: '70%',
@@ -356,20 +311,20 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                                     zIndex: 10,
                                 },
                             ]}
-                        /
-                    ></
+                        />
+                    </React.Fragment>
                 )}
 
                 <Animated.View style={containerStyle}>
-                    <Box>
+                    <Box
                         sx={{
                             backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                             padding: Theme.spacing.md,
                             minHeight: 200,
                         }}
-                    
-                        <Input>
+                    >
+                        <Input
                             variant="outline"
                             size="md"
                             sx={{
@@ -377,33 +332,29 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                                 flex: 1,
                             }}
                             isDisabled={isBurning || isPastView}
-                        
-                            <InputField/>
-                                placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord')) : t('fireJournal.placeholder')}
+                        >
+                            <InputField
+                                placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord')) : t('fireJournal.placeholder') || 'Write it down, then burn it...'}
                                 multiline
                                 value={isPastView ? (journalHistory[0]?.content_preview || '') : content}
                                 onChangeText={setContent}
-                                color={Theme.colors.sacredWhite}
-                                placeholderTextColor={Theme.colors.dimGray}
                                 sx={{
+                                    color: Theme.colors.sacredWhite,
                                     textAlignVertical: 'top',
                                     fontSize: typography.fontSize.lg,
-                                    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+                                    lineHeight: 28,
                                     minHeight: 160,
                                 }}
-                            /
-                        ></Input>
+                                placeholderTextColor={Theme.colors.dimGray}
+                            />
+                        </Input>
                     </Box>
                 </Animated.View>
             </Box>
 
-            {/* Action Buttons */}
-            <HStack space="md" justifyContent="flex-end">
-                {/* Voice Input (UI only for now) */}>
-                <Button>
+            <HStack space="md" sx={{ justifyContent: 'flex-end' }}>
+                <Button
                     size="md"
-                    variant="link"
-                    action="primary"
                     onPress={hapticLight}
                     isDisabled={isBurning}
                     sx={{
@@ -412,14 +363,12 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                         height: 48,
                         backgroundColor: Theme.colors.ink,
                     }}
-                
-                    <Mic color={Theme.colors.sanctuarySaffron} size={20} /
-                ></Button>
+                >
+                    <Mic color={Theme.colors.sanctuarySaffron} size={20} />
+                </Button>
 
-                {/* Burn Button */}
-                <Button>
+                <Button
                     size="md"
-                    action="primary"
                     onPress={handleBurn}
                     isDisabled={!content.trim() || isBurning || isPastView}
                     sx={{
@@ -428,46 +377,42 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             ? Theme.colors.emberRed
                             : Theme.colors.sanctuarySaffron,
                         paddingHorizontal: Theme.spacing.lg,
-                        paddingVertical: Theme.spacing.md,
                     }}
-                
-                    <Flame>
+                >
+                    <Flame
                         color={Theme.colors.sacredWhite}
                         size={20}
-                        style={{ marginRight: Theme.spacing.sm }}
+                        style={{ marginRight: 8 }}
                     />
-                    ><ButtonText color={Theme.colors.sacredWhite}
-                        {isPastView ? t('fireJournal.historical') : (isBurning ? t('fireJournal.burning') : t('fireJournal.burn'))}
+                    <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                        {isPastView ? t('fireJournal.historical') || 'Past Release' : (isBurning ? t('fireJournal.burning') || 'Burning...' : t('fireJournal.burn') || 'Burn and Release')}
                     </ButtonText>
                 </Button>
             </HStack>
 
-            {/* Privacy & Guidance Note */}
             <VStack space="sm">
-                <Box>
+                <Box
                     sx={{
                         backgroundColor: Theme.colors.ink,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
                     }}
-                
-                    <Text color={Theme.colors.mistGray} size="xs" textAlign="center">
-                        {t('fireJournal.privacy')}>
+                >
+                    <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center' }} size="xs">
+                        {t('fireJournal.privacy') || 'Your words are for you alone. They are never shared or stored beyond this moment of release.'}
                     </Text>
                 </Box>
 
-                <Box>
+                <Box
                     sx={{
                         padding: Theme.spacing.sm,
                     }}
-                
-                    <Text>
-                        color={Theme.colors.dimGray}
+                >
+                    <Text
+                        sx={{ color: Theme.colors.dimGray, textAlign: 'center', fontStyle: 'italic' }}
                         size="xs"
-                        textAlign="center"
-                        sx={{ fontStyle: 'italic' }}
-                    
-                        {t('fireJournal.guidance')}
+                    >
+                        {t('fireJournal.guidance') || 'GuruDevi: "Let the smoke carry away the weight of what you cannot change."'}
                     </Text>
                 </Box>
             </VStack>

@@ -3,8 +3,6 @@ import { StyleSheet, View, Text, PanResponder, Animated, Dimensions } from 'reac
 import { useTemporalStore } from '@repo/core';
 import { Theme } from '../theme/Theme';
 
-
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SCRUBBER_WIDTH = SCREEN_WIDTH * 0.8;
 
@@ -38,9 +36,6 @@ export const TemporalScrubber: React.FC = () => {
           setViewDate(today.toISOString().split('T')[0]!);
         }
 
-
-
-        
         Animated.spring(pan, {
           toValue: 0,
           useNativeDriver: false,
@@ -52,8 +47,8 @@ export const TemporalScrubber: React.FC = () => {
   const color = phase === 'past' ? '#968E80' : '#F6BF8C';
 
   return (
-    <View style={styles.container}
-      <View style={[styles.track, { backgroundColor: `${color}22` }]}
+    <View style={styles.container}>
+      <View style={[styles.track, { backgroundColor: `${color}22` }]}>
         <Animated.View
           {...panResponder.panHandlers}
           style={[
@@ -65,14 +60,14 @@ export const TemporalScrubber: React.FC = () => {
               opacity: intensity,
             },
           ]}
-        
-          <View style={styles.handleInner} /
-        </Animated.View
-      </View
-      <Text style={[styles.label, { color }]}
+        >
+          <View style={styles.handleInner} />
+        </Animated.View>
+      </View>
+      <Text style={[styles.label, { color }]}>
         {viewDate === new Date().toISOString().split('T')[0] ? 'LIVING PRESENT' : viewDate}
-      </Text
-    </View
+      </Text>
+    </View>
   );
 };
 

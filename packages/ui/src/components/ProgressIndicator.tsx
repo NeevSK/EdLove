@@ -38,7 +38,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                     const isFuture = index > currentStep;
 
                     return (
-                        <Box>
+                        <Box
                             key={index}
                             testID={`progress-dot-${index}`}
                             sx={{
@@ -51,25 +51,24 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                                         ? colors.textSecondary
                                         : colors.textTertiary,
                                 opacity: isActive ? 1 : isPast ? 0.6 : 0.3,
-                                // Organic transition (breathing effect)
+                                // @ts-ignore
                                 transition: 'all 300ms ease-in-out',
                             }}
-                        /
+                        />
                     );
                 })}
             </HStack>
 
             {/* Step Count Text */}
             {showStepCount && (
-                <Text>
+                <Text
                     size="sm"
                     color={colors.textSecondary}
                     sx={{ fontWeight: '$medium' }}
-                
+                >
                     Step {currentStep + 1} of {totalSteps}
                 </Text>
             )}
         </VStack>
     );
 };
-

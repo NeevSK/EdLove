@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { VStack, HStack, Text, Heading } from '../gluestack';
+import { VStack, HStack, Text } from '../gluestack';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
 import { LucideIcon } from 'lucide-react-native';
@@ -29,9 +29,9 @@ export const DailyResonanceCard = ({
 
     return (
         <GlassCard>
-            <VStack >space="md">
+            <VStack space="md">
                 <HStack space="sm" alignItems="center">
-                    <View>
+                    <View
                         style={{
                             backgroundColor: type === 'motivation'
                                 ? `${Theme.colors.sanctuarySaffron}26` // 15% opacity
@@ -39,37 +39,37 @@ export const DailyResonanceCard = ({
                             padding: 8,
                             borderRadius: Theme.corners.comfortable
                         }}
-                    
-                        <Icon>
+                    >
+                        <Icon
                             size={20}
                             color={type === 'motivation' ? Theme.colors.sanctuarySaffron : colors.action}
-                        /
+                        />
                     </View>
-                    <Text>
+                    <Text
                         style={{
                             color: colors.textSecondary,
                             fontSize: Theme.typography.fontSize.sm,
                             fontFamily: 'Inter_600SemiBold',
                             letterSpacing: 0.5
                         }}
-                    
+                    >
                         {title.toUpperCase()}
                     </Text>
                 </HStack>
 
                 <VStack space="xs">
-                    <Text>
+                    <Text
                         style={{
                             color: colors.text,
                             fontSize: Theme.typography.fontSize.lg,
                             lineHeight: 26,
                             fontFamily: 'Inter_500Medium',
                         }}
-                    
-                        "{content}"
+                    >
+                        &quot;{content}&quot;
                     </Text>
                     {author && (
-                        <Text>
+                        <Text
                             style={{
                                 color: colors.textTertiary,
                                 fontSize: Theme.typography.fontSize.sm,
@@ -78,8 +78,8 @@ export const DailyResonanceCard = ({
                                 textAlign: 'right',
                                 marginTop: Theme.spacing.small
                             }}
-                        
-                             {author}
+                        >
+                             — {author}
                         </Text>
                     )}
                 </VStack>
@@ -87,4 +87,3 @@ export const DailyResonanceCard = ({
         </GlassCard>
     );
 };
-

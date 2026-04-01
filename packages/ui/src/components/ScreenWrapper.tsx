@@ -47,18 +47,18 @@ export default function ScreenWrapper({
     const resolvedBackground = backgroundColor || scene.canvas.bg;
 
     return (
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={{ flex: 1 }}
-        
-            <StatusBar>
+        >
+            <StatusBar
                 barStyle={isDark ? 'light-content' : 'dark-content'}
                 backgroundColor={resolvedBackground}
-            /
+            />
 
             <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}>
                 {(scroll ?? scrollable) ? (
-                    <ScrollView>
+                    <ScrollView
                         style={{ flex: 1 }}
                         contentContainerStyle={[
                             styles.contentContainer,
@@ -67,7 +67,7 @@ export default function ScreenWrapper({
                         ]}
                         showsVerticalScrollIndicator={false}
                         refreshControl={refreshControl}
-                    
+                    >
                         {children}
                     </ScrollView>
                 ) : (
