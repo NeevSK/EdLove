@@ -56,49 +56,49 @@ export default function JoyJar({ userId }: JoyJarProps) {
     const getCategoryMeta = (cat: string) => CATEGORIES.find(c => c.value === cat) ?? CATEGORIES[3]!;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                    <Sparkles size={16} color="#F59E0B" /
-                    <span style={{ fontSize: '14px', fontWeight: '800' }}>Joy Jar</span
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sparkles size={16} color="#F59E0B" />
+                    <span style={{ fontSize: '14px', fontWeight: '800' }}>Joy Jar</span>
                     {!isLoading && joyMoments.length > 0 && (
-                        <span style={{ fontSize: '11px', padding: '2px 8px', background: 'var(--background-alt)', borderRadius: '6px', color: 'var(--ink-ghost)' }}
+                        <span style={{ fontSize: '11px', padding: '2px 8px', background: 'var(--background-alt)', borderRadius: '6px', color: 'var(--ink-ghost)' }}>
                             {joyMoments.length}
-                        </span
+                        </span>
                     )}
-                </div
+                </div>
                 <button
                     onClick={() => setShowForm(v => !v)}
                     style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? '#F59E0B' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
-                
-                    <Plus size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} /
+                >
+                    <Plus size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
                     {showForm ? 'Cancel' : 'Capture Moment'}
-                </button
-            </div
+                </button>
+            </div>
 
             {/* Add form */}
             {showForm && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: 'var(--background-alt)', borderRadius: '12px' }}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: 'var(--background-alt)', borderRadius: '12px' }}>
                     {/* Category selector */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.value}
                                 onClick={() => setCategory(cat.value)}
                                 style={{ padding: '8px 4px', borderRadius: '8px', border: `1.5px solid ${category === cat.value ? cat.color : 'var(--border)'}`, background: category === cat.value ? `${cat.color}18` : 'transparent', cursor: 'pointer', fontSize: '9px', fontWeight: '700', color: category === cat.value ? cat.color : 'var(--ink-ghost)', transition: 'all 0.2s', textAlign: 'center' }}
-                            
-                                <div style={{ fontSize: '16px', marginBottom: '3px' }}>{cat.emoji}</div
+                            >
+                                <div style={{ fontSize: '16px', marginBottom: '3px' }}>{cat.emoji}</div>
                                 {cat.label}
-                            </button
+                            </button>
                         ))}
-                    </div
+                    </div>
                     <input
                         value={studentName}
                         onChange={e => setStudentName(e.target.value)}
                         placeholder="Student's name (optional)"
                         style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'white', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none' }}
-                    /
+                    />
                     <textarea
                         autoFocus
                         value={description}
@@ -107,52 +107,52 @@ export default function JoyJar({ userId }: JoyJarProps) {
                         placeholder="Describe this moment of joy\u2026"
                         rows={3}
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', background: 'white', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
-                    /
+                    />
                     <button
                         onClick={handleSave}
                         disabled={saving || !description.trim()}
                         style={{ padding: '10px', borderRadius: '10px', background: '#F59E0B', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving || !description.trim() ? 'not-allowed' : 'pointer', opacity: saving || !description.trim() ? 0.6 : 1 }}
-                    
+                    >
                         {saving ? 'Saving\u2026' : '\u2728 Add to Jar'}
-                    </button
-                </div
+                    </button>
+                </div>
             )}
 
             {/* Moments */}
             {isLoading ? (
-                <div style={{ height: '60px', background: 'var(--background-alt)', borderRadius: '10px' }} /
+                <div style={{ height: '60px', background: 'var(--background-alt)', borderRadius: '10px' }} />
             ) : joyMoments.length === 0 ? (
-                <div style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '12px', textAlign: 'center' }}
-                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}
+                <div style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
                         Your jar is empty. What brought a spark of joy today?
-                    </p
-                </div
+                    </p>
+                </div>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {joyMoments.slice(0, 6).map((moment: JoyMoment) => {
                         const meta = getCategoryMeta(moment.category);
                         return (
                             <div
                                 key={moment.id}
                                 style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${meta.color}` }}
-                            
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}
-                                    <span>{meta.emoji}</span
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                                    <span>{meta.emoji}</span>
                                     {moment.student_name && (
-                                        <span style={{ fontSize: '12px', fontWeight: '700', color: meta.color }}>{moment.student_name}</span
+                                        <span style={{ fontSize: '12px', fontWeight: '700', color: meta.color }}>{moment.student_name}</span>
                                     )}
-                                    <span style={{ marginLeft: 'auto', fontSize: '10px', color: 'var(--ink-ghost)' }}
+                                    <span style={{ marginLeft: 'auto', fontSize: '10px', color: 'var(--ink-ghost)' }}>
                                         {formatDistanceToNow(new Date(moment.created_at), { addSuffix: true })}
-                                    </span
-                                </div
-                                <p style={{ fontSize: '13px', color: 'var(--ink-soft)', lineHeight: '1.6', margin: 0 }}
+                                    </span>
+                                </div>
+                                <p style={{ fontSize: '13px', color: 'var(--ink-soft)', lineHeight: '1.6', margin: 0 }}>
                                     {moment.moment_description}
-                                </p
-                            </div
+                                </p>
+                            </div>
                         );
                     })}
-                </div
+                </div>
             )}
-        </div
+        </div>
     );
 }

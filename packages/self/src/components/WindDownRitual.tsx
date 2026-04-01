@@ -24,6 +24,17 @@ import { useNavigation } from '@react-navigation/native';
 // TYPES
 // —————————————————————————————————————————————————————————————————————————————
 
+interface Step {
+    id: string;
+    title: string;
+    description?: string;
+    duration?: number;
+    input?: boolean;
+    value?: string;
+    setValue?: (text: string) => void;
+    placeholder?: string;
+}
+
 interface WindDownRitualProps {
   userId?: string;
 }
@@ -43,40 +54,40 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const [toRelease, setToRelease] = useState('');
   const [tomorrowIntent, setTomorrowIntent] = useState('');
 
-  const steps = [
+  const steps: Step[] = [
     {
       id: 'breathe',
-      title: t('self.breathe'),
-      description: t('self.breatheDesc'),
+      title: t('self.breathe', 'Mindful Breathing'),
+      description: t('self.breatheDesc', 'Take a few deep breaths to anchor yourself in the present moment.'),
       duration: 30
     },
     {
       id: 'reflect',
-      title: t('self.reflect'),
+      title: t('self.reflect', 'Daily Reflection'),
       input: true,
       value: wentWell,
       setValue: setWentWell,
-      placeholder: t('self.oneThingWentWell')
+      placeholder: t('self.oneThingWentWell', 'One thing that went well today...')
     },
     {
       id: 'release',
-      title: t('self.release'),
+      title: t('self.release', 'Letting Go'),
       input: true,
       value: toRelease,
       setValue: setToRelease,
-      placeholder: t('self.oneThingRelease')
+      placeholder: t('self.oneThingRelease', 'One thing I am releasing tonight...')
     },
     {
       id: 'intent',
-      title: t('self.tomorrowIntent'),
+      title: t('self.tomorrowIntent', 'Tomorrow\'s Intent'),
       input: true,
       value: tomorrowIntent,
       setValue: setTomorrowIntent,
-      placeholder: t('self.gentleIntentTomorrow')
+      placeholder: t('self.gentleIntentTomorrow', 'A gentle intention for tomorrow...')
     }
   ];
 
-  const currentStepData = steps[currentStep] || steps[0];
+  const currentStepData = steps[currentStep] || steps[0]!; // Use ! as we know steps has items, or better a proper fallback.
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleNext = () => {
@@ -112,11 +123,11 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           <HStack space="sm" sx={{ alignItems: 'center' }}>
             <Moon color={Theme.colors.sanctuarySaffron} size={24} />
             <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: 20 }}>
-              {t('self.windDown')}
+              {t('self.windDown', 'Wind Down Ritual')}
             </Heading>
           </HStack>
           <Text sx={{ color: Theme.colors.mistGray, fontSize: 14 }}>
-            {t('self.windDownDesc')}
+            {t('self.windDownDesc', 'Restoring balance before sleep.')}
           </Text>
         </VStack>
 
@@ -133,16 +144,16 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
             <VStack space="xs" sx={{ alignItems: 'center' }}>
               <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 18, fontWeight: '700', textAlign: 'center' }}>
-                {t('self.windDownComplete')}
+                {t('self.windDownComplete', 'Ritual Complete')}
               </Text>
               <Text sx={{ color: Theme.colors.mistGray, fontSize: 14, textAlign: 'center' }}>
-                {t('self.windDownCompleteDesc')}
+                {t('self.windDownCompleteDesc', 'May your sleep be peaceful and restorative.')}
               </Text>
             </VStack>
 
             {/* Summary Section */}
             <VStack space="md" sx={{ width: '100%', marginTop: 16 }}>
-              {wentWell && (
+              {wentWell.trim() !== '' && (
                 <Box
                   sx={{
                     padding: Theme.spacing.md,
@@ -153,7 +164,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   }}
                 >
                   <Text sx={{ color: Theme.colors.dimGray, fontSize: 10, marginBottom: 4, fontWeight: '700', textTransform: 'uppercase' }}>
-                    {t('self.wentWell')}
+                    {t('self.wentWell', 'Went Well')}
                   </Text>
                   <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}>
                     {wentWell}
@@ -161,7 +172,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 </Box>
               )}
 
-              {tomorrowIntent && (
+              {tomorrowIntent.trim() !== '' && (
                 <Box
                   sx={{
                     padding: Theme.spacing.md,
@@ -172,7 +183,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   }}
                 >
                   <Text sx={{ color: Theme.colors.dimGray, fontSize: 10, marginBottom: 4, fontWeight: '700', textTransform: 'uppercase' }}>
-                    {t('self.tomorrowIntentLabel')}
+                    {t('self.tomorrowIntentLabel', 'Intent for Tomorrow')}
                   </Text>
                   <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}>
                     {tomorrowIntent}
@@ -192,7 +203,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
               }}
             >
               <ButtonText sx={{ color: Theme.colors.mistGray }}>
-                {t('self.startAnother')}
+                {t('self.startAnother', 'Start Again')}
               </ButtonText>
             </Button>
           </VStack>
@@ -218,11 +229,11 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         <HStack space="sm" sx={{ alignItems: 'center' }}>
           <Moon color={Theme.colors.sanctuarySaffron} size={24} />
           <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: 20 }}>
-            {t('self.windDown')}
+            {t('self.windDown', 'Wind Down Ritual')}
           </Heading>
         </HStack>
         <Text sx={{ color: Theme.colors.mistGray, fontSize: 14 }}>
-          {t('self.windDownDesc')}
+          {t('self.windDownDesc', 'Restoring balance before sleep.')}
         </Text>
       </VStack>
 
@@ -230,7 +241,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       <VStack space="xs">
         <HStack sx={{ justifyContent: 'space-between' }}>
           <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
-            {t('self.step')} {currentStep + 1} {t('self.stepOf')} {steps.length}
+            {t('self.step', 'Step')} {currentStep + 1} {t('self.stepOf', 'of')} {steps.length}
           </Text>
           <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
             {Math.round(progress)}%
@@ -282,7 +293,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <InputField
                   placeholder={currentStepData.placeholder}
                   value={currentStepData.value}
-                  onChangeText={(text) => currentStepData.setValue?.(text)}
+                  onChangeText={(text: string) => currentStepData.setValue?.(text)}
                   multiline
                   sx={{ 
                     color: Theme.colors.sacredWhite,
@@ -312,7 +323,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <Moon color={Theme.colors.sanctuarySaffron} size={40} />
               </Box>
               <Text sx={{ color: Theme.colors.mistGray, fontSize: 14, textAlign: 'center', maxWidth: 200 }}>
-                {t('self.breatheInstructions')}
+                {t('self.breatheInstructions', 'Breathe in slowly through your nose, and out through your mouth.')}
               </Text>
             </VStack>
           )}
@@ -332,20 +343,20 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           }}
         >
           <ButtonText sx={{ color: Theme.colors.mistGray }}>
-            {t('common.back')}
+            {t('common.back', 'Back')}
           </ButtonText>
         </Button>
         <Button
           onPress={handleNext}
-          isDisabled={currentStepData.input && !currentStepData.value?.trim()}
+          isDisabled={!!currentStepData.input && (!currentStepData.value || currentStepData.value.trim() === '')}
           sx={{
             backgroundColor: Theme.colors.sanctuarySaffron,
             borderRadius: Theme.corners.comfortable,
             flex: 1
           }}
         >
-          <ButtonText sx={{ color: Theme.colors.sacredBlack, fontWeight: '700' }}>
-            {currentStep === steps.length - 1 ? t('common.complete') : t('common.next')}
+          <ButtonText sx={{ color: Theme.colors.black, fontWeight: '700' }}>
+            {currentStep === steps.length - 1 ? t('common.complete', 'Complete') : t('common.next', 'Next')}
           </ButtonText>
         </Button>
       </HStack>

@@ -57,7 +57,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         <ToastContext.Provider value={{ showToast }}>
             {children}
             {toast && (
-                <Animated.View>
+                <Animated.View
                     entering={FadeInUp}
                     exiting={FadeOutUp}
                     style={{
@@ -67,7 +67,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         right: 20,
                         zIndex: 1000,
                     }}
-                
+                >
                     <Box sx={{
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
@@ -91,4 +91,3 @@ export const useLotusToast = () => {
     if (!context) throw new Error('useLotusToast must be used within ToastProvider (or SanctuaryProvider)');
     return context;
 };
-

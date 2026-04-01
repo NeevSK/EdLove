@@ -86,12 +86,20 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                 : 1.0;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', padding: '8px 0' }}            <div style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)' }}                Breath Guide
-            </div
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', padding: '8px 0' }}>
+            <div style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)' }}>
+                Breath Guide
+            </div>
             {done ? (
-                <div style={{ textAlign: 'center' }}                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>\uD83C\uDF38</div                    <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', margin: 0 }}                        {TOTAL_CYCLES} cycles complete. You are grounded.
-                    </p                </div            ) : (
-                <                    <div
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>🌸</div>
+                    <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', margin: 0 }}>
+                        {TOTAL_CYCLES} cycles complete. You are grounded.
+                    </p>
+                </div>
+            ) : (
+                <>
+                    <div
                         style={{
                             width: '100px',
                             height: '100px',
@@ -105,14 +113,27 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                             justifyContent: 'center',
                             flexShrink: 0,
                         }}
-                                            <span style={{ fontSize: '32px' }}>\uD83C\uDF2C</span                    </div
-                    <div style={{ textAlign: 'center', minHeight: '36px' }}                        {active ? (
-                            <                                <div style={{ fontSize: '18px', fontWeight: '800', color: current.color, transition: 'color 0.3s' }}                                    {current.label}
-                                </div                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}                                    Cycle {cycleIdx + 1} of {TOTAL_CYCLES}
-                                </div                            </                        ) : (
-                            <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}                                4 cycles \u00B7 about 1 minute \u00B7 4-2-6-2 rhythm
-                            </p                        )}
-                    </div                </            )}
+                    >
+                        <span style={{ fontSize: '32px' }}>🌬️</span>
+                    </div>
+                    <div style={{ textAlign: 'center', minHeight: '36px' }}>
+                        {active ? (
+                            <>
+                                <div style={{ fontSize: '18px', fontWeight: '800', color: current.color, transition: 'color 0.3s' }}>
+                                    {current.label}
+                                </div>
+                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>
+                                    Cycle {cycleIdx + 1} of {TOTAL_CYCLES}
+                                </div>
+                            </>
+                        ) : (
+                            <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
+                                4 cycles · about 1 minute · 4-2-6-2 rhythm
+                            </p>
+                        )}
+                    </div>
+                </>
+            )}
 
             <button
                 onClick={active ? stop : start}
@@ -127,6 +148,9 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                 }}
-                            {done ? 'Again' : active ? 'Stop' : 'Begin'}
-            </button        </div    );
+            >
+                {done ? 'Again' : active ? 'Stop' : 'Begin'}
+            </button>
+        </div>
+    );
 }

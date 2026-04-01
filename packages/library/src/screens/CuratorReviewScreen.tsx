@@ -121,7 +121,7 @@ export default function CuratorReviewScreen() {
             <VStack sx={{ gap: 8 }}>
                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                     <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.textPrimary, flex: 1 }}>
-                        {item.title}>
+                        {item.title}
                     </Text>
                     <Box sx={{
                         px: 8,
@@ -130,31 +130,31 @@ export default function CuratorReviewScreen() {
                         backgroundColor: Theme.colors.sanctuarySaffron + '22'
                     }}>
                         <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron }}>
-                            {item.content_type.toUpperCase()}>
+                            {item.content_type.toUpperCase()}
                         </Text>
                     </Box>
                 </HStack>
 
                 <Text sx={{ fontSize: 13, color: colors.textSecondary }} numberOfLines={2}>
-                    {item.description}>
+                    {item.description}
                 </Text>
 
                 <HStack sx={{ gap: 12, mt: 8 }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
                         style={[styles.actionBtn, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                         onPress={() => handlePublish(item.id)}
-                    
-                        <Check size={16} color="#fff" /
-                        ><Text sx={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>Publish</Text
-                    ></TouchableOpacity>
+                    >
+                        <Check size={16} color="#fff" />
+                        <Text sx={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>Publish</Text>
+                    </TouchableOpacity>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity
                         style={[styles.actionBtn, { backgroundColor: 'rgba(255,255,255,0.1)' }]}
                         onPress={() => {/* TODO: Implement rejection/edit */ }}
-                    
-                        <X size={16} color={colors.textSecondary} /
-                        ><Text sx={{ color: colors.textSecondary, fontSize: 12 }}>Reject</Text
-                    ></TouchableOpacity>
+                    >
+                        <X size={16} color={colors.textSecondary} />
+                        <Text sx={{ color: colors.textSecondary, fontSize: 12 }}>Reject</Text>
+                    </TouchableOpacity>
                 </HStack>
             </VStack>
         </Box>
@@ -192,27 +192,27 @@ export default function CuratorReviewScreen() {
         }}>
             <VStack sx={{ gap: 8 }}>
                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text sx={{ fontSize: 16, fontWeight: '700', color: '#fff', flex: 1 }}>{item.title}</Text
-                    ><Box sx={{ px: 8, py: 2, borderRadius: 4, backgroundColor: 'rgba(239, 68, 68, 0.2)' }}
-                        <Text sx={{ fontSize: 10, color: '#F87171' }}>{item.fail_count || 0} REPORTS</Text
-                    ></Box>
+                    <Text sx={{ fontSize: 16, fontWeight: '700', color: '#fff', flex: 1 }}>{item.title}</Text>
+                    <Box sx={{ px: 8, py: 2, borderRadius: 4, backgroundColor: 'rgba(239, 68, 68, 0.2)' }}>
+                        <Text sx={{ fontSize: 10, color: '#F87171' }}>{item.fail_count || 0} REPORTS</Text>
+                    </Box>
                 </HStack>
-                <Text sx={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }} numberOfLines={1}>{item.url}</Text
-                ><HStack sx={{ gap: 12, mt: 8 }}
-                    <TouchableOpacity>
+                <Text sx={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }} numberOfLines={1}>{item.url}</Text>
+                <HStack sx={{ gap: 12, mt: 8 }}>
+                    <TouchableOpacity
                         style={[styles.actionBtn, { backgroundColor: '#10B981' }]}
                         onPress={() => handleRepair(item.id)}
-                    
-                        <RefreshCw size={14} color="#fff" /
-                        ><Text sx={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Fix Link</Text
-                    ></TouchableOpacity>
-                    <TouchableOpacity>
+                    >
+                        <RefreshCw size={14} color="#fff" />
+                        <Text sx={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Fix Link</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         style={[styles.actionBtn, { backgroundColor: 'rgba(255,255,255,0.05)' }]}
                         onPress={() => handleDeleteResource(item.id)}
-                    
-                        <Trash2 size={14} color="#F87171" /
-                        ><Text sx={{ color: '#F87171', fontSize: 12 }}>Remove</Text
-                    ></TouchableOpacity>
+                    >
+                        <Trash2 size={14} color="#F87171" />
+                        <Text sx={{ color: '#F87171', fontSize: 12 }}>Remove</Text>
+                    </TouchableOpacity>
                 </HStack>
             </VStack>
         </Box>
@@ -221,40 +221,40 @@ export default function CuratorReviewScreen() {
     return (
         <ScreenWrapper>
             <GlobalHeader
-                >title="Curator Dashboard"
+                title="Curator Dashboard"
                 subtitle="Review incoming knowledge streams"
                 onBack={() => navigation.goBack()}
-            /
+            />
 
-            ><HStack sx={{ px: 16, mb: 16, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}
-                <TouchableOpacity>
+            <HStack sx={{ px: 16, mb: 16, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+                <TouchableOpacity
                     onPress={() => setActiveTab('staging')}
                     style={[styles.tab, activeTab === 'staging' && { borderBottomColor: Theme.colors.sanctuarySaffron, borderBottomWidth: 2 }]}
-                
-                    <Text sx={{ color: activeTab === 'staging' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Staged</Text
-                ></TouchableOpacity>
-                <TouchableOpacity>
+                >
+                    <Text sx={{ color: activeTab === 'staging' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Staged</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
                     onPress={() => setActiveTab('broken')}
                     style={[styles.tab, activeTab === 'broken' && { borderBottomColor: Theme.colors.emberRed, borderBottomWidth: 2 }]}
-                
-                    <Text sx={{ color: activeTab === 'broken' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Broken Links</Text
-                ></TouchableOpacity>
+                >
+                    <Text sx={{ color: activeTab === 'broken' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Broken Links</Text>
+                </TouchableOpacity>
             </HStack>
 
             {loading ? (
-                <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} style={{ marginTop: 40 }} /
-            >) : (
-                <FlatList>
+                <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} style={{ marginTop: 40 }} />
+            ) : (
+                <FlatList
                     data={activeTab === 'staging' ? items : brokenResources}
                     keyExtractor={item => item.id}
                     renderItem={activeTab === 'staging' ? renderItem : renderBrokenItem}
                     contentContainerStyle={{ padding: 16 }}
                     ListEmptyComponent={
                         <Box sx={{ mt: 100, alignItems: 'center' }}>
-                            <Text sx={{ color: colors.textSecondary }}>The stream is quiet today.</Text
-                        ></Box>
+                            <Text sx={{ color: colors.textSecondary }}>The stream is quiet today.</Text>
+                        </Box>
                     }
-                /
+                />
             )}
         </ScreenWrapper>
     );

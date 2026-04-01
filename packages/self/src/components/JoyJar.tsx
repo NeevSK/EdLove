@@ -140,7 +140,8 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
           <ScrollView sx={{ flex: 1, maxHeight: 400 }}>
             <VStack space="md">
               {joyMoments.map((moment) => {
-                const catInfo = categories.find(c => c.id === moment.category) || categories[3];
+                const catInfo = categories.find(c => c.id === moment.category) || categories[categories.length - 1];
+                if (!catInfo) return null;
                 return (
                   <Box
                     key={moment.id}

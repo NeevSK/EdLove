@@ -86,32 +86,32 @@ export function ResonancePatternCard({
     const ACCENT = '#F59E0B'; // sanctuary saffron
 
     return (
-        <div style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '16px', border: '1px solid var(--border)' }}
+        <div style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '16px', border: '1px solid var(--border)' }}>
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}
-                <Sparkles size={14} color={ACCENT} /
-                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: ACCENT }}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <Sparkles size={14} color={ACCENT} />
+                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: ACCENT }}>
                     Your Learning Pattern
-                </span
+                </span>
                 {dataQuality !== 'default' && (
-                    <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: `${ACCENT}18`, color: ACCENT }}
+                    <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: `${ACCENT}18`, color: ACCENT }}>
                         {dataQuality}
-                    </span
+                    </span>
                 )}
-            </div
+            </div>
 
             {isForming ? (
-                <div style={{ padding: '20px', textAlign: 'center' }}
-                    <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', margin: 0 }}
-                        \u2726 Still forming\u2026{' '}
-                        <span style={{ fontSize: '12px' }}>Your pattern will emerge as you use the app.</span
-                    </p
-                </div
+                <div style={{ padding: '20px', textAlign: 'center' }}>
+                    <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', margin: 0 }}>
+                        ✦ Still forming…{' '}
+                        <span style={{ fontSize: '12px' }}>Your pattern will emerge as you use the app.</span>
+                    </p>
+                </div>
             ) : (
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
                     {/* SVG radar chart */}
-                    <div style={{ flexShrink: 0 }}
-                        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}
+                    <div style={{ flexShrink: 0 }}>
+                        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
                             {/* Grid rings */}
                             {grid.map((ring, ri) => (
                                 <polygon
@@ -120,7 +120,7 @@ export function ResonancePatternCard({
                                     fill="none"
                                     stroke="var(--border)"
                                     strokeWidth="0.8"
-                                /
+                                />
                             ))}
                             {/* Axis spokes */}
                             {AXES.map((_, i) => {
@@ -135,7 +135,7 @@ export function ResonancePatternCard({
                                 stroke={ACCENT}
                                 strokeWidth="1.5"
                                 strokeLinejoin="round"
-                            /
+                            />
                             {/* Data point dots */}
                             {AXES.map((axis, i) => {
                                 const angle = (360 / AXES.length) * i;
@@ -143,23 +143,23 @@ export function ResonancePatternCard({
                                 const { x, y } = polarToXY(angle, R * value);
                                 return <circle key={i} cx={x} cy={y} r="3.5" fill={ACCENT} />;
                             })}
-                        </svg
-                    </div
+                        </svg>
+                    </div>
 
                     {/* Axis breakdowns */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {AXES.map(axis => {
                             const value = seeds[axis.key] ?? 50;
                             const pct = value / 100;
-                            const pole = pct < 0.4 ? axis.lo : pct > 0.6 ? axis.hi : '\u2014';
+                            const pole = pct < 0.4 ? axis.lo : pct > 0.6 ? axis.hi : '—';
                             return (
-                                <div key={axis.key}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}
-                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{axis.lo}</span
-                                        <span style={{ fontSize: '10px', fontWeight: '700', color: ACCENT }}>{pole}</span
-                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{axis.hi}</span
-                                    </div
-                                    <div style={{ position: 'relative', height: '4px', background: 'var(--border)', borderRadius: '2px' }}
+                                <div key={axis.key}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{axis.lo}</span>
+                                        <span style={{ fontSize: '10px', fontWeight: '700', color: ACCENT }}>{pole}</span>
+                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{axis.hi}</span>
+                                    </div>
+                                    <div style={{ position: 'relative', height: '4px', background: 'var(--border)', borderRadius: '2px' }}>
                                         <div style={{
                                             position: 'absolute',
                                             left: `${value}%`,
@@ -169,33 +169,33 @@ export function ResonancePatternCard({
                                             borderRadius: '50%',
                                             background: ACCENT,
                                             transform: 'translateX(-3px)',
-                                        }} /
-                                    </div
-                                </div
+                                        }} />
+                                    </div>
+                                </div>
                             );
                         })}
-                    </div
-                </div
+                    </div>
+                </div>
             )}
 
             {/* Confidence footnote */}
-            <div style={{ marginTop: '16px', fontSize: '11px', color: 'var(--ink-ghost)', borderTop: '1px solid var(--border)', paddingTop: '12px' }}
-                Pattern confidence: {Math.round(confidence * 100)}% \u00B7 {
-                    isDefault ? 'Perspective defaults \u2014 usage will refine this.' :
+            <div style={{ marginTop: '16px', fontSize: '11px', color: 'var(--ink-ghost)', borderTop: '1px solid var(--border)', paddingTop: '12px' }}>
+                Pattern confidence: {Math.round(confidence * 100)}% · {
+                    isDefault ? 'Perspective defaults — usage will refine this.' :
                     dataQuality === 'strong' ? 'Strong signal from onboarding + behavior.' :
                     'Emerging from your usage patterns.'
                 }
-            </div
+            </div>
 
             {onExplore && (
                 <button
                     onClick={onExplore}
                     style={{ marginTop: '12px', background: 'none', border: 'none', color: ACCENT, fontSize: '12px', fontWeight: '700', cursor: 'pointer', padding: 0 }}
-                
-                    Explore pattern \u2192
-                </button
+                >
+                    Explore pattern →
+                </button>
             )}
-        </div
+        </div>
     );
 }
 

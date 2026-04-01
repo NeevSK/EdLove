@@ -93,7 +93,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               <SanctuaryButton 
                 onPress={handleSave}
                 isLoading={isSaving}
-                disabled={!insight.trim()}
+                isDisabled={!insight.trim()}
                 variant="solid"
                 size="sm"
               >

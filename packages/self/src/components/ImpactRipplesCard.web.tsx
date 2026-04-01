@@ -23,7 +23,7 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
             backgroundColor: 'rgba(58, 122, 154, 0.07)',
             borderRadius: '14px',
             border: '1px solid rgba(58, 122, 154, 0.18)',
-        }}
+        }}>
             <div style={{
                 fontSize: '10px',
                 fontWeight: '900',
@@ -31,10 +31,10 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
                 color: '#3A7A9A',
                 marginBottom: '14px',
                 textTransform: 'uppercase',
-            }}
-                \uD83D\uDCA7 IMPACT RIPPLES
-            </div
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+            }}>
+                💧 IMPACT RIPPLES
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {ripples.map(r => (
                     <div
                         key={r.id}
@@ -44,18 +44,18 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
                             borderRadius: '10px',
                             border: '1px solid rgba(58, 122, 154, 0.12)',
                         }}
-                    
+                    >
                         <p style={{
                             fontSize: '13px',
                             lineHeight: '1.55',
                             color: 'var(--ink-soft)',
                             margin: 0,
-                        }}
+                        }}>
                             {r.warm_message_en ?? r.ripple_type}
-                        </p
-                    </div
+                        </p>
+                    </div>
                 ))}
-            </div
-        </div
+            </div>
+        </div>
     );
 }

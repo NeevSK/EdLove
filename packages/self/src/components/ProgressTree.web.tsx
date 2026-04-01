@@ -15,12 +15,12 @@ interface ProgressTreeProps {
 }
 
 const GROWTH_STAGES = [
-    { minInteractions: 0, stage: 'seed', emoji: '<1', label: 'Seed', description: 'Just beginning' },
-    { minInteractions: 5, stage: 'sprout', emoji: '<?', label: 'Sprout', description: 'Taking root' },
-    { minInteractions: 15, stage: 'sapling', emoji: '<3', label: 'Sapling', description: 'Growing steadily' },
-    { minInteractions: 30, stage: 'young_tree', emoji: '<2', label: 'Young Tree', description: 'Finding strength' },
-    { minInteractions: 50, stage: 'tree', emoji: '<3', label: 'Tree', description: 'Standing tall' },
-    { minInteractions: 75, stage: 'blooming', emoji: '<8', label: 'Blooming', description: 'Flourishing' },
+    { minInteractions: 0, stage: 'seed', emoji: '🌱', label: 'Seed', description: 'Just beginning' },
+    { minInteractions: 5, stage: 'sprout', emoji: '🌿', label: 'Sprout', description: 'Taking root' },
+    { minInteractions: 15, stage: 'sapling', emoji: '🪴', label: 'Sapling', description: 'Growing steadily' },
+    { minInteractions: 30, stage: 'young_tree', emoji: '🌳', label: 'Young Tree', description: 'Finding strength' },
+    { minInteractions: 50, stage: 'tree', emoji: '🌲', label: 'Tree', description: 'Standing tall' },
+    { minInteractions: 75, stage: 'blooming', emoji: '🌸', label: 'Blooming', description: 'Flourishing' },
 ] as const;
 
 export default function ProgressTree({ userId }: ProgressTreeProps) {
@@ -59,32 +59,61 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     }
 
     return (
-        <div style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '16px' }}            <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)', marginBottom: '16px' }}                Growth Journey
-            </div
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}                <div
+        <div style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '16px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
+                Growth Journey
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+                <div
                     style={{
                         fontSize: '56px',
                         animation: 'breathe 4s ease-in-out infinite',
                         lineHeight: 1,
                     }}
-                                    {currentStage.emoji}
-                </div                <div                    <div style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}                        {currentStage.label}
-                    </div                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginBottom: '8px' }}                        {currentStage.description}
-                    </div                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}                        {interactionCount} interaction{interactionCount !== 1 ? 's' : ''} logged
-                    </div                </div            </div
+                >
+                    {currentStage.emoji}
+                </div>
+                <div>
+                    <div style={{ fontSize: '18px', fontWeight: '800', marginBottom: '4px' }}>
+                        {currentStage.label}
+                    </div>
+                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginBottom: '8px' }}>
+                        {currentStage.description}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>
+                        {interactionCount} interaction{interactionCount !== 1 ? 's' : ''} logged
+                    </div>
+                </div>
+            </div>
             {nextStage && (
-                <div                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}                            Progress to {nextStage.label} {nextStage.emoji}
-                        </span                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{progressPct}%</span                    </div                    <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}                        <div style={{ width: `${progressPct}%`, height: '100%', background: 'linear-gradient(to right, var(--moss), #10b981)', borderRadius: '3px', transition: 'width 0.6s ease' }} /                    </div                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '6px' }}                        {nextStage.minInteractions - interactionCount} more interaction{nextStage.minInteractions - interactionCount !== 1 ? 's' : ''} to grow
-                    </div                </div            )}
+                <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                            Progress to {nextStage.label} {nextStage.emoji}
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{progressPct}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
+                        <div style={{ width: `${progressPct}%`, height: '100%', background: 'linear-gradient(to right, var(--moss), #10b981)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '6px' }}>
+                        {nextStage.minInteractions - interactionCount} more interaction{nextStage.minInteractions - interactionCount !== 1 ? 's' : ''} to grow
+                    </div>
+                </div>
+            )}
 
             {progressPct === 100 && (
-                <div style={{ fontSize: '13px', color: 'var(--moss)', fontWeight: '700', textAlign: 'center', marginTop: '8px' }}                    {'<8'} Fully bloomed, your growth is beautiful.
-                </div            )}
+                <div style={{ fontSize: '13px', color: 'var(--moss)', fontWeight: '700', textAlign: 'center', marginTop: '8px' }}>
+                    🌸 Fully bloomed, your growth is beautiful.
+                </div>
+            )}
 
             <style>{`
                 @keyframes breathe {
                     0%, 100% { transform: scale(0.95); }
                     50% { transform: scale(1.05); }
                 }
-            `}</style        </div    );
+            `}</style>
+        </div>
+    );
 }

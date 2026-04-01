@@ -12,7 +12,7 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../theme/Theme';
+import { useTheme } from '../hooks/useTheme';
 
 export function SanctuaryBackground() {
     const { gradientNodes, animationsEnabled, phase, isDark } = useTheme();

@@ -27,11 +27,10 @@ export const ENERGY_COLORS = [
 
 /** Ordered emoji options for the inline mood picker. */
 export const MOOD_OPTIONS: { value: MoodLog['mood']; emoji: string; label: string }[] = [
-    { value: 'sad', emoji: '=', label: 'Sad' },
-    { value: 'frustrated', emoji: '=$', label: 'Frustrated' },
-    { value: 'anxious', emoji: '=0', label: 'Anxious' },
-    { value: 'calm', emoji: '=', label: 'Calm' },
-    { value: 'curious', emoji: '>', label: 'Curious' },
-    { value: 'joyful', emoji: '=
-', label: 'Joyful' },
+    { value: 'sad', emoji: '😞', label: 'Sad' },
+    { value: 'frustrated', emoji: '😤', label: 'Frustrated' },
+    { value: 'anxious', emoji: '😰', label: 'Anxious' },
+    { value: 'calm', emoji: '🧘', label: 'Calm' },
+    { value: 'curious', emoji: '🧐', label: 'Curious' },
+    { value: 'joyful', emoji: '✨', label: 'Joyful' },
 ];

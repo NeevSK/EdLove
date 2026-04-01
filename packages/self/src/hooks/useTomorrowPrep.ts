@@ -67,7 +67,7 @@ export function useTomorrowPrep(userId?: string) {
 
     const updatePrepItem = useCallback(async (
         itemId: string,
-        updates: Partial<Pick<DailyPrepItem, 'is_completed' | 'item_text'>    ) => {
+        updates: Partial<Pick<DailyPrepItem, 'is_completed' | 'item_text'>>) => {
         await updateTomorrowPrepItem(itemId, updates);
         const nextItems = prepItems.map((item) => (
             item.id === itemId ? { ...item, ...updates } : item

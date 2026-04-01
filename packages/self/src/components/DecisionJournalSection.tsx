@@ -69,16 +69,16 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
 
     return (
         <VStack space="md" sx={{ flex: 1 }}>
-            <Box>
+            <Box
                 p={Theme.spacing.md}
                 sx={{
                     backgroundColor: colors.tertiary,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 120
                 }}
-            
+            >
                 <Input sx={{ borderWidth: 0, flex: 1 }}>
-                    <InputField>
+                    <InputField
                         placeholder={t('principal.decisionPlaceholder') || t('self.decisionPlaceholder') || "What decision is weighing on you today?"}
                         multiline
                         color={colors.text}
@@ -86,10 +86,10 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                         sx={{ textAlignVertical: 'top', minHeight: 100 }}
                         value={decisionText}
                         onChangeText={setDecisionText}
-                    /
+                    />
                 </Input>
                 <Box alignItems="flex-end" mt="$2">
-                    <Pressable>
+                    <Pressable
                         onPress={handleSave}
                         disabled={!decisionText.trim() || isSaving}
                         sx={{
@@ -99,7 +99,7 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                             borderRadius: Theme.corners.comfortable,
                             opacity: isSaving ? 0.7 : 1
                         }}
-                    
+                    >
                         <Text color={Theme.colors.white} size="sm" bold>
                             {isSaving ? (t('common.saving') || "Saving...") : (t('common.save') || "Save")}
                         </Text>
@@ -111,10 +111,10 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                 {t('principal.recentDecisions') || t('self.recentDecisions') || "Recent Decisions"}
             </Heading>
 
-            <ScrollView style={{ maxHeight: 300 }} nestedScrollEnabled>
+            <ScrollView style={{ maxHeight: 300 }}>
                 <VStack space="sm">
                     {decisions.map((decision) => (
-                        <Box>
+                        <Box
                             key={decision.id}
                             p={Theme.spacing.md}
                             sx={{
@@ -123,7 +123,7 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
                                 borderLeftWidth: 3,
                                 borderLeftColor: colors.action
                             }}
-                        
+                        >
                             <Text color={colors.text} size="sm" numberOfLines={3}>
                                 {decision.decision_text}
                             </Text>

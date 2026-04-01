@@ -33,7 +33,7 @@ interface MoodLotusProps {
     disabled?: boolean;
 }
 
-export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusProps) {
+export const MoodLotus: React.FC<MoodLotusProps> = ({ userId, onMoodChange, disabled }) => {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [selectedMood, setSelectedMood] = useState<number | null>(null);
@@ -68,7 +68,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                 <Animated.View style={[styles.lotusContainer, lotusStyle]}>
                     <Flower2 
                         size={80} 
-                        color={selectedMood ? moodOptions[selectedMood - 1].color : colors.textTertiary} 
+                        color={(selectedMood !== null && moodOptions[selectedMood - 1]) ? (moodOptions[selectedMood - 1] as any).color : colors.textTertiary} 
                         strokeWidth={1.5}
                     />
                 </Animated.View>
@@ -126,3 +126,4 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
     }
 });
+export default MoodLotus;

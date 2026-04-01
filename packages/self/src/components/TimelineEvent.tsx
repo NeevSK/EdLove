@@ -1,8 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { MessageSquare, Heart, Star } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-
 
 interface TimelineEventProps {
     type: 'mood' | 'journal' | 'growth' | 'path';
@@ -36,9 +34,9 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
             <View style={styles.content}>
                 <View style={styles.header}>
                     <Icon size={14} color={color} />
-                    <Text style={styles.time}>{new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text
-                ></View>
-                <Text style={styles.title}>{title}</Text
+                    <Text style={styles.time}>{new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </View>
+                <Text style={styles.title}>{title}</Text>
                 {content && <Text style={styles.body} numberOfLines={2}>{content}</Text>}
             </View>
         </View>

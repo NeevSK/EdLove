@@ -198,7 +198,7 @@ export async function createStudentGoal(userId: string, text: string): Promise<G
 
 export async function updateStudentGoal(
     goalId: string,
-    updates: Partial<Pick<Goal, 'text' | 'progress' | 'is_completed'>): Promise<void> {
+    updates: Partial<Pick<Goal, 'text' | 'progress' | 'is_completed'>>): Promise<void> {
     const { error } = await supabase
         .from('student_goals')
         .update(updates)
@@ -241,7 +241,7 @@ export async function createTomorrowPrepItem(
 
 export async function updateTomorrowPrepItem(
     itemId: string,
-    updates: Partial<Pick<DailyPrepItem, 'is_completed' | 'item_text'>): Promise<void> {
+    updates: Partial<Pick<DailyPrepItem, 'is_completed' | 'item_text'>>): Promise<void> {
     const { error } = await supabase
         .from('daily_prep_items')
         .update(updates)

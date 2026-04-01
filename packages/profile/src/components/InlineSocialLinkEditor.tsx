@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { 
     X, 
     Check, 
@@ -8,11 +8,8 @@ import {
     Linkedin, 
     Instagram, 
     Globe, 
-    Mail, 
-    ShieldCheck, 
     Users, 
     Lock,
-    ExternalLink
 } from 'lucide-react-native';
 import { 
     HStack, 
@@ -23,7 +20,7 @@ import {
     SanctuaryCard,
     hapticLight
 } from '@repo/ui';
-import { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
+import type { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
 
 interface InlineSocialLinkEditorProps {
     link?: Partial<SocialLink>;
@@ -34,16 +31,16 @@ interface InlineSocialLinkEditorProps {
 }
 
 const PLATFORMS: { label: string; value: SocialPlatform; icon: any; color: string }[] = [
-    { label: 'WhatsApp', value: 'whatsapp', icon: MessagesSquare, color: Theme.colors.whatsapp },
-    { label: 'LinkedIn', value: 'linkedin', icon: Linkedin, color: Theme.colors.linkedin },
-    { label: 'Instagram', value: 'instagram', icon: Instagram, color: Theme.colors.instagram },
-    { label: 'Website', value: 'website', icon: Globe, color: Theme.colors.portfolio },
+    { label: 'WhatsApp', value: 'whatsapp', icon: MessagesSquare, color: '#25D366' },
+    { label: 'LinkedIn', value: 'linkedin', icon: Linkedin, color: '#0077B5' },
+    { label: 'Instagram', value: 'instagram', icon: Instagram, color: '#E4405F' },
+    { label: 'Website', value: 'website', icon: Globe, color: '#4A90E2' },
 ];
 
 const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; emoji: string; label: string }[] = [
-    { value: 'public', icon: Globe, emoji: '<', label: 'Public' },
-    { value: 'particulars', icon: Users, emoji: '=e', label: 'Friends' },
-    { value: 'private', icon: Lock, emoji: '=', label: 'Private' },
+    { value: 'public', icon: Globe, emoji: '🌍', label: 'Public' },
+    { value: 'particulars', icon: Users, emoji: '👥', label: 'Friends' },
+    { value: 'private', icon: Lock, emoji: '🔒', label: 'Private' },
 ];
 
 export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew }: InlineSocialLinkEditorProps) {
@@ -60,7 +57,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
             await onSave({
                 ...link,
                 platform,
-                url,
+                url: url.trim(),
                 privacy_level: privacy,
                 is_public: privacy !== 'private'
             });
@@ -76,7 +73,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                 {/* Platform Selection */}
                 <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
                     {PLATFORMS.map((p) => (
-                        <TouchableOpacity>
+                        <TouchableOpacity
                             key={p.value}
                             onPress={() => setPlatform(p.value)}
                             style={[
@@ -86,7 +83,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                     backgroundColor: platform === p.value ? `${p.color}20` : 'transparent',
                                 }
                             ]}
-                        
+                        >
                             <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} />
                         </TouchableOpacity>
                     ))}
@@ -94,7 +91,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
 
                 {/* URL Input */}
                 <HStack space="sm" alignItems="center">
-                    <TextInput>
+                    <TextInput
                         value={url}
                         onChangeText={setUrl}
                         placeholder={platform === 'whatsapp' ? 'Phone number' : 'Username or link'}
@@ -107,12 +104,12 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                 backgroundColor: colors.secondary 
                             }
                         ]}
-                    /
+                    />
                     
                     {/* Privacy Selection */}
-                    <HStack space="xs" style={styles.privacyContainer}>
+                    <HStack space="xs" style={[styles.privacyContainer, { backgroundColor: colors.border }]}>
                         {PRIVACY_LEVELS.map((pl) => (
-                            <TouchableOpacity>
+                            <TouchableOpacity
                                 key={pl.value}
                                 onPress={() => setPrivacy(pl.value)}
                                 style={[
@@ -122,9 +119,9 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                         borderColor: privacy === pl.value ? colors.action : 'transparent',
                                     }
                                 ]}
-                            
-                                <Text style={{ fontSize: 16 }}>{pl.emoji}</Text
-                            ></TouchableOpacity>
+                            >
+                                <Text style={{ fontSize: 16 }}>{pl.emoji}</Text>
+                            </TouchableOpacity>
                         ))}
                     </HStack>
                 </HStack>
@@ -132,25 +129,25 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                 {/* Actions */}
                 <HStack space="md" justifyContent="flex-end" alignItems="center">
                     {!isNew && onDelete && link?.id && (
-                        <TouchableOpacity >
+                        <TouchableOpacity 
                             onPress={() => onDelete(link.id!)} 
                             style={styles.actionBtn}
                             disabled={isSaving}
-                        
-                            <Trash2 size={18} color={Theme.colors.emberOrange} />
+                        >
+                            <Trash2 size={18} color="#FF6B6B" />
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity onPress={onCancel} style={styles.actionBtn} disabled={isSaving}>
                         <X size={20} color={colors.textTertiary} />
                     </TouchableOpacity>
-                    <TouchableOpacity >
+                    <TouchableOpacity 
                         onPress={handleSave} 
                         style={[styles.saveBtn, { backgroundColor: colors.action }]}
                         disabled={isSaving || !url.trim()}
-                    
+                    >
                         {isSaving ? (
-                            <Text color="white" bold>...</Text
-                        >) : (
+                            <Text color="white" bold>...</Text>
+                        ) : (
                             <Check size={20} color="white" />
                         )}
                     </TouchableOpacity>
@@ -163,7 +160,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
 const styles = StyleSheet.create({
     container: {
         borderWidth: 1,
-        borderColor: 'var(--action)',
+        borderColor: '#F6BF8C',
         marginBottom: 12,
     },
     platformChip: {
@@ -186,7 +183,6 @@ const styles = StyleSheet.create({
         })
     },
     privacyContainer: {
-        backgroundColor: 'var(--border)',
         borderRadius: 8,
         padding: 2,
     },

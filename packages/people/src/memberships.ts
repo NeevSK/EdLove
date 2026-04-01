@@ -43,6 +43,7 @@ function buildMembership(user: MembershipSeed): Membership {
     schoolId: user.school_id,
     schoolRole: getSchoolRoleForUser(user as any),
     workRoles: getWorkRolesForUser(user as any),
+    roles: [], // Initialize with empty roles; to be hydrated from backend if needed
     scopes: buildScopes(user),
     status: 'active',
     tenantKind: (user.tenant_kind as Membership['tenantKind']) ?? undefined,

@@ -78,7 +78,7 @@ export default function CommunityPresence({
 
     const vibeColor = useMemo(
         () => isOffline ? colors.textTertiary : getVibeColor(dominantVibe),
-        [isOffline, dominantVibe, colors]
+        [isOffline, dominantVibe, colors, getVibeColor]
     );
 
     const roleLabel = useMemo(() => {
@@ -95,26 +95,40 @@ export default function CommunityPresence({
 
     if (isLoading) {
         return (
-            <HStack space="md" alignItems="center" p={hidePadding || compact ? 0 : "$4"} opacity={0.6}                <Spinner size="small" color={colors.action} /                <Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>Locating Sanctuary Presence...</Text            </HStack        );
+            <HStack space="md" alignItems="center" p={hidePadding || compact ? 0 : "$4"} opacity={0.6}>
+                <Spinner size="small" color={colors.action} />
+                <Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>Locating Sanctuary Presence...</Text>
+            </HStack>
+        );
     }
 
     if (compact) {
         return (
-            <HStack space="xs" alignItems="center"                <Box
+            <HStack space="xs" alignItems="center">
+                <Box
                     style={{
                         width: 8,
                         height: 8,
                         borderRadius: 4,
                         backgroundColor: vibeColor,
                     }}
-                /                <Text size="xs" color={colors.textSecondary} bold                    {isOffline ? t('community.offline') : `${onlineCount} ${roleLabel}`}
-                </Text            </HStack        );
+                />
+                <Text size="xs" color={colors.textSecondary} bold>
+                    {isOffline ? t('community.offline') : `${onlineCount} ${roleLabel}`}
+                </Text>
+            </HStack>
+        );
     }
 
     return (
-        <VStack space="md" p={hidePadding || compact ? 0 : "$4"}            <HStack space="md" alignItems="center"                <Box sx={{ position: 'relative' }}                    {isOffline ? (
-                        <WifiOff color={colors.textTertiary} size={28} /                    ) : (
-                        <Users color={vibeColor} size={28} /                    )}
+        <VStack space="md" p={hidePadding || compact ? 0 : "$4"}>
+            <HStack space="md" alignItems="center">
+                <Box sx={{ position: 'relative' }}>
+                    {isOffline ? (
+                        <WifiOff color={colors.textTertiary} size={28} />
+                    ) : (
+                        <Users color={vibeColor} size={28} />
+                    )}
 
                     {!isOffline && (
                         <Animated.View
@@ -130,19 +144,29 @@ export default function CommunityPresence({
                                     backgroundColor: vibeColor,
                                 },
                             ]}
-                        /                    )}
-                </Box                <VStack                    <Heading size="sm" color={colors.text}                        {isOffline ? t('community.offlineTitle') : t('community.sanctuaryPulse')}
-                    </Heading                    <Text color={colors.textSecondary} size="sm"                        {isOffline
+                        />
+                    )}
+                </Box>
+                <VStack>
+                    <Heading size="sm" color={colors.text}>
+                        {isOffline ? t('community.offlineTitle') : t('community.sanctuaryPulse')}
+                    </Heading>
+                    <Text color={colors.textSecondary} size="sm">
+                        {isOffline
                             ? t('community.offlineDesc')
                             : `${onlineCount} ${roleLabel} ${t('community.onlineNow')}`}
-                    </Text                    {!isOffline && (
+                    </Text>
+                    {!isOffline && (
                         <Text
                             color={colors.textTertiary}
                             size="xs"
                             sx={{ mt: '$1' }}
-                                                    {t('community.dominantVibe')}: {dominantVibe}
-                        </Text                    )}
-                </VStack            </HStack
+                        >
+                            {t('community.dominantVibe')}: {dominantVibe}
+                        </Text>
+                    )}
+                </VStack>
+            </HStack>
             {!isOffline && onlineCount > 0 && (
                 <Box
                     sx={{
@@ -152,7 +176,12 @@ export default function CommunityPresence({
                         borderWidth: 1,
                         borderColor: colors.border,
                     }}
-                                    <Text size="xs" color={colors.textSecondary} italic                        {motivationText}
-                    </Text                </Box            )}
-        </VStack    );
+                >
+                    <Text size="xs" color={colors.textSecondary} italic>
+                        {motivationText}
+                    </Text>
+                </Box>
+            )}
+        </VStack>
+    );
 }

@@ -30,10 +30,18 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     return (
-        <VStack space="lg"            <FormControl                <FormControlLabel >sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.studentBodyType')}>
-                    </FormControlLabelText                ></FormControlLabel                <HStack sx={{ gap: '$sm', flexWrap: 'wrap' }}                    {STUDENT_TYPES.map(type => (
-                        <Pressable accessibilityRole="button">
+        <VStack space="lg">
+            <FormControl>
+                <FormControlLabel sx={{ marginBottom: '$2' }}>
+                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}>
+                        {t('schoolSetup.studentBodyType')}
+                    </FormControlLabelText>
+                </FormControlLabel>
+                <HStack sx={{ gap: '$sm', flexWrap: 'wrap' }}>
+                    {STUDENT_TYPES.map((type) => (
+                        <Pressable
                             key={type.id}
+                            accessibilityRole="button"
                             onPress={() => onUpdate({ studentType: type.id as any })}
                             sx={{
                                 flex: 1,
@@ -45,26 +53,40 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                 backgroundColor: data.studentType === type.id ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
                                 alignItems: 'center'
                             }}
-                                                    <Text>
+                        >
+                            <Text
                                 color={data.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.text}
                                 bold={data.studentType === type.id}
                                 sx={{ fontSize: '$sm' }}
-                                                            {(type[lang] ?? type.en).split(' ')[0]}
-                            </Text                        ></Pressable                    >))}
-                </HStack            </FormControl
-            {/* Religious Affiliation might use a similar selection style or dropdown */}
-            <SanctuaryInput>
+                            >
+                                {(type[lang] ?? type.en).split(' ')[0]}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </HStack>
+            </FormControl>
+
+            <SanctuaryInput
                 label={t('schoolSetup.studentCount')}
                 placeholder={t('schoolSetup.studentCountPlaceholder')}
                 value={data.studentCount}
                 onChangeText={(text) => onUpdate({ studentCount: text })}
                 leftIcon={Users}
                 keyboardType="numeric"
-            /
-            <FormControl                <FormControlLabel >sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.religiousContext')}>
-                    </FormControlLabelText                ></FormControlLabel                ><VStack space="xs"                    <HStack sx={{ gap: '$xs', flexWrap: 'wrap' }}                        {RELIGIOUS_AFFILIATIONS.map(rel => (
-                            <Pressable accessibilityRole="button">
+            />
+
+            <FormControl>
+                <FormControlLabel sx={{ marginBottom: '$2' }}>
+                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}>
+                        {t('schoolSetup.religiousContext')}
+                    </FormControlLabelText>
+                </FormControlLabel>
+                <VStack space="xs">
+                    <HStack sx={{ gap: '$xs', flexWrap: 'wrap' }}>
+                        {RELIGIOUS_AFFILIATIONS.map((rel) => (
+                            <Pressable
                                 key={rel.id}
+                                accessibilityRole="button"
                                 onPress={() => onUpdate({ religiousAffiliation: rel.id })}
                                 sx={{
                                     paddingHorizontal: '$3',
@@ -74,10 +96,18 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                     borderColor: data.religiousAffiliation === rel.id ? Theme.colors.sanctuarySaffron : colors.border,
                                     backgroundColor: data.religiousAffiliation === rel.id ? Theme.colors.sanctuarySaffron : 'transparent',
                                 }}
-                                                            <Text>
+                            >
+                                <Text
                                     color={data.religiousAffiliation === rel.id ? Theme.colors.sacredWhite : colors.textSecondary}
                                     sx={{ fontSize: '$xs' as any }}
-                                                                    {rel[lang] ?? rel.en}
-                                </Text                            ></Pressable                        >))}
-                    </HStack                </VStack            </FormControl        </VStack    );
+                                >
+                                    {rel[lang] ?? rel.en}
+                                </Text>
+                            </Pressable>
+                        ))}
+                    </HStack>
+                </VStack>
+            </FormControl>
+        </VStack>
+    );
 }

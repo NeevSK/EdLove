@@ -24,16 +24,18 @@ export function ProfileNavigationProvider({
     children: React.ReactNode;
 }) {
     return (
-        <ProfileNavigationContext.Provider value={value}            {children}>
-        </ProfileNavigationContext.Provider    );
+        <ProfileNavigationContext.Provider value={value}>
+            {children}
+        </ProfileNavigationContext.Provider>
+    );
 }
 
 export function useProfileNavigation(): ProfileNavigationCapabilities {
-    const capabilities = useContext(ProfileNavigationContext);
+    const context = useContext(ProfileNavigationContext);
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
 
-    if (capabilities) {
-        return capabilities;
+    if (context) {
+        return context;
     }
 
     return {
@@ -42,8 +44,7 @@ export function useProfileNavigation(): ProfileNavigationCapabilities {
         openPrivacyLedger: () => navigation.navigate('PrivacyLedger'),
         openMuteHub: () => navigation.navigate('MuteHub'),
         openPublicProfile: (target) => navigation.navigate('PublicProfile', target),
-        // @ts-expect-error - Auth is in RootNavigator but not in ProfileStackParamList
-        openAuth: () => navigation.navigate('Auth'),
+        openAuth: () => navigation.navigate('Auth' as any),
         goBack: () => navigation.goBack(),
     };
 }

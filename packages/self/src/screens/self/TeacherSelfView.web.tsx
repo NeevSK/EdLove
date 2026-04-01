@@ -47,13 +47,25 @@ export default function TeacherSelfView() {
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const personalLayer = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}            <TemporalShield label="JOURNAL HISTORY"                <JournalSection entries={journalEntries} loading={journalLoading} /            </TemporalShield            <MoodLotus userId={userId ?? undefined} /        </div    );
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <TemporalShield label="JOURNAL HISTORY">
+                <JournalSection entries={journalEntries} loading={journalLoading} />
+            </TemporalShield>
+            <MoodLotus userId={userId ?? undefined} />
+        </div>
+    );
 
     const workingLayer = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}            <TeacherPulse banyan={banyan} loading={banyanLoading} /            <DailyRhythm /        </div    );
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <TeacherPulse banyan={banyan} loading={banyanLoading} />
+            <DailyRhythm />
+        </div>
+    );
 
     const holisticSection = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '8px' }}>
+                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
                     <button
                         key={scale}
                         className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
@@ -68,19 +80,25 @@ export default function TeacherSelfView() {
                             cursor: 'pointer',
                             textTransform: 'uppercase',
                         }}
-                                            {scale}
-                    </button                ))}
-            </div            <JourneyHistoryCard
+                    >
+                        {scale}
+                    </button>
+                ))}
+            </div>
+            <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
                 loading={journeyLoading}
                 scale={viewScale as any}
-            /            {workingLayer}
+            />
+            {workingLayer}
             {personalLayer}
-        </div    );
+        </div>
+    );
 
     const sideBar = (
-        <            <MoodPickerCard
+        <>
+            <MoodPickerCard
                 isOpen={false}
                 onToggle={() => {}}
                 onSelect={async (mood, note) => {
@@ -91,11 +109,31 @@ export default function TeacherSelfView() {
                 latestMood={moodLogs[0]}
                 isLoading={moodLoading}
                 accent="dark"
-            /            <div className="sanctuary-card" style={{ padding: '24px' }}                <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: '16px' }}                    Professional Ecology
-                </h3                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}                        <Users size={16} /> <span>Educational Ecology</span                    </button                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}                        <MessageSquare size={16} /> <span>Faculty Resonance</span                    </button                </div            </div            <ImpactRipplesCard ripples={[]} /            <WarmMirrorCard text="Your presence is the root of this sanctuary." /        </    );
+            />
+            <div className="sanctuary-card" style={{ padding: '24px' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
+                    Professional Ecology
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}>
+                        <Users size={16} /> <span>Educational Ecology</span>
+                    </button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
+                        <MessageSquare size={16} /> <span>Faculty Resonance</span>
+                    </button>
+                </div>
+            </div>
+            <ImpactRipplesCard ripples={[]} />
+            <WarmMirrorCard text="Your presence is the root of this sanctuary." />
+        </>
+    );
 
     return (
-        <TemporalProvider            <div style={{ padding: '20px 40px 0' }}                <TemporalNavigator /            </div            <BaseSelfView
+        <TemporalProvider>
+            <div style={{ padding: '20px 40px 0' }}>
+                <TemporalNavigator />
+            </div>
+            <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDesc', 'Radiate clarity from the center of your instructional practice.')}
                 domains={[
@@ -128,8 +166,11 @@ export default function TeacherSelfView() {
                     },
                 ]}
                 sideBar={sideBar}
-            /            <WelcomeModal
+            />
+            <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            /        </TemporalProvider    );
+            />
+        </TemporalProvider>
+    );
 }

@@ -31,15 +31,15 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
   const { forecasts, refreshData, isLoading: dataLoading } = useEnergyForecast(userId);
 
   const [todayForecast, setTodayForecast] = useState<EnergyForecastType | null>(null);
-  // Optimistic local selection  mirrors todayForecast.energy_level but updates instantly on tap
+  // Optimistic local selection mirrors todayForecast.energy_level but updates instantly on tap
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     if (forecasts.length > 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const found = forecasts.find(f => f.forecast_date === today);
+      const todayDate = new Date().toISOString().split('T')[0];
+      const found = forecasts.find(f => f.forecast_date === todayDate);
       setTodayForecast(found || null);
       if (found) setSelectedLevel(found.energy_level);
     }
@@ -74,11 +74,11 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
   };
 
   const energyLevels = [
-    { level: 1, label: t('self.energyDepleted'), color: Theme.colors.emberRed, emoji: '\uD83D\uDE35' },
-    { level: 2, label: t('self.energyLow'), color: Theme.colors.emberOrange, emoji: '\uD83D\uDE34' },
-    { level: 3, label: t('self.energyOkay'), color: Theme.colors.templeGold, emoji: '\uD83D\uDE10' },
-    { level: 4, label: t('self.energyGood'), color: Theme.colors.sageGreen, emoji: '\uD83D\uDE0A' },
-    { level: 5, label: t('self.energyEnergized'), color: Theme.colors.gurudeviBlue, emoji: '\u26A1' },
+    { level: 1, label: t('self.energyDepleted', 'Depleted'), color: Theme.colors.emberRed, emoji: '😵' },
+    { level: 2, label: t('self.energyLow', 'Low'), color: Theme.colors.emberOrange, emoji: '😴' },
+    { level: 3, label: t('self.energyOkay', 'Steady'), color: Theme.colors.templeGold, emoji: '😐' },
+    { level: 4, label: t('self.energyGood', 'Good'), color: Theme.colors.sageGreen, emoji: '😊' },
+    { level: 5, label: t('self.energyEnergized', 'Energized'), color: Theme.colors.gurudeviBlue, emoji: '⚡' },
   ];
 
   if (dataLoading && userId) {
@@ -98,6 +98,7 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
         onAction={() => navigation.navigate('Auth' as never)}
       />
     );
+  }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
@@ -108,18 +109,18 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
             size={24}
           />
           <Heading color={colors.text} size="lg">
-            {t('self.energyForecast')}
+            {t('self.energyForecast', 'Energy Forecast')}
           </Heading>
         </HStack>
         <Text color={colors.textSecondary} size="sm">
-          {t('self.energyForecastDesc')}
+          {t('self.energyForecastDesc', 'Visualise your internal batteries.')}
         </Text>
       </VStack>
 
-      {/* Emoji Energy Picker  always visible, current selection highlighted */}
+      {/* Emoji Energy Picker always visible, current selection highlighted */}
       <Box sx={{ paddingHorizontal: Theme.spacing.sm }}>
         <Text color={colors.textSecondary} size="sm" textAlign="center" mb="$3">
-          {t('self.capacityToday')}
+          {t('self.capacityToday', 'What is your capacity today?')}
         </Text>
         <HStack justifyContent="space-between" alignItems="center">
           {energyLevels.map((energy) => {
@@ -172,12 +173,10 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
           }}
         >
           <Text color={colors.textSecondary} size="sm" textAlign="center">
-            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {t('self.checkedToday', 'Last checked today at')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </Text>
         </Box>
       )}
     </VStack>
   );
 }
-
-export default EnergyForecast;

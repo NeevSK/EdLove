@@ -164,7 +164,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         if (!initialized) {
             setDefaultPosition();
         }
-    }, [clampInnerViewport = clampFabToViewport, positionX, positionY, setDefaultPosition]);
+    }, [clampFabToViewport, positionX, positionY, setDefaultPosition]);
 
     useEffect(() => {
         const sub = Dimensions.addEventListener('change', () => {

@@ -82,7 +82,7 @@ export default function SanctuaryButton({
     };
 
     return (
-        <Button>
+        <Button
             {...({ size } as any)}
             variant={variant === 'ghost' ? 'link' : variant}
             action={action === 'negative' ? 'negative' : 'primary'} // Map to Gluestack actions somewhat
@@ -111,17 +111,17 @@ export default function SanctuaryButton({
                 ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: scene.interactive.bg } : {}),
                 ...style
             }}
-        
+        >
             {isLoading ? (
                 <ButtonSpinner color={getTextColor()} sx={{ marginRight: '$2' as any }} />
             ) : leftIcon ? (
                 <ButtonIcon as={leftIcon} color={getTextColor()} sx={{ marginRight: '$2' as any }} />
             ) : null}
 
-            <ButtonText>
+            <ButtonText
                 color={getTextColor()}
                 sx={{ fontWeight: '$semibold', letterSpacing: 0.5 }}
-            
+            >
                 {children}
             </ButtonText>
 
@@ -131,4 +131,3 @@ export default function SanctuaryButton({
         </Button>
     );
 }
-

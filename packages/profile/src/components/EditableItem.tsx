@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import {
     Box,
     VStack,
@@ -78,8 +78,8 @@ export const EditableItem = ({
         try {
             await onSave(field, editValue);
             setIsEditing(false);
-        } catch (err) {
-            // Error is handled by the hook's reversion logic and global handler
+        } catch (err: any) {
+            setError(err?.message || 'Failed to save');
         } finally {
             setIsSaving(false);
         }
@@ -87,15 +87,15 @@ export const EditableItem = ({
 
     return (
         <HStack space="md" alignItems="center">
-            <Box>
+            <Box
                 sx={{
                     padding: 10,
                     borderRadius: Theme.corners.full,
                     backgroundColor: colors.tertiary
                 }}
-            
-                <Icon size={20} color={colors.action} /
-            ></Box>
+            >
+                <Icon size={20} color={colors.action} />
+            </Box>
             <VStack flex={1}>
                 <Text size="xs" color={colors.textSecondary}>
                     {label}
@@ -103,13 +103,13 @@ export const EditableItem = ({
                 {isEditing ? (
                     <VStack space="xs">
                         <HStack space="sm" alignItems="center">
-                            <Input>
+                            <Input
                                 sx={{
                                     flex: 1,
                                     borderColor: error ? colors.error : colors.action
                                 }}
-                            
-                                <InputField/>
+                            >
+                                <InputField
                                     value={editValue}
                                     onChangeText={(text: string) => {
                                         const nextValue = transform ? transform(text) : text;
@@ -119,42 +119,50 @@ export const EditableItem = ({
                                     autoFocus
                                     color={colors.text}
                                     multiline={multiline}
-                                /
-                            ></Input>
-                            <TouchableOpacity>
+                                />
+                            </Input>
+                            <TouchableOpacity
                                 onPress={handleSave}
                                 disabled={isSaving || !!error}
                                 style={{ opacity: (isSaving || !!error) ? 0.3 : 1 }}
-                            
-                                <Check size={20} color={colors.success} /
-                            ></TouchableOpacity>
+                            >
+                                <Check size={20} color={colors.success} />
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={handleCancel}>
                                 <X size={20} color={colors.error} />
                             </TouchableOpacity>
                         </HStack>
                         {error && (
                             <Text size="xs" color={colors.error}>
-                                {error}>
+                                {error}
                             </Text>
                         )}
                     </VStack>
                 ) : (
-                    <TouchableOpacity>
+                    <TouchableOpacity
                         onPress={handleStartEdit}
-                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-                    
+                        style={styles.touchableDisplay}
+                    >
                         <Text size="md" color={value ? colors.text : colors.textTertiary} bold>
-                            {value || placeholder}>
+                            {value || placeholder}
                         </Text>
                         {!disabled && <Edit2 size={14} color={colors.textTertiary} />}
                     </TouchableOpacity>
                 )}
                 {helperText && (
                     <Text size="xs" color={colors.textTertiary} mt={2} sx={{ opacity: 0.8 }}>
-                        {helperText}>
+                        {helperText}
                     </Text>
                 )}
             </VStack>
         </HStack>
     );
 };
+
+const styles = StyleSheet.create({
+    touchableDisplay: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+});

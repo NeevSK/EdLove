@@ -49,29 +49,29 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                <div style={{ padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px' }}
-                    <Flame size={18} color="#EF4444" /
-                </div
-                <div
-                    <div style={{ fontSize: '14px', fontWeight: '800' }}>Fire Journal</div
-                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Write it. Burn it. Release it.</div
-                </div
-            </div
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px' }}>
+                    <Flame size={18} color="#EF4444" />
+                </div>
+                <div>
+                    <div style={{ fontSize: '14px', fontWeight: '800' }}>Fire Journal</div>
+                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Write it. Burn it. Release it.</div>
+                </div>
+            </div>
 
             {burned ? (
-                <div style={{ padding: '28px', background: 'rgba(239,68,68,0.06)', borderRadius: '14px', textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)', animation: 'fadeIn 0.5s ease' }}
-                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>=%</div
-                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#EF4444', marginBottom: '6px' }}>Released.</div
-                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}
+                <div style={{ padding: '28px', background: 'rgba(239,68,68,0.06)', borderRadius: '14px', textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)', animation: 'fadeIn 0.5s ease' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>🔥</div>
+                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#EF4444', marginBottom: '6px' }}>Released.</div>
+                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
                         The words are ash now. You're lighter.
-                    </p
-                </div
+                    </p>
+                </div>
             ) : (
-                <
-                    <div style={{ position: 'relative' }}
+                <>
+                    <div style={{ position: 'relative' }}>
                         <textarea
                             value={content}
                             onChange={e => handleChange(e.target.value)}
@@ -95,18 +95,18 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                                 opacity: burning ? 0.4 : 1,
                                 animation: burning ? 'flicker 0.1s infinite' : 'none',
                             }}
-                        /
+                        />
                         {charCount > 0 && !burning && (
-                            <div style={{ position: 'absolute', bottom: '10px', right: '14px', fontSize: '11px', color: 'var(--ink-ghost)' }}
+                            <div style={{ position: 'absolute', bottom: '10px', right: '14px', fontSize: '11px', color: 'var(--ink-ghost)' }}>
                                 {charCount}
-                            </div
+                            </div>
                         )}
                         {burning && (
-                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}
-                                <div style={{ fontSize: '48px', animation: 'burnPulse 0.3s ease-in-out infinite alternate' }}>=%</div
-                            </div
+                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                                <div style={{ fontSize: '48px', animation: 'burnPulse 0.3s ease-in-out infinite alternate' }}>🔥</div>
+                            </div>
                         )}
-                    </div
+                    </div>
 
                     <button
                         onClick={handleBurn}
@@ -127,18 +127,18 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                             letterSpacing: '0.5px',
                             transition: 'all 0.2s',
                         }}
-                    
-                        <Flame size={16} color={content.trim() ? '#fff' : 'var(--ink-ghost)'} /
-                        {burning ? 'Burning&' : 'Burn & Release =%'}
-                    </button
-                </
+                    >
+                        <Flame size={16} color={content.trim() ? '#fff' : 'var(--ink-ghost)'} />
+                        {burning ? 'Burning...' : 'Burn & Release 🔥'}
+                    </button>
+                </>
             )}
 
             <style>{`
                 @keyframes flicker { 0% { opacity: 0.35; } 100% { opacity: 0.5; } }
                 @keyframes burnPulse { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-            `}</style
-        </div
+            `}</style>
+        </div>
     );
 }

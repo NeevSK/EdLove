@@ -134,10 +134,10 @@ export default function SchoolCreationScreen() {
         return (
             <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Establishing Sanctuary..." />
-                ><Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}
+                <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
-                    ><Text sx={{ marginTop: Theme.spacing.lg, color: colors.textSecondary, textAlign: 'center' }}
-                        Constructing digital foundations...>
+                    <Text sx={{ marginTop: Theme.spacing.lg, color: colors.textSecondary, textAlign: 'center' }}>
+                        Constructing digital foundations...
                     </Text>
                 </Box>
             </ScreenWrapper>
@@ -148,7 +148,7 @@ export default function SchoolCreationScreen() {
         return (
             <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Sanctuary Established!" />
-                ><ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 120 }}
+                <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 120 }}>
                     <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', marginTop: Theme.spacing.xl }}>
                         <Box sx={{
                             width: 100,
@@ -163,15 +163,15 @@ export default function SchoolCreationScreen() {
                             shadowOpacity: 0.3,
                             shadowRadius: 10
                         }}>
-                            <Check size={60} color={Theme.colors.obsidian} strokeWidth={3} /
-                        ></Box>
+                            <Check size={60} color={Theme.colors.obsidian} strokeWidth={3} />
+                        </Box>
 
                         <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
                             <Heading sx={{ fontSize: Theme.typography.fontSize['2xl'], textAlign: 'center' }} color={colors.text}>
                                 {successData.schoolName} is Live
                             </Heading>
                             <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
-                                Your digital foundations are successfully established.>
+                                Your digital foundations are successfully established.
                             </Text>
                         </VStack>
 
@@ -186,31 +186,31 @@ export default function SchoolCreationScreen() {
                             borderColor: colors.border
                         }}>
                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: Theme.colors.sanctuarySaffron, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
-                                Share this QR to invite others>
+                                Share this QR to invite others
                             </Text>
-                            <QRCodeGenerator/>
+                            <QRCodeGenerator
                                 value={QRBuilder.school(successData.schoolId, successData.groupId)}
                                 size={180}
                                 label={successData.schoolName}
                                 errorCorrectionLevel="H"
                             />
-                            ><Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary, marginTop: Theme.spacing.md, textAlign: 'center' }}
-                                Scanning joins {successData.schoolName} and its Community HQ group>
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary, marginTop: Theme.spacing.md, textAlign: 'center' }}>
+                                Scanning joins {successData.schoolName} and its Community HQ group
                             </Text>
                         </Box>
 
                         <Box sx={{ width: '100%', marginTop: Theme.spacing.lg, gap: Theme.spacing.md }}>
                             {/* Primary: hierarchy setup is the principal's real next step */}
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 onPress={() => navigation.navigate('ClassroomList')}
                                 action="primary"
                                 size="lg"
                                 fullWidth
-                            
-                                Set Up School Structure \u2192
+                            >
+                                Set Up School Structure →
                             </SanctuaryButton>
                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textAlign: 'center' }}>
-                                Add grades, sections and grade heads. Teachers join via the QR above, then create their own classrooms.>
+                                Add grades, sections and grade heads. Teachers join via the QR above, then create their own classrooms.
                             </Text>
                         </Box>
                     </VStack>
@@ -221,19 +221,19 @@ export default function SchoolCreationScreen() {
 
     return (
         <ScreenWrapper noTopInset={true}>
-            <GlobalHeader>
+            <GlobalHeader
                 title="Establish School"
                 subtitle="Bring your sanctuary to life"
                 showBack
             />
 
-            ><StepIndicator
+            <StepIndicator
                 currentStep={state.step}
                 totalSteps={TOTAL_STEPS}
                 stepLabels={STEP_LABELS}
             />
 
-            ><ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
                 <Box sx={{ p: 16 }}>
                     {renderStep()}
                 </Box>
@@ -254,20 +254,20 @@ export default function SchoolCreationScreen() {
                 <HStack sx={{ gap: Theme.spacing.md }}>
                     {state.step > 1 && (
                         <Box sx={{ flex: 1 }}>
-                            <SanctuaryButton>
+                            <SanctuaryButton
                                 variant="outline"
                                 onPress={handleBack}
                                 leftIcon={ArrowLeft}
-                            
-                                Back>
+                            >
+                                Back
                             </SanctuaryButton>
                         </Box>
                     )}
                     <Box sx={{ flex: 2 }}>
-                        <SanctuaryButton>
+                        <SanctuaryButton
                             onPress={handleNext}
                             rightIcon={state.step === TOTAL_STEPS ? Check : ArrowRight}
-                        
+                        >
                             {state.step === TOTAL_STEPS ? 'Complete Setup' : 'Continue'}
                         </SanctuaryButton>
                     </Box>

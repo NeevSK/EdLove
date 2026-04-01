@@ -32,7 +32,7 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
     };
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity
             onPress={handlePress}
             accessible={true}
             accessibilityRole="button"
@@ -47,16 +47,16 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
                 justifyContent: 'center',
                 ...Theme.shadows.none
             }}
-        
+        >
             <HStack justifyContent="space-between" alignItems="center">
                 <HStack space="md" alignItems="center">
-                    <Box>
+                    <Box
                         sx={{
                             p: '$2',
                             bg: colors.isDark ? 'rgba(255,255,255,0.05)' : colors.secondary,
                             borderRadius: '$full'
                         }}
-                    
+                    >
                         <Icon size={18} color={iconColor || colors.action} />
                     </Box>
                     <Text color={colors.text} size="sm" bold>

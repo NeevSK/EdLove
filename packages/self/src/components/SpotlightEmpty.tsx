@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Sparkles, Plus } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
 
 interface SpotlightEmptyProps {
     date: string;
@@ -20,7 +19,7 @@ export const SpotlightEmpty: React.FC<SpotlightEmptyProps> = ({ date, onAction }
                 <Sparkles size={40} color="rgba(246, 191, 140, 0.3)" />
             </View>
             
-            <Text style={styles.title}>QUIET RESONANCE</Text
+            <Text style={styles.title}>QUIET RESONANCE</Text>
             <Text style={styles.subtitle}>
                 No whispers from the past on {new Date(date).toLocaleDateString()}.
             </Text>
@@ -28,11 +27,13 @@ export const SpotlightEmpty: React.FC<SpotlightEmptyProps> = ({ date, onAction }
             <Text style={styles.description}>
                 Every quiet moment is a canvas. Start a new thread in your journey today.
             </Text>
-
-            <TouchableOpacity style={styles.button} onPress={onAction}>
-                <Plus size={18} color="#000" />
-                <Text style={styles.buttonText}>CREATE RESONANCE</Text
-            ></TouchableOpacity>
+            
+            {onAction && (
+                <TouchableOpacity style={styles.button} onPress={onAction}>
+                    <Plus size={18} color="#000" />
+                    <Text style={styles.buttonText}>CREATE RESONANCE</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

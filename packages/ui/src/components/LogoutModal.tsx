@@ -14,7 +14,7 @@ interface LogoutModalProps {
 }
 
 /**
- * LogoutModal  sanctuary-themed logout confirmation.
+ * LogoutModal - sanctuary-themed logout confirmation.
  * Uses SanctuaryModal for phase-aware glass styling (light + dark world).
  */
 export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = false }: LogoutModalProps) {
@@ -23,36 +23,36 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
     const footer = (
         <HStack {...({ space: "md", width: "100%" } as any)}>
             <Box sx={{ flex: 1 }}>
-                <SanctuaryButton>
+                <SanctuaryButton
                     variant="ghost"
                     action="secondary"
                     onPress={onClose}
                     isDisabled={isLoading}
-                
+                >
                     Stay
                 </SanctuaryButton>
             </Box>
             <Box sx={{ flex: 1.5 }}>
-                <SanctuaryButton>
+                <SanctuaryButton
                     action="primary"
                     onPress={onLogout}
                     isLoading={isLoading}
-                
-                    {isLoading ? "Signing out&" : "Sign Out"}
+                >
+                    {isLoading ? "Signing out..." : "Sign Out"}
                 </SanctuaryButton>
             </Box>
         </HStack>
     );
 
     return (
-        <SanctuaryModal>
+        <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
             title="Sign Out"
             icon={<LogOut color={accent.action} size={20} />}
             footer={footer}
             size="md"
-        
+        >
             <VStack {...({ space: "md", py: "$2" } as any)}>
                 <Text {...({ color: text.secondary, size: "md" } as any)}>
                     Are you sure you want to sign out? You'll need to log in again to access your garden.
@@ -72,4 +72,3 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
         </SanctuaryModal>
     );
 }
-

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import { Box, VStack, HStack, Center, Theme, useThemedColors } from '@repo/ui';
 import { SkeletonLoader, SkeletonCard, SkeletonAvatar, SkeletonTextLine } from '@repo/ui';
 
@@ -13,21 +13,21 @@ export default function ProfileSkeleton() {
             <VStack space="2xl">
                 {/* Identity Card Placeholder */}
                 <Center>
-                    <SkeletonLoader/>
+                    <SkeletonLoader
                         width={width - 48}
                         height={200}
                         borderRadius={Theme.corners.generous}
-                    /
+                    />
                 </Center>
 
                 {/* Stats Card Placeholder */}
                 <Box>
-                    <SkeletonCard />height={120} />
+                    <SkeletonCard height={120} />
                 </Box>
 
                 {/* Achievements Placeholder */}
                 <Box>
-                    <SkeletonTextLine >width={150} mb={12} />
+                    <SkeletonTextLine width={150} mb={12} />
                     <HStack space="md">
                         <SkeletonAvatar size={60} />
                         <SkeletonAvatar size={60} />

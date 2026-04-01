@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Share, Platform } from 'react-native';
-import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL, showExternalLinkOptions } from '@repo/ui';
+import { Text, GlassCard, useThemedColors, SanctuaryCard, Theme, openExternalURL, showExternalLinkOptions } from '@repo/ui';
 import { useSocialLinks } from '../hooks/useSocialLinks';
-import { SocialLink, SocialPlatform } from '@repo/core';
+import type { SocialLink, SocialPlatform } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import {
     Instagram,
@@ -45,7 +44,7 @@ const PRIVACY_ICONS = {
 export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnProfile }) => {
     const colors = useThemedColors();
     const { t } = useTranslation();
-    const { links, loading, deleteLink, updateLink } = useSocialLinks(userId);
+    const { links, loading } = useSocialLinks(userId);
 
     const handlePress = async (link: SocialLink) => {
         let url = link.url;
@@ -92,7 +91,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                 try {
                     await navigator.share({ title: 'Gurudevi Profile', url: profileUrl });
                 } catch {
-                    // Cancelled or unavailable  fall back to clipboard
+                    // Cancelled or unavailable - fall back to clipboard
                     try { await Clipboard.setStringAsync(profileUrl); } catch { /* ignore */ }
                 }
             } else {
@@ -114,54 +113,55 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text variant="h3" style={styles.title}>{t('socialSanctuary.title')}</Text
-                >{isOwnProfile && (
+                <Text variant="h3" style={styles.title}>{t('socialSanctuary.title', 'Social Connections')}</Text>
+                {isOwnProfile && (
                     <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}>
-                        <Share2 size={20} color={Theme.colors.ink} />
-                    ></TouchableOpacity>
+                        <Share2 size={20} color={colors.text} />
+                    </TouchableOpacity>
                 )}
             </View>
 
             <View style={styles.linksContainer}>
                 {visibleLinks.map((link) => {
                     const PlatformIcon = PLATFORM_ICONS[link.platform] || ExternalLink;
-                    const PrivacyIcon = PRIVACY_ICONS[link.privacy_level];
+                    const PrivacyIcon = PRIVACY_ICONS[link.privacy_level as keyof typeof PRIVACY_ICONS];
 
                     return (
-                        <TouchableOpacity>
+                        <TouchableOpacity
                             key={link.id}
                             onPress={() => handlePress(link)}
                             onLongPress={() => handleOpenOptions(link)}
                             activeOpacity={0.7}
-                                                    <GlassCard style={styles.linkCard}>
+                        >
+                            <GlassCard style={styles.linkCard}>
                                 <View style={styles.linkContent}>
-                                    <View style={[styles.platformIcon, { backgroundColor: colors.primary + '20' }]}>
+                                    <View style={[styles.platformIcon, { backgroundColor: colors.primary + '33' }]}>
                                         <PlatformIcon size={24} color={colors.primary} />
-                                    ></View>
+                                    </View>
                                     <View style={styles.linkTextContainer}>
                                         <Text variant="p2" weight="bold" style={styles.platformName}>
                                             {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
                                         </Text>
                                         <Text variant="p3" numberOfLines={1} style={styles.linkUrl}>
-                                            {link.url}>
+                                            {link.url}
                                         </Text>
                                     </View>
                                     {isOwnProfile && (
                                         <View style={styles.privacyIndicator}>
                                             <PrivacyIcon size={16} color={colors.textTertiary} />
-                                        ></View>
+                                        </View>
                                     )}
-                                    <ExternalLink size={18} color={colors.textTertiary} style={styles.arrowIcon} /
-                                ></View>
+                                    <ExternalLink size={18} color={colors.textTertiary} style={styles.arrowIcon} />
+                                </View>
                             </GlassCard>
                         </TouchableOpacity>
                     );
                 })}
 
                 {isOwnProfile && visibleLinks.length === 0 && (
-                    <SanctuaryCard variant="glass" style={{ padding: 20, alignItems: 'center' }}>
+                    <SanctuaryCard variant="glass" style={styles.emptyCard}>
                         <Text variant="p3" style={styles.emptyText}>
-                            {t('socialSanctuary.empty')}
+                            {t('socialSanctuary.empty', 'No social links added yet.')}
                         </Text>
                     </SanctuaryCard>
                 )}
@@ -224,7 +224,6 @@ const styles = StyleSheet.create({
     emptyCard: {
         padding: 20,
         alignItems: 'center',
-        borderStyle: 'dashed',
     },
     emptyText: {
         textAlign: 'center',

@@ -22,35 +22,35 @@ export const ResonanceTimeline: React.FC = () => {
         return (
             <View style={styles.center}>
                 <ActivityIndicator color={Theme.colors.resonance.present} />
-                <Text style={styles.loadingText}>Synthesizing Journey Path...</Text
-            ></View>
+                <Text style={styles.loadingText}>Synthesizing Journey Path...</Text>
+            </View>
         );
     }
 
     if (journey.length === 0) {
         return (
             <View style={styles.center}>
-                <Text style={styles.emptyText}>No resonance data found for this period.</Text
-            ></View>
+                <Text style={styles.emptyText}>No resonance data found for this period.</Text>
+            </View>
         );
     }
 
     return (
-        <ScrollView >
-            style={styles.container} 
+        <ScrollView
+            style={styles.container}
             contentContainerStyle={styles.contentContainer}
             showsVerticalScrollIndicator={false}
-        
+        >
             <View style={styles.header}>
-                <Text style={styles.dateLabel}>{viewDate}</Text
-                ><Text style={styles.scaleLabel}>{viewScale.toUpperCase()} JOURNEY</Text
-            ></View>
+                <Text style={styles.dateLabel}>{viewDate}</Text>
+                <Text style={styles.scaleLabel}>{viewScale.toUpperCase()} JOURNEY</Text>
+            </View>
 
             {journey.map((event, index: number) => (
                 event.type === 'path' ? (
                     <GenesisNode key={event.id} timestamp={event.timestamp} />
                 ) : (
-                    <TimelineEvent>
+                    <TimelineEvent
                         key={event.id}
                         type={event.type as any}
                         title={event.title}
@@ -58,7 +58,7 @@ export const ResonanceTimeline: React.FC = () => {
                         timestamp={event.timestamp}
                         intensity={event.intensity}
                         isLast={index === journey.length - 1}
-                    /
+                    />
                 )
             ))}
 

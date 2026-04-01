@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { 
     VStack, 
     HStack, 
@@ -9,7 +9,7 @@ import {
     GlassCard,
     Box
 } from '@repo/ui';
-import { Mic, Square, Check, X, Play, Pause } from 'lucide-react-native';
+import { Mic, Square, Check, X } from 'lucide-react-native';
 import Animated, { 
     useSharedValue, 
     useAnimatedStyle, 
@@ -27,7 +27,11 @@ const AudioModule = {
     playAsync: async (uri: string) => {},
 };
 
-export const VoiceJournaling: React.FC = () => {
+interface VoiceJournalingProps {
+    userId?: string;
+}
+
+export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId }) => {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'finished'>('idle');
@@ -85,15 +89,11 @@ export const VoiceJournaling: React.FC = () => {
         opacity: interpolate(pulseScale.value, [1, 1.2], [0.6, 1])
     }));
 
-    const waveStyle = useAnimatedStyle(() => ({
-        height: waveHeight.value,
-    }));
-
     return (
         <GlassCard style={styles.container}>
             <VStack space="xl" alignItems="center">
                 <Text fontWeight="700" size="lg">
-                    {t('self.voiceJournal') || 'Voice Sanctuary'}
+                    {t('self.voiceJournal', 'Voice Sanctuary')}
                 </Text>
 
                 <Box style={styles.recordOuter}>
@@ -120,7 +120,7 @@ export const VoiceJournaling: React.FC = () => {
                         {formatDuration(duration)}
                     </Text>
                     <Text size="xs" color={colors.textSecondary}>
-                        {recordingState === 'recording' ? t('self.recording') || 'Listening...' : t('self.tapToStart') || 'Tap to start reflecting'}
+                        {recordingState === 'recording' ? t('self.recording', 'Listening...') : t('self.tapToStart', 'Tap to start reflecting')}
                     </Text>
                 </VStack>
 
@@ -138,6 +138,8 @@ export const VoiceJournaling: React.FC = () => {
         </GlassCard>
     );
 };
+
+export default VoiceJournaling;
 
 const styles = StyleSheet.create({
     container: {

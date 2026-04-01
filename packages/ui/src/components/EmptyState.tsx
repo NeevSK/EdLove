@@ -42,31 +42,31 @@ export default function EmptyState({
                     <Icon size={48} color={accent.action} strokeWidth={1.5} />
                 </Box>
 
-                <Text>
+                <Text
                     color={text.onCanvas}
                     fontSize="$xl"
                     fontWeight="$bold"
                     textAlign="center"
-                
+                >
                     {title}
                 </Text>
 
-                <Text>
+                <Text
                     color={text.secondary}
                     textAlign="center"
                     fontSize="$md"
                     sx={{ lineHeight: 24 }}
-                
+                >
                     {description}
                 </Text>
 
                 {actionLabel && onAction && (
                     <Box mt="$4">
-                        <SanctuaryButton>
+                        <SanctuaryButton
                             onPress={onAction}
                             size="md"
                             variant="outline"
-                        
+                        >
                             {actionLabel}
                         </SanctuaryButton>
                     </Box>
@@ -75,4 +75,3 @@ export default function EmptyState({
         </Center>
     );
 }
-

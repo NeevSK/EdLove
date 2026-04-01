@@ -157,13 +157,13 @@ export default function ShadowAgentDrawer() {
     };
 
     return (
-        <
+        <>
             {/* Glowing Orb Trigger */}
             <Pressable
                 onPress={handleOpenDrawer}
                 style={styles.orbContainer}
-            
-                <Animated.View style={[styles.orb, orbStyle]}
+            >
+                <Animated.View style={[styles.orb, orbStyle]}>
                     <Box
                         sx={{
                             width: 56,
@@ -174,11 +174,11 @@ export default function ShadowAgentDrawer() {
                             justifyContent: 'center',
                             ...Theme.shadows.glow,
                         }}
-                    
-                        <Text style={{ fontSize: 24 }}>\uD83E\uDEB7</Text
-                    </Box
-                </Animated.View
-            </Pressable
+                    >
+                        <Text style={{ fontSize: 24 }}>\uD83E\uDEB7</Text>
+                    </Box>
+                </Animated.View>
+            </Pressable>
 
             {/* Bottom Sheet Modal */}
             <Modal
@@ -186,15 +186,15 @@ export default function ShadowAgentDrawer() {
                 transparent
                 animationType="slide"
                 onRequestClose={handleCloseDrawer}
-            
+            >
                 <Pressable
                     style={styles.modalOverlay}
                     onPress={handleCloseDrawer}
-                
+                >
                     <Pressable
                         style={styles.drawerContainer}
                         onPress={(e: any) => e.stopPropagation()}
-                    
+                    >
                         <Box
                             sx={{
                                 backgroundColor: Theme.colors.ink,
@@ -203,7 +203,7 @@ export default function ShadowAgentDrawer() {
                                 padding: Theme.spacing.xl,
                                 minHeight: SCREEN_HEIGHT * 0.5,
                             }}
-                        
+                        >
                             {/* Handle bar */}
                             <Box
                                 sx={{
@@ -215,7 +215,7 @@ export default function ShadowAgentDrawer() {
                                     marginBottom: Theme.spacing.md,
                                     opacity: 0.3,
                                 }}
-                            /
+                            />
 
                             {/* Close Button */}
                             <Pressable
@@ -227,40 +227,40 @@ export default function ShadowAgentDrawer() {
                                     zIndex: 10,
                                     padding: 8,
                                 }}
-                            
+                            >
                                 <Box sx={{
                                     backgroundColor: 'rgba(255,255,255,0.05)',
                                     borderRadius: 20,
                                     padding: 4
-                                }}
-                                    <X color={Theme.colors.mistGray} size={20} /
-                                </Box
-                            </Pressable
+                                }}>
+                                    <X color={Theme.colors.mistGray} size={20} />
+                                </Box>
+                            </Pressable>
 
-                            <VStack space="xl"
+                            <VStack space="xl">
                                 {/* Title */}
-                                <Animated.View entering={FadeIn.duration(Theme.motion.gentle)}
+                                <Animated.View entering={FadeIn.duration(Theme.motion.gentle)}>
                                     <Text
                                         color={Theme.colors.sacredWhite}
                                         size="2xl"
                                         sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
-                                    
+                                    >
                                         {t('shadowAgent.title')}
-                                    </Text
+                                    </Text>
                                     <Text
                                         color={Theme.colors.mistGray}
                                         size="sm"
                                         mt="$2"
-                                    
+                                    >
                                         {t('shadowAgent.subtitle')}
-                                    </Text
-                                </Animated.View
+                                    </Text>
+                                </Animated.View>
 
                                 {/* Contextual Suggestion */}
                                 {contextualSuggestion && (
                                     <Animated.View
                                         entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.quick)}
-                                    
+                                    >
                                         <Box
                                             sx={{
                                                 backgroundColor: Theme.colors.ink,
@@ -269,7 +269,7 @@ export default function ShadowAgentDrawer() {
                                                 borderWidth: 1,
                                                 borderColor: Theme.colors.twilightBlue,
                                             }}
-                                        
+                                        >
                                             <Text
                                                 color={Theme.colors.shroud}
                                                 size="xs"
@@ -278,9 +278,9 @@ export default function ShadowAgentDrawer() {
                                                     letterSpacing: 1,
                                                     marginBottom: Theme.spacing.sm,
                                                 }}
-                                            
+                                            >
                                                 Gentle Reminder
-                                            </Text
+                                            </Text>
                                             <Text
                                                 color={Theme.colors.starlightGray}
                                                 size="lg"
@@ -288,17 +288,17 @@ export default function ShadowAgentDrawer() {
                                                     fontWeight: typography.fontWeight.medium,
                                                     lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
                                                 }}
-                                            
+                                            >
                                                 {contextualSuggestion.emoji} {contextualSuggestion.message}
-                                            </Text
-                                        </Box
-                                    </Animated.View
+                                            </Text>
+                                        </Box>
+                                    </Animated.View>
                                 )}
 
                                 {/* Thought Seed */}
                                 <Animated.View
                                     entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard)}
-                                
+                                >
                                     <Box
                                         sx={{
                                             backgroundColor: Theme.colors.ink,
@@ -307,7 +307,7 @@ export default function ShadowAgentDrawer() {
                                             borderLeftWidth: 3,
                                             borderLeftColor: Theme.colors.sanctuarySaffron,
                                         }}
-                                    
+                                    >
                                         <Text
                                             color={Theme.colors.shroud}
                                             size="xs"
@@ -316,9 +316,9 @@ export default function ShadowAgentDrawer() {
                                                 letterSpacing: 1,
                                                 marginBottom: Theme.spacing.sm,
                                             }}
-                                        
+                                        >
                                             Thought Seed
-                                        </Text
+                                        </Text>
                                         <Text
                                             color={Theme.colors.sacredWhite}
                                             size="xl"
@@ -326,43 +326,43 @@ export default function ShadowAgentDrawer() {
                                                 fontWeight: typography.fontWeight.medium,
                                                 lineHeight: typography.lineHeight.relaxed * typography.fontSize.xl,
                                             }}
-                                        
+                                        >
                                             {currentSeed}
-                                        </Text
-                                    </Box
-                                </Animated.View
+                                        </Text>
+                                    </Box>
+                                </Animated.View>
 
                                 {/* Contemplation Space */}
                                 <Animated.View
                                     entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 2)}
-                                
-                                    <VStack space="md"
+                                >
+                                    <VStack space="md">
                                         <Text
                                             color={Theme.colors.mistGray}
                                             size="sm"
-                                        
+                                        >
                                             Take a moment to sit with this question.
-                                        </Text
+                                        </Text>
                                         <Text
                                             color={Theme.colors.mistGray}
                                             size="sm"
-                                        
+                                        >
                                             There's no need to answer right away.
-                                        </Text
+                                        </Text>
                                         <Text
                                             color={Theme.colors.mistGray}
                                             size="sm"
                                             sx={{ fontStyle: 'italic' }}
-                                        
+                                        >
                                             Sometimes questions are more valuable than answers.
-                                        </Text
-                                    </VStack
-                                </Animated.View
+                                        </Text>
+                                    </VStack>
+                                </Animated.View>
 
                                 {/* Note about future feature */}
                                 <Animated.View
                                     entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 3)}
-                                
+                                >
                                     <Box
                                         sx={{
                                             marginTop: Theme.spacing.xl,
@@ -371,21 +371,21 @@ export default function ShadowAgentDrawer() {
                                             backgroundColor: Theme.colors.ink,
                                             opacity: 0.5,
                                         }}
-                                    
+                                    >
                                         <Text
                                             color={Theme.colors.shroud}
                                             size="xs"
                                             textAlign="center"
-                                        
+                                        >
                                             \uD83D\uDCAB This space will grow with you
-                                        </Text
-                                    </Box
-                                </Animated.View
-                            </VStack
-                        </Box
-                    </Pressable
-                </Pressable
-            </Modal
-        </
+                                        </Text>
+                                    </Box>
+                                </Animated.View>
+                            </VStack>
+                        </Box>
+                    </Pressable>
+                </Pressable>
+            </Modal>
+        </>
     );
 }

@@ -78,7 +78,7 @@ export default function TeacherSelfView() {
         <VStack space="lg" sx={{ p: 20 }}>
             <HStack justifyContent="flex-end" space="xs">
                 {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box >
+                    <Box 
                         key={scale}
                         sx={{ 
                             bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
@@ -86,10 +86,10 @@ export default function TeacherSelfView() {
                             py: 4, 
                             borderRadius: 12 
                         }}
-                    
-                        <Pressable onPress={() => setScale(scale)}
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text
-                        ></Pressable>
+                    >
+                        <Pressable onPress={() => setScale(scale)}>
+                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
+                        </Pressable>
                     </Box>
                 ))}
             </HStack>
@@ -112,7 +112,7 @@ export default function TeacherSelfView() {
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            <BaseSelfView/>
+            <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
                 domains={[
@@ -130,18 +130,18 @@ export default function TeacherSelfView() {
                             {
                                 id: 'pulse',
                                 label: 'Daily Pulse',
-                                content: <PulseDashboard onEnterDetails={() => { }} /
+                                content: <PulseDashboard onEnterDetails={() => { }} />
                             },
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} /
-                            >},
+                                content: <MoodLotus userId={userId ?? undefined} />
+                            },
                             {
                                 id: 'wisdom',
                                 label: 'Wisdom Seeds',
-                                content: <WisdomSeeds userId={userId ?? undefined} /
-                            >}
+                                content: <WisdomSeeds userId={userId ?? undefined} />
+                            }
                         ]
                     },
                     {
@@ -152,25 +152,25 @@ export default function TeacherSelfView() {
                             {
                                 id: 'fire-journal',
                                 label: 'Fire Journal',
-                                content: <FireJournal userId={userId ?? undefined} /
-                            >},
+                                content: <FireJournal userId={userId ?? undefined} />
+                            },
                             {
                                 id: 'voice',
                                 label: 'Voice Journal',
-                                content: <VoiceJournaling userId={userId ?? undefined} /
-                            >},
+                                content: <VoiceJournaling userId={userId ?? undefined} />
+                            },
                             {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
                                 content: (
-                                    <MoodPickerCard/>
+                                    <MoodPickerCard
                                         isOpen={isMoodPickerOpen}
                                         onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
                                         onSelect={handleMoodSelect}
                                         isSaving={isSavingMood}
                                         latestMood={latestMood}
                                         isLoading={loadingMoods}
-                                    /
+                                    />
                                 )
                             }
                         ]
@@ -185,18 +185,18 @@ export default function TeacherSelfView() {
                                 label: 'Energy Rhythm',
                                 content: (
                                     <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                                        <EnergyBarChart/>
+                                        <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
-                                        /
+                                        />
                                     </Box>
                                 )
                             },
                             {
                                 id: 'wind-down',
                                 label: 'Restorative Ritual',
-                                content: <WindDownRitual userId={userId ?? undefined} /
-                            >}
+                                content: <WindDownRitual userId={userId ?? undefined} />
+                            }
                         ]
                     },
                     {
@@ -207,8 +207,8 @@ export default function TeacherSelfView() {
                             {
                                 id: 'daily-rhythm',
                                 label: 'Working Pace',
-                                content: <DailyRhythm /
-                            >}
+                                content: <DailyRhythm />
+                            }
                         ]
                     }
                 ]}
@@ -218,13 +218,13 @@ export default function TeacherSelfView() {
                         <ImpactRipplesCard ripples={ripples} />
                     </VStack>
                 }
-            /
+            />
 
 
-            <WelcomeModal/>
+            <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            /
+            />
         </ScreenWrapper>
     );
 }

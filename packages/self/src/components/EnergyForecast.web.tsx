@@ -65,16 +65,16 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     const meta = selectedLevel ? LEVEL_LABELS[selectedLevel] : null;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                <Battery size={16} color="var(--sanctuary-saffron)" /
-                <span style={{ fontSize: '14px', fontWeight: '800' }}>Energy Forecast</span
-                {saved && <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--moss)', fontWeight: '700' }}>\u2713 Logged</span>}
-            </div
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Battery size={16} color="var(--sanctuary-saffron)" />
+                <span style={{ fontSize: '14px', fontWeight: '800' }}>Energy Forecast</span>
+                {saved && <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--moss)', fontWeight: '700' }}>✓ Logged</span>}
+            </div>
 
             {/* Level selector */}
-            <div style={{ display: 'flex', gap: '8px' }}
+            <div style={{ display: 'flex', gap: '8px' }}>
                 {[1, 2, 3, 4, 5].map(level => {
                     const m = LEVEL_LABELS[level];
                     const isSelected = selectedLevel === level;
@@ -100,34 +100,34 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                                 transform: isSelected ? 'scale(1.08)' : 'scale(1)',
                                 opacity: isPastView && !isSelected ? 0.4 : 1,
                             }}
-                        
-                            <span style={{ fontSize: '20px' }}>{m!.emoji}</span
-                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m!.label}</span
-                        </button
+                        >
+                            <span style={{ fontSize: '20px' }}>{m!.emoji}</span>
+                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m!.label}</span>
+                        </button>
                     );
                 })}
-            </div
+            </div>
 
             {/* Description */}
             {meta && (
-                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0, fontStyle: 'italic' }}
+                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0, fontStyle: 'italic' }}>
                     {meta.desc}
-                </p
+                </p>
             )}
 
             {/* Notes */}
             {selectedLevel && (
-                <div style={{ display: 'flex', gap: '8px' }}
+                <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                         value={notes}
                         onChange={e => setNotes(e.target.value)}
                         onBlur={() => !isPastView && selectedLevel && handleSave(selectedLevel)}
-                        placeholder={isPastView ? "Viewing historical context" : "Add context (optional)\u2026"}
+                        placeholder={isPastView ? "Viewing historical context" : "Add context (optional)..."}
                         disabled={isPastView}
                         style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', opacity: isPastView ? 0.7 : 1 }}
-                    /
-                </div
+                    />
+                </div>
             )}
-        </div
+        </div>
     );
 }

@@ -31,42 +31,42 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     const achievements: Achievement[] = [
         {
             id: 'Sanctuary Seeker',
-            title: t('achievements.sanctuarySeeker'),
+            title: t('achievements.sanctuarySeeker', 'Sanctuary Seeker'),
             description: 'Visit all 4 main sections of the app',
             icon: Compass,
             unlocked: unlockedBadges.includes('Sanctuary Seeker'),
         },
         {
             id: 'Early Riser',
-            title: t('achievements.earlyRiser'),
+            title: t('achievements.earlyRiser', 'Early Riser'),
             description: 'Log mood or attendance before 8 AM',
             icon: Clock,
             unlocked: unlockedBadges.includes('Early Riser'),
         },
         {
             id: 'Energy Master',
-            title: t('achievements.energyMaster'),
+            title: t('achievements.energyMaster', 'Energy Master'),
             description: 'Log energy levels 3 days in a row',
             icon: Zap,
             unlocked: unlockedBadges.includes('Energy Master'),
         },
         {
             id: 'Community Builder',
-            title: t('achievements.communityBuilder'),
+            title: t('achievements.communityBuilder', 'Community Builder'),
             description: 'Join your first group or post an announcement',
             icon: Users,
             unlocked: unlockedBadges.includes('Community Builder'),
         },
         {
             id: 'Wisdom Collector',
-            title: t('achievements.wisdomCollector'),
+            title: t('achievements.wisdomCollector', 'Wisdom Collector'),
             description: 'Save 5 items to your personal library',
             icon: BookOpen,
             unlocked: unlockedBadges.includes('Wisdom Collector'),
         },
         {
             id: 'QR Hunter',
-            title: t('achievements.qrHunter'),
+            title: t('achievements.qrHunter', 'QR Hunter'),
             description: 'Scan your first QR code',
             icon: QrCode,
             unlocked: unlockedBadges.includes('QR Hunter'),
@@ -76,15 +76,15 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     const AchievementItem = ({ achievement }: { achievement: Achievement }) => {
         const Icon = achievement.icon;
         return (
-            <VStack>
+            <VStack
                 alignItems="center"
                 space="xs"
                 style={[
                     styles.itemContainer,
                     !achievement.unlocked && { opacity: 0.4 }
                 ]}
-            
-                <Box>
+            >
+                <Box
                     style={{
                         padding: Theme.spacing.md,
                         backgroundColor: achievement.unlocked
@@ -94,19 +94,19 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                         borderWidth: achievement.unlocked ? 1 : 0,
                         borderColor: `${colors.action}40`,
                     }}
-                
-                    <Icon>
+                >
+                    <Icon
                         size={24}
                         color={achievement.unlocked ? colors.action : colors.textTertiary}
-                    /
+                    />
                 </Box>
-                <Text>
+                <Text
                     size="xs"
                     bold={achievement.unlocked}
                     textAlign="center"
                     color={achievement.unlocked ? colors.text : colors.textTertiary}
                     numberOfLines={1}
-                
+                >
                     {achievement.title}
                 </Text>
             </VStack>
@@ -115,27 +115,21 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
 
     return (
         <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
-            <Box>
+            <Box
                 sx={{
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.generous,
                     padding: Theme.spacing.xl,
                     borderWidth: 1,
                     borderColor: colors.border,
-                    shadowColor: colors.glow,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 15,
-                    elevation: 5,
                 }}
-            
-                <Heading>
+            >
+                <Heading
                     color={colors.textSecondary as any}
                     size="sm"
-                    mt={Theme.spacing.sm}
-                    mb={Theme.spacing.md}
-                
-                    {t('achievements.title')}
+                    sx={{ mt: Theme.spacing.sm, mb: Theme.spacing.md }}
+                >
+                    {t('achievements.title', 'Achievements')}
                 </Heading>
                 <HStack style={styles.galleryGrid}>
                     {achievements.map((item) => (
@@ -158,9 +152,5 @@ const styles = StyleSheet.create({
         width: '28%',
         alignItems: 'center',
         marginBottom: Theme.spacing.xs,
-    },
-    unlockedIcon: {
-        borderWidth: 1,
-        borderColor: `${Theme.colors.sanctuarySaffron}40`, // sanctuarySaffron at ~25% opacity
     }
 });

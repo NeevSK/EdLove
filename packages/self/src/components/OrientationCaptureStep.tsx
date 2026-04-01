@@ -205,10 +205,9 @@ export const OrientationCaptureStep = ({
 
     return (
         <VStack style={{ flex: 1 }} space="md">
-            {/* Progress dots */}>
             <HStack space="xs" justifyContent="center" style={{ paddingTop: Theme.spacing.md }}>
                 {Array.from({ length: totalSteps }).map((_, i) => (
-                    <Box>
+                    <Box
                         key={i}
                         style={{
                             width: i === currentStep ? 18 : 6,
@@ -216,20 +215,21 @@ export const OrientationCaptureStep = ({
                             borderRadius: 3,
                             backgroundColor: i === currentStep
                                 ? Theme.colors.sanctuarySaffron
-                                : i < currentStep ? colors.action : colors.border,>
+                                : i < currentStep ? colors.action : colors.border,
                         }}
-                    /
-                >))}
+                    />
+                ))}
             </HStack>
 
-            <ScrollView>
+            <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ padding: Theme.spacing.lg }}
-                showsVerticalScrollIndicator={false}>
+                showsVerticalScrollIndicator={false}
+            >
             
                 {/* Header */}
                 <VStack space="xs" style={{ marginBottom: Theme.spacing.lg }}>
-                    <Text>
+                    <Text
                         style={{
                             fontSize: 11,
                             fontWeight: '700',
@@ -237,18 +237,18 @@ export const OrientationCaptureStep = ({
                             color: Theme.colors.sanctuarySaffron,
                             textTransform: 'uppercase',
                         }}
-                    
+                    >
                         {`${questionIndex + 1} of ${QUESTIONS.length}`}
                     </Text>
-                    <Heading>
+                    <Heading
                         size="lg"
                         color={colors.text}
                         style={{ lineHeight: 28 }}
-                    
+                    >
                         {question?.situation}
                     </Heading>
                     <Text color={colors.textSecondary} size="sm">
-                        {question?.prompt}>
+                        {question?.prompt}
                     </Text>
                 </VStack>
 
@@ -257,7 +257,7 @@ export const OrientationCaptureStep = ({
                     {question?.options.map((opt, i) => {
                         const isSelected = selected === i;
                         return (
-                            <Pressable>
+                            <Pressable
                                 key={i}
                                 onPress={() => handleSelect(i)}
                                 style={[
@@ -271,10 +271,10 @@ export const OrientationCaptureStep = ({
                                             : colors.border,
                                     },
                                 ]}
-                            
+                            >
                                 <HStack space="md" alignItems="center">
-                                    <Text style={{ fontSize: 28 }}>{opt.emoji}</Text
-                                    ><Text
+                                    <Text style={{ fontSize: 28 }}>{opt.emoji}</Text>
+                                    <Text
                                         style={{
                                             flex: 1,
                                             fontSize: Theme.typography.fontSize.sm,
@@ -282,7 +282,7 @@ export const OrientationCaptureStep = ({
                                             color: isSelected ? colors.text : colors.textSecondary,
                                             fontWeight: isSelected ? '600' : '400',
                                         }}
-                                    
+                                    >
                                         {opt.label}
                                     </Text>
                                 </HStack>
@@ -292,7 +292,7 @@ export const OrientationCaptureStep = ({
                 </VStack>
 
                 {/* Privacy note */}
-                <Text>
+                <Text
                     style={{
                         marginTop: Theme.spacing.lg,
                         fontSize: Theme.typography.fontSize.xs,
@@ -300,21 +300,21 @@ export const OrientationCaptureStep = ({
                         textAlign: 'center',
                         lineHeight: 16,
                     }}
-                
-                    \uD83D\uDD12 Your answers are private. They help the app feel more like you \u2014 we never label or categorize you.
+                >
+                    🔒 Your answers are private. They help the app feel more like you — we never label or categorize you.
                 </Text>
             </ScrollView>
 
             {/* Footer actions */}
-            <HStack>
+            <HStack
                 space="md"
                 style={{
                     paddingHorizontal: Theme.spacing.lg,
                     paddingBottom: Theme.spacing.xl,
                     paddingTop: Theme.spacing.sm,
                 }}
-            
-                <Pressable>
+            >
+                <Pressable
                     onPress={handleBack}
                     style={{
                         flex: 1,
@@ -327,11 +327,11 @@ export const OrientationCaptureStep = ({
                         flexDirection: 'row',
                         gap: 4,
                     }}
-                
-                    <ChevronLeft color={colors.textSecondary} size={16} /
-                    ><Text color={colors.textSecondary} size="sm">Back</Text
-                ></Pressable>
-                <Pressable>
+                >
+                    <ChevronLeft color={colors.textSecondary} size={16} />
+                    <Text color={colors.textSecondary} size="sm">Back</Text>
+                </Pressable>
+                <Pressable
                     onPress={onSkip}
                     style={{
                         flex: 2,
@@ -339,9 +339,9 @@ export const OrientationCaptureStep = ({
                         borderRadius: Theme.corners.comfortable,
                         alignItems: 'center',
                     }}
-                
-                    <Text color={colors.textTertiary} size="sm">Skip for now</Text
-                ></Pressable>
+                >
+                    <Text color={colors.textTertiary} size="sm">Skip for now</Text>
+                </Pressable>
             </HStack>
         </VStack>
     );

@@ -1,3 +1,4 @@
+import React from 'react';
 import { usePermissions } from '@repo/core';
 import { WebScreenHeader } from '@repo/ui';
 import { 
@@ -9,7 +10,7 @@ import {
 } from './self';
 
 /**
- * SelfScreenWeb  declarative entry point for the user's sanctuary on Web.
+ * SelfScreenWeb declarative entry point for the user's sanctuary on Web.
  * Now capability-driven (POA) instead of registry-intent based.
  */
 export default function SelfScreenWeb() {
@@ -40,10 +41,17 @@ export default function SelfScreenWeb() {
   const { title, note } = getHeaderDetails();
 
   return (
-    <div className="sanctuary-screen"      <div className="sanctuary-container"        <WebScreenHeader>
+    <div className="sanctuary-screen">
+      <div className="sanctuary-container">
+        <WebScreenHeader
           title={title}
           note={note}
           showPersonalizedGreeting
-        /        <div style={{ marginTop: 24 }}            {renderDashboard()}
-        </div      ></div    </div  );
+        />
+        <div style={{ marginTop: 24 }}>
+          {renderDashboard()}
+        </div>
+      </div>
+    </div>
+  );
 }

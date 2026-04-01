@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Rocket } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
 
 /**
  * GenesisNode
@@ -19,7 +18,7 @@ export const GenesisNode: React.FC<{ timestamp: string }> = ({ timestamp }) => {
             </View>
 
             <View style={styles.content}>
-                <Text style={styles.title}>JOURNEY STARTS HERE</Text
+                <Text style={styles.title}>JOURNEY STARTS HERE</Text>
                 <Text style={styles.subtitle}>
                     {new Date(timestamp).toLocaleDateString(undefined, { 
                         month: 'long', 

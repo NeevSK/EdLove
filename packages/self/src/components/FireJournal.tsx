@@ -203,8 +203,8 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                 <SkeletonCard height={40} />
                 <SkeletonCard height={200} />
                 <HStack space="md" sx={{ justifyContent: 'flex-end' }}>
-                    <SkeletonLoader width={48} height={48} sx={{ borderRadius: 24 }} />
-                    <SkeletonLoader width={100} height={48} sx={{ borderRadius: 24 }} />
+                    <SkeletonLoader width={48} height={48} borderRadius={24} />
+                    <SkeletonLoader width={100} height={48} borderRadius={24} />
                 </HStack>
             </VStack>
         );

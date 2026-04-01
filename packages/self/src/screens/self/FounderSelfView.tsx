@@ -72,7 +72,7 @@ export default function FounderSelfView() {
         <VStack space="lg" sx={{ p: 20 }}>
             <HStack justifyContent="flex-end" space="xs">
                 {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box >
+                    <Box
                         key={scale}
                         sx={{ 
                             bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
@@ -80,10 +80,10 @@ export default function FounderSelfView() {
                             py: 4, 
                             borderRadius: 12 
                         }}
-                    
-                        <Pressable onPress={() => setScale(scale)}
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text
-                        ></Pressable>
+                    >
+                        <Pressable onPress={() => setScale(scale)}>
+                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
+                        </Pressable>
                     </Box>
                 ))}
             </HStack>
@@ -107,7 +107,7 @@ export default function FounderSelfView() {
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            <BaseSelfView/>
+            <BaseSelfView
                 perspective="founder"
                 description={t('self.founderDescription', 'The steady eye of the hurricane - a space for vision and personal pulse.')}
                 domains={[
@@ -125,23 +125,23 @@ export default function FounderSelfView() {
                             {
                                 id: 'pulse',
                                 label: 'Ecosystem Dash',
-                                content: <PulseDashboard onEnterDetails={() => { }} /
+                                content: <PulseDashboard onEnterDetails={() => { }} />
                             },
                             {
                                 id: 'voice',
                                 label: 'Voice Journal',
-                                content: <VoiceJournaling userId={userId ?? undefined} /
-                            >},
+                                content: <VoiceJournaling userId={userId ?? undefined} />
+                            },
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} /
-                            >},
+                                content: <MoodLotus userId={userId ?? undefined} />
+                            },
                             {
                                 id: 'wisdom',
                                 label: 'Wisdom Seeds',
-                                content: <WisdomSeeds userId={userId ?? undefined} /
-                            >}
+                                content: <WisdomSeeds userId={userId ?? undefined} />
+                            }
                         ]
                     },
                     {
@@ -153,7 +153,7 @@ export default function FounderSelfView() {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
                                 content: (
-                                    <MoodPickerCard/>
+                                    <MoodPickerCard
                                         isOpen={isMoodPickerOpen}
                                         onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
                                         onSelect={handleMoodSelect}
@@ -161,7 +161,7 @@ export default function FounderSelfView() {
                                         latestMood={latestMood}
                                         isLoading={loadingMoods}
                                         accent="dark"
-                                    /
+                                    />
                                 )
                             },
                             {
@@ -169,10 +169,10 @@ export default function FounderSelfView() {
                                 label: 'Energy Rhythm',
                                 content: (
                                     <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                                        <EnergyBarChart/>
+                                        <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
-                                        /
+                                        />
                                     </Box>
                                 )
                             }
@@ -185,13 +185,13 @@ export default function FounderSelfView() {
                         <ImpactRipplesCard ripples={ripples} />
                     </VStack>
                 }
-            /
+            />
 
 
-            <WelcomeModal/>
+            <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            /
+            />
         </ScreenWrapper>
     );
 }

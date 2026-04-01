@@ -67,7 +67,7 @@ export function useStudentGoals(userId?: string) {
 
     const updateGoal = useCallback(async (
         goalId: string,
-        updates: Partial<Pick<Goal, 'text' | 'progress' | 'is_completed'>    ) => {
+        updates: Partial<Pick<Goal, 'text' | 'progress' | 'is_completed'>>) => {
         await updateStudentGoal(goalId, updates);
         const nextGoals = goals.map((goal) => (
             goal.id === goalId ? { ...goal, ...updates } : goal

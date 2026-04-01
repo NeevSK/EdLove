@@ -90,19 +90,31 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
     if (completed) {
         return (
-            <div style={{ padding: '28px', background: 'rgba(139,92,246,0.06)', borderRadius: '16px', textAlign: 'center', border: '1px solid rgba(139,92,246,0.15)' }}                <div style={{ fontSize: '48px', marginBottom: '12px' }}><</div                <div style={{ fontSize: '16px', fontWeight: '800', marginBottom: '8px' }}>Rest well.</div                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}                    Your wind-down is complete. You have tended to your inner garden for today.
-                </p            </div        );
+            <div style={{ padding: '28px', background: 'rgba(139,92,246,0.06)', borderRadius: '16px', textAlign: 'center', border: '1px solid rgba(139,92,246,0.15)' }}>
+                <div style={{ fontSize: '48px', marginBottom: '12px' }}>✨</div>
+                <div style={{ fontSize: '16px', fontWeight: '800', marginBottom: '8px' }}>Rest well.</div>
+                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
+                    Your wind-down is complete. You have tended to your inner garden for today.
+                </p>
+            </div>
+        );
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}            <div style={{ display: 'flex', gap: '6px' }}                {STEPS.map((item, index) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', gap: '6px' }}>
+                {STEPS.map((item, index) => (
                     <div
                         key={item.id}
                         style={{ flex: 1, height: '3px', borderRadius: '2px', background: index <= step ? '#8B5CF6' : 'var(--border)', transition: 'background 0.3s' }}
-                    /                ))}
-            </div
-            <div style={{ padding: '28px', background: 'var(--background-alt)', borderRadius: '16px' }}                <div style={{ fontSize: '18px', fontWeight: '800', marginBottom: '10px' }}>{current.title}</div                <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', lineHeight: '1.6', marginBottom: current.hasInput ? '16px' : '24px' }}                    {current.description}
-                </p
+                    />
+                ))}
+            </div>
+            <div style={{ padding: '28px', background: 'var(--background-alt)', borderRadius: '16px' }}>
+                <div style={{ fontSize: '18px', fontWeight: '800', marginBottom: '10px' }}>{current.title}</div>
+                <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', lineHeight: '1.6', marginBottom: current.hasInput ? '16px' : '24px' }}>
+                    {current.description}
+                </p>
                 {current.hasInput && (
                     <textarea
                         autoFocus
@@ -111,23 +123,29 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                         placeholder={current.placeholder}
                         rows={3}
                         style={{ width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'white', color: 'var(--ink)', fontSize: '14px', fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', marginBottom: '16px', boxSizing: 'border-box' }}
-                    /                )}
+                    />
+                )}
 
                 <button
                     onClick={handleNext}
                     disabled={saving}
                     style={{ padding: '11px 24px', borderRadius: '10px', background: '#8B5CF6', color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', cursor: saving ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                                    {saving ? 'Saving...' : isLast ? (
-                        <                            <CheckCircle2 size={16} color="#fff" /> Complete Ritual
-                        </                    ) : (
+                >    {saving ? 'Saving...' : isLast ? (
+                        <>
+                            <CheckCircle2 size={16} color="#fff" /> Complete Ritual
+                        </>
+                    ) : (
                         `Next -> ${nextStepLabel}`
                     )}
-                </button            </div
+                </button>
+            </div>
             {step > 0 && (
                 <button
                     onClick={() => setStep((value) => value - 1)}
                     style={{ background: 'none', border: 'none', color: 'var(--ink-ghost)', fontSize: '12px', cursor: 'pointer', alignSelf: 'flex-start' }}
-                                    {'<- Back'}
-                </button            )}
-        </div    );
+                >                    {'<- Back'}
+                </button>
+            )}
+        </div>
+    );
 }
