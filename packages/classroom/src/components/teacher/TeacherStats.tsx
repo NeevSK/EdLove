@@ -1,5 +1,5 @@
 import React from 'react';
-import { Theme, useTheme } from '@repo/ui';
+import { Box, Text, Theme, useTheme } from '@repo/ui';
 
 interface TeacherStatCardProps {
   label: string;
@@ -11,25 +11,50 @@ export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({ label, value, 
   const theme = useTheme();
 
   return (
-    <div
-      className="rounded-[24px] p-5"
-      style={{
+    <Box
+      sx={{
+        padding: Theme.spacing.lg,
+        borderRadius: 24,
         background: 'linear-gradient(180deg, rgba(250, 247, 237, 0.94) 0%, rgba(245, 237, 214, 0.9) 100%)',
         border: `1px solid ${theme.glass.surface.border}`,
         boxShadow: '0 16px 30px rgba(107, 100, 128, 0.08)',
       }}
-          <div className="flex items-start justify-between gap-3"        <span
-          className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-          style={{ color: theme.text.secondary }}
-                  {label}
-        </span        <span
-          className="h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: accent || theme.accent.action, opacity: 0.9 }}
-        /      </div      <div
-        className="mt-5 text-3xl font-bold"
-        style={{ color: theme.text.primary, lineHeight: 1 }}
-              {value}
-      </div    </div  );
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <Text
+          sx={{
+            fontSize: 11,
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: theme.text.secondary,
+          }}
+        >
+          {label}
+        </Text>
+        <Box
+          sx={{
+            height: 10,
+            width: 10,
+            borderRadius: Theme.corners.full,
+            backgroundColor: accent || theme.accent.action,
+            opacity: 0.9,
+          }}
+        />
+      </Box>
+      <Text
+        sx={{
+          marginTop: Theme.spacing.md,
+          fontSize: Theme.typography.fontSize['3xl'],
+          fontWeight: '700',
+          color: theme.text.primary,
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </Text>
+    </Box>
+  );
 };
 
 interface TeacherStatsProps {
@@ -50,7 +75,20 @@ export const TeacherStats: React.FC<TeacherStatsProps> = ({ stats }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"      {statItems.map((item) => (
-        <TeacherStatCard key={item.label} {...item} /      ))}
-    </div  );
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          base: 'repeat(1, 1fr)',
+          md: 'repeat(2, 1fr)',
+          xl: 'repeat(4, 1fr)',
+        },
+        gap: 16,
+      }}
+    >
+      {statItems.map((item) => (
+        <TeacherStatCard key={item.label} {...item} />
+      ))}
+    </Box>
+  );
 };

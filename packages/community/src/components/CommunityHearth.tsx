@@ -20,20 +20,7 @@ import {
 import { Star, Sparkles, Megaphone, Users, Heart } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-interface SanctuaryManifesto {
-    id: string;
-    title: string;
-    content: string;
-    endorserCount: number;
-    authorName: string;
-}
-
-interface Post {
-    id: string;
-    content: string;
-    authorName: string;
-    timestamp: string;
-}
+import { SanctuaryManifesto, CommunityPost as Post } from '../types/Community';
 
 interface CommunityHearthProps {
     manifestos?: SanctuaryManifesto[];
@@ -96,7 +83,7 @@ export default function CommunityHearth({
                     <HStack space="xs" sx={{ alignItems: 'center' }}>
                         <Users size={14} color={colors.textTertiary} />
                         <Text size="xs" color={colors.textTertiary}>
-                            {item.endorserCount} {t('community.endorsers') || 'Endorsers'}
+                            {item.endorsement_count || 0} {t('community.endorsers') || 'Endorsers'}
                         </Text>
                     </HStack>
                     

@@ -55,14 +55,15 @@ export interface EducationalServices {
         getAll(classroomId: string): Promise<ClassroomStudent[]>;
         enroll(classroomId: string, studentId: string): Promise<ClassroomStudent>;
         remove(classroomId: string, studentId: string): Promise<void>;
+        getTeacherStats(teacherId: string): Promise<any>;
     };
     classroomStudents: {
         getAll(classroomId: string): Promise<EnrollmentRecord[]>;
-        addShadowStudent(classroomId: string, fullName: string, rollNumber?: number, notes?: string): Promise<EnrollmentRecord>;
+        addShadowStudent(classroomId: string, fullName: string, rollNumber?: string, notes?: string): Promise<EnrollmentRecord>;
         claimStudent(inviteCode: string): Promise<EnrollmentRecord>;
-        add(classroomId: string, studentId: string, rollNumber?: number, notes?: string): Promise<EnrollmentRecord>;
-        updateById(id: string, updates: { roll_number?: number; notes?: string }): Promise<EnrollmentRecord>;
-        update(classroomId: string, studentId: string, updates: { roll_number?: number; notes?: string }): Promise<EnrollmentRecord>;
+        add(classroomId: string, studentId: string, rollNumber?: string, notes?: string): Promise<EnrollmentRecord>;
+        updateById(id: string, updates: { roll_number?: string; notes?: string }): Promise<EnrollmentRecord>;
+        update(classroomId: string, studentId: string, updates: { roll_number?: string; notes?: string }): Promise<EnrollmentRecord>;
         remove(id: string): Promise<void>;
     };
     lessonMaterials: {
@@ -175,11 +176,6 @@ export const createEducationalServices = (
             }),
         delete: (id) => repository.deleteClassroomGroup(id),
     },
-    students: {
-        getAll: (classroomId) => repository.getSimpleStudents(classroomId),
-        enroll: (classroomId, studentId) => repository.enrollStudent(classroomId, studentId),
-        remove: (classroomId, studentId) => repository.removeStudent(classroomId, studentId),
-    },
     classroomStudents: {
         getAll: (classroomId) => repository.getEnrollmentRecords(classroomId),
         addShadowStudent: (classroomId, fullName, rollNumber, notes) => repository.addShadowStudent(classroomId, fullName, rollNumber, notes),
@@ -192,6 +188,12 @@ export const createEducationalServices = (
         updateById: (id, updates) => repository.updateEnrollmentRecordById(id, updates),
         update: (classroomId, studentId, updates) => repository.updateEnrollmentRecord(classroomId, studentId, updates),
         remove: (id) => repository.deleteEnrollmentRecord(id),
+    },
+    students: {
+        getAll: (classroomId) => repository.getSimpleStudents(classroomId),
+        enroll: (classroomId, studentId) => repository.enrollStudent(classroomId, studentId),
+        remove: (classroomId, studentId) => repository.removeStudent(classroomId, studentId),
+        getTeacherStats: (teacherId) => repository.getTeacherStats(teacherId),
     },
     lessonMaterials: {
         getAll: (classroomId) => repository.getMaterials(classroomId),

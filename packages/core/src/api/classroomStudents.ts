@@ -16,7 +16,7 @@ export const classroomStudentsAPI = {
     async addShadowStudent(
         classroomId: string,
         fullName: string,
-        rollNumber?: number,
+        rollNumber?: string,
         notes?: string
     ): Promise<EnrollmentRecord> {
         return educationalServices.classroomStudents.addShadowStudent(classroomId, fullName, rollNumber, notes);
@@ -35,7 +35,7 @@ export const classroomStudentsAPI = {
     async add(
         classroomId: string,
         studentId: string,
-        rollNumber?: number,
+        rollNumber?: string,
         notes?: string
     ): Promise<EnrollmentRecord> {
         return educationalServices.classroomStudents.add(classroomId, studentId, rollNumber, notes);
@@ -46,7 +46,7 @@ export const classroomStudentsAPI = {
      */
     async updateById(
         id: string,
-        updates: { roll_number?: number; notes?: string }
+        updates: { roll_number?: string; notes?: string }
     ): Promise<EnrollmentRecord> {
         return educationalServices.classroomStudents.updateById(id, updates);
     },
@@ -58,7 +58,7 @@ export const classroomStudentsAPI = {
     async update(
         classroomId: string,
         studentId: string,
-        updates: { roll_number?: number; notes?: string }
+        updates: { roll_number?: string; notes?: string }
     ): Promise<EnrollmentRecord> {
         return educationalServices.classroomStudents.update(classroomId, studentId, updates);
     },

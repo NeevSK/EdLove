@@ -96,9 +96,9 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
         return (
             <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
                 <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}>
-                    Unable to load video. Please check the URL and try again.>
+                    Unable to load video. Please check the URL and try again.
                 </Text>
-                <SanctuaryButton onPress={() => navigation.goBack()} leftIcon={X}
+                <SanctuaryButton onPress={() => navigation.goBack()} leftIcon={X}>
                     Go Back
                 </SanctuaryButton>
             </Box>
@@ -107,15 +107,15 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
     return (
         <Box sx={{ flex: 1, backgroundColor: 'black' }}>
-            {/* Browser-native <video> element  full codec + PiP support */}
-            {/* @ts-ignore  Pressable style={absoluteFill} type mismatch on web */}
-            <Pressable>
+            {/* Browser-native <video> element - full codec + PiP support */}
+            {/* @ts-ignore - Pressable style={absoluteFill} type mismatch on web */}
+            <Pressable
                 onPress={() => { setShowControls(c => !c); resetHideTimer(); }}
                 style={StyleSheet.absoluteFill}
                 accessibilityLabel="Toggle controls"
-            
-                {/* @ts-ignore  'video' is a valid DOM element in react-native-web */}
-                <video/>
+            >
+                {/* @ts-ignore - 'video' is a valid DOM element in react-native-web */}
+                <video
                     ref={videoRef}
                     src={url}
                     style={styles.video as any}
@@ -126,69 +126,69 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                     onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
                     onDurationChange={() => setDuration(videoRef.current?.duration ?? 0)}
                     onError={() => setHasError(true)}
-                /
-            ></Pressable>
+                />
+            </Pressable>
 
             {/* Overlay controls */}
             {showControls && (
                 <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="box-none">
-                    {/* Header */}>
+                    {/* Header */}
                     <View style={styles.header} pointerEvents="auto">
-                        <Pressable>
+                        <Pressable
                             onPress={() => navigation.goBack()}
                             accessibilityLabel="Close video"
                             style={styles.closeBtn}
-                        
-                            <X size={22} color="#fff" /
-                        ></Pressable>
+                        >
+                            <X size={22} color="#fff" />
+                        </Pressable>
                         <VStack sx={{ flex: 1 }}>
-                            <Text style={styles.titleText} numberOfLines={1}>{title}</Text
-                            >{creator ? <Text style={styles.creatorText}>{creator}</Text> : null}
+                            <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
+                            {creator ? <Text style={styles.creatorText}>{creator}</Text> : null}
                         </VStack>
-                        <Pressable>
+                        <Pressable
                             onPress={handleFullscreen}
                             accessibilityLabel="Enter fullscreen"
-                            style={styles.closeBtn}>
-                        
-                            <Maximize size={20} color="#fff" /
-                        ></Pressable>
+                            style={styles.closeBtn}
+                        >
+                            <Maximize size={20} color="#fff" />
+                        </Pressable>
                     </View>
 
                     {/* Playback buttons */}
                     <View style={styles.centerRow} pointerEvents="auto">
-                        <Pressable onPress={() => handleSeekBy(-10)} style={styles.controlBtn} accessibilityLabel="Rewind 10 seconds"
-                            <RotateCcw size={28} color="#fff" /
-                            ><Text style={styles.seekLabel}>10</Text
-                        ></Pressable>
+                        <Pressable onPress={() => handleSeekBy(-10)} style={styles.controlBtn} accessibilityLabel="Rewind 10 seconds">
+                            <RotateCcw size={28} color="#fff" />
+                            <Text style={styles.seekLabel}>10</Text>
+                        </Pressable>
                         <Pressable onPress={handlePlayPause} style={styles.playBtn} accessibilityLabel={isPlaying ? 'Pause' : 'Play'}>
                             {isPlaying
-                                ? <Pause size={36} color="#fff" fill="#fff" /
-                                >: <Play size={36} color="#fff" fill="#fff" />
-                            >}
+                                ? <Pause size={36} color="#fff" fill="#fff" />
+                                : <Play size={36} color="#fff" fill="#fff" />
+                            }
                         </Pressable>
-                        <Pressable onPress={() => handleSeekBy(10)} style={styles.controlBtn} accessibilityLabel="Skip 10 seconds"
-                            <RotateCw size={28} color="#fff" /
-                            ><Text style={styles.seekLabel}>10</Text
-                        ></Pressable>
+                        <Pressable onPress={() => handleSeekBy(10)} style={styles.controlBtn} accessibilityLabel="Skip 10 seconds">
+                            <RotateCw size={28} color="#fff" />
+                            <Text style={styles.seekLabel}>10</Text>
+                        </Pressable>
                     </View>
 
                     {/* Progress bar + timestamps */}
                     <View style={styles.footer} pointerEvents="auto">
-                        <Text style={styles.timeText}>{formatTimeSecs(currentTime)}</Text
-                        >{/* @ts-ignore  onClick on div in react-native-web */}
-                        <div>
+                        <Text style={styles.timeText}>{formatTimeSecs(currentTime)}</Text>
+                        {/* @ts-ignore - onClick on div in react-native-web */}
+                        <div
                             style={styles.progressTrack as any}
                             onClick={handleProgressClick}
                             role="slider"
                             aria-label="Video progress"
                             aria-valuenow={Math.round(progress)}
                             aria-valuemin={0}
-                            aria-valuemax={100}>
-                        
-                            <div style={{ ...styles.progressFill as any, width: `${progress}%` }} /
-                        ></div>
-                        <Text style={styles.timeText}>{formatTimeSecs(duration)}</Text
-                    ></View>
+                            aria-valuemax={100}
+                        >
+                            <div style={{ ...styles.progressFill as any, width: `${progress}%` }} />
+                        </div>
+                        <Text style={styles.timeText}>{formatTimeSecs(duration)}</Text>
+                    </View>
                 </View>
             )}
         </Box>

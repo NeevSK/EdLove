@@ -49,11 +49,15 @@ export function HeatmapChart({
   };
 
   return (
-    <Card style={styles.container}      {title && <Text style={styles.title}>{title}</Text>}
+    <Card style={styles.container}>
+      {title && <Text style={styles.title}>{title}</Text>}
       
-      <VStack space="sm"        {/* Heatmap Grid */}
-        <View style={styles.heatmapContainer}          {grid.map((row, y) => (
-            <HStack key={`row-${y}`} style={styles.row}              {row.map((cell, x) => (
+      <VStack space="sm">
+        {/* Heatmap Grid */}
+        <View style={styles.heatmapContainer}>
+          {grid.map((row, y) => (
+            <HStack key={`row-${y}`} style={styles.row}>
+              {row.map((cell, x) => (
                 <View
                   key={`cell-${x}-${y}`}
                   style={[
@@ -66,21 +70,39 @@ export function HeatmapChart({
                       borderColor: Theme.colors.border
                     }
                   ]}
-                                  {showLabels && cell.label && (
-                    <Text style={styles.cellLabel}                      {cell.label}
-                    </Text                  )}
-                </View              ))}
-            </HStack          ))}
-        </View
+                >
+                  {showLabels && cell.label && (
+                    <Text style={styles.cellLabel}>
+                      {cell.label}
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </HStack>
+          ))}
+        </View>
+        
         {/* Legend */}
         {showLegend && (
-          <View style={styles.legend}            <Text style={styles.legendTitle}>Intensity Scale</Text            <HStack style={styles.legendItems}              {colorScale.map((color, index) => (
-                <HStack key={index} style={styles.legendItem}                  <View 
+          <View style={styles.legend}>
+            <Text style={styles.legendTitle}>Intensity Scale</Text>
+            <HStack style={styles.legendItems}>
+              {colorScale.map((color, index) => (
+                <HStack key={index} style={styles.legendItem}>
+                  <View 
                     style={[styles.legendColor, { backgroundColor: color }]} 
-                  /                  <Text style={styles.legendLabel}                    {Math.round((index / (colorScale.length - 1)) * maxValue)}
-                  </Text                </HStack              ))}
-            </HStack          </View        )}
-      </VStack    </Card  );
+                  />
+                  <Text style={styles.legendLabel}>
+                    {Math.round((index / (colorScale.length - 1)) * maxValue)}
+                  </Text>
+                </HStack>
+              ))}
+            </HStack>
+          </View>
+        )}
+      </VStack>
+    </Card>
+  );
 }
 
 const styles = StyleSheet.create({

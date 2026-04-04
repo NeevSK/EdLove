@@ -31,21 +31,21 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
             <Text size="xs" bold color={Theme.colors.mistGray} px="$1" mb="$2" style={{ letterSpacing: 1 }}>
                 PINNED RESOURCES
             </Text>
-            <ScrollView>
+            <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 4 }}
                 accessibilityLabel="Pinned resources"
                 accessibilityRole="scrollbar"
-            
+            >
                 <HStack space="sm">
                     {resources.map((resource) => (
-                        <TouchableOpacity>
+                        <TouchableOpacity
                             key={resource.id}
                             onPress={() => onResourcePress?.(resource)}
                             activeOpacity={0.75}
-                        
-                            <Box>
+                        >
+                            <Box
                                 sx={{
                                     width: 140,
                                     backgroundColor: Theme.colors.shroud,
@@ -54,31 +54,31 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                                     borderWidth: 1,
                                     borderColor: Theme.colors.glass.dark.border,
                                 }}
-                            
+                            >
                                 <VStack space="xs">
                                     <HStack space="xs" alignItems="center">
                                         {getResourceIcon(resource.type)}
-                                        <Text>
+                                        <Text
                                             size="xs"
                                             color={Theme.colors.mistGray}
                                             style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
-                                        
+                                        >
                                             {resource.type}
                                         </Text>
                                     </HStack>
-                                    <Text>
+                                    <Text
                                         size="sm"
                                         bold
                                         color={Theme.colors.sacredWhite}
                                         numberOfLines={2}
-                                    
+                                    >
                                         {resource.title}
                                     </Text>
-                                    <Text>
+                                    <Text
                                         size="xs"
                                         color={Theme.colors.dimGray}
                                         numberOfLines={1}
-                                    
+                                    >
                                         {resource.subjects?.[0] || ''}
                                     </Text>
                                 </VStack>

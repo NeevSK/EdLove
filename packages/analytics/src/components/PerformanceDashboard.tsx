@@ -34,7 +34,7 @@ export function PerformanceDashboard({
   }));
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScrollView style={[styles.container, { backgroundColor: '#FFFFFF' }]}>
       <VStack space="md" sx={{ padding: Theme.spacing.md }}>
         {/* Header Card */}
         <Card style={styles.headerCard}>

@@ -75,23 +75,23 @@ export default function GuestConversionPrompt({
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalBackdrop />
-            ><ModalContent
+            <ModalContent
                 sx={{
                     backgroundColor: colors.primary,
                     borderRadius: Theme.corners.comfortable,
                     maxWidth: 400
                 }}
-            
+            >
                 <ModalHeader>
                     <ModalCloseButton>
-                        ><CloseIcon color={colors.textSecondary} /
-                    ></ModalCloseButton>
+                        <CloseIcon color={colors.textSecondary} />
+                    </ModalCloseButton>
                 </ModalHeader>
 
                 <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
                     <VStack space="lg" alignItems="center">
                         {/* Icon */}
-                        <Box>
+                        <Box
                             sx={{
                                 width: 80,
                                 height: 80,
@@ -105,31 +105,34 @@ export default function GuestConversionPrompt({
                                 shadowRadius: 8,
                                 elevation: 4
                             }}
-                        
-                            <IconComponent size={40} color={Theme.colors.sanctuarySaffron} /
-                        ></Box>
+                        >
+                            <IconComponent size={40} color={Theme.colors.sanctuarySaffron} />
+                        </Box>
 
                         {/* Title */}
-                        <Heading>
+                        <Heading
                             size="xl"
-                            color={Theme.colors.sanctuarySaffron}
-                            textAlign="center">
-                        
+                            sx={{
+                                color: Theme.colors.sanctuarySaffron,
+                                textAlign: 'center'
+                            }}
+                        >
                             {t(config.title)}
                         </Heading>
 
                         {/* Description */}
-                        <Text>
-                            size="md"
-                            color={colors.textSecondary}
-                            textAlign="center">
-                        
+                        <Text
+                            sx={{
+                                color: colors.textSecondary,
+                                textAlign: 'center'
+                            }}
+                        >
                             {t(config.description)}
                         </Text>
 
                         {/* Local Data Count */}
                         {itemCount !== undefined && itemCount > 0 && (
-                            <Box>
+                            <Box
                                 sx={{
                                     p: "$3",
                                     backgroundColor: colors.secondary,
@@ -137,15 +140,15 @@ export default function GuestConversionPrompt({
                                     borderLeftWidth: 4,
                                     borderLeftColor: Theme.colors.sageGreen
                                 }}
-                            
-                                <Text size="sm" color={colors.text} textAlign="center"
-                                    \uD83D\uDCBE {t('guest.dataSavedLocally', { count: itemCount })}>
+                            >
+                                <Text sx={{ color: colors.text, textAlign: 'center' }}>
+                                    💾 {t('guest.dataSavedLocally', { count: itemCount })}
                                 </Text>
                             </Box>
                         )}
 
                         {/* Benefit */}
-                        <Box>
+                        <Box
                             sx={{
                                 p: "$4",
                                 backgroundColor: `${Theme.colors.amberGlow}1A`, // 10% Opacity
@@ -153,39 +156,41 @@ export default function GuestConversionPrompt({
                                 borderWidth: 1,
                                 borderColor: Theme.colors.amberGlow
                             }}
-                        
-                            <Text>
-                                size="sm"
-                                color={Theme.colors.amberGlow}
-                                textAlign="center"
-                                fontWeight="$semibold"
-                            
-                                \u2728 {t(config.benefit)}>
+                        >
+                            <Text
+                                sx={{
+                                    color: Theme.colors.amberGlow,
+                                    textAlign: 'center',
+                                    fontWeight: '600'
+                                }}
+                            >
+                                ✨ {t(config.benefit)}
                             </Text>
                         </Box>
 
                         {/* Actions */}
                         <VStack space="sm" sx={{ width: '100%' }}>
-                            <Button>
-                                size="lg"
+                            <Button
                                 onPress={onCreateAccount}
                                 sx={{
                                     backgroundColor: Theme.colors.sanctuarySaffron,
-                                    borderRadius: Theme.corners.comfortable
+                                    borderRadius: Theme.corners.comfortable,
+                                    height: 48
                                 }}
-                            
-                                <ButtonText color={Theme.colors.sacredWhite}>
-                                    {t('guest.createAccount')}>
+                            >
+                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                                    {t('guest.createAccount')}
                                 </ButtonText>
                             </Button>
 
-                            <Button>
-                                size="md"
-                                variant="link"
-                                onPress={onClose}>
-                            
-                                <ButtonText color={colors.textSecondary}>
-                                    {t('guest.continueBrowsing')}>
+                            <Button
+                                variant="outline"
+                                action="secondary"
+                                onPress={onClose}
+                                sx={{ borderTransparent: true }}
+                            >
+                                <ButtonText sx={{ color: colors.textSecondary }}>
+                                    {t('guest.continueBrowsing')}
                                 </ButtonText>
                             </Button>
                         </VStack>

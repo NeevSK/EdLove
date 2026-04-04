@@ -1,20 +1,53 @@
 import React from 'react';
 import { Target } from 'lucide-react-native';
-import { SkeletonCard } from '@repo/ui';
+import { Box, Text, Button, SkeletonCard, Theme, ButtonText } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 
 export const StudentGoals = ({ goals, loading }: { goals: any[], loading: boolean }) => {
     const navigation = useNavigation<any>();
 
     return (
-        <div className="sanctuary-card" style={{ padding: '24px' }}            <h3 style={{ fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}                <Target size={14} /> Active Goals
-            </h3            {loading ? (
-                <SkeletonCard /            ) : goals.length === 0 ? (
-                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}                    No goals set yet. Start your growth journey.
-                </p            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}                    {goals.slice(0, 3).map((goal: any) => (
-                        <div key={goal.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}                            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{goal.text}</div                            <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}                                <div style={{ width: `${goal.progress ?? 0}%`, height: '100%', background: 'var(--water)', borderRadius: '3px' }} /                            </div                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textAlign: 'right' }}>{goal.progress ?? 0}%</div                        </div                    ))}
-                </div            )}
-            <button className="secondary-button" style={{ width: '100%', marginTop: '20px', fontSize: '12px' }} onClick={() => navigation.navigate('Main', { screen: 'Self' })}                View All Goals \u2192
-            </button        </div    );
+        <Box sx={{ padding: 24, backgroundColor: 'var(--glass-bg)', borderRadius: 16 }}>
+            <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                <Target size={14} color="var(--ink-ghost)" />
+                <Text sx={{ fontSize: 14, fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: 1 }}>
+                    Active Goals
+                </Text>
+            </Box>
+
+            {loading ? (
+                <SkeletonCard />
+            ) : goals.length === 0 ? (
+                <Text sx={{ fontSize: 13, color: 'var(--ink-ghost)', margin: 0 }}>
+                    No goals set yet. Start your growth journey.
+                </Text>
+            ) : (
+                <Box sx={{ flexDirection: 'column', gap: 16 }}>
+                    {goals.slice(0, 3).map((goal: any) => (
+                        <Box key={goal.id} sx={{ flexDirection: 'column', gap: 8 }}>
+                            <Text sx={{ fontSize: 13, fontWeight: '700', color: 'var(--ink)' }}>
+                                {goal.text}
+                            </Text>
+                            <Box sx={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
+                                <Box sx={{ width: `${goal.progress ?? 0}%`, height: '100%', background: 'var(--water)', borderRadius: 3 }} />
+                            </Box>
+                            <Text sx={{ fontSize: 11, color: 'var(--ink-ghost)', textAlign: 'right' }}>
+                                {goal.progress ?? 0}%
+                            </Text>
+                        </Box>
+                    ))}
+                </Box>
+            )}
+
+            <Button
+                variant="outline"
+                sx={{ width: '100%', marginTop: 20 }}
+                onPress={() => navigation.navigate('Main', { screen: 'Self' })}
+            >
+                <ButtonText sx={{ fontSize: 12 }}>
+                    View All Goals →
+                </ButtonText>
+            </Button>
+        </Box>
+    );
 };

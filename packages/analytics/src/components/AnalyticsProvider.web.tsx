@@ -20,6 +20,8 @@ export function AnalyticsProvider({ children, apiKey, options }: Props) {
     }, [apiKey, options]);
 
     return (
-        <ActivityPulseProvider            {children}
-        </ActivityPulseProvider    );
+        <ActivityPulseProvider>
+            {children}
+        </ActivityPulseProvider>
+    );
 }

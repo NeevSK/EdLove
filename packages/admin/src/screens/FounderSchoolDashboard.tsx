@@ -9,6 +9,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import {
     Box,
@@ -18,7 +19,6 @@ import {
     HStack,
     ScrollView,
     Theme,
-    useTranslation,
     GlobalHeader,
     useThemedColors,
     ScreenWrapper,
@@ -213,8 +213,12 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                         <VStack sx={{ gap: Theme.spacing.md }}>
                             <SkeletonCard height={120} />
                             <HStack sx={{ gap: Theme.spacing.md }}>
-                                <SkeletonCard height={100} sx={{ flex: 1 }} />
-                                <SkeletonCard height={100} sx={{ flex: 1 }} />
+                                <Box sx={{ flex: 1 }}>
+                                    <SkeletonCard height={100} />
+                                </Box>
+                                <Box sx={{ flex: 1 }}>
+                                    <SkeletonCard height={100} />
+                                </Box>
                             </HStack>
                             <SkeletonCard height={80} />
                         </VStack>

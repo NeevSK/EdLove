@@ -23,7 +23,7 @@ import type { UserProfile } from '../types';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
 import { AvatarDisplay } from '../components/AvatarDisplay';
 import { ContactLinktree } from '../components/ContactLinktree';
-import { StaffPresencePulse } from '@repo/people';
+import { StaffPresencePulse } from '@repo/admin';
 import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
 import { GiveThuthimalModal } from '../components/GiveThuthimalModal';
 import { EditableItem } from '../components/EditableItem';

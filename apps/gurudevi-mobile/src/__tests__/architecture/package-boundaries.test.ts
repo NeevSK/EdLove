@@ -95,7 +95,8 @@ function getImportStatements(source) {
 
 describe('Package architecture boundaries', () => {
   it('admin orchestration files do not import @repo/classroom', () => {
-    const adminFiles = collectFiles(ADMIN_SRC).filter((filePath) =      filePath.includes(`${path.sep}screens${path.sep}`) ||
+    const adminFiles = collectFiles(ADMIN_SRC).filter((filePath) =>
+      filePath.includes(`${path.sep}screens${path.sep}`) ||
       filePath.includes(`${path.sep}components${path.sep}principal${path.sep}`) ||
       filePath.includes(`${path.sep}principal${path.sep}`),
     );

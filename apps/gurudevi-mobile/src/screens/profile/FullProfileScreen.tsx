@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
+import { ScrollView, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import {
     Box,
     VStack,
@@ -12,16 +12,14 @@ import {
     ScreenWrapper,
     useBottomTabPadding,
     Center,
-    useEnvironment,
     SanctuaryProgressBar,
     hapticSuccess,
     AchievementUnlockOverlay,
     SanctuaryButton,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School, AtSign } from 'lucide-react-native';
-import { hapticLight, hapticError } from '@repo/ui';
-import { useStore, identityAPI } from '@repo/core';
+import { Phone, Edit3, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School, AtSign } from 'lucide-react-native';
+import { useStore } from '@repo/core';
 import {
     IdentityCard,
     AddSocialLinkModal,
@@ -48,54 +46,17 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     const { updateField } = useProfile();
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const { user } = useStore();
+    const { user: currentUser, userRole } = useStore();
     const bottomPadding = useBottomTabPadding();
     const [profile, setProfile] = useState<any>(initialProfile);
-    const { role } = useEnvironment();
-    const completionResult = useProfileCompletion(profile, role ?? null);
+    const completionResult = useProfileCompletion(profile, userRole ?? null);
     const [showCelebration, setShowCelebration] = useState(false);
-    const [editingField, setEditingField] = useState<string | null>(null);
     const [showSocialModal, setShowSocialModal] = useState(false);
     const [showThuthimalModal, setShowThuthimalModal] = useState(false);
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [currentUserName, setCurrentUserName] = useState<string>('');
 
-    // Per-field edit state: { fieldKey: { value, saved, saving, error } }
-    interface EditState {
-        value: any;
-        saved: boolean;
-        saving: boolean;
-        error: string | null;
-    }
-    const [fieldStates, setFieldStates] = useState<Record<string, EditState>>({});
+    const currentUserId = currentUser?.id ?? null;
+    const currentUserName = currentUser?.full_name || currentUser?.email || '';
 
-    // Track all auto-dismiss timers so they can be cleared on unmount
-    const dismissTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-    useEffect(() => {
-        if (initialProfile) {
-            setProfile(initialProfile);
-        }
-    }, [initialProfile]);
-
-    // Resolve current session user
-    useEffect(() => {
-        if (user) {
-            setCurrentUserId(user.id);
-            setCurrentUserName(user.full_name || user.email || '');
-        } else {
-            identityAPI.getMyInternalId().then((id) => {
-                if (id) setCurrentUserId(id);
-            });
-        }
-    }, [user]);
-
-    // Clear all pending dismiss timers when the screen unmounts
-    useEffect(() => {
-        return () => {
-            dismissTimers.current.forEach(id => clearTimeout(id));
-        };
-    }, []);
 
     // Animated opacity for bar fade-out on completion
     const barOpacity = useSharedValue(1);
@@ -117,13 +78,13 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration, completionResult, hapticSuccess, barOpacity]);
+    }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration, completionResult, barOpacity]);
 
     if (!profile) return null;
 
     // True when the signed-in user is viewing someone else's profile
     const isOtherProfile = currentUserId !== null && currentUserId !== profile.id;
-    const isTeacherProfile = ['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role);
+    const isTeacherProfile = ['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.authority || profile.role);
 
     const handleSave = async (field: string, value: any) => {
         // Handle array-based professional fields transformation before passing to hook
@@ -166,8 +127,8 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             fullName={profile.full_name}
                             size={72}
                             editable={!isOtherProfile}
-                            onAvatarUpdated={async (url) => {
-                                await updateField('avatar_url', url);
+                            onAvatarSelected={async (localUri) => {
+                                await updateField('avatar_url', localUri);
                                 hapticSuccess();
                             }}
                         />
@@ -278,7 +239,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                     </Center>
 
                     {/* Professional Details Section - Educational Staff Only */}
-                    {['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role) && (
+                    {['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.authority || profile.role) && (
                         <Center>
                             <Box
                                 sx={{
@@ -389,7 +350,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                     </Center>
 
                     {/* Professional Pulse (Staff Attendance) */}
-                    {['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role) && (
+                    {['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.authority || profile.role) && (
                         <Center>
                             <Box sx={{ width: CARD_WIDTH }}>
                                 <StaffPresencePulse
@@ -424,7 +385,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                     onClose={() => setShowThuthimalModal(false)}
                     recipientId={profile.id}
                     recipientName={profile.full_name ?? 'this person'}
-                    recipientRole={profile.role ?? 'teacher'}
+                    recipientTier={profile.authority || profile.role || 'teacher'}
                     giverId={currentUserId}
                     giverName={currentUserName}
                 />

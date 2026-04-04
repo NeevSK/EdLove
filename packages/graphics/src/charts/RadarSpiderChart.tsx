@@ -98,6 +98,7 @@ export function RadarChart({
         <View style={StyleSheet.absoluteFill}>
           {points.map((point, index) => {
             const nextPoint = points[(index + 1) % points.length];
+            if (!nextPoint) return null;
             // Calculate distance between points for line length
             const dist = Math.sqrt(Math.pow(nextPoint.x - point.x, 2) + Math.pow(nextPoint.y - point.y, 2));
             const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x);

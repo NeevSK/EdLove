@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Copy, Plus } from 'lucide-react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { ArrowLeft, Copy, Plus, X } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
+import { hapticSuccess } from '@repo/ui';
 import { invitesAPI, type InviteCode } from '../../invites';
 
 // —————————————————————————————————————————————————————————————————————————————
@@ -24,22 +25,35 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
 
-    const loadInviteCodes = async () => {
+    const loadInviteCodes = useCallback(async () => {
         if (!schoolId) return;
         setLoading(true);
         try {
-            const data = await invitesAPI.listInviteCodes(schoolId);
-            setInviteCodes(data ?? []);
-        } catch (err) {
-            console.error('[InvitesDashboard] loadInviteCodes failed:', err);
+            const codes = await invitesAPI.getInviteCodesBySchool(schoolId);
+            setInviteCodes(codes ?? []);
+        } catch (error) {
+            console.error('Failed to load invite codes:', error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [schoolId]);
 
     useEffect(() => {
         void loadInviteCodes();
-    }, [schoolId]);
+    }, [loadInviteCodes]);
+
+    const handleRevoke = async (code: string) => {
+        if (!schoolId || !userId) return;
+        try {
+            await invitesAPI.revokeInviteCode(schoolId, code, userId);
+            setInviteCodes((current) => 
+                current.map(inv => inv.code === code ? { ...inv, is_active: false } : inv)
+            );
+            hapticSuccess();
+        } catch (err) {
+            console.error('[InvitesDashboard] revokeInviteCode failed:', err);
+        }
+    };
 
     const handleGenerateCode = async () => {
         if (!schoolId || !userId) return;
@@ -151,9 +165,9 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                         No active codes. Generate one above.
                     </p>
                 ) : (
-                    inviteCodes.map((inviteCode) => (
+                    inviteCodes.map((invite) => (
                         <div 
-                            key={inviteCode.id || inviteCode.code} 
+                            key={invite.code} 
                             className="sanctuary-card" 
                             style={{ 
                                 padding: '18px 24px', 
@@ -173,27 +187,46 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                                     color: 'var(--lotus)',
                                     fontFamily: 'monospace'
                                 }}>
-                                    {inviteCode.code}
+                                    {invite.code}
                                 </code>
                                 <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>
-                                    Role: {inviteCode.role || 'Guest'} • {inviteCode.used ? 'Used' : 'Active'} • {formatDistanceToNow(new Date(inviteCode.created_at), { addSuffix: true })}
+                                    Role: {invite.authority.replace('_', ' ') || 'Guest'} • {invite.is_active === false ? 'Revoked' : invite.used ? 'Used' : 'Active'} • {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
                                 </div>
                             </div>
-                            <button
-                                onClick={() => copyToClipboard(inviteCode.code)}
-                                title="Copy code"
-                                style={{ 
-                                    background: 'rgba(255,255,255,0.05)', 
-                                    border: '1px solid var(--border)', 
-                                    borderRadius: '8px',
-                                    padding: '8px',
-                                    cursor: 'pointer', 
-                                    color: 'var(--ink-ghost)',
-                                    transition: 'background 0.2s'
-                                }}
-                            >
-                                <Copy size={16} />
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button
+                                    onClick={() => copyToClipboard(invite.code)}
+                                    title="Copy code"
+                                    style={{ 
+                                        background: 'rgba(255,255,255,0.05)', 
+                                        border: '1px solid var(--border)', 
+                                        borderRadius: '8px',
+                                        padding: '8px',
+                                        cursor: 'pointer', 
+                                        color: 'var(--ink-ghost)',
+                                        transition: 'background 0.2s'
+                                    }}
+                                >
+                                    <Copy size={16} />
+                                </button>
+                                {!invite.used && invite.is_active !== false && (
+                                    <button
+                                        onClick={() => handleRevoke(invite.code)}
+                                        title="Revoke code"
+                                        style={{ 
+                                            background: 'rgba(255,0,0,0.05)', 
+                                            border: '1px solid rgba(255,0,0,0.2)', 
+                                            borderRadius: '8px',
+                                            padding: '8px',
+                                            cursor: 'pointer', 
+                                            color: '#ef4444',
+                                            transition: 'background 0.2s'
+                                        }}
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))
                 )}

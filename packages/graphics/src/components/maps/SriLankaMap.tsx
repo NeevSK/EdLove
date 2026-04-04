@@ -29,8 +29,11 @@ export function SriLankaMap({
 }: SriLankaMapProps) {
 
     return (
-        <View style={[styles.container, { width, height }]}            <Svg viewBox="0 0 100 200" width="100%" height="100%"                <G                    {SRI_LANKAN_DISTRICTS.map((district) => (
-                        <Path>
+        <View style={[styles.container, { width, height }]}>
+            <Svg viewBox="0 0 100 200" width="100%" height="100%">
+                <G>
+                    {SRI_LANKAN_DISTRICTS.map((district) => (
+                        <Path
                             key={district.id}
                             d={DISTRICT_PATHS[district.id] || ""}
                             fill={
@@ -44,9 +47,12 @@ export function SriLankaMap({
                                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                                 onDistrictSelect?.(district.id);
                             }}
-
-                        /                    ))}
-                </G            ></Svg        </View    );
+                        />
+                    ))}
+                </G>
+            </Svg>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

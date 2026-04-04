@@ -14,6 +14,7 @@ export * from './hooks/useTheme';
 export * from './hooks/useThemedColors';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
+export { useTranslation } from 'react-i18next';
 
 // Fundamental Components (Gluestack & Basic UI)
 export * from './gluestack';
@@ -32,3 +33,11 @@ export * from './utils/colorUtils';
 export * from './utils/stringUtils';
 export * from './utils/dateTimeUtils';
 export * from './utils/a11yUtils';
+
+// Canvas & Workspace (Shared patterns)
+export type { 
+    WorkspaceSurfaceDefinition, 
+    ResolvedWorkspaceSurface, 
+    WorkspaceLayout, 
+    WorkspaceZoneId 
+} from '@repo/core';

@@ -29,24 +29,8 @@ export interface GradeWithRank extends GradeWithMarks {
   rank: number;
 }
 
-// Export StudentGrade from core types for compatibility
-export interface StudentGrade {
-  id: string;
-  student_id: string;
-  assignment_id?: string;
-  marks: number;
-  grade: string;
-  gpa: number;
-  feedback?: string;
-  rank?: number;
-  graded_at: string;
-}
-
-export interface ClassroomGradingSettings {
-  classroom_id: string;
-  grading_mode: 'marks' | 'gpa' | 'both';
-  show_ranks: boolean;
-}
+// Re-export shared types from core
+export type { StudentGrade, ClassroomGradingSettings } from '@repo/core';
 
 // ML and prediction exports
 export * from './ml/Predictor';

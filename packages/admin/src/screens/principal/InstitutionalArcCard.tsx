@@ -4,9 +4,9 @@ import {
     Box, 
     Text, 
     InfoIcon,
+    SanctuaryModal,
 } from '@repo/ui';
 import { Plus, Clock } from 'lucide-react-native';
-import { SanctuaryModal } from '@repo/ui';
 import { PRINCIPAL_FEATURE_REGISTRY } from './PrincipalFeatureRegistry';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 import { useTranslation } from 'react-i18next';
@@ -22,12 +22,12 @@ interface InstitutionalArcCardProps {
 }
 
 /**
- * InstitutionalArcCard \u2014 The "Unified Widget Shell"
+ * InstitutionalArcCard — The "Unified Widget Shell"
  * 
  * Provides a consistent wrapper for all dashboard features with:
- * 1. [\u24D8] Info \u2014 Documentation & Intent (SanctuaryModal)
- * 2. [+] Action \u2014 CRUD (Add/Update)
- * 3. [\u23F3] History \u2014 Temporal Navigator
+ * 1. [ⓘ] Info — Documentation & Intent (SanctuaryModal)
+ * 2. [+] Action — CRUD (Add/Update)
+ * 3. [⌛] History — Temporal Navigator
  */
 export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
     featureId,
@@ -45,64 +45,76 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
     const scopeHelpText = scopeMeta ? t(scopeMeta.scopeHelpTextKey) : '';
 
     return (
-        <Box >
+        <Box 
             style={{ 
-                background: 'var(--card-bg)', 
-                borderRadius: '24px', 
-                padding: '20px',
-                border: '1px solid var(--border-subtle)',
+                backgroundColor: 'var(--card-bg)', 
+                borderRadius: 24, 
+                padding: 20,
+                borderWidth: 1,
+                borderColor: 'var(--border-subtle)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '16px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                gap: 16,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.05,
+                shadowRadius: 12,
+                elevation: 2,
                 height: '100%'
             }}
-        
+        >
             {/* Header Section */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     {FeatureIcon && (
                         <div style={{ 
-                            width: '36px', 
-                            height: '36px', 
-                            borderRadius: '10px', 
-                            background: 'var(--sanctuary-blue-soft)',
+                            width: 36, 
+                            height: 36, 
+                            borderRadius: 10, 
+                            backgroundColor: 'var(--sanctuary-blue-soft)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}>
-                            <FeatureIcon size={20} color="var(--sanctuary-blue)" /
-                        ></div>
+                            <FeatureIcon size={20} color="var(--sanctuary-blue)" />
+                        </div>
                     )}
-                    <Text style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}                        {title}>
-                    </Text                    >{scopeMeta && (>
-                        <span>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: 'var(--ink)' }}>
+                        {title}
+                    </Text>
+                    {scopeMeta && (
+                        <span
                             title={scopeHelpText}
                             style={{
-                                fontSize: '10px',
-                                fontWeight: 800,
+                                fontSize: 10,
+                                fontWeight: '800',
                                 textTransform: 'uppercase',
                                 padding: '4px 8px',
-                                borderRadius: '999px',
-                                background: 'var(--background-alt)',
+                                borderRadius: 999,
+                                backgroundColor: 'var(--background-alt)',
                                 color: 'var(--ink-ghost)',
-                                letterSpacing: '0.4px',
+                                letterSpacing: 0.4,
                             }}
-                                                    {scopeBadgeLabel}
-                        </span                    >)}
+                        >
+                            {scopeBadgeLabel}
+                        </span>
+                    )}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {/* Info Icon (\u24D8) */}>
-                    <Pressable >
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    {/* Info Icon (ⓘ) */}
+                    <Pressable 
                         onPress={() => setIsInfoOpen(true)}
                         accessibilityRole="button"
                         accessibilityLabel={`Open information for ${title}`}
                         accessibilityHint={`Shows details and guidance for ${title}`}
                         style={{ padding: 4 }}
-                                            <InfoIcon size="sm" color="var(--ink-ghost)" /                    ></Pressable
-                    >{/* Add Icon (+) */}>
+                    >
+                        <InfoIcon size="sm" color="var(--ink-ghost)" />
+                    </Pressable>
+
+                    {/* Add Icon (+) */}
                     {onAdd && (
-                        <Pressable >
+                        <Pressable 
                             onPress={onAdd}
                             accessibilityRole="button"
                             accessibilityLabel={`Add item for ${title}`}
@@ -115,13 +127,14 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 justifyContent: 'center',
                                 backgroundColor: 'var(--lotus-soft)'
                             }}
-                                                    <Plus size={16} color="var(--lotus)" /
-                        ></Pressable>
+                        >
+                            <Plus size={16} color="var(--lotus)" />
+                        </Pressable>
                     )}
 
-                    {/* History Icon (\u23F3) */}
+                    {/* History Icon (⌛) */}
                     {onHistory && (
-                        <Pressable >
+                        <Pressable 
                             onPress={onHistory}
                             accessibilityRole="button"
                             accessibilityLabel={`Open history for ${title}`}
@@ -133,39 +146,46 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}
-                        
-                            <Clock size={16} color="var(--ink-ghost)" /
-                        ></Pressable>
+                        >
+                            <Clock size={16} color="var(--ink-ghost)" />
+                        </Pressable>
                     )}
                 </div>
             </div>
 
             {/* Content Section */}
             <Box style={{ flex: 1 }}>
-                {children}>
+                {children}
             </Box>
 
             {/* Info Modal */}
-            <SanctuaryModal>
+            <SanctuaryModal
                 isOpen={isInfoOpen}
                 onClose={() => setIsInfoOpen(false)}
                 title={featureInfo?.title || title}
-            
-                <Box style={{ gap: '16px', padding: '16px' }}>
-                    <Text style={{ fontSize: '16px', lineHeight: '24px', color: 'var(--ink)' }}                        {featureInfo?.description}>
+            >
+                <Box style={{ gap: 16, padding: 16 }}>
+                    <Text style={{ fontSize: 16, lineHeight: 24, color: 'var(--ink)' }}>
+                        {featureInfo?.description}
                     </Text>
                     {scopeMeta && (
-                        <Box style={{ background: 'var(--background-alt)', padding: '12px', borderRadius: '12px' }}                            <Text style={{ fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: 'var(--ink-ghost)' }}                                {scopeBadgeLabel}>
-                            </Text                            ><Text style={{ fontSize: '13px', color: 'var(--ink-subtle)' }}                                {scopeHelpText}>
-                            </Text                        ></Box                    >)}
+                        <Box style={{ backgroundColor: 'var(--background-alt)', padding: 12, borderRadius: 12 }}>
+                            <Text style={{ fontSize: 12, fontWeight: '700', marginBottom: 6, color: 'var(--ink-ghost)' }}>
+                                {scopeBadgeLabel}
+                            </Text>
+                            <Text style={{ fontSize: 13, color: 'var(--ink-subtle)' }}>
+                                {scopeHelpText}
+                            </Text>
+                        </Box>
+                    )}
                     
                     {featureInfo?.howToUse && (
-                        <Box style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '12px' }}>
-                            <Text style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px' }}>
+                        <Box style={{ backgroundColor: 'var(--surface-subtle)', padding: 12, borderRadius: 12 }}>
+                            <Text style={{ fontSize: 14, fontWeight: '700', marginBottom: 8 }}>
                                 How to use:
                             </Text>
-                            <Text style={{ fontSize: '14px', color: 'var(--ink-subtle)' }}>
-                                {featureInfo.howToUse}>
+                            <Text style={{ fontSize: 14, color: 'var(--ink-subtle)' }}>
+                                {featureInfo.howToUse}
                             </Text>
                         </Box>
                     )}

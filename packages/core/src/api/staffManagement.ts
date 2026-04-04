@@ -237,7 +237,12 @@ export const staffManagementAPI = {
     }
   },
 
-  async getStudentAttendancePulse(schoolId: string, classroomId?: string, viewDate?: string): Promise<StudentAttendancePulse> {
+  async getStudentAttendancePulse(
+    schoolId: string,
+    classroomId?: string,
+    viewDate?: string,
+    options?: { actorId?: string; accessKind?: string; reason?: string }
+  ): Promise<StudentAttendancePulse> {
     return attendanceProjectionServices.getSchoolAttendancePulse(schoolId, classroomId, viewDate);
   },
 

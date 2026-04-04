@@ -247,7 +247,7 @@ export const educationalContract = c.router({
         body: z.object({
             classroom_id: z.string(),
             full_name: z.string(),
-            roll_number: z.number().optional(),
+            roll_number: z.string().optional(),
             notes: z.string().optional(),
         }),
         responses: { 201: StudentSchema },
@@ -266,7 +266,7 @@ export const educationalContract = c.router({
         body: z.object({
             classroom_id: z.string(),
             student_id: z.string(),
-            roll_number: z.number().optional(),
+            roll_number: z.string().optional(),
             notes: z.string().optional(),
         }),
         responses: { 201: StudentSchema },
@@ -275,7 +275,7 @@ export const educationalContract = c.router({
     updateById: {
         method: 'PATCH',
         path: '/educational/enrollments/:id',
-        body: z.object({ roll_number: z.number().optional(), notes: z.string().optional() }),
+        body: z.object({ roll_number: z.string().optional(), notes: z.string().optional() }),
         responses: { 200: StudentSchema },
         metadata: classroomAuthority('update'),
     },
@@ -285,7 +285,7 @@ export const educationalContract = c.router({
         body: z.object({
             classroom_id: z.string(),
             student_id: z.string(),
-            updates: z.object({ roll_number: z.number().optional(), notes: z.string().optional() }),
+            updates: z.object({ roll_number: z.string().optional(), notes: z.string().optional() }),
         }),
         responses: { 200: StudentSchema },
         metadata: classroomAuthority('update'),

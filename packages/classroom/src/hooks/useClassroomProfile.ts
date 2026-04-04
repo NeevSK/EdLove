@@ -16,7 +16,7 @@ export function useClassroomProfile(classroomId: string) {
         try {
             setLoading(true);
             const data = await classroomsAPI.getById(classroomId);
-            setClassroom(data);
+            setClassroom(data as any);
         } catch (error) {
             handleAPIError(error);
         } finally {

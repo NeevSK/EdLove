@@ -121,7 +121,7 @@ export default function CreateSchoolModal({
                     const group = await communityAPI.createGroupWithOwner({
                         name: `${name.trim()} HQ`,
                         description: `Official community portal for ${name.trim()}`,
-                        group_type: 'general',
+                        type: 'general',
                         join_policy: 'open',
                         school_id: updatedSchool.id,
                     }, userId);

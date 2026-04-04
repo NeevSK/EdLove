@@ -57,3 +57,16 @@ export interface WorkspaceRendererConfig {
     mode: WorkspaceRendererMode;
     maxColumns?: number;
 }
+
+export interface ResolvedWorkspaceSurface<TSurfaceId extends string = string, TCapabilityKey extends string = string>
+    extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> {
+    pinned: boolean;
+    hidden: boolean;
+    zone: WorkspaceZoneId;
+    order: number;
+    content?: React.ReactNode;
+    subtitle?: string;
+    summary?: string;
+    temporalLabel?: string;
+    metadata?: Record<string, any>;
+}

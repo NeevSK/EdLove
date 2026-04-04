@@ -93,6 +93,26 @@ export const inventoryAPI = {
 
         return data;
     },
+
+    /**
+     * Get all inventory requests for a school
+     * @authority read Inventory
+     */
+    async getSchoolRequests(schoolId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('inventory_requests')
+            .select(`
+                *,
+                item:classroom_inventory(name, school_id)
+            `)
+            .eq('item.school_id', schoolId);
+
+        if (error) {
+            throw new APIError('Failed to fetch school inventory requests', error.code, error);
+        }
+
+        return data || [];
+    },
 };
 
 // Satisfy linter for POA metadata linking

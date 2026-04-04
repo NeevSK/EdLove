@@ -6,7 +6,7 @@ export function useCommunityProfile(communityId: string) {
     const [loading, setLoading] = useState(true);
     const { can } = usePermissions();
     
-    const isOwner = can('manage', 'CommunityGroup', { groupId: communityId });
+    const isOwner = can('manage', { __typename: 'CommunityGroup', id: communityId } as any);
     const addToQueue = useMutationQueue(state => state.addToQueue);
 
     const fetchCommunity = useCallback(async () => {

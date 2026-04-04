@@ -8,6 +8,8 @@ interface DocumentListScreenWebProps {
   schoolId: string;
   onDocumentPress: (document: DocumentWorkflow) => void;
   onCreateNew: () => void;
+  viewDate?: string;
+  isPastView?: boolean;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -15,7 +17,9 @@ const { width: screenWidth } = Dimensions.get('window');
 const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   schoolId,
   onDocumentPress,
-  onCreateNew
+  onCreateNew,
+  viewDate,
+  isPastView
 }) => {
   const theme = useTheme();
   const { can, context: user } = usePermissions();
@@ -474,7 +478,6 @@ const styles = StyleSheet.create({
     borderColor: '#E8E2CF',
     color: '#2A2318',
     width: '100%',
-    outline: 'none',
   },
   controlGroup: {
     flexDirection: 'row',
@@ -499,7 +502,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5EDD6',
     borderColor: '#E8E2CF',
     color: '#2A2318',
-    outline: 'none',
   },
   viewToggle: {
     flexDirection: 'row',

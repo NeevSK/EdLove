@@ -8,7 +8,7 @@ const data = dataRaw as unknown as LKEduData;
  * ADMINISTRATIVE QUERIES (Layer 1 - Hierarchy Drilling)
  */
 
-export const getProvinces = (): Province[] => > data.provinces;
+export const getProvinces = (): Province[] => data.provinces;
 
 export const getProvinceById = (id: string): Province | undefined => data.provinces.find(p => p.id === id);
 
@@ -24,9 +24,16 @@ export const getGNDivisionsByDSDivision = (dsId: string): GNDivision[] => data.g
 /**
  * Flat Accessors (Optional use)
  */
-export const getAllDistricts = () => data.districts;
+export const getDistricts = (provinceId?: string) => 
+  provinceId ? data.districts.filter(d => d.province_id === provinceId) : data.districts;
+
 export const getAllDSDivisions = () => data.dsDivisions;
+export const getDSDivisions = (districtId?: string) => 
+  districtId ? data.dsDivisions.filter(ds => ds.district_id === districtId) : data.dsDivisions;
+
 export const getAllGNDivisions = () => data.gnDivisions;
+export const getGNDivisions = (dsId?: string) => 
+  dsId ? data.gnDivisions.filter(gn => gn.ds_division_id === dsId) : data.gnDivisions;
 
 /**
  * POSTAL QUERIES
@@ -139,6 +146,11 @@ export const searchGNDivisions = (query: string, options?: SearchOptions): GNDiv
 /**
  * Resolves the full path for a school for display in summaries or breadcrumbs
  */
+export const getPostalUnits = () => data.postalUnits;
+
+/**
+ * Resolves the full path for a school for display in summaries or breadcrumbs
+ */
 export const getSchoolContext = (censusNo: string) => {
   const school = data.schools.find(s => s.census_no === censusNo);
   if (!school) return null;
@@ -151,6 +163,33 @@ export const getSchoolContext = (censusNo: string) => {
     division: data.divisions.find(div => div.id === school.jurisdiction.division_id),
     postalTown: data.postalUnits.find(pu => pu.id === school.location.postal_unit_id)
   };
+};
+
+/**
+ * Resolves the administrative and educational hierarchy for a school.
+ */
+export const getHierarchyForSchool = (schoolId: string) => {
+  const school = data.schools.find(s => s.id === schoolId);
+  if (!school) return null;
+
+  return {
+    school,
+    admin: {
+      province: data.provinces.find(p => p.id === school.location.province_id),
+      district: data.districts.find(d => d.id === school.location.district_id)
+    },
+    edu: {
+      zone: data.zones.find(z => z.id === school.jurisdiction.zone_id),
+      division: data.divisions.find(div => div.id === school.jurisdiction.division_id)
+    }
+  };
+};
+
+/**
+ * Returns all schools located in a specific postal code area.
+ */
+export const getSchoolsByPostalCode = (postalCode: string): School[] => {
+  return data.schools.filter(s => s.postal_code === postalCode);
 };
 
 /**

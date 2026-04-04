@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ClassroomStackParamList } from '@repo/core';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useRoute } from '@react-navigation/native';
 import AttendanceSheet from '../components/AttendanceSheet';
-import { StudentAttendance } from '@repo/core';
-import { api, ClassroomStudent, useStore, useSafeMutation, growthSignalsAPI } from '@repo/core';
+import { StudentAttendance, AttendanceStatus } from '@repo/core';
+import { api, useStore, useSafeMutation, growthSignalsAPI } from '@repo/core';
 import { Theme, hapticSuccess, Button, ButtonText, Spinner, Text, Box, VStack } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
 
 type AttendanceScreenRouteProp = {
     key: string;
@@ -19,49 +16,50 @@ type AttendanceScreenRouteProp = {
 
 export default function AttendanceScreen() {
     const route = useRoute<AttendanceScreenRouteProp>();
-    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
-    const { classroomId, classroomName } = route.params;
-    const { t } = useTranslation();
+    const { classroomId } = route.params;
 
     const [students, setStudents] = useState<StudentAttendance[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchStudents();
-    }, [classroomId]);
-
-    const fetchStudents = async () => {
+    const fetchStudents = useCallback(async () => {
         setIsLoading(true);
         try {
-            const today = new Date().toISOString().split('T')[0] || '';
-            const [data, snapshot] = await Promise.all([
+            const today = new Date().toISOString().split('T')[0];
+
+            // Load student roster and any already-saved attendance for today in parallel
+            const [roster, snapshot] = await Promise.all([
                 api.classroomStudents.getAll(classroomId),
-                api.attendance.getClassroomAttendanceSnapshot(classroomId, today)
-                    .catch(() => ({ records: [] as StudentAttendance[] })),
+                api.attendance.getClassroomAttendanceSnapshot(classroomId, today || '')
+                    .catch(() => ({ records: [] as { student_id: string; status: AttendanceStatus }[] })),
             ]);
 
-            const savedStatus = new Map(
-                snapshot.records.map((record) => [record.student_id, record.status])
+            // Build a lookup map: student_id -> saved status
+            const savedStatus = new Map<string, AttendanceStatus>(
+                (snapshot.records as { student_id: string; status: AttendanceStatus }[])
+                    .map(r => [r.student_id, r.status])
             );
 
-            // Transform to Attendance format and set default status
-            const attendanceData: StudentAttendance[] = data.map((student: ClassroomStudent) => ({
+            const attendanceData: StudentAttendance[] = (roster as any[]).map(student => ({
                 id: student.id,
-                student_id: student.student_id || student.id, // Use enrollment ID if student_id is null (shadow student)
-                full_name: student.full_name,
-                roll_number: student.roll_number,
-                status: savedStatus.get(student.student_id || student.id) ?? 'present',
-            }));
+                student_id: student.student_id || student.id,
+                full_name: student.full_name || 'Unknown Student',
+                roll_number: student.roll_number || null,
+                // Restore saved status; default to 'present' for unmarked students
+                status: (savedStatus.get(student.student_id || student.id) as any) ?? 'present',
+            })) as StudentAttendance[];
 
             setStudents(attendanceData);
         } catch (err) {
-            console.error('Failed to fetch students:', err);
             setError('Failed to load student list');
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [classroomId]);
+
+    useEffect(() => {
+        fetchStudents();
+    }, [fetchStudents]);
 
     const showToast = useStore(state => state.showToast);
     const currentUser = useStore(state => state.user);
@@ -108,28 +106,28 @@ export default function AttendanceScreen() {
         return (
             <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
                 <Spinner color={Theme.colors.sanctuarySaffron} />
-                <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text
-            ></Box>
+                <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text>
+            </Box>
         );
     }
 
     if (error) {
         return (
             <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
-                <Text color={Theme.colors.emberRed}>{error}</Text
-            ></Box>
+                <Text color={Theme.colors.emberRed}>{error}</Text>
+            </Box>
         );
     }
 
     return (
         <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
-            <AttendanceSheet>
+            <AttendanceSheet
                 classroomId={classroomId}
                 initialStudents={students}
                 onAttendanceChange={handleAttendanceChange}
-            /
+            />
             <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}>
-                <Button>
+                <Button
                     onPress={handleSave}
                     disabled={saveMutation.isLoading}
                     sx={{
@@ -139,7 +137,7 @@ export default function AttendanceScreen() {
                         minHeight: 56,
                         justifyContent: 'center'
                     }}
-                
+                >
                     <ButtonText color="white" sx={{ fontWeight: '700' }}>
                         {saveMutation.isLoading ? 'Syncing...' : 'Complete Marking'}
                     </ButtonText>

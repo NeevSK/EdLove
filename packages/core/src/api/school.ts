@@ -170,7 +170,84 @@ export const schoolAPI = {
         return SchoolStatsSchema.parse(stats) as unknown as SchoolStats;
     },
     
-    // ... other methods (invite codes, sections) omitted for brevity
+    /**
+     * Get invite codes for a school
+     * @authority read School
+     */
+    async getInviteCodes(schoolId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('invite_codes')
+            .select('*')
+            .eq('school_id', schoolId)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch invite codes', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Create a new section for a school.
+     * @authority create School
+     */
+    async createSection(schoolId: string, name: string): Promise<Section> {
+        const { data, error } = await supabase
+            .from('sections')
+            .insert([{ school_id: schoolId, name }])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to create section', error.code, error);
+        }
+
+        return SectionSchema.parse(data) as unknown as Section;
+    },
+
+    /**
+     * Create a new grade for a section.
+     * @authority create School
+     */
+    async createGrade(sectionId: string, number: number): Promise<Grade> {
+        const { data, error } = await supabase
+            .from('grades')
+            .insert([{ section_id: sectionId, number }])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to create grade', error.code, error);
+        }
+
+        return GradeSchema.parse(data) as unknown as Grade;
+    },
+
+    /**
+     * Generate a new invite code for a school
+     * @authority create School
+     */
+    async generateInviteCode(schoolId: string, role: string, createdBy: string): Promise<any> {
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const { data, error } = await supabase
+            .from('invite_codes')
+            .insert([{
+                school_id: schoolId,
+                role,
+                code,
+                created_by: createdBy,
+                used: false
+            }])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to generate invite code', error.code, error);
+        }
+
+        return data;
+    },
 };
 
 // Satisfy linter for POA metadata linking

@@ -1,9 +1,13 @@
+import AcademicCycleManager from './AcademicCycleManager';
 import FounderDashboard from './FounderDashboard';
 import FounderDashboardWeb from './FounderDashboard.web';
 import FounderSchoolDashboard from './FounderSchoolDashboard';
+import GradeHeadDashboard from './GradeHeadDashboard';
+import PrincipalDashboard from './PrincipalDashboard';
 import PrincipalDashboardWeb from './PrincipalDashboard.web';
 import { PrincipalNativeWorkspace } from './PrincipalNativeWorkspace';
 import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
+import SectionHeadDashboard from './SectionHeadDashboard';
 import { HierarchyDashboard } from './principal/HierarchyDashboard';
 import { CommandCenter } from './principal/CommandCenter';
 import { CyclesDashboard } from './principal/CyclesDashboard';
@@ -28,6 +32,8 @@ export * from './principal/PrincipalFeatureRegistry';
 export * from './principal/PrincipalIAScope';
 
 export {
+    AcademicCycleManager,
+    PrincipalDashboard,
     PrincipalDashboardWeb,
     PrincipalNativeWorkspace,
     PrincipalWorkspaceContainer,
@@ -36,6 +42,7 @@ export {
     FounderDashboard,
     FounderDashboardWeb,
     FounderSchoolDashboard,
+    GradeHeadDashboard,
     HierarchyDashboard,
     InstitutionalArcCard,
     InvitesDashboard,
@@ -43,5 +50,6 @@ export {
     PendingApprovals,
     SchoolForestScreenWeb,
     SchoolProfileScreenWeb,
+    SectionHeadDashboard,
     FounderVisionScreen,
 };

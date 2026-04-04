@@ -160,4 +160,5 @@ export function SankeyDiagram({
         ))}
       </View>
     </Card>
-  });
+  );
+}

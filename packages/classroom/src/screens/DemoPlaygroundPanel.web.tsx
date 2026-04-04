@@ -49,7 +49,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
     };
 
     return (
-        <div>
+        <div
             style={{
                 position: 'fixed',
                 top: 'var(--top-bar-h, 64px)',
@@ -62,7 +62,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 flexDirection: 'column',
                 overflow: 'hidden',
             }}
-        
+        >
             {/*  Demo banner  */}
             <div style={{
                 background: 'rgba(245,158,11,0.10)',
@@ -81,7 +81,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                         Demo  {ROLE_LABEL[role]} view with simulated data
                     </span>
                 </div>
-                <button>
+                <button
                     onClick={onClose}
                     style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
@@ -90,25 +90,25 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                         cursor: 'pointer', fontSize: '12px', fontWeight: '700',
                         color: 'var(--ink)', fontFamily: 'var(--font-body)',
                     }}
-                
+                >
                     <X size={13} /> Exit demo
                 </button>
             </div>
 
             {/*  Scrollable demo content  */}
-            <div>
+            <div
                 style={{
                     flex: 1,
                     overflowY: 'auto',
                     padding: '40px 48px 60px',
                 }}
-            
+            >
                 {role === 'teacher' && <TeacherDashboard />}
                 {role === 'principal' && (
-                    <PrincipalDashboard>
+                    <PrincipalDashboard
                         schoolId="mock-school"
                         userId="mock-principal"
-                    /
+                    />
                 )}
                 {role === 'student' && <StudentDashboard />}
             </div>

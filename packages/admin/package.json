@@ -7,9 +7,12 @@
     ".": "./src/index.ts",
     "./founder": "./src/entrypoints/founder.ts",
     "./screens/FounderDashboard": "./src/screens/FounderDashboard.tsx",
+    "./screens/FounderDashboard.web": "./src/screens/FounderDashboard.web.tsx",
     "./screens/FounderSchoolDashboard": "./src/screens/FounderSchoolDashboard.tsx",
     "./screens/SchoolCreationScreen": "./src/screens/SchoolCreationScreen.tsx",
     "./screens/SchoolForestScreen.web": "./src/screens/SchoolForestScreen.web.tsx",
+    "./screens/PrincipalDashboard.web": "./src/screens/PrincipalDashboard.web.tsx",
+    "./screens/PrincipalDashboard": "./src/screens/PrincipalDashboard.tsx",
     "./components/CreateSchoolModal": "./src/components/school/CreateSchoolModal.tsx",
     "./package.json": "./package.json"
   },

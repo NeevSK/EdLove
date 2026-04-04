@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { composeUserAbilities } from '../composer';
-import { Actions, Subjects } from '../abilities/base';
+import { Actions, Subjects, SubjectType } from '../abilities/base';
 import { UserContext, UserContextSchema, TenantKind } from '../schemas/user.schema';
 import { Role } from '../schemas/role.schema';
 import { useStore, TotalState } from '../../store/useStore';
@@ -57,10 +57,10 @@ export const usePermissions = () => {
      * can: Check if action on subject is allowed.
      * usage: can('read', 'School')
      */
-    can: (action: Actions, subject: Subjects, field?: string) => ability.can(action, subject, field),
+    can: (action: Actions, subject: SubjectType, field?: string) => ability.can(action, subject as any, field),
     /**
      * cannot: Check if action on subject is forbidden.
      */
-    cannot: (action: Actions, subject: Subjects, field?: string) => ability.cannot(action, subject, field),
+    cannot: (action: Actions, subject: SubjectType, field?: string) => ability.cannot(action, subject as any, field),
   };
 };

@@ -19,8 +19,8 @@ import {
     ScreenWrapper,
     useTheme,
 } from '@repo/ui';
-import { Send, ChevronLeft, Sparkles, MessageSquare } from 'lucide-react-native';
-import { useAIAgent, Message } from '@repo/core';
+import { Send, ChevronLeft, Sparkles } from 'lucide-react-native';
+import { useAIAgent, Message } from '@repo/ai';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
 import { useStore } from '@repo/core';

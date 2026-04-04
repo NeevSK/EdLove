@@ -3,7 +3,7 @@ import { StyleSheet, View, useWindowDimensions, TouchableOpacity } from 'react-n
 import Svg, { Path } from 'react-native-svg';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Theme, useThemedColors, SanctuaryFlashList, Text, Box } from '@repo/ui';
-import { Lock, CheckCircle2, Circle } from 'lucide-react-native';
+import { CheckCircle2, Circle } from 'lucide-react-native';
 import type { 
     PerspectiveViewProps, 
     GraphNode 
@@ -41,7 +41,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                 {!isLast && (
                     <View style={styles.spineContainer}>
                         <Svg width={windowWidth} height={160} viewBox={`0 0 ${windowWidth} 160`}>
-                            <Path/>
+                            <Path
                                 d={`M ${windowWidth/2 + xOffset} 80 
                                    C ${windowWidth/2 + xOffset} 120, 
                                      ${windowWidth/2 - xOffset} 120, 
@@ -51,19 +51,19 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                 strokeDasharray="8 8"
                                 fill="none"
                                 opacity={0.3}
-                            /
+                            />
                         </Svg>
                     </View>
                 )}
 
                 {/* Node Button */}
-                <Animated.View >
+                <Animated.View 
                     entering={FadeInDown.delay(index * 100)}
                     style={{
                         transform: [{ translateX: xOffset }]
                     }}
-                
-                    <TouchableOpacity >
+                >
+                    <TouchableOpacity 
                         onPress={() => onNodePress?.(item)}
                         style={[
                             styles.nodeCircle, 
@@ -73,7 +73,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                 shadowColor: colors.action
                             }
                         ]}
-                    
+                    >
                         {item.type === 'topic' ? (
                             <CheckCircle2 size={32} color={Theme.colors.sanctuarySaffron} />
                         ) : (
@@ -82,10 +82,10 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                     </TouchableOpacity>
                     
                     <View style={[styles.labelContainer, { transform: [{ translateX: isEven ? 80 : -140 }] }]}>
-                        <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}>
+                        <Text color={colors.text} bold size="sm" numberOfLines={2}>
                             {item.label}
                         </Text>
-                        <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}>
+                        <Text color={colors.textTertiary} size="xxs">
                             {item.type.toUpperCase()}
                         </Text>
                     </View>
@@ -96,12 +96,12 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <View style={styles.container}>
-            <SanctuaryFlashList/>
+            <SanctuaryFlashList
                 data={orderedNodes}
                 renderItem={renderItem}
                 estimatedItemSize={160}
                 contentContainerStyle={{ paddingTop: 120, paddingBottom: 150 }}
-            /
+            />
         </View>
     );
 };

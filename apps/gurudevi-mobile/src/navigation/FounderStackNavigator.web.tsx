@@ -4,11 +4,11 @@ import { FounderStackParamList } from '@repo/core';
 import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
-const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDashboard'));
+const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDashboard.web'));
 const FounderSchoolDashboard = React.lazy(() => import('@repo/admin/screens/FounderSchoolDashboard'));
 const SchoolCreationScreen = React.lazy(() => import('@repo/admin/screens/SchoolCreationScreen'));
 const SchoolForestScreen = React.lazy(() => import('@repo/admin/screens/SchoolForestScreen.web'));
-const PrincipalDashboardWeb = React.lazy(() => import('@repo/classroom/screens/PrincipalDashboard.web'));
+const PrincipalDashboardWeb = React.lazy(() => import('@repo/admin/screens/PrincipalDashboard.web'));
 
 const Stack = createNativeStackNavigator<FounderStackParamList>();
 

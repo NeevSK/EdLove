@@ -36,18 +36,31 @@ export default function PublicFormScreenWeb() {
 
   if (loading) {
     return (
-      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark }}        <LotusLoader /        ><Text sx={{ marginTop: 16, color: colors.textSecondary }}>Preparing your dignified experience...</Text      ></VStack    );
+      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark }}>
+        <LotusLoader />
+        <Text sx={{ marginTop: 16, color: colors.textSecondary }}>Preparing your dignified experience...</Text>
+      </VStack>
+    );
   }
 
   if (error || !template) {
     return (
-      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark, padding: 40 }}        <Heading size="lg" sx={{ color: Theme.colors.emberRed }}>Access Denied</Heading        ><Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}>{error}</Text      ></VStack    );
+      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark, padding: 40 }}>
+        <Heading size="lg" sx={{ color: Theme.colors.emberRed }}>Access Denied</Heading>
+        <Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}>{error}</Text>
+      </VStack>
+    );
   }
 
   if (submitted) {
     return (
-      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark, padding: 40 }}        <Heading size="xl" sx={{ color: Theme.colors.sageGreen }}>Thank You</Heading        ><Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}          Your response has been securely recorded in the Gurudevi ecosystem.
-        </Text      </VStack    );
+      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark, padding: 40 }}>
+        <Heading size="xl" sx={{ color: Theme.colors.sageGreen }}>Thank You</Heading>
+        <Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}>
+          Your response has been securely recorded in the Gurudevi ecosystem.
+        </Text>
+      </VStack>
+    );
   }
 
   const formSchema: any = { fields: {} };
@@ -73,7 +86,8 @@ export default function PublicFormScreenWeb() {
   });
 
   return (
-    <VStack sx={{ flex: 1, backgroundColor: colors.backgroundDark, padding: 20, alignItems: 'center', justifyContent: 'center' }}      <Box>
+    <VStack sx={{ flex: 1, backgroundColor: colors.backgroundDark, padding: 20, alignItems: 'center', justifyContent: 'center' }}>
+      <Box
         sx={{
           backgroundColor: 'white',
           borderRadius: 32,
@@ -84,9 +98,17 @@ export default function PublicFormScreenWeb() {
           maxWidth: 600,
           width: '100%',
         }}
-              <VStack sx={{ marginBottom: 32, alignItems: 'center' }}          <Heading size="xl" sx={{ textAlign: 'center' }}>{template.title}</Heading          >{template.description && (
-            <Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}              {template.description}>
-            </Text          >)}
-        </VStack        ><NativeForm manager={manager} submitLabel="Submit Response" /      ></Box    </VStack  );
+      >
+        <VStack sx={{ marginBottom: 32, alignItems: 'center' }}>
+          <Heading size="xl" sx={{ textAlign: 'center' }}>{template.title}</Heading>
+          {template.description && (
+            <Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}>
+              {template.description}
+            </Text>
+          )}
+        </VStack>
+        <NativeForm manager={manager} submitLabel="Submit Response" />
+      </Box>
+    </VStack>
+  );
 }
-

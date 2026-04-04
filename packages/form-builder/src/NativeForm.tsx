@@ -25,7 +25,7 @@ export default function NativeForm<T extends Record<string, any>>({
         const field = config.fields[fieldName];
         return (
           <Box key={fieldName as string}>
-            <SanctuaryInput>
+            <SanctuaryInput
               label={field.label}
               placeholder={field.placeholder}
               value={(state.values[fieldName] as string) || ''}
@@ -39,17 +39,17 @@ export default function NativeForm<T extends Record<string, any>>({
               }
               multiline={field.type === 'textarea'}
               numberOfLines={field.type === 'textarea' ? 4 : 1}
-            /
+            />
           </Box>
         );
       })}
 
-      <SanctuaryButton>
+      <SanctuaryButton
         onPress={() => manager.submit()}
         isLoading={state.isSubmitting}
         isDisabled={state.isSubmitting}
         fullWidth
-      
+      >
         {submitLabel}
       </SanctuaryButton>
 

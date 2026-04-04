@@ -10,7 +10,18 @@ import {
     VStack,
     type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
-import { BookOpen, ClipboardList, MessageCircle, Plus, ScanLine, School, ShieldCheck, Users, Wind, Zap } from 'lucide-react-native';
+import {
+    BookOpen,
+    ClipboardList,
+    MessageCircle,
+    Plus,
+    ScanLine,
+    School,
+    ShieldCheck,
+    Users,
+    Wind,
+    Zap,
+} from 'lucide-react-native';
 import { ClassroomList } from '../components';
 
 export type TeacherDashboardSurfaceId =
@@ -27,7 +38,8 @@ export type TeacherDashboardCapabilityKey =
     | 'TeacherPulse'
     | 'TeacherClassroomRegistry';
 
-export type TeacherDashboardSurface = WorkspaceSurfaceDefinition    TeacherDashboardSurfaceId,
+export type TeacherDashboardSurface = WorkspaceSurfaceDefinition<
+    TeacherDashboardSurfaceId,
     TeacherDashboardCapabilityKey
 > & {
     title: string;
@@ -37,6 +49,8 @@ export type TeacherDashboardSurface = WorkspaceSurfaceDefinition    TeacherDashb
     metadata?: string[];
     content: React.ReactNode;
 };
+
+// ─── Helper Components ───────────────────────────────────────────────────────
 
 function QuickAction({
     icon: LucideIcon,
@@ -54,7 +68,7 @@ function QuickAction({
     colors: any;
 }) {
     return (
-        <Pressable>
+        <Pressable
             onPress={disabled ? undefined : onPress}
             disabled={disabled}
             sx={{
@@ -69,15 +83,29 @@ function QuickAction({
                 opacity: disabled ? 0.5 : 1,
                 minHeight: 112,
             }}
-                    <Box>
+        >
+            <Box
                 sx={{
                     padding: Theme.spacing.sm,
                     borderRadius: Theme.corners.comfortable,
                     backgroundColor: colors.tertiary,
                     marginBottom: Theme.spacing.sm,
                 }}
-                            <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} /            ></Box            ><Text color={colors.text} sx={{ textAlign: 'center', fontSize: 12, fontWeight: '700' }}                {label}
-            </Text        ></Pressable    );
+            >
+                <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} />
+            </Box>
+            <Text
+                sx={{
+                    textAlign: 'center',
+                    fontSize: 12,
+                    fontWeight: '700',
+                    color: colors.text,
+                }}
+            >
+                {label}
+            </Text>
+        </Pressable>
+    );
 }
 
 function StatCard({
@@ -94,7 +122,7 @@ function StatCard({
     colors: any;
 }) {
     return (
-        <Box>
+        <Box
             sx={{
                 flex: 1,
                 backgroundColor: colors.secondary,
@@ -104,21 +132,44 @@ function StatCard({
                 borderColor: colors.border,
                 position: 'relative',
                 overflow: 'hidden',
+                minHeight: 100,
             }}
-                    <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}                <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}                    {label}>
-                </Text                ><Text color={colors.text} sx={{ fontSize: 32, fontWeight: '700' }}                    {value}>
+        >
+            <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}>
+                <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary }}>
+                    {label}
+                </Text>
+                <Text sx={{ fontSize: 32, fontWeight: '700', color: colors.text }}>
+                    {value}
                     {isDemoMode ? '*' : ''}
-                </Text            ></VStack            >{isDemoMode ? (
-                <Box sx={{ position: 'absolute', top: 5, right: 5 }}                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} /                ></Box            ) : null}
-            <Box>
+                </Text>
+            </VStack>
+
+            {isDemoMode && (
+                <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
+                    <Zap
+                        size={12}
+                        color={Theme.colors.sanctuarySaffron}
+                        fill={Theme.colors.sanctuarySaffron}
+                    />
+                </Box>
+            )}
+
+            <Box
                 sx={{
                     position: 'absolute',
                     right: -10,
                     bottom: -10,
                     opacity: 0.1,
                 }}
-                            <LucideIcon color={colors.text} size={80} /            ></Box        ></Box    );
+            >
+                <LucideIcon color={colors.text} size={80} />
+            </Box>
+        </Box>
+    );
 }
+
+// ─── Hook Definition ─────────────────────────────────────────────────────────
 
 type Args = {
     colors: any;
@@ -134,7 +185,9 @@ type Args = {
     setShowEchoHistory: (value: boolean) => void;
     setIsBreathingOpen: (value: boolean) => void;
     onOpenLibrary: () => void;
-    handleClassroomsLoaded: (classrooms: Array<{ id: string; name: string; student_count?: number | null }>) => void;
+    handleClassroomsLoaded: (
+        classrooms: Array<{ id: string; name: string; student_count?: number | null }>
+    ) => void;
     onOpenClassroom: (classroom: { id: string; name: string }) => void;
 };
 
@@ -188,7 +241,32 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: isPastView ? 'Past view' : 'Action ready',
                 metadata: ['Create', 'Join', 'Scan'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}                        <QuickAction icon={Plus} label="Create Class" onPress={() => openCreateFlow('create')} disabled={isPastView} colors={colors} /                        ><QuickAction icon={Users} label="Join Class" onPress={() => openCreateFlow('join')} color={Theme.colors.sanctuarySaffron} disabled={isPastView} colors={colors} /                        ><QuickAction icon={ScanLine} label="Scan QR" onPress={() => setIsScannerOpen(true)} color={Theme.colors.amberGlow} disabled={isPastView} colors={colors} /                    ></HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md }}>
+                        <QuickAction
+                            icon={Plus}
+                            label="Create Class"
+                            onPress={() => openCreateFlow('create')}
+                            disabled={isPastView}
+                            colors={colors}
+                        />
+                        <QuickAction
+                            icon={Users}
+                            label="Join Class"
+                            onPress={() => openCreateFlow('join')}
+                            color={Theme.colors.sanctuarySaffron}
+                            disabled={isPastView}
+                            colors={colors}
+                        />
+                        <QuickAction
+                            icon={ScanLine}
+                            label="Scan QR"
+                            onPress={() => setIsScannerOpen(true)}
+                            color={Theme.colors.amberGlow}
+                            disabled={isPastView}
+                            colors={colors}
+                        />
+                    </HStack>
+                ),
             },
             {
                 surfaceId: 'support-tools',
@@ -205,7 +283,60 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: 'Support',
                 metadata: ['Admin', 'Echoes', 'Breathing'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md, flexWrap: 'wrap', justifyContent: 'space-between' }}                        <Box sx={{ width: '48%' }}><QuickAction icon={ShieldCheck} label="Admin" onPress={() => setIsAdminModalOpen(true)} color={Theme.colors.sageGreen} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} color={Theme.colors.amberGlow} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={MessageCircle} label="Principal Echo" onPress={() => setIsFeedbackModalOpen(true)} color={Theme.colors.emberRed} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={ClipboardList} label="My Echoes" onPress={() => setShowEchoHistory(true)} color={colors.action} colors={colors} /></Box                        ><Box sx={{ width: '48%' }}><QuickAction icon={Wind} label="Breathing" onPress={() => setIsBreathingOpen(true)} color={colors.success} colors={colors} /></Box                    ></HStack                ),
+                    <HStack
+                        sx={{
+                            gap: Theme.spacing.md,
+                            flexWrap: 'wrap',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <Box sx={{ width: '48%' }}>
+                            <QuickAction
+                                icon={ShieldCheck}
+                                label="Admin"
+                                onPress={() => setIsAdminModalOpen(true)}
+                                color={Theme.colors.sageGreen}
+                                colors={colors}
+                            />
+                        </Box>
+                        <Box sx={{ width: '48%' }}>
+                            <QuickAction
+                                icon={BookOpen}
+                                label="Library"
+                                onPress={onOpenLibrary}
+                                color={Theme.colors.amberGlow}
+                                colors={colors}
+                            />
+                        </Box>
+                        <Box sx={{ width: '48%' }}>
+                            <QuickAction
+                                icon={MessageCircle}
+                                label="Principal Echo"
+                                onPress={() => setIsFeedbackModalOpen(true)}
+                                color={Theme.colors.emberRed}
+                                colors={colors}
+                            />
+                        </Box>
+                        <Box sx={{ width: '48%' }}>
+                            <QuickAction
+                                icon={ClipboardList}
+                                label="My Echoes"
+                                onPress={() => setShowEchoHistory(true)}
+                                color={colors.action}
+                                colors={colors}
+                            />
+                        </Box>
+                        <Box sx={{ width: '48%' }}>
+                            <QuickAction
+                                icon={Wind}
+                                label="Breathing"
+                                onPress={() => setIsBreathingOpen(true)}
+                                color={colors.success}
+                                colors={colors}
+                            />
+                        </Box>
+                    </HStack>
+                ),
             },
             {
                 surfaceId: 'pulse',
@@ -222,7 +353,23 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: 'Snapshot',
                 metadata: [`Classes ${stats.activeClasses}`, `Students ${stats.totalStudents}`],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}                        <StatCard icon={School} label="Active Classes" value={stats.activeClasses} isDemoMode={isDemoMode} colors={colors} /                        ><StatCard icon={Users} label="Total Students" value={stats.totalStudents} isDemoMode={isDemoMode} colors={colors} /                    ></HStack                ),
+                    <HStack sx={{ gap: Theme.spacing.md }}>
+                        <StatCard
+                            icon={School}
+                            label="Active Classes"
+                            value={stats.activeClasses}
+                            isDemoMode={isDemoMode}
+                            colors={colors}
+                        />
+                        <StatCard
+                            icon={Users}
+                            label="Total Students"
+                            value={stats.totalStudents}
+                            isDemoMode={isDemoMode}
+                            colors={colors}
+                        />
+                    </HStack>
+                ),
             },
             {
                 surfaceId: 'classroom-registry',
@@ -239,22 +386,33 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: stats.activeClasses > 0 ? 'Live' : 'Onboarding',
                 metadata: [`Classes ${stats.activeClasses}`, 'Registry', 'Daily work'],
                 content: (
-                    <                        <ClassroomList
+                    <VStack sx={{ gap: Theme.spacing.md }}>
+                        <ClassroomList
                             onClassroomPress={onOpenClassroom}
                             onDataLoaded={handleClassroomsLoaded}
                             isNested={true}
                             refreshTrigger={refreshTrigger}
                             emptyContent={
-                                <PositiveInvitation>
+                                <PositiveInvitation
                                     context="classroom"
                                     title={isDemoMode ? 'Create Your First Sanctuary' : undefined}
-                                    description={isDemoMode ? 'Ready to lead your first classroom? Generate a sanctuary for your students to begin their journey.' : undefined}
+                                    description={
+                                        isDemoMode
+                                            ? 'Ready to lead your first classroom? Generate a sanctuary for your students to begin their journey.'
+                                            : undefined
+                                    }
                                     actionLabel={isDemoMode ? 'Create My First Classroom' : undefined}
                                     onAction={() => openCreateFlow('create')}
-                                /                            >}
-                        /                        >{isGuest ? (
-                            <Box sx={{ marginTop: Theme.spacing.md }}                                <PositiveInvitation type="guest" onAction={() => {}} /                            ></Box                        >) : null}
-                    </                ),
+                                />
+                            }
+                        />
+                        {isGuest && (
+                            <Box sx={{ marginTop: Theme.spacing.md }}>
+                                <PositiveInvitation type="guest" onAction={() => {}} />
+                            </Box>
+                        )}
+                    </VStack>
+                ),
             },
         ],
         [

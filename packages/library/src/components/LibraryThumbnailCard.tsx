@@ -186,11 +186,11 @@ export function LibraryThumbnailCard({
         },
     }), [colors, cfg]);
 
-    const gradientColors: string[] = [
+    const gradientColors = [
         'transparent',
         'rgba(0,0,0,0.6)',
         'rgba(0,0,0,0.9)',
-    ];
+    ] as const;
 
     const overlay = (
         <View style={styles.overlay}>
@@ -235,12 +235,12 @@ export function LibraryThumbnailCard({
                     {endorsements > 0 && (
                         <>
                             {subject && <Text style={[styles.metaText, { marginHorizontal: 4 }]}>•</Text>}
-                            <HStack space="xs" sx={{ alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
-                                <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron, fontWeight: '700' }]}>
+                                <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron, fontWeight: '700', marginLeft: 4 }]}>
                                     {endorsements}
                                 </Text>
-                            </HStack>
+                            </View>
                         </>
                     )}
                 </View>

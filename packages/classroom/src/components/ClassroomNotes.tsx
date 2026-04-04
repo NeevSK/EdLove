@@ -16,7 +16,7 @@
  * Layout:
  *   - Pinned notes always float to the top
  *   - Notes grouped by relative date label (Today, Yesterday, This Week, Earlier)
- *   - Infinite scroll backward in time \u2014 old notes are never deleted
+ *   - Infinite scroll backward in time — old notes are never deleted
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -27,7 +27,6 @@ import {
     FlatList,
     KeyboardAvoidingView,
     Platform,
-    Alert,
     ActivityIndicator,
     StyleSheet,
 } from 'react-native';
@@ -36,11 +35,11 @@ import {
     HStack,
     Box,
     Text,
-    Pressable,
     useThemedColors,
     Theme,
     PositiveInvitation,
     useLotusToast,
+    hapticLight,
 } from '@repo/ui';
 import {
     NotebookPen,
@@ -53,12 +52,11 @@ import {
     StickyNote,
     X,
     ChevronDown,
-    ChevronUp,
 } from 'lucide-react-native';
 import { api } from '@repo/core';
 import type { ClassroomNote } from '@repo/core';
 
-// \u2500\u2500 Types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 interface ClassroomNotesProps {
     classroomId: string;
@@ -70,7 +68,7 @@ type NoteGroup = {
     data: ClassroomNote[];
 };
 
-// \u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getRelativeDateLabel(dateStr: string): string {
     const now = new Date();
@@ -101,9 +99,8 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
     }
 
     const result: NoteGroup[] = [];
-    if (pinned.length > 0) result.push({ label: '\uD83D\uDCCC Pinned', data: pinned });
+    if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
 
-    // Explicitly handle noUncheckedIndexedAccess: true from base.json
     for (const label of Object.keys(groups)) {
         const data = groups[label];
         if (data) {
@@ -113,9 +110,9 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
     return result;
 }
 
-// \u2500\u2500 Note type metadata \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Note type metadata ──────────────────────────────────────────────
 
-const NOTE_TYPE_META: Record
+const NOTE_TYPE_META: Record<
     ClassroomNote['note_type'],
     { label: string; icon: any; color: string; teacherOnly: boolean }
 > = {
@@ -151,7 +148,7 @@ const NOTE_TYPE_META: Record
     },
 };
 
-// \u2500\u2500 Main Component \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNotesProps) {
     const colors = useThemedColors();
@@ -164,7 +161,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         isTeacher ? 'note' : 'personal'
     );
     const [draftVisibility, setDraftVisibility] = useState<ClassroomNote['visibility']>(
-        isTeacher ? 'private' : 'private'
+        'private'
     );
     const [saving, setSaving] = useState(false);
 
@@ -198,6 +195,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             setNotes((prev) => [created, ...prev]);
             setDraft('');
             setComposing(false);
+            hapticLight();
         } catch (err) {
             showToast({ message: 'Could not save note. Please try again.', type: 'error' });
         } finally {
@@ -206,6 +204,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     };
 
     const handleDelete = async (id: string) => {
+        hapticLight();
         try {
             await api.classroomNotes.delete(id);
             setNotes((prev) => prev.filter((n) => n.id !== id));
@@ -216,6 +215,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     };
 
     const handleTogglePin = async (note: ClassroomNote) => {
+        hapticLight();
         try {
             const updated = await api.classroomNotes.update(note.id, {
                 is_pinned: !note.is_pinned,
@@ -227,6 +227,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     };
 
     const handleToggleVisibility = async (note: ClassroomNote) => {
+        hapticLight();
         const next: ClassroomNote['visibility'] =
             note.visibility === 'private' ? 'class' : 'private';
         try {
@@ -237,21 +238,17 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         }
     };
 
-    // \u2500\u2500 Compose sheet available note types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-
     const availableTypes = useMemo(
-        () =
+        () =>
             (Object.entries(NOTE_TYPE_META) as [ClassroomNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][])
                 .filter(([, meta]) => isTeacher || !meta.teacherOnly)
                 .map(([type]) => type),
         [isTeacher]
     );
 
-    // \u2500\u2500 Render helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-
     const renderNoteCard = ({ item: note }: { item: ClassroomNote }) => {
         const meta = NOTE_TYPE_META[note.note_type];
-        if (!meta) return null; // Defensive check for unexpected note types
+        if (!meta) return null;
         const NoteIcon = meta.icon;
         const isClassVisible = note.visibility === 'class';
         const time = new Date(note.created_at || new Date()).toLocaleTimeString([], {
@@ -260,7 +257,8 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         });
 
         return (
-            <Box>
+            <Box
+                key={note.id}
                 sx={{
                     backgroundColor: note.is_pinned ? colors.tertiary : colors.secondary,
                     borderRadius: Theme.corners.comfortable,
@@ -271,80 +269,75 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     padding: Theme.spacing.md,
                     marginBottom: Theme.spacing.sm,
                 }}
-            
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    {/* Type badge */}>
-                    <HStack sx={{ gap: 6, alignItems: 'center', flex: 1 }}>
-                        <NoteIcon size={14} color={meta.color} /
-                        ><Text
-                            sx={{
-                                fontSize: Theme.typography.fontSize.xs,
-                                fontWeight: '700',
-                                color: meta.color,
-                                textTransform: 'uppercase',
-                                letterSpacing: 0.5,
-                            }}
-                        
-                            {meta.label}
-                        </Text>
-                        {isClassVisible && (
-                            <Globe size={12} color={colors.textTertiary} /
-                        >)}
-                        {!isClassVisible && (
-                            <Lock size={12} color={colors.textTertiary} /
-                        >)}
+            >
+                <VStack sx={{ gap: Theme.spacing.xs }}>
+                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <HStack sx={{ gap: 6, alignItems: 'center', flex: 1 }}>
+                            <NoteIcon size={14} color={meta.color} />
+                            <Text
+                                sx={{
+                                    fontSize: Theme.typography.fontSize.xs,
+                                    fontWeight: '700',
+                                    color: meta.color,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 0.5,
+                                }}
+                            >
+                                {meta.label}
+                            </Text>
+                            {isClassVisible && <Globe size={12} color={colors.textTertiary} />}
+                            {!isClassVisible && <Lock size={12} color={colors.textTertiary} />}
+                        </HStack>
+
+                        <HStack sx={{ gap: 10, alignItems: 'center' }}>
+                            <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text>
+                            {isTeacher && (
+                                <HStack sx={{ gap: 8 }}>
+                                    <TouchableOpacity onPress={() => handleTogglePin(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                                        <Pin
+                                            size={14}
+                                            color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
+                                            fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                                        {isClassVisible ? (
+                                            <Globe size={14} color={Theme.colors.gurudeviViolet} />
+                                        ) : (
+                                            <Lock size={14} color={colors.textTertiary} />
+                                        )}
+                                    </TouchableOpacity>
+                                </HStack>
+                            )}
+                            <TouchableOpacity onPress={() => handleDelete(note.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                                <X size={14} color={colors.textTertiary} />
+                            </TouchableOpacity>
+                        </HStack>
                     </HStack>
 
-                    {/* Actions (own notes only) */}
-                    <HStack sx={{ gap: 10, alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text
-                        >{isTeacher && (
-                            <
-                                <TouchableOpacity onPress={() => handleTogglePin(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                                    <Pin>
-                                        size={14}
-                                        color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
-                                        fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
-                                    /
-                                ></TouchableOpacity
-                                ><TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                                    {isClassVisible
-                                        ? <Globe size={14} color={Theme.colors.gurudeviViolet} /
-                                        >: <Lock size={14} color={colors.textTertiary} /
-                                    >}
-                                </TouchableOpacity>
-                            </
-                        )}
-                        <TouchableOpacity onPress={() => handleDelete(note.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                            <X size={14} color={colors.textTertiary} /
-                        ></TouchableOpacity
-                    </HStack>
-                </HStack>
-
-                <Text>
-                    sx={{
-                        fontSize: Theme.typography.fontSize.sm,
-                        color: colors.text,
-                        marginTop: Theme.spacing.xs,
-                        lineHeight: 20,
-                    }}
-                
-                    {note.content}
-                </Text>
-
-                {/* Author line for class-visible notes (shows who wrote it) */}
-                {isClassVisible && note.author && (
-                    <Text sx={{ fontSize: 11, color: colors.textTertiary, marginTop: 4 }}
-                        \u2014 {note.author.full_name}>
+                    <Text
+                        sx={{
+                            fontSize: Theme.typography.fontSize.sm,
+                            color: colors.text,
+                            lineHeight: 20,
+                        }}
+                    >
+                        {note.content}
                     </Text>
-                )}
+
+                    {isClassVisible && note.author && (
+                        <Text sx={{ fontSize: 11, color: colors.textTertiary, marginTop: 4 }}>
+                            — {note.author.full_name}
+                        </Text>
+                    )}
+                </VStack>
             </Box>
         );
     };
 
     const renderGroup = ({ item: group }: { item: NoteGroup }) => (
         <VStack sx={{ marginBottom: Theme.spacing.md }}>
-            <Text>
+            <Text
                 sx={{
                     fontSize: Theme.typography.fontSize.xs,
                     fontWeight: '700',
@@ -354,7 +347,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     marginBottom: Theme.spacing.sm,
                     paddingHorizontal: Theme.spacing.lg,
                 }}
-            
+            >
                 {group.label}
             </Text>
             <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}>
@@ -366,32 +359,31 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     if (loading) {
         return (
             <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 40 }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
-            ></Box
-        >);
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            </Box>
+        );
     }
 
     return (
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={120}>
-        
+            keyboardVerticalOffset={120}
+        >
             <VStack sx={{ flex: 1 }}>
-                {/* Note list */}>
                 {grouped.length === 0 ? (
                     <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
-                        <PositiveInvitation/>
+                        <PositiveInvitation
                             title="No notes yet"
                             description={
                                 isTeacher
-                                    ? "Tap the button below to add your first note \u2014 recap today's lesson, pin an announcement, or jot a private reminder."
+                                    ? "Tap the button below to add your first note — recap today's lesson, pin an announcement, or jot a private reminder."
                                     : "Tap the button below to add personal study notes for this class. Teacher announcements will appear here too."
                             }
-                        /
-                    ></Box
-                >) : (
-                    <FlatList/>
+                        />
+                    </Box>
+                ) : (
+                    <FlatList
                         data={grouped}
                         keyExtractor={(g) => g.label}
                         renderItem={renderGroup}
@@ -400,148 +392,142 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             paddingBottom: composing ? 0 : 100,
                         }}
                         showsVerticalScrollIndicator={false}
-                    /
-                >)}
+                    />
+                )}
 
-                {/* Compose sheet */}
                 {composing ? (
-                    <Box>
+                    <Box
                         sx={{
                             backgroundColor: colors.secondary,
                             borderTopWidth: 1,
                             borderTopColor: colors.border,
                             padding: Theme.spacing.md,
                         }}
-                    
-                        {/* Type selector (teacher only: all types; student: personal only) */}
-                        {isTeacher && (
-                            <ScrollableTypeSelector>
-                                types={availableTypes}
-                                selected={draftType}
-                                onSelect={setDraftType}
-                                colors={colors}
-                            /
-                        >)}
+                    >
+                        <VStack sx={{ gap: Theme.spacing.sm }}>
+                            {isTeacher && (
+                                <ScrollableTypeSelector
+                                    types={availableTypes}
+                                    selected={draftType}
+                                    onSelect={(t) => { hapticLight(); setDraftType(t); }}
+                                    colors={colors}
+                                />
+                            )}
 
-                        {/* Visibility toggle (teacher only) */}
-                        {isTeacher && (
-                            <TouchableOpacity>
-                                onPress={() =
-                                    setDraftVisibility((v) =
-                                        v === 'private' ? 'class' : 'private'
-                                    )
+                            {isTeacher && (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        hapticLight();
+                                        setDraftVisibility((v) => (v === 'private' ? 'class' : 'private'));
+                                    }}
+                                    style={styles.visibilityToggle}
+                                >
+                                    <HStack sx={{ gap: 6, alignItems: 'center' }}>
+                                        {draftVisibility === 'class' ? (
+                                            <Globe size={14} color={Theme.colors.gurudeviViolet} />
+                                        ) : (
+                                            <Lock size={14} color={colors.textTertiary} />
+                                        )}
+                                        <Text sx={{ fontSize: 12, color: draftVisibility === 'class' ? Theme.colors.gurudeviViolet : colors.textTertiary }}>
+                                            {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
+                                        </Text>
+                                        <ChevronDown size={12} color={colors.textTertiary} />
+                                    </HStack>
+                                </TouchableOpacity>
+                            )}
+
+                            <TextInput
+                                value={draft}
+                                onChangeText={setDraft}
+                                placeholder={
+                                    draftType === 'announcement'
+                                        ? "Write an announcement for the class..."
+                                        : draftType === 'lesson_recap'
+                                            ? "What did you cover today?..."
+                                            : draftType === 'reminder'
+                                                ? "What do you need to remember?..."
+                                                : draftType === 'personal'
+                                                    ? "Write your study note..."
+                                                    : "Write your note..."
                                 }
-                                style={styles.visibilityToggle}
-                            
-                                <HStack sx={{ gap: 6, alignItems: 'center' }}>
-                                    {draftVisibility === 'class' ? (>
-                                        <Globe size={14} color={Theme.colors.gurudeviViolet} /
-                                    >) : (
-                                        <Lock size={14} color={colors.textTertiary} /
-                                    >)}
-                                    <Text sx={{ fontSize: 12, color: draftVisibility === 'class' ? Theme.colors.gurudeviViolet : colors.textTertiary }}>
-                                        {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
-                                    </Text>
-                                    <ChevronDown size={12} color={colors.textTertiary} /
-                                ></HStack
-                            ></TouchableOpacity>
-                        )}
-
-                        {/* Text input */}
-                        <TextInput>
-                            value={draft}
-                            onChangeText={setDraft}
-                            placeholder={
-                                draftType === 'announcement'
-                                    ? "Write an announcement for the class\u2026"
-                                    : draftType === 'lesson_recap'
-                                        ? "What did you cover today?\u2026"
-                                        : draftType === 'reminder'
-                                            ? "What do you need to remember?\u2026"
-                                            : draftType === 'personal'
-                                                ? "Write your study note\u2026"
-                                                : "Write your note\u2026"
-                            }
-                            placeholderTextColor={colors.textTertiary}
-                            multiline
-                            autoFocus
-                            style={[
-                                styles.textInput,>
-                                {
-                                    color: colors.text,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                },
-                            ]}
-                        /
-
-                        >{/* Action row */}
-                        <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}>
-                            <TouchableOpacity>
-                                onPress={() => {
-                                    setComposing(false);
-                                    setDraft('');
-                                }}
-                                style={styles.cancelBtn}
-                            
-                                <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>
-                                    Cancel>
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                onPress={handleSave}
-                                disabled={!draft.trim() || saving}
+                                placeholderTextColor={colors.textTertiary}
+                                multiline
+                                autoFocus
                                 style={[
-                                    styles.saveBtn,>
+                                    styles.textInput,
                                     {
-                                        backgroundColor: draft.trim()
-                                            ? Theme.colors.sanctuarySaffron
-                                            : colors.tertiary,
+                                        color: colors.text,
+                                        backgroundColor: colors.tertiary,
+                                        borderColor: colors.border,
                                     },
                                 ]}
-                            
-                                {saving ? (
-                                    <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /
-                                >) : (
-                                    <Text>
-                                        sx={{
-                                            fontSize: 14,
-                                            fontWeight: '700',
-                                            color: draft.trim()
-                                                ? Theme.colors.sacredWhite
-                                                : colors.textTertiary,
-                                        }}
-                                    
-                                        Save
+                            />
+
+                            <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        hapticLight();
+                                        setComposing(false);
+                                        setDraft('');
+                                    }}
+                                    style={styles.cancelBtn}
+                                >
+                                    <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>
+                                        Cancel
                                     </Text>
-                                )}
-                            </TouchableOpacity>
-                        </HStack>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleSave}
+                                    disabled={!draft.trim() || saving}
+                                    style={[
+                                        styles.saveBtn,
+                                        {
+                                            backgroundColor: draft.trim()
+                                                ? Theme.colors.sanctuarySaffron
+                                                : colors.tertiary,
+                                        },
+                                    ]}
+                                >
+                                    {saving ? (
+                                        <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
+                                    ) : (
+                                        <Text
+                                            sx={{
+                                                fontSize: 14,
+                                                fontWeight: '700',
+                                                color: draft.trim()
+                                                    ? Theme.colors.sacredWhite
+                                                    : colors.textTertiary,
+                                            }}
+                                        >
+                                            Save
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+                            </HStack>
+                        </VStack>
                     </Box>
                 ) : (
-                    /* Floating add button */
-                    <Box>
+                    <Box
                         sx={{
                             position: 'absolute',
                             bottom: 24,
                             right: 20,
                         }}
-                    
-                        <TouchableOpacity>
-                            onPress={() => setComposing(true)}
+                    >
+                        <TouchableOpacity
+                            onPress={() => { hapticLight(); setComposing(true); }}
                             style={[styles.fabButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                             activeOpacity={0.85}
-                        
-                            <NotebookPen size={20} color={Theme.colors.sacredWhite} /
-                        ></TouchableOpacity
-                    ></Box>
+                        >
+                            <NotebookPen size={20} color={Theme.colors.sacredWhite} />
+                        </TouchableOpacity>
+                    </Box>
                 )}
             </VStack>
         </KeyboardAvoidingView>
     );
 }
-
-// \u2500\u2500 Scrollable type chip row \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function ScrollableTypeSelector({
     types,
@@ -561,7 +547,7 @@ function ScrollableTypeSelector({
                 const isActive = selected === type;
                 const Icon = meta.icon;
                 return (
-                    <TouchableOpacity>
+                    <TouchableOpacity
                         key={type}
                         onPress={() => onSelect(type)}
                         style={[
@@ -571,16 +557,16 @@ function ScrollableTypeSelector({
                                 borderColor: isActive ? meta.color : colors.border,
                             },
                         ]}
-                    
-                        <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} /
-                        ><Text
+                    >
+                        <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} />
+                        <Text
                             style={{
                                 fontSize: 11,
                                 fontWeight: isActive ? '700' : '400',
                                 color: isActive ? Theme.colors.sacredWhite : colors.textSecondary,
                                 marginLeft: 4,
                             }}
-                        
+                        >
                             {meta.label}
                         </Text>
                     </TouchableOpacity>
@@ -589,8 +575,6 @@ function ScrollableTypeSelector({
         </View>
     );
 }
-
-// \u2500\u2500 Styles \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const styles = StyleSheet.create({
     textInput: {

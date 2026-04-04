@@ -1,6 +1,7 @@
 import React from 'react';
 import { BookOpen, MessageSquare, Star, Layout, TrendingUp, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Box, Text, Heading, Pressable, Theme } from '@repo/ui';
 
 export const StudentStudySuite = () => {
     const navigation = useNavigation<any>();
@@ -14,13 +15,48 @@ export const StudentStudySuite = () => {
     ];
 
     return (
-        <div className="sanctuary-card" style={{ padding: '24px' }}            <h3 style={{ fontSize: '14px', fontWeight: '800', marginBottom: '16px' }}>Study Suite</h3            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}                {items.map((item, i) => (
-                    <div 
-                        key={i} 
-                        style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', cursor: 'pointer' }} 
-                        onMouseOver={e => (e.currentTarget.style.background = 'var(--background-alt)')} 
-                        onMouseOut={e => (e.currentTarget.style.background = 'transparent')} 
-                        onClick={item.onClick}
-                                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--background-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}                            <item.icon size={16} color={item.color} /                        </div                        <span style={{ fontSize: '13px', fontWeight: '600' }}>{item.label}</span                        <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.2 }} /                    </div                ))}
-            </div        </div    );
+        <Box className="sanctuary-card" sx={{ padding: Theme.spacing.xl }}>
+            <Heading sx={{ fontSize: 14, fontWeight: '800', marginBottom: Theme.spacing.md }}>
+                Study Suite
+            </Heading>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {items.map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                        <Pressable
+                            key={i}
+                            onPress={item.onClick}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 12,
+                                padding: 12,
+                                borderRadius: Theme.corners.comfortable,
+                                ':hover': {
+                                    backgroundColor: 'var(--background-alt)',
+                                },
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: Theme.corners.tight,
+                                    backgroundColor: 'var(--background-alt)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Icon size={16} color={item.color} />
+                            </Box>
+                            <Text sx={{ fontSize: 13, fontWeight: '600', flex: 1 }}>{item.label}</Text>
+                            <ChevronRight size={14} style={{ opacity: 0.2 }} />
+                        </Pressable>
+                    );
+                })}
+            </Box>
+        </Box>
+    );
 };

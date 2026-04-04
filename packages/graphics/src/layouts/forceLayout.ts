@@ -96,7 +96,7 @@ function extractPositions(nodes: GraphNode[]): Map<string, { x: number; y: numbe
 
 function computeBounds(
     nodes: GraphNode[],
-    opts: Required<ForceLayoutOptions
+    opts: Required<ForceLayoutOptions>
 ): LayoutResult['bounds'] {
     if (nodes.length === 0) {
         return { width: opts.width, height: opts.height, minX: 0, minY: 0 };

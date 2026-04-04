@@ -63,7 +63,7 @@ describe('DocumentListScreen', () => {
 
   describe('Rendering', () => {
     it('should render the document list screen correctly', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('Documents')).toBeTruthy();
@@ -71,16 +71,16 @@ describe('DocumentListScreen', () => {
       });
     });
 
-    it('should display loading state initially', () => {
+    it('should display loading state initially', async () => {
       mockedDocumentAPI.getDocuments.mockImplementation(() => new Promise(() => {}));
       
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       expect(screen.getByText('Loading documents...')).toBeTruthy();
     });
 
     it('should display documents when loaded', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('Test Document 1')).toBeTruthy();
@@ -91,7 +91,7 @@ describe('DocumentListScreen', () => {
     it('should display empty state when no documents', async () => {
       mockedDocumentAPI.getDocuments.mockResolvedValue([]);
       
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText(/No documents yet/)).toBeTruthy();
@@ -101,7 +101,7 @@ describe('DocumentListScreen', () => {
 
   describe('Document Filtering', () => {
     it('should filter documents by status', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('Test Document 1')).toBeTruthy();
@@ -118,7 +118,7 @@ describe('DocumentListScreen', () => {
     });
 
     it('should show all documents when "All" filter is selected', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       // First tap on 'draft' filter
       fireEvent.press(screen.getByText('Draft (1)'));
@@ -140,7 +140,7 @@ describe('DocumentListScreen', () => {
 
   describe('Document Interactions', () => {
     it('should call onDocumentPress when document is pressed', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('Test Document 1')).toBeTruthy();
@@ -152,7 +152,7 @@ describe('DocumentListScreen', () => {
     });
 
     it('should call onCreateNew when create button is pressed', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('+ New')).toBeTruthy();
@@ -166,7 +166,7 @@ describe('DocumentListScreen', () => {
 
   describe('Status Badge Display', () => {
     it('should show correct status badges', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('DRAFT')).toBeTruthy();
@@ -175,7 +175,7 @@ describe('DocumentListScreen', () => {
     });
 
     it('should show "Pending Review" badge for review documents', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByText('Pending Review')).toBeTruthy();
@@ -188,7 +188,7 @@ describe('DocumentListScreen', () => {
       mockedDocumentAPI.getDocuments.mockRejectedValue(new Error('API Error'));
       const alertSpy = jest.spyOn(Alert, 'alert');
       
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith('Error', 'Failed to load documents');
@@ -197,14 +197,14 @@ describe('DocumentListScreen', () => {
   });
 
   describe('Responsive Design', () => {
-    it('should adapt layout for different screen sizes', () => {
-      const { rerender } = render(<DocumentListScreen {...mockProps} />);
+    it('should adapt layout for different screen sizes', async () => {
+      const { rerender } = await render(<DocumentListScreen {...mockProps} />);
       
       // The component should render without crashing
       expect(screen.getByText('Documents')).toBeTruthy();
       
       // Re-render with different props if needed for responsive testing
-      rerender(<DocumentListScreen {...mockProps} />);
+      await rerender(<DocumentListScreen {...mockProps} />);
       
       expect(screen.getByText('Documents')).toBeTruthy();
     });
@@ -212,7 +212,7 @@ describe('DocumentListScreen', () => {
 
   describe('Accessibility', () => {
     it('should have proper accessibility labels', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         const documentItems = screen.getAllByTestId('document-item');
@@ -221,7 +221,7 @@ describe('DocumentListScreen', () => {
     });
 
     it('should support screen reader navigation', async () => {
-      render(<DocumentListScreen {...mockProps} />);
+      await render(<DocumentListScreen {...mockProps} />);
       
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /Create new document/ })).toBeTruthy();

@@ -33,6 +33,7 @@ const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod => Inv
     used: Boolean(row.used ?? !row.is_active) || Number(row.uses_count ?? 0) > 0,
     created_at: row.created_at,
     expires_at: row.expires_at ?? null,
+    is_active: Boolean(row.is_active ?? true),
   });
 
 const recordGovernanceEvent = async ({

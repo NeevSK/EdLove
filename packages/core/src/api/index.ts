@@ -27,6 +27,7 @@ import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from './principalWo
 import { teacherInsightsAPI as rawTeacherInsightsAPI } from './teacherInsights';
 import { longitudinalAPI as rawLongitudinalAPI } from './longitudinal';
 import { staffManagementAPI as _staffManagementAPI } from './staffManagement';
+import { profileAPI as rawProfileAPI } from './profile';
 import { createTemporalProxy } from './temporalProxy';
 import { createTemporalPOAProxy } from './temporalPOAProxy';
 import { createPOAProxy } from './poaProxy';
@@ -65,6 +66,7 @@ import { guardianContract } from './guardian.contract';
 import { principalWorkspaceContract } from './principalWorkspace.contract';
 import { teacherInsightsContract } from './teacherInsights.contract';
 import { longitudinalContract } from './longitudinal.contract';
+import { profileContract } from './profile.contract';
 
 const staffManagementAPI = createTemporalPOAProxy(
     'staffManagement', 
@@ -218,7 +220,11 @@ const schoolAPI = createTemporalPOAProxy('school', rawSchoolAPI, operationsContr
     getSchoolStats: 'getSchoolStats',
     getSections: 'getSchoolSections',
     getGrades: 'getSectionGrades',
+    getInviteCodes: 'getInviteCodes',
+    generateInviteCode: 'generateInviteCode',
     update: 'updateSchool',
+    createSection: 'createSchoolSection',
+    createGrade: 'createSectionGrade',
 });
 const inventoryAPI = createTemporalPOAProxy('inventory', rawInventoryAPI, operationsContract, {
     getAll: 'getInventory',
@@ -316,6 +322,13 @@ const notesWithPOA = createTemporalPOAProxy(
     classroomNotesCoverage.methodMapping,
     { strictUnmappedMethods: true }
 );
+const profileAPI = createPOAProxy(
+    'profile',
+    rawProfileAPI,
+    profileContract,
+    {},
+    { strictUnmappedMethods: true }
+);
 
 // Simplified named exports for direct access
 export {
@@ -369,6 +382,7 @@ export {
     historyAPI,
     formTemplatesAPI,
     socialAPI,
+    profileAPI,
 };
 
 export * from './mockData';
@@ -478,6 +492,7 @@ export const api = {
     history: historyAPI,
     forms: formTemplatesAPI,
     socialAPI,
+    profile: profileAPI,
 };
 
 export default api;

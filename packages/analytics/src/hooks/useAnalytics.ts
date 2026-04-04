@@ -79,7 +79,7 @@ import { InsightGenerator } from '../ml/InsightGenerator';
 import { supabase } from '@repo/core';
 
 const performanceAnalyzer = new PerformanceAnalyzer(supabase);
-const predictor = new Predictor(supabase);
+export const predictor = new Predictor(supabase);
 const insightGenerator = new InsightGenerator();
 
 export function useStudentPerformance(

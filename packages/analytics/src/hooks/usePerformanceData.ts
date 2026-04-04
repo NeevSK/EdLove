@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { ClassAnalytics } from '../types/AnalyticsTypes';
 import { PerformanceAnalyzer } from '../engine/PerformanceAnalyzer';
+import { supabase } from '@repo/core';
 
-const performanceAnalyzer = new PerformanceAnalyzer();
+const performanceAnalyzer = new PerformanceAnalyzer(supabase);
 
 export function usePerformanceData(classId?: string) {
   return useQuery({

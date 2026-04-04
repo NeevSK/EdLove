@@ -59,12 +59,14 @@ export interface EducationalRepository {
     removeStudent(classroomId: string, studentId: string): Promise<void>;
 
     getEnrollmentRecords(classroomId: string): Promise<EnrollmentRecord[]>;
-    addShadowStudent(classroomId: string, fullName: string, rollNumber?: number, notes?: string): Promise<EnrollmentRecord>;
+    addShadowStudent(classroomId: string, fullName: string, rollNumber?: string, notes?: string): Promise<EnrollmentRecord>;
     claimStudent(inviteCode: string, studentId: string): Promise<EnrollmentRecord>;
-    addStudent(classroomId: string, studentId: string, rollNumber?: number, notes?: string): Promise<EnrollmentRecord>;
-    updateEnrollmentRecordById(id: string, updates: { roll_number?: number; notes?: string }): Promise<EnrollmentRecord>;
-    updateEnrollmentRecord(classroomId: string, studentId: string, updates: { roll_number?: number; notes?: string }): Promise<EnrollmentRecord>;
+    addStudent(classroomId: string, studentId: string, rollNumber?: string, notes?: string): Promise<EnrollmentRecord>;
+    updateEnrollmentRecordById(id: string, updates: { roll_number?: string; notes?: string }): Promise<EnrollmentRecord>;
+    updateEnrollmentRecord(classroomId: string, studentId: string, updates: { roll_number?: string; notes?: string }): Promise<EnrollmentRecord>;
     deleteEnrollmentRecord(id: string): Promise<void>;
+
+    getTeacherStats(teacherId: string): Promise<any>;
 
     getMaterials(classroomId: string): Promise<LessonMaterial[]>;
     getMaterialsByLesson(lessonId: string): Promise<LessonMaterial[]>;

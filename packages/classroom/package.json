@@ -10,8 +10,6 @@
     "./teacher": "./src/entrypoints/teacher.ts",
     "./student": "./src/entrypoints/student.ts",
     "./screens/ClassroomScreen.web": "./src/screens/ClassroomScreen.web.tsx",
-    "./screens/PrincipalDashboard": "./src/screens/PrincipalDashboard.tsx",
-    "./screens/PrincipalDashboard.web": "./src/screens/PrincipalDashboard.web.tsx",
     "./screens/TeacherClassroomDashboard.web": "./src/screens/TeacherClassroomDashboard.web.tsx",
     "./screens/StudentClassroomDashboard": "./src/screens/StudentClassroomDashboard.tsx",
     "./screens/AttendanceScreen.web": "./src/screens/AttendanceScreen.web.tsx",

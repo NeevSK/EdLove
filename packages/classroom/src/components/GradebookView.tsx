@@ -54,25 +54,23 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
     };
 
     if (showSettings) {
-        return (
-            gradingSettings && (
-                <GradingSettings/>
-                    currentSettings={gradingSettings}
-                    onSave={handleSaveSettings}
-                    onCancel={() => setShowSettings(false)}
-                /
-            >)
-        );
+        return gradingSettings ? (
+            <GradingSettings
+                currentSettings={gradingSettings as any}
+                onSave={handleSaveSettings}
+                onCancel={() => setShowSettings(false)}
+            />
+        ) : null;
     }
 
     return (
         <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
             <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}>
                 <VStack sx={{ gap: Theme.spacing.lg }}>
-                    {/* Header Stats & Controls */}>
+                    {/* Header Stats & Controls */}
                     <VStack sx={{ gap: Theme.spacing.md }}>
-                        {/* Stats Summary */}>
-                        <HStack>
+                        {/* Stats Summary */}
+                        <HStack
                             sx={{
                                 gap: Theme.spacing.md,
                                 padding: Theme.spacing.md,
@@ -80,15 +78,15 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
                                 borderColor: colors.border,
-                                ...Theme.shadows.sm,>
+                                ...Theme.shadows.sm,
                             }}
-                        
+                        >
                             <VStack sx={{ flex: 1 }}>
                                 <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
                                     {t('grading.gradebook.totalStudents') || 'Total Students'}
                                 </Text>
                                 <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}>
-                                    {grades.length}>
+                                    {grades.length}
                                 </Text>
                             </VStack>
 
@@ -97,11 +95,11 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                     {t('grading.gradebook.averageMarks') || 'Average'}
                                 </Text>
                                 <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}>
-                                    {stats.averageMarks}>
+                                    {stats.averageMarks}
                                 </Text>
                             </VStack>
 
-                            <Button>
+                            <Button
                                 variant="outline"
                                 action="secondary"
                                 onPress={() => {
@@ -109,9 +107,9 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                     setShowSettings(true);
                                 }}
                                 sx={{ alignSelf: 'center', height: 36, borderRadius: Theme.corners.full }}
-                            
+                            >
                                 <ButtonText sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
-                                    {t('grading.settings.button') || 'Settings'}>
+                                    {t('grading.settings.button') || 'Settings'}
                                 </ButtonText>
                             </Button>
                         </HStack>
@@ -123,11 +121,14 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                             </Text>
 
                             {(['rank', 'marks', 'name'] as const).map((option) => (
-                                <TouchableOpacity key={option} onPress={() => {
-                                    hapticLight();
-                                    setSortBy(option);
-                                }}
-                                    <Box>
+                                <TouchableOpacity
+                                    key={option}
+                                    onPress={() => {
+                                        hapticLight();
+                                        setSortBy(option);
+                                    }}
+                                >
+                                    <Box
                                         sx={{
                                             paddingVertical: Theme.spacing.xs,
                                             paddingHorizontal: Theme.spacing.md,
@@ -136,11 +137,11 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                             borderWidth: 1,
                                             borderColor: sortBy === option ? Theme.colors.sanctuarySaffron : colors.border,
                                         }}
-                                    
-                                        <Text>
+                                    >
+                                        <Text
                                             color={sortBy === option ? Theme.colors.sacredWhite : colors.textSecondary}
                                             sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: sortBy === option ? '700' : '400' }}
-                                        
+                                        >
                                             {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
                                         </Text>
                                     </Box>
@@ -151,25 +152,25 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
 
                     {/* Content Area */}
                     <Box sx={{ flex: 1 }}>
-                        {isLoading && (>
+                        {isLoading && (
                             <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
                                 <Spinner color={Theme.colors.sanctuarySaffron} />
-                            ></Box>
+                            </Box>
                         )}
 
                         {error && !isLoading && (
                             <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.errorBackground, borderRadius: Theme.corners.comfortable }}>
-                                <Text color={Theme.colors.errorText} sx={{ fontSize: Theme.typography.fontSize.sm }}>{error}</Text
-                            ></Box>
+                                <Text color={Theme.colors.errorText} sx={{ fontSize: Theme.typography.fontSize.sm }}>{error}</Text>
+                            </Box>
                         )}
 
                         {!isLoading && !error && grades.length > 0 && gradingSettings && (
-                            <GradebookTable>
-                                grades={sortedGrades}
+                            <GradebookTable
+                                grades={sortedGrades as any}
                                 gradingSettings={gradingSettings}
                                 studentNames={studentNames}
                             />
-                        >)}
+                        )}
 
                         {!isLoading && !error && grades.length === 0 && (
                             <Box sx={{ padding: Theme.spacing['2xl'], alignItems: 'center', marginTop: 40 }}>

@@ -8,7 +8,7 @@ import { communityAPI } from '../api/community';
 export const COMMUNITY_KEYS = {
     all: ['community'] as const,
     groups: () => [...COMMUNITY_KEYS.all, 'groups'] as const,
-    posts: (groupId?: string, date?: string, scale?: string) =        [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now', scale || 'day'] as const,
+    posts: (groupId?: string, date?: string, scale?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now', scale || 'day'] as const,
 };
 
 export const useCommunity = (groupId?: string, options: { searchQuery?: string; isPublicOnly?: boolean } = {}) => {

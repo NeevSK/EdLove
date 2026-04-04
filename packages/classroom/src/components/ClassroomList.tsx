@@ -16,20 +16,12 @@ import {
     ListRenderItemInfo,
     GestureResponderEvent,
 } from 'react-native';
-import { Box, Text, Heading, VStack, HStack } from '@repo/ui';
-import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap, Trash2, Edit2 } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { api, MOCK_CLASSROOMS, identityAPI } from '@repo/core';
-import { useStore, usePermissions } from '@repo/core';
-import { useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
+import { Box, Text, Heading, VStack, HStack, Theme, useThemedColors, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap } from 'lucide-react-native';
+import { api, MOCK_CLASSROOMS, identityAPI, useStore, usePermissions, useFeatureAccess } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { useThemedColors } from '@repo/ui';
-import RoleInitialState from './RoleInitialState';
 import CreateClassroomModal from './CreateClassroomModal';
-import { useFeatureAccess } from '@repo/core';
-import { PositiveInvitation } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
 
 interface ClassroomListProps {
     onClassroomPress?: (classroom: WorkspaceClassroom) => void;
@@ -67,6 +59,7 @@ export default function ClassroomList({
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
     const colors = useThemedColors();
+    
     const styles = useMemo(() => StyleSheet.create({
         container: {
             flex: 1,
@@ -104,6 +97,7 @@ export default function ClassroomList({
             color: Theme.colors.sacredWhite,
         },
     }), [colors]);
+
     const [error, setError] = useState<string | null>(null);
     const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -113,8 +107,7 @@ export default function ClassroomList({
     const [isFetchingMore, setIsFetchingMore] = useState(false);
     const PAGE_SIZE = 10;
     const toast = useToast();
-    const { isExplorerMode, dismissedSampleIds } = useStore();
-
+    const { dismissedSampleIds } = useStore();
 
     useEffect(() => {
         let isMounted = true;
@@ -259,19 +252,18 @@ export default function ClassroomList({
         const studentCount = (classroom as any).student_count || 0;
 
         return (
-            <ClassroomCard/>
+            <ClassroomCard
                 classroom={classroom}
                 onPress={handleClassroomPress}
-                onClassroomPress={onClassroomPress}
                 studentCount={studentCount}
                 colors={colors}
-                setPendingInitialData={setPendingInitialData}
                 setIsCreateModalOpen={setIsCreateModalOpen}
+                setPendingInitialData={setPendingInitialData}
                 toast={toast}
                 t={t}
             />
-        >);
-    }, [handleClassroomPress, onClassroomPress, colors, toast, t]);
+        );
+    }, [handleClassroomPress, colors, toast, t]);
 
     const keyExtractor = useCallback((item: WorkspaceClassroom) => item.id, []);
     const ItemSeparator = useCallback(() => <View style={{ height: Theme.spacing.md }} />, []);
@@ -280,22 +272,21 @@ export default function ClassroomList({
         return (
             <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
                 <SkeletonCard height={80} />
-                ><SkeletonCard height={80} /
-                ><SkeletonCard height={80} />
-            ></VStack>
+                <SkeletonCard height={80} />
+                <SkeletonCard height={80} />
+            </VStack>
         );
     }
 
     if (error) {
         return (
             <View style={styles.centerContainer}>
-                <Text style={styles.errorText}>\u26A0\uFE0F {error}</Text
-                ><TouchableOpacity
+                <Text style={styles.errorText}>⚠️ {error}</Text>
+                <TouchableOpacity
                     style={styles.retryButton}
                     onPress={handleRetry}>
-                
-                    <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text
-                ></TouchableOpacity>
+                    <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -304,8 +295,8 @@ export default function ClassroomList({
         return (
             <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
                 {classrooms.length === 0 ? (
-                    emptyContent || (>
-                        <PositiveInvitation/>
+                    emptyContent || (
+                        <PositiveInvitation
                             context="classroom"
                             onAction={() => {
                                 hapticLight();
@@ -314,26 +305,25 @@ export default function ClassroomList({
                                     setIsCreateModalOpen(true);
                                 }
                             }}
-                        /
-                    >)
+                        />
+                    )
                 ) : (
                     classrooms.map((classroom) => (
-                        <ClassroomCard/>
+                        <ClassroomCard
                             key={classroom.id}
                             classroom={classroom}
                             onPress={handleClassroomPress}
-                            onClassroomPress={onClassroomPress}
                             studentCount={(classroom as any).student_count || 0}
                             colors={colors}
-                            setPendingInitialData={setPendingInitialData}
                             setIsCreateModalOpen={setIsCreateModalOpen}
+                            setPendingInitialData={setPendingInitialData}
                             toast={toast}
                             t={t}
                         />
-                    >))
+                    ))
                 )}
 
-                <CreateClassroomModal/>
+                <CreateClassroomModal
                     isOpen={isCreateModalOpen}
                     initialData={pendingInitialData}
                     onClose={() => {
@@ -344,15 +334,15 @@ export default function ClassroomList({
                         hapticSuccess();
                         setInternalRefreshTrigger(prev => prev + 1);
                     }}
-                /
-            ></VStack>
+                />
+            </VStack>
         );
     }
 
     return (
         <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-            {classrooms.length === 0 ? (>
-                <PositiveInvitation>
+            {classrooms.length === 0 ? (
+                <PositiveInvitation
                     context="classroom"
                     onAction={() => {
                         hapticLight();
@@ -361,10 +351,10 @@ export default function ClassroomList({
                             setIsCreateModalOpen(true);
                         }
                     }}
-                /
-            >) : (
-                <
-                    <FlatList>
+                />
+            ) : (
+                <>
+                    <FlatList
                         data={classrooms}
                         renderItem={renderClassroomCard}
                         keyExtractor={keyExtractor}
@@ -374,15 +364,11 @@ export default function ClassroomList({
                         showsVerticalScrollIndicator={false}
                         onEndReached={fetchMore}
                         onEndReachedThreshold={0.5}
-                        ListFooterComponent={isFetchingMore ? <ActivityIndicator color={colors.action} style={{ padding: 10 }} /> : null}
-                        initialNumToRender={10}
-                        maxToRenderPerBatch={10}
-                        windowSize={5}
-                        removeClippedSubviews={true}
-                    /
+                        ListFooterComponent={isFetchingMore ? <ActivityIndicator color={Theme.colors.sanctuarySaffron} style={{ padding: 10 }} /> : null}
+                    />
 
-                    >{canCreateClassroom && (
-                        <TouchableOpacity>
+                    {canCreateClassroom && (
+                        <TouchableOpacity
                             onPress={() => {
                                 hapticLight();
                                 setPendingInitialData(null);
@@ -401,14 +387,14 @@ export default function ClassroomList({
                                 ...Theme.shadows.md,
                                 zIndex: 10
                             }}
-                        
-                            <Plus size={24} color="white" /
-                        ></TouchableOpacity>
+                        >
+                            <Plus size={24} color="white" />
+                        </TouchableOpacity>
                     )}
-                </
+                </>
             )}
 
-            <CreateClassroomModal/>
+            <CreateClassroomModal
                 isOpen={isCreateModalOpen}
                 initialData={pendingInitialData}
                 onClose={() => {
@@ -419,8 +405,8 @@ export default function ClassroomList({
                     hapticSuccess();
                     setInternalRefreshTrigger(prev => prev + 1);
                 }}
-            /
-        ></Box>
+            />
+        </Box>
     );
 }
 
@@ -428,116 +414,106 @@ export default function ClassroomList({
 interface ClassroomCardProps {
     classroom: WorkspaceClassroom;
     onPress: (classroom: WorkspaceClassroom) => void;
-    onClassroomPress?: (classroom: WorkspaceClassroom) => void;
     studentCount: number;
     colors: any;
     setPendingInitialData: (data: any) => void;
     setIsCreateModalOpen: (isOpen: boolean) => void;
-    toast: ReturnType<typeof useToast>;
+    toast: any;
     t: (key: string) => string;
 }
 
-const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studentCount, colors, setPendingInitialData, setIsCreateModalOpen, toast, t }: ClassroomCardProps) => {
+const ClassroomCard = React.memo(({ 
+    classroom, 
+    onPress, 
+    studentCount, 
+    colors, 
+    setPendingInitialData, 
+    setIsCreateModalOpen, 
+    toast, 
+    t 
+}: ClassroomCardProps) => {
     const handlePress = useCallback(() => {
         hapticLight();
         onPress(classroom);
     }, [classroom, onPress]);
 
-    const dismissSample = useStore(state => state.dismissSample);
+    const dismissSample = useStore(state => (state as any).dismissSample);
 
     const handleAttendancePress = useCallback((e: GestureResponderEvent) => {
         e.stopPropagation();
         hapticLight();
-        console.log('Open attendance for:', classroom.id);
-    }, [classroom.id]);
-
-    const handleDismiss = useCallback((e: GestureResponderEvent) => {
-        e.stopPropagation();
-        hapticLight();
-        dismissSample(classroom.id);
-
-        toast.show({
-            placement: "top",
-            render: ({ id }: { id: string }) => (
-                <Toast nativeID={"toast-" + id}>
-                    <VStack sx={{ gap: 4 }}>
-                        <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle
-                        ><ToastDescription
-                            {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}>
-                        </ToastDescription>
-                    </VStack>
-                </Toast>
-            ),
-        });
-    }, [classroom.id, dismissSample, toast, t]);
+        // Attendance action handled here or passed up
+    }, []);
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity
             onPress={handlePress}
-            activeOpacity={0.7}>
-        
-            <Box>
+            activeOpacity={0.7}
+        >
+            <Box
                 sx={{
                     borderRadius: Theme.corners.generous,
                     padding: Theme.spacing.md,
                     borderWidth: 1,
-                    backgroundColor: colors.secondary,
+                    backgroundColor: colors.surface,
                     borderColor: colors.border,
                 }}
-            
-                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}>
+            >
+                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}>
                     <Box sx={{
                         width: 50,
                         height: 50,
                         borderRadius: Theme.corners.comfortable,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: colors.tertiary
+                        backgroundColor: colors.surfaceVariant || colors.surface
                     }}>
-                        <BookOpen/>
+                        <BookOpen
                             size={24}
-                            color={Theme.colors.sanctuarySaffron}
+                            color={Theme.colors.templeGold}
                         />
-                    ></Box>
+                    </Box>
 
                     <VStack sx={{ flex: 1, gap: 4 }}>
-                        <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
-                                {classroom.name}>
+                        <HStack sx={{ alignItems: 'center', gap: 8 }}>
+                            <Text sx={{ fontSize: 18, fontWeight: '700', color: colors.text }}>
+                                {classroom.name}
                             </Text>
                             {(classroom as any).is_sample && (
                                 <Box sx={{
-                                    backgroundColor: Theme.colors.amberGlow + '22',
+                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
                                     paddingHorizontal: 6,
                                     paddingVertical: 2,
                                     borderRadius: 4,
                                     borderWidth: 1,
-                                    borderColor: Theme.colors.amberGlow,
+                                    borderColor: Theme.colors.templeGold,
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     gap: 2
                                 }}>
-                                    <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} /
-                                    ><Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text
-                                ></Box>
+                                    <Zap size={10} color={Theme.colors.templeGold} />
+                                    <Text sx={{ fontSize: 10, color: Theme.colors.templeGold, fontWeight: '700' }}>
+                                        {t('classroom.sample') || 'SAMPLE'}
+                                    </Text>
+                                </Box>
                             )}
                         </HStack>
-                        <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}>
+                        <HStack sx={{ alignItems: 'center', gap: 8 }}>
+                            <Text sx={{ fontSize: 14, fontWeight: '700', color: Theme.colors.templeGold }}>
                                 {classroom.subject || t('classroom.noSubject')}
                             </Text>
-                            <Box>
+                            <Box
                                 sx={{
                                     width: 4,
                                     height: 4,
                                     borderRadius: 2,
-                                    backgroundColor: colors.textTertiary,
+                                    backgroundColor: colors.textSecondary,
                                 }}
-                            /
-                            ><HStack alignItems="center" sx={{ gap: 4 }}
+                            />
+                            <HStack sx={{ alignItems: 'center', gap: 4 }}>
                                 <Users size={14} color={colors.textSecondary} />
-                                ><Text color={colors.textSecondary} sx={{ fontSize: 14 }}
-                                    {studentCount}>
+                                <Text sx={{ fontSize: 14, color: colors.textSecondary }}>
+                                    {studentCount}
                                 </Text>
                             </HStack>
                         </HStack>
@@ -547,13 +523,13 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                         <Box sx={{
                             padding: Theme.spacing.sm,
                             borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.tertiary,
+                            backgroundColor: colors.surfaceVariant || colors.surface,
                         }}>
-                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} /
-                        ></Box>
+                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
+                        </Box>
                     </TouchableOpacity>
 
-                    <ChevronRight>
+                    <ChevronRight
                         size={20}
                         color={colors.textSecondary}
                     />

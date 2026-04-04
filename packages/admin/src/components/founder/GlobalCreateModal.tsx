@@ -26,8 +26,7 @@ import {
 import { School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 import { communityAPI } from '@repo/community';
-import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
+import { hapticLight, hapticSuccess, Textarea, useTranslation } from '@repo/ui';
 import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from 'lucide-react-native';
 
 interface GlobalCreateModalProps {
@@ -114,6 +113,7 @@ export default function GlobalCreateModal({
         result = await createFounderClassroom({
           name: name.trim(),
           school_id: selectedSchoolId,
+          grade_number: 1, // Defaulting to 1 for global creator
           created_by: userId,
         });
 
@@ -348,7 +348,7 @@ function TypeButton({
       }}
       size="sm"
     >
-      {React.cloneElement(icon, { color: active ? '#fff' : colors.textSecondary })}
+      {React.cloneElement(icon as React.ReactElement<{ color?: string }>, { color: active ? '#fff' : colors.textSecondary })}
       <ButtonText color={active ? '#fff' : colors.textSecondary}>{label}</ButtonText>
     </Button>
   );

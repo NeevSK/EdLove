@@ -42,8 +42,8 @@ describe('Founder stack boundaries', () => {
     expect(nativeSource.includes('name="FounderSchoolDashboard"')).toBe(true);
     expect(nativeSource.includes('name="PrincipalDashboard"')).toBe(true);
 
-    expect(webSource.includes("import('@repo/admin/screens/FounderDashboard')")).toBe(true);
+    expect(webSource.includes("import('@repo/admin/screens/FounderDashboard.web')")).toBe(true);
     expect(webSource.includes("import('@repo/admin/screens/FounderSchoolDashboard')")).toBe(true);
-    expect(webSource.includes("import('@repo/classroom/screens/PrincipalDashboard.web')")).toBe(true);
+    expect(webSource.includes("import('@repo/admin/screens/PrincipalDashboard.web')")).toBe(true);
   });
 });

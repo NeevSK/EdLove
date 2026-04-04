@@ -46,33 +46,33 @@ export default function ManifestoCard({
             <VStack space="md">
                 <HStack justifyContent="space-between" alignItems="center">
                     <HStack space="xs" alignItems="center">
-                        <Box>
+                        <Box
                             p="$1"
                             sx={{
                                 backgroundColor: colors.overlay,
                                 borderRadius: Theme.corners.tight,
                             }}
-                        
-                            <VibeIcon size={16} color={config.color} /
-                        ></Box>
-                        <Text>
+                        >
+                            <VibeIcon size={16} color={config.color} />
+                        </Box>
+                        <Text
                             size="xs"
                             color={config.color}
                             bold
                             sx={{ textTransform: 'uppercase' }}
-                        
+                        >
                             {vibe} Manifesto
                         </Text>
                     </HStack>
 
                     <HStack space="xs" alignItems="center">
-                        <Heart/>
+                        <Heart
                             size={16}
                             color={has_endorsed ? colors.error : colors.textTertiary}
                             fill={has_endorsed ? colors.error : 'none'}
                         />
                         <Text size="xs" color={colors.textTertiary} bold>
-                            {endorsement_count}>
+                            {endorsement_count}
                         </Text>
                     </HStack>
                 </HStack>
@@ -81,19 +81,19 @@ export default function ManifestoCard({
                     <Heading size="md" color={colors.text}>
                         {title}
                     </Heading>
-                    <Text>
+                    <Text
                         size="sm"
                         numberOfLines={onPress ? 3 : undefined}
                         color={colors.textSecondary}
                         sx={{ lineHeight: 22 }}
-                    
+                    >
                         {content}
                     </Text>
                 </VStack>
 
                 <Animated.View layout={LinearTransition}>
                     <HStack justifyContent="space-between" alignItems="center" mt="$1">
-                        <Box>
+                        <Box
                             sx={{
                                 backgroundColor: has_endorsed ? colors.action : 'transparent',
                                 paddingVertical: 6,
@@ -102,13 +102,13 @@ export default function ManifestoCard({
                                 borderWidth: has_endorsed ? 0 : 1,
                                 borderColor: colors.border,
                             }}
-                        
-                            <Text>
+                        >
+                            <Text
                                 size="xs"
                                 bold
                                 color={has_endorsed ? Theme.colors.white : colors.textTertiary}
                                 onPress={() => onEndorse?.(id)}
-                            
+                            >
                                 {has_endorsed ? 'Identified with Mission' : 'Endorse Mission'}
                             </Text>
                         </Box>
@@ -116,7 +116,7 @@ export default function ManifestoCard({
                         {has_endorsed && (
                             <LivingGlow duration={3000}>
                                 <Star size={18} color={colors.action} />
-                            ></LivingGlow>
+                            </LivingGlow>
                         )}
                     </HStack>
                 </Animated.View>

@@ -47,7 +47,7 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
             ]);
 
             setData({
-                attendance: attendanceSnapshot.records,
+                attendance: attendanceSnapshot,
                 grades: gradebookSnapshot.grades,
                 observations: obsData
             });
@@ -83,9 +83,9 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
     if (isLoading) {
         return (
             <Center sx={{ flex: 1, padding: 40 }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
-            ></Center
-        >);
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            </Center>
+        );
     }
 
     return (
@@ -94,20 +94,24 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
                 <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}>
                     <VStack sx={{ gap: 4 }}>
                         <HStack sx={{ alignItems: 'center', gap: 6 }}>
-                            <TrendingUp size={14} color={Theme.colors.sanctuarySaffron} /
-                            ><Text sx={{ fontSize: 10, color: colors.textSecondary, fontWeight: 'bold' }}>{t('insights.avgGpa') || 'AVG GPA'}</Text
-                        ></HStack
-                        ><Heading sx={{ fontSize: 24, color: colors.text }}>{stats.avgGpa}</Heading
-                    ></VStack>
+                            <TrendingUp size={14} color={Theme.colors.sanctuarySaffron} />
+                            <Text sx={{ fontSize: 10, color: colors.textSecondary, fontWeight: 'bold' }}>
+                                {t('insights.avgGpa') || 'AVG GPA'}
+                            </Text>
+                        </HStack>
+                        <Heading sx={{ fontSize: 24, color: colors.text }}>{stats.avgGpa}</Heading>
+                    </VStack>
                 </Card>
                 <Card sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary }}>
                     <VStack sx={{ gap: 4 }}>
                         <HStack sx={{ alignItems: 'center', gap: 6 }}>
-                            <Calendar size={14} color={Theme.colors.amberGlow} /
-                            ><Text sx={{ fontSize: 10, color: colors.textSecondary, fontWeight: 'bold' }}>{t('insights.attendance') || 'TODAY'}</Text
-                        ></HStack
-                        ><Heading sx={{ fontSize: 24, color: colors.text }}>{stats.attendanceRate}%</Heading
-                    ></VStack>
+                            <Calendar size={14} color={Theme.colors.amberGlow} />
+                            <Text sx={{ fontSize: 10, color: colors.textSecondary, fontWeight: 'bold' }}>
+                                {t('insights.attendance') || 'TODAY'}
+                            </Text>
+                        </HStack>
+                        <Heading sx={{ fontSize: 24, color: colors.text }}>{stats.attendanceRate}%</Heading>
+                    </VStack>
                 </Card>
             </HStack>
 
@@ -115,26 +119,26 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
                 <VStack sx={{ gap: Theme.spacing.md }}>
                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                         <VStack>
-                            <Heading >sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text }}
+                            <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text }}>
                                 {t('insights.growthPulse') || 'Growth Pulse'}
                             </Heading>
                             <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                                {t('insights.observationSummary') || 'Collective teacher observations'}>
+                                {t('insights.observationSummary') || 'Collective teacher observations'}
                             </Text>
                         </VStack>
-                        <Activity size={20} color={Theme.colors.sanctuarySaffron} /
-                    ></HStack
+                        <Activity size={20} color={Theme.colors.sanctuarySaffron} />
+                    </HStack>
 
                     <HStack sx={{ gap: Theme.spacing.md }}>
                         <VStack sx={{ flex: 1, backgroundColor: 'rgba(255,184,0,0.1)', padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
-                            <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 20 }}>{stats.positiveObs}</Heading
-                            ><Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('insights.positiveNotes') || 'Positive'}</Text
-                        ></VStack
-                        ><VStack sx={{ flex: 1, backgroundColor: 'rgba(239,68,68,0.1)', padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
-                            <Heading sx={{ color: '#EF4444', fontSize: 20 }}>{stats.concernObs}</Heading
-                            ><Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('insights.areasOfConcern') || 'Concerns'}</Text
-                        ></VStack
-                    ></HStack>
+                            <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 20 }}>{stats.positiveObs}</Heading>
+                            <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('insights.positiveNotes') || 'Positive'}</Text>
+                        </VStack>
+                        <VStack sx={{ flex: 1, backgroundColor: 'rgba(239,68,68,0.1)', padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
+                            <Heading sx={{ color: '#EF4444', fontSize: 20 }}>{stats.concernObs}</Heading>
+                            <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('insights.areasOfConcern') || 'Concerns'}</Text>
+                        </VStack>
+                    </HStack>
                 </VStack>
             </Card>
 
@@ -144,16 +148,16 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
                 </Heading>
                 {data.observations.length === 0 && (
                     <Text sx={{ color: colors.textTertiary, fontStyle: 'italic', textAlign: 'center', py: 20 }}>
-                        {t('insights.noActivity') || 'No recent activity recorded.'}>
+                        {t('insights.noActivity') || 'No recent activity recorded.'}
                     </Text>
                 )}
                 {data.observations.slice(0, 4).map((obs) => (
                     <Box key={obs.id} sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: obs.observation_type === 'positive' ? Theme.colors.sanctuarySaffron : colors.border }}>
                         <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.sm }}>{obs.content}</Text
-                                ><Text sx={{ fontSize: 10, color: colors.textTertiary, marginTop: 4 }}
-                                    {obs.author?.full_name} " {new Date(obs.created_at).toLocaleDateString()}
+                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.sm }}>{obs.content}</Text>
+                                <Text sx={{ fontSize: 10, color: colors.textTertiary, marginTop: 4 }}>
+                                    {obs.author?.full_name} &bull; {new Date(obs.created_at).toLocaleDateString()}
                                 </Text>
                             </VStack>
                             <Icon as={ChevronRightIcon} size="sm" color={colors.textTertiary} />

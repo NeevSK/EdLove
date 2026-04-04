@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@repo/ui';
+import { Box, Button, ButtonText, Text, Theme, useTheme, VStack } from '@repo/ui';
 
 interface TeacherAdminButtonProps {
   label: string;
@@ -11,19 +11,45 @@ export const TeacherAdminButton: React.FC<TeacherAdminButtonProps> = ({ label, o
   const theme = useTheme();
 
   return (
-    <button
-      onClick={onClick}
-      className="w-full rounded-[18px] border px-4 py-4 text-left transition-transform duration-150 hover:-translate-y-0.5"
-      style={{
+    <Button
+      variant="outline"
+      action="secondary"
+      onPress={onClick}
+      sx={{
+        width: '100%',
+        borderRadius: 18,
+        padding: Theme.spacing.md,
+        alignItems: 'flex-start',
+        borderWidth: 1,
         background: 'linear-gradient(180deg, rgba(250, 247, 237, 0.92) 0%, rgba(233, 241, 232, 0.84) 100%)',
         borderColor: theme.glass.surface.border,
       }}
-          <span
-        className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-        style={{ color: theme.text.secondary }}
-              Admin
-      </span      <div className="mt-2 text-sm font-semibold" style={{ color: theme.text.primary }}        {label}
-      </div    </button  );
+    >
+      <VStack sx={{ alignItems: 'flex-start' }}>
+        <Text
+          sx={{
+            fontSize: 11,
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: theme.text.secondary,
+          }}
+        >
+          Admin
+        </Text>
+        <ButtonText
+          sx={{
+            marginTop: 8,
+            fontSize: Theme.typography.fontSize.sm,
+            fontWeight: '600',
+            color: theme.text.primary,
+          }}
+        >
+          {label}
+        </ButtonText>
+      </VStack>
+    </Button>
+  );
 };
 
 interface TeacherAdminActionsProps {
@@ -37,7 +63,19 @@ interface TeacherAdminActionsProps {
 
 export const TeacherAdminActions: React.FC<TeacherAdminActionsProps> = ({ actions }) => {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"      {actions.map((action) => (
-        <TeacherAdminButton key={action.id} {...action} /      ))}
-    </div  );
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          base: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+        },
+        gap: 12,
+      }}
+    >
+      {actions.map((action) => (
+        <TeacherAdminButton key={action.id} {...action} />
+      ))}
+    </Box>
+  );
 };

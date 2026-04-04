@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { libraryAPI } from '../api/library';
+import { knowledgeSync } from '../api/sync';
 import { ResourceFilters, CollectionFilters, CreateResourceInput } from '../types';
 import { useTemporalStore } from '@repo/core';
 
@@ -11,11 +12,9 @@ export const LIBRARY_KEYS = {
     collections: (filters: CollectionFilters = {}) => [...LIBRARY_KEYS.all, 'collections', filters] as const,
     collection: (id: string) => [...LIBRARY_KEYS.all, 'collection', id] as const,
     resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
-    bookmarked: (userId: string, viewDate?: string, viewScale?: string) =        [...LIBRARY_KEYS.all, 'bookmarked', userId, viewDate || 'now', viewScale || 'day'] as const,
+    bookmarked: (userId: string, viewDate?: string, viewScale?: string) => [...LIBRARY_KEYS.all, 'bookmarked', userId, viewDate || 'now', viewScale || 'day'] as const,
     sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
 };
-import { knowledgeSync } from '../api/sync';
-import { useCallback } from 'react';
 
 export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilters: CollectionFilters = {}) => {
     const queryClient = useQueryClient();

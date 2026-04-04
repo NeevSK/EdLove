@@ -10,20 +10,7 @@
 
 import { supabase } from '../lib/supabase';
 import { growthSignalsAPI } from './growthSignals';
-
-export interface ThuthimalGift {
-  id: string;
-  gift_token: string;
-  gifter_id: string;
-  gifter_name: string;
-  recipient_tier: 'teacher' | 'principal';
-  recipient_id: string | null;
-  claimed: boolean;
-  claimed_at: string | null;
-  expires_at: string | null;
-  message: string | null;
-  created_at: string;
-}
+import { ThuthimalGift } from '../types';
 
 export interface CreateGiftInput {
   gifterName: string;

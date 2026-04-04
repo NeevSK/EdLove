@@ -19,7 +19,4 @@ export { default as TeacherClassroomDashboard } from './screens/TeacherClassroom
 export { default as TeacherClassroomDashboardWeb } from './screens/TeacherClassroomDashboard.web';
 export { default as StudentClassroomDashboard } from './screens/StudentClassroomDashboard';
 export { default as StudentProfileScreen } from './screens/StudentProfileScreen';
-export { default as PrincipalDashboard } from './screens/PrincipalDashboard';
-export { default as SectionHeadDashboard } from './screens/SectionHeadDashboard';
-export { default as GradeHeadDashboard } from './screens/GradeHeadDashboard';
 export { default as RoleInitialState } from './components/RoleInitialState';

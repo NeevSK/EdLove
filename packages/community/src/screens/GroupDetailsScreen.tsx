@@ -26,7 +26,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCommunity } from '../hooks/useCommunity';
-import { GroupMemberManagement } from '../components/GroupMemberManagement';
+import GroupMemberManagement from '../components/GroupMemberManagement';
 import { PinnedResourcesShelf } from '../components/PinnedResourcesShelf';
 import { clearPendingGateAction, getPendingGateAction, setPendingGateAction, useStore, supabase, type CommunityStackParamList } from '@repo/core';
 import { usePermissions } from '@repo/core';
@@ -189,7 +189,7 @@ export default function GroupDetailsScreen() {
 
     if (showAdmin && isAdmin) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: colors.background }}>
+            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 <HStack space="md" sx={{ padding: Theme.spacing.lg, paddingTop: Theme.spacing.xl, alignItems: 'center', backgroundColor: colors.secondary }}>
                     <TouchableOpacity onPress={() => setShowAdmin(false)}>
                         <ChevronLeft color={colors.text} />

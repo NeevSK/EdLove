@@ -32,7 +32,7 @@ export interface GuardianAPI {
 export const guardianAPI: GuardianAPI = {
   // Identity management
   async createGuardianProfile(data: Omit<GuardianIdentity, 'id' | 'createdAt' | 'updatedAt'>): Promise<GuardianIdentity> {
-    return api.guardian.createProfile(data as any) as Promise<GuardianIdentity>;
+    return api.guardian.createProfile(data as any) as unknown as Promise<GuardianIdentity>;
   },
 
   async verifyGuardian(guardianId: string, documents: VerificationDocument[]): Promise<void> {
@@ -40,7 +40,7 @@ export const guardianAPI: GuardianAPI = {
   },
 
   async updateGuardianProfile(guardianId: string, updates: Partial<GuardianIdentity>): Promise<GuardianIdentity> {
-    return api.guardian.updateProfile(guardianId, updates as any) as Promise<GuardianIdentity>;
+    return api.guardian.updateProfile(guardianId, updates as any) as unknown as Promise<GuardianIdentity>;
   },
 
   async getGuardianProfile(guardianId: string): Promise<GuardianIdentity | null> {
@@ -53,7 +53,7 @@ export const guardianAPI: GuardianAPI = {
 
   // Relationship management
   async linkGuardianToStudent(guardianId: string, studentId: string, relationship: RelationshipType): Promise<StudentGuardianRelationship> {
-    return api.guardian.linkGuardianToStudent(guardianId, studentId, relationship) as Promise<StudentGuardianRelationship>;
+    return api.guardian.linkGuardianToStudent(guardianId, studentId, relationship) as unknown as Promise<StudentGuardianRelationship>;
   },
 
   async updatePermissions(guardianId: string, studentId: string, permissions: GuardianPermissionConfig[]): Promise<void> {
@@ -70,12 +70,12 @@ export const guardianAPI: GuardianAPI = {
   },
 
   async getStudentGuardians(studentId: string): Promise<GuardianIdentity[]> {
-    return api.guardian.getStudentGuardians(studentId) as Promise<GuardianIdentity[]>;
+    return api.guardian.getStudentGuardians(studentId) as unknown as Promise<GuardianIdentity[]>;
   },
 
   // Dashboard and data
   async getGuardianDashboard(guardianId: string): Promise<GuardianDashboard> {
-    return api.guardian.getDashboard(guardianId) as Promise<GuardianDashboard>;
+    return api.guardian.getDashboard(guardianId) as unknown as Promise<GuardianDashboard>;
   },
 
   async updateNotificationSettings(guardianId: string, settings: any): Promise<void> {

@@ -16,20 +16,13 @@ export { GlobalProvider } from './providers/GlobalProvider';
 export * from './store/useTemporalStore';
 export * from './utils/temporalUtils';
 
-
 export * from './types';
 export * from './constants/SriLankanSchools';
 export * from './lib/supabase';
+
 export * from './lib/mediaUtils';
 export * from './lib/permissions';
 export * from './lib/apiInterceptor';
-export * from './lib/sync';
-export * from './lib/grading';
-export * from './lib/monitoring/sentry';
-export * from './lib/monitoring/posthog';
-export * from './lib/runtime';
-export * from './lib/storage';
-export * from './lib/storageWrapper';
 export * from './lib/guestDataManager';
 export * from './lib/cloudinary';
 export * from './lib/pendingGateAction';
@@ -37,6 +30,8 @@ export * from './lib/inventoryScope';
 export { isDemo } from './api/demo';
 export * from './lib/flows/FlowResolver';
 export * from './lib/guestDataSync';
+import { z } from 'zod';
+export { z };
 export * from './lib/inviteCodes';
 export * from './lib/workspace/canvas';
 export * from './lib/workspace/useWorkspaceLayoutSync';
@@ -52,17 +47,17 @@ export * from './permissions/composer';
 export * from './permissions/hooks/usePermissions';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
-// Resolving ambiguities for roles and tenancy types
 export * from './permissions/schemas/role.schema';
 export * from './permissions/schemas/user.schema';
-export * from './api/schemas/dashboard.schema';
-export * from './api/schemas/founder.schema';
-// Exporting the schema as a whole, but avoid re-exporting the types if they clash
-export { 
-    ClassroomSchema, 
-    AssignmentSchema, 
-    TeacherStatsSchema, 
-    StudentStatsSchema, 
+
+
+
+// Unified Schema Exports (Avoiding Clashes)
+export {
+    ClassroomSchema,
+    AssignmentSchema,
+    TeacherStatsSchema,
+    StudentStatsSchema,
     EchoSchema,
 } from './api/schemas/classroom.schema';
 
@@ -76,13 +71,22 @@ export type {
 
 export { AttendanceSchema, AttendanceStatusSchema, StudentAttendanceSchema } from './api/schemas/attendance.schema';
 export type { Attendance, AttendanceStatus, StudentAttendance } from './api/schemas/attendance.schema';
-export { AssessmentSchema, GradeSchema } from './api/schemas/grading.schema';
-export type { Assessment, Grade } from './api/schemas/grading.schema';
+export type { Section, SchoolGrade } from './types/School';
+export { AssessmentSchema, GradeSchema, PublishedSchoolGradingCompletionSchema, ClassroomGradingSettingsSchema, GradebookSnapshotSchema, PublishedStudentGradesSnapshotSchema, SchoolGradingCompletionSchema } from './api/schemas/grading.schema';
+export type { Assessment, Grade, PublishedSchoolGradingCompletion, ClassroomGradingSettings, GradebookSnapshot, PublishedStudentGradesSnapshot, SchoolGradingCompletion, StudentGrade, StudentGradebookSnapshot } from './api/schemas/grading.schema';
 export { UserSchema } from './api/schemas/user.schema';
 export type { User } from './api/schemas/user.schema';
+export type { Lesson } from './api/schemas/lesson.schema';
+export type { Material as LessonMaterial } from './api/schemas/material.schema';
+export type { PrincipalInviteRole, InviteCodeZod } from './api/schemas/principal-workspace.schema';
+export { KnowledgeTopologySchema, PulseMetricsSchema } from './api/schemas/dashboard.schema';
+export type { MappingTopologyZod, PulseMetricsZod } from './api/schemas/dashboard.schema';
+
+export { useMutationQueue } from './lib/sync/useMutationQueue';
+export { SafeZustandStorage } from './lib/storageWrapper';
+export { Runtime } from './lib/runtime';
+export { storage } from './lib/storage';
 
 export * from './api/hooks/founder.hooks';
 export * from './api/hooks/classroom.hooks';
 
-// Ensure consistent zod instance
-export { z } from 'zod';

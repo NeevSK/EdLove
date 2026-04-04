@@ -19,7 +19,7 @@ import {
 } from 'lucide-react-native';
 import { useProfile } from '../hooks/useProfile';
 import { ContactLinktree } from '../components/ContactLinktree';
-import { StaffPresencePulse } from '@repo/people';
+import { StaffPresencePulse } from '@repo/admin';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
 import { AvatarDisplay } from '../components/AvatarDisplay';
 import LivingJourneyPanel from '../components/LivingJourneyPanel';

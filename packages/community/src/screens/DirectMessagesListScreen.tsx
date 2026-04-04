@@ -57,13 +57,13 @@ export default function DirectMessagesListScreen() {
 
         return (
             <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
-                <TouchableOpacity>
+                <TouchableOpacity
                     onPress={() => navigation.navigate('DirectMessage', {
                         conversationId: item.id,
                         userName: item.other_user_name
                     })}
-                
-                    <HStack>
+                >
+                    <HStack
                         sx={{
                             padding: Theme.spacing.md,
                             alignItems: 'center',
@@ -72,12 +72,13 @@ export default function DirectMessagesListScreen() {
                             borderBottomColor: colors.border,
                             gap: Theme.spacing.md,
                         }}
-                    
+                    >
                         <Avatar size="md" sx={{ backgroundColor: colors.action }}>
-                            {item.other_user_avatar
-                                ? <AvatarImage source={{ uri: item.other_user_avatar }} alt={item.other_user_name} /
-                                >: <AvatarFallbackText>{initials}</AvatarFallbackText
-                            >}
+                            {item.other_user_avatar ? (
+                                <AvatarImage source={{ uri: item.other_user_avatar }} alt={item.other_user_name} />
+                            ) : (
+                                <AvatarFallbackText>{initials}</AvatarFallbackText>
+                            )}
                         </Avatar>
 
                         <VStack sx={{ flex: 1 }}>
@@ -108,7 +109,7 @@ export default function DirectMessagesListScreen() {
 
     return (
         <Box sx={{ flex: 1 }}>
-            <SanctuaryFlashList>
+            <SanctuaryFlashList
                 data={conversations}
                 keyExtractor={(item) => item.id}
                 estimatedItemSize={80}
@@ -122,7 +123,7 @@ export default function DirectMessagesListScreen() {
                         </Text>
                     </Box>
                 }
-            /
+            />
         </Box>
     );
 }

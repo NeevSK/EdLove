@@ -71,24 +71,29 @@ export const studentsAPI = {
     },
 
     /**
-     * @authority update Classroom
+     * @authority create Classroom
      */
-    async create(vars: { classroom_id: string; student_id: string; roll_number?: number; notes?: string }): Promise<any> {
+    async create(student: { full_name: string; roll_number?: string; notes?: string; classroom_id: string }) {
         return educationalServices.classroomStudents.add(
-            vars.classroom_id,
-            vars.student_id,
-            vars.roll_number,
-            vars.notes
+            student.classroom_id,
+            '', // student_id not needed for shadow student creation
+            student.roll_number,
+            student.notes
         );
     },
 
     /**
      * @authority update Classroom
      */
-    async update(id: string, updates: { roll_number?: number; notes?: string; classroom_id: string; student_id: string }): Promise<any> {
-        // The registry passes 'id' but our service needs classroomId and studentId or a record ID
-        // If 'id' is a combined key or a record ID, we use updateById
+    async update(id: string, updates: { roll_number?: string; notes?: string }) {
         return educationalServices.classroomStudents.updateById(id, updates);
+    },
+
+    /**
+     * @authority read Classroom
+     */
+    async getTeacherStats(teacherId: string): Promise<any> {
+        return educationalServices.students.getTeacherStats(teacherId);
     },
 };
 

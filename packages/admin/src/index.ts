@@ -55,6 +55,7 @@ export * from './analytics/api';
 export * from './analytics/engine';
 export * from './analytics/types';
 export * from './principal/workspace';
+export * from './principal/usePrincipalWorkspaceSurfaces';
 export * from './screens';
 
 export const adminAPI = {

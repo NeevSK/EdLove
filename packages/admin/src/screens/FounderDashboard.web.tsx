@@ -647,7 +647,7 @@ function SchoolCard({ school, onPress }: { school: School; onPress: () => void }
                     <div>
                         <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Since</div>
                         <div style={{ fontSize: '13px', fontWeight: '700' }}>
-                            {new Date(school.created_at).getFullYear()}
+                            {school.created_at ? new Date(school.created_at).getFullYear() : '2024'}
                         </div>
                     </div>
                 </div>

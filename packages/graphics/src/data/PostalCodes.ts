@@ -1,4 +1,4 @@
-// Note: Using the backend package for postal code validation and extraction
+// @ts-ignore
 import * as SLPostal from 'srilankan-postalcode-backend';
 
 /**

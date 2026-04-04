@@ -27,15 +27,23 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
   });
 
   return (
-    <View style={{ flex: 1, padding: 20 }}      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}        Thematic Insights Studio>
-      </Text      >
-      <GeographicPerspective >
+    <View style={{ flex: 1, padding: 20 }}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}>
+        Thematic Insights Studio
+      </Text>
+      <GeographicPerspective
         data={districtData}
         palette="socioeconomic"
         title="School Viability Analysis"
-      /
-      <View style={{ marginTop: 20 }}        <Text style={{ fontSize: 16, fontWeight: '600' }}>Dataset Features:</Text        >{data.map((f: any) => (
-          <Text key={f.id} style={{ fontSize: 12 }}            " {f.properties.school_name}: {f.properties.viability_score}>
-          </Text        >))}
-      </View    </View  );
+      />
+      <View style={{ marginTop: 20 }}>
+        <Text style={{ fontSize: 16, fontWeight: '600' }}>Dataset Features:</Text>
+        {data.map((f: any) => (
+          <Text key={f.id} style={{ fontSize: 12 }}>
+            {f.properties.school_name}: {f.properties.viability_score}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
 }

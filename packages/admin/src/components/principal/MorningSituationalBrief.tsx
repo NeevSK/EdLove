@@ -12,18 +12,10 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { approvalsAPI } from '../../approvals';
-import { api } from '@repo/core';
-import {
-  staffOperationsAPI,
-  type StaffPresenceSummary,
-  type StudentAttendancePulse,
-} from '@repo/people';
+import { staffManagementAPI, StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
 
 interface MorningSituationalBriefProps {
   schoolId: string;
-  principalId?: string;
-  viewDate?: string;
   onViewStaff?: () => void;
   onViewApprovals?: () => void;
 }
@@ -38,8 +30,6 @@ function presenceColor(present: number, total: number): string {
 
 export default function MorningSituationalBrief({
   schoolId,
-  principalId,
-  viewDate,
   onViewStaff,
   onViewApprovals,
 }: MorningSituationalBriefProps) {
@@ -53,31 +43,20 @@ export default function MorningSituationalBrief({
     let mounted = true;
     async function load() {
       setLoading(true);
-      try {
-        const [pres, puls, leaves] = await Promise.all([
-          staffOperationsAPI.getStaffPresenceSummary(schoolId),
-          api.attendance.getSchoolAttendancePulse(schoolId, undefined, viewDate, {
-            actorId: principalId,
-            accessKind: 'institutional_read',
-            reason: 'principal_morning_brief',
-          }),
-          approvalsAPI.listPendingLeaveApprovals(schoolId),
-        ]);
-        if (!mounted) return;
-        setPresence(pres);
-        setPulse(puls);
-        setPendingLeaves(leaves?.length || 0);
-      } catch (error) {
-        console.error('Error loading morning brief data:', error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
+      const [pres, puls, leaves] = await Promise.all([
+        staffManagementAPI.getStaffPresenceSummary(schoolId),
+        staffManagementAPI.getStudentAttendancePulse(schoolId),
+        staffManagementAPI.getPendingLeaves(schoolId),
+      ]);
+      if (!mounted) return;
+      setPresence(pres);
+      setPulse(puls);
+      setPendingLeaves(leaves.length);
+      setLoading(false);
     }
     load();
-    return () => {
-      mounted = false;
-    };
-  }, [principalId, schoolId, viewDate]);
+    return () => { mounted = false; };
+  }, [schoolId]);
 
   if (loading) {
     return (
@@ -88,29 +67,26 @@ export default function MorningSituationalBrief({
     );
   }
 
-  const dotColor = presence ? presenceColor(presence.present, presence.total) : (colors?.textSecondary || '#aaa');
+  const dotColor = presence ? presenceColor(presence.present, presence.total) : colors.textSecondary;
   const attendanceDelta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
-  const deltaLabel = attendanceDelta > 0 
-    ? `+${attendanceDelta}% vs yesterday` 
-    : attendanceDelta < 0 
-      ? `${attendanceDelta}% vs yesterday` 
-      : 'same as yesterday';
+  const deltaLabel =
+    attendanceDelta > 0
+      ? `+${attendanceDelta}% vs yesterday`
+      : attendanceDelta < 0
+        ? `${attendanceDelta}% vs yesterday`
+        : 'same as yesterday';
 
   return (
     <VStack sx={{ gap: Theme.spacing.sm }}>
-      {/* Staff Presence Strip */}
-      <TouchableOpacity 
-        onPress={onViewStaff} 
-        activeOpacity={0.8}
-        disabled={!onViewStaff}
-      >
+      {/* Staff presence strip */}
+      <TouchableOpacity onPress={onViewStaff} activeOpacity={0.8}>
         <Box
           sx={{
-            backgroundColor: colors?.primary || Theme.colors.ink,
+            backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)',
+            borderColor: colors.border,
           }}
         >
           <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
@@ -122,108 +98,105 @@ export default function MorningSituationalBrief({
                 backgroundColor: dotColor,
               }}
             />
-            <Text sx={{ flex: 1, fontSize: 14, color: colors?.text || '#fff', fontWeight: '600' }}>
-              {presence ? `${presence.present} of ${presence.total} teachers present today` : 'No attendance data yet'}
+            <Text sx={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '600' }}>
+              {presence
+                ? `${presence.present} of ${presence.total} teachers present today`
+                : 'No attendance data yet'}
             </Text>
             {onViewStaff && (
-              <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa' }}>View</Text>
+              <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View →</Text>
             )}
           </HStack>
         </Box>
       </TouchableOpacity>
 
-      {/* Row of 3 stats */}
+      {/* Student pulse + at-risk + pending approvals */}
       <HStack sx={{ gap: Theme.spacing.sm }}>
-        {/* Student Attendance */}
+        {/* Attendance pulse */}
         <Box
           sx={{
             flex: 1,
-            backgroundColor: colors?.primary || Theme.colors.ink,
+            backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)',
+            borderColor: colors.border,
           }}
         >
-          <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
+          <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
             Student Attendance
           </Text>
-          <Text sx={{ fontSize: 22, fontWeight: '700', color: colors?.text || '#fff' }}>
-            {pulse ? `${pulse.todayRate}%` : '-'}
+          <Text sx={{ fontSize: 22, fontWeight: '700', color: colors.text }}>
+            {pulse ? `${pulse.todayRate}%` : '—'}
           </Text>
           <Text
             sx={{
               fontSize: 11,
-              color: attendanceDelta >= 0 
-                ? (Theme.colors.sageGreen ?? '#4caf50') 
-                : (Theme.colors.emberRed ?? '#f44336'),
+              color: attendanceDelta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336'),
             }}
           >
             {pulse ? deltaLabel : ''}
           </Text>
         </Box>
 
-        {/* At-Risk Students */}
+        {/* At-risk badge */}
         <Box
           sx={{
             flex: 1,
-            backgroundColor: colors?.primary || Theme.colors.ink,
+            backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)',
+            borderColor: colors.border,
           }}
         >
-          <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
+          <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
             At-Risk Students
           </Text>
           <Text
             sx={{
               fontSize: 22,
               fontWeight: '700',
-              color: (pulse?.atRiskCount ?? 0) > 0 ? (Theme.colors.amberGlow ?? '#ffc107') : (colors?.text || '#fff'),
+              color:
+                (pulse?.atRiskCount ?? 0) > 0
+                  ? (Theme.colors.amberGlow ?? '#ffc107')
+                  : colors.text,
             }}
           >
             {pulse?.atRiskCount ?? 0}
           </Text>
-          <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa' }}>
-            {'attendance < 75%'}
-          </Text>
+          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{'attendance < 75%'}</Text>
         </Box>
 
-        {/* Pending Leaves */}
-        <TouchableOpacity 
-          onPress={onViewApprovals} 
-          activeOpacity={0.8} 
-          style={{ flex: 1 }}
-          disabled={!onViewApprovals}
-        >
+        {/* Pending approvals */}
+        <TouchableOpacity onPress={onViewApprovals} activeOpacity={0.8} style={{ flex: 1 }}>
           <Box
             sx={{
               flex: 1,
-              backgroundColor: colors?.primary || Theme.colors.ink,
+              backgroundColor: colors.primary,
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
-              borderColor: colors?.border || 'rgba(255,255,255,0.1)',
+              borderColor: colors.border,
             }}
           >
-            <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
+            <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
               Pending Leaves
             </Text>
             <Text
               sx={{
                 fontSize: 22,
                 fontWeight: '700',
-                color: pendingLeaves > 0 ? (Theme.colors.amberGlow ?? '#ffc107') : (colors?.text || '#fff'),
+                color:
+                  pendingLeaves > 0
+                    ? (Theme.colors.amberGlow ?? '#ffc107')
+                    : colors.text,
               }}
             >
               {pendingLeaves}
             </Text>
             {onViewApprovals && (
-              <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa' }}>
-                Tap to review
-              </Text>
+              <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Tap to review</Text>
             )}
           </Box>
         </TouchableOpacity>

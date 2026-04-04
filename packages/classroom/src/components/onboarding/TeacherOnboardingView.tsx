@@ -43,7 +43,7 @@ export default function TeacherOnboardingView({
     const { glass } = useTheme();
 
     return (
-        <ScrollView >
+        <ScrollView 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 padding: Theme.spacing.lg, 
@@ -51,72 +51,118 @@ export default function TeacherOnboardingView({
                 alignSelf: 'center',
                 width: '100%' 
             }}
-                    <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}                {/* Welcome Header */}>
-                <VStack sx={{ gap: 8, alignItems: 'center' }}                    <Box sx={{ 
+        >
+            <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}>
+                {/* Welcome Header */}
+                <VStack sx={{ gap: 8, alignItems: 'center' }}>
+                    <Box sx={{ 
                         padding: 16, 
                         borderRadius: 24, 
                         backgroundColor: 'rgba(212,132,58,0.1)',
                         marginBottom: 12
-                    }}                        <Icon as={School} color={Theme.colors.sanctuarySaffron} size={40} /                    ></Box                    ><Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}                        Welcome, Teacher
-                    </Heading                    ><Text sx={{ 
+                    }}>
+                        <Icon as={School} color={Theme.colors.sanctuarySaffron} size={40} />
+                    </Box>
+                    <Heading size="xl" color={colors.text} sx={{ textAlign: 'center' }}>
+                        Welcome, Teacher
+                    </Heading>
+                    <Text sx={{ 
                         textAlign: 'center', 
                         color: colors.textSecondary, 
                         fontSize: 16,
                         maxWidth: 500 
-                    }}                        Lead your students with digital tools designed for holistic growth. Create your workbench to begin.
-                    </Text                </VStack
+                    }}>
+                        Lead your students with digital tools designed for holistic growth. Create your workbench to begin.
+                    </Text>
+                </VStack>
+
                 {/* Primary Actions Grid */}
-                <VStack sx={{ gap: Theme.spacing.lg }}                    >
-                    {/* Create Classroom Card */}>
-                    <TouchableOpacity >
+                <VStack sx={{ gap: Theme.spacing.lg }}>
+                    {/* Create Classroom Card */}
+                    <TouchableOpacity 
                         onPress={() => {
                             hapticLight();
                             onCreateClassroom();
                         }}
                         activeOpacity={0.8}
                         style={{ width: '100%' }}
-                                            <Box sx={{ 
+                    >
+                        <Box sx={{ 
                             padding: 24, 
                             borderRadius: 24, 
                             backgroundColor: 'white',
                             borderWidth: 1,
                             borderColor: colors.border,
-                            ...Theme.shadows.md>
-                        }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
+                            ...Theme.shadows.md
+                        }}>
+                            <HStack sx={{ gap: 20, alignItems: 'center' }}>
+                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
                                     borderRadius: 20, 
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}                                    <Icon as={Plus} color="white" size={32} /                                ></Box                                ><VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="md" color={colors.text}>Create New Classroom</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Establish a personal sanctuary for your students, manage lessons, and track holistic growth.
-                                    </Text                                    >{isGuest && (
-                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} /                                            ><Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}                                                Requires Signup
-                                            </Text                                        </HStack                                    )}
-                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
+                                }}>
+                                    <Icon as={Plus} color="white" size={32} />
+                                </Box>
+                                <VStack sx={{ flex: 1, gap: 4 }}>
+                                    <Heading size="md" color={colors.text}>Create New Classroom</Heading>
+                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                                        Establish a personal sanctuary for your students, manage lessons, and track holistic growth.
+                                    </Text>
+                                    {isGuest && (
+                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}>
+                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} />
+                                            <Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>
+                                                Requires Signup
+                                            </Text>
+                                        </HStack>
+                                    )}
+                                </VStack>
+                                <Icon as={ChevronRight} color={colors.textTertiary} />
+                            </HStack>
+                        </Box>
+                    </TouchableOpacity>
+
                     {/* Join School Card */}
-                    <TouchableOpacity >
+                    <TouchableOpacity 
                         onPress={() => {
                             hapticLight();
                             onJoinSchool();
                         }}
                         activeOpacity={0.8}
                         style={{ width: '100%' }}
-                                            <Box sx={{ 
+                    >
+                        <Box sx={{ 
                             padding: 24, 
                             borderRadius: 24, 
                             backgroundColor: colors.tertiary,
                             borderWidth: 1,
                             borderColor: colors.border
-                        }}                            <HStack sx={{ gap: 20, alignItems: 'center' }}                                <Box sx={{ 
+                        }}>
+                            <HStack sx={{ gap: 20, alignItems: 'center' }}>
+                                <Box sx={{ 
                                     width: 64, 
                                     height: 64, 
                                     borderRadius: 20, 
                                     backgroundColor: colors.border,
                                     alignItems: 'center', 
                                     justifyContent: 'center' 
-                                }}                                    <Icon as={Search} color={colors.textSecondary} size={32} /                                ></Box                                ><VStack sx={{ flex: 1, gap: 4 }}                                    <Heading size="sm" color={colors.text}>Join or Search School</Heading                                    ><Text sx={{ color: colors.textSecondary, fontSize: 14 }}                                        Connect with your institution to access shared resources and school-wide dashboards.
-                                    </Text                                </VStack                                <Icon as={ChevronRight} color={colors.textTertiary} /                            ></HStack                        </Box                    </TouchableOpacity
+                                }}>
+                                    <Icon as={Search} color={colors.textSecondary} size={32} />
+                                </Box>
+                                <VStack sx={{ flex: 1, gap: 4 }}>
+                                    <Heading size="sm" color={colors.text}>Join or Search School</Heading>
+                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                                        Connect with your institution to access shared resources and school-wide dashboards.
+                                    </Text>
+                                </VStack>
+                                <Icon as={ChevronRight} color={colors.textTertiary} />
+                            </HStack>
+                        </Box>
+                    </TouchableOpacity>
+
                     {/* Try Demo Banner */}
                     <Box sx={{ 
                         marginTop: Theme.spacing.xl,
@@ -125,7 +171,8 @@ export default function TeacherOnboardingView({
                         backgroundColor: '#1A1A1A', 
                         overflow: 'hidden',
                         position: 'relative'
-                    }}                        <Box sx={{
+                    }}>
+                        <Box sx={{
                             position: 'absolute',
                             right: -20,
                             top: -20,
@@ -134,20 +181,30 @@ export default function TeacherOnboardingView({
                             borderRadius: 75,
                             backgroundColor: 'rgba(212,132,58,0.15)',
                             zIndex: 0
-                        }} /
-                        ><VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}                            <Box sx={{ 
+                        }} />
+                        <VStack sx={{ gap: 20, zIndex: 1, alignItems: 'center' }}>
+                            <Box sx={{ 
                                 padding: 12, 
                                 borderRadius: 16, 
                                 backgroundColor: 'rgba(255,255,255,0.1)'
-                            }}                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} /                            ></Box                            <VStack sx={{ gap: 8, alignItems: 'center' }}                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}                                    Explore the Experience
-                                </Heading                                <Text sx={{ 
+                            }}>
+                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} />
+                            </Box>
+                            <VStack sx={{ gap: 8, alignItems: 'center' }}>
+                                <Heading size="lg" color="white" sx={{ textAlign: 'center' }}>
+                                    Explore the Experience
+                                </Heading>
+                                <Text sx={{ 
                                     color: 'rgba(255,255,255,0.7)', 
                                     fontSize: 15, 
                                     textAlign: 'center',
                                     maxWidth: 400 
-                                }}                                    Launch a sample teacher dashboard to witness how Gurudevi simplifies classroom orchestration.
-                                </Text                            </VStack                            
-                            <Button >
+                                }}>
+                                    Launch a sample teacher dashboard to witness how Gurudevi simplifies classroom orchestration.
+                                </Text>
+                            </VStack>
+                            
+                            <Button 
                                 action="primary" 
                                 onPress={() => {
                                     hapticLight();
@@ -159,14 +216,26 @@ export default function TeacherOnboardingView({
                                     height: 54,
                                     borderRadius: 27
                                 }}
-                                                            <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}                                    Launch Teacher Sandbox>
-                                </ButtonText                                ><Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" /                            ></Button                        ></VStack                    </Box
+                            >
+                                <HStack sx={{ alignItems: 'center', gap: 6 }}>
+                                    <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}>
+                                        Launch Teacher Sandbox
+                                    </ButtonText>
+                                    <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" />
+                                </HStack>
+                            </Button>
+                        </VStack>
+                    </Box>
                 </VStack>
                 <Text sx={{ 
                     textAlign: 'center', 
                     color: colors.textTertiary, 
                     fontSize: 12,
                     marginTop: 20 
-                }}                    Gurudevi Workbenches are designed for intentional teaching.>
-                </Text            ></VStack        </ScrollView    );
+                }}>
+                    Gurudevi Workbenches are designed for intentional teaching.
+                </Text>
+            </VStack>
+        </ScrollView>
+    );
 }

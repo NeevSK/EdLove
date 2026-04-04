@@ -67,15 +67,15 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <View style={styles.container}>
-            <UnifiedMapView>
+            <UnifiedMapView
                 ref={mapRef}
                 style={styles.map}
                 region={initialRegion}
                 customMapStyle={mapStyle}
                 rotateEnabled={false}
-            
+            >
                 {geoNodes.map((node) => (
-                    <UnifiedMarker>
+                    <UnifiedMarker
                         key={node.id}
                         id={node.id}
                         coordinate={{
@@ -86,7 +86,7 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
                         description={node.type}
                         onPress={() => onNodePress?.(node)}
                         pinColor={node.type === 'school' ? Theme.colors.sanctuarySaffron : colors.action}
-                    /
+                    />
                 ))}
             </UnifiedMapView>
         </View>

@@ -56,7 +56,7 @@ export function useComments(postId: string | null) {
         mutationFn: ({
             content,
             isAnonymous = false,
-        }: { content: string; isAnonymous?: boolean }) =
+        }: { content: string; isAnonymous?: boolean }) =>
             communityAPI.createComment(postId!, content, isAnonymous),
 
         onMutate: async ({ content, isAnonymous = false }) => {
@@ -134,8 +134,8 @@ export function useComments(postId: string | null) {
             await queryClient.cancelQueries({ queryKey: COMMENT_KEYS.list(postId) });
             const previous = queryClient.getQueryData<Comment[]>(COMMENT_KEYS.list(postId));
 
-            queryClient.setQueryData<Comment[]>(COMMENT_KEYS.list(postId), prev =
-                (prev ?? []).map(c =
+            queryClient.setQueryData<Comment[]>(COMMENT_KEYS.list(postId), prev =>
+                (prev ?? []).map(c =>
                     c.id !== commentId ? c : {
                         ...c,
                         has_upvoted: !c.has_upvoted,
@@ -160,7 +160,7 @@ export function useComments(postId: string | null) {
 
     //  Mark official answer 
     const markOfficialMutation = useMutation({
-        mutationFn: ({ commentId, isOfficial }: { commentId: string; isOfficial: boolean }) =
+        mutationFn: ({ commentId, isOfficial }: { commentId: string; isOfficial: boolean }) =>
             communityAPI.markOfficialAnswer(commentId, isOfficial),
         onSettled: () => {
             if (postId) queryClient.invalidateQueries({ queryKey: COMMENT_KEYS.list(postId) });

@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { PredictionRequest, PredictionResult } from '../types/AnalyticsTypes';
-import { Predictor } from '../ml/Predictor';
-
-const predictor = new Predictor();
+import { PredictionRequest } from '../types/AnalyticsTypes';
+import { predictor } from './useAnalytics';
 
 export function usePredictions(request: PredictionRequest) {
   return useQuery({

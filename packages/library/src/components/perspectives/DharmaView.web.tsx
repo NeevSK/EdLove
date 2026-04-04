@@ -27,7 +27,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
     }, [data.nodes]);
 
     return (
-        <View style={styles.container}
+        <View style={styles.container}>
             <div style={{ 
                 height: '100%', 
                 overflowY: 'auto', 
@@ -36,18 +36,18 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center'
-            }}
+            }}>
                 {orderedNodes.map((item, index) => {
                     const isLast = index === orderedNodes.length - 1;
                     const isEven = index % 2 === 0;
                     const xOffset = isEven ? -40 : 40;
 
                     return (
-                        <Box key={item.id} sx={{ height: 160, width: '100%', alignItems: 'center', justifyContent: 'center', position: 'relative' }}
+                        <Box key={item.id} sx={{ height: 160, width: '100%', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                             {/* Connecting Spine Segment */}
                             {!isLast && (
-                                <div style={{ position: 'absolute', top: 80, left: 0, right: 0, bottom: -80, zIndex: -1 }}
-                                    <svg width="100%" height="160" viewBox={`0 0 ${windowWidth} 160`} preserveAspectRatio="none"
+                                <div style={{ position: 'absolute', top: 80, left: 0, right: 0, bottom: -80, zIndex: -1 }}>
+                                    <svg width="100%" height="160" viewBox={`0 0 ${windowWidth} 160`} preserveAspectRatio="none">
                                         <path
                                             d={`M ${windowWidth/2 + xOffset} 0 
                                                C ${windowWidth/2 + xOffset} 40, 
@@ -58,13 +58,13 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                             strokeDasharray="8 8"
                                             fill="none"
                                             opacity={0.3}
-                                        /
-                                    </svg
-                                </div
+                                        />
+                                    </svg>
+                                </div>
                             )}
 
                             {/* Node Button */}
-                            <div style={{ transform: `translateX(${xOffset}px)` }}
+                            <div style={{ transform: `translateX(${xOffset}px)` }}>
                                 <TouchableOpacity 
                                     onPress={() => onNodePress?.(item)}
                                     style={[
@@ -74,13 +74,13 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                             borderColor: colors.action,
                                         }
                                     ]}
-                                
+                                >
                                     {item.type === 'topic' ? (
-                                        <CheckCircle2 size={32} color={colors.action} /
+                                        <CheckCircle2 size={32} color={colors.action} />
                                     ) : (
-                                        <Circle size={32} color={colors.textSecondary} /
+                                        <Circle size={32} color={colors.textSecondary} />
                                     )}
-                                </TouchableOpacity
+                                </TouchableOpacity>
                                 
                                 <div style={{ 
                                     position: 'absolute', 
@@ -88,20 +88,20 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                     left: isEven ? 90 : -130, 
                                     top: 20,
                                     textAlign: isEven ? 'left' : 'right'
-                                }}
-                                    <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}
+                                }}>
+                                    <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}>
                                         {item.label}
-                                    </Text
-                                    <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}
+                                    </Text>
+                                    <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}>
                                         {item.type.toUpperCase()}
-                                    </Text
-                                </div
-                            </div
-                        </Box
+                                    </Text>
+                                </div>
+                            </div>
+                        </Box>
                     );
                 })}
-            </div
-        </View
+            </div>
+        </View>
     );
 };
 

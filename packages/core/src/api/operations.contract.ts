@@ -240,6 +240,36 @@ export const operationsContract = c.router({
       },
     }),
   },
+  getInviteCodes: {
+    method: 'GET',
+    path: '/schools/:id/invites',
+    responses: {
+      200: z.array(z.any()),
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'read',
+        subject: 'School',
+      },
+    }),
+  },
+  generateInviteCode: {
+    method: 'POST',
+    path: '/schools/:id/invites',
+    body: z.object({
+      role: z.string(),
+      created_by: z.string(),
+    }),
+    responses: {
+      201: z.any(),
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'create',
+        subject: 'School',
+      },
+    }),
+  },
   getSchoolSections: {
     method: 'GET',
     path: '/schools/:id/sections',

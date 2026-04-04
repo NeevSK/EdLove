@@ -23,8 +23,15 @@ import {
     ProgressFilledTrack,
 } from '@repo/ui';
 import { BookOpen, Zap, Clock } from 'lucide-react-native';
-import { insightsAPI, type GradeProgress } from '../../insights';
+import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
+
+interface GradeProgress {
+    grade: string;
+    coverage: number;
+    is_reform: boolean;
+    last_updated: string;
+}
 
 export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
@@ -38,8 +45,18 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
 
     const fetchCurriculumProgress = async () => {
         try {
-            const data = await insightsAPI.listCurriculumProgress(schoolId);
-            setProgress(data);
+            const { data, error } = await supabase
+                .from('curriculum_progress')
+                .select('*')
+                .eq('school_id', schoolId)
+                .order('grade', { ascending: true });
+
+            if (error) {
+                console.error('Error fetching curriculum progress:', error);
+                setMockData();
+            } else {
+                setProgress(data || []);
+            }
         } catch (err) {
             setMockData();
         } finally {
@@ -79,9 +96,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     >
                         <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
                             <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                            <Text sx={{ fontSize: 10, fontWeight: '700' }} color={Theme.colors.amberGlow}>
-                                2026 REFORM
-                            </Text>
+                            <Text sx={{ fontSize: 10, fontWeight: '700' }} color={Theme.colors.amberGlow}>2026 REFORM</Text>
                         </HStack>
                     </Box>
                 </HStack>
@@ -95,23 +110,17 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     <VStack key={item.grade} sx={{ gap: Theme.spacing.xs }}>
                         <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>
-                                    {item.grade}
-                                </Text>
+                                <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{item.grade}</Text>
                                 {item.is_reform && (
-                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={Theme.colors.amberGlow}>
-                                        (Reform)
-                                    </Text>
+                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={Theme.colors.amberGlow}>(Reform)</Text>
                                 )}
                             </HStack>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
-                                {item.coverage}%
-                            </Text>
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>{item.coverage}%</Text>
                         </HStack>
                         <Progress value={item.coverage} sx={{ height: 8, width: '100%' }}>
                             <ProgressFilledTrack
                                 sx={{
-                                    backgroundColor: item.is_reform ? Theme.colors.amberGlow : colors.action,
+                                    backgroundColor: item.is_reform ? Theme.colors.amberGlow : colors.action
                                 }}
                             />
                         </Progress>

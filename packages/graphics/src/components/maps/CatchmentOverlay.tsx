@@ -21,15 +21,19 @@ export function CatchmentOverlay({
     title = 'Catchment Area' 
 }: CatchmentOverlayProps) {
     return (
-        <            <Circle
+        <>
+            <Circle
                 center={{ latitude: center.lat, longitude: center.lng }}
                 radius={radiusKm * 1000} // Convert to meters
                 fillColor={color}
                 strokeColor={color.replace('0.3', '1')}
                 strokeWidth={2}
-            /            ><Marker
+            />
+            <Marker
                 coordinate={{ latitude: center.lat, longitude: center.lng }}
                 title={title}
                 pinColor="#F59E0B"
-            /        ></    );
+            />
+        </>
+    );
 }

@@ -32,7 +32,7 @@ import CreatePostModal from '../components/CreatePostModal';
 import CreateGroupModal from '../components/CreateGroupModal';
 import { CommentSheet } from '../components/CommentSheet';
 
-import { CommunityPresence } from '@repo/self';
+
 import {
     Hash,
     MessageSquare,

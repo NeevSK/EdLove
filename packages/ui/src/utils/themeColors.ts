@@ -38,6 +38,7 @@ export interface ThemeColors {
     black: string;
     gurudeviBlue: string;
     card: string;
+    surface: string;
 }
 
 type ThemeColorSource = Pick<ResolvedThemeTokens, 'scene' | 'text' | 'accent' | 'glow'> & {
@@ -74,6 +75,7 @@ export function toThemeColors(source: ThemeColorSource): ThemeColors {
         black: source.scene.world.bg,
         gurudeviBlue: Theme.colors.gurudeviBlue,
         card: source.scene.surface.bg,
+        surface: source.scene.surface.bg,
     };
 }
 

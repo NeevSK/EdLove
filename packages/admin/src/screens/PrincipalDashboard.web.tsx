@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { useAuthStore, useTenantStore, useUIStore, useFeatureAccess, usePermissions, useTemporalStore, api } from '@repo/core';
+import { useAuthStore, useFeatureAccess, usePermissions, useTemporalStore, api } from '@repo/core';
 import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
 import { resolvePrincipalWorkspaceView } from '../principal/workspace';
 import type { PrincipalWorkspaceView } from '../principal/workspace';
@@ -17,7 +17,8 @@ import {
   type TeacherCarouselItem,
   type StaffLeaveDTO,
   type CalendarEvent,
-  type PulseMetricsZod
+  type PulseMetricsZod,
+  type PublishedSchoolGradingCompletion
 } from '@repo/core';
 import { type FeedbackEcho, type GradeProgress } from '../insights';
 import { type ResourceNeedSummary } from '../inventory';
@@ -33,7 +34,7 @@ import {
 } from '../hooks/useDashboardHooks';
 
 import { useQuery } from '@tanstack/react-query';
-import { type StudentPrincipalPulse } from '@repo/people';
+import { staffOperationsAPI, type StudentPrincipalPulse } from '../staff';
 
 const DEMO_PRINCIPAL_SCHOOL_ID = 'mock-school';
 
@@ -58,6 +59,7 @@ interface DashboardContentProps {
   isPastView: boolean;
   observations: PrincipalObservation[];
   viewDate: string;
+  publishedGradingCompletion: PublishedSchoolGradingCompletion | null;
   onNavigate: (view: PrincipalWorkspaceView) => void;
   onAddAction: (featureId: string) => void;
   onHistoryAction: (featureId: string) => void;
@@ -167,7 +169,7 @@ export default function PrincipalDashboardWeb({
   // Institutional oversight should read from canonical official routes.
   const studentPulseQuery = useQuery({
     queryKey: ['student-attendance-pulse', principalSchoolId, viewDate],
-    queryFn: () =      api.attendance.getSchoolAttendancePulse(principalSchoolId, undefined, viewDate, {
+    queryFn: () => staffOperationsAPI.getStudentPrincipalPulse(principalSchoolId, undefined, viewDate, {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
         reason: 'principal_dashboard_attendance_pulse',
@@ -177,7 +179,7 @@ export default function PrincipalDashboardWeb({
 
   const publishedGradingCompletionQuery = useQuery({
     queryKey: ['principal-published-grading-completion', principalSchoolId, viewDate],
-    queryFn: () =      api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate, {
+    queryFn: () => api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
         reason: 'principal_dashboard_published_grading_completion',
@@ -198,8 +200,6 @@ export default function PrincipalDashboardWeb({
   const staffLoading = staff.presence.isLoading || staff.teachers.isLoading;
   const topologyLoading = topology.isLoading;
   const studentPulse = studentPulseQuery.data || null;
-
-
 
   const handleTryDemo = () => {
     hapticLight();
@@ -245,17 +245,24 @@ export default function PrincipalDashboardWeb({
 
   if (showOnboarding) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--background)' }}        <WebScreenHeader title="Gurudevi Principal" note="Educational Management Sanctuary" /        ><PrincipalOnboardingViewComponent onTryDemo={handleTryDemo} onCreateSchool={handleCreateSchool} onJoinSchool={handleJoinSchool} isGuest={isGuest} /        ><CreateSchoolModalComponent isOpen={isCreateSchoolOpen} onClose={() => setIsCreateSchoolOpen(false)} onSuccess={() => onRefresh?.()} /      </div    );
+      <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
+        <WebScreenHeader title="Gurudevi Principal" note="Educational Management Sanctuary" />
+        <PrincipalOnboardingViewComponent onTryDemo={handleTryDemo} onCreateSchool={handleCreateSchool} onJoinSchool={handleJoinSchool} isGuest={isGuest} />
+        <CreateSchoolModalComponent isOpen={isCreateSchoolOpen} onClose={() => setIsCreateSchoolOpen(false)} onSuccess={() => onRefresh?.()} />
+      </div>
+    );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}      {isDemo && <SandboxBanner />}
-      <div style={{ padding: '0px 24px 40px' }}        <PrincipalWorkspaceContainer>
+    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
+      {isDemo && <SandboxBanner />}
+      <div style={{ padding: '0px 24px 40px' }}>
+        <PrincipalWorkspaceContainer
           activeView={activeView}
           onActiveViewChange={navigatePrincipalView}
           renderView={({ activeView: nextView }: { activeView: PrincipalWorkspaceView }) => renderPrincipalView(nextView)}
           renderMain={() => (
-            <DashboardContentComponent>
+            <DashboardContentComponent
               school={school ?? null}
               user={user ?? null}
               stats={schoolStats ?? null}
@@ -268,7 +275,7 @@ export default function PrincipalDashboardWeb({
               atRiskCount={studentPulse?.atRiskCount ?? 0}
               pendingLeaves={pendingLeaves}
               calendarEvents={calendarEvents}
-              schoolTopology={schoolTopology}
+              schoolTopology={schoolTopology as KnowledgeTopology}
               topologyLoading={topologyLoading}
               staffLoading={staffLoading}
               curriculumProgress={curriculumProgress}
@@ -288,6 +295,11 @@ export default function PrincipalDashboardWeb({
               onShowAtRisk={() => {}}
               onNavigateToProfile={() => navigation.navigate('SchoolProfile', { schoolId: principalSchoolId })}
               onOpenCommons={() => navigation.navigate('Main', { screen: 'Community' })}
-            /          )}
-        /      </div      ><CreateClassroomModalComponent isOpen={showCreateClassroom} onClose={() => setShowCreateClassroom(false)} onSuccess={() => onRefresh?.()} /    </div  >);
+            />
+          )}
+        />
+      </div>
+      <CreateClassroomModalComponent isOpen={showCreateClassroom} onClose={() => setShowCreateClassroom(false)} onSuccess={() => onRefresh?.()} />
+    </div>
+  );
 }

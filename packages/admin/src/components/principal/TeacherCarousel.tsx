@@ -12,7 +12,7 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, ScrollView, SkeletonCard, useThemedColors, getInitialsFromName } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { staffOperationsAPI, type TeacherCarouselItem } from '@repo/people';
+import { staffManagementAPI, TeacherCarouselItem } from '@repo/core';
 
 interface TeacherCarouselProps {
   schoolId: string;
@@ -36,9 +36,12 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 function formatRole(role: string): string {
-  return role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return role
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** 20% opacity suffix for avatar background */
 const AVATAR_BG_OPACITY = '33';
 
 function TeacherCard({
@@ -69,6 +72,7 @@ function TeacherCard({
           gap: Theme.spacing.sm,
         }}
       >
+        {/* Avatar */}
         <Box
           sx={{
             width: 56,
@@ -84,9 +88,16 @@ function TeacherCard({
             {getInitialsFromName(item.fullName)}
           </Text>
         </Box>
-        <Text numberOfLines={1} sx={{ fontSize: 13, fontWeight: '700', color: colors.text, textAlign: 'center', maxWidth: 136 }}>
+
+        {/* Name */}
+        <Text
+          numberOfLines={1}
+          sx={{ fontSize: 13, fontWeight: '700', color: colors.text, textAlign: 'center', maxWidth: 136 }}
+        >
           {item.fullName}
         </Text>
+
+        {/* Role tag */}
         <Box
           sx={{
             backgroundColor: colors.secondary,
@@ -95,12 +106,25 @@ function TeacherCard({
             paddingVertical: 2,
           }}
         >
-          <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{formatRole(item.role)}</Text>
+          <Text sx={{ fontSize: 10, color: colors.textSecondary }}>
+            {formatRole(item.role)}
+          </Text>
         </Box>
+
+        {/* Status */}
         <HStack sx={{ alignItems: 'center', gap: 4 }}>
-          <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: statusColor }} />
+          <Box
+            sx={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: statusColor,
+            }}
+          />
           <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{statusLabel}</Text>
         </HStack>
+
+        {/* Classroom count */}
         <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
           {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
         </Text>
@@ -118,15 +142,13 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
     let mounted = true;
     async function load() {
       setLoading(true);
-      const data = await staffOperationsAPI.getTeacherCarousel(schoolId);
+      const data = await staffManagementAPI.getTeacherCarousel(schoolId);
       if (!mounted) return;
       setTeachers(data);
       setLoading(false);
     }
     load();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [schoolId]);
 
   if (loading) {
@@ -139,10 +161,16 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
     );
   }
 
-  if (teachers.length === 0) return null;
+  if (teachers.length === 0) {
+    return null;
+  }
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} sx={{ marginHorizontal: -Theme.spacing.lg }}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      sx={{ marginHorizontal: -Theme.spacing.lg }}
+    >
       <HStack
         sx={{
           gap: Theme.spacing.sm,
@@ -150,11 +178,15 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
           paddingVertical: Theme.spacing.xs,
         }}
       >
-        {teachers.map((teacher) => (
-          <TeacherCard key={teacher.userId} item={teacher} onTap={() => onTapTeacher?.(teacher.userId)} colors={colors} />
+        {teachers.map((t) => (
+          <TeacherCard
+            key={t.userId}
+            item={t}
+            onTap={() => onTapTeacher?.(t.userId)}
+            colors={colors}
+          />
         ))}
       </HStack>
     </ScrollView>
   );
 }
-

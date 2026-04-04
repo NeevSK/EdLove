@@ -1,50 +1,110 @@
 import React from 'react';
-import { Theme, useTheme } from '@repo/ui';
+import { 
+    useThemedColors, 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Theme 
+} from '@repo/ui';
 
 interface SnapshotItem {
-  time: string;
-  activity: string;
-  location: string;
+    time: string;
+    activity: string;
+    location: string;
 }
 
 interface TeacherSnapshotProps {
-  items: SnapshotItem[];
+    items: SnapshotItem[];
 }
 
 export const TeacherSnapshot: React.FC<TeacherSnapshotProps> = ({ items }) => {
-  const theme = useTheme();
+    const colors = useThemedColors();
 
-  if (items.length === 0) {
+    if (items.length === 0) {
+        return (
+            <Box
+                sx={{
+                    borderRadius: 22,
+                    borderWidth: 1,
+                    padding: 20,
+                    backgroundColor: 'rgba(250, 247, 237, 0.82)',
+                    borderColor: colors.border,
+                }}
+            >
+                <Text sx={{ 
+                    fontSize: Theme.typography.fontSize.sm, 
+                    fontWeight: '600', 
+                    color: colors.text 
+                }}>
+                    No temporal moments are surfaced yet.
+                </Text>
+                <Text sx={{ 
+                    marginTop: 8, 
+                    fontSize: Theme.typography.fontSize.xs, 
+                    lineHeight: 20, 
+                    color: colors.textSecondary 
+                }}>
+                    Snapshot context will appear here as the day gathers more classroom signal.
+                </Text>
+            </Box>
+        );
+    }
+
     return (
-      <div
-        className="rounded-[22px] border p-5"
-        style={{
-          background: 'rgba(250, 247, 237, 0.82)',
-          borderColor: theme.glass.surface.border,
-        }}
-              <p className="text-sm font-medium" style={{ color: theme.text.primary }}          No temporal moments are surfaced yet.
-        </p        <p className="mt-2 text-xs leading-5" style={{ color: theme.text.secondary }}          Snapshot context will appear here as the day gathers more classroom signal.
-        </p      </div    );
-  }
-
-  return (
-    <div className="space-y-3"      {items.map((item, index) => (
-        <div key={`${item.time}-${index}`} className="flex gap-3"          <div
-            className="shrink-0 rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em]"
-            style={{
-              backgroundColor: 'rgba(184, 169, 224, 0.14)',
-              color: Theme.colors.gurudeviViolet,
-              alignSelf: 'flex-start',
-            }}
-                      {item.time}
-          </div          <div
-            className="flex-1 rounded-[18px] border p-4"
-            style={{
-              backgroundColor: 'rgba(250, 247, 237, 0.82)',
-              borderColor: theme.glass.surface.border,
-            }}
-                      <p className="text-sm font-semibold" style={{ color: theme.text.primary }}              {item.activity}
-            </p            <p className="mt-1 text-[11px] uppercase tracking-[0.14em]" style={{ color: theme.text.secondary }}              {item.location}
-            </p          </div        </div      ))}
-    </div  );
+        <VStack sx={{ gap: 12 }}>
+            {items.map((item, index) => (
+                <HStack key={`${item.time}-${index}`} sx={{ gap: 12 }}>
+                    <Box
+                        sx={{
+                            flexShrink: 0,
+                            borderRadius: Theme.corners.full,
+                            paddingHorizontal: 12,
+                            paddingVertical: 8,
+                            backgroundColor: 'rgba(184, 169, 224, 0.14)',
+                            alignSelf: 'flex-start',
+                        }}
+                    >
+                        <Text sx={{
+                            fontSize: 11,
+                            fontWeight: '700',
+                            color: Theme.colors.gurudeviViolet,
+                            letterSpacing: 1.8,
+                            textTransform: 'uppercase'
+                        }}>
+                            {item.time}
+                        </Text>
+                    </Box>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            borderRadius: 18,
+                            borderWidth: 1,
+                            padding: 16,
+                            backgroundColor: 'rgba(250, 247, 237, 0.82)',
+                            borderColor: colors.border,
+                        }}
+                    >
+                        <Text sx={{ 
+                            fontSize: Theme.typography.fontSize.sm, 
+                            fontWeight: '600', 
+                            color: colors.text 
+                        }}>
+                            {item.activity}
+                        </Text>
+                        <Text sx={{ 
+                            marginTop: 4, 
+                            fontSize: 11, 
+                            fontWeight: '500',
+                            color: colors.textSecondary,
+                            letterSpacing: 1.4,
+                            textTransform: 'uppercase'
+                        }}>
+                            {item.location}
+                        </Text>
+                    </Box>
+                </HStack>
+            ))}
+        </VStack>
+    );
 };

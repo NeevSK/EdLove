@@ -30,18 +30,18 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
 
     if (provider === 'maplibre') {
         return (
-            <MapLibreGL.PointAnnotation>
+            <MapLibreGL.PointAnnotation
                 id={id || `marker-${coordinate.latitude}-${coordinate.longitude}`}
                 coordinate={[coordinate.longitude, coordinate.latitude]}
                 onSelected={onPress}
-            
+            >
                 {(children as React.ReactElement) || (
                     <View style={[styles.dot, { backgroundColor: pinColor || '#FF0000' }]} />
                 )}
                 <MapLibreGL.Callout>
-                    <View >style={styles.callout}>
-                        <Text style={styles.calloutTitle}>{title}</Text
-                        >{description && <Text style={styles.calloutDesc}>{description}</Text>}
+                    <View style={styles.callout}>
+                        <Text style={styles.calloutTitle}>{title}</Text>
+                        {description && <Text style={styles.calloutDesc}>{description}</Text>}
                     </View>
                 </MapLibreGL.Callout>
             </MapLibreGL.PointAnnotation>
@@ -49,13 +49,13 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
     }
 
     return (
-        <Marker>
+        <Marker
             coordinate={coordinate}
             title={title}
             description={description}
             onPress={onPress}
             pinColor={pinColor}
-        
+        >
             {children}
         </Marker>
     );

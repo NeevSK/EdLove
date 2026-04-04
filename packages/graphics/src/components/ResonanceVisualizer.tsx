@@ -26,7 +26,8 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
   if (Platform.OS === 'web') {
     // Un-shimmed Web implementation using CSS gradients and animations
     return (
-      <SanctuaryCanvas width={size} height={size}        <View >
+      <SanctuaryCanvas width={size} height={size}>
+        <View 
           style={[
             styles.webGlow,
             {
@@ -36,8 +37,9 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
               backgroundColor: `rgba(255, 165, 0, ${0.1 + intensity * 0.4})`, // Saffron glow
             }
           ]}
-        /        {/* Simple CSS simulation of "subsurface scattering" */}
-        <View />
+        />
+        {/* Simple CSS simulation of "subsurface scattering" */}
+        <View 
           style={[
             styles.webCore,
             {
@@ -49,12 +51,15 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
               backgroundColor: `rgba(255, 235, 205, ${0.3 + intensity * 0.6})`, // BlanchedAlmond (Silk)
             }
           ]}
-        /      </SanctuaryCanvas    >);
+        />
+      </SanctuaryCanvas>
+    );
   }
 
   // Native implementation would ideally use Skia
   return (
-    <SanctuaryCanvas width={size} height={size}      <View >
+    <SanctuaryCanvas width={size} height={size}>
+      <View 
         style={[
           styles.nativeBase,
           {
@@ -64,7 +69,9 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
             backgroundColor: 'rgba(255, 150, 0, 0.2)',
           }
         ]}
-      /    </SanctuaryCanvas  >);
+      />
+    </SanctuaryCanvas>
+  );
 };
 
 const styles = StyleSheet.create({

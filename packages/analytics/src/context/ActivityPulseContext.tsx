@@ -51,8 +51,10 @@ export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <ActivityPulseContext.Provider value={{ state, registerPulse }}      {children}
-    </ActivityPulseContext.Provider  );
+    <ActivityPulseContext.Provider value={{ state, registerPulse }}>
+      {children}
+    </ActivityPulseContext.Provider>
+  );
 };
 
 export const useActivityPulse = () => {

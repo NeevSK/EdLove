@@ -25,7 +25,8 @@ export function useStudentWorkspaceData(forceDemo?: boolean) {
     const pendingAssignments = assignments.filter((assignment) => !assignment.submitted).length;
 
     const stats = useMemo(
-        () =            isDemoExperience
+        () =>
+            isDemoExperience
                 ? DEMO_STATS
                 : {
                     enrolledClasses: classrooms.length,

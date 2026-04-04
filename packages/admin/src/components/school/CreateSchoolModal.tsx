@@ -11,15 +11,11 @@ import {
     Heading,
     Button,
     ButtonText,
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
     Spinner,
     Icon,
     Theme,
 } from '@repo/ui';
 import { 
-    ChevronDown, 
     CheckCircle, 
     School as SchoolIcon, 
     MessageSquare, 
@@ -43,7 +39,6 @@ import {
     STUDENT_TYPES,
     RELIGIOUS_AFFILIATIONS
 } from '@repo/core';
-import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
@@ -66,19 +61,17 @@ export default function CreateSchoolModal({
     onSuccess,
     initialData,
 }: CreateSchoolModalProps) {
-    const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const user = useStore((state) => state.user);
     const setUser = useStore((state) => state.setUser);
     const colors = useThemedColors();
-    const { text, glass } = useTheme();
+    const { glass } = useTheme();
     const isEdit = !!initialData;
     
     // Use unified entity hook for logic, but keep custom step state for the wizard UI
     const { 
         updateInstance,
-        create,
-        isLoading: isEntityLoading
+        create
     } = useEntity({
         type: 'school',
         id: initialData?.id,
@@ -142,7 +135,7 @@ export default function CreateSchoolModal({
                 student_type: state.demographics.studentType,
                 religious_affiliation: state.demographics.religiousAffiliation,
                 student_count: parseInt(state.demographics.studentCount) || 0,
-                type: (state.basicInfo.officialType || '').includes('Primary') ? 'primary' : 'mixed', // Back-compat
+                type: (state.basicInfo.officialType || '').includes('Primary') ? 'primary' : 'mixed' as const, // Back-compat
             };
 
             let school;
@@ -168,7 +161,7 @@ export default function CreateSchoolModal({
                     const group = await communityAPI.createGroupWithOwner({
                         name: `${state.basicInfo.name.trim()} HQ`,
                         description: `Official community portal for ${state.basicInfo.name.trim()}`,
-                        group_type: 'general',
+                        type: 'general',
                         join_policy: 'open',
                         school_id: school.id,
                     }, userId);
@@ -182,9 +175,10 @@ export default function CreateSchoolModal({
                 updateStep(5); // Success step
                 onSuccess(school);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to save school';
             console.error('Failed to save school:', err);
-            setError(err.message || 'Failed to save school');
+            setError(message);
         } finally {
             setIsSubmitting(false);
         }
@@ -297,6 +291,8 @@ export default function CreateSchoolModal({
                                             <TouchableOpacity 
                                                 key={type.key}
                                                 onPress={() => updateBasicInfo({ officialType: type.key })}
+                                                accessibilityRole="button"
+                                                accessibilityLabel={type.en}
                                                 style={{
                                                     paddingHorizontal: 12,
                                                     paddingVertical: 8,
@@ -327,6 +323,8 @@ export default function CreateSchoolModal({
                                                 <TouchableOpacity 
                                                     key={p.id}
                                                     onPress={() => updateLocation({ provinceId: p.id, districtId: '' })}
+                                                    accessibilityRole="button"
+                                                    accessibilityLabel={p.en}
                                                     style={{
                                                         paddingHorizontal: 16,
                                                         paddingVertical: 10,
@@ -353,6 +351,8 @@ export default function CreateSchoolModal({
                                                 <TouchableOpacity 
                                                     key={d.id}
                                                     onPress={() => updateLocation({ districtId: d.id })}
+                                                    accessibilityRole="button"
+                                                    accessibilityLabel={d.en}
                                                     style={{
                                                         paddingHorizontal: 12,
                                                         paddingVertical: 8,
@@ -399,6 +399,8 @@ export default function CreateSchoolModal({
                                             <TouchableOpacity 
                                                 key={type.id}
                                                 onPress={() => updateDemographics({ studentType: type.id as any })}
+                                                accessibilityRole="button"
+                                                accessibilityLabel={type.en}
                                                 style={{
                                                     flex: 1,
                                                     padding: 16,
@@ -425,6 +427,8 @@ export default function CreateSchoolModal({
                                             <TouchableOpacity 
                                                 key={r.id}
                                                 onPress={() => updateDemographics({ religiousAffiliation: r.id })}
+                                                accessibilityRole="button"
+                                                accessibilityLabel={r.en}
                                                 style={{
                                                     paddingHorizontal: 16,
                                                     paddingVertical: 10,

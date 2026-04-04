@@ -69,16 +69,16 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     });
 
     return (
-        <ScrollView >
+        <ScrollView 
             style={{ flex: 1 }} 
             contentContainerStyle={{ padding: 24, paddingTop: 100, paddingBottom: 100 }}
-        
+        >
             <VStack spacing={24}>
-                {/* Header Stats using Standard Sanctuary Component */}>
-                <SanctuaryStatsCard />
+                {/* Header Stats using Standard Sanctuary Component */}
+                <SanctuaryStatsCard 
                     title="Knowledge Resonance"
                     showTrophy={false}
-                    items={[>
+                    items={[
                         {
                             label: "Total Nodes",
                             value: totalNodes,
@@ -94,9 +94,9 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     ]}
                     progressLabel="Topology Density"
                     progressValue={Math.min(100, Math.round(Number(avgConnectivity) * 10))}
-                /
+                />
 
-                >{/* Type Distribution - Bar Chart */}
+                {/* Type Distribution - Bar Chart */}
                 <Box sx={{ 
                     padding: 24, 
                     backgroundColor: 'rgba(255,255,255,0.03)', 
@@ -106,10 +106,10 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                 }}>
                     <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
                         <Layers size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                        ><Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text
-                    ></HStack>
+                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text>
+                    </HStack>
                     
-                    <BarChart/>
+                    <BarChart
                         data={barData}
                         barWidth={40}
                         noOfSections={3}
@@ -134,31 +134,31 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                 }}>
                     <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
                         <TrendingUp size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                        ><Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Domain Resonance</Text
-                    ></HStack>
+                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Domain Resonance</Text>
+                    </HStack>
 
                     <View style={{ alignItems: 'center' }}>
-                        <PieChart/>
+                        <PieChart
                             data={pieData}
                             donut
                             radius={80}
                             innerRadius={60}
                             centerLabelComponent={() => (
                                 <VStack {...({ alignItems: 'center', justifyContent: 'center' } as any)}>
-                                    <Text {...({ size: "xl", bold: true, color: colors.text } as any)}>{totalNodes}</Text
-                                    ><Text {...({ size: "xs", color: colors.textTertiary } as any)}>Total</Text
-                                ></VStack>
+                                    <Text {...({ size: "xl", bold: true, color: colors.text } as any)}>{totalNodes}</Text>
+                                    <Text {...({ size: "xs", color: colors.textTertiary } as any)}>Total</Text>
+                                </VStack>
                             )}
-                        /
-                    ></View>
+                        />
+                    </View>
 
                     <VStack spacing={8} sx={{ marginTop: 20 }}>
                         {pieData.map((item, i) => (
                             <HStack key={i} {...({ alignItems: 'center' } as any)}>
                                 <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 8 }} />
-                                ><Text {...({ size: "xs", color: colors.textSecondary, sx: { flex: 1 } } as any)}>{item.text}</Text
-                                ><Text {...({ size: "xs", bold: true, color: colors.text } as any)}>{item.value}</Text
-                            ></HStack>
+                                <Text {...({ size: "xs", color: colors.textSecondary, sx: { flex: 1 } } as any)}>{item.text}</Text>
+                                <Text {...({ size: "xs", bold: true, color: colors.text } as any)}>{item.value}</Text>
+                            </HStack>
                         ))}
                     </VStack>
                 </Box>

@@ -154,21 +154,21 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
     return (
         <VStack sx={{ flex: 1, padding: Theme.spacing.lg, gap: 32 }}>
             <Center sx={{ padding: 32 }}>
-                <Box>
+                <Box
                     sx={{
                         padding: Theme.spacing.xl,
                         borderRadius: Theme.corners.full,
                         backgroundColor: colors.tertiary,
                         marginBottom: Theme.spacing.lg
                     }}
-                
-                    <content.icon size={48} color={Theme.colors.sanctuarySaffron} /
-                ></Box>
-                <Heading color={colors.text} sx={{ textAlign: 'center', fontSize: 24 }}>{content.title}</Heading
-                ><Text color={colors.textSecondary} sx={{ textAlign: 'center', marginTop: 8 }}>{content.description}</Text
-            ></Center>
+                >
+                    <content.icon size={48} color={Theme.colors.sanctuarySaffron} />
+                </Box>
+                <Heading color={colors.text} sx={{ textAlign: 'center', fontSize: 24 }}>{content.title}</Heading>
+                <Text color={colors.textSecondary} sx={{ textAlign: 'center', marginTop: 8 }}>{content.description}</Text>
+            </Center>
 
-            <Button>
+            <Button
                 size="lg"
                 onPress={() => {
                     hapticLight();
@@ -185,11 +185,11 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                     backgroundColor: Theme.colors.sanctuarySaffron,
                     borderRadius: Theme.corners.comfortable
                 }}
-            
+            >
                 <HStack alignItems="center" justifyContent="center" sx={{ height: 48, gap: 8 }}>
                     <Plus size={20} color="white" />
-                    ><ButtonText color="white" sx={{ fontWeight: '600' }}>{content.primaryAction}</ButtonText
-                ></HStack>
+                    <ButtonText color="white" sx={{ fontWeight: '600' }}>{content.primaryAction}</ButtonText>
+                </HStack>
             </Button>
 
             {content.samples.length > 0 && (
@@ -198,7 +198,7 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                         {t('common.guidesAndSamples') || "Guides & Samples"}
                     </Text>
                     {content.samples.map((item) => (
-                        <Pressable>
+                        <Pressable
                             key={item.id}
                             onPress={() => {
                                 hapticLight();
@@ -208,8 +208,8 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                                     onSamplePress?.(item);
                                 }
                             }}
-                        
-                            <Box>
+                        >
+                            <Box
                                 sx={{
                                     padding: Theme.spacing.md,
                                     borderRadius: Theme.corners.comfortable,
@@ -217,29 +217,28 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                                     borderWidth: 1,
                                     borderColor: colors.border
                                 }}
-                            
+                            >
                                 <HStack alignItems="center" sx={{ gap: 16 }}>
-                                    <Box>
+                                    <Box
                                         sx={{
                                             padding: Theme.spacing.sm,
                                             borderRadius: Theme.corners.comfortable,
                                             backgroundColor: colors.tertiary
                                         }}
-                                    
-                                        <item.icon size={20} color={item.color || colors.action} /
-                                    ></Box>
+                                    >
+                                        <item.icon size={20} color={item.color || colors.action} />
+                                    </Box>
                                     <VStack flex={1}>
-                                        <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 14 }}>{item.title}</Text
-                                        ><Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{item.subtitle}</Text
-                                    ></VStack>
+                                        <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 14 }}>{item.title}</Text>
+                                        <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{item.subtitle}</Text>
+                                    </VStack>
                                     <ArrowRight size={16} color={colors.textTertiary} />
                                 </HStack>
                             </Box>
                         </Pressable>
                     ))}
                 </VStack>
-            )
-            }
-        </VStack >
+            )}
+        </VStack>
     );
 }

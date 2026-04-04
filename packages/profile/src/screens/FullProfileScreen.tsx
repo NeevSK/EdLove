@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import {
     Box,
     VStack,
@@ -16,8 +16,8 @@ import {
     hapticSuccess,
     AchievementUnlockOverlay,
     SanctuaryButton,
+    IdentityCard,
 } from '@repo/ui';
-import { IdentityCard } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Phone, Edit3, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School, AtSign } from 'lucide-react-native';
 import Reanimated, {
@@ -28,7 +28,7 @@ import Reanimated, {
 import { useStore } from '@repo/core';
 
 // Local Package Imports
-import { StaffPresencePulse } from '@repo/people';
+import { StaffPresencePulse } from '@repo/admin';
 import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
 import { UserProfile } from '../types';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
@@ -49,12 +49,12 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
     
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const { user: currentUser } = useStore();
+    const { user: currentUser, userRole } = useStore();
     const bottomPadding = useBottomTabPadding();
     
     const { profile: liveProfile, updateField, refresh, uploadAvatar } = useProfile(initialProfile?.id);
     const profile = liveProfile || initialProfile;
-    const completionResult = useProfileCompletion(profile, currentUser?.authority ?? null);
+    const completionResult = useProfileCompletion(profile, userRole ?? null);
     const { links: socialLinks } = useSocialLinks(profile?.id);
 
     const [showCelebration, setShowCelebration] = useState(false);
@@ -372,7 +372,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                     onClose={() => setShowThuthimalModal(false)}
                     recipientId={profile.id}
                     recipientName={profile.full_name}
-                    recipientTier={((profile as any).authority ?? profile.role) as any ?? 'teacher'}
+                    recipientTier={profileRole}
                     giverId={currentUserId}
                     giverName={currentUserName}
                 />

@@ -52,7 +52,7 @@ export function useNotifications() {
                 },
                 (payload: any) => {
                     // Prepend new notification optimistically
-                    queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =
+                    queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =>
                         [payload.new as Notification, ...(prev ?? [])],
                     );
                     // Bump badge count
@@ -84,8 +84,8 @@ export function useNotifications() {
             await queryClient.cancelQueries({ queryKey: NOTIF_KEYS.list(userId) });
             const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list(userId));
 
-            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =
-                (prev ?? []).map(n =
+            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =>
+                (prev ?? []).map(n =>
                     n.id === notifId ? { ...n, is_read: true, read_at: new Date().toISOString() } : n,
                 ),
             );
@@ -113,7 +113,7 @@ export function useNotifications() {
             const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list(userId));
             const now = new Date().toISOString();
 
-            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =                (prev ?? []).map(n => ({ ...n, is_read: true, read_at: now })),
+            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev => (prev ?? []).map(n => ({ ...n, is_read: true, read_at: now })),
             );
             queryClient.setQueryData<number>(NOTIF_KEYS.count(userId), 0);
 

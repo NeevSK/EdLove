@@ -102,19 +102,19 @@ export function SimpleLineChart({
           return (
             <View key={index} style={StyleSheet.absoluteFill}>
               {/* Line segment to previous point */}
-              {index > 0 && (
+              {index > 0 && data[index - 1] && (
                 <View 
                   style={[
                     styles.line,
                     {
                       left: ((index - 1) / (data.length - 1)) * chartWidth,
-                      top: chartHeight - ((data[index - 1].y - minValue) / range) * chartHeight,
+                      top: chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight,
                       width: chartWidth / (data.length - 1),
                       height: 2,
                       backgroundColor: chartColor,
                       transform: [
-                        { translateY: (y - (chartHeight - ((data[index - 1].y - minValue) / range) * chartHeight)) / 2 },
-                        { rotate: '${Math.atan2(y - (chartHeight - ((data[index - 1].y - minValue) / range) * chartHeight), chartWidth / (data.length - 1)) * (180 / Math.PI)}deg' }
+                        { translateY: (y - (chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight)) / 2 },
+                        { rotate: `${Math.atan2(y - (chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight), chartWidth / (data.length - 1)) * (180 / Math.PI)}deg` }
                       ]
                     }
                   ]} 
@@ -194,7 +194,7 @@ export function SimplePieChart({
                   styles.pieSlice,
                   {
                     backgroundColor: item.color || colors.primary,
-                    transform: [{ rotate: '${startAngle}deg' }],
+                    transform: [{ rotate: `${startAngle}deg` }],
                     width: radius * 2,
                     height: radius * 2,
                     borderRadius: radius,
@@ -203,7 +203,7 @@ export function SimplePieChart({
                 ]} 
               />
               <Text style={[styles.pieLabel, { color: colors.text }]}>
-                {item.label}{percentage > 5 ? ' (${percentage.toFixed(0)}%)' : ''}
+                {item.label}{percentage > 5 ? ` (${percentage.toFixed(0)}%)` : ''}
               </Text>
             </View>
           );
@@ -267,7 +267,7 @@ export function ProgressRing({
               borderRadius: size / 2,
               borderLeftColor: 'transparent',
               borderBottomColor: 'transparent',
-              transform: [{ rotate: '${(percentage / 100) * 360 - 45}deg' }]
+              transform: [{ rotate: `${(percentage / 100) * 360 - 45}deg` }]
             }
           ]} 
         />

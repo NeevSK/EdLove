@@ -9,7 +9,7 @@ import {
   type SchoolStats,
   type PulseMetricsZod,
 } from '@repo/core';
-import { staffOperationsAPI } from '@repo/people';
+import { staffOperationsAPI } from '../staff';
 import { approvalsAPI } from '../approvals';
 import { adminCalendarAPI } from '../calendar';
 import { adminInventoryAPI } from '../inventory';

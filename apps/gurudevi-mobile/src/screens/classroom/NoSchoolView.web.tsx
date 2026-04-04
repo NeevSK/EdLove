@@ -18,7 +18,7 @@ import React, { useState, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     schoolAPI, onboardingAPI, validateInviteCode, incrementInviteCodeUsage,
-    communityAPI, api, useStore, useUserRole, supabase,
+    communityAPI, api, useStore, supabase,
 } from '@repo/core';
 import {
     Building2, BookOpen, Users, Search, Key, CheckCircle2,
@@ -351,7 +351,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
 
 function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void }) {
     const { user } = useStore();
-    const { userId } = useUserRole();
+    const userId = user?.id;
     const [name, setName] = useState('');
     const [subject, setSubject] = useState('');
     const [loading, setLoading] = useState(false);
@@ -532,7 +532,8 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function NoSchoolView() {
-    const { role } = useUserRole();
+    const userRole = useStore(state => state.userRole);
+    const role = userRole;
     const navigation = useNavigation<any>();
 
     const isPrincipal = role === 'principal' || role === 'founder' || role === 'admin';

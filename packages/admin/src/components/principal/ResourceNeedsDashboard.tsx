@@ -9,7 +9,7 @@ import {
 } from '@repo/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
-import { adminInventoryAPI } from '../../inventory';
+import { api } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useThemedColors } from '@repo/ui';
 
@@ -59,7 +59,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     const fetchResourceNeeds = async () => {
         try {
             setIsLoading(true);
-            const data = await adminInventoryAPI.getResourceNeeds(schoolId);
+            const data = await api.inventory.getSchoolResourceNeeds(schoolId);
             setNeeds(data || []);
         } catch (error) {
             console.error('Failed to fetch resource needs:', error);
@@ -72,30 +72,30 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
         return (
             <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
                 <Spinner color={colors.action} />
-            ></Box>
+            </Box>
         );
     }
 
     if (needs.length === 0) {
         return (
-            <Box>
+            <Box
                 sx={{
                     padding: Theme.spacing.xl,
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
                     alignItems: 'center',
                 }}
-            
-                <Text>
+            >
+                <Text
                     color={colors.success}
                     sx={{ fontWeight: typography.fontWeight.medium, fontSize: 18 }}
-                
+                >
                     {t('principal.resources.emptyState') || 'Sanctuary is Well-Equipped'}
                 </Text>
-                <Text>
+                <Text
                     color={colors.textSecondary}
                     sx={{ marginTop: Theme.spacing.sm, fontSize: 14 }}
-                
+                >
                     {t('principal.resources.emptyStateDesc') || 'No resource requests or damaged items reported.'}
                 </Text>
             </Box>
@@ -106,10 +106,10 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
         <VStack space="lg">
             <VStack space="xs">
                 <Heading color={colors.text} sx={{ fontSize: 24 }}>
-                    {t('principal.resources.title') || 'Resource Vistas'}>
+                    {t('principal.resources.title') || 'Resource Vistas'}
                 </Heading>
                 <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
-                    {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}>
+                    {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}
                 </Text>
             </VStack>
 
@@ -119,7 +119,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                     const priorityColor = (PRIORITY_COLORS as any)[need.priority] || colors.textTertiary;
 
                     return (
-                        <Box>
+                        <Box
                             key={need.id}
                             sx={{
                                 padding: Theme.spacing.lg,
@@ -128,9 +128,9 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                 borderLeftWidth: 4,
                                 borderLeftColor: priorityColor,
                             }}
-                        
+                        >
                             <HStack space="md" sx={{ alignItems: "center" }}>
-                                <Box>
+                                <Box
                                     sx={{
                                         width: 48,
                                         height: 48,
@@ -139,27 +139,27 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                     }}
-                                
-                                    <Icon color={priorityColor} size={24} /
-                                ></Box>
+                                >
+                                    <Icon color={priorityColor} size={24} />
+                                </Box>
 
                                 <VStack space="xs" sx={{ flex: 1 }}>
                                     <HStack space="sm" sx={{ alignItems: "center" }}>
-                                        <Text>
+                                        <Text
                                             color={colors.text}
                                             sx={{ fontWeight: typography.fontWeight.semibold, fontSize: 18 }}
-                                        
+                                        >
                                             {t('principal.resources.needUnit', { count: need.requested_by_count })}
                                         </Text>
                                     </HStack>
                                     <Text color={colors.textSecondary} sx={{ fontSize: 16 }}>
-                                        {need.description}>
+                                        {need.description}
                                     </Text>
                                     {need.priority === 'urgent' && (
-                                        <Text>
+                                        <Text
                                             color={Theme.colors.emberRed}
                                             sx={{ fontWeight: typography.fontWeight.medium, fontSize: 12 }}
-                                        
+                                        >
                                             {t('principal.resources.urgent')}
                                         </Text>
                                     )}
@@ -170,19 +170,19 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                 })}
             </VStack>
 
-            <Box>
+            <Box
                 sx={{
                     padding: Theme.spacing.md,
                     backgroundColor: colors.tertiary,
                     borderRadius: Theme.corners.comfortable,
                     marginTop: Theme.spacing.md,
                 }}
-            
-                <Text>
+            >
+                <Text
                     color={colors.textTertiary}
                     textAlign="center"
                     sx={{ fontStyle: 'italic', fontSize: 12 }}
-                
+                >
                     {t('principal.resources.philosophy')}
                 </Text>
             </Box>

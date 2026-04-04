@@ -15,10 +15,10 @@ const StudentProfileScreen = React.lazy(() =>
     import('@repo/classroom').then(m => ({ default: m.StudentProfileScreen }))
 );
 const FounderDashboard = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.FounderDashboard }))
+    import('@repo/admin/screens/FounderDashboard.web').then(m => ({ default: m.default }))
 );
 const FounderSchoolView = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.FounderSchoolView }))
+    import('@repo/admin/screens/FounderSchoolDashboard').then(m => ({ default: m.default }))
 );
 const SchoolCreationScreen = React.lazy(() =>
     import('../screens/SchoolCreationScreen')

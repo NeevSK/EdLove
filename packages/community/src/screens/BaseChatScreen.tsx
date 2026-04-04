@@ -177,26 +177,26 @@ export default function BaseChatScreen({
         const time = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const avatar = (side: 'left' | 'right') => (
-            <TouchableOpacity>
+            <TouchableOpacity
                 onPress={() => onPressAuthor?.(item.author_id, authorName)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            
+            >
                 <Avatar size="xs" sx={{ [side === 'left' ? 'marginRight' : 'marginLeft']: 8, marginTop: 4, backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.action }}>
                     {(isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)
-                        ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} /
-                        >: <AvatarFallbackText>{initials}</AvatarFallbackText
-                    >}
+                        ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} />
+                        : <AvatarFallbackText>{initials}</AvatarFallbackText>
+                    }
                 </Avatar>
             </TouchableOpacity>
         );
 
         return (
             <HStack sx={{ justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md }}>
-                {!isOwn && avatar('left')}>
+                {!isOwn && avatar('left')}
                 <VStack sx={{ maxWidth: '72%', gap: 2 }}>
-                    {!isOwn && (>
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary, marginLeft: 2 }}>{authorName}</Text
-                    >)}
+                    {!isOwn && (
+                        <Text sx={{ fontSize: 11, color: colors.textTertiary, marginLeft: 2 }}>{authorName}</Text>
+                    )}
                     <Box sx={{
                         backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.secondary,
                         borderRadius: Theme.corners.comfortable,
@@ -208,11 +208,11 @@ export default function BaseChatScreen({
                         borderColor: colors.border,
                     }}>
                         <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: isOwn ? Theme.colors.sacredWhite : colors.text, lineHeight: 20 }}>
-                            {item.content}>
+                            {item.content}
                         </Text>
                     </Box>
-                    <Text sx={{ fontSize: 10, color: colors.textTertiary, alignSelf: isOwn ? 'flex-end' : 'flex-start' }}>{time}</Text
-                ></VStack>
+                    <Text sx={{ fontSize: 10, color: colors.textTertiary, alignSelf: isOwn ? 'flex-end' : 'flex-start' }}>{time}</Text>
+                </VStack>
                 {isOwn && avatar('right')}
             </HStack>
         );
@@ -220,20 +220,20 @@ export default function BaseChatScreen({
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            <GlobalHeader/>
+            <GlobalHeader
                 title={title}
                 subtitle={subtitle}
                 showBack
                 rightAction={headerRight}
             />
 
-            ><Box sx={{ flex: 1 }}
-                {loading ? (>
+            <Box sx={{ flex: 1 }}>
+                {loading ? (
                     <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
-                    ></Box>
+                    </Box>
                 ) : (
-                    <FlatList>
+                    <FlatList
                         ref={listRef}
                         data={messages}
                         keyExtractor={item => item.id}
@@ -242,15 +242,15 @@ export default function BaseChatScreen({
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
                             <Text sx={{ textAlign: 'center', color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm }}>
-                                No messages yet. Say hello =K>
+                                No messages yet. Say hello!
                             </Text>
                         }
-                    /
-                >)}
+                    />
+                )}
 
                 {/* Compose bar */}
                 <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}>
-                    {isReadOnly ? (>
+                    {isReadOnly ? (
                         <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
                             <Text color={colors.textTertiary} size="sm" italic>
                                 {t('chat.historicalView', 'Viewing historical sanctuary records.')}
@@ -264,24 +264,24 @@ export default function BaseChatScreen({
                         </Box>
                     ) : (
                         <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}>
-                            <TextInput>
+                            <TextInput
                                 value={draft}
                                 onChangeText={setDraft}
-                                placeholder="Write a message&"
+                                placeholder="Write a message..."
                                 placeholderTextColor={colors.textTertiary}
                                 multiline
                                 style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
                                 returnKeyType="default"
-                            /
-                            ><TouchableOpacity
+                            />
+                            <TouchableOpacity
                                 onPress={handleSend}
                                 disabled={!draft.trim() || sending}
                                 style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}
-                            
+                            >
                                 {sending
-                                    ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} /
-                                    >: <Send size={18} color={Theme.colors.sacredWhite} /
-                                >}
+                                    ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
+                                    : <Send size={18} color={Theme.colors.sacredWhite} />
+                                }
                             </TouchableOpacity>
                         </HStack>
                     )}

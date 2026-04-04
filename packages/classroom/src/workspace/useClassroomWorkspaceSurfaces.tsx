@@ -28,7 +28,8 @@ export type ClassroomWorkspaceCapabilityKey =
     | 'TeacherDashboard'
     | 'StudentDashboard';
 
-export type ClassroomWorkspaceSurface = WorkspaceSurfaceDefinition    ClassroomWorkspaceSurfaceId,
+export type ClassroomWorkspaceSurface = WorkspaceSurfaceDefinition<
+    ClassroomWorkspaceSurfaceId,
     ClassroomWorkspaceCapabilityKey
 > & {
     content: React.ReactNode;
@@ -84,41 +85,56 @@ export function useClassroomWorkspaceSurfaces({
     const renderNudge = () => {
         if (classroomData && !classroomData.profileCompleted && !isGuest) {
             return (
-                <SanctuaryNudge>
+                <SanctuaryNudge
                     title="Sanctuary Entry"
                     description="Complete your profile to unlock full school features."
                     actionLabel="Finish"
                     onAction={() => navigation.navigate('Profile')}
                     icon="profile"
-                /            >);
+                />
+            );
         }
 
         return (
-            <                <FeatureGuard >action="read" subject="TeacherPulse"                    <SanctuaryNudge
+            <>
+                <FeatureGuard action="read" subject="TeacherPulse">
+                    <SanctuaryNudge
                         title={t('classroom.nudges.breathing.title') || 'Feeling Overwhelmed?'}
                         description={t('classroom.nudges.breathing.message') || 'Take a 60-second breathing reset to center yourself before your next session.'}
                         actionLabel={t('classroom.nudges.breathing.action') || 'Start Reset'}
                         onAction={() => setBreathingOpen(true)}
                         icon={Wind}
-                    /                ></FeatureGuard                ><FeatureGuard action="read" subject="PrincipalPulse"                    <SanctuaryNudge
+                    />
+                </FeatureGuard>
+                <FeatureGuard action="read" subject="PrincipalPulse">
+                    <SanctuaryNudge
                         title={t('principal.nudges.breathing.title') || 'Leadership Clarity'}
                         description={t('principal.nudges.breathing.message') || 'Principals carry the weight of the institution. A minute of breathing restores focus.'}
                         actionLabel={t('principal.nudges.breathing.action') || 'Pause & Breathe'}
                         onAction={() => setBreathingOpen(true)}
                         icon={Wind}
-                    /                </FeatureGuard                <FeatureGuard action="read" subject="FounderPulse"                    <SanctuaryNudge
+                    />
+                </FeatureGuard>
+                <FeatureGuard action="read" subject="FounderPulse">
+                    <SanctuaryNudge
                         title={t('founder.nudges.breathing.title') || 'Visionary Pulse'}
                         description={t('founder.nudges.breathing.message') || 'Taking a moment for yourself is the best way to lead by example for your ecosystem.'}
                         actionLabel={t('founder.nudges.breathing.action') || 'Mindful Reset'}
                         onAction={() => setBreathingOpen(true)}
                         icon={Wind}
-                    /                </FeatureGuard                <FeatureGuard action="read" subject="StudentPulse"                    <SanctuaryNudge
+                    />
+                </FeatureGuard>
+                <FeatureGuard action="read" subject="StudentPulse">
+                    <SanctuaryNudge
                         title={t('student.nudges.breathing.title') || 'Learning Fuel'}
                         description={t('student.nudges.breathing.message') || 'Studies are easier when your mind is calm. Reset your breath to improve focus.'}
                         actionLabel={t('student.nudges.breathing.action') || 'Breathe Now'}
                         onAction={() => setBreathingOpen(true)}
                         icon={Wind}
-                    /                </FeatureGuard            </        );
+                    />
+                </FeatureGuard>
+            </>
+        );
     };
 
     return useMemo<ClassroomWorkspaceSurface[]>(() => {
@@ -129,17 +145,19 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'PrincipalDashboard')) {
             const principalContent =
                 !schoolIdToUse && !isDemoModeTriggered ? (
-                    <PrincipalOnboardingView/>
+                    <PrincipalOnboardingView
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onCreateSchool={() => setIsCreateSchoolOpen(true)}
                         onJoinSchool={() => navigation.navigate('Search' as any)}
-                    /                >) : (
-                    <PrincipalDashboard/>
+                    />
+                ) : (
+                    <PrincipalDashboard
                         schoolId={schoolIdToUse || 'demo-school'}
                         userId={classroomData.userId}
                         onRefresh={fetchRoleData}
-                    /                >);
+                    />
+                );
 
             surfaces.push({
                 surfaceId: 'principal',
@@ -200,19 +218,26 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'TeacherDashboard')) {
             const teacherContent =
                 classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
-                    <TeacherOnboardingView>
+                    <TeacherOnboardingView
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onCreateClassroom={() => setIsCreateClassroomOpen(true)}
                         onJoinSchool={() => navigation.navigate('Search' as any)}
-                    /                >) : (
-                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1 }}                            <GlobalHeader title="Classroom" subtitle={undefined} /                            >{renderNudge()}
+                    />
+                ) : (
+                    <ScreenWrapper scroll={false} noTopInset={true}>
+                        <Box sx={{ flex: 1 }}>
+                            <GlobalHeader title="Classroom" subtitle={undefined} />
+                            {renderNudge()}
                             {isDemoModeTriggered && <SandboxBanner />}
-                            <TeacherDashboard>
+                            <TeacherDashboard
                                 schoolId={schoolIdToUse || undefined}
                                 userId={classroomData.userId}
                                 onRefresh={fetchRoleData}
-                            /                        ></Box                    ></ScreenWrapper                >);
+                            />
+                        </Box>
+                    </ScreenWrapper>
+                );
 
             surfaces.push({
                 surfaceId: 'teacher',
@@ -235,19 +260,26 @@ export function useClassroomWorkspaceSurfaces({
         if (can('manage', 'StudentDashboard')) {
             const studentContent =
                 classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
-                    <StudentOnboardingView>
+                    <StudentOnboardingView
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onJoinClass={() => setIsClaimInviteOpen(true)}
                         onFindSchool={() => navigation.navigate('Search' as any)}
-                    /                >) : (
-                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1 }}                            <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} /                            >{renderNudge()}
+                    />
+                ) : (
+                    <ScreenWrapper scroll={false} noTopInset={true}>
+                        <Box sx={{ flex: 1 }}>
+                            <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
+                            {renderNudge()}
                             {isDemoModeTriggered && <SandboxBanner />}
-                            <StudentDashboard>
+                            <StudentDashboard
                                 schoolId={schoolIdToUse || undefined}
                                 userId={classroomData.userId}
                                 onRefresh={fetchRoleData}
-                            /                        ></Box                    ></ScreenWrapper                >);
+                            />
+                        </Box>
+                    </ScreenWrapper>
+                );
 
             surfaces.push({
                 surfaceId: 'student',
@@ -282,5 +314,6 @@ export function useClassroomWorkspaceSurfaces({
         setIsCreateClassroomOpen,
         setIsCreateSchoolOpen,
         setIsDemoModeTriggered,
+        surfaceInsights,
     ]);
 }

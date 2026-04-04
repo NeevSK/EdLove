@@ -2,12 +2,15 @@ export interface StudentGrade {
   id: string;
   student_id: string;
   classroom_id: string;
-  assignment_id?: string;
+  assignment_id?: string | null;
   marks: number;
   grade: string;
   gpa: number;
-  feedback?: string;
-  rank?: number;
+  feedback?: string | null;
+  rank?: number | null;
+  created_at: string;
+  updated_at: string;
+  graded_by: string;
   graded_at: string;
   publication_state?: 'draft' | 'published';
   published_at?: string | null;

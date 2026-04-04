@@ -18,6 +18,7 @@ export { default as ClassroomHolisticInsights } from './ClassroomHolisticInsight
 export { default as ClassroomEchoSection } from './ClassroomEchoSection';
 
 export { default as SubmissionModal } from './SubmissionModal';
+export { default as GlobalCreateModal } from './GlobalCreateModal';
 
 export * from './onboarding';
 export * from './poa';

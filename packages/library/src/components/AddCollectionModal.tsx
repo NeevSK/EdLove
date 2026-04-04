@@ -7,7 +7,6 @@ import {
     InputField,
     SanctuaryButton,
     SanctuaryModal,
-    useThemedColors
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +22,6 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
     onSubmit 
 }) => {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,14 +76,14 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
                     <SanctuaryButton 
                         variant="outline" 
                         onPress={onClose}
-                        disabled={isSubmitting}
+                        isDisabled={isSubmitting}
                     >
                         {t('common.cancel') || 'Cancel'}
                     </SanctuaryButton>
                     <SanctuaryButton 
                         onPress={handleSubmit}
                         isLoading={isSubmitting}
-                        disabled={!name.trim()}
+                        isDisabled={!name.trim()}
                     >
                         {t('common.create') || 'Create'}
                     </SanctuaryButton>
@@ -94,3 +92,5 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
         </SanctuaryModal>
     );
 };
+
+export default AddCollectionModal;

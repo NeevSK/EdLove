@@ -1,20 +1,38 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react-native';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { VStack, HStack, Box, Text, Theme, SkeletonCard, PositiveInvitation, useThemedColors } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 
-export const StudentClassroomList = ({ classrooms, loading, isDemo }: { classrooms: any[], loading: boolean, isDemo: boolean }) => {
+interface Classroom {
+    id: string;
+    name: string;
+    subject?: string;
+    color_theme?: string;
+}
+
+interface StudentClassroomListProps {
+    classrooms: Classroom[];
+    loading: boolean;
+    isDemo: boolean;
+}
+
+export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentClassroomListProps) => {
     const navigation = useNavigation<any>();
+    const colors = useThemedColors();
     
     if (loading) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}                {[1, 2].map(i => <SkeletonCard key={i} />)}
-            </div        );
+            <VStack sx={{ gap: 12 }}>
+                {[1, 2, 3].map(i => <SkeletonCard key={i} height={120} />)}
+            </VStack>
+        );
     }
 
     if (classrooms.length === 0) {
         return (
-            <div style={{ padding: '40px 0', textAlign: 'center' }}                <PositiveInvitation
+            <Box sx={{ paddingVertical: 40, alignItems: 'center' }}>
+                <PositiveInvitation
                     type="empty"
                     title={isDemo ? "Join Your First Sanctuary" : "No Classrooms found"}
                     description={isDemo
@@ -23,20 +41,87 @@ export const StudentClassroomList = ({ classrooms, loading, isDemo }: { classroo
                     }
                     actionLabel="Join a Classroom"
                     onAction={() => navigation.navigate('Main', { screen: 'Community' })}
-                /            </div        );
+                />
+            </Box>
+        );
     }
 
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '24px' }}            {classrooms.map(cls => (
-                <div
+        <HStack sx={{ flexWrap: 'wrap', gap: 24 }}>
+            {classrooms.map(cls => (
+                <TouchableOpacity
                     key={cls.id}
-                    className="sanctuary-card interactive"
-                    style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
-                    onClick={() => navigation.navigate('StudentClassroomDashboard', { classroomId: cls.id, classroomName: cls.name })}
-                                    <div style={{ height: '80px', background: cls.color_theme ?? 'var(--background-alt)', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', opacity: 0.9 }}                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}                            <BookOpen size={20} color="var(--water)" /                        </div                        <span style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.9)', borderRadius: '6px', fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)' }}>Active</span                    </div                    <div style={{ padding: '24px' }}                        <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 4px' }}>{cls.name}</h3                        {cls.subject && (
-                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', margin: '0 0 12px' }}>{cls.subject}</p                        )}
-                        <div style={{ display: 'flex', gap: '8px' }}                            <span style={{ padding: '4px 8px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)' }}                                \uD83D\uDCD6 Lessons
-                            </span                            <span style={{ padding: '4px 8px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)' }}                                \uD83D\uDCCB Assignments
-                            </span                        </div                    </div                </div            ))}
-        </div    );
+                    activeOpacity={0.8}
+                    onPress={() => navigation.navigate('StudentClassroomDashboard', { classroomId: cls.id, classroomName: cls.name })}
+                    style={[styles.card, { backgroundColor: colors.surface }]}
+                >
+                    <Box sx={{ 
+                        height: 80, 
+                        backgroundColor: cls.color_theme || Theme.colors.gurudeviBlue, 
+                        padding: 24, 
+                        flexDirection: 'row', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'flex-start',
+                        opacity: 0.9 
+                    }}>
+                        <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            borderRadius: 12, 
+                            backgroundColor: 'rgba(255,255,255,0.9)', 
+                            alignItems: 'center', 
+                            justifyContent: 'center' 
+                        }}>
+                            <BookOpen size={20} color={Theme.colors.gurudeviBlue} />
+                        </Box>
+                        <Box sx={{ 
+                            paddingHorizontal: 8, 
+                            paddingVertical: 4, 
+                            backgroundColor: 'rgba(255,255,255,0.9)', 
+                            borderRadius: 6 
+                        }}>
+                            <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.ink }}>Active</Text>
+                        </Box>
+                    </Box>
+                    <VStack sx={{ padding: 24, gap: 12 }}>
+                        <VStack sx={{ gap: 4 }}>
+                            <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.text }}>{cls.name}</Text>
+                            {cls.subject && (
+                                <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{cls.subject}</Text>
+                            )}
+                        </VStack>
+                        <HStack sx={{ gap: 8 }}>
+                            <Box sx={{ 
+                                paddingHorizontal: 8, 
+                                paddingVertical: 4, 
+                                backgroundColor: colors.primary, 
+                                borderRadius: 6 
+                            }}>
+                                <Text sx={{ fontSize: 11, fontWeight: '700', color: colors.textSecondary }}>📖 Lessons</Text>
+                            </Box>
+                            <Box sx={{ 
+                                paddingHorizontal: 8, 
+                                paddingVertical: 4, 
+                                backgroundColor: colors.primary, 
+                                borderRadius: 6 
+                            }}>
+                                <Text sx={{ fontSize: 11, fontWeight: '700', color: colors.textSecondary }}>📋 Assignments</Text>
+                            </Box>
+                        </HStack>
+                    </VStack>
+                </TouchableOpacity>
+            ))}
+        </HStack>
+    );
 };
+
+const styles = StyleSheet.create({
+    card: {
+        width: '100%',
+        maxWidth: 320,
+        borderRadius: 16,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
+    },
+});

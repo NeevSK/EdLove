@@ -2,6 +2,7 @@ import type {
     WorkspaceLayout,
     WorkspaceSurfaceDefinition,
     WorkspaceZoneId,
+    ResolvedWorkspaceSurface,
 } from '../../types';
 
 export type {
@@ -12,6 +13,7 @@ export type {
     WorkspaceRuntimePlatform,
     WorkspaceSurfaceDefinition,
     WorkspaceZoneId,
+    ResolvedWorkspaceSurface,
 } from '../../types';
 export * from './layoutSync';
 export * from './renderer';
@@ -26,14 +28,7 @@ export const WORKSPACE_CANVAS_ZONES = [
 
 export type WorkspaceCanvasZoneId = (typeof WORKSPACE_CANVAS_ZONES)[number];
 
-export interface ResolvedWorkspaceSurface<TSurfaceId extends string = string,
-    TCapabilityKey extends string = string
-> extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> {
-    order: number;
-    hidden: boolean;
-    pinned: boolean;
-    zone: WorkspaceZoneId;
-}
+
 
 export interface WorkspaceZoneLayoutGroup<TSurfaceId extends string = string,
     TCapabilityKey extends string = string

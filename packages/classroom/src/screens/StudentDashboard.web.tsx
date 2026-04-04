@@ -74,31 +74,40 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
         enableRemoteSync: false,
     });
 
-    const findSurfaceDefinition = (surfaceId: string) =        dashboardSurfaces.find((candidate) => candidate.surfaceId === surfaceId);
+    const findSurfaceDefinition = (surfaceId: string) =>
+        dashboardSurfaces.find((candidate) => candidate.surfaceId === surfaceId);
 
     if (!layout) {
         return <Box sx={{ flex: 1, backgroundColor: colors.primary }} />;
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}            {isDemoExperience ? <SandboxBanner /> : null}
-            <ScrollView>
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            {isDemoExperience ? <SandboxBanner /> : null}
+            <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ padding: Theme.spacing.lg }}
-                            <Animated.View entering={FadeInDown.duration(400)}                    <WorkspaceCanvas>
+            >
+                <Animated.View entering={FadeInDown.duration(400)}>
+                    <WorkspaceCanvas
                         surfaces={dashboardSurfaces}
                         layout={layout}
                         title={t('classroom.studentDashboardHeading') || 'Your Learning Journey'}
                         subtitle={t('classroom.studentDashboardIntro') || 'Step into your sanctuaries and grow with love.'}
-                        renderSurfaceContent={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.content ?? null
+                        renderSurfaceContent={(surface) =>
+                            findSurfaceDefinition(surface.surfaceId)?.content ?? null
                         }
-                        getSurfaceSubtitle={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.subtitle
+                        getSurfaceSubtitle={(surface) =>
+                            findSurfaceDefinition(surface.surfaceId)?.subtitle
                         }
-                        getSurfaceSummary={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.summary
+                        getSurfaceSummary={(surface) =>
+                            findSurfaceDefinition(surface.surfaceId)?.summary
                         }
-                        getSurfaceTemporalLabel={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.temporalLabel
+                        getSurfaceTemporalLabel={(surface) =>
+                            findSurfaceDefinition(surface.surfaceId)?.temporalLabel
                         }
-                        getSurfaceMetadata={(surface) =                            findSurfaceDefinition(surface.surfaceId)?.metadata
+                        getSurfaceMetadata={(surface) =>
+                            findSurfaceDefinition(surface.surfaceId)?.metadata
                         }
                         onToggleHidden={(surface) => setSurfaceHidden(surface.surfaceId, !surface.hidden)}
                         renderSurfaceActions={(surface) => {
@@ -106,7 +115,8 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
                             if (!resolved) return null;
 
                             return (
-                                <Box sx={{ flexDirection: 'row', gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    <TouchableOpacity>
+                                <Box sx={{ flexDirection: 'row', gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
+                                    <TouchableOpacity
                                         onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
                                         style={{
                                             paddingHorizontal: Theme.spacing.md,
@@ -116,9 +126,14 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
                                             borderWidth: 1,
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
-                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}>
-                                        </Text                                    ></TouchableOpacity                                    ><TouchableOpacity
-                                        onPress={() =                                            setSurfaceZone(
+                                    >
+                                        <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}>
+                                            {resolved.pinned ? 'Unpin' : 'Pin'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            setSurfaceZone(
                                                 resolved.surfaceId,
                                                 resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'private' : 'work'
                                             )
@@ -131,8 +146,17 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
                                             borderWidth: 1,
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
-                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone>
-                                        </Text                                    ></TouchableOpacity                                ></Box                            >);
+                                    >
+                                        <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}>
+                                            Move zone
+                                        </Text>
+                                    </TouchableOpacity>
+                                </Box>
+                            );
                         }}
-                    /                ></Animated.View            </ScrollView        </Box    );
+                    />
+                </Animated.View>
+            </ScrollView>
+        </Box>
+    );
 }

@@ -21,6 +21,13 @@ export const principalWorkspaceAPI = {
   },
 
   /**
+   * @authority read SchoolInvite
+   */
+  async getInviteCodes(schoolId: string): Promise<InviteCodeZod[]> {
+    return principalWorkspaceServices.listInviteCodes(schoolId);
+  },
+
+  /**
    * @authority create SchoolInvite
    */
   async generateInviteCode(

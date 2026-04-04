@@ -652,7 +652,7 @@ export default function LibraryScreen() {
             <AddCollectionModal
                 isOpen={isAddCollectionModalOpen && !isPastView}
                 onClose={() => setIsAddCollectionModalOpen(false)}
-                onAdd={handleCreateCollection}
+                onSubmit={handleCreateCollection}
             />
             {selectedResource && (
                 <ResourceActionSheet

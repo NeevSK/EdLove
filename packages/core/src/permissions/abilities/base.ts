@@ -13,7 +13,8 @@ import {
     Post,
     GroupMember,
     GroupMessage,
-    CommunityReaction
+    CommunityReaction,
+    ThuthimalGift
 } from '../../types';
 
 export type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'send' | 'verify' | 'grade' | 'resolve';
@@ -96,7 +97,8 @@ export type SubjectType =
     | Post
     | GroupMember
     | GroupMessage
-    | CommunityReaction;
+    | CommunityReaction
+    | ThuthimalGift;
 
 export type AppAbilities = [Actions, SubjectType];
 export type AppAbility = MongoAbility<AppAbilities>;

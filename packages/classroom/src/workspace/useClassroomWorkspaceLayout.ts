@@ -16,14 +16,16 @@ export function useClassroomWorkspaceLayout(
     });
 
     const resolvedSurfaceMap = useMemo(
-        () =            new Map(
+        () =>
+            new Map(
                 workspace.surfaces.map((surface) => [surface.surfaceId, surface] as const)
             ),
         [workspace.surfaces]
     );
 
     const enrichedSurfaces = useMemo(
-        () =            surfaces
+        () =>
+            surfaces
                 .map((surface) => {
                     const resolved = resolvedSurfaceMap.get(surface.surfaceId);
                     if (!resolved) return null;
@@ -34,7 +36,9 @@ export function useClassroomWorkspaceLayout(
                     } as ClassroomWorkspaceSurface &
                         ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId>;
                 })
-                .filter(Boolean) as Array                ClassroomWorkspaceSurface & ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId            >,
+                .filter(Boolean) as Array<
+                ClassroomWorkspaceSurface & ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId>
+            >,
         [surfaces, resolvedSurfaceMap]
     );
 

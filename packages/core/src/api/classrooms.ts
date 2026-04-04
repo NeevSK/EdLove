@@ -60,6 +60,20 @@ export const classroomsAPI = {
     async delete(id: string): Promise<void> {
         return educationalServices.classrooms.delete(id);
     },
+
+    async getTeacherClassrooms(teacherId: string, params: PaginationParams = {}): Promise<Classroom[]> {
+        return (await educationalServices.classrooms.getByTeacher(teacherId, params)) as unknown as Classroom[];
+    },
+
+    async getTeacherStats(teacherId: string, _viewDate?: string): Promise<any> {
+        // Temporary implementation until educationalServices.classrooms.getTeacherStats is ready
+        return {
+            totalStudents: 0,
+            activeAssignments: 0,
+            pendingEchoes: 0,
+            attendancePulse: 0,
+        };
+    },
 };
 
 // Satisfy linter for architectural linking

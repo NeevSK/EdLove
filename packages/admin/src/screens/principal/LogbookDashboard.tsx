@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { observationsAPI, type PrincipalObservation } from '../../observations';
-import { useCallback, useEffect } from 'react';
 
 interface LogbookDashboardProps {
     userId: string;
@@ -47,48 +46,73 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
 
     return (
         <div>
-            <button >onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', marginBottom: '24px' }}>
+            <button 
+                onClick={onBack} 
+                style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 8, 
+                    padding: '8px 14px', 
+                    borderRadius: 10, 
+                    border: '1px solid var(--border)', 
+                    background: 'var(--glass-surface)', 
+                    cursor: 'pointer', 
+                    fontFamily: 'var(--font-body)', 
+                    fontSize: 13, 
+                    fontWeight: '600', 
+                    marginBottom: 24 
+                }}
+            >
                 <ArrowLeft size={14} /> Back to Dashboard
             </button>
-            <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>\uD83D\uDCD3 Institutional Log</h2
-            ><p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Your daily operational notes and walkthroughs.</p
             
-            ><div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', opacity: isPastView ? 0.6 : 1 }}>
-                <select >
+            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>📓 Institutional Log</h2>
+            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: 14 }}>
+                Your daily operational notes and walkthroughs.
+            </p>
+            
+            <div className="sanctuary-card" style={{ padding: 24, marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12, opacity: isPastView ? 0.6 : 1 }}>
+                <select 
                     value={type} 
                     onChange={e => setType(e.target.value)} 
                     disabled={isPastView} 
-                    style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}
-                
+                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }}
+                >
                     {['walkthrough', 'note', 'concern', 'commendation'].map(t => (
-                        <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option
-                    >))}
+                        <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                    ))}
                 </select>
-                <textarea >
+                <textarea 
                     value={content} 
                     onChange={e => setContent(e.target.value)} 
                     disabled={isPastView} 
-                    placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note\u2026"} 
+                    placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note…"} 
                     rows={3} 
-                    style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', resize: 'vertical' as const }} 
-                /
-                ><button 
+                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14, resize: 'vertical' }} 
+                />
+                <button 
                     onClick={handleSaveObservation} 
                     disabled={!content.trim() || saving || isPastView} 
                     className="premium-button" 
                     style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}
-                
-                    {saving ? '\u23F3' : '+ Log Entry'}
+                >
+                    {saving ? '⏳' : '+ Log Entry'}
                 </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {observations.map(o => (
                     <div key={o.id} className="sanctuary-card" style={{ padding: '18px 20px', borderLeft: `3px solid ${o.type === 'concern' ? 'var(--ember)' : o.type === 'commendation' ? 'var(--moss)' : 'var(--sanctuary-saffron)'}` }}>
-                        <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: '6px' }}>{o.type}</div
-                        ><p style={{ margin: '0 0 6px', fontSize: '14px', lineHeight: '1.6' }}>{o.content}</p
-                        ><div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}</div
-                    ></div>
+                        <div style={{ fontSize: 11, fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: 6 }}>
+                            {o.type}
+                        </div>
+                        <p style={{ margin: '0 0 6px', fontSize: 14, lineHeight: 1.6 }}>
+                            {o.content}
+                        </p>
+                        <div style={{ fontSize: 11, color: 'var(--ink-ghost)' }}>
+                            {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
+                        </div>
+                    </div>
                 ))}
             </div>
         </div>

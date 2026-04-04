@@ -97,11 +97,18 @@ export function AnalyticsEngine({
   }, [data, selectedMetric]);
 
   return (
-    <Card style={styles.container}      {title && <Text style={styles.title}>{title}</Text>}
+    <Card style={styles.container}>
+      {title && <Text style={styles.title}>{title}</Text>}
       
       {/* Filters */}
       {showFilters && (
-        <View style={styles.filters}          <HStack space="md"            <VStack flex={1}              <Text style={styles.filterLabel}>Metric</Text              <ScrollView horizontal showsHorizontalScrollIndicator={false}                <HStack space="sm"                  {['all', 'A', 'B', 'C', 'S', 'F'].map(grade => (
+        <View style={styles.filters}>
+          <HStack space="md">
+            <VStack flex={1}>
+              <Text style={styles.filterLabel}>Metric</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <HStack space="sm">
+                  {['all', 'A', 'B', 'C', 'S', 'F'].map(grade => (
                     <Text
                       key={grade}
                       style={[
@@ -109,10 +116,19 @@ export function AnalyticsEngine({
                         selectedMetric === grade && styles.selectedFilter
                       ]}
                       onPress={() => setSelectedMetric(grade)}
-                                          {grade === 'all' ? 'All' : grade}
-                    </Text                  ))}
-                </HStack              </ScrollView            </VStack            
-            <VStack flex={1}              <Text style={styles.filterLabel}>Date Range</Text              <ScrollView horizontal showsHorizontalScrollIndicator={false}                <HStack space="sm"                  {['week', 'month', 'quarter', 'year'].map(range => (
+                    >
+                      {grade === 'all' ? 'All' : grade}
+                    </Text>
+                  ))}
+                </HStack>
+              </ScrollView>
+            </VStack>
+            
+            <VStack flex={1}>
+              <Text style={styles.filterLabel}>Date Range</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <HStack space="sm">
+                  {['week', 'month', 'quarter', 'year'].map(range => (
                     <Text
                       key={range}
                       style={[
@@ -120,37 +136,85 @@ export function AnalyticsEngine({
                         dateRange === range && styles.selectedFilter
                       ]}
                       onPress={() => setDateRange(range)}
-                                          {range.charAt(0).toUpperCase() + range.slice(1)}
-                    </Text                  ))}
-                </HStack              </ScrollView            </VStack          </HStack        </View      )}
+                    >
+                      {range.charAt(0).toUpperCase() + range.slice(1)}
+                    </Text>
+                  ))}
+                </HStack>
+              </ScrollView>
+            </VStack>
+          </HStack>
+        </View>
+      )}
 
       {/* Search */}
-      <View style={styles.searchContainer}        <Text style={styles.searchLabel}>Search</Text        <TextInput
+      <View style={styles.searchContainer}>
+        <Text style={styles.searchLabel}>Search</Text>
+        <TextInput
           style={styles.searchInput}
           value={searchTerm}
           onChangeText={setSearchTerm}
           placeholder="Search analytics..."
-        /      </View
+        />
+      </View>
+
       {/* Analytics Summary */}
-      <View style={styles.summary}        <VStack space="md"          <HStack style={styles.summaryRow}            <VStack flex={1} alignItems="center"              <Text style={styles.summaryValue}>{analytics.totalItems}</Text              <Text style={styles.summaryLabel}>Total Items</Text            </VStack            
-            <VStack flex={1} alignItems="center"              <Text style={styles.summaryValue}>{analytics.averageValue.toFixed(2)}</Text              <Text style={styles.summaryLabel}>Average</Text            </VStack            
-            <VStack flex={1} alignItems="center"              <Text style={[
+      <View style={styles.summary}>
+        <VStack space="md">
+          <HStack style={styles.summaryRow}>
+            <VStack flex={1} alignItems="center">
+              <Text style={styles.summaryValue}>{analytics.totalItems}</Text>
+              <Text style={styles.summaryLabel}>Total Items</Text>
+            </VStack>
+            
+            <VStack flex={1} alignItems="center">
+              <Text style={styles.summaryValue}>{analytics.averageValue.toFixed(2)}</Text>
+              <Text style={styles.summaryLabel}>Average</Text>
+            </VStack>
+            
+            <VStack flex={1} alignItems="center">
+              <Text style={[
                 styles.summaryValue,
                 { color: analytics.trendDirection === 'up' ? Theme.colors.success : 
                          analytics.trendDirection === 'down' ? Theme.colors.error : Theme.colors.warning }
-              ]}                {analytics.trendDirection === 'up' ? '\u2191' : 
+              ]}>
+                {analytics.trendDirection === 'up' ? '\u2191' : 
                  analytics.trendDirection === 'down' ? '\u2193' : '\u2192'}
-              </Text              <Text style={styles.summaryLabel}>Trend</Text            </VStack          </HStack        </VStack      </View
+              </Text>
+              <Text style={styles.summaryLabel}>Trend</Text>
+            </VStack>
+          </HStack>
+        </VStack>
+      </View>
       {/* Export Button */}
       {showExport && (
-        <View style={styles.exportContainer}          <Text style={styles.exportButton} onPress={handleExport}            \uD83D\uDCE4 Export Report
-          </Text        </View      )}
+        <View style={styles.exportContainer}>
+          <Text style={styles.exportButton} onPress={handleExport}>
+            \uD83D\uDCE4 Export Report
+          </Text>
+        </View>
+      )}
 
       {/* Data Visualization */}
-      <ScrollView style={styles.dataContainer}        <VStack space="md"          {filteredData.map((item, index) => (
-            <View key={item.id} style={styles.dataItem}              <HStack justifyContent="space-between"                <VStack flex={1}                  <Text style={styles.itemName}>{item.name}</Text                  <Text style={styles.itemValue}>{item.value}</Text                </VStack                <Text style={styles.itemGrade}                  {marksToGPA(item.value).grade} ({item.value}%)
-                </Text              </HStack            </View          ))}
-        </VStack      </ScrollView    </Card  );
+      <ScrollView style={styles.dataContainer}>
+        <VStack space="md">
+          {filteredData.map((item, index) => (
+            <View key={item.id} style={styles.dataItem}>
+              <HStack justifyContent="space-between">
+                <VStack flex={1}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemValue}>{item.value}</Text>
+                </VStack>
+                <Text style={styles.itemGrade}>
+                  {marksToGPA(item.value).grade} ({item.value}%)
+                </Text>
+              </HStack>
+            </View>
+          ))}
+        </VStack>
+      </ScrollView>
+    </Card>
+  );
 }
 
 const styles = StyleSheet.create({

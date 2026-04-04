@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, Classroom, Lesson, LessonMaterial, Assignment, useAuthStore } from '@repo/core';
 
-type StudentSubmissionSummary = Awaited    ReturnType<typeof api.assignments.getSubmissionHistoryForStudent>[number];
+type StudentSubmissionSummary = Awaited<ReturnType<typeof api.assignments.getSubmissionHistoryForStudent>>[number];
 
 type StudentClassroomWorkspaceData = {
     classroom: Classroom | null;
@@ -51,13 +51,13 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
             ]);
 
             setData({
-                classroom,
-                lessons,
-                materials,
-                assignments,
-                submissions,
+                classroom: classroom as any,
+                lessons: lessons as any,
+                materials: materials as any,
+                assignments: assignments as any,
+                submissions: submissions as any,
                 noteCount: notes.length,
-                personalNoteCount: notes.filter((note) => note.note_type === 'personal').length,
+                personalNoteCount: notes.filter((note) => (note as any).note_type === 'personal').length,
             });
         } catch (err: any) {
             console.error('Failed to load student classroom workspace', err);

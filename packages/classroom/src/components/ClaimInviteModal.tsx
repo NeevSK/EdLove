@@ -6,7 +6,6 @@ import {
     ModalHeader,
     ModalCloseButton,
     ModalBody,
-    ModalFooter,
     Heading,
     Icon,
     CloseIcon,
@@ -41,7 +40,6 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     const [loading, setLoading] = useState(false);
     const [successData, setSuccessData] = useState<any>(null);
     const colors = useThemedColors();
-    const { text } = useTheme();
     const { user, setUser } = useStore();
 
     const handleClaim = async () => {
@@ -82,27 +80,74 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}            <ModalBackdrop /            ><ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}                <ModalHeader                    <Heading >color={colors.text}>Claim Invite</Heading                    ><ModalCloseButton                        <Icon >as={CloseIcon} color={colors.textSecondary} /                    ></ModalCloseButton                </ModalHeader                <ModalBody                    {successData ? (
-                        <VStack sx={{ gap: 16, alignItems: 'center', paddingVertical: 24 }}                            <Box sx={{ backgroundColor: colors.tertiary, padding: 20, borderRadius: 40 }}                                <CheckCircle2 size={48} color={Theme.colors.sageGreen} /                            ></Box                            <VStack sx={{ gap: 4, alignItems: 'center' }}                                <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 18 }}>Successfully Enrolled!</Text                                ><Text color={colors.textSecondary} textAlign="center"                                    You have successfully linked your account to your classroom record.
-                                </Text                            </VStack                            <Button
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalBackdrop />
+            <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
+                <ModalHeader>
+                    <Heading color={colors.text}>Claim Invite</Heading>
+                    <ModalCloseButton>
+                        <Icon as={CloseIcon} color={colors.textSecondary} />
+                    </ModalCloseButton>
+                </ModalHeader>
+                <ModalBody>
+                    {successData ? (
+                        <VStack sx={{ gap: 16, alignItems: 'center', paddingVertical: 24 }}>
+                            <Box sx={{ backgroundColor: colors.tertiary, padding: 20, borderRadius: 40 }}>
+                                <CheckCircle2 size={48} color={Theme.colors.sageGreen} />
+                            </Box>
+                            <VStack sx={{ gap: 4, alignItems: 'center' }}>
+                                <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 18 }}>Successfully Enrolled!</Text>
+                                <Text color={colors.textSecondary} textAlign="center">
+                                    You have successfully linked your account to your classroom record.
+                                </Text>
+                            </VStack>
+                            <Button
                                 onPress={handleDone}
-                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, width: '100%' }}
-                                                            <ButtonText>Continue to Classroom</ButtonText                            ></Button                        </VStack                    ) : (
-                        <VStack sx={{ gap: 16, paddingBottom: 16 }}                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}                                <HStack sx={{ gap: 8, alignItems: 'center' }}                                    <QrCode size={20} color={Theme.colors.sanctuarySaffron} /                                    ><Text color={colors.textSecondary} sx={{ fontSize: 14 }}                                        Enter the 8-character invite code provided by your teacher.
-                                    </Text                                </HStack                            </Box>
-                            <FormControl isRequired                                <FormControlLabel                                    <FormControlLabelText >color={colors.textSecondary}>Invite Code</FormControlLabelText                                ></FormControlLabel                                <Input sx={{ borderColor: colors.border, backgroundColor: colors.primary, height: 60 }}                                    <InputField
+                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, width: '100%', marginTop: 16 }}
+                            >
+                                <ButtonText>Continue to Classroom</ButtonText>
+                            </Button>
+                        </VStack>
+                    ) : (
+                        <VStack sx={{ gap: 16, paddingBottom: 16 }}>
+                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}>
+                                <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                    <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
+                                        Enter the 8-character invite code provided by your teacher.
+                                    </Text>
+                                </HStack>
+                            </Box>
+                            <FormControl isRequired>
+                                <FormControlLabel>
+                                    <FormControlLabelText color={colors.textSecondary}>Invite Code</FormControlLabelText>
+                                </FormControlLabel>
+                                <Input sx={{ borderColor: colors.border, backgroundColor: colors.primary, height: 60 }}>
+                                    <InputField
                                         placeholder="e.g. a1b2c3d4"
                                         color={colors.text}
                                         value={inviteCode}
                                         onChangeText={setInviteCode}
                                         autoCapitalize="none"
                                         sx={{ fontSize: 24, textAlign: 'center', fontWeight: 'bold', letterSpacing: 4 }}
-                                    /                                ></Input                            </FormControl
-                            <Button>
+                                    />
+                                </Input>
+                            </FormControl>
+                            <Button
                                 onPress={handleClaim}
                                 disabled={loading || inviteCode.length < 6}
-                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50 }}
-                                                            {loading ? <Spinner >{...({ color: text.inverse } as any)} /> : <ButtonText>Claim Record</ButtonText>}
-                            </Button                        ></VStack                    )}
-                </ModalBody            </ModalContent        </Modal    );
+                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50, marginTop: 8 }}
+                            >
+                                {loading ? (
+                                    <Spinner color="white" />
+                                ) : (
+                                    <ButtonText>Claim Record</ButtonText>
+                                )}
+                            </Button>
+                        </VStack>
+                    )}
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    );
 }

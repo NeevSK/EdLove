@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { VStack, HStack, Card, Theme, useThemedColors } from '@repo/ui';
 import { marksToGPA } from '@repo/analytics';
 import { SimpleBarChart, ProgressRing } from '@repo/graphics';
 
@@ -23,23 +23,37 @@ function AnalyticsWidget({
   showGrade = false,
   marks 
 }: AnalyticsWidgetProps) {
-  const gradeInfo = showGrade && marks ? marksToGPA(marks) : null;
+  const gradeInfo = showGrade && marks !== undefined ? marksToGPA(marks) : null;
+  const colors = useThemedColors();
 
   return (
-    <Card style={styles.widget}      <VStack space="xs"        <HStack style={styles.header}          <Text style={styles.title}>{title}</Text          >{trend && (
-            <Text style={[>
-              styles.trend,>
-              { color: trend === 'up' ? Theme.colors.success : trend === 'down' ? Theme.colors.error : Theme.colors.warning }
-            ]}              {trend === 'up' ? '\u2191' : trend === 'down' ? '\u2193' : '\u2192'}
-            </Text          )}
-        </HStack        >
-        <Text style={[styles.value, { color }]}>{value}</Text        
-        >{subtitle && (
-          <Text style={styles.subtitle}>{subtitle}</Text        >)}
+    <Card sx={{ padding: Theme.spacing.md, marginBottom: Theme.spacing.sm }}>
+      <VStack sx={{ gap: Theme.spacing.xs }}>
+        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+          {trend && (
+            <Text style={[
+              styles.trend,
+              { color: trend === 'up' ? Theme.colors.sageGreen : trend === 'down' ? Theme.colors.emberRed : Theme.colors.templeGold }
+            ]}>
+              {trend === 'up' ? '\u2191' : trend === 'down' ? '\u2193' : '\u2192'}
+            </Text>
+          )}
+        </HStack>
+        <Text style={[styles.value, { color }]}>{value}</Text>
+        {subtitle && (
+          <Text style={[styles.subtitle, { color: colors.textTertiary }]}>{subtitle}</Text>
+        )}
         
         {gradeInfo && (
-          <HStack style={styles.gradeRow}            <Text style={styles.gradeText}>Grade: {gradeInfo.grade}</Text            ><Text style={styles.gpaText}>GPA: {gradeInfo.gpa.toFixed(2)}</Text          ></HStack        )}
-      </VStack    </Card  );
+          <HStack sx={{ justifyContent: 'space-between', marginTop: Theme.spacing.xs }}>
+            <Text style={[styles.gradeText, { color: colors.text }]}>Grade: {gradeInfo.grade}</Text>
+            <Text style={[styles.gpaText, { color: colors.text }]}>GPA: {gradeInfo.gpa.toFixed(2)}</Text>
+          </HStack>
+        )}
+      </VStack>
+    </Card>
+  );
 }
 
 interface QuickAnalyticsProps {
@@ -59,128 +73,135 @@ export default function QuickAnalytics({
   attendanceRate = 0, 
   rank = 0 
 }: QuickAnalyticsProps) {
-  const currentGrade = marks ? marksToGPA(marks) : null;
+  const currentGrade = marks !== undefined ? marksToGPA(marks) : null;
+  const colors = useThemedColors();
   
   return (
-    <ScrollView style={styles.container}      <VStack space="md"        {/* Header */}>
-        <Text style={styles.headerTitle}>\uD83D\uDCCA Quick Analytics</Text        
-        >{/* Main Stats */}
-        <VStack space="sm"          <AnalyticsWidget>
+    <ScrollView style={[styles.container, { backgroundColor: colors.primary }]}>
+      <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>📊 Quick Analytics</Text>
+        
+        <VStack sx={{ gap: Theme.spacing.sm }}>
+          <AnalyticsWidget
             title="Current Grade"
             value={currentGrade ? `${currentGrade.grade} (${marks}%)` : 'N/A'}
             showGrade={true}
-            marks={marks || 0}
-            color={currentGrade ? getGradeColor(currentGrade.grade) : Theme.colors.textSecondary}
-          /          >
-          ><AnalyticsWidget
+            marks={marks}
+            color={currentGrade ? getGradeColor(currentGrade.grade) : colors.textSecondary}
+          />
+          <AnalyticsWidget
             title="Average GPA"
             value={averageGPA.toFixed(2)}
             subtitle="This semester"
             trend={averageGPA > 3.0 ? 'up' : averageGPA < 2.0 ? 'down' : 'stable'}
-            color={averageGPA >= 3.0 ? Theme.colors.success : averageGPA < 2.0 ? Theme.colors.error : Theme.colors.warning}
-          /          
-          ><AnalyticsWidget
+            color={averageGPA >= 3.0 ? Theme.colors.sageGreen : averageGPA < 2.0 ? Theme.colors.emberRed : Theme.colors.templeGold}
+          />
+          <AnalyticsWidget
             title="Class Rank"
-            value={`#${rank}`}
+            value={`#${rank || 'N/A'}`}
             subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
             color={Theme.colors.gurudeviBlue}
-          /          />/>/>/>
-          ><AnalyticsWidget
+          />
+          <AnalyticsWidget
             title="Attendance Rate"
             value={`${(attendanceRate * 100).toFixed(1)}%`}
             subtitle="This month"
             trend={attendanceRate > 0.9 ? 'up' : attendanceRate < 0.7 ? 'down' : 'stable'}
-            color={attendanceRate > 0.9 ? Theme.colors.success : attendanceRate < 0.7 ? Theme.colors.error : Theme.colors.warning}
-          /        ></VStack        
-        >{/* Progress Visualization */}
-        <Card          <Text >style={styles.sectionTitle}>\uD83D\uDCC8 Progress Overview</Text          ><VStack space="sm" style={styles.progressContainer}            <ProgressRing
+            color={attendanceRate > 0.9 ? Theme.colors.sageGreen : attendanceRate < 0.7 ? Theme.colors.emberRed : Theme.colors.templeGold}
+          />
+        </VStack>
+
+        <Card sx={{ padding: Theme.spacing.md }}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>📈 Progress Overview</Text>
+          <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+            <ProgressRing
               value={averageGPA}
               max={4.0}
               size={120}
-              color={averageGPA >= 3.0 ? Theme.colors.success : averageGPA < 2.0 ? Theme.colors.error : Theme.colors.warning}
-            /            ><Text style={styles.progressLabel}>GPA Progress: {((averageGPA / 4.0) * 100).toFixed(0)}%</Text          ></VStack        </Card        
-        {/* Quick Actions */}
-        <Card          <Text >style={styles.sectionTitle}>\uD83D\uDE80 Quick Actions</Text          ><VStack space="sm"            <Text style={styles.actionText}>\uD83D\uDCE4 View detailed gradebook</Text            ><Text style={styles.actionText}>\uD83D\uDCC8 Track performance trends</Text            ><Text style={styles.actionText}>\uD83C\uDFAF Set GPA goals</Text            ><Text style={styles.actionText}>\uD83D\uDCE4 Download progress report</Text          ></VStack        </Card        
-        {/* Performance Tips */}
-        <Card          <Text >style={styles.sectionTitle}>\uD83D\uDCA1 Performance Tips</Text          ><VStack space="xs"            {averageGPA < 2.0 && (
-              <Text style={styles.tipText}>\u2022 Focus on improving attendance and assignment completion</Text            >)}
+              color={averageGPA >= 3.0 ? Theme.colors.sageGreen : averageGPA < 2.0 ? Theme.colors.emberRed : Theme.colors.templeGold}
+            />
+            <Text style={[styles.progressLabel, { color: colors.text }]}>GPA Progress: {((averageGPA / 4.0) * 100).toFixed(0)}%</Text>
+          </VStack>
+        </Card>
+
+        <Card sx={{ padding: Theme.spacing.md }}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>🚀 Quick Actions</Text>
+          <VStack sx={{ gap: Theme.spacing.sm }}>
+            <Text style={styles.actionText}>📤 View detailed gradebook</Text>
+            <Text style={styles.actionText}>📊 Track performance trends</Text>
+            <Text style={styles.actionText}>🎯 Set GPA goals</Text>
+            <Text style={styles.actionText}>📄 Download progress report</Text>
+          </VStack>
+        </Card>
+
+        <Card sx={{ padding: Theme.spacing.md }}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>💡 Performance Tips</Text>
+          <VStack sx={{ gap: Theme.spacing.xs }}>
+            {averageGPA < 2.0 && (
+              <Text style={[styles.tipText, { color: colors.text }]}>• Focus on improving attendance and assignment completion</Text>
+            )}
             {attendanceRate < 0.8 && (
-              <Text style={styles.tipText}>\u2022 Better attendance strongly correlates with higher grades</Text            >)}
-            {rank <= 5 && (
-              <Text style={styles.tipText}>\u2022 Great job! You're in top 25% of class</Text            >)}
+              <Text style={[styles.tipText, { color: colors.text }]}>• Better attendance strongly correlates with higher grades</Text>
+            )}
+            {rank > 0 && rank <= 5 && (
+              <Text style={[styles.tipText, { color: colors.text }]}>• Great job! You're in top 5 of the class</Text>
+            )}
             {averageGPA >= 3.5 && (
-              <Text style={styles.tipText}>\u2022 Excellent performance! Consider advanced coursework</Text            >)}
-          </VStack        </Card      </VStack    </ScrollView  );
+              <Text style={[styles.tipText, { color: colors.text }]}>• Excellent performance! Consider advanced coursework</Text>
+            )}
+          </VStack>
+        </Card>
+      </VStack>
+    </ScrollView>
+  );
 }
 
 function getGradeColor(grade: string): string {
   const colors: { [key: string]: string } = {
-    'A': Theme.colors.success,
+    'A': Theme.colors.sageGreen,
     'B': Theme.colors.gurudeviBlue,
-    'C': Theme.colors.warning,
-    'S': Theme.colors.textSecondary,
-    'F': Theme.colors.error,
+    'C': Theme.colors.templeGold,
+    'S': Theme.colors.starlightGray,
+    'F': Theme.colors.emberRed,
   };
   
-  return colors[grade] || Theme.colors.textSecondary;
+  return colors[grade] || Theme.colors.starlightGray;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '700',
-    color: Theme.colors.text,
+    fontWeight: '700' as any,
     marginBottom: Theme.spacing.md,
-  },
-  widget: {
-    padding: Theme.spacing.md,
-    marginBottom: Theme.spacing.sm,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Theme.spacing.xs,
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
-    color: Theme.colors.text,
+    fontWeight: '600' as any,
   },
   trend: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '600' as any,
   },
   value: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: '700' as any,
     marginBottom: Theme.spacing.xs,
   },
   subtitle: {
     fontSize: 12,
-    color: Theme.colors.textSecondary,
-  },
-  gradeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Theme.spacing.xs,
   },
   gradeText: {
     fontSize: 14,
-    color: Theme.colors.text,
   },
   gpaText: {
     fontSize: 14,
-    color: Theme.colors.text,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Theme.colors.text,
+    fontWeight: '600' as any,
     marginBottom: Theme.spacing.sm,
   },
   actionText: {
@@ -190,15 +211,10 @@ const styles = StyleSheet.create({
   },
   tipText: {
     fontSize: 14,
-    color: Theme.colors.text,
     lineHeight: 20,
-  },
-  progressContainer: {
-    alignItems: 'center',
   },
   progressLabel: {
     fontSize: 14,
-    color: Theme.colors.text,
     textAlign: 'center',
     marginTop: Theme.spacing.sm,
   },

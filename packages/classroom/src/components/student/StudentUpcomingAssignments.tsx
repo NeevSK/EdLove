@@ -1,27 +1,142 @@
 import React from 'react';
 import { CheckCircle2, Clock } from 'lucide-react-native';
+import {
+    useThemedColors,
+    Box,
+    HStack,
+    VStack,
+    Text,
+    Button,
+    ButtonText,
+    Theme
+} from '@repo/ui';
 
-export const StudentUpcomingAssignments = ({ assignments, onOpenSubmission, isPastView }: { assignments: any[], onOpenSubmission: (a: any) => void, isPastView: boolean }) => {
-    const pendingAssignments = assignments.filter((a: any) => !a.submitted);
+interface Assignment {
+    id: string;
+    title: string;
+    submitted: boolean;
+    due_date: string | Date;
+    classroom?: string;
+    classrooms?: { name: string };
+}
+
+interface StudentUpcomingAssignmentsProps {
+    assignments: Assignment[];
+    onOpenSubmission: (assignment: Assignment) => void;
+    isPastView: boolean;
+}
+
+export const StudentUpcomingAssignments = ({
+    assignments,
+    onOpenSubmission,
+    isPastView
+}: StudentUpcomingAssignmentsProps) => {
+    const colors = useThemedColors();
+    const pendingAssignments = assignments.filter((a) => !a.submitted);
 
     if (assignments.length === 0) return null;
 
     return (
-        <div style={{ marginTop: '40px' }}            <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}                <CheckCircle2 size={18} color="var(--moss)" /                Upcoming Assignments
+        <VStack sx={{ marginTop: 40, gap: Theme.spacing.md }}>
+            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+                <CheckCircle2 size={18} color={Theme.colors.sageGreen} />
+                <Text sx={{
+                    fontSize: Theme.typography.fontSize.md,
+                    fontWeight: '800',
+                    color: colors.text
+                }}>
+                    Upcoming Assignments
+                </Text>
                 {pendingAssignments.length > 0 && (
-                    <span style={{ padding: '4px 8px', background: 'rgba(239,68,68,0.1)', borderRadius: '6px', fontSize: '11px', color: 'var(--ember)', fontWeight: '700' }}                        {pendingAssignments.length} pending
-                    </span                )}
-            </h2            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}                {assignments.map((a: any) => (
-                    <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', borderRadius: '12px', background: 'var(--background-alt)', border: `1px solid ${a.submitted ? 'var(--moss)' : 'var(--border-light)'}` }}                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: a.submitted ? 'var(--moss)' : 'var(--ember)', flexShrink: 0 }} /                        <div style={{ flex: 1 }}                            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{a.title}</div                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}                                <span>{a.classroom ?? (a.classrooms as any)?.name ?? ''}</span                                <span>\u00B7</span                                <Clock size={10} /                                <span>Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span                            </div                        </div                        {!a.submitted && !isPastView && (
-                            <button
-                                className="premium-button"
-                                style={{ fontSize: '11px', padding: '6px 12px' }}
-                                onClick={() => onOpenSubmission(a)}
-                                                            Submit
-                            </button                        )}
+                    <Box sx={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderRadius: 6,
+                    }}>
+                        <Text sx={{
+                            fontSize: 11,
+                            color: Theme.colors.emberRed,
+                            fontWeight: '700'
+                        }}>
+                            {pendingAssignments.length} pending
+                        </Text>
+                    </Box>
+                )}
+            </HStack>
+
+            <VStack sx={{ gap: Theme.spacing.sm }}>
+                {assignments.map((a) => (
+                    <HStack
+                        key={a.id}
+                        sx={{
+                            alignItems: 'center',
+                            gap: Theme.spacing.md,
+                            padding: Theme.spacing.md,
+                            borderRadius: Theme.corners.comfortable,
+                            backgroundColor: colors.surface,
+                            borderWidth: 1,
+                            borderColor: a.submitted ? Theme.colors.sageGreen : colors.border
+                        }}
+                    >
+                        <Box sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 4,
+                            backgroundColor: a.submitted ? Theme.colors.sageGreen : Theme.colors.emberRed
+                        }} />
+
+                        <VStack sx={{ flex: 1 }}>
+                            <Text sx={{
+                                fontSize: Theme.typography.fontSize.sm,
+                                fontWeight: '700',
+                                color: colors.text
+                            }}>
+                                {a.title}
+                            </Text>
+                            <HStack sx={{ alignItems: 'center', gap: 6, marginTop: 2 }}>
+                                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
+                                    {a.classroom ?? a.classrooms?.name ?? ''}
+                                </Text>
+                                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>•</Text>
+                                <Clock size={10} color={colors.textSecondary} />
+                                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
+                                    Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                </Text>
+                            </HStack>
+                        </VStack>
+
+                        {!a.submitted && !isPastView && (
+                            <Button
+                                size="xs"
+                                variant="outline"
+                                onPress={() => onOpenSubmission(a)}
+                                sx={{
+                                    borderColor: Theme.colors.templeGold,
+                                    borderRadius: Theme.corners.tight
+                                }}
+                            >
+                                <ButtonText color={Theme.colors.templeGold}>
+                                    Submit
+                                </ButtonText>
+                            </Button>
+                        )}
+
                         {a.submitted && (
-                            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--moss)', display: 'flex', alignItems: 'center', gap: '4px' }}                                <CheckCircle2 size={13} /> Submitted
-                            </span                        )}
-                    </div                ))}
-            </div        </div    );
+                            <HStack sx={{ alignItems: 'center', gap: 4 }}>
+                                <CheckCircle2 size={13} color={Theme.colors.sageGreen} />
+                                <Text sx={{
+                                    fontSize: 11,
+                                    fontWeight: '700',
+                                    color: Theme.colors.sageGreen
+                                }}>
+                                    Submitted
+                                </Text>
+                            </HStack>
+                        )}
+                    </HStack>
+                ))}
+            </VStack>
+        </VStack>
+    );
 };

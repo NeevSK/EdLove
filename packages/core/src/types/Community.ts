@@ -45,3 +45,18 @@ export interface CommunityReaction {
     user_id: string;
     emoji: string;
 }
+
+export interface ThuthimalGift {
+    __typename?: 'Thuthimal';
+    id: string;
+    gift_token: string;
+    gifter_id: string;
+    gifter_name: string;
+    recipient_tier: 'teacher' | 'principal';
+    recipient_id: string | null;
+    claimed: boolean;
+    claimed_at: string | null;
+    expires_at: string | null;
+    message: string | null;
+    created_at: string;
+}

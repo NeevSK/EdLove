@@ -911,4 +911,18 @@ export const communityAPI = {
             .eq('user_id', myId)
             .eq('is_read', false);
     },
+
+    async isBlockingActive(targetUserId: string): Promise<boolean> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return false;
+
+        const { data, error } = await supabase
+            .from('user_blocks')
+            .select('blocker_id')
+            .or(`and(blocker_id.eq.${myId},blocked_id.eq.${targetUserId}),and(blocker_id.eq.${targetUserId},blocked_id.eq.${myId})`)
+            .maybeSingle();
+
+        if (error) return false;
+        return !!data;
+    },
 };

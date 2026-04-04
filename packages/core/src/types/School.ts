@@ -47,7 +47,8 @@ export interface Announcement {
 export interface InviteCode {
     code: string;
     school_id: string;
-    authority: AuthorityTier;
+    role: AuthorityTier; // Canonical role name
+    authority: AuthorityTier; // Legacy/DB field compatibility
     created_by: string;
     used: boolean;
     created_at: string;

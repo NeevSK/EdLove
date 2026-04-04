@@ -4,11 +4,22 @@ export type ClassroomStackParamList = {
     StudentClassroomDashboard: { classroomId: string; classroomName?: string };
     Attendance: { classroomId: string; classroomName?: string; date?: string };
     Gradebook: { classroomId: string; classroomName?: string };
+    ContentLibrary: { classroomId: string; classroomName?: string };
     StudentProfile: { studentId: string; classroomId: string; studentName?: string; classroomStudentId: string };
     Timetable: { schoolId?: string };
     PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
     FormBuilder: undefined;
     PublicForm: { slug: string };
+    // Missing routes used in mobile app
+    ClassroomDetails: { classroomId: string };
+    FounderDashboard: undefined;
+    FounderSchoolView: { schoolId: string; userId: string };
+    SchoolCreation: undefined;
+    SchoolForest: undefined;
+    KnowledgeBase: undefined;
+    LiveSession: { sessionId: string };
+    ResourceCenter: undefined;
+    Assignment: { assignmentId: string };
 };
 
 export type FounderStackParamList = {

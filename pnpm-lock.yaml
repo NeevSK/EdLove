@@ -9,8 +9,7 @@ overrides:
   '@zenstackhq/orm': 3.5.1
   '@zenstackhq/language': 3.5.1
   '@zenstackhq/sdk': 3.5.1
-  '@zenstackhq/server': 3.5.1
-  zod: ^3.23.8
+  zod: ^3.24.3
   react: 19.2.0
   react-dom: 19.2.0
   react-native: 0.83.2
@@ -237,6 +236,9 @@ importers:
       '@repo/admin':
         specifier: workspace:*
         version: link:../../packages/admin
+      '@repo/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@repo/classroom':
         specifier: workspace:*
         version: link:../../packages/classroom
@@ -480,13 +482,13 @@ importers:
         version: 10.1.0
       eslint:
         specifier: ^9.38.0
-        version: 9.39.4(jiti@2.6.1)
+        version: 9.39.4(jiti@1.21.7)
       eslint-plugin-react-compiler:
         specifier: 19.1.0-rc.2
-        version: 19.1.0-rc.2(eslint@9.39.4(jiti@2.6.1))
+        version: 19.1.0-rc.2(eslint@9.39.4(jiti@1.21.7))
       eslint-plugin-react-native-a11y:
         specifier: ^3.5.1
-        version: 3.5.1(eslint@9.39.4(jiti@2.6.1))
+        version: 3.5.1(eslint@9.39.4(jiti@1.21.7))
       jest-cucumber:
         specifier: ^4.5.0
         version: 4.5.0(@types/jest@29.5.14)(jest@29.7.0(@types/node@25.5.0))(vitest@2.1.9(@types/node@25.5.0)(jsdom@20.0.3)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.1))
@@ -783,7 +785,7 @@ importers:
         version: 19.2.14
       eslint:
         specifier: ^9.38.0
-        version: 9.39.4(jiti@1.21.7)
+        version: 9.39.4(jiti@2.6.1)
       tailwindcss:
         specifier: ~3.4.17
         version: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
@@ -894,7 +896,7 @@ importers:
         specifier: '*'
         version: 3.0.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
       zod:
-        specifier: ^3.23.8
+        specifier: ^3.24.3
         version: 3.25.76
     devDependencies:
       '@repo/eslint-config':
@@ -1401,52 +1403,6 @@ importers:
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.6.1)
-      typescript:
-        specifier: ~5.9.2
-        version: 5.9.3
-
-  packages/trube-art:
-    dependencies:
-      '@shopify/react-native-skia':
-        specifier: 2.4.18
-        version: 2.4.18(react-native-reanimated@4.2.3(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
-      react:
-        specifier: 19.2.0
-        version: 19.2.0
-      react-native:
-        specifier: 0.83.2
-        version: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@types/node':
-        specifier: ^25.5.0
-        version: 25.5.0
-      '@types/react':
-        specifier: 19.2.14
-        version: 19.2.14
-      '@webgpu/types':
-        specifier: ^0.1.54
-        version: 0.1.69
-      eslint:
-        specifier: ^9.38.0
-        version: 9.39.4(jiti@2.6.1)
-      react-native-nitro-modules:
-        specifier: ~0.21.0
-        version: 0.21.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
-      react-native-reanimated:
-        specifier: ~4.2.1-nitro
-        version: 4.2.3(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
-      react-native-wgpu:
-        specifier: ~0.1.5
-        version: 0.1.23(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
-      rimraf:
-        specifier: ^6.0.0
-        version: 6.1.3
-      typegpu:
-        specifier: ~0.3.2
-        version: 0.3.4
       typescript:
         specifier: ~5.9.2
         version: 5.9.3
@@ -5403,7 +5359,7 @@ packages:
     resolution: {integrity: sha512-tAjz7Kxq/grJodcTA1Anop4AVRDlD40fkksEV5Mmal88VoZeRKAG8oMHsDwdwPZz+B/zgnz0q2sF+cm5M7Bc7g==}
     peerDependencies:
       '@types/node': ^18.18.7 || >=20.8.4
-      zod: ^3.23.8
+      zod: ^3.24.3
     peerDependenciesMeta:
       '@types/node':
         optional: true
@@ -5889,7 +5845,7 @@ packages:
       mysql2: ^3.16.1
       pg: ^8.13.1
       sql.js: ^1.13.0
-      zod: ^3.23.8
+      zod: ^3.24.3
     peerDependenciesMeta:
       better-sqlite3:
         optional: true
@@ -5922,7 +5878,7 @@ packages:
       hono: ^4.6.0
       next: ^15.0.0 || ^16.0.0
       nuxt: ^4.0.0
-      zod: ^3.23.8
+      zod: ^3.24.3
     peerDependenciesMeta:
       '@sveltejs/kit':
         optional: true
@@ -5944,7 +5900,7 @@ packages:
   '@zenstackhq/zod@3.5.1':
     resolution: {integrity: sha512-pzZM1dJb7H9uI7+oqDSVB3PlgFHzTGSpJJNUwIpgAvq6LPZarf0hKgDwnrKmhQhua57fZoGJ945b4P+dDMVIYA==}
     peerDependencies:
-      zod: ^3.23.8
+      zod: ^3.24.3
 
   abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
@@ -10638,12 +10594,6 @@ packages:
       react-native: 0.83.2
       react-native-nitro-modules: '*'
 
-  react-native-nitro-modules@0.21.0:
-    resolution: {integrity: sha512-7OQsFiApHnBmTmZj5Ge6A1FZb63v3BjI4p2Y0s6zff35Tq9LJemjB2tHdv5F/0tbjHBV4AYcZf5DMop3NdzOog==}
-    peerDependencies:
-      react: 19.2.0
-      react-native: 0.83.2
-
   react-native-nitro-modules@0.33.9:
     resolution: {integrity: sha512-BM9C5mCGYYjrc8CDWZZ0anLWU/knH2xaEuFzvzogKTOW6fzgS6mmsCdM3ty+AhImJNSYwK19DLrHaqwnrrwEzw==}
     peerDependencies:
@@ -10685,12 +10635,6 @@ packages:
     peerDependencies:
       react: 19.2.0
       react-dom: 19.2.0
-
-  react-native-wgpu@0.1.23:
-    resolution: {integrity: sha512-5DXO2Yt/w11QtEIY5WJhgJ4yObqELQKpWbESxUGNOARHW54t4g8WR5vO/lxja5XiMrWlM/fblk+dmg7GIbAmFA==}
-    peerDependencies:
-      react: 19.2.0
-      react-native: 0.83.2
 
   react-native-worklets@0.7.2:
     resolution: {integrity: sha512-DuLu1kMV/Uyl9pQHp3hehAlThoLw7Yk2FwRTpzASOmI+cd4845FWn3m2bk9MnjUw8FBRIyhwLqYm2AJaXDXsog==}
@@ -11570,10 +11514,6 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
-  tinyest@0.1.2:
-    resolution: {integrity: sha512-aHRmouyowIq1P5jrTF+YK6pGX+WuvFtSCLbqk91yHnU3SWQRIcNIamZLM5XF6lLqB13AWz0PGPXRff2QGDsxIg==}
-    engines: {node: '>=12.20.0'}
-
   tinyexec@0.3.2:
     resolution: {integrity: sha512-KQQR9yN7R5+OSwaK0XQoj22pwHoTlgYqmUscPYoknOoWCWfj/5/ABTMRi69FrKU5ffPVh5QcFikpWJI/P1ocHA==}
 
@@ -11754,13 +11694,6 @@ packages:
   typed-array-length@1.0.7:
     resolution: {integrity: sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg==}
     engines: {node: '>= 0.4'}
-
-  typed-binary@4.3.3:
-    resolution: {integrity: sha512-W2hLsSzt3k/tg38gDE4Fn/QiwcoqGuUHBc2cb3mXuH7KcYxe/GM57vzW14s2/bawB4R5knGgGq8Xb57vsaJ4Sg==}
-
-  typegpu@0.3.4:
-    resolution: {integrity: sha512-4b0eBOa+lNZzP36GYxa9tJhxbGrq2wCCj4EQjci8H+fwQFmj+PGYJu2GHu4L3aVco3knI+e0YI8LyPQBgZGlmQ==}
-    engines: {node: '>=12.20.0'}
 
   typesafe-path@0.2.2:
     resolution: {integrity: sha512-OJabfkAg1WLZSqJAJ0Z6Sdt3utnbzr/jh+NAHoyWHJe8CMSy79Gm085094M9nvTPy22KzTVn5Zq5mbapCI/hPA==}
@@ -12567,25 +12500,25 @@ packages:
   zod-to-json-schema@3.25.1:
     resolution: {integrity: sha512-pM/SU9d3YAggzi6MtR4h7ruuQlqKtad8e9S0fmxcMi+ueAK5Korys/aWcV9LIIHTVbj01NdzxcnXSN+O74ZIVA==}
     peerDependencies:
-      zod: ^3.23.8
+      zod: ^3.24.3
 
   zod-to-ts@1.2.0:
     resolution: {integrity: sha512-x30XE43V+InwGpvTySRNz9kB7qFU8DlyEy7BsSTCHPH1R0QasMmHWZDCzYm6bVXtj/9NNJAZF3jW8rzFvH5OFA==}
     peerDependencies:
       typescript: ^4.9.4 || ^5.0.2
-      zod: ^3.23.8
+      zod: ^3.24.3
 
   zod-validation-error@3.5.4:
     resolution: {integrity: sha512-+hEiRIiPobgyuFlEojnqjJnhFvg4r/i3cqgcm67eehZf/WBaK3g6cD02YU9mtdVxZjv8CzCA9n/Rhrs3yAAvAw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      zod: ^3.23.8
+      zod: ^3.24.3
 
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      zod: ^3.23.8
+      zod: ^3.24.3
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
@@ -19739,6 +19672,18 @@ snapshots:
 
   eslint-plugin-only-warn@1.2.1: {}
 
+  eslint-plugin-react-compiler@19.1.0-rc.2(eslint@9.39.4(jiti@1.21.7)):
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/parser': 7.29.2
+      '@babel/plugin-proposal-private-methods': 7.18.6(@babel/core@7.29.0)
+      eslint: 9.39.4(jiti@1.21.7)
+      hermes-parser: 0.25.1
+      zod: 3.25.76
+      zod-validation-error: 3.5.4(zod@3.25.76)
+    transitivePeerDependencies:
+      - supports-color
+
   eslint-plugin-react-compiler@19.1.0-rc.2(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       '@babel/core': 7.29.0
@@ -19754,6 +19699,13 @@ snapshots:
   eslint-plugin-react-hooks@5.2.0(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       eslint: 9.39.4(jiti@2.6.1)
+
+  eslint-plugin-react-native-a11y@3.5.1(eslint@9.39.4(jiti@1.21.7)):
+    dependencies:
+      '@babel/runtime': 7.29.2
+      ast-types-flow: 0.0.7
+      eslint: 9.39.4(jiti@1.21.7)
+      jsx-ast-utils: 3.3.5
 
   eslint-plugin-react-native-a11y@3.5.1(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
@@ -23976,11 +23928,6 @@ snapshots:
       react-native: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
       react-native-nitro-modules: 0.33.9(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
 
-  react-native-nitro-modules@0.21.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0):
-    dependencies:
-      react: 19.2.0
-      react-native: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
-
   react-native-nitro-modules@0.33.9(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0):
     dependencies:
       react: 19.2.0
@@ -24033,11 +23980,6 @@ snapshots:
       styleq: 0.1.3
     transitivePeerDependencies:
       - encoding
-
-  react-native-wgpu@0.1.23(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0):
-    dependencies:
-      react: 19.2.0
-      react-native: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
 
   react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0):
     dependencies:
@@ -25191,8 +25133,6 @@ snapshots:
 
   tinybench@2.9.0: {}
 
-  tinyest@0.1.2: {}
-
   tinyexec@0.3.2: {}
 
   tinyexec@1.0.4: {}
@@ -25384,13 +25324,6 @@ snapshots:
       is-typed-array: 1.1.15
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
-
-  typed-binary@4.3.3: {}
-
-  typegpu@0.3.4:
-    dependencies:
-      tinyest: 0.1.2
-      typed-binary: 4.3.3
 
   typesafe-path@0.2.2: {}
 

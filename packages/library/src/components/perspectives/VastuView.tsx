@@ -78,23 +78,28 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                 const pathData = `M ${parentPos.x} ${parentPos.y} C ${parentPos.x} ${midY}, ${childPos.x} ${midY}, ${childPos.x} ${childPos.y}`;
 
                 return (
-                    <Path>
+                    <Path
                         key={`link-${node.id}`}
                         d={pathData}
                         stroke={colors.textTertiary}
                         strokeWidth={2}
                         strokeOpacity={0.2}
                         fill="none"
-                    /                );
+                    />
+                );
             });
     };
 
     return (
-        <GestureDetector gesture={combinedGesture}            <Animated.View style={[{ flex: 1 }, animatedStyle]}                <Svg >
+        <GestureDetector gesture={combinedGesture}>
+            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+                <Svg 
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 
                     viewBox={`${layout.bounds.minX - 500} ${layout.bounds.minY - 500} ${layout.bounds.width + 1000} ${layout.bounds.height + 1000}`}
-                                    <G                        {renderLinks()}>
+                >
+                    <G>
+                        {renderLinks()}
                         
                         {data.nodes.map((node, i) => {
                             const pos = layout.positions.get(node.id);
@@ -103,25 +108,34 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                             const isSelected = selectedNode?.id === node.id;
                             
                             return (
-                                <G >
+                                <G 
                                     key={`node-${node.id}`} 
                                     onPress={() => onNodePress?.(node)}
-                                                                    <Circle>
+                                >
+                                    <Circle
                                         cx={pos.x}
                                         cy={pos.y}
                                         r={isSelected ? 12 : 8}
                                         fill={colors.card}
                                         stroke={isSelected ? Theme.colors.sanctuarySaffron : colors.textTertiary}
                                         strokeWidth={isSelected ? 3 : 2}
-                                    /                                    <SvgText
+                                    />
+                                    <SvgText
                                         x={pos.x}
                                         y={pos.y + 25}
                                         fontSize="10"
                                         fill={colors.text}
                                         textAnchor="middle"
                                         fontWeight={isSelected ? "bold" : "normal"}
-                                                                            {node.label}
-                                    </SvgText                                ></G                            >);
+                                    >
+                                        {node.label}
+                                    </SvgText>
+                                </G>
+                            );
                         })}
-                    </G                ></Svg            ></Animated.View        ></GestureDetector    );
+                    </G>
+                </Svg>
+            </Animated.View>
+        </GestureDetector>
+    );
 };

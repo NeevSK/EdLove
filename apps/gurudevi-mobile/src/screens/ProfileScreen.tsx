@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import {
     Box,
@@ -16,8 +16,7 @@ import {
     LogoutModal,
     GlobalHeader,
     ScreenWrapper,
-    useEnvironment,
-    Switch
+    IdentityCard
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { useAccountDeletion, useTracking, useStore } from '@repo/core';
@@ -25,14 +24,12 @@ import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import {
     ProfileSkeleton,
     LivingJourneyPanel,
-    IdentityCard,
     ThuthimalBadge,
     ProfileListItem
 } from '@repo/profile';
 import {
     Edit3,
     UserPlus,
-    ChevronRight,
     Settings,
     LogOut,
     Trash2,
@@ -41,8 +38,6 @@ import {
     Info,
     Heart,
     X,
-    Shield,
-    Eye
 } from 'lucide-react-native';
 import AppSettingsScreen from './AppSettingsScreen';
 
@@ -67,12 +62,8 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
     return (
         <Center>
             <IdentityCard
-                profile={profile}
+                data={profile}
                 onViewFullProfile={() => {
-                    if (isGuest) {
-                        // For guests, viewing profile is a 'blocked' action that triggers shake
-                        onGuestAction?.();
-                    }
                     hapticLight();
                     navigation.navigate(isGuest ? 'Auth' : 'FullProfile', { profile });
                 }}
@@ -101,6 +92,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 accessible={true}
                 accessibilityRole="button"
                 accessibilityLabel={isGuest ? t('auth.createAccount') : t('profile.viewEditProfile')}
+                accessibilityHint={isGuest ? "Navigates to authentication screen" : "Navigates to full profile screen"}
                 style={{
                     marginTop: Theme.spacing.lg,
                     width: cardWidth,
@@ -324,6 +316,7 @@ const SettingsModal = ({ isVisible, onClose, colors, t, navigation }: any) => (
                         accessible={true}
                         accessibilityRole="button"
                         accessibilityLabel={t('common.close')}
+                        accessibilityHint="Closes the settings modal"
                         style={{
                             padding: 8,
                             borderRadius: Theme.corners.full,
@@ -356,20 +349,21 @@ export default function ProfileScreen() {
         rewards
     } = useProfile();
 
-    const { isDark, role } = useEnvironment();
-    const completionResult = useProfileCompletion(profile, role ?? null);
+    const userRole = useStore(state => state.userRole);
+    const completionResult = useProfileCompletion(profile, userRole ?? null);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     // Reactive width — responds to browser resize on web, device rotation on native
     const { width: windowWidth } = useWindowDimensions();
     const cardWidth = Math.min(windowWidth, 600) - Theme.spacing.xl;
+    const { deleteAccount, isDeleting } = useAccountDeletion();
+    const { discoverFeature } = useTracking();
+    const showToast = useStore((state) => state.showToast);
+
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
     const [isLoggingOut, setLoggingOut] = useState(false);
     const [isSettingsVisible, setSettingsVisible] = useState(false);
-    const { deleteAccount, isDeleting } = useAccountDeletion();
-    const { discoverFeature } = useTracking();
-    const showToast = useStore((state) => state.showToast);
 
     // --- Shake Animation Logic ---
     const bannerShake = useSharedValue(0);
@@ -388,7 +382,7 @@ export default function ProfileScreen() {
 
     useEffect(() => {
         discoverFeature('section_profile');
-    }, []);
+    }, [discoverFeature]);
 
     const handleLogout = () => {
         hapticLight();
@@ -400,7 +394,7 @@ export default function ProfileScreen() {
         try {
             await logout();
             setLogoutModalVisible(false);
-        } catch (error) {
+        } catch {
             hapticError();
         } finally {
             setLoggingOut(false);
@@ -417,7 +411,7 @@ export default function ProfileScreen() {
             await deleteAccount();
             hapticSuccess();
             setDeleteModalVisible(false);
-        } catch (error) {
+        } catch {
             hapticError();
             if (Platform.OS === 'web') {
                 showToast(t('profile.deleteFailedTitle'), 'error');
@@ -453,6 +447,7 @@ export default function ProfileScreen() {
                         accessible={true}
                         accessibilityRole="button"
                         accessibilityLabel={t('settings.title')}
+                        accessibilityHint="Opens app settings"
                         style={{
                             padding: 8,
                             borderRadius: Theme.corners.comfortable,
@@ -599,6 +594,7 @@ export default function ProfileScreen() {
                                             accessible={true}
                                             accessibilityRole="button"
                                             accessibilityLabel={t('profile.logout')}
+                                            accessibilityHint="Logs out of the application"
                                             style={{
                                                 flexDirection: 'row',
                                                 alignItems: 'center',
@@ -621,6 +617,7 @@ export default function ProfileScreen() {
                                             accessible={true}
                                             accessibilityRole="button"
                                             accessibilityLabel={t('profile.deleteAccount')}
+                                            accessibilityHint="Deletes your account forever"
                                             style={{
                                                 flexDirection: 'row',
                                                 alignItems: 'center',

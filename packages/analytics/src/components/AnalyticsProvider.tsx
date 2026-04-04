@@ -32,8 +32,10 @@ import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 export function AnalyticsProvider({ children, apiKey, options }: Props) {
     if (!apiKey) {
         return (
-            <ActivityPulseProvider                {children}
-            </ActivityPulseProvider        );
+            <ActivityPulseProvider>
+                {children}
+            </ActivityPulseProvider>
+        );
     }
 
     return (
@@ -43,6 +45,10 @@ export function AnalyticsProvider({ children, apiKey, options }: Props) {
                 host: options?.host,
             }}
             autocapture={false}
-                    <ActivityPulseProvider                {children}
-            </ActivityPulseProvider        </NativePostHogProvider    );
+        >
+            <ActivityPulseProvider>
+                {children}
+            </ActivityPulseProvider>
+        </NativePostHogProvider>
+    );
 }

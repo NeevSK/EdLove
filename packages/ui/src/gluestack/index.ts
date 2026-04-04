@@ -305,9 +305,12 @@ export const SliderFilledTrack = BaseSliderFilledTrack as any;
 export const SliderThumb = BaseSliderThumb as any;
 
 // ============================================================================
-// Provider (special case - keep from main export)
+// Provider & Configuration
 // ============================================================================
 export { GluestackUIProvider } from '@gluestack-ui/themed/build/components/Provider';
+import { createConfig as BaseCreateConfig } from '@gluestack-style/react';
+export const createConfig = BaseCreateConfig as any;
+export { config as gluestackConfig } from '@gluestack-ui/config';
 
 // ============================================================================
 // ADD COMPONENTS AS NEEDED

@@ -8,12 +8,16 @@ interface DocumentListScreenProps {
   schoolId: string;
   onDocumentPress: (document: DocumentWorkflow) => void;
   onCreateNew: () => void;
+  viewDate?: string;
+  isPastView?: boolean;
 }
 
 const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   schoolId,
   onDocumentPress,
-  onCreateNew
+  onCreateNew,
+  viewDate,
+  isPastView
 }) => {
   const theme = useTheme();
   const { can, context: user } = usePermissions();

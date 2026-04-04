@@ -5,9 +5,8 @@ import {
     ClassroomDashboard,
     AttendanceScreen,
     GradebookScreen,
-    FounderDashboard,
-    FounderSchoolView
 } from '@repo/classroom';
+import { FounderDashboard, FounderSchoolDashboard as FounderSchoolView } from '@repo/admin';
 import { Theme, useTheme } from '@repo/ui';
 import { ClassroomStackParamList } from '@repo/core';
 import { SchoolCreationScreen } from '../screens'; // Added

@@ -1,3 +1,21 @@
+/**
+ * PrincipalNotes — School Logbook
+ *
+ * The principal's personal memory-offload layer, scoped to their school.
+ *
+ * Topology parallel:
+ *   Teacher/Student in a classroom → ClassroomNotes  (classroom_id)
+ *   Principal in their school      → PrincipalNotes  (school_id)
+ *
+ * What makes this distinct from ClassroomNotes:
+ *   • Always fully private — no visibility toggle needed
+ *   • Todo items can be checked off (is_done=true) — struck through but
+ *     never deleted; the record of what was done matters
+ *   • Note types: todo, observation, decision, reminder, note
+ *   • Optional context tags: which teacher or classroom this note is about
+ *   • Undone todos float above done ones; pinned always on top
+ */
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     View,
@@ -6,6 +24,7 @@ import {
     FlatList,
     KeyboardAvoidingView,
     Platform,
+    Alert,
     ActivityIndicator,
     StyleSheet,
 } from 'react-native';
@@ -26,18 +45,19 @@ import {
     CheckSquare,
     Square,
     Pin,
+    ChevronLeft,
     Lightbulb,
     Eye,
     BookMarked,
     Bell,
     StickyNote,
     X,
+    ChevronDown,
 } from 'lucide-react-native';
-import { notesAPI, type PrincipalNote } from '../../notes';
+import { api } from '@repo/core';
+import type { PrincipalNote } from '@repo/core';
 
-// —————————————————————————————————————————————————————————————————————————————
-// TYPES
-// —————————————————————————————————————————————————————————————————————————————
+// ── Types ────────────────────────────────────────────────────
 
 interface PrincipalNotesProps {
     schoolId: string;
@@ -46,9 +66,7 @@ interface PrincipalNotesProps {
 
 type NoteGroup = { label: string; data: PrincipalNote[] };
 
-// —————————————————————————————————————————————————————————————————————————————
-// HELPERS
-// —————————————————————————————————————————————————————————————————————————————
+// ── Helpers ──────────────────────────────────────────────────
 
 function getRelativeDateLabel(dateStr: string | undefined): string {
     if (!dateStr) return 'Unknown Date';
@@ -79,6 +97,7 @@ function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
     const result: NoteGroup[] = [];
     if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
 
+    // Explicitly handle noUncheckedIndexedAccess: true from base.json
     for (const label of Object.keys(grouped)) {
         const groupData = grouped[label];
         if (groupData) {
@@ -89,6 +108,8 @@ function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
     if (done.length > 0) result.push({ label: '✅ Completed', data: done });
     return result;
 }
+
+// ── Note type metadata ────────────────────────────────────────
 
 const NOTE_TYPE_META: Record<
     PrincipalNote['note_type'],
@@ -126,9 +147,7 @@ const NOTE_TYPE_META: Record<
     },
 };
 
-// —————————————————————————————————————————————————————————————————————————————
-// MAIN COMPONENT
-// —————————————————————————————————————————————————————————————————————————————
+// ── Main Component ───────────────────────────────────────────
 
 export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps) {
     const colors = useThemedColors();
@@ -142,7 +161,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
     const fetchNotes = useCallback(async () => {
         try {
-            const data = await notesAPI.listBySchool(schoolId);
+            const data = await api.principalNotes.getAll(schoolId);
             setNotes(data || []);
         } catch (err) {
             console.error('PrincipalNotes: fetch error', err);
@@ -159,7 +178,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         if (!draft.trim()) return;
         setSaving(true);
         try {
-            const created = await notesAPI.create({
+            const created = await api.principalNotes.create({
                 school_id: schoolId,
                 content: draft.trim(),
                 note_type: draftType,
@@ -168,16 +187,17 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             setDraft('');
             setComposing(false);
         } catch {
-            showToast({ message: 'Could not save note.', type: 'error' });
+            showToast({ message: 'Could not save note. Please try again.', type: 'error' });
         } finally {
             setSaving(false);
         }
     };
 
     const handleToggleDone = async (note: PrincipalNote) => {
+        // Only todos are check-off-able
         if (note.note_type !== 'todo') return;
         try {
-            const updated = await notesAPI.update(note.id, { is_done: !note.is_done });
+            const updated = await api.principalNotes.update(note.id, { is_done: !note.is_done });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
             showToast({ message: 'Could not update note.', type: 'error' });
@@ -185,9 +205,9 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     };
 
     const handleTogglePin = async (note: PrincipalNote) => {
-        if (note.is_done) return;
+        if (note.is_done) return; // don't pin completed items
         try {
-            const updated = await notesAPI.update(note.id, { is_pinned: !note.is_pinned });
+            const updated = await api.principalNotes.update(note.id, { is_pinned: !note.is_pinned });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
             showToast({ message: 'Could not update note.', type: 'error' });
@@ -196,7 +216,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
     const handleDelete = async (id: string) => {
         try {
-            await notesAPI.remove(id);
+            await api.principalNotes.delete(id);
             setNotes((prev) => prev.filter((n) => n.id !== id));
             showToast({ message: 'Note deleted.', type: 'success' });
         } catch {
@@ -204,18 +224,20 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         }
     };
 
-    const renderNoteCard = (note: PrincipalNote) => {
+    // ── Note card ─────────────────────────────────────────────
+
+    const renderNoteCard = ({ item: note }: { item: PrincipalNote }) => {
         const meta = NOTE_TYPE_META[note.note_type];
         const NoteIcon = meta.icon;
         const isTodo = note.note_type === 'todo';
-        const time = new Date(note.created_at || Date.now()).toLocaleTimeString([], {
+        const createdAt = note.created_at || new Date().toISOString();
+        const time = new Date(createdAt).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
         });
 
         return (
             <Box
-                key={note.id}
                 sx={{
                     backgroundColor: note.is_done ? colors.tertiary : colors.secondary,
                     borderRadius: Theme.corners.comfortable,
@@ -227,7 +249,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 }}
             >
                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <HStack space="xs" sx={{ alignItems: 'center', flex: 1 }}>
+                    {/* Left: check-off (todos) or type icon */}
+                    <HStack sx={{ gap: 8, alignItems: 'center', flex: 1 }}>
                         {isTodo ? (
                             <TouchableOpacity
                                 onPress={() => handleToggleDone(note)}
@@ -241,18 +264,21 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         ) : (
                             <NoteIcon size={14} color={note.is_done ? colors.textTertiary : meta.color} />
                         )}
-                        <Text sx={{
-                            fontSize: 10,
-                            fontWeight: '700',
-                            color: note.is_done ? colors.textTertiary : meta.color,
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5,
-                        }}>
+                        <Text
+                            sx={{
+                                fontSize: Theme.typography.fontSize.xs,
+                                fontWeight: '700',
+                                color: note.is_done ? colors.textTertiary : meta.color,
+                                textTransform: 'uppercase',
+                                letterSpacing: 0.5,
+                            }}
+                        >
                             {meta.label}
                         </Text>
                     </HStack>
 
-                    <HStack space="md" sx={{ alignItems: 'center' }}>
+                    {/* Right: time + actions */}
+                    <HStack sx={{ gap: 10, alignItems: 'center' }}>
                         <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text>
                         {!note.is_done && (
                             <TouchableOpacity
@@ -275,18 +301,22 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     </HStack>
                 </HStack>
 
-                <Text sx={{
-                    fontSize: 14,
-                    color: note.is_done ? colors.textTertiary : colors.text,
-                    marginTop: Theme.spacing.xs,
-                    lineHeight: 20,
-                    textDecorationLine: note.is_done ? 'line-through' : 'none',
-                }}>
+                {/* Content */}
+                <Text
+                    sx={{
+                        fontSize: Theme.typography.fontSize.sm,
+                        color: note.is_done ? colors.textTertiary : colors.text,
+                        marginTop: Theme.spacing.xs,
+                        lineHeight: 20,
+                        textDecorationLine: note.is_done ? 'line-through' : 'none',
+                    }}
+                >
                     {note.content}
                 </Text>
 
+                {/* Context tag */}
                 {(note.context_teacher || note.context_classroom) && (
-                    <HStack space="xs" sx={{ marginTop: Theme.spacing.xs, alignItems: 'center' }}>
+                    <HStack sx={{ gap: 6, marginTop: Theme.spacing.xs, alignItems: 'center' }}>
                         <BookMarked size={11} color={colors.textTertiary} />
                         <Text sx={{ fontSize: 11, color: colors.textTertiary }}>
                             {note.context_teacher?.full_name || (note.context_classroom as any)?.name}
@@ -299,22 +329,26 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
     const renderGroup = ({ item: group }: { item: NoteGroup }) => (
         <VStack sx={{ marginBottom: Theme.spacing.md }}>
-            <Text sx={{
-                fontSize: 10,
-                fontWeight: '700',
-                color: colors.textTertiary,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-                marginBottom: Theme.spacing.sm,
-                paddingHorizontal: Theme.spacing.lg,
-            }}>
+            <Text
+                sx={{
+                    fontSize: Theme.typography.fontSize.xs,
+                    fontWeight: '700',
+                    color: colors.textTertiary,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    marginBottom: Theme.spacing.sm,
+                    paddingHorizontal: Theme.spacing.lg,
+                }}
+            >
                 {group.label}
             </Text>
             <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}>
-                {group.data.map((note) => renderNoteCard(note))}
+                {group.data.map((note) => renderNoteCard({ item: note }))}
             </VStack>
         </VStack>
     );
+
+    // ── Render ────────────────────────────────────────────────
 
     return (
         <ScreenWrapper scroll={false}>
@@ -328,18 +362,18 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                keyboardVerticalOffset={100}
             >
                 <VStack sx={{ flex: 1 }}>
                     {loading ? (
                         <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
                         </Box>
-                    ) : grouped.length === 0 && !composing ? (
+                    ) : grouped.length === 0 ? (
                         <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
                             <PositiveInvitation
                                 title="Your logbook is empty"
-                                description="Tap the button below to capture your first thought — a to-do, an observation, or a decision."
+                                description="Tap the button below to capture your first thought — a to-do for tomorrow, a classroom observation, or a decision you just made."
                             />
                         </Box>
                     ) : (
@@ -349,7 +383,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             renderItem={renderGroup}
                             contentContainerStyle={{
                                 paddingTop: Theme.spacing.md,
-                                paddingBottom: composing ? 20 : 100,
+                                paddingBottom: composing ? 0 : 100,
                             }}
                             showsVerticalScrollIndicator={false}
                         />
@@ -357,13 +391,15 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
                     {/* Compose sheet */}
                     {composing ? (
-                        <Box sx={{
-                            backgroundColor: colors.secondary,
-                            borderTopWidth: 1,
-                            borderTopColor: colors.border,
-                            padding: Theme.spacing.md,
-                            paddingBottom: Platform.OS === 'ios' ? Theme.spacing.xl : Theme.spacing.md,
-                        }}>
+                        <Box
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderTopWidth: 1,
+                                borderTopColor: colors.border,
+                                padding: Theme.spacing.md,
+                            }}
+                        >
+                            {/* Type selector */}
                             <View style={styles.typeRow}>
                                 {(Object.entries(NOTE_TYPE_META) as [PrincipalNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][]).map(([type, meta]) => {
                                     const isActive = draftType === type;
@@ -381,12 +417,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                                             ]}
                                         >
                                             <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} />
-                                            <Text style={{
-                                                fontSize: 11,
-                                                fontWeight: isActive ? '700' : '400',
-                                                color: isActive ? Theme.colors.sacredWhite : colors.textSecondary,
-                                                marginLeft: 4,
-                                            }}>
+                                            <Text
+                                                style={{
+                                                    fontSize: 11,
+                                                    fontWeight: isActive ? '700' : '400',
+                                                    color: isActive ? Theme.colors.sacredWhite : colors.textSecondary,
+                                                    marginLeft: 4,
+                                                }}
+                                            >
                                                 {meta.label}
                                             </Text>
                                         </TouchableOpacity>
@@ -412,8 +450,13 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             />
 
                             <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}>
-                                <TouchableOpacity onPress={() => { setComposing(false); setDraft(''); }} style={styles.cancelBtn}>
-                                    <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>Cancel</Text>
+                                <TouchableOpacity
+                                    onPress={() => { setComposing(false); setDraft(''); }}
+                                    style={styles.cancelBtn}
+                                >
+                                    <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>
+                                        Cancel
+                                    </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={handleSave}
@@ -447,14 +490,16 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     );
 }
 
+// ── Styles ───────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
     textInput: {
-        minHeight: 100,
-        maxHeight: 200,
+        minHeight: 80,
+        maxHeight: 160,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         padding: Theme.spacing.md,
-        fontSize: 14,
+        fontSize: Theme.typography.fontSize.sm,
         marginTop: Theme.spacing.sm,
         textAlignVertical: 'top',
     },
@@ -463,33 +508,33 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: Theme.corners.comfortable,
-        minWidth: 80,
+        minWidth: 70,
         alignItems: 'center',
     },
     fabButton: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        width: 52,
+        height: 52,
+        borderRadius: 26,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 5,
     },
     typeRow: {
         flexDirection: 'row',
         gap: 8,
         flexWrap: 'wrap',
-        marginBottom: 8,
+        marginBottom: Theme.spacing.xs,
     },
     typeChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: Theme.corners.full,
         borderWidth: 1,
     },
 });

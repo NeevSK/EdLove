@@ -34,7 +34,7 @@ type Props = {
 const getNextZone = (zone: WorkspaceZoneId): WorkspaceZoneId => {
     const currentIndex = WORKSPACE_CANVAS_ZONES.indexOf(zone);
     const nextIndex = (currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
-    return WORKSPACE_CANVAS_ZONES[nextIndex];
+    return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
 };
 
 export function ClassroomWorkspaceCanvas({
@@ -49,9 +49,9 @@ export function ClassroomWorkspaceCanvas({
     const styles = createStyles();
 
     return (
-        <WorkspaceCanvas>
+        <WorkspaceCanvas
             surfaces={surfaces}
-            layout={layout}
+            layout={layout as any}
             title="Classroom Work Canvas"
             subtitle="Capability-driven workspace for academic, mixed-role, and institutional surfaces."
             emptyMessage="No workspace surfaces are available for this user yet."
@@ -68,19 +68,29 @@ export function ClassroomWorkspaceCanvas({
                 const nextZone = getNextZone(typedSurface.zone);
 
                 return (
-                    <View style={styles.actionsRow}                        <Pressable>
+                    <View style={styles.actionsRow}>
+                        <Pressable
                             accessibilityRole="button"
                             onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
                             style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
-                                                    <Text style={styles.actionText}                                {typedSurface.pinned ? 'Unpin' : 'Pin'}>
-                            </Text                        ></Pressable                        ><Pressable
+                        >
+                            <Text style={styles.actionText}>
+                                {typedSurface.pinned ? 'Unpin' : 'Pin'}
+                            </Text>
+                        </Pressable>
+                        <Pressable
                             accessibilityRole="button"
                             onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
                             style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
-                                                    <Text style={styles.actionText}>Move to {nextZone}</Text                        ></Pressable                    ></View                );
+                        >
+                            <Text style={styles.actionText}>Move to {nextZone}</Text>
+                        </Pressable>
+                    </View>
+                );
             }}
             onToggleHidden={(surface) => onToggleHidden(surface.surfaceId, !surface.hidden)}
-        /    );
+        />
+    );
 }
 
 function createStyles() {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClipboardList } from 'lucide-react-native';
 import { LEAVE_STATUS_COLORS } from '../../principal/workspace';
-import type { StaffLeaveDTO } from '@repo/people';
+import type { StaffLeave as StaffLeaveDTO } from '@repo/core';
 
 interface PendingApprovalsProps {
     leaves: StaffLeaveDTO[];

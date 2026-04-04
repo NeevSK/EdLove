@@ -56,11 +56,12 @@ export default function CreateGroupModal({
   if (createdGroupId) {
     const groupQRValue = QRBuilder.group(createdGroupId);
     return (
-      <SanctuaryModal>
+      <SanctuaryModal
         isOpen={isOpen}
         onClose={onClose}
         title="Community Founded!"
-              <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
+      >
+        <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
           <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}>
             <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={64} />
           </Box>
@@ -74,29 +75,33 @@ export default function CreateGroupModal({
           </VStack>
 
           <Box sx={{ padding: 20, backgroundColor: 'white', borderRadius: 12 }}>
-            <QRCodeGenerator/>
+            <QRCodeGenerator
               value={groupQRValue}
               size={180}
               color="#000"
-            /
+            />
           </Box>
           
-          <SanctuaryButton >
+          <SanctuaryButton
             onPress={() => {
               onClose();
               navigation.navigate("GroupDetails", { groupId: createdGroupId });
             }}
-          
-            <Text color="white" bold>Enter Group Space</Text          ></SanctuaryButton        ></VStack      ></SanctuaryModal    >);
+          >
+            <Text color="white" bold>Enter Group Space</Text>
+          </SanctuaryButton>
+        </VStack>
+      </SanctuaryModal>
+    );
   }
 
   return (
-    <EntityModal/>
+    <EntityModal
       isOpen={isOpen}
       onClose={onClose}
       definition={groupDefinition}
       mode={mode as any}
       instance={initialData}
-    /
+    />
   );
 }

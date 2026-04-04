@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FounderStackParamList } from '@repo/core';
 import { useTheme } from '@repo/ui';
 import { FounderDashboard, FounderSchoolDashboard, SchoolCreationScreen } from '@repo/admin/founder';
-import PrincipalDashboard from '@repo/classroom/screens/PrincipalDashboard';
+import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 
 const Stack = createNativeStackNavigator<FounderStackParamList>();
 

@@ -16,12 +16,13 @@ export const GradeSchema = z.object({
   published_at: z.string().datetime().optional().nullable(),
   published_by: z.string().uuid().optional().nullable(),
   publication_action: z.string().optional().nullable(),
+  rank: z.number().optional().nullable(),
 });
 
 export const ClassroomGradingSettingsSchema = z.object({
   classroom_id: z.string().uuid(),
-  grading_mode: z.enum(['marks', 'grade', 'both']).default('both'),
-  show_ranks: z.boolean().default(true),
+  grading_mode: z.enum(['marks', 'grade', 'gpa', 'both']).default('both').optional(),
+  show_ranks: z.boolean().default(true).optional(),
 });
 
 export const AssessmentSchema = z.object({
@@ -70,3 +71,7 @@ export type GradebookSnapshot = z.infer<typeof GradebookSnapshotSchema>;
 export type PublishedStudentGradesSnapshot = z.infer<typeof PublishedStudentGradesSnapshotSchema>;
 export type SchoolGradingCompletion = z.infer<typeof SchoolGradingCompletionSchema>;
 export type PublishedSchoolGradingCompletion = z.infer<typeof PublishedSchoolGradingCompletionSchema>;
+
+// Aliases for backward compatibility or semantic clarity in classroom package
+export type StudentGrade = Grade;
+export type StudentGradebookSnapshot = GradebookSnapshot;

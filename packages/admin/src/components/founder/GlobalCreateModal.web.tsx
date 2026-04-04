@@ -300,8 +300,6 @@ export default function GlobalCreateModal({
                                     onChangeText={setName}
                                     color={colors.text}
                                     placeholder={type === 'school' ? "e.g., Royal Gurudevi Academy" : "Enter name..."}
-                                    // @ts-ignore
-                                    style={{ outline: 'none' }}
                                 />
                             </Input>
                         </FormControl>
@@ -401,7 +399,17 @@ export default function GlobalCreateModal({
     );
 }
 
-function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress: () => void, label: string, icon: any }) {
+function TypeButton({
+  active,
+  onPress,
+  label,
+  icon,
+}: {
+  active: boolean;
+  onPress: () => void;
+  label: string;
+  icon: React.ReactElement;
+}) {
     const colors = useThemedColors();
     return (
         <Button
@@ -419,7 +427,7 @@ function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress
             }}
         >
             <Box sx={{ marginBottom: 4 }}>
-                {React.cloneElement(icon, { color: active ? '#fff' : colors.textSecondary })}
+                {React.cloneElement(icon as React.ReactElement<{ color?: string }>, { color: active ? '#fff' : colors.textSecondary })}
             </Box>
             <ButtonText color={active ? '#fff' : colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}>
                 {label}

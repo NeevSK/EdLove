@@ -83,11 +83,11 @@ export function useTeacherWorkspaceShell(
 
             if (payload.action === 'join_class') {
                 const flowResult = await FlowResolver.resolveQR(payload, internalUserId);
-                if (flowResult.outcome === 'success') {
+                if (flowResult && flowResult.outcome === 'success') {
                     bumpRefresh();
                     showToast({ message: 'Joined classroom!', type: 'success' });
                 } else {
-                    showToast({ message: flowResult.message || 'Could not join classroom.', type: 'error' });
+                    showToast({ message: flowResult?.message || 'Could not join classroom.', type: 'error' });
                 }
             } else if (payload.action === 'join_school') {
                 showToast({ message: 'Open the school join flow from the welcome screen.', type: 'info' });
@@ -101,7 +101,7 @@ export function useTeacherWorkspaceShell(
     }, [bumpRefresh, showToast]);
 
     const handleAdminAction = useCallback((action: string) => {
-        if (action === 'Attendance' && classrooms.length > 0) {
+        if (action === 'Attendance' && classrooms.length > 0 && classrooms[0]) {
             setIsAdminModalOpen(false);
             navigation.navigate('Attendance', {
                 classroomId: classrooms[0].id,

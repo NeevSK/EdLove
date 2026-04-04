@@ -17,7 +17,7 @@ export function useTeacherRegistry() {
 
     const stats = useQuery<TeacherStats>({
         queryKey: ['teacher-stats', userId],
-        queryFn: () => classroomsAPI.getTeacherStats(userId!),
+        queryFn: () => classroomsAPI.getTeacherStats(userId!) as Promise<TeacherStats>,
         enabled: !!userId,
     });
 
@@ -50,7 +50,7 @@ export function useTeacherAssignmentsPulse() {
             const allAssignments = await Promise.all(
                 classrooms.map(c => assignmentsAPI.getAll(c.id))
             );
-            return allAssignments.flat();
+            return allAssignments.flat() as Assignment[];
         },
         enabled: !!userId,
     });
@@ -68,7 +68,7 @@ export function useTeacherEchoesPulse() {
         queryFn: () => {
              // Mocking for now, as echoAPI is still being solidified 
              // but we have EchoSchema ready for it.
-             return Promise.resolve([]);
+             return Promise.resolve([]) as Promise<Echo[]>;
         },
         enabled: !!userId,
     });

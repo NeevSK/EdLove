@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { RoleSchema } from '../../permissions/schemas/role.schema';
 
-export const PrincipalInviteRoleSchema = z.enum(['teacher', 'principal']);
+export const PrincipalInviteRoleSchema = z.enum(['teacher', 'principal', 'student', 'gradeHead', 'sectionHead', 'assistantPrincipal']);
 export const PrincipalGovernanceEventTypeSchema = z.enum(['create', 'read', 'use', 'expire', 'revoke', 'follow_up', 'approve']);
 
 export const InviteCodeSchema = z.object({
@@ -12,6 +12,7 @@ export const InviteCodeSchema = z.object({
   used: z.boolean(),
   created_at: z.string(),
   expires_at: z.string().nullable().optional(),
+  is_active: z.boolean().optional(),
 });
 
 export const PrincipalObservationSchema = z.object({

@@ -1,4 +1,14 @@
 import { StateCreator } from 'zustand';
+import { ResourceType } from '../../types/Resource';
+
+export interface DeskItem {
+  id: string;
+  title: string;
+  type: ResourceType;
+  url: string;
+  thumbnailUrl?: string;
+  addedAt: string;
+}
 
 export interface UISlice {
   isSidebarCollapsed: boolean;
@@ -7,9 +17,10 @@ export interface UISlice {
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   themeMode?: 'light' | 'dark' | 'system';
   dismissedSampleIds?: string[];
-  deskItems?: unknown[];
+  deskItems?: DeskItem[];
   isBreathingOpen: boolean;
   setBreathingOpen: (open: boolean) => void;
+  addToDesk: (item: DeskItem) => void;
 }
 
 export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
@@ -22,4 +33,5 @@ export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
   deskItems: [],
   isBreathingOpen: false,
   setBreathingOpen: (isBreathingOpen) => set({ isBreathingOpen }),
+  addToDesk: (item) => set((state) => ({ deskItems: [...(state.deskItems || []), item] })),
 });
