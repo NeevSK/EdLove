@@ -33,7 +33,16 @@
     "culori": "^4.0.2",
     "lucide-react-native": "^0.563.0",
     "qrcode": "^1.5.4",
-    "react-native-svg": "15.15.3"
+    "react-native-reanimated": "~4.2.1",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-svg": "15.15.3",
+    "expo-device": "~55.0.9",
+    "expo-sharing": "~55.0.11",
+    "expo-clipboard": "^55.0.8",
+    "expo-web-browser": "~55.0.9",
+    "expo-auth-session": "~55.0.6",
+    "date-fns": "^4.1.0",
+    "expo-router": "~55.0.3"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "*",
@@ -53,7 +62,9 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/react": "~19.1.10",
+    "@types/react": "19.2.14",
+    "@types/react-native": "workspace:*",
+    "@types/qrcode": "^1.x",
     "eslint": "^9.38.0",
     "i18next": "^25.8.0",
     "react-i18next": "^16.5.4",

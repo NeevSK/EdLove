@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { api, StudentAttendance, growthSignalsAPI, useStore } from '@repo/core';
+import { api, StudentAttendance, AttendanceRecord, growthSignalsAPI, useStore } from '@repo/core';
 import { Check, X, Clock, ChevronLeft, Save } from 'lucide-react-native';
 
 type Status = 'present' | 'absent' | 'late';
@@ -94,7 +94,7 @@ export default function AttendanceScreenWeb() {
         },
       );
       if (user?.id) {
-        growthSignalsAPI.emitSignal(user.id, 'attendance_marked', { classroom_id: classroomId }).catch(() => {});
+        growthSignalsAPI.emitSilent(user.id, 'attendance_marked', { classroom_id: classroomId });
       }
       setSaved(true);
     } catch (caughtError: any) {

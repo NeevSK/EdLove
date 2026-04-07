@@ -30,6 +30,13 @@
     "check:classroom-boundaries": "node scripts/check-classroom-boundaries.mjs"
   },
   "devDependencies": {
+    "@expo/metro": "~55.0.0",
+    "@expo/config": "~55.0.0",
+    "@expo/config-plugins": "~55.0.0",
+    "@react-navigation/core": "^7.17.2",
+    "@react-navigation/routers": "^7.5.3",
+    "@tanstack/query-core": "^5.96.2",
+    "expo-modules-core": "55.0.17",
     "@eslint/eslintrc": "^3.3.5",
     "@repo/types-shim": "workspace:*",
     "@testing-library/react-native": "14.0.0-beta.0",
@@ -53,11 +60,12 @@
   "pnpm": {
     "packageExtensions": {},
     "overrides": {
-      "@zenstackhq/cli": "3.5.1",
-      "@zenstackhq/orm": "3.5.1",
-      "@zenstackhq/language": "3.5.1",
-      "@zenstackhq/sdk": "3.5.1",
-      "zod": "^3.24.3",
+      "@zenstackhq/cli": "3.5.5",
+      "@zenstackhq/orm": "3.5.5",
+      "@zenstackhq/language": "3.5.5",
+      "@zenstackhq/sdk": "3.5.5",
+      "zod": "4.3.6",
+      "zod-validation-error": "5.0.0",
       "react": "19.2.0",
       "react-dom": "19.2.0",
       "react-native": "0.83.2",
@@ -90,7 +98,11 @@
       "expo-audio": "55.0.9",
       "expo-linking": "55.0.8",
       "expo-sqlite": "55.0.11",
-      "expo-video": "55.0.11"
+      "expo-video": "55.0.11",
+      "@expo/metro": "~55.0.0",
+      "@react-navigation/core": "^7.17.2",
+      "@supabase/supabase-js": "2.102.1",
+      "@supabase/postgrest-js": "2.102.1"
     },
     "onlyBuiltDependencies": [
       "@img/sharp-win32-x64",
@@ -99,26 +111,28 @@
       "@prisma/engines",
       "@sentry/cli",
       "@shopify/react-native-skia",
+      "@zenstackhq/cli",
+      "core-js",
       "esbuild",
       "prisma",
+      "protobufjs",
       "react-native-nitro-modules",
       "sharp",
       "supabase",
-      "turbo",
-      "@zenstackhq/cli"
+      "turbo"
     ],
     "patchedDependencies": {
       "@noble/hashes@1.8.0": "patches/@noble__hashes@1.8.0.patch",
       "react-native-web@0.21.2": "patches/react-native-web@0.21.2.patch"
     }
   },
-  "packageManager": "pnpm@10.30.2",
+  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": "24.x"
   },
   "volta": {
     "node": "24.11.0",
-    "pnpm": "10.30.2"
+    "pnpm": "10.33.0"
   },
   "workspaces": [
     "apps/*",
@@ -127,9 +141,8 @@
   "version": "1.0.0",
   "dependencies": {
     "@shopify/react-native-skia": "2.4.18",
-    "@ts-rest/core": "^3.52.1",
+    "@ts-rest/core": "3.53.0-rc.1",
     "expo": "~55.0.8",
-    "package.json": "^2.0.1",
     "react": "19.2.0",
     "react-native": "0.83.2",
     "react-native-gesture-handler": "2.30.0",

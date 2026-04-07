@@ -67,7 +67,7 @@ begin
         assignment_record.school_id,
         assignment_record.classroom_id,
         'submission',
-        (snapshot ->> 'id')::uuid,
+        (snapshot ->> 'id'),
         lower(tg_op),
         tg_table_name,
         snapshot,
@@ -148,7 +148,7 @@ begin
         classroom_record.school_id,
         classroom_record.id,
         'study_note',
-        (snapshot ->> 'id')::uuid,
+        (snapshot ->> 'id'),
         operation_kind,
         tg_table_name,
         snapshot,
@@ -205,7 +205,7 @@ select
     c.school_id,
     a.classroom_id,
     'submission',
-    s.id,
+    s.id::text,
     'insert',
     'submissions',
     to_jsonb(s),
@@ -221,7 +221,7 @@ where not exists (
     select 1
     from public.student_longitudinal_events sle
     where sle.entity_type = 'submission'
-      and sle.entity_id = s.id
+      and sle.entity_id = s.id::text
 );
 
 insert into public.student_longitudinal_events (
@@ -244,7 +244,7 @@ select
     c.school_id,
     cn.classroom_id,
     'study_note',
-    cn.id,
+    cn.id::text,
     'insert',
     'classroom_notes',
     to_jsonb(cn),
@@ -260,5 +260,5 @@ where cn.note_type = 'personal'
       select 1
       from public.student_longitudinal_events sle
       where sle.entity_type = 'study_note'
-        and sle.entity_id = cn.id
+        and sle.entity_id = cn.id::text
   );

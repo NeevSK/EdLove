@@ -46,8 +46,7 @@ export * from './utils/analyticsHelpers';
 export * from './utils/benchmarking';
 
 // Components
-export { PerformanceDashboard } from './components/PerformanceDashboard';
-export { GPAInsights } from './components/GPAInsights';
+export * from './components';
 
 // Export legacy documentation note
 // UI components were previously recommended to be imported from @repo/analytics/components

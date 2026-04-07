@@ -199,11 +199,12 @@ export const growthSignalsAPI = {
      * @param metadata   Optional context stored in event_metadata (entity IDs, section names, etc.)
      *                   Never surfaced to the user \u2014 analytics only.
      */
-    async emitSignal(
-        userId: string,
-        signalType: GrowthSignalType,
-        metadata: Record<string, unknown> = {}
-    ): Promise<void> {
+    async emitSignal(input: {
+        user_id: string;
+        event_type: GrowthSignalType;
+        event_metadata?: Record<string, unknown>;
+    }): Promise<void> {
+        const { user_id: userId, event_type: signalType, event_metadata: metadata = {} } = input;
         const dimension = GROWTH_SIGNAL_MAP[signalType];
 
         // 1. Record the growth event (internal analytics \u2014 feeds the lotus, stays out of the teacher's hands)
@@ -290,11 +291,11 @@ export const growthSignalsAPI = {
      * The primary operation always completes first; this call follows silently.
      */
     emitSilent(
-        userId: string,
-        signalType: GrowthSignalType,
-        metadata: Record<string, unknown> = {}
+        user_id: string,
+        event_type: GrowthSignalType,
+        event_metadata: Record<string, unknown> = {}
     ): void {
-        void this.emitSignal(userId, signalType, metadata).catch(() => { });
+        void this.emitSignal({ user_id, event_type, event_metadata }).catch(() => { });
     },
 };
 

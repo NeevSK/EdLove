@@ -134,10 +134,10 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        void growthSignalsAPI.emitSignal(userId, 'community_post_created', {
+        growthSignalsAPI.emitSilent(userId, 'community_post_created', {
             post_id: data?.id,
             school_id: schoolId,
-        }).catch(() => { });
+        });
 
         return CommunityPostSchema.parse(data);
     },
@@ -167,9 +167,9 @@ export const communityAPI = {
                 status: 'active'
             }]);
 
-        void growthSignalsAPI.emitSignal(userId, 'circle_facilitated', {
+        growthSignalsAPI.emitSilent(userId, 'circle_facilitated', {
             group_id: data?.id,
-        }).catch(() => { });
+        });
 
         return CommunityGroupSchema.parse(data);
     },
@@ -196,9 +196,9 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        void growthSignalsAPI.emitSignal(userId, 'group_joined', {
+        growthSignalsAPI.emitSilent(userId, 'group_joined', {
             group_id: groupId,
-        }).catch(() => { });
+        });
 
         if (group?.creator_id && group.creator_id !== userId) {
             void impactRipplesAPI.createRipple({
@@ -275,9 +275,9 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        void growthSignalsAPI.emitSignal(myId, 'group_message_sent', {
+        growthSignalsAPI.emitSilent(myId, 'group_message_sent', {
             group_id: groupId,
-        }).catch(() => { });
+        });
 
         return GroupMessageSchema.parse(data);
     },

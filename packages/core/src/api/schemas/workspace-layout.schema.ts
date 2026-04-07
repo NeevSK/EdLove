@@ -24,7 +24,7 @@ export const WorkspaceLayoutRecordSchema = z.object({
   order: z.array(z.string()),
   hidden: z.array(z.string()),
   pinned: z.array(z.string()),
-  zone_by_surface: z.record(WorkspaceLayoutZoneSchema).default({}),
+  zone_by_surface: z.record(z.string(), WorkspaceLayoutZoneSchema).default({}),
   layout_version: WorkspaceLayoutVersionSchema.default(1),
   created_at: z.string(),
   updated_at: z.string(),
@@ -37,7 +37,7 @@ export const WorkspaceLayoutUpsertSchema = z.object({
   order: z.array(z.string()),
   hidden: z.array(z.string()).default([]),
   pinned: z.array(z.string()).default([]),
-  zoneBySurface: z.record(WorkspaceLayoutZoneSchema).default({}),
+  zoneBySurface: z.record(z.string(), WorkspaceLayoutZoneSchema).default({}),
   layoutVersion: WorkspaceLayoutVersionSchema.default(1),
   updatedAt: z.string().min(1),
 });

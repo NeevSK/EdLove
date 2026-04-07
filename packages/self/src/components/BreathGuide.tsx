@@ -169,7 +169,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         transform: [
             { scale: petalScale.value },
             { rotate: `${petalRotation.value}deg` },
-        ],
+        ] as any,
         opacity: petalOpacity.value,
     }));
 

@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { PRINCIPAL_FEATURE_REGISTRY } from '../../../../../packages/classroom/src/screens/principal/PrincipalFeatureRegistry';
-import { PRINCIPAL_FEATURE_SCOPE_MAP } from '../../../../../packages/classroom/src/screens/principal/PrincipalIAScope';
+import { PRINCIPAL_FEATURE_REGISTRY } from '../../../../../packages/admin/src/screens/principal/PrincipalFeatureRegistry';
+import { PRINCIPAL_FEATURE_SCOPE_MAP } from '../../../../../packages/admin/src/screens/principal/PrincipalIAScope';
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
-const INSTITUTIONAL_ARC_CARD = path.join(WORKSPACE_ROOT, 'packages', 'classroom', 'src', 'screens', 'principal', 'InstitutionalArcCard.tsx');
-const COMMAND_CENTER = path.join(WORKSPACE_ROOT, 'packages', 'classroom', 'src', 'screens', 'principal', 'CommandCenter.tsx');
-const DASHBOARD_CONTENT = path.join(WORKSPACE_ROOT, 'packages', 'classroom', 'src', 'screens', 'principal', 'DashboardContent.tsx');
+const INSTITUTIONAL_ARC_CARD = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'src', 'screens', 'principal', 'InstitutionalArcCard.tsx');
+const COMMAND_CENTER = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'src', 'screens', 'principal', 'CommandCenter.tsx');
+const DASHBOARD_CONTENT = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'src', 'screens', 'principal', 'DashboardContent.tsx');
 const EN_LOCALE = path.join(APP_ROOT, 'src', 'i18n', 'locales', 'en.json');
 
 function get(obj: any, keyPath: string): any {

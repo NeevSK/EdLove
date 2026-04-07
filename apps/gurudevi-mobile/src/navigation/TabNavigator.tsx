@@ -3,22 +3,18 @@ import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Theme, SanctuaryBackground, UniversalModal, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
+import { Theme, SanctuaryBackground, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
 import { ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
 import { BreathGuide } from '@repo/self';
-import { BlurView } from 'expo-blur';
-import { useWindowDimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui';
-import { TemporalGlass } from '@repo/ui/native';
 
 // Icons
 import {
   User,
-  BookOpen,
   Users,
-  LayoutGrid,
   Library,
   Heart,
   School
@@ -29,15 +25,12 @@ import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
 import { useThemedColors } from '@repo/ui';
-import { useUserRole, useRewards, useTracking, useStore } from '@repo/core';
+import { usePermissions, useRewards, useTracking, useStore } from '@repo/core';
 
 // Screens
 import {
-  SelfScreen,
-  LibraryScreen,
-  ProfileScreen
+  SelfScreen
 } from '../screens';
-import { CommunityScreen, Group, Post, useCommunityGroups } from '@repo/community';
 // Assuming this is a local component, not a screen
 
 
@@ -49,14 +42,13 @@ interface TabNavigatorProps {
 
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
-  const { role } = useUserRole();
+  const { context } = usePermissions();
+  const role = context.roles[0];
   const colors = useThemedColors();
-  const { phase, isDark } = useTheme();
-  const { width } = useWindowDimensions();
+  const { phase } = useTheme();
   const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const insets = useSafeAreaInsets();
   const { newAchievements } = useRewards();
-  const { exploredFeatures } = useTracking();
   const { isBreathingOpen, setBreathingOpen } = useStore();
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState('');
@@ -72,8 +64,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const getClassroomLabel = () => {
     if (role === 'principal') return t('tabs.mySchool') || 'My School';
     if (role === 'founder') return t('tabs.school');
-    if (role === 'section_head') return t('tabs.section');
-    if (role === 'grade_head') return t('tabs.grade') || t('tabs.classroom');
+    if (role === 'sectionHead') return t('tabs.section');
+    if (role === 'gradeHead') return t('tabs.grade') || t('tabs.classroom');
     return t('tabs.classroom');
   };
 

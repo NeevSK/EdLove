@@ -1,16 +1,6 @@
 import { supabase } from '@repo/core';
 
-export interface StudentGrade {
-  id: string;
-  student_id: string;
-  assignment_id?: string;
-  marks: number;
-  grade: string;
-  gpa: number;
-  feedback?: string;
-  rank?: number;
-  graded_at: string;
-}
+/* StudentGrade is now imported from @repo/core in the root index.ts to ensure POA compliance */
 
 export interface GradingScale {
   name: string;

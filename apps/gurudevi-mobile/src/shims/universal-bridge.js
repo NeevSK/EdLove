@@ -9,25 +9,36 @@
  */
 
 const createProxyShim = (name, baseMock = { __esModule: true }) => {
-  const noop = (...args) => createProxyShim(`${name}.result`, {});
-  const target = Object.assign(noop, baseMock);
+  // Use a blank function as the target.
+  // This ensures 'typeof proxy === "function"', making it a valid React component.
+  const target = function MockComponent() { return null; };
+  
+  // Copy baseMock properties to the function
+  Object.assign(target, baseMock);
   
   const proxy = new Proxy(target, {
     get: (obj, prop) => {
       if (prop === 'default') return proxy;
       if (prop === '__esModule') return true;
+      if (prop === '$$typeof') return undefined; // Nuclear: Don't trick React into thinking this is a built-in element
+      if (prop === 'prototype') return undefined; // Nuclear: Don't trick class inheritance
+      
+      if (prop === 'Provider' || prop === 'Consumer') {
+          // If something.Provider is accessed, return a mock Context object
+          return { $$typeof: Symbol.for('react.provider'), _context: proxy };
+      }
+      
       if (prop in obj) return obj[prop];
       if (typeof prop === 'symbol') return obj[prop];
       
-      // NUCLEAR: never return undefined  always a new proxy
-      // this means .featureFlags.experiment.anything is always safe
-      const child = createProxyShim(`${name}.${String(prop)}`, {});
-      obj[prop] = child; // cache it so same prop always returns same object
+      // If we are on web and someone requests a common native-only property, return safety
+      if (prop === 'addListener' || prop === 'removeListeners') return () => {};
+
+      // SELF-HEALING: return a new proxy for anything missing.
+      const propStr = String(prop);
+      const child = createProxyShim(`${name}.${propStr}`, {});
+      obj[prop] = child; // cache it
       return child;
-    },
-    set: (obj, prop, value) => {
-      obj[prop] = value; // allow setting like featureFlags.experiment.x = true
-      return true;
     }
   });
   return proxy;

@@ -277,7 +277,8 @@ export const userGrowthStateAPI = {
      *
      * Security: ensures the caller is authenticated and can only access their own state.
      */
-    async getOrCreateState(userId: string): Promise<UserGrowthState> {
+    async getOrCreateState(input: { userId: string }): Promise<UserGrowthState> {
+        const { userId } = input;
         const loggedInId = await identityAPI.getMyInternalId();
         const ability = composeUserAbilities({ userId: loggedInId });
 
@@ -292,16 +293,20 @@ export const userGrowthStateAPI = {
      * Used by the LivingJourneyPanel to display memory tiles.
      * Returns an empty array on any error or unauthorized access.
      */
-    async getWhisperedMoments(userId: string, options: {
-        asOf?: string;
-        viewDate?: string;
-        viewScale?: 'day' | 'week' | 'month' | 'year' | 'custom';
-    } = {}): Promise<Array<{
+    async getWhisperedMoments(input: {
+        userId: string;
+        options?: {
+            asOf?: string;
+            viewDate?: string;
+            viewScale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+        }
+    }): Promise<Array<{
         key: string;
         name_en: string;
         name_si: string;
         awarded_at: string;
     }>> {
+        const { userId, options = {} } = input;
         const loggedInId = await identityAPI.getMyInternalId();
         if (!loggedInId) return [];
 

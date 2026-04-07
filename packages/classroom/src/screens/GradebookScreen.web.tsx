@@ -324,7 +324,7 @@ export default function GradebookScreenWeb() {
     if (!gradingId) return;
     await (submitGrade as any)(gradingId, marks, feedback);
     if (user?.id) {
-      growthSignalsAPI.emitSignal(user.id, 'assignment_graded', { classroom_id: classroomId }).catch(() => {});
+      growthSignalsAPI.emitSilent(user.id, 'assignment_graded', { classroom_id: classroomId });
     }
   };
 

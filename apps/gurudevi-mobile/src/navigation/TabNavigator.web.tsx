@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, VStack, HStack, Text, hapticLight, Theme } from "@repo/ui";
 import { BreathGuide } from "@repo/self";
-import { useUserRole, useRewards, useNotifications, useStore } from "@repo/core";
+import { usePermissions, useRewards, useNotifications, useStore } from "@repo/core";
 import {
   User,
   School,
@@ -63,14 +63,15 @@ schedulePreload(() => import("./LibraryStackNavigator.web"));
 
 // In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
 const NotificationsScreenWeb = React.lazy(
-  () => import("../screens/NotificationsScreen.web"),
+  () => import("@repo/ui/screens/NotificationsScreen.web"),
 );
-schedulePreload(() => import("../screens/NotificationsScreen.web"));
+schedulePreload(() => import("@repo/ui/screens/NotificationsScreen.web"));
 
 const AppSettingsScreenWeb = React.lazy(
-  () => import("../screens/AppSettingsScreen.web"),
+  () => import("@repo/ui/screens/AppSettingsScreen.web"),
 );
-schedulePreload(() => import("../screens/AppSettingsScreen.web"));
+schedulePreload(() => import("@repo/ui/screens/AppSettingsScreen.web"));
+
 
 // ── Tab navigator ────────────────────────────────────────────────────────────
 
@@ -130,7 +131,9 @@ export default function TabNavigator({
   onTabChange?: (tab: string) => void;
 }) {
   const { t } = useTranslation();
-  const { role, userId } = useUserRole();
+  const { context } = usePermissions();
+  const role = context.roles[0];
+  const userId = context.userId;
   const { isDark } = useTheme();
   const { newAchievements } = useRewards();
   const { unreadCount } = useNotifications(userId);
@@ -142,7 +145,8 @@ export default function TabNavigator({
   const [activeTab, setActiveTab] = React.useState("Self");
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
-  const { isBreathingOpen, setBreathingOpen } = useStore();
+  const store = useStore() as any;
+  const { isBreathingOpen, setBreathingOpen } = store;
 
   // Ref to the sidebar element — used for focus trap
   const sidebarRef = React.useRef<HTMLElement>(null);
@@ -239,8 +243,8 @@ export default function TabNavigator({
   const getClassroomLabel = () => {
     if (role === "principal") return t("tabs.mySchool");
     if (role === "founder") return t("tabs.school");
-    if (role === "section_head") return t("tabs.section");
-    if (role === "grade_head") return t("tabs.grade");
+    if (role === "sectionHead") return t("tabs.section");
+    if (role === "gradeHead") return t("tabs.grade");
     return t("tabs.classroom");
   };
 

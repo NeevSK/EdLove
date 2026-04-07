@@ -15,10 +15,12 @@
     "@repo/ui": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
+    "react-i18next": "^16.5.4",
     "lucide-react-native": "^0.563.0"
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-i18next": "*"
   }
 }

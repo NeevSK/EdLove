@@ -12,7 +12,7 @@ import {
     SanctuaryChip,
 } from '@repo/ui';
 import { Zap, TrendingUp, Users, HeartPulse } from 'lucide-react-native';
-import { useSchoolPulse } from '@repo/profile';
+import { useSchoolPulse } from '@repo/profile/hooks/useSchoolPulse';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface PulseDashboardProps {

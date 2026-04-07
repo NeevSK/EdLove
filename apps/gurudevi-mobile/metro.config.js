@@ -44,19 +44,89 @@ config.resolver.blockList = [
     /packages\/.*\/node_modules\/@react-native-async-storage\/.*/,
 ];
 
-// 5. Explicitly alias singleton packages so that ANY require('react') anywhere
-//    in the bundle resolves to exactly ONE file path in the app's node_modules.
-config.resolver.extraNodeModules = {
-    'react': path.resolve(projectRoot, 'node_modules/react'),
-    '@react-native-async-storage/async-storage': path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
+const resolvePackage = (name, parentPaths = []) => {
+    const searchPaths = [projectRoot, workspaceRoot, ...parentPaths];
+    try {
+        // 1. Try standard resolution (works if package.json is exported)
+        return path.dirname(require.resolve(`${name}/package.json`, { paths: searchPaths }));
+    } catch {
+        try {
+            // 2. Fallback: resolve entry point and discover root by walking up the tree.
+            const entryPoint = require.resolve(name, { paths: searchPaths });
+            let currentDir = path.dirname(entryPoint);
+            while (currentDir !== path.dirname(currentDir)) {
+                if (fs.existsSync(path.join(currentDir, 'package.json'))) {
+                    return currentDir;
+                }
+                currentDir = path.dirname(currentDir);
+            }
+        } catch {}
+        return null;
+    }
 };
+
+const SINGLETON_OVERRIDES = {
+    'react': resolvePackage('react') || path.resolve(projectRoot, 'node_modules/react'),
+    'react-dom': resolvePackage('react-dom') || path.resolve(projectRoot, 'node_modules/react-dom'),
+    'react-native-web': resolvePackage('react-native-web') || path.resolve(projectRoot, 'node_modules/react-native-web'),
+    '@react-navigation/native': resolvePackage('@react-navigation/native') || path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
+    '@react-navigation/core': resolvePackage('@react-navigation/core') || path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
+    '@react-native-async-storage/async-storage': resolvePackage('@react-native-async-storage/async-storage') || path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
+};
+
+config.resolver.extraNodeModules = new Proxy(SINGLETON_OVERRIDES, {
+    get: (target, name) => {
+        // 0. Safety: if name is a symbol (like util.inspect.custom or React internals),
+        // we MUST return from the target immediately to avoid resolving it as a package.
+        if (typeof name !== 'string') return target[name];
+        
+        // 1. Explicit Check for exact matches
+        if (target[name]) return target[name];
+        
+        // 2. Handle Sub-paths of singletons (e.g. "react-dom/client" -> "node_modules/react-dom/client")
+        // This is critical for pnpm monorepos where sub-paths are not always discoverable.
+        for (const key in target) {
+            if (name.startsWith(key + '/')) {
+                const subPath = name.slice(key.length + 1);
+                const resolvedSubPath = path.resolve(target[key], subPath);
+                // console.log(`[Metro-Proxy] \ud83d\udd0d Sub-path Resolution: ${name} -> ${resolvedSubPath}`);
+                return resolvedSubPath;
+            }
+        }
+        
+        // 3. Dynamic Parent Search: libraries often expect their sub-packages to be nearby.
+        // We look for requested modules relative to these major anchor packages.
+        const parentPaths = [];
+        const anchors = ['expo', '@react-navigation/native', '@tanstack/react-query', '@gluestack-ui/themed'];
+        
+        anchors.forEach(anchor => {
+            try {
+                // We use our own resolvePackage logic for anchors too, just in case they hide package.json
+                const resolvedAnchor = resolvePackage(anchor);
+                if (resolvedAnchor) parentPaths.push(resolvedAnchor);
+            } catch {}
+        });
+        
+        const resolved = resolvePackage(name, parentPaths);
+        if (resolved) {
+             if (name.startsWith('@repo/') && !resolved.includes('packages')) {
+                 console.warn(`[Metro-Proxy] \u26a0\ufe0f Potential mis-resolution of internal package ${name} to ${resolved}`);
+             }
+            // console.log(`[Metro-Proxy] \u2705 Resolved ${name} -> ${resolved}`);
+            return resolved;
+        }
+        
+        // Fallback to local node_modules (this allows Metro to still find standard modules)
+        return path.resolve(projectRoot, 'node_modules', name);
+    }
+});
 
 // 5b. Platform-aware react-native alias
 // Note: On web, we MUST allow Expo's default aliasing to react-native-web.
 // On native, we force it to the app's node_modules to ensure singleton behavior.
 const isWeb = process.argv.find(arg => arg.includes('platform=web'));
 if (!isWeb) {
-    config.resolver.extraNodeModules['react-native'] = path.resolve(projectRoot, 'node_modules/react-native');
+    SINGLETON_OVERRIDES['react-native'] = path.resolve(projectRoot, 'node_modules/react-native');
 }
 
 // 6. Web-only shims: redirect native-only packages to no-op web implementations
@@ -108,7 +178,6 @@ const WEB_SHIMS = {
     // Internal Monorepo Shims
     '@intuitui-labs/lk-edu-geo': path.resolve(projectRoot, 'src/shims/lk-edu-geo-web.js'),
     'srilankan-postalcode-backend': path.resolve(projectRoot, 'src/shims/postalcode-backend-web.js'),
-    '@repo/scanner-kit': path.resolve(projectRoot, 'src/shims/mmkv-web.js'),
 };
 
 const UNIVERSAL_SHIMS = {

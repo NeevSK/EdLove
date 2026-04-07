@@ -1,11 +1,11 @@
 export { AuthScreenWeb, AppSettingsScreen, AppSettingsScreenWeb, ErrorMessageDemo, NotificationsScreen, NotificationsScreenWeb, OnboardingScreen, OnboardingScreenWeb, OnboardingWrapper, WelcomeScreen, WelcomeScreenWeb } from '@repo/ui/screens';
-export { default as AuthScreen } from '../composition/AuthScreen';
+export { default as AuthScreen } from './AuthScreen';
 export { MuteHubScreen, ThuthimalClaimScreen, FullProfileScreen, FullProfileScreenWeb, ProfileScreen, ProfileScreenWeb, PublicProfileScreenWeb } from '@repo/profile';
-export { FounderVisionScreen, SchoolCreationScreen, SchoolForestScreen, SchoolProfileScreen } from '@repo/admin';
+export { FounderVisionScreen, SchoolCreationScreen, SchoolForestScreen, SchoolProfileScreen, FounderDashboard, FounderDashboardWeb, FounderSchoolDashboard, PrincipalDashboardWeb, PrincipalNativeWorkspace } from '@repo/admin';
 export { AIAssistantScreen, AIAssistantScreenWeb } from '@repo/ai';
-export { ClassroomDetailScreenWeb, ClassroomProfileScreenWeb, ClassroomScreen, ClassroomScreenWeb, DemoPlaygroundPanel as DemoPlaygroundPanelWeb, NoSchoolView, TimetableScreen as TimetableScreenWeb } from '@repo/classroom';
+export { ClassroomDetailScreenWeb, ClassroomProfileScreenWeb, ClassroomScreen, ClassroomScreenWeb, DemoPlaygroundPanel as DemoPlaygroundPanelWeb, NoSchoolView, TimetableScreen as TimetableScreenWeb, AttendanceScreen, AttendanceScreenWeb, GradebookScreen, GradebookScreenWeb, StudentDashboard, TeacherDashboard, StudentProfileScreen } from '@repo/classroom';
 export { AnnouncementsScreen, BaseChatScreen, CommunityScreen, CommunityScreenWeb, DirectMessageScreen, DirectMessagesListScreen, GroupChatScreen, GroupDetailsScreen, GroupDetailsScreenWeb, GroupsScreen, UserPublicProfileScreen, InvitationWelcomeScreen, InviteCodeEntry } from '@repo/community';
 export { FormBuilderScreenWeb, PublicFormScreenWeb } from '@repo/form-builder';
 export { CollectionDetailScreenWeb, LibraryScreen, LibraryScreenWeb } from '@repo/library';
 export { QRHandlerScreen } from '@repo/scanner-kit';
-export { PrivacyLedgerScreen, SelfScreen } from '@repo/self';
+export { PrivacyLedgerScreen, SelfScreen, SelfScreenWeb } from '@repo/self';

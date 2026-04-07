@@ -1,5 +1,5 @@
 import type { Lesson } from './types';
-import { ClassroomStudent } from './schemas/classroom.schema';
+import { ClassroomStudent, TeacherStats } from './schemas/classroom.schema';
 import { educationalContract } from './educational.contract';
 import { educationalServices } from '../domains/educational/runtime';
 
@@ -92,8 +92,8 @@ export const studentsAPI = {
     /**
      * @authority read Classroom
      */
-    async getTeacherStats(teacherId: string): Promise<any> {
-        return educationalServices.students.getTeacherStats(teacherId);
+    async getTeacherStats(teacherId: string): Promise<TeacherStats> {
+        return educationalServices.classrooms.getTeacherStats(teacherId);
     },
 };
 

@@ -72,7 +72,10 @@ export default function ThuthimalClaimScreen() {
         return;
       }
 
-      const result = await thuthimalAPI.claimGift(gift_token, myId);
+      const result = await thuthimalAPI.claimGift({
+        gift_token,
+        recipient_id: myId,
+      });
 
       if (result.success) {
         setGifterName(result.gifter_name ?? gifterName);

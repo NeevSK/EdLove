@@ -5,12 +5,10 @@ import {
     useThemedColors, 
     SkeletonCard 
 } from '@repo/ui';
-import { 
-    AvatarDisplay, 
-    ContactLinktree,
-    EditableItem,
-    useSchoolProfile
-} from '@repo/profile';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import { EditableItem } from '@repo/profile/components/EditableItem';
+import { useSchoolProfile } from '@repo/profile/hooks/useSchoolProfile';
 import { 
     ArrowLeft, 
     School as SchoolIcon,

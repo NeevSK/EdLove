@@ -3,7 +3,7 @@
 -- reconstructable without depending on ad hoc dashboard queries.
 
 create table if not exists public.principal_governance_events (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     school_id uuid not null references public.schools(id) on delete cascade,
     principal_id uuid not null references public.users(id) on delete cascade,
     entity_type text not null check (entity_type in ('principal_observation', 'school_invite')),

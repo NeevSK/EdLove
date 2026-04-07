@@ -1,34 +1,24 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { ClassroomStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
-const ClassroomScreenWeb = React.lazy(() => import('../screens/ClassroomScreen.web'));
-const ClassroomDetailScreenWeb = React.lazy(() => import('../screens/ClassroomDetailScreen.web'));
+// Web-specific screens — lazy loaded for code splitting
+const ClassroomScreenWeb = React.lazy(() => import('@repo/classroom/screens/ClassroomScreen.web'));
+const ClassroomDetailScreenWeb = React.lazy(() => import('@repo/classroom/screens/ClassroomDetailScreen.web'));
 
-// Web-native attendance and gradebook (HTML/CSS, no RN gesture handlers)
-const AttendanceScreen = React.lazy(() => import('../screens/AttendanceScreen.web'));
-const GradebookScreen  = React.lazy(() => import('../screens/GradebookScreen.web'));
-const StudentProfileScreen = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.StudentProfileScreen }))
-);
-const FounderDashboard = React.lazy(() =>
-    import('@repo/admin/screens/FounderDashboard.web').then(m => ({ default: m.default }))
-);
-const FounderSchoolView = React.lazy(() =>
-    import('@repo/admin/screens/FounderSchoolDashboard').then(m => ({ default: m.default }))
-);
-const SchoolCreationScreen = React.lazy(() =>
-    import('../screens/SchoolCreationScreen')
-);
-const TimetableScreen = React.lazy(() =>
-    import('../screens/TimetableScreen.web')
-);
-const SchoolForestScreen = React.lazy(() =>
-    import('../screens/SchoolForestScreen.web')
-);
+// Web-native attendance and gradebook
+const AttendanceScreen = React.lazy(() => import('@repo/classroom/screens/AttendanceScreen.web'));
+const GradebookScreen  = React.lazy(() => import('@repo/classroom/screens/GradebookScreen.web'));
+const StudentProfileScreen = React.lazy(() => import('@repo/classroom/screens/StudentProfileScreen'));
+const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDashboard.web'));
+const FounderSchoolView = React.lazy(() => import('@repo/admin/screens/FounderSchoolDashboard'));
+const SchoolCreationScreen = React.lazy(() => import('@repo/admin/screens/SchoolCreationScreen'));
+const TimetableScreen = React.lazy(() => import('@repo/classroom/screens/TimetableScreen.web'));
+const SchoolForestScreen = React.lazy(() => import('@repo/admin/screens/SchoolForestScreen.web'));
+
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 

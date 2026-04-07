@@ -3,9 +3,7 @@ import { Box, GlobalHeader, SandboxBanner, ScreenWrapper, SanctuaryNudge } from 
 import { FeatureGuard } from '@repo/core';
 import type { WorkspaceSurfaceDefinition } from '@repo/core';
 import { Wind } from 'lucide-react-native';
-import PrincipalDashboard from '../screens/PrincipalDashboard';
-import SectionHeadDashboard from '../screens/SectionHeadDashboard';
-import GradeHeadDashboard from '../screens/GradeHeadDashboard';
+import { PrincipalDashboard, SectionHeadDashboard, GradeHeadDashboard } from '@repo/admin';
 import TeacherDashboard from '../screens/TeacherDashboard';
 import StudentDashboard from '../screens/StudentDashboard';
 import {

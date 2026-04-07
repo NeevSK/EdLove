@@ -11,7 +11,10 @@ export function useGuardianWorkspaceData(guardianId: string) {
         try {
             setIsLoading(true);
             const dashboardData = await api.guardian.getDashboard(guardianId);
-            setDashboard(dashboardData);
+            setDashboard({
+                ...dashboardData,
+                guardianId: dashboardData.guardianId || guardianId
+            } as GuardianDashboard);
             setError(null);
     } catch (caughtError: any) {
       console.error('Failed to load guardian workspace data', caughtError);

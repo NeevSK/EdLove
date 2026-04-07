@@ -296,6 +296,40 @@ export const operationsContract = c.router({
       },
     }),
   },
+  createSchoolSection: {
+    method: 'POST',
+    path: '/schools/:school_id/sections',
+    body: z.object({
+      name: z.string(),
+      code: z.string().optional(),
+    }),
+    responses: {
+      201: SectionSchema,
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'create',
+        subject: 'School',
+      },
+    }),
+  },
+  createSectionGrade: {
+    method: 'POST',
+    path: '/sections/:section_id/grades',
+    body: z.object({
+      name: z.string(),
+      level: z.number().int(),
+    }),
+    responses: {
+      201: GradeSchema,
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'create',
+        subject: 'School',
+      },
+    }),
+  },
 
   // Inventory
   getInventory: {
@@ -342,6 +376,32 @@ export const operationsContract = c.router({
     metadata: POAMetadataSchema.parse({
       authority: {
         action: 'create',
+        subject: 'Inventory',
+      },
+    }),
+  },
+  getSchoolResourceNeeds: {
+    method: 'GET',
+    path: '/inventory/school/:schoolId/needs',
+    responses: {
+      200: z.array(z.any()),
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'read',
+        subject: 'Inventory',
+      },
+    }),
+  },
+  getSchoolRequests: {
+    method: 'GET',
+    path: '/inventory/school/:schoolId/requests',
+    responses: {
+      200: z.array(z.any()),
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'read',
         subject: 'Inventory',
       },
     }),

@@ -5,24 +5,15 @@ import { StackFallback } from '../components/web/WebScreenShimmer';
 import { CommunityStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
-const CommunityScreenWeb = React.lazy(() => import('../screens/CommunityScreen.web'));
+// Web-specific screens — lazy loaded for code splitting
+const CommunityScreenWeb = React.lazy(() => import('@repo/community/screens/CommunityScreen.web'));
 
-// Community sub-screens — use package screens (Metro resolves .web.tsx automatically)
-const UserPublicProfileScreen = React.lazy(() =>
-    import('@repo/community').then(m => ({ default: m.UserPublicProfileScreen }))
-);
-const GroupDetailsScreen = React.lazy(() =>
-    import('@repo/community').then(m => ({ default: m.GroupDetailsScreen }))
-);
-const GroupChatScreen = React.lazy(() =>
-    import('@repo/community').then(m => ({ default: m.GroupChatScreen }))
-);
-const DirectMessagesListScreen = React.lazy(() =>
-    import('@repo/community').then(m => ({ default: m.DirectMessagesListScreen }))
-);
-const DirectMessageScreen = React.lazy(() =>
-    import('@repo/community').then(m => ({ default: m.DirectMessageScreen }))
-);
+// Community sub-screens — use direct package subpaths
+const UserPublicProfileScreen = React.lazy(() => import('@repo/community/screens/UserPublicProfileScreen.web'));
+const GroupDetailsScreen = React.lazy(() => import('@repo/community/screens/GroupDetailsScreen.web'));
+const GroupChatScreen = React.lazy(() => import('@repo/community/screens/GroupChatScreen.web'));
+const DirectMessagesListScreen = React.lazy(() => import('@repo/community/screens/DirectMessagesListScreen'));
+const DirectMessageScreen = React.lazy(() => import('@repo/community/screens/DirectMessageScreen.web'));
 // Announcements — in-app announcements screen
 const AnnouncementsScreen = React.lazy(() =>
     import('../screens/community/AnnouncementsScreen')

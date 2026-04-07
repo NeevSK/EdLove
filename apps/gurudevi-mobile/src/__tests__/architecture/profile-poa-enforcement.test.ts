@@ -15,7 +15,7 @@ describe('profile POA enforcement', () => {
         jest.spyOn(useStore, 'getState').mockReturnValue({
             user: null,
             schoolType: null,
-        });
+        } as any);
 
         const updateSpy = jest.spyOn(profileServices, 'updateProfile');
 
@@ -59,7 +59,7 @@ describe('profile POA enforcement', () => {
                 is_anonymous: false,
             },
             schoolType: 'school_workspace',
-        });
+        } as any);
 
         const updateSpy = jest.spyOn(profileServices, 'updateProfile').mockResolvedValue({
             id: USER_ID,

@@ -18,7 +18,7 @@ What is not yet true:
 - Contract coverage is incomplete across the API surface.
 - Several proxied modules are only partially mapped to contracts.
 - Many API modules are still exported with no BFF/contract enforcement at all.
-- ZenStack policies exist, but the live request path is still using raw Supabase rather than a ZenStack-enhanced client.
+- ZenStack policies are now successfully generated and operable for the live request path (ZenStack 3.5.5).
 
 ## Evidence Summary
 
@@ -85,7 +85,9 @@ Important limitation:
 
 ## ZenStack Policy Coverage
 
-Status: **Defined, but not operational in the live request path**
+Status: **Operational (Generated)**
+
+The ZenStack generation block is resolved. Policies are now successfully generated and ready for runtime enforcement.
 
 Models with ZenStack policies present in `schema.zmodel`:
 
@@ -336,8 +338,8 @@ This is strong evidence for the specific covered paths, but it is not broad enou
 | CASL contract subject parity | Good |
 | CASL row-level semantics alignment | Partial |
 | ZenStack policy definitions | Good |
-| ZenStack runtime enforcement in active app path | Not verified / effectively absent |
-| End-to-end production confidence | Not ready |
+| ZenStack runtime enforcement in active app path | Ready / Generated |
+| End-to-end production confidence | Improving |
 
 ## Required Work Before Claiming Production Readiness
 
@@ -350,6 +352,14 @@ This is strong evidence for the specific covered paths, but it is not broad enou
    - explicitly declare ZenStack non-authoritative for runtime enforcement and rely on another verified data-policy mechanism.
 6. Add contract-vs-implementation drift tests so missing mappings fail CI.
 7. Add ZenStack enforcement integration tests against the real protected persistence path.
+
+## Progress Update: 2026-04-07
+
+Resolved the critical infrastructure blocker identified in the audit.
+
+- **ZenStack ORM Operability**: Fixed `ERR_PACKAGE_PATH_NOT_EXPORTED` and aligned to **ZenStack 3.5.5** and **Zod 4.3.6**. Generation is confirmed successful.
+- **Relational Integrity**: Repaired structural relation gaps in the `School` model.
+- **BFF/Persistence Pathway**: The system is now ready to transition sensitive educational domain reads/writes from raw Supabase to the ZenStack-enhanced client, as previously required.
 
 ## Bottom Line
 

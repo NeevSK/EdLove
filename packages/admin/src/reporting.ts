@@ -66,7 +66,14 @@ export const reportingAPI = {
     endDate: string,
     classroomId?: string,
   ): Promise<AttendanceReport> {
-    return attendanceAPI.getAttendanceReport(schoolId, startDate, endDate, classroomId);
+    const report = await attendanceAPI.getAttendanceReport(schoolId, startDate, endDate, classroomId);
+    return {
+      ...report,
+      trend: (report.trend || []).map(p => ({
+        ...p,
+        date: p.date || new Date().toISOString().split('T')[0]
+      }))
+    } as AttendanceReport;
   },
 
   async getOperationalSnapshot(

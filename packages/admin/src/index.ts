@@ -36,9 +36,13 @@ export { default as FounderDashboard } from './screens/FounderDashboard';
 export { default as FounderDashboardWeb } from './screens/FounderDashboard.web';
 export { default as FounderSchoolDashboard } from './screens/FounderSchoolDashboard';
 export {
+  PrincipalDashboard,
   PrincipalDashboardWeb,
   PrincipalNativeWorkspace,
   PrincipalWorkspaceContainer,
+  SectionHeadDashboard,
+  GradeHeadDashboard,
+  AcademicCycleManager,
 } from './screens';
 export { default as SchoolCreationScreen } from './screens/SchoolCreationScreen';
 export * from './sections';

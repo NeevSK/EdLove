@@ -5,21 +5,14 @@ import { StackFallback } from '../components/web/WebScreenShimmer';
 import { LibraryStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
-const LibraryScreenWeb = React.lazy(() => import('../screens/LibraryScreen.web'));
+// Web-specific screens — lazy loaded for code splitting
+const LibraryScreenWeb = React.lazy(() => import('@repo/library/screens/LibraryScreen.web'));
 
 // Package screens (Metro auto-resolves .web.tsx for each)
-const PDFViewerScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.PDFViewerScreen }))
-);
-const VideoPlayerScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.VideoPlayerScreen }))
-);
-const MapScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.MapScreen }))
-);
-const CuratorReviewScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.CuratorReviewScreen }))
-);
+const PDFViewerScreen = React.lazy(() => import('@repo/library/screens/PDFViewerScreen.web'));
+const VideoPlayerScreen = React.lazy(() => import('@repo/library/screens/VideoPlayerScreen.web'));
+const MapScreen = React.lazy(() => import('@repo/library/screens/MapScreen.web'));
+const CuratorReviewScreen = React.lazy(() => import('@repo/library/screens/CuratorReviewScreen'));
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 

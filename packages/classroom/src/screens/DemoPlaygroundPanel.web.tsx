@@ -16,7 +16,7 @@ import { X, Zap } from 'lucide-react-native';
 
 import TeacherDashboard from './TeacherDashboard';
 import StudentDashboard from './StudentDashboard';
-import PrincipalDashboard from './PrincipalDashboard';
+// import PrincipalDashboard from './PrincipalDashboard';
 
 type DemoRole = 'teacher' | 'principal' | 'student';
 
@@ -105,10 +105,9 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
             >
                 {role === 'teacher' && <TeacherDashboard />}
                 {role === 'principal' && (
-                    <PrincipalDashboard
-                        schoolId="mock-school"
-                        userId="mock-principal"
-                    />
+                    <div style={{ padding: '40px', textAlign: 'center', opacity: 0.5 }}>
+                        Principal Dashboard preview moved to @repo/admin
+                    </div>
                 )}
                 {role === 'student' && <StudentDashboard />}
             </div>

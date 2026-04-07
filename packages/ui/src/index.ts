@@ -1,26 +1,23 @@
-import './types/apca-w3.d.ts';
-import './types/culori.d.ts';
-
-// Theme & Styling
+// 1. Fundamental Styling & Gluestack (Base)
 export * from './theme/Theme';
+export * from './gluestack';
 
-// Context & Providers
+// 2. Context & Providers (Logic State)
 export * from './context';
 export * from './providers/ToastProvider';
 export { SanctuaryProvider } from './providers/SanctuaryProvider';
 
-// Hooks
+// 3. Hooks (Logic Access)
 export * from './hooks/useTheme';
 export * from './hooks/useThemedColors';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
 export { useTranslation } from 'react-i18next';
 
-// Fundamental Components (Gluestack & Basic UI)
-export * from './gluestack';
-
-// Advanced Components
+// 4. Components (UI Building Blocks)
 export * from './components';
+
+// 5. Screens (Pages/Compositions)
 export * from './screens';
 
 // Utilities

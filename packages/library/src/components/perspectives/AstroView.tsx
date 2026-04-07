@@ -63,7 +63,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ]
+        ] as any
     }));
 
     return (

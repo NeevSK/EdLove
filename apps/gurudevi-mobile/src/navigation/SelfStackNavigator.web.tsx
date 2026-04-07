@@ -4,10 +4,9 @@ import { Theme, useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { SelfStackParamList } from '@repo/core';
 
-// Web-specific screens — lazy loaded for code splitting
-const SelfScreenWeb = React.lazy(() => import('../screens/SelfScreen.web'));
-// AI Assistant screen — web override with CSS message list (no FlatList)
-const AIAssistantScreen = React.lazy(() => import('../screens/AIAssistantScreen.web'));
+// Web-specific lazy loading
+const SelfScreenWeb = React.lazy(() => import('@repo/self/screens/SelfScreen.web'));
+const AIAssistantScreen = React.lazy(() => import('@repo/ai/screens/AIAssistantScreen.web'));
 
 const Stack = createNativeStackNavigator<SelfStackParamList>();
 

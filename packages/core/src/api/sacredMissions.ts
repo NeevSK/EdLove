@@ -25,7 +25,8 @@ export const sacredMissionsAPI = {
     /**
      * Fetch manifestos for a school
      */
-    async getManifestos(schoolId: string, userId?: string) {
+    async getManifestos(input: { school_id: string, user_id?: string }) {
+        const { school_id: schoolId, user_id: userId } = input;
         const { data, error } = await supabase
             .from('sanctuary_manifestos')
             .select(`
@@ -82,7 +83,8 @@ export const sacredMissionsAPI = {
     /**
      * Endorse a manifesto
      */
-    async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string) {
+    async endorseManifesto(input: { manifesto_id: string, user_id: string, commitment_text?: string }) {
+        const { manifesto_id: manifestoId, user_id: userId, commitment_text: commitmentText } = input;
         // Fetch the manifesto's creator_id for the Impact Ripple
         const { data: manifesto } = await supabase
             .from('sanctuary_manifestos')
@@ -101,8 +103,12 @@ export const sacredMissionsAPI = {
         if (error) throw error;
 
         // Growth signal: teacher actively participated in community alignment (Weaving dimension)
-        void growthSignalsAPI.emitSignal(userId, 'manifesto_endorsed', {
-            manifesto_id: manifestoId,
+        void growthSignalsAPI.emitSignal({
+            user_id: userId,
+            event_type: 'manifesto_endorsed',
+            event_metadata: {
+                manifesto_id: manifestoId,
+            }
         }).catch(() => {});
 
         // Impact Ripple for the manifesto creator  "a fellow teacher endorsed your vision"
@@ -122,7 +128,8 @@ export const sacredMissionsAPI = {
     /**
      * Remove endorsement
      */
-    async unendorseManifesto(manifestoId: string, userId: string) {
+    async unendorseManifesto(input: { manifesto_id: string, user_id: string }) {
+        const { manifesto_id: manifestoId, user_id: userId } = input;
         const { error } = await supabase
             .from('manifesto_endorsements')
             .delete()

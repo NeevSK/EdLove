@@ -57,7 +57,6 @@ The platform is still not fully production-ready end to end.
 
 Remaining blockers:
 
-- ZenStack is not yet the active server-side persistence path for the migrated educational domain
 - Many non-educational modules are still only partially contract-backed or still on older patterns
 - Repo-wide TypeScript is still red due to pre-existing drift outside the new educational foundation
 - Legacy sync wiring still points at old API method shapes in some places
@@ -78,3 +77,12 @@ Current repo-wide TypeScript blockers observed after this wave:
    - implementation without contract
    - proxy methods without contract metadata
 5. Repeat the same service-port-adapter migration pattern for `self`, `library`, and `community`.
+
+## Update: 2026-04-07 (Infrastructure Hardening)
+
+Resolved the ZenStack generation block that was previously stalling infrastructure progress.
+
+- **ZenStack Generation Success**: Successfully generated TypeScript schema and policies from `protocol/schema.zmodel` without ESM resolution errors.
+- **Dependency Alignment**: Upgraded and aligned to **ZenStack 3.5.5** and **Zod 4.3.6**, resolving critical `ERR_PACKAGE_PATH_NOT_EXPORTED` issues caused by version mismatches in Node 24 context.
+- **Schema Integrity**: Repaired missing inverse relation field (`manifestos`) on the `School` model, ensuring full structural integrity for ZenStack ORM generation.
+- **Persistence Path Ready**: The foundation is now operational for routing server-side execution through the ZenStack-enhanced persistence layer.

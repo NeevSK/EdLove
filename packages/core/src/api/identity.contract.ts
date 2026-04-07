@@ -72,4 +72,19 @@ export const identityContract = c.router({
     }),
     summary: 'Get classroom workspace role summary for a user',
   },
+  updateProfile: {
+    method: 'PATCH',
+    path: '/identity/profile/:id',
+    body: IdentitySchema.partial(),
+    responses: {
+      200: IdentitySchema,
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'update',
+        subject: 'User',
+      },
+    }),
+    summary: 'Update a user profile',
+  },
 });

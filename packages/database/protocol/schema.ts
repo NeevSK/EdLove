@@ -188,6 +188,58 @@ export class SchemaType implements SchemaDef {
                     type: "UserPreferences",
                     optional: true,
                     relation: { opposite: "user" }
+                },
+                gifts_given: {
+                    name: "gifts_given",
+                    type: "ThuthimalGift",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GiftsGiven") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "gifter", name: "GiftsGiven" }
+                },
+                gifts_received: {
+                    name: "gifts_received",
+                    type: "ThuthimalGift",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GiftsReceived") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "recipient", name: "GiftsReceived" }
+                },
+                impact_ripples: {
+                    name: "impact_ripples",
+                    type: "ImpactRipple",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("RecipientRipples") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "recipient", name: "RecipientRipples" }
+                },
+                actions_rippled: {
+                    name: "actions_rippled",
+                    type: "ImpactRipple",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("ActorRipples") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "actor", name: "ActorRipples" }
+                },
+                whispered_moments: {
+                    name: "whispered_moments",
+                    type: "WhisperedMoment",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
+                growth_events: {
+                    name: "growth_events",
+                    type: "GrowthEvent",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
+                growth_state: {
+                    name: "growth_state",
+                    type: "UserGrowthState",
+                    optional: true,
+                    relation: { opposite: "user" }
+                },
+                manifesto_endorsements: {
+                    name: "manifesto_endorsements",
+                    type: "ManifestoEndorsement",
+                    array: true,
+                    relation: { opposite: "user" }
                 }
             },
             attributes: [
@@ -1038,8 +1090,8 @@ export class SchemaType implements SchemaDef {
                 emoji: {
                     name: "emoji",
                     type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("d") }] }] as readonly AttributeApplication[],
-                    default: "d" as FieldDefault
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("\u2764\uFE0F") }] }] as readonly AttributeApplication[],
+                    default: "\u2764\uFE0F" as FieldDefault
                 },
                 post: {
                     name: "post",
@@ -1337,6 +1389,12 @@ export class SchemaType implements SchemaDef {
                 groups: {
                     name: "groups",
                     type: "Group",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                manifestos: {
+                    name: "manifestos",
+                    type: "SanctuaryManifesto",
                     array: true,
                     relation: { opposite: "school" }
                 }
@@ -1876,6 +1934,575 @@ export class SchemaType implements SchemaDef {
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" }
+            }
+        },
+        ThuthimalGift: {
+            name: "ThuthimalGift",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                gift_token: {
+                    name: "gift_token",
+                    type: "String",
+                    unique: true,
+                    attributes: [{ name: "@unique" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                gifter_id: {
+                    name: "gifter_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "gifter"
+                    ] as readonly string[]
+                },
+                recipient_id: {
+                    name: "recipient_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "recipient"
+                    ] as readonly string[]
+                },
+                gifter_name: {
+                    name: "gifter_name",
+                    type: "String",
+                    optional: true
+                },
+                recipient_role: {
+                    name: "recipient_role",
+                    type: "String",
+                    optional: true
+                },
+                gift_message: {
+                    name: "gift_message",
+                    type: "String",
+                    optional: true
+                },
+                claimed: {
+                    name: "claimed",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
+                    default: false as FieldDefault
+                },
+                claimed_at: {
+                    name: "claimed_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                expires_at: {
+                    name: "expires_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                gifter: {
+                    name: "gifter",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GiftsGiven") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("gifter_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "gifts_given", name: "GiftsGiven", fields: ["gifter_id"], references: ["id"] }
+                },
+                recipient: {
+                    name: "recipient",
+                    type: "User",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GiftsReceived") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("recipient_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "gifts_received", name: "GiftsReceived", fields: ["recipient_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("gifter_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("recipient_id"))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("thuthimal_gifts") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                gift_token: { type: "String" }
+            }
+        },
+        ImpactRipple: {
+            name: "ImpactRipple",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                recipient_user_id: {
+                    name: "recipient_user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "recipient"
+                    ] as readonly string[]
+                },
+                actor_user_id: {
+                    name: "actor_user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "actor"
+                    ] as readonly string[]
+                },
+                entity_id: {
+                    name: "entity_id",
+                    type: "String",
+                    optional: true
+                },
+                ripple_type: {
+                    name: "ripple_type",
+                    type: "String"
+                },
+                warm_message_en: {
+                    name: "warm_message_en",
+                    type: "String",
+                    optional: true
+                },
+                warm_message_si: {
+                    name: "warm_message_si",
+                    type: "String",
+                    optional: true
+                },
+                delivered: {
+                    name: "delivered",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
+                    default: false as FieldDefault
+                },
+                delivered_at: {
+                    name: "delivered_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                recipient: {
+                    name: "recipient",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("RecipientRipples") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("recipient_user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "impact_ripples", name: "RecipientRipples", fields: ["recipient_user_id"], references: ["id"] }
+                },
+                actor: {
+                    name: "actor",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("ActorRipples") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("actor_user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "actions_rippled", name: "ActorRipples", fields: ["actor_user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("actor_user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("recipient_user_id"))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("impact_ripples") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        WhisperedMoment: {
+            name: "WhisperedMoment",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                moment_key: {
+                    name: "moment_key",
+                    type: "String"
+                },
+                moment_name_en: {
+                    name: "moment_name_en",
+                    type: "String"
+                },
+                moment_name_si: {
+                    name: "moment_name_si",
+                    type: "String",
+                    optional: true
+                },
+                awarded_at: {
+                    name: "awarded_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "whispered_moments", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin")) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("whispered_moments") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        GrowthEvent: {
+            name: "GrowthEvent",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                dimension: {
+                    name: "dimension",
+                    type: "String"
+                },
+                event_type: {
+                    name: "event_type",
+                    type: "String"
+                },
+                event_metadata: {
+                    name: "event_metadata",
+                    type: "Json",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "growth_events", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("growth_events") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        UserGrowthState: {
+            name: "UserGrowthState",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    unique: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[],
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                bhumi_stage: {
+                    name: "bhumi_stage",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("seed") }] }] as readonly AttributeApplication[],
+                    default: "seed" as FieldDefault
+                },
+                banyan_stage: {
+                    name: "banyan_stage",
+                    type: "String",
+                    optional: true
+                },
+                river_stage: {
+                    name: "river_stage",
+                    type: "String",
+                    optional: true
+                },
+                crystal_tier: {
+                    name: "crystal_tier",
+                    type: "String",
+                    optional: true
+                },
+                presence_signals: {
+                    name: "presence_signals",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                nourishing_signals: {
+                    name: "nourishing_signals",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                witnessing_signals: {
+                    name: "witnessing_signals",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                weaving_signals: {
+                    name: "weaving_signals",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                blooming_signals: {
+                    name: "blooming_signals",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                peer_mentored_count: {
+                    name: "peer_mentored_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                circles_facilitated_count: {
+                    name: "circles_facilitated_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                lessons_completed_count: {
+                    name: "lessons_completed_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                reflections_submitted_count: {
+                    name: "reflections_submitted_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                crystals_found_count: {
+                    name: "crystals_found_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                fractal_moments_count: {
+                    name: "fractal_moments_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                last_seen_at: {
+                    name: "last_seen_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "growth_state", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin"))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("user_growth_state") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                user_id: { type: "String" }
+            }
+        },
+        SanctuaryManifesto: {
+            name: "SanctuaryManifesto",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                creator_id: {
+                    name: "creator_id",
+                    type: "String"
+                },
+                title: {
+                    name: "title",
+                    type: "String"
+                },
+                content: {
+                    name: "content",
+                    type: "String"
+                },
+                vibe: {
+                    name: "vibe",
+                    type: "String",
+                    optional: true
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                target_date: {
+                    name: "target_date",
+                    type: "DateTime",
+                    optional: true
+                },
+                metadata: {
+                    name: "metadata",
+                    type: "Json",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "manifestos", fields: ["school_id"], references: ["id"] }
+                },
+                endorsements: {
+                    name: "endorsements",
+                    type: "ManifestoEndorsement",
+                    array: true,
+                    relation: { opposite: "manifesto" }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["authority"]), "==", ExpressionUtils.literal("admin")) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("sanctuary_manifestos") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        ManifestoEndorsement: {
+            name: "ManifestoEndorsement",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                manifesto_id: {
+                    name: "manifesto_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "manifesto"
+                    ] as readonly string[]
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                commitment_text: {
+                    name: "commitment_text",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                manifesto: {
+                    name: "manifesto",
+                    type: "SanctuaryManifesto",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("manifesto_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "endorsements", fields: ["manifesto_id"], references: ["id"] }
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "manifesto_endorsements", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("manifesto_id"), ExpressionUtils.field("user_id")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("manifesto_endorsements") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                manifesto_id_user_id: { manifesto_id: { type: "String" }, user_id: { type: "String" } }
             }
         }
     } as const;

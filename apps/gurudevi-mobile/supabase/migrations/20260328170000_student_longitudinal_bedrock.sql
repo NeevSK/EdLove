@@ -1,15 +1,21 @@
--- Student Longitudinal Bedrock
--- Creates a shared temporal event store for long-lived student records so
--- POA-backed services can reconstruct timelines and "as of" views across
--- enrollments, attendance, grades, guardian relationships, and observations.
-
+-- 1. Student Longitudinal Event Store
+-- This table acts as a "Flight Recorder" for the student's entire journey across 13+ years.
+-- In our multitenant architecture, we capture 'snapshot' states to preserve history
+-- even if a student moves between schools (tenants) or grade levels.
 create table if not exists public.student_longitudinal_events (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     student_id uuid not null references public.users(id) on delete cascade,
     school_id uuid null,
+    grade_id uuid null references public.grades(id) on delete set null, -- The "Higher Layer" (Year 1, 2, etc.)
     classroom_id uuid null references public.classrooms(id) on delete set null,
-    entity_type text not null check (entity_type in ('enrollment', 'attendance', 'grade', 'guardian_relationship', 'observation')),
-    entity_id uuid not null,
+    entity_type text not null check (entity_type in (
+        'enrollment',            -- Student joined/left a classroom
+        'attendance',            -- Daily presence record
+        'grade',                 -- Grade Level change (Promotion/School Change)
+        'guardian_relationship', -- Change in care relationships
+        'observation'            -- Qualitative teacher insights
+    )),
+    entity_id text not null,
     operation text not null check (operation in ('insert', 'update', 'delete')),
     source_table text not null,
     snapshot jsonb not null,
@@ -31,6 +37,8 @@ create index if not exists idx_student_longitudinal_events_classroom_occurred_at
 
 alter table public.student_longitudinal_events enable row level security;
 
+-- 2. Generic Capture Function
+-- Automatically captures snapshots and stamps them with the current context (School/Grade).
 create or replace function public.capture_student_longitudinal_event_generic()
 returns trigger
 language plpgsql
@@ -47,9 +55,11 @@ declare
     occurred_column text := tg_argv[4];
     effective_from_column text := tg_argv[5];
     effective_to_column text := tg_argv[6];
+    
     student_value uuid;
     classroom_value uuid;
     school_value uuid;
+    grade_value uuid; -- Added to capture the "Higher Layer" level
     occurred_value timestamptz;
     effective_from_value timestamptz;
     effective_to_value timestamptz;
@@ -57,24 +67,35 @@ begin
     target_record := case when tg_op = 'DELETE' then old else new end;
     snapshot := to_jsonb(target_record);
 
+    -- Identify the student
     if coalesce(student_column, '') = '' or coalesce(snapshot ->> student_column, '') = '' then
-        return case when tg_op = 'DELETE' then old else new end;
+        -- For 'grade' events on public.users, the student is the ID of the record itself
+        if tg_table_name = 'users' then
+            student_value := (snapshot ->> 'id')::uuid;
+        else
+            return case when tg_op = 'DELETE' then old else new end;
+        end if;
+    else
+        student_value := (snapshot ->> student_column)::uuid;
     end if;
 
-    student_value := (snapshot ->> student_column)::uuid;
-
+    -- Extract / Lookup context (Classroom)
     if coalesce(classroom_column, '') <> '' and coalesce(snapshot ->> classroom_column, '') <> '' then
         classroom_value := (snapshot ->> classroom_column)::uuid;
     end if;
 
+    -- Extract / Lookup context (School & Grade Level)
+    -- We prefer values from the snapshot, but fallback to the student profile (users table)
     if coalesce(school_column, '') <> '' and coalesce(snapshot ->> school_column, '') <> '' then
         school_value := (snapshot ->> school_column)::uuid;
-    elsif classroom_value is not null then
-        select c.school_id into school_value
-        from public.classrooms c
-        where c.id = classroom_value;
     end if;
 
+    -- Crucial: Capture the "Grade Level" context from the user's current state if not specified
+    select s.school_id, s.grade_id into school_value, grade_value
+    from public.users s
+    where s.id = student_value;
+
+    -- Timing
     if coalesce(occurred_column, '') <> '' and coalesce(snapshot ->> occurred_column, '') <> '' then
         occurred_value := (snapshot ->> occurred_column)::timestamptz;
     else
@@ -98,6 +119,7 @@ begin
     insert into public.student_longitudinal_events (
         student_id,
         school_id,
+        grade_id,
         classroom_id,
         entity_type,
         entity_id,
@@ -113,9 +135,15 @@ begin
     values (
         student_value,
         school_value,
+        grade_value,
         classroom_value,
         entity_kind,
-        (snapshot ->> 'id')::uuid,
+        case 
+            when snapshot ? 'id' then snapshot ->> 'id'
+            when tg_table_name = 'attendance' then 
+                (snapshot ->> 'classroom_id') || '_' || (snapshot ->> 'student_id') || '_' || (snapshot ->> 'date')
+            else md5(snapshot::text) -- Final fallback for tables without 'id'
+        end,
         lower(tg_op),
         tg_table_name,
         snapshot,
@@ -178,18 +206,23 @@ begin
         $trigger$;
     end if;
 
-    if to_regclass('public.grades') is not null then
-        execute 'drop trigger if exists trg_capture_student_longitudinal_grade on public.grades';
+    -- 3. Grade Level (The "Higher Layer")
+    -- Track when a student moves to a new Grade Level (Promotion/School Change).
+    -- This captures the longitudinal journey over 13+ years.
+    if to_regclass('public.users') is not null then
+        execute 'drop trigger if exists trg_capture_student_longitudinal_grade_level on public.users';
         execute $trigger$
-            create trigger trg_capture_student_longitudinal_grade
-            after insert or update or delete on public.grades
-            for each row execute function public.capture_student_longitudinal_event_generic(
-                'grade',
-                'student_id',
-                'classroom_id',
-                '',
+            create trigger trg_capture_student_longitudinal_grade_level
+            after insert or update of grade_id, school_id on public.users
+            for each row 
+            when (new.role = 'student')
+            execute function public.capture_student_longitudinal_event_generic(
+                'grade', -- entity_type 'grade' = Grade Level / Life Stage
+                '',      -- student_column blank (uses record ID for users table)
+                '',      -- classroom blank
+                'school_id',
                 'updated_at',
-                'created_at',
+                'updated_at',
                 ''
             )
         $trigger$;
@@ -287,10 +320,12 @@ where cs.student_id is not null
         and sle.entity_id = cs.id
   );
 
+-- 5. Backfill Grade Level Context
+-- Records the "Initial Point" for every student's current grade level journey.
 insert into public.student_longitudinal_events (
     student_id,
     school_id,
-    classroom_id,
+    grade_id,
     entity_type,
     entity_id,
     operation,
@@ -303,27 +338,29 @@ insert into public.student_longitudinal_events (
     recorded_by
 )
 select
-    g.student_id,
-    c.school_id,
-    g.classroom_id,
+    u.id,
+    u.school_id,
+    u.grade_id,
     'grade',
-    g.id,
+    u.grade_id::text,
     'insert',
-    'grades',
-    to_jsonb(g),
-    coalesce(g.updated_at, g.created_at, now()),
+    'users',
+    to_jsonb(u),
+    coalesce(u.updated_at, u.created_at, now()),
     now(),
-    coalesce(g.created_at, g.updated_at, now()),
+    coalesce(u.created_at, u.updated_at, now()),
     null,
     null
-from public.grades g
-left join public.classrooms c on c.id = g.classroom_id
-where not exists (
+from public.users u
+where u.role = 'student'
+  and u.grade_id is not null
+  and not exists (
     select 1
     from public.student_longitudinal_events sle
     where sle.entity_type = 'grade'
-      and sle.entity_id = g.id
-);
+      and sle.student_id = u.id
+      and (sle.snapshot ->> 'grade_id')::uuid = u.grade_id
+  );
 
 do $$
 begin
@@ -348,7 +385,7 @@ begin
             c.school_id,
             a.classroom_id,
             'attendance',
-            a.id,
+            a.classroom_id::text || '_' || a.student_id::text || '_' || a.date::text,
             'insert',
             'attendance',
             to_jsonb(a),
@@ -363,7 +400,7 @@ begin
             select 1
             from public.student_longitudinal_events sle
             where sle.entity_type = 'attendance'
-              and sle.entity_id = a.id
+              and sle.entity_id = a.classroom_id::text || '_' || a.student_id::text || '_' || a.date::text
         );
     end if;
 end;

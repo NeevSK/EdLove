@@ -124,15 +124,15 @@ jest.mock('@repo/ui', () => {
         Text: T, Heading: T, Badge: T, BadgeText: T,
         ButtonText: T, ToastTitle: T, LinkText: T,
         // \u2500\u2500 Interactive \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-        Button: ({ testID, children, onPress, isDisabled, ...p }: any) =
+        Button: ({ testID, children, onPress, isDisabled, ...p }: any) =>
             React.createElement('View', { testID, onPress, isDisabled }, children),
-        Pressable: ({ testID, children, onPress, ...p }: any) =
+        Pressable: ({ testID, children, onPress, ...p }: any) =>
             React.createElement('View', { testID, onPress }, children),
-        Link: ({ testID, children, onPress, ...p }: any) =
+        Link: ({ testID, children, onPress, ...p }: any) =>
             React.createElement('View', { testID, onPress }, children),
         // \u2500\u2500 Form \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Input: V,
-        InputField: ({ testID, placeholder, value, onChangeText, ...p }: any) =
+        InputField: ({ testID, placeholder, value, onChangeText, ...p }: any) =>
             React.createElement('TextInput', { testID, placeholder, value, onChangeText }),
         // \u2500\u2500 Checkbox \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         Checkbox: V, CheckboxIndicator: V, CheckboxIcon: noop,
@@ -151,7 +151,7 @@ jest.mock('@repo/ui', () => {
         showExternalLinkOptions: jest.fn().mockResolvedValue(true),
         // \u2500\u2500 ProgressIndicator (inlined for ProgressIndicator.test.tsx) \u2500\u2500\u2500\u2500\u2500\u2500\u2500
         ProgressIndicator: ({ currentStep, totalSteps, showStepCount = true }: any) => {
-            const dots = Array.from({ length: totalSteps }, (_: any, i: number) =
+            const dots = Array.from({ length: totalSteps }, (_: any, i: number) =>
                 React.createElement('View', {
                     key: i,
                     testID: `progress-dot-${i}`,

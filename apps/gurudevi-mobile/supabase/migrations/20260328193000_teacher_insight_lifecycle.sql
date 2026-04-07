@@ -3,7 +3,7 @@
 -- forcing it into the student longitudinal store or exposing it upward by default.
 
 create table if not exists public.teacher_insight_events (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     insight_type text not null check (insight_type in ('teacher_note', 'student_observation', 'student_potential')),
     insight_id uuid not null,
     owner_id uuid not null references public.users(id) on delete cascade,

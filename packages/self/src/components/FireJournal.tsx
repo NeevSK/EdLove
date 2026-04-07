@@ -89,23 +89,23 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                 { scale: scale.value },
                 { translateY: translateY.value },
                 { rotate: `${rotation.value}deg` },
-            ],
+            ] as any,
         };
     });
 
     const ember1Style = useAnimatedStyle(() => ({
         opacity: ember1Opacity.value,
-        transform: [{ translateY: ember1Y.value }],
+        transform: [{ translateY: ember1Y.value }] as any,
     }));
 
     const ember2Style = useAnimatedStyle(() => ({
         opacity: ember2Opacity.value,
-        transform: [{ translateY: ember2Y.value }],
+        transform: [{ translateY: ember2Y.value }] as any,
     }));
 
     const ember3Style = useAnimatedStyle(() => ({
         opacity: ember3Opacity.value,
-        transform: [{ translateY: ember3Y.value }],
+        transform: [{ translateY: ember3Y.value }] as any,
     }));
 
     const handleBurn = async () => {

@@ -98,7 +98,7 @@ export const useJournalEntries = () => {
                 if (error) throw error;
                 setEntries(prev => [data, ...prev]);
                 // Growth signal  fire-and-forget (benefits mobile + web callers)
-                void growthSignalsAPI.emitSignal(internalId, 'reflection_written', {}).catch(() => { });
+                growthSignalsAPI.emitSilent(internalId, 'reflection_written', {});
                 return data;
             }
         } catch (error) {

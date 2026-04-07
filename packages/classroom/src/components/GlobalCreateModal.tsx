@@ -154,10 +154,10 @@ export default function GlobalCreateModal({
             hapticSuccess();
             // Growth signals — fire-and-forget
             if (type === 'classroom' && result) {
-                void growthSignalsAPI.emitSignal(userId, 'classroom_created', {
+                growthSignalsAPI.emitSilent(userId, 'classroom_created', {
                     classroom_id: result.id,
                     school_id: selectedSchoolId,
-                }).catch(() => { });
+                });
             }
             onSuccess(type, result);
             handleClose();

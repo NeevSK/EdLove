@@ -33,7 +33,7 @@ self.addEventListener('install', (event) => {
 //  ACTIVATE 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =
+    caches.keys().then(keys =>
       Promise.all(
         keys.filter(k => k.startsWith('gurudevi-') && k !== SHELL_CACHE && k !== FONT_CACHE && k !== IMAGE_CACHE)
           .map(k => caches.delete(k))

@@ -2,7 +2,7 @@ import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import { LessonSchema } from './schemas/lesson.schema';
 import { MaterialSchema } from './schemas/material.schema';
-import { ClassroomSchema, ClassroomStudentSchema, AssignmentSchema, AssignmentSubmissionSchema, ClassroomGroupSchema, StudentAssignmentSchema, StudentSubmissionSummarySchema } from './schemas/classroom.schema';
+import { ClassroomSchema, ClassroomStudentSchema, AssignmentSchema, AssignmentSubmissionSchema, ClassroomGroupSchema, StudentAssignmentSchema, StudentSubmissionSummarySchema, TeacherStatsSchema } from './schemas/classroom.schema';
 import { GradeSchema, ClassroomGradingSettingsSchema } from './schemas/grading.schema';
 import { StudentSchema } from './schemas/student.schema';
 import { POAMetadataSchema } from './contract';
@@ -78,6 +78,18 @@ export const educationalContract = c.router({
         path: '/educational/classrooms/:id',
         responses: { 204: z.void() },
         metadata: classroomAuthority('delete'),
+    },
+    getTeacherClassrooms: {
+        method: 'GET',
+        path: '/educational/classrooms/teacher/:teacherId',
+        responses: { 200: z.array(ClassroomSchema) },
+        metadata: classroomAuthority('read'),
+    },
+    getTeacherStats: {
+        method: 'GET',
+        path: '/educational/classrooms/teacher/:teacherId/stats',
+        responses: { 200: TeacherStatsSchema },
+        metadata: classroomAuthority('read'),
     },
 
     getAll: {

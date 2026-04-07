@@ -7,8 +7,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureUpdateEvent, PinchGestureHandlerEventPayload, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
 import { Theme, useThemedColors } from '@repo/ui';
-import type { 
+import { 
     PerspectiveViewProps, 
+    GraphNode, 
 } from '@repo/graphics';
 
 /**
@@ -60,7 +61,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ]
+        ] as any
     }));
 
     // Generate SVG path for tree links (curved connectors)

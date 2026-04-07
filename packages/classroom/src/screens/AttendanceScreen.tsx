@@ -84,8 +84,7 @@ export default function AttendanceScreen() {
                 showToast('Attendance saved successfully', 'success');
                 // Growth signal  fire-and-forget
                 if (currentUser?.id) {
-                    growthSignalsAPI.emitSignal(currentUser.id, 'attendance_marked', { classroom_id: classroomId })
-                        .catch((err) => console.warn('[AttendanceScreen] growth signal failed:', err));
+                    growthSignalsAPI.emitSilent(currentUser.id, 'attendance_marked', { classroom_id: classroomId });
                 }
             },
             onError: (err: any) => {

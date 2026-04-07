@@ -161,7 +161,7 @@ export default function LibraryScreenWeb() {
         });
         try {
             await libraryAPI.bookmarkResource(resource.id, user.id);
-            growthSignalsAPI.emitSignal(user.id, 'resource_read').catch((err) => console.warn('[LibraryScreen] growth signal failed:', err));
+            growthSignalsAPI.emitSilent(user.id, 'resource_read');
             if (resource.creator_id && resource.creator_id !== user.id) {
                 impactRipplesAPI.createRipple({
                     recipientUserId: resource.creator_id,

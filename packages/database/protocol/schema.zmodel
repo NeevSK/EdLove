@@ -50,6 +50,16 @@ model User {
   journal_entries FireJournalEntry[]
   preferences UserPreferences?
 
+  // Growth & Wellbeing
+  gifts_given ThuthimalGift[] @relation("GiftsGiven")
+  gifts_received ThuthimalGift[] @relation("GiftsReceived")
+  impact_ripples ImpactRipple[] @relation("RecipientRipples")
+  actions_rippled ImpactRipple[] @relation("ActorRipples")
+  whispered_moments WhisperedMoment[]
+  growth_events GrowthEvent[]
+  growth_state UserGrowthState?
+  manifesto_endorsements ManifestoEndorsement[]
+
   // Only the user themselves or a platform admin can update profile details
   @@allow('all', auth() != null && auth().id == id)
   @@allow('all', auth() != null && auth().authority == 'admin')
@@ -338,6 +348,7 @@ model School {
 
   classrooms Classroom[]
   groups     Group[]
+  manifestos SanctuaryManifesto[]
 
   // Permissions: Only admins can manage schools; everyone authenticated can read basic info
   @@allow('read', auth() != null)
@@ -477,4 +488,144 @@ model ResourceEngagement {
   @@allow('read', auth().id == user_id || auth().authority == 'admin')
   @@allow('all', auth().id == user_id || auth().authority == 'admin')
   @@map("resource_engagements")
+}
+
+// ============================================================================
+// GROWTH & WELLBEING (BHUMI STACK)
+// ============================================================================
+
+model ThuthimalGift {
+  id               String   @id @default(uuid())
+  gift_token       String   @unique @default(uuid())
+  gifter_id        String
+  recipient_id     String?
+  gifter_name      String?
+  recipient_role   String?
+  gift_message     String?
+  claimed          Boolean  @default(false)
+  claimed_at       DateTime?
+  expires_at       DateTime?
+  created_at       DateTime @default(now())
+
+  gifter           User     @relation("GiftsGiven", fields: [gifter_id], references: [id])
+  recipient        User?    @relation("GiftsReceived", fields: [recipient_id], references: [id])
+
+  @@allow('all', auth().id == gifter_id || auth().id == recipient_id || auth().authority == 'admin')
+  @@map("thuthimal_gifts")
+}
+
+model ImpactRipple {
+  id               String   @id @default(uuid())
+  recipient_user_id String
+  actor_user_id     String
+  entity_id        String?
+  ripple_type      String
+  warm_message_en  String?
+  warm_message_si  String?
+  delivered        Boolean  @default(false)
+  delivered_at     DateTime?
+  created_at       DateTime @default(now())
+
+  recipient        User     @relation("RecipientRipples", fields: [recipient_user_id], references: [id])
+  actor            User     @relation("ActorRipples", fields: [actor_user_id], references: [id])
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().id == actor_user_id || auth().id == recipient_user_id || auth().authority == 'admin')
+  @@map("impact_ripples")
+}
+
+model WhisperedMoment {
+  id            String   @id @default(uuid())
+  user_id       String
+  moment_key    String
+  moment_name_en String
+  moment_name_si String?
+  awarded_at    DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('all', auth().authority == 'admin')
+  @@map("whispered_moments")
+}
+
+model GrowthEvent {
+  id             String   @id @default(uuid())
+  user_id        String
+  dimension      String   // presence, flowering, etc.
+  event_type     String
+  event_metadata Json?
+  created_at     DateTime @default(now())
+
+  user           User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('create', auth().id == user_id || auth().authority == 'admin')
+  @@map("growth_events")
+}
+
+model UserGrowthState {
+  id                          String   @id @default(uuid())
+  user_id                     String   @unique
+  bhumi_stage                 String   @default("seed")
+  banyan_stage                String?
+  river_stage                 String?
+  crystal_tier                String?
+  presence_signals             Int      @default(0)
+  nourishing_signals           Int      @default(0)
+  witnessing_signals           Int      @default(0)
+  weaving_signals              Int      @default(0)
+  blooming_signals             Int      @default(0)
+  peer_mentored_count          Int      @default(0)
+  circles_facilitated_count    Int      @default(0)
+  lessons_completed_count      Int      @default(0)
+  reflections_submitted_count Int      @default(0)
+  crystals_found_count         Int      @default(0)
+  fractal_moments_count        Int      @default(0)
+  last_seen_at                DateTime @default(now())
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime @updatedAt
+
+  user                        User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('all', auth().id == user_id || auth().authority == 'admin')
+  @@map("user_growth_state")
+}
+
+model SanctuaryManifesto {
+  id          String   @id @default(uuid())
+  school_id   String
+  creator_id  String
+  title       String
+  content     String
+  vibe        String?
+  status      String   @default("active")
+  target_date DateTime?
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  school      School   @relation(fields: [school_id], references: [id])
+  endorsements ManifestoEndorsement[]
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().authority == 'admin')
+  @@map("sanctuary_manifestos")
+}
+
+model ManifestoEndorsement {
+  id             String   @id @default(uuid())
+  manifesto_id   String
+  user_id        String
+  commitment_text String?
+  created_at     DateTime @default(now())
+
+  manifesto      SanctuaryManifesto @relation(fields: [manifesto_id], references: [id])
+  user           User               @relation(fields: [user_id], references: [id])
+
+  @@unique([manifesto_id, user_id])
+  @@allow('read', auth() != null)
+  @@allow('create', auth() != null)
+  @@map("manifesto_endorsements")
 }

@@ -1,6 +1,7 @@
 export { default as OCRScanner } from './OCRScanner';
 export { default as ScannerModal } from './ScannerModal';
-export { QRCodeGenerator, QRBuilder, resolveQR } from '@repo/ui';
+export { QRCodeGenerator } from '@repo/ui';
+export { QRBuilder, resolveQR } from '@repo/core';
 export type { ScannedStudent } from './types';
 export type { QRCodeGeneratorProps } from '@repo/ui';
 

@@ -37,7 +37,7 @@ describe('Founder stack boundaries', () => {
     const nativeSource = fs.readFileSync(FOUNDER_NATIVE_STACK, 'utf8');
     const webSource = fs.readFileSync(FOUNDER_WEB_STACK, 'utf8');
 
-    expect(nativeSource.includes("from '@repo/admin/founder';")).toBe(true);
+    expect(nativeSource.includes("from '@repo/admin';")).toBe(true);
     expect(nativeSource.includes('name="FounderDashboard"')).toBe(true);
     expect(nativeSource.includes('name="FounderSchoolDashboard"')).toBe(true);
     expect(nativeSource.includes('name="PrincipalDashboard"')).toBe(true);

@@ -145,12 +145,10 @@ export default function GlobalCreateModal({
 
       hapticSuccess();
       if (type === 'classroom' && result) {
-        void growthSignalsAPI
-          .emitSignal(userId, 'classroom_created', {
-            classroom_id: result.id,
-            school_id: selectedSchoolId,
-          })
-          .catch(() => {});
+        growthSignalsAPI.emitSilent(userId, 'classroom_created', {
+          classroom_id: result.id,
+          school_id: selectedSchoolId,
+        });
       }
 
       onSuccess(type, result);

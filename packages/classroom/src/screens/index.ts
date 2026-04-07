@@ -1,27 +1,27 @@
-import AcademicCycleManager from './AcademicCycleManager';
+/* Migrated to admin package */
 import AttendanceReportScreen from './AttendanceReportScreen';
 import { ClassroomDetailScreenWeb } from './ClassroomDetailScreen.web';
 import ContentLibrary from './ContentLibrary';
 import DemoPlaygroundPanelWeb from './DemoPlaygroundPanel.web';
-import GradeHeadDashboard from './GradeHeadDashboard';
+/* Migrated to admin package */
 import LessonFeed from './LessonFeed';
 import NoSchoolViewWeb from './NoSchoolView.web';
-import SectionHeadDashboard from './SectionHeadDashboard';
+/* Migrated to admin package */
 import StudentClassroomDashboard from './StudentClassroomDashboard';
 import StudentProfileScreen from './StudentProfileScreen';
 import TeacherClassroomDashboard from './TeacherClassroomDashboard';
 import TimetableScreenWeb from './TimetableScreen.web';
 
 export {
-    AcademicCycleManager,
+    /* AcademicCycleManager, (Migrated) */
     AttendanceReportScreen,
     ClassroomDetailScreenWeb,
     ContentLibrary,
     DemoPlaygroundPanelWeb,
-    GradeHeadDashboard,
+    /* GradeHeadDashboard, (Migrated) */
     LessonFeed,
     NoSchoolViewWeb,
-    SectionHeadDashboard,
+    /* SectionHeadDashboard, (Migrated) */
     StudentClassroomDashboard,
     StudentProfileScreen,
     TeacherClassroomDashboard,

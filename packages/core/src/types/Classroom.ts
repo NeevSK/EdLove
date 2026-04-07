@@ -10,7 +10,7 @@ export interface Classroom {
     description?: string | null;
     color_theme?: string | null;
     syllabus_version?: string | null;
-    is_archived?: boolean | null;
+    is_archived: boolean;
     /** Academic year label, e.g. '2026'. Set automatically on creation; used for year-end rollover and historical queries. */
     academic_year?: string | null;
     created_at: string;

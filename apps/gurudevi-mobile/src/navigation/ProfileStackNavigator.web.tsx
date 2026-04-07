@@ -1,14 +1,14 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useThemedColors } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import { ProfileStackParamList } from '@repo/core';
-import { StackFallback } from '../components/web/WebScreenShimmer';
 
 // Static imports instead of React.lazy for stability on web
-import ProfileScreenWeb from '../screens/ProfileScreen.web';
-import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
-import FullProfileScreen from '../screens/profile/FullProfileScreen';
-import { PrivacyLedgerScreen } from '@repo/self';
+// Direct imports for stability on web, avoiding barrel file bloat
+import ProfileScreenWeb from '@repo/profile/screens/ProfileScreen.web';
+import FullProfileScreen from '@repo/profile/screens/FullProfileScreen.web';
+import AppSettingsScreenWeb from '@repo/ui/screens/AppSettingsScreen.web';
+import PrivacyLedgerScreen from '@repo/self/screens/PrivacyLedgerScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 

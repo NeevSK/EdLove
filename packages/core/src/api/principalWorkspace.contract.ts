@@ -24,6 +24,14 @@ export const principalWorkspaceContract = c.router({
     },
     metadata: principalWorkspaceAuthority('read', 'SchoolInvite'),
   },
+  getInviteCodes: {
+    method: 'GET',
+    path: '/principal-workspace/:schoolId/invites',
+    responses: {
+      200: z.array(InviteCodeSchema),
+    },
+    metadata: principalWorkspaceAuthority('read', 'SchoolInvite'),
+  },
   generateInviteCode: {
     method: 'POST',
     path: '/principal-workspace/:schoolId/invites',

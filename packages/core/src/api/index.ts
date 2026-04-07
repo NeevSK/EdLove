@@ -28,7 +28,6 @@ import { teacherInsightsAPI as rawTeacherInsightsAPI } from './teacherInsights';
 import { longitudinalAPI as rawLongitudinalAPI } from './longitudinal';
 import { staffManagementAPI as _staffManagementAPI } from './staffManagement';
 import { profileAPI as rawProfileAPI } from './profile';
-import { createTemporalProxy } from './temporalProxy';
 import { createTemporalPOAProxy } from './temporalPOAProxy';
 import { createPOAProxy } from './poaProxy';
 import { assertContractCoverage, defineContractCoverage } from './contractCoverage';
@@ -67,16 +66,26 @@ import { principalWorkspaceContract } from './principalWorkspace.contract';
 import { teacherInsightsContract } from './teacherInsights.contract';
 import { longitudinalContract } from './longitudinal.contract';
 import { profileContract } from './profile.contract';
+import { growthContract } from './growth.contract';
+import { proContract } from './pro.contract';
 
 const staffManagementAPI = createTemporalPOAProxy(
     'staffManagement', 
     _staffManagementAPI,
     operationsContract
 );
-const identityAPI = createPOAProxy('identity', rawIdentityAPI, identityContract, {
-    resolveInternalId: 'resolveIdentity',
-    getMyInternalId: 'resolveIdentity',
-    getClassroomRoleSummary: 'getClassroomRoleSummary',
+const identityCoverage = assertContractCoverage(rawIdentityAPI, defineContractCoverage({
+    moduleName: 'identity',
+    contract: identityContract,
+    methodMapping: {
+        resolveInternalId: 'resolveIdentity',
+        getMyInternalId: 'resolveIdentity',
+        updateProfile: 'updateProfile',
+    },
+    internalMethods: ['linkIdentity', 'clearCache'], // Explicitly internal
+}));
+const identityAPI = createPOAProxy('identity', rawIdentityAPI, identityCoverage.contract, identityCoverage.methodMapping, {
+    strictUnmappedMethods: true,
 });
 const attendanceCoverage = assertContractCoverage(rawAttendanceAPI, defineContractCoverage({
     moduleName: 'attendance',
@@ -91,6 +100,7 @@ const attendanceCoverage = assertContractCoverage(rawAttendanceAPI, defineContra
         getSchoolAttendancePulse: 'getSchoolAttendancePulse',
         getAttendanceReport: 'getAttendanceReport',
     },
+    internalMethods: ['logAttendanceAudit'],
 }));
 const attendanceAPI = createTemporalPOAProxy('attendance', rawAttendanceAPI, attendanceCoverage.contract, attendanceCoverage.methodMapping, {
     strictUnmappedMethods: true,
@@ -209,27 +219,44 @@ const gradingCoverage = assertContractCoverage(rawGradingAPI, defineContractCove
         revisePublishedGrade: 'revisePublishedGrade',
         overrideGrade: 'overrideGrade',
     },
+    internalMethods: ['getGradeLifecycleRows'],
 }));
 const gradingAPI = createTemporalPOAProxy('grading', rawGradingAPI, gradingCoverage.contract, gradingCoverage.methodMapping, {
     strictUnmappedMethods: true,
 });
-const schoolAPI = createTemporalPOAProxy('school', rawSchoolAPI, operationsContract, {
-    create: 'createSchool',
-    searchSchools: 'searchSchools',
-    getSchool: 'getSchool',
-    getSchoolStats: 'getSchoolStats',
-    getSections: 'getSchoolSections',
-    getGrades: 'getSectionGrades',
-    getInviteCodes: 'getInviteCodes',
-    generateInviteCode: 'generateInviteCode',
-    update: 'updateSchool',
-    createSection: 'createSchoolSection',
-    createGrade: 'createSectionGrade',
+const schoolCoverage = assertContractCoverage(rawSchoolAPI, defineContractCoverage({
+    moduleName: 'school',
+    contract: operationsContract,
+    methodMapping: {
+        create: 'createSchool',
+        searchSchools: 'searchSchools',
+        getSchool: 'getSchool',
+        getSchoolStats: 'getSchoolStats',
+        getSections: 'getSchoolSections',
+        getGrades: 'getSectionGrades',
+        getInviteCodes: 'getInviteCodes',
+        generateInviteCode: 'generateInviteCode',
+        update: 'updateSchool',
+        createSection: 'createSchoolSection',
+        createGrade: 'createSectionGrade',
+    },
+}));
+const schoolAPI = createTemporalPOAProxy('school', rawSchoolAPI, schoolCoverage.contract, schoolCoverage.methodMapping, {
+    strictUnmappedMethods: true,
 });
-const inventoryAPI = createTemporalPOAProxy('inventory', rawInventoryAPI, operationsContract, {
-    getAll: 'getInventory',
-    update: 'updateInventory',
-    createRequest: 'createInventoryRequest',
+const inventoryCoverage = assertContractCoverage(rawInventoryAPI, defineContractCoverage({
+    moduleName: 'inventory',
+    contract: operationsContract,
+    methodMapping: {
+        getAll: 'getInventory',
+        update: 'updateInventory',
+        createRequest: 'createInventoryRequest',
+        getSchoolResourceNeeds: 'getSchoolResourceNeeds',
+        getSchoolRequests: 'getSchoolRequests',
+    },
+}));
+const inventoryAPI = createTemporalPOAProxy('inventory', rawInventoryAPI, inventoryCoverage.contract, inventoryCoverage.methodMapping, {
+    strictUnmappedMethods: true,
 });
 const communityCoverage = assertContractCoverage(rawCommunityAPI, defineContractCoverage({
     moduleName: 'community',
@@ -322,13 +349,28 @@ const notesWithPOA = createTemporalPOAProxy(
     classroomNotesCoverage.methodMapping,
     { strictUnmappedMethods: true }
 );
+const profileCoverage = assertContractCoverage(rawProfileAPI, defineContractCoverage({
+    moduleName: 'profile',
+    contract: profileContract,
+    methodMapping: {
+        getSchoolPulse: 'getSchoolPulse',
+    },
+}));
 const profileAPI = createPOAProxy(
     'profile',
     rawProfileAPI,
-    profileContract,
-    {},
+    profileCoverage.contract,
+    profileCoverage.methodMapping,
     { strictUnmappedMethods: true }
 );
+
+// Growth & Pro Ecosystem Hardening
+export const growthAPI = createPOAProxy('growth', growthSignalsAPI, growthContract);
+export const proAPI = createPOAProxy('pro', thuthimalAPI, proContract);
+export const missionsAPI = createPOAProxy('missions', sacredMissionsAPI, growthContract);
+export const ripplesAPI = createPOAProxy('ripples', impactRipplesAPI, growthContract);
+export const growthStateAPI = createPOAProxy('growthState', userGrowthStateAPI, growthContract);
+
 
 // Simplified named exports for direct access
 export {
@@ -358,11 +400,7 @@ export {
     communityAPI,
     guardianAPI,
     staffManagementAPI,
-    sacredMissionsAPI,
     demoAPI,
-    growthSignalsAPI,
-    userGrowthStateAPI,
-    impactRipplesAPI,
     warmMirrorAPI,
     naturePathsAPI,
     moonPhaseAPI,
@@ -461,19 +499,20 @@ export const api = {
     tracking: trackingAPI,
     onboarding: onboardingAPI,
     dailyContent: dailyContentAPI,
-    thuthimal: thuthimalAPI,
+    thuthimal: proAPI,
+    pro: proAPI,
     classroomNotes: notesWithPOA,
     principalNotes: principalNotesAPI,
     community: communityAPI,
     community_group: communityAPI,
     guardian: guardianAPI,
     staffManagement: staffManagementAPI,
-    missions: sacredMissionsAPI,
+    missions: missionsAPI,
     demo: demoAPI,
     // Growth Model v3.0  Full Nature-Inspired Growth Ecosystem
-    growth: growthSignalsAPI,
-    growthState: userGrowthStateAPI,
-    ripples: impactRipplesAPI,
+    growth: growthAPI,
+    growthState: growthStateAPI,
+    ripples: ripplesAPI,
     warmMirror: warmMirrorAPI,
     naturePaths: naturePathsAPI,
     moonPhase: moonPhaseAPI,

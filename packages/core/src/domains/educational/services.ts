@@ -1,6 +1,6 @@
 import { APIError } from '../../api/types';
 import { marksToGPA } from '../../lib/grading';
-import type { Classroom, Assignment, AssignmentSubmission, ClassroomGroup, ClassroomStudent, StudentAssignment, StudentSubmissionSummary } from '../../api/schemas/classroom.schema';
+import type { Classroom, Assignment, AssignmentSubmission, ClassroomGroup, ClassroomStudent, StudentAssignment, StudentSubmissionSummary, TeacherStats } from '../../api/schemas/classroom.schema';
 import type { Lesson } from '../../api/schemas/lesson.schema';
 import type { Material as LessonMaterial } from '../../api/schemas/material.schema';
 import type { Attendance as AttendanceRecord } from '../../api/schemas/attendance.schema';
@@ -17,6 +17,7 @@ export interface EducationalServices {
         create(classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>): Promise<Classroom>;
         update(id: string, updates: Partial<Classroom>): Promise<Classroom>;
         delete(id: string): Promise<void>;
+        getTeacherStats(teacherId: string): Promise<TeacherStats>;
     };
     lessons: {
         getAll(classroomId: string): Promise<Lesson[]>;
@@ -55,7 +56,6 @@ export interface EducationalServices {
         getAll(classroomId: string): Promise<ClassroomStudent[]>;
         enroll(classroomId: string, studentId: string): Promise<ClassroomStudent>;
         remove(classroomId: string, studentId: string): Promise<void>;
-        getTeacherStats(teacherId: string): Promise<any>;
     };
     classroomStudents: {
         getAll(classroomId: string): Promise<EnrollmentRecord[]>;
@@ -110,6 +110,7 @@ export const createEducationalServices = (
         create: (classroom) => repository.createClassroom(classroom),
         update: (id, updates) => repository.updateClassroom(id, updates),
         delete: (id) => repository.deleteClassroom(id),
+        getTeacherStats: (teacherId) => repository.getTeacherStats(teacherId),
     },
     lessons: {
         getAll: (classroomId) => repository.getLessons(classroomId),
@@ -193,7 +194,6 @@ export const createEducationalServices = (
         getAll: (classroomId) => repository.getSimpleStudents(classroomId),
         enroll: (classroomId, studentId) => repository.enrollStudent(classroomId, studentId),
         remove: (classroomId, studentId) => repository.removeStudent(classroomId, studentId),
-        getTeacherStats: (teacherId) => repository.getTeacherStats(teacherId),
     },
     lessonMaterials: {
         getAll: (classroomId) => repository.getMaterials(classroomId),

@@ -44,9 +44,9 @@ const rawSelfAPI = {
         }
 
         // Growth signal: teacher chose to check in with themselves (Presence  Tier 2 Care Signal)
-        void growthSignalsAPI.emitSignal(userId, 'mood_checkin', {
+        growthSignalsAPI.emitSilent(userId, 'mood_checkin', {
             mood_score: score,
-        }).catch(() => {});
+        });
 
         return data;
     },
@@ -93,7 +93,7 @@ const rawSelfAPI = {
         }
 
         // Growth signal: teacher processed difficult emotions (Presence  Tier 2 Care Signal)
-        void growthSignalsAPI.emitSignal(userId, 'fire_journal_entry', {}).catch(() => {});
+        growthSignalsAPI.emitSilent(userId, 'fire_journal_entry', {});
 
         return data;
     },

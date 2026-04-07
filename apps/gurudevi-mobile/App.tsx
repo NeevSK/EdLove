@@ -7,68 +7,35 @@ import { NavigationContainer } from '@react-navigation/native';
 import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider, SanctuaryToast, ToastProvider, ErrorBoundary, NetworkStatusBanner, Theme } from '@repo/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider, SanctuaryToast, ToastProvider, ErrorBoundary, NetworkStatusBanner, Theme, EnvironmentProvider, useTheme } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
-import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
+import { Home, School, Library, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { initPostHog, trackEvent, identifyUser } from '@repo/analytics';
-// import { AnalyticsProvider } from '@repo/analytics/src/components/AnalyticsProvider.tsx';
 import { Platform, StyleSheet, View } from 'react-native';
-import ReactDOM from 'react-dom';
 import * as Linking from 'expo-linking';
-
-// Initialize axe-core for web accessibility auditing in development
-// Using dynamic import to avoid bundling issues in React Native
-if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
-  import('axe-core').then((axe) => {
-    if (typeof window !== 'undefined' && window.document) {
-      axe.default.run(document, {
-        reporter: 'v2',
-        runOnly: {
-          type: 'tag',
-          values: ['wcag2a', 'wcag2aa', 'best-practice']
-        }
-      });
-    }
-  }).catch((error) => {
-    console.warn('Failed to load axe-core for accessibility testing:', error);
-  });
-}
 
 import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { EnvironmentProvider } from '@repo/ui';
 import { SyncManager, useStore, supabase, AuthorityTier, SchoolType, APIError, initSentry, setSentryUser, clearSentryUser, authAPI, identityAPI } from '@repo/core';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useTheme } from '@repo/ui';
 
-// Placeholder components for missing screens
-const QRHandlerScreen = () => <Center><Text>QR Handler Screen</Text></Center>;
-const ThuthimalClaimScreen = () => <Center><Text>Thuthimal Claim Screen</Text></Center>;
-const InvitationWelcomeScreen = () => <Center><Text>Invitation Welcome Screen</Text></Center>;
-const AIAssistantScreen = () => <Center><Text>AI Assistant Screen</Text></Center>;
-
-// Placeholder components for UI screens with void return issues
-const WelcomeScreenPlaceholder = ({ onLogin, onGuest }: any) => (
-  <Center><Text>Welcome Screen</Text></Center>
-);
-const OnboardingScreenPlaceholder = ({ onComplete, isAnonymous }: any) => (
-  <Center><Text>Onboarding Screen</Text></Center>
-);
-const AuthScreenPlaceholder = ({ onSuccess, onBack }: any) => (
-  <Center><Text>Auth Screen</Text></Center>
-);
-const AppSettingsScreenPlaceholder = () => <Center><Text>App Settings Screen</Text></Center>;
-const NotificationsScreenPlaceholder = () => <Center><Text>Notifications Screen</Text></Center>;
+// Import screens and navigation from the local authoritative index
+import { 
+  WelcomeScreen, 
+  OnboardingScreen, 
+  AuthScreen, 
+  AppSettingsScreen, 
+  NotificationsScreen,
+  AIAssistantScreen,
+  QRHandlerScreen,
+  ThuthimalClaimScreen,
+  InvitationWelcomeScreen
+} from './src/screens';
 
 // Import screens and navigation
-import { WelcomeScreen, OnboardingScreen, AuthScreen, AppSettingsScreen, NotificationsScreen } from '@repo/ui';
 import TabNavigator from './src/navigation/TabNavigator';
-// import { AIAssistantScreen } from './src/screens';
-// import QRHandlerScreen from './src/screens/QRHandlerScreen';
-// import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
-// import InvitationWelcomeScreen from './src/screens/InvitationWelcomeScreen';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { LanguageUtils } from './src/utils/LanguageUtils';
 import CommandPalette from './src/components/web/CommandPalette';
@@ -84,14 +51,31 @@ const queryClient = new QueryClient();
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
 
+/**
+ * UserProfile - Interface for raw database user rows from Supabase.
+ */
+interface UserProfile {
+  id: string;
+  role: string | null;
+  school_id: string | null;
+  onboarding_completed: boolean;
+  full_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  is_anonymous: boolean;
+  profile_completed: boolean;
+}
+
 // Module-level so AppContent can call it without prop-drilling.
 const fetchAndSetUserProfile = async (internalUserId: string, onComplete?: () => void) => {
   try {
-    const { data: userProfile, error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
       .eq('id', internalUserId)
       .maybeSingle();
+
+    const userProfile = data as UserProfile | null;
 
     if (error) {
       console.warn('⚠️ Profile: Table fetch returned error:', error.message);
@@ -323,36 +307,38 @@ function App() {
   const needsWelcome = showWelcome && isNewUser;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <EnvironmentProvider>
-        <GluestackUIProvider config={config}>
-          <SanctuaryGlobalStyles />
-          <FABProvider>
-            <View style={{ flex: 1 }}>
-              <AppContent
-                currentTab={currentTab}
-                setCurrentTab={setCurrentTab}
-                session={session}
-                needsWelcome={needsWelcome}
-                onboardingCompleted={onboardingCompleted}
-                isProfileLoading={isProfileLoading}
-                showWelcome={showWelcome}
-                setShowWelcome={setShowWelcome}
-                toast={toast}
-                hideToast={hideToast}
-              />
-            </View>
-          </FABProvider>
-        </GluestackUIProvider>
-      </EnvironmentProvider>
-    </QueryClientProvider>
+    <ErrorBoundary name="Absolute Root">
+      <QueryClientProvider client={queryClient}>
+        <EnvironmentProvider>
+          <GluestackUIProvider config={config}>
+            <SanctuaryGlobalStyles />
+            <FABProvider>
+              <View style={{ flex: 1 }}>
+                <AppContent
+                  currentTab={currentTab}
+                  setCurrentTab={setCurrentTab}
+                  session={session}
+                  needsWelcome={needsWelcome}
+                  onboardingCompleted={onboardingCompleted}
+                  isProfileLoading={isProfileLoading}
+                  showWelcome={showWelcome}
+                  setShowWelcome={setShowWelcome}
+                  toast={toast}
+                  hideToast={hideToast}
+                />
+              </View>
+            </FABProvider>
+          </GluestackUIProvider>
+        </EnvironmentProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
 function OnboardingWrapper({ session }: { session: any }) {
   const storeUser = useStore((state) => state.user);
   return (
-    <OnboardingScreenPlaceholder
+    <OnboardingScreen
       isAnonymous={
         storeUser?.is_anonymous === true ||
         session?.user?.is_anonymous === true ||
@@ -459,7 +445,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                       <RootStack.Screen name="Welcome">
                         {() => (
                           <ErrorBoundary name="Welcome Screen">
-                            <WelcomeScreenPlaceholder
+                            <WelcomeScreen
                               onLogin={() => navigationRef.isReady() && navigationRef.navigate('Auth' as never)}
                               onGuest={() => navigationRef.isReady() && navigationRef.navigate('Onboarding' as never)}
                             />
@@ -468,7 +454,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                       </RootStack.Screen>
                       <RootStack.Screen name="Auth" options={{ presentation: 'card' }}>
                         {(props: any) => (
-                          <AuthScreenPlaceholder
+                          <AuthScreen
                             onSuccess={() => {
                               identityAPI.getMyInternalId().then((id) => { if (id) fetchAndSetUserProfile(id); });
                               if (navigationRef.isReady()) navigationRef.navigate('Onboarding' as never);
@@ -505,7 +491,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                       <RootStack.Screen name="AIAssistant" component={AIAssistantScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="Auth" options={{ presentation: 'modal' }}>
                         {(props: any) => (
-                          <AuthScreenPlaceholder
+                          <AuthScreen
                             onSuccess={() => {
                               identityAPI.getMyInternalId().then((id) => { if (id) fetchAndSetUserProfile(id); });
                               props.navigation.goBack();
@@ -515,8 +501,8 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                         )}
                       </RootStack.Screen>
                       <RootStack.Screen name="QRHandler" component={QRHandlerScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="AppSettings" component={AppSettingsScreenPlaceholder} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="Notifications" component={NotificationsScreenPlaceholder} options={{ presentation: 'modal' }} />
+                      <RootStack.Screen name="AppSettings" component={AppSettingsScreen} options={{ presentation: 'modal' }} />
+                      <RootStack.Screen name="Notifications" component={NotificationsScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="ThuthimalClaim" component={ThuthimalClaimScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="InvitationWelcome" component={InvitationWelcomeScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>

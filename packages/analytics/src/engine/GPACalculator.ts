@@ -1,8 +1,8 @@
 import { 
   GradingScale, 
-  GPACalculationOptions, 
-  StudentGrade
+  GPACalculationOptions
 } from '../types/AnalyticsTypes';
+import { StudentGrade } from '@repo/core';
 import { 
   GradebookEntry 
 } from '../types/GradingTypes';
@@ -105,7 +105,10 @@ export class GPACalculator {
         marks: entry.marks ?? 0,
         grade: entry.letterGrade ?? '',
         gpa: entry.gpa,
-        graded_at: entry.gradedAt
+        created_at: entry.gradedAt,
+        updated_at: entry.gradedAt,
+        classroom_id: '', // Not in GradebookEntry, but required for POA type
+        graded_by: '' // Not in GradebookEntry, but required for POA type
       });
     }
 

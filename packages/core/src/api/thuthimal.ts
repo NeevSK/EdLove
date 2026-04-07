@@ -35,10 +35,8 @@ export const thuthimalAPI = {
    * Called by the gifter after completing payment (Alpha: manual; Beta: post-Stripe webhook).
    * Returns the generated gift_token UUID for encoding in a QR code.
    */
-  async createGift(
-    gifterId: string,
-    input: CreateGiftInput,
-  ): Promise<{ gift_token: string }> {
+  async createGift(input: CreateGiftInput & { gifter_id: string }): Promise<{ gift_token: string }> {
+    const { gifter_id: gifterId } = input;
     const { data, error } = await supabase
       .from('thuthimal_gifts')
       .insert({
@@ -60,7 +58,8 @@ export const thuthimalAPI = {
    * Claim a gift token on behalf of the recipient.
    * Uses server-side RPC with row-lock to prevent double-claim.
    */
-  async claimGift(giftToken: string, recipientId: string): Promise<ClaimResult> {
+  async claimGift(input: { gift_token: string, recipient_id: string }): Promise<ClaimResult> {
+    const { gift_token: giftToken, recipient_id: recipientId } = input;
     const { data, error } = await supabase.rpc('claim_thuthimal_gift', {
       p_token: giftToken,
       p_recipient: recipientId,
@@ -74,8 +73,12 @@ export const thuthimalAPI = {
     // a past student honoring their teacher years later.
     // This can advance the teacher to P\u016Br\u1E47a Kamala (Full Lotus).
     if (result.success) {
-      void growthSignalsAPI.emitSignal(recipientId, 'thuthimal_received', {
-        gifter_name: result.gifter_name,
+      void growthSignalsAPI.emitSignal({
+        user_id: recipientId,
+        event_type: 'thuthimal_received',
+        event_metadata: {
+          gifter_name: result.gifter_name,
+        }
       }).catch(() => { });
     }
 

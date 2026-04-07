@@ -2,6 +2,7 @@ import React, { useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useAuth } from '@repo/core';
+import { supabase } from '@repo/core';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { navigationRef } from '../navigation/navigationRef';
 
@@ -41,7 +42,7 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useQRDeepLink((payload) => {
     if (navigationRef.isReady() && session) {
-      navigationRef.navigate('QRHandler' as never, { payload } as never);
+      navigationRef.navigate('QRHandler' as any, { payload } as any);
     }
   });
 

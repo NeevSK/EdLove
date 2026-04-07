@@ -9,6 +9,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
         subject: 'Mathematics',
         description: 'Advanced algebra and geometry sanctuary',
         color_theme: '#F59E0B',
+        is_archived: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     },
@@ -19,6 +20,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
         subject: 'Science',
         description: 'Exploring the physical world',
         color_theme: '#10B981',
+        is_archived: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     },
@@ -29,6 +31,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
         subject: 'English Language',
         description: 'Global communication & literature',
         color_theme: '#3B82F6',
+        is_archived: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     },
@@ -40,6 +43,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
         description: 'A sample sanctuary to explore our features',
         color_theme: '#10B981',
         teacher_id: 'mock-t',
+        is_archived: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_sample: true
@@ -52,6 +56,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
         description: 'A sample school to explore administrative features',
         color_theme: '#8B5CF6',
         teacher_id: 'mock-principal',
+        is_archived: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_sample: true,

@@ -27,7 +27,7 @@ import {
 } from '@repo/ui';
 import { School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
-import { communityAPI } from '@repo/community';
+import { communityAPI } from '@repo/community/api/community';
 import { useTranslation } from 'react-i18next';
 import {
     School as SchoolIcon,

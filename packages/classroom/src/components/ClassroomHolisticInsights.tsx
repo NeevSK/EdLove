@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     VStack,
@@ -17,7 +17,6 @@ import {
     TrendingUp,
     Activity,
     Calendar,
-    ChevronRight
 } from 'lucide-react-native';
 import { api, StudentObservation, AttendanceRecord, StudentGrade } from '@repo/core';
 import { ActivityIndicator } from 'react-native';
@@ -36,7 +35,7 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
         observations: StudentObservation[];
     }>({ attendance: [], grades: [], observations: [] });
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
             const today = new Date().toISOString().split('T')[0] ?? '';
@@ -47,7 +46,10 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
             ]);
 
             setData({
-                attendance: attendanceSnapshot,
+                attendance: (attendanceSnapshot.records as any[]).map(r => ({
+                    ...r,
+                    id: r.id || `temp-${Math.random()}`
+                })) as AttendanceRecord[],
                 grades: gradebookSnapshot.grades,
                 observations: obsData
             });
@@ -56,13 +58,13 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [classroomId]);
 
     useEffect(() => {
         if (classroomId) {
             fetchData();
         }
-    }, [classroomId]);
+    }, [classroomId, fetchData]);
 
     const stats = useMemo(() => {
         const totalGrades = data.grades.length;

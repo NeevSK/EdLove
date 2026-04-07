@@ -1,15 +1,15 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
-    ClassroomScreen,
-    ClassroomDashboard,
     AttendanceScreen,
     GradebookScreen,
+    TeacherClassroomDashboard as ClassroomDashboard,
 } from '@repo/classroom';
 import { FounderDashboard, FounderSchoolDashboard as FounderSchoolView } from '@repo/admin';
-import { Theme, useTheme } from '@repo/ui';
+import { ClassroomScreen } from '../screens';
+import { useTheme } from '@repo/ui';
 import { ClassroomStackParamList } from '@repo/core';
-import { SchoolCreationScreen } from '../screens'; // Added
+import { SchoolCreationScreen } from '../screens';
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 

@@ -46,7 +46,8 @@ export function GiveThuthimalModal({
         if (isSending) return;
         setIsSending(true);
         try {
-            await thuthimalAPI.createGift(giverId, {
+            await thuthimalAPI.createGift({
+                gifter_id: giverId,
                 gifterName: giverName,
                 recipientTier: recipientTier as 'teacher' | 'principal',
                 recipientId: recipientId,
