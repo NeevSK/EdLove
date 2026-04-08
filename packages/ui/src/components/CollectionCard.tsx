@@ -11,18 +11,14 @@
  * Philosophy: Engaging, visual, and curated — inspired by streaming services.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
-    View,
     Pressable,
-    StyleSheet,
-    Text,
     ImageBackground,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BadgeCheck, BookOpen, Bookmark } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
+import { Box, VStack, HStack, Text } from '../gluestack';
 
 // ============================================================================
 // CONSTANTS
@@ -45,6 +41,7 @@ export interface CollectionCardProps<T = any> {
     contextData?: T;
     onPress?: (contextData: T) => void;
     onPullToDesk?: (contextData: T) => void;
+    className?: string;
 }
 
 // ============================================================================
@@ -61,135 +58,21 @@ export function CollectionCard<T = any>({
     contextData,
     onPress,
     onPullToDesk,
+    className
 }: CollectionCardProps<T>) {
-    const colors = useThemedColors();
-
-    const styles = useMemo(
-        () =>
-            StyleSheet.create({
-                pressable: {
-                    borderRadius: Theme.corners.generous,
-                    marginRight: Theme.spacing.md,
-                },
-                container: {
-                    width: CARD_WIDTH,
-                    height: CARD_HEIGHT,
-                    borderRadius: Theme.corners.generous,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    ...Theme.shadows.md,
-                },
-                image: {
-                    flex: 1,
-                },
-                fallbackCenter: {
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                },
-                overlay: {
-                    ...StyleSheet.absoluteFillObject,
-                    justifyContent: 'space-between',
-                    padding: Theme.spacing.sm,
-                },
-                topRow: {
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                },
-                subjectBadge: {
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    paddingHorizontal: Theme.spacing.sm,
-                    paddingVertical: 3,
-                    borderRadius: Theme.corners.tight,
-                },
-                subjectText: {
-                    fontSize: 10,
-                    fontWeight: '700',
-                    color: Theme.colors.white,
-                    letterSpacing: 0.4,
-                },
-                verifiedBadge: {
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 3,
-                    backgroundColor: colors.overlay,
-                    paddingHorizontal: 6,
-                    paddingVertical: 3,
-                    borderRadius: Theme.corners.tight,
-                    borderWidth: 0.5,
-                    borderColor: colors.border,
-                },
-                verifiedText: {
-                    fontSize: 10,
-                    fontWeight: '600',
-                    color: colors.success,
-                },
-                gradient: {
-                    padding: Theme.spacing.sm,
-                    paddingTop: Theme.spacing.xl,
-                },
-                title: {
-                    fontSize: Theme.typography.fontSize.sm,
-                    fontWeight: '700',
-                    color: colors.text,
-                    marginBottom: 3,
-                    lineHeight: 18,
-                },
-                creator: {
-                    fontSize: 11,
-                    color: colors.textSecondary,
-                    marginBottom: Theme.spacing.sm,
-                },
-                bottomRow: {
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                },
-                countBadge: {
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 4,
-                    backgroundColor: colors.overlay,
-                    paddingHorizontal: 7,
-                    paddingVertical: 3,
-                    borderRadius: Theme.corners.tight,
-                    borderWidth: 0.5,
-                    borderColor: colors.border,
-                },
-                countText: {
-                    fontSize: 11,
-                    color: colors.textSecondary,
-                    fontWeight: '600',
-                },
-                deskButton: {
-                    padding: 6,
-                    backgroundColor: 'rgba(230, 126, 34, 0.15)',
-                    borderRadius: Theme.corners.tight,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.sanctuarySaffron,
-                },
-            }),
-        [colors]
-    );
-
-    const gradientColors: [string, string, string] = [
-        'transparent',
-        colors.secondary + 'CC', // Dynamic secondary with 80% alpha
-        colors.primary, // Dynamic primary at the bottom
-    ];
 
     const cardContent = (
-        <View style={styles.container}>
+        <Box 
+            style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+            className={`rounded-3xl overflow-hidden bg-phase-surface shadow-md ${className || ''}`}
+        >
             {thumbnailUrl ? (
                 <ImageBackground
                     source={{ uri: thumbnailUrl }}
-                    style={styles.image}
+                    className="flex-1"
                     resizeMode="cover"
                 >
                     <CardOverlay
-                        styles={styles}
-                        gradientColors={gradientColors}
                         title={title}
                         creator={creator}
                         resourceCount={resourceCount}
@@ -199,11 +82,9 @@ export function CollectionCard<T = any>({
                     />
                 </ImageBackground>
             ) : (
-                <View style={styles.fallbackCenter}>
-                    <BookOpen color={Theme.colors.sanctuarySaffron} size={44} />
+                <VStack className="flex-1 items-center justify-center bg-phase-surface">
+                    <BookOpen className="text-phase-accent opacity-50" size={44} />
                     <CardOverlay
-                        styles={styles}
-                        gradientColors={gradientColors}
                         title={title}
                         creator={creator}
                         resourceCount={resourceCount}
@@ -212,28 +93,26 @@ export function CollectionCard<T = any>({
                         onPullToDesk={onPullToDesk ? () => onPullToDesk(contextData as T) : undefined}
                         absolute
                     />
-                </View>
+                </VStack>
             )}
-        </View>
+        </Box>
     );
 
     if (onPress) {
         return (
-            <Pressable onPress={() => onPress(contextData as T)} style={styles.pressable}>
+            <Pressable onPress={() => onPress(contextData as T)} className="rounded-3xl mr-4">
                 {cardContent}
             </Pressable>
         );
     }
-    return <View style={styles.pressable}>{cardContent}</View>;
+    return <Box className="rounded-3xl mr-4">{cardContent}</Box>;
 }
 
 // ============================================================================
-// INTERNAL: OVERLAY (reused for both image and fallback cases)
+// INTERNAL: OVERLAY
 // ============================================================================
 
 interface OverlayProps {
-    styles: any;
-    gradientColors: [string, string, string];
     title: string;
     creator: string;
     resourceCount: number;
@@ -244,8 +123,6 @@ interface OverlayProps {
 }
 
 function CardOverlay({
-    styles,
-    gradientColors,
     title,
     creator,
     resourceCount,
@@ -254,53 +131,62 @@ function CardOverlay({
     onPullToDesk,
     absolute = false,
 }: OverlayProps) {
-    const baseOverlayStyle = [styles.overlay, { justifyContent: 'space-between' as const }];
-    const overlayStyle = absolute
-        ? baseOverlayStyle
-        : [
-            baseOverlayStyle,
-            {
-                flex: 1,
-                position: 'relative' as const,
-                top: undefined,
-                right: undefined,
-                bottom: undefined,
-                left: undefined,
-            },
-        ];
-
     return (
-        <View style={overlayStyle}>
+        <VStack 
+            className={`
+                flex-1 justify-between p-3
+                ${absolute ? 'absolute inset-0' : ''}
+            `}
+        >
             {/* Top Row */}
-            <View style={styles.topRow}>
-                <View style={styles.subjectBadge}>
-                    <Text style={styles.subjectText}>{subjectTag}</Text>
-                </View>
+            <HStack className="items-center justify-between">
+                <Box className="bg-phase-accent px-2 py-1 rounded-md">
+                    <Text className="text-[10px] font-bold text-white tracking-widest uppercase">
+                        {subjectTag}
+                    </Text>
+                </Box>
                 {verified && (
-                    <View style={styles.verifiedBadge}>
-                        <BadgeCheck color={Theme.colors.sageGreen} size={11} />
-                        <Text style={styles.verifiedText}>Verified</Text>
-                    </View>
+                    <HStack className="items-center gap-1 bg-black/40 px-2 py-1 rounded-md border border-white/10">
+                        <BadgeCheck className="text-phase-success" size={12} />
+                        <Text className="text-[10px] font-semibold text-phase-success">Verified</Text>
+                    </HStack>
                 )}
-            </View>
+            </HStack>
 
             {/* Bottom Gradient with title, creator, count */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}>
-                <Text style={styles.title} numberOfLines={2}>{title}</Text>
-                <Text style={styles.creator} numberOfLines={1}>{creator}</Text>
-                <View style={styles.bottomRow}>
-                    <View style={styles.countBadge}>
-                        <BookOpen color={Theme.colors.starlightGray} size={11} />
-                        <Text style={styles.countText}>{resourceCount} Items</Text>
-                    </View>
-                    {onPullToDesk && (
-                        <Pressable onPress={onPullToDesk} style={styles.deskButton} hitSlop={8}>
-                            <Bookmark color={Theme.colors.sanctuarySaffron} size={14} />
-                        </Pressable>
-                    )}
-                </View>
+            <LinearGradient 
+                colors={['transparent', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.9)']} 
+                className="absolute left-0 right-0 bottom-0 p-3 pt-8"
+            >
+                <VStack className="gap-1">
+                    <Text className="text-sm font-bold text-white leading-5" numberOfLines={2}>
+                        {title}
+                    </Text>
+                    <Text className="text-[11px] text-white/70" numberOfLines={1}>
+                        {creator}
+                    </Text>
+                    
+                    <HStack className="items-center justify-between mt-1">
+                        <HStack className="items-center gap-1 bg-white/10 px-2 py-1 rounded-md border border-white/5">
+                            <BookOpen className="text-white/60" size={11} />
+                            <Text className="text-[11px] font-semibold text-white/80">
+                                {resourceCount} Items
+                            </Text>
+                        </HStack>
+                        
+                        {onPullToDesk && (
+                            <Pressable 
+                                onPress={onPullToDesk} 
+                                className="p-2 bg-phase-accent/20 rounded-md border border-phase-accent"
+                                hitSlop={8}
+                            >
+                                <Bookmark className="text-phase-accent" size={14} />
+                            </Pressable>
+                        )}
+                    </HStack>
+                </VStack>
             </LinearGradient>
-        </View>
+        </VStack>
     );
 }
 

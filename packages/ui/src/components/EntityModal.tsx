@@ -13,6 +13,12 @@ export interface EntityModalProps {
     title?: string;
 }
 
+/**
+ * EntityModal
+ * 
+ * A generalized modal for viewing or editing entities.
+ * Hardened v3 implementation.
+ */
 export default function EntityModal({
     isOpen,
     onClose,
@@ -44,11 +50,13 @@ export default function EntityModal({
         // Fallback to standard views/forms
         if (mode === 'create' || mode === 'edit') {
             return (
-                <VStack space="md">
-                    <Text>{mode === 'create' ? 'Creating' : 'Editing'} {definition.type}</Text>
+                <VStack className="gap-4">
+                    <Text className="text-phase-text-primary font-bold">
+                        {mode === 'create' ? 'Creating' : 'Editing'} {definition.type}
+                    </Text>
                     {/* Default FormManager-powered form or generic FormBuilder */}
-                    <Box bg="$backgroundLight100" p={20} rounded="$md">
-                        <Text color="$textLight500">Standard Form for {definition.type}</Text>
+                    <Box className="bg-phase-surface p-5 rounded-comfortable">
+                        <Text className="text-phase-text-secondary">Standard Form for {definition.type}</Text>
                     </Box>
                 </VStack>
             );
@@ -69,7 +77,7 @@ export default function EntityModal({
             onClose={onClose}
             title={displayTitle}
         >
-            <Box p={16}>
+            <Box className="p-4">
                 {renderContent()}
             </Box>
         </SanctuaryModal>

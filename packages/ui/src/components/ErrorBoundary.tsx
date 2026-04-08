@@ -1,8 +1,17 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Platform, View, Text as RNText, TouchableOpacity, StyleSheet } from 'react-native';
-import { Box, VStack, Text, Heading, Center, Button, ButtonText, ButtonIcon } from '../gluestack';
+import {
+    Box,
+    VStack,
+    Text,
+    Heading,
+    Center,
+    Button,
+    ButtonText,
+    ButtonIcon,
+    HStack,
+} from '../gluestack';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
 
 interface Props {
     children: ReactNode;
@@ -82,57 +91,44 @@ export default class ErrorBoundary extends Component<Props, State> {
             // If this fails (double-fault), we fall back to the basic React Native View/Text.
             try {
                 return (
-                    <Box sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
-                        <Center sx={{ flex: 1, padding: Theme.spacing.xl }}>
-                            <VStack space="xl" alignItems="center" maxWidth={400}>
-                                <Box sx={{
-                                    padding: Theme.spacing.xl,
-                                    backgroundColor: 'rgba(255, 99, 71, 0.1)', 
-                                    borderRadius: Theme.corners.full,
-                                }}>
+                    <Box className="flex-1 bg-phase-ink">
+                        <Center className="flex-1 p-8">
+                            <VStack className="gap-8 items-center max-w-[400px]">
+                                <Box className="p-8 bg-phase-danger/10 rounded-full">
                                     {/* These icons are the most likely to cause "Element type is invalid" on Web if not aliased */}
                                     {Platform.OS !== 'web' ? (
-                                        <AlertTriangle size={64} color={Theme.colors.emberRed} />
+                                        <AlertTriangle size={64} className="text-phase-danger" />
                                     ) : (
                                         <RNText style={{ fontSize: 64 }}>⚠️</RNText>
                                     )}
                                 </Box>
 
-                                <Heading color={Theme.colors.sacredWhite} textAlign="center" size="2xl">
+                                <Heading className="text-phase-text-primary text-center text-2xl font-bold">
                                     Something went wrong
                                 </Heading>
 
-                                <Text color={Theme.colors.starlightGray} textAlign="center">
+                                <Text className="text-phase-text-secondary text-center text-base">
                                     We&apos;ve encountered an unexpected issue. The sanctuary is momentarily disrupted.
                                 </Text>
 
                                 <Button
                                     onPress={this.handleReset}
-                                    size="lg"
-                                    action="primary"
-                                    sx={{
-                                        backgroundColor: Theme.colors.emberRed,
-                                        borderRadius: Theme.corners.comfortable,
-                                    }}
+                                    className="h-14 px-8 bg-phase-danger rounded-xl flex-row items-center gap-2"
                                 >
-                                    {Platform.OS !== 'web' && <ButtonIcon as={RefreshCw} color={Theme.colors.sacredWhite} />}
-                                    <ButtonText color={Theme.colors.sacredWhite}>
+                                    {Platform.OS !== 'web' && (
+                                        <ButtonIcon as={RefreshCw} className="text-phase-text-primary" />
+                                    )}
+                                    <ButtonText className="text-white font-bold text-lg">
                                         Try Again
                                     </ButtonText>
                                 </Button>
 
                                 {__DEV__ && this.state.error && (
-                                    <Box sx={{
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.shroud,
-                                        borderRadius: Theme.corners.comfortable,
-                                        marginTop: Theme.spacing.lg,
-                                        width: '100%'
-                                    }}>
-                                        <Text color={Theme.colors.dimGray} size="xs" mb="$1">
+                                    <Box className="p-4 bg-phase-surface/50 rounded-xl mt-8 w-full border border-phase-surface">
+                                        <Text className="text-phase-text-tertiary text-[10px] mb-1">
                                             Boundary: {this.props.name}
                                         </Text>
-                                        <Text color={Theme.colors.emberRed} size="xs" fontFamily="monospace">
+                                        <Text className="text-phase-danger text-[10px] font-mono">
                                             {this.state.error.toString()}
                                         </Text>
                                     </Box>

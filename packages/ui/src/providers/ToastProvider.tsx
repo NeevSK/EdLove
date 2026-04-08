@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { Box, Text, VStack } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 
 type ToastType = 'success' | 'error' | 'info' | 'sanctuary';
@@ -20,7 +18,6 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [toast, setToast] = useState<ToastOptions | null>(null);
-    const colors = useThemedColors();
     // Track the active timer so rapid showToast calls don't leave orphaned timers
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -45,11 +42,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const getToastStyles = (type: ToastType) => {
         switch (type) {
-            // Use semantic theme tokens (Zero Fallback Rule \u2014 no raw hex values)
-            case 'success': return { bg: colors.success, icon: '\u2728' };
-            case 'error': return { bg: colors.error, icon: '\u26A0\uFE0F' };
-            case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: '\uD83D\uDCAB' };
-            default: return { bg: colors.tertiary, icon: '\u2139\uFE0F' };
+            case 'success': return { bg: 'bg-phase-reward', icon: '✨' };
+            case 'error': return { bg: 'bg-phase-danger', icon: '⚠️' };
+            case 'sanctuary': return { bg: 'bg-phase-accent', icon: '💫' };
+            default: return { bg: 'bg-phase-surface', icon: 'ℹ️' };
         }
     };
 
@@ -68,14 +64,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         zIndex: 1000,
                     }}
                 >
-                    <Box sx={{
-                        padding: Theme.spacing.md,
-                        borderRadius: Theme.corners.comfortable,
-                        backgroundColor: getToastStyles(toast.type!).bg,
-                        ...Theme.shadows.md
-                    }}>
-                        <VStack sx={{ alignItems: 'center', gap: 4 }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}>
+                    <Box 
+                        className={`p-4 rounded-xl border border-white/10 shadow-xl ${getToastStyles(toast.type!).bg}`}
+                    >
+                        <VStack className="items-center gap-1">
+                            <Text className="text-white font-bold text-center">
                                 {getToastStyles(toast.type!).icon} {toast.message}
                             </Text>
                         </VStack>
@@ -86,8 +79,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     );
 };
 
-export const useLotusToast = () => {
+export const useSanctuaryToast = () => {
     const context = useContext(ToastContext);
-    if (!context) throw new Error('useLotusToast must be used within ToastProvider (or SanctuaryProvider)');
+    if (!context) throw new Error('useSanctuaryToast must be used within ToastProvider (or SanctuaryProvider)');
     return context;
 };

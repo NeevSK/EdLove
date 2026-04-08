@@ -1,14 +1,12 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Dimensions, Pressable, ScrollView, Modal, ActivityIndicator } from 'react-native';
-import { Box, VStack, HStack, Text, Heading } from '../gluestack';
-import { X, Bell, Info, CheckCircle, AlertCircle, Users, BookOpen, Check } from 'lucide-react-native';
+import React from 'react';
+import { Dimensions, ScrollView } from 'react-native';
+import { Box, VStack, HStack, Text, Heading, Portal, Pressable, Spinner } from '../gluestack';
+import { X, Bell, Info, CheckCircle, Users, BookOpen, Check } from 'lucide-react-native';
 import Animated, {
     SlideInLeft,
     SlideOutLeft,
     Easing
 } from 'react-native-reanimated';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { hapticLight } from '../utils/haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -65,25 +63,16 @@ export default function NotificationDrawer({
     onMarkRead,
     onMarkAllRead,
 }: NotificationDrawerProps) {
-    const colors = useThemedColors();
     const insets = useSafeAreaInsets();
 
+    if (!isVisible) return null;
+
     return (
-        <Modal
-            visible={isVisible}
-            transparent
-            animationType="none"
-            onRequestClose={onClose}
-        >
-            <Box
-                sx={{
-                    flex: 1,
-                    backgroundColor: 'rgba(0,0,0,0.4)',
-                }}
-            >
+        <Portal>
+            <Box className="flex-1 bg-black/40">
                 <Pressable 
                     accessibilityRole="button"
-                    style={StyleSheet.absoluteFill}
+                    className="absolute inset-0"
                     onPress={() => {
                         hapticLight();
                         onClose();
@@ -93,48 +82,41 @@ export default function NotificationDrawer({
                 <Animated.View
                     entering={SlideInLeft.duration(800).easing(Easing.out(Easing.exp))}
                     exiting={SlideOutLeft.duration(500)}
-                    style={[
-                        styles.drawer,
-                        {
-                            backgroundColor: colors.primary,
-                            borderColor: colors.border,
-                            paddingTop: insets.top,
-                            paddingBottom: insets.bottom,
-                        }
-                    ]}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        width: DRAWER_WIDTH,
+                        paddingTop: insets.top,
+                        paddingBottom: insets.bottom,
+                    }}
+                    className="bg-phase-canvas border-r border-phase-surface shadow-2xl"
                 >
-                    <VStack sx={{ gap: '$md' as any, flex: 1, padding: Theme.spacing.lg }}>
+                    <VStack className="flex-1 p-6 gap-4">
                         {/* Header */}
-                        <HStack justifyContent="space-between" alignItems="center" sx={{ height: 60 }}>
-                            <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
-                                <Bell size={24} color={colors.action} />
-                                <Heading color={colors.text} sx={{ fontSize: '$lg' as any }}>
+                        <HStack className="justify-between items-center h-[60px]">
+                            <HStack className="items-center gap-2">
+                                <Bell size={24} color="#F6BF8C" />
+                                <Heading size="lg" className="text-phase-text-primary">
                                     Notifications
                                 </Heading>
                                 {unreadCount > 0 && (
-                                    <Box sx={{
-                                        backgroundColor: colors.action,
-                                        borderRadius: 10,
-                                        minWidth: 20,
-                                        height: 20,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        paddingHorizontal: 4,
-                                    }}>
-                                        <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 11, fontWeight: '700' }}>
+                                    <Box className="bg-phase-accent rounded-full min-w-[20px] h-5 items-center justify-center px-1">
+                                        <Text className="text-white text-[11px] font-bold">
                                             {unreadCount > 99 ? '99+' : unreadCount}
                                         </Text>
                                     </Box>
                                 )}
                             </HStack>
-                            <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
+                            <HStack className="items-center gap-2">
                                 {unreadCount > 0 && onMarkAllRead && (
                                     <Pressable 
                                         accessibilityRole="button"
                                         onPress={() => { hapticLight(); onMarkAllRead(); }}
                                         hitSlop={10}
                                     >
-                                        <Check size={18} color={colors.action} />
+                                        <Check size={18} color="#F6BF8C" />
                                     </Pressable>
                                 )}
                                 <Pressable 
@@ -142,29 +124,28 @@ export default function NotificationDrawer({
                                     onPress={() => { hapticLight(); onClose(); }}
                                     hitSlop={10}
                                 >
-                                    <X size={28} color={colors.textSecondary} />
+                                    <X size={28} className="text-phase-text-secondary" />
                                 </Pressable>
                             </HStack>
                         </HStack>
 
                         <ScrollView
                             showsVerticalScrollIndicator={false}
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingBottom: Theme.spacing.xl }}
+                            contentContainerStyle={{ paddingBottom: 40 }}
                         >
                             {isLoading ? (
-                                <Box sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl }}>
-                                    <ActivityIndicator color={colors.action} />
+                                <Box className="items-center py-10">
+                                    <Spinner className="text-phase-accent" />
                                 </Box>
                             ) : notifications.length === 0 ? (
-                                <VStack sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl, gap: 8 }}>
-                                    <Bell size={40} color={colors.textTertiary} />
-                                    <Text color={colors.textTertiary} sx={{ textAlign: 'center', fontSize: '$sm' as any }}>
+                                <VStack className="items-center py-10 gap-2">
+                                    <Bell size={40} color="#666" style={{ opacity: 0.3 }} />
+                                    <Text className="text-center text-phase-text-secondary text-sm">
                                         You're all caught up ✨
                                     </Text>
                                 </VStack>
                             ) : (
-                                <VStack sx={{ gap: '$sm' as any, marginTop: '$4' as any }}>
+                                <VStack className="mt-4 gap-2">
                                     {notifications.map((n) => {
                                         const Icon = notificationIcon(n.type);
                                         return (
@@ -176,31 +157,25 @@ export default function NotificationDrawer({
                                                     if (!n.is_read && onMarkRead) onMarkRead(n.id);
                                                 }}
                                             >
-                                                <Box sx={{
-                                                    padding: Theme.spacing.md,
-                                                    borderRadius: Theme.corners.comfortable,
-                                                    backgroundColor: n.is_read ? colors.tertiary : `${colors.action}14`,
-                                                    borderWidth: 1,
-                                                    borderColor: n.is_read ? colors.border : `${colors.action}40`,
-                                                }}>
-                                                    <HStack sx={{ gap: '$sm' as any, alignItems: 'flex-start' }}>
-                                                        <Box sx={{
-                                                            padding: 8,
-                                                            borderRadius: 20,
-                                                            backgroundColor: colors.secondary
-                                                        }}>
-                                                            <Icon size={16} color={n.is_read ? colors.textTertiary : colors.action} />
+                                                <Box className={`p-4 rounded-xl border ${
+                                                    n.is_read 
+                                                        ? 'bg-phase-surface border-phase-surface' 
+                                                        : 'bg-phase-accent/10 border-phase-accent/30'
+                                                }`}>
+                                                    <HStack className="items-start gap-2">
+                                                        <Box className="p-2 rounded-full bg-phase-surface">
+                                                            <Icon size={16} color={n.is_read ? '#666' : '#F6BF8C'} />
                                                         </Box>
-                                                        <VStack sx={{ flex: 1, gap: 2 }}>
-                                                            <Text color={colors.text} sx={{ fontWeight: n.is_read ? '400' : '700', fontSize: '$sm' as any }}>
+                                                        <VStack className="flex-1 gap-1">
+                                                            <Text className={`text-phase-text-primary text-sm ${n.is_read ? 'font-normal' : 'font-bold'}`}>
                                                                 {n.title}
                                                             </Text>
                                                             {n.body ? (
-                                                                <Text color={colors.textSecondary} sx={{ fontSize: '$xs' as any }} numberOfLines={2}>
+                                                                <Text className="text-phase-text-secondary text-xs" numberOfLines={2}>
                                                                     {n.body}
                                                                 </Text>
                                                             ) : null}
-                                                            <Text color={colors.textTertiary} sx={{ fontSize: 10 }}>
+                                                            <Text className="text-phase-text-secondary text-[10px]">
                                                                 {relativeTime(n.created_at)}
                                                             </Text>
                                                         </VStack>
@@ -213,36 +188,12 @@ export default function NotificationDrawer({
                             )}
                         </ScrollView>
 
-                        <Text
-                            sx={{ 
-                                color: colors.textTertiary,
-                                textAlign: 'center',
-                                fontSize: '$xs' as any, 
-                                fontStyle: 'italic', 
-                                marginBottom: Theme.spacing.sm 
-                            }}
-                        >
+                        <Text className="text-phase-text-secondary text-center text-xs italic mb-4">
                             Your sanctuary stays updated.
                         </Text>
                     </VStack>
                 </Animated.View>
             </Box>
-        </Modal>
+        </Portal>
     );
 }
-
-const styles = StyleSheet.create({
-    drawer: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        width: DRAWER_WIDTH,
-        borderRightWidth: 1,
-        shadowColor: Theme.colors.shadowViolet,
-        shadowOffset: { width: 4, height: 0 },
-        shadowOpacity: 0.15,
-        shadowRadius: 15,
-        elevation: 10,
-    }
-});

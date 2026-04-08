@@ -6,10 +6,9 @@ import Animated, {
     withTiming,
     runOnJS
 } from 'react-native-reanimated';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { Box, Text, HStack } from '../gluestack';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -31,24 +30,15 @@ export default function SanctuaryToast({
     const translateY = useSharedValue(100);
     const opacity = useSharedValue(0);
 
-    const getIcon = () => {
+    const getIconData = () => {
         switch (type) {
-            case 'success': return CheckCircle;
-            case 'error': return AlertCircle;
-            case 'info': return Info;
+            case 'success': return { icon: CheckCircle, color: '#10B981' }; // phase-reward
+            case 'error': return { icon: AlertCircle, color: '#EF4444' };   // phase-danger
+            case 'info': return { icon: Info, color: '#F6BF8C' };          // phase-accent
         }
     };
 
-    const getColor = () => {
-        switch (type) {
-            case 'success': return Theme.colors.sageGreen;
-            case 'error': return Theme.colors.emberRed;
-            case 'info': return Theme.colors.sanctuarySaffron;
-        }
-    };
-
-    const Icon = getIcon();
-    const color = getColor();
+    const { icon: Icon, color: iconColor } = getIconData();
 
     useEffect(() => {
         if (visible) {
@@ -82,48 +72,27 @@ export default function SanctuaryToast({
     if (!visible) return null;
 
     return (
-        <Animated.View style={[styles.container, animatedStyle]}>
-            <Box sx={{
-                borderRadius: Theme.corners.medium,
-                backgroundColor: Theme.colors.shroud,
-                padding: Theme.spacing.md,
-                flexDirection: 'row',
+        <Animated.View 
+            style={[{
+                position: 'absolute',
+                bottom: 100,
+                left: 20,
+                right: 20,
                 alignItems: 'center',
-                gap: Theme.spacing.md,
-                borderWidth: 1,
-                borderColor: Theme.colors.glass.dark.border,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 10,
-                width: '100%',
-                maxWidth: 400
-            }}>
-                <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}>
-                    <Icon color={color} size={24} />
-                    <Text>
-                        color={Theme.colors.sacredWhite}
-                        sx={{ fontSize: '$sm' as any, flex: 1, fontWeight: '500' }}
-                    
+                zIndex: 1000,
+            }, animatedStyle]}
+        >
+            <Box className="bg-phase-surface p-4 rounded-xl border border-white/10 shadow-xl w-full max-w-[400px]">
+                <HStack className="items-center gap-3">
+                    <Icon color={iconColor} size={24} />
+                    <Text className="text-white text-sm font-medium flex-1">
                         {message}
                     </Text>
-                    <TouchableOpacity accessibilityRole="button" onPress={hide}>
-                        <X color={Theme.colors.mistGray} size={18} />
-                    </TouchableOpacity>
+                    <Pressable accessibilityRole="button" onPress={hide} className="p-1 active:opacity-60">
+                        <X className="text-phase-text-secondary" size={18} color="#666" />
+                    </Pressable>
                 </HStack>
             </Box>
         </Animated.View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        bottom: 100, // Above tabs/FAB
-        left: 20,
-        right: 20,
-        alignItems: 'center',
-        zIndex: Theme.zIndex.toast,
-    }
-});

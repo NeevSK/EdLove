@@ -5,21 +5,18 @@
  * - Organic corners (never sharp)
  * - Soft shadows when elevated
  * - Lift animation when pressable
- * - GLASSMORPHISM support (BlurView) with simplified fallback
  * 
  * Philosophy: Simple, reusable foundation for UI cards
  */
 
-import React, { FC, useMemo, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, TextStyle, ViewStyle, Platform } from 'react-native';
+import React, { FC, useState } from 'react';
+import { Pressable, Platform } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withSpring,
 } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { Theme, typography } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
+import { Box, VStack, Text } from '../gluestack';
 
 // ============================================================================
 // TYPES
@@ -34,9 +31,9 @@ interface SanctuaryCardProps {
     href?: string;
     target?: '_blank' | '_self';
     elevated?: boolean;
-    variant?: 'glass' | 'solid'; // New variant prop
     style?: any;
     accessibilityLabel?: string;
+    className?: string;
 }
 
 // ============================================================================
@@ -59,77 +56,15 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     href,
     target = '_self',
     elevated = false,
-    variant = 'glass', // Default to glass
     style,
-    accessibilityLabel
+    accessibilityLabel,
+    className
 }) => {
-    const { isDark, scene, text, blurEnabled } = useTheme();
-
     // Hover state - only meaningful on web (desktop pointer devices)
     const [hovered, setHovered] = useState(false);
 
-    // Check if we should use glass (blur enabled + glass variant)
-    const useGlass = blurEnabled && variant === 'glass';
-    // Note: blurEnabled accounts for device tier and fidelity settings.
-
-    // Hover style - memoized so the object reference is stable between renders
-    // `cursor` is a web-only CSS property; typed via ViewStyle intersection to avoid `as any`
-    const hoverStyle = useMemo(
-        () => ({ opacity: 0.93, transform: [{ scale: 1.012 }], cursor: 'pointer' } as ViewStyle & { cursor?: string }),
-        [],
-    );
-
     // Shared value for lift animation
     const scale = useSharedValue(LIFT_SCALE_NORMAL);
-
-    // ============================================================================
-    // STYLES
-    // ============================================================================
-
-    const cardStyles = useMemo(() => {
-        const layer = elevated ? scene.elevated : scene.surface;
-        const layerText = elevated ? text.onElevated : text.onSurface;
-
-        return {
-            container: {
-                borderRadius: Theme.corners.generous,
-                overflow: 'hidden' as const, // For BlurView
-                borderWidth: 1,
-                borderColor: layer.border,
-                backgroundColor: layer.bg,
-            },
-            elevated: {
-                shadowColor: Theme.colors.shadowViolet,
-                shadowOpacity: 0.24,
-                shadowRadius: 16,
-                shadowOffset: { width: 0, height: 8 },
-                elevation: 8,
-                ...(Platform.OS === 'web' && {
-                    boxShadow: `0 8px 16px ${Theme.colors.shadowViolet}3D`, // 3D is ~24% opacity
-                }),
-            },
-            contentPadding: {
-                padding: Theme.spacing.lg,
-            },
-            title: {
-                fontSize: typography.h3.fontSize,
-                fontWeight: typography.h3.fontWeight as TextStyle['fontWeight'],
-                letterSpacing: typography.h3.letterSpacing,
-                lineHeight: typography.h3.lineHeight,
-                color: layerText,
-                marginBottom: Theme.spacing.md,
-            },
-            footerContainer: {
-                marginTop: Theme.spacing.md,
-            },
-            footerBorder: {
-                height: 1,
-                backgroundColor: layer.border,
-                marginBottom: Theme.spacing.md,
-                opacity: 0.3,
-            },
-        };
-    }, [elevated, scene, text]);
 
     // ============================================================================
     // ANIMATION: LIFT EFFECT (when pressable)
@@ -142,7 +77,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     });
 
     const handlePressIn = () => {
-        if (onPress) {
+        if (onPress || href) {
             scale.value = withSpring(LIFT_SCALE_PRESSED, {
                 damping: 15,
                 stiffness: 150,
@@ -151,7 +86,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     };
 
     const handlePressOut = () => {
-        if (onPress) {
+        if (onPress || href) {
             scale.value = withSpring(LIFT_SCALE_NORMAL, {
                 damping: 15,
                 stiffness: 150,
@@ -160,75 +95,58 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     };
 
     // ============================================================================
-    // RENDER CONTENT
+    // RENDER: Container Level
     // ============================================================================
 
-    const InnerContent = () => (
-        <View style={cardStyles.contentPadding}>
-            {/* Title Section */}
-            {title && (
-                <Text nativeID="card-title" style={cardStyles.title}>{title}</Text>
-            )}
-
-            {/* Children Content */}
-            <View style={{ gap: Theme.spacing.md }}>
-                {/* @ts-ignore */}
-                {children}
-            </View>
-
-            {/* Footer Section */}
-            {footer && (
-                <View style={cardStyles.footerContainer}>
-                    <View style={cardStyles.footerBorder} />
-                    {footer}
-                </View>
-            )}
-        </View>
-    );
-
-    // ============================================================================
-    // RENDER: Container Level (Glass vs Solid)
-    // ============================================================================
-
-    const renderCard = () => (
+    const content = (
         <Animated.View
-            // @ts-ignore
-            accessibilityRole={onPress || href ? undefined : 'summary'}
-            accessibilityLabel={accessibilityLabel}
-            // @ts-ignore
-            aria-labelledby={title ? 'card-title' : undefined}
             style={[
-                cardStyles.container,
-                elevated && cardStyles.elevated,
-                onPress && animatedStyle,
+                onPress || href ? animatedStyle : undefined,
                 style
-            ]}>
-        
-            {useGlass && (
-                <BlurView
-                    intensity={36} // Retina Protocol: 36 is the magic number
-                    tint={isDark ? 'dark' : 'light'}
-                    style={StyleSheet.absoluteFill}
-                />
-            )}
-            <InnerContent />
+            ]}
+            className={`
+                bg-phase-surface border border-white/5 rounded-3xl overflow-hidden
+                ${elevated ? 'shadow-xl shadow-black/20' : ''}
+                ${hovered && Platform.OS === 'web' ? 'opacity-90 scale-[1.01]' : ''}
+                ${className || ''}
+            `}
+        >
+            <VStack className="p-6">
+                {/* Title Section */}
+                {title && (
+                    <Text className="text-xl font-bold text-phase-text-primary mb-4">
+                        {title}
+                    </Text>
+                )}
+
+                {/* Children Content */}
+                <Box className="gap-4">
+                    {children}
+                </Box>
+
+                {/* Footer Section */}
+                {footer && (
+                    <VStack className="mt-4 gap-4">
+                        <Box className="h-px bg-white/5 opacity-30" />
+                        {footer}
+                    </VStack>
+                )}
+            </VStack>
         </Animated.View>
     );
 
     if (onPress || href) {
-        const PressableAny = Pressable as any;
         return (
-            <PressableAny
+            <Pressable
                 onPress={onPress}
                 onLongPress={onLongPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 onHoverIn={Platform.OS === 'web' ? () => setHovered(true) : undefined}
                 onHoverOut={Platform.OS === 'web' ? () => setHovered(false) : undefined}
-                style={Platform.OS === 'web' && hovered ? hoverStyle : undefined}
-                // @ts-ignore
                 accessibilityRole={href ? 'link' : 'button'}
-                // @ts-ignore
+                accessibilityLabel={accessibilityLabel}
+                // @ts-ignore - RN Pressable web props
                 href={href}
                 // @ts-ignore
                 hrefAttrs={{
@@ -236,12 +154,12 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                     rel: target === '_blank' ? 'noopener noreferrer' : undefined,
                 }}
             >
-                {renderCard()}
-            </PressableAny>
+                {content}
+            </Pressable>
         );
     }
 
-    return renderCard();
+    return content;
 };
 
 export default SanctuaryCard;

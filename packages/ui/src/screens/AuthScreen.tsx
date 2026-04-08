@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -8,26 +8,27 @@ import {
     ButtonText,
     Text,
     Heading,
-    useToast,
-    Toast,
-    ToastTitle,
     Center,
     HStack,
     Pressable,
     Divider,
     Spinner,
+    InputSlot,
+    InputIcon,
+    ButtonSpinner,
 } from '../gluestack';
-import { useThemedColors } from '../hooks/useThemedColors';
+import { useTheme } from '../hooks/useTheme';
+import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
-import { Mail } from 'lucide-react-native';
+import { Mail, Eye, EyeOff, Chrome } from 'lucide-react-native';
 import { Platform, type TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
 import { BreathAnimation } from '../components/BreathAnimation';
-import { GlassCard } from '../components/GlassCard';
 import { LivingGlow } from '../components/LivingGlow';
+import { SanctuaryBackground } from '../components/SanctuaryBackground';
 import { supabase, Role, handleAPIError, GuestDataSync, identityAPI, authAPI, validators, validateForm, FlowResolver } from '@repo/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as WebBrowser from 'expo-web-browser';
@@ -74,12 +75,12 @@ interface AuthScreenProps {
 
 export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: AuthScreenProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const { accent, text, glow } = useTheme();
+    const { showToast } = useSanctuaryToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showEmailAuth, setShowEmailAuth] = useState(initialMode === 'login');
-    // Issue 3.1 fix: visitors landing on 'Auth' route from Welcome 'Login' should see Login form.
     const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -87,12 +88,11 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     const [showSyncModal, setShowSyncModal] = useState(false);
     const [newUserId, setNewUserId] = useState<string>('');
     const syncCheckDoneRef = useRef(false);
-    const toast = useToast();
     const passwordRef = useRef<TextInput>(null);
 
     // Load current user from public.users via the internal identity (new architecture pattern).
     // This gives us email + is_anonymous from our own DB, not raw Supabase auth.
-    React.useEffect(() => {
+    useEffect(() => {
         identityAPI.getMyInternalId().then(async (internalId) => {
             if (!internalId) { setCurrentUser(null); return; }
             const { data } = await supabase
@@ -100,43 +100,22 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                 .select('id, email, is_anonymous, full_name')
                 .eq('id', internalId)
                 .maybeSingle();
-            setCurrentUser(data ?? null);
+            if (data) setCurrentUser(data);
         });
     }, []);
 
-    // Safety net: after any successful auth transition (email or OAuth),
-    // if guest data exists and user is now non-anonymous, prompt sync.
-    React.useEffect(() => {
-        let cancelled = false;
-        const checkPendingGuestSync = async () => {
-            if (syncCheckDoneRef.current || showSyncModal) return;
-            const session = await authAPI.getSession().catch(() => null);
-            if (!session?.user) return;
-            const isAnon = session?.user?.is_anonymous || !session?.user?.email;
-            if (isAnon) return;
-            const internalId = await identityAPI.getMyInternalId();
-            if (!internalId) return;
-            const hasGuestData = await GuestDataSync.hasGuestData();
-            if (!cancelled && hasGuestData) {
-                setNewUserId(internalId);
-                setShowSyncModal(true);
-            }
-            syncCheckDoneRef.current = true;
-        };
-        checkPendingGuestSync();
-        return () => { cancelled = true; };
-    }, [showSyncModal]);
-
-    // ── Web: detect Supabase OAuth error params in URL hash/query ────────────
-    // e.g. ?error=server_error&error_code=identity_already_exists&...
-    // Supabase redirects back with these params when an identity is already linked.
-    React.useEffect(() => {
+    // ─── Browser callback handling ─────────────────────────────────────────────
+    // For web and mobile (via redirected app protocols), we check the URL for tokens
+    // which signifies a successful OAuth return.
+    useEffect(() => {
+        // Only run on web to avoid conflicts with deep linking handlers in Expo go
         if (Platform.OS !== 'web') return;
+
+        const hashParams = new URL(window.location.href.replace('#', '?')).searchParams;
         const getUrlParam = (name: string) => {
-            // Search both the query string and the hash fragment
-            const fromQuery = new URLSearchParams(window.location.search).get(name);
-            if (fromQuery) return fromQuery;
-            const hashSearch = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            const search = new URLSearchParams(window.location.search);
+            if (search.has(name)) return search.get(name);
+            const hashSearch = new URLSearchParams(window.location.hash.substring(1));
             return hashSearch.get(name);
         };
         const errorCode = getUrlParam('error_code');
@@ -149,11 +128,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
             setShowEmailAuth(true);
             // Decode and surface the message after a short delay so AuthScreen has mounted
             setTimeout(() => {
-                showToast(
-                    t('auth.identityAlreadyExists') ||
-                    'This account already exists. Please sign in instead.',
-                    'error'
-                );
+                showToast({
+                    message: t('auth.identityAlreadyExists') || 'This account already exists. Please sign in instead.',
+                    type: 'error'
+                });
             }, 300);
             // Clean the error params from the URL without triggering a reload
             try {
@@ -162,10 +140,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
             } catch (_) { /* ignore */ }
         } else if (errorCode) {
             setTimeout(() => {
-                showToast(
-                    decodeURIComponent(errorDesc ?? errorCode).replace(/\+/g, ' '),
-                    'error'
-                );
+                showToast({
+                    message: decodeURIComponent(errorDesc ?? errorCode).replace(/\+/g, ' '),
+                    type: 'error'
+                });
             }, 300);
             try {
                 const cleanUrl = window.location.origin + window.location.pathname;
@@ -179,9 +157,6 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     const shouldHideGeneralAuth = isRealUser;
 
     // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
-    // On web we keep the existing browser-redirect approach.
-    // On native (iOS/Android) we use makeRedirectUri so the OS routes the callback
-    // back into the app without leaving to an external browser.
     const getRedirectUrl = () => {
         if (Platform.OS === 'web') {
             return window.location.origin;
@@ -200,9 +175,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         const session = await authAPI.getSession().catch(() => null);
         const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
-        console.log('🚀 Auth: handleOAuthSignIn', { provider, isAnon, redirectUrl });
-
-        // ── Web platform: fall back to classic browser-redirect flow ───────────
+        // ── Web platform: classic browser-redirect flow ───────────
         if (Platform.OS === 'web') {
             if (isAnon && session?.user) {
                 const { error } = await supabase.auth.linkIdentity({
@@ -211,7 +184,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                 });
                 if (error) {
                     if (error.message.includes('already linked')) {
-                        showToast(t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.', 'error');
+                        showToast({
+                            message: t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.',
+                            type: 'error'
+                        });
                     } else {
                         handleAPIError(error);
                     }
@@ -230,8 +206,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
             return;
         }
 
-        // ── Native platform: use expo-auth-session for native account picker ───
-        // Step 1: Ask Supabase for the OAuth URL without opening the browser
+        // ── Native platform: use expo-auth-session ───
         const oauthOptions = isAnon && session?.user
             ? await supabase.auth.linkIdentity({
                 provider,
@@ -255,7 +230,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
 
         if (oauthError) {
             if (oauthError.message.includes('already linked')) {
-                showToast(t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.', 'error');
+                showToast({
+                    message: t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.',
+                    type: 'error'
+                });
             } else {
                 handleAPIError(oauthError);
             }
@@ -264,36 +242,24 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         }
 
         if (!oauthUrl) {
-            showToast('Could not reach Google sign-in. Please try again.', 'error');
+            showToast({
+                message: 'Could not reach Google sign-in. Please try again.',
+                type: 'error'
+            });
             setLoading(false);
             return;
         }
 
-        // Step 2: Open the OAuth URL in a WebBrowser session — this triggers
-        //         the native Google Account Picker (ASWebAuthenticationSession
-        //         on iOS, Chrome Custom Tabs on Android).
-        const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
-        console.log('🔄 Auth: WebBrowser result', result.type);
+        const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
 
-        if (result.type !== 'success') {
-            // User cancelled or browser was dismissed
-            setLoading(false);
-            return;
-        }
-
-        // Step 3: Extract tokens from the callback URL fragment and set session
-        try {
-            const callbackUrl = result.url;
-            // Tokens are in the URL hash: #access_token=...&refresh_token=...
-            const hashParams = new URLSearchParams(
-                callbackUrl.includes('#') ? callbackUrl.split('#')[1] : callbackUrl.split('?')[1]
-            );
-            const access_token = hashParams.get('access_token');
-            const refresh_token = hashParams.get('refresh_token');
-
+        if (authResponse.type === 'success' && (authResponse as any).url) {
+            const url = new URL((authResponse as any).url);
+            const params = Object.fromEntries(url.searchParams.entries());
+            const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
+            const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
             if (!access_token || !refresh_token) {
-                console.warn('⚠️ Auth: Missing tokens in callback URL. Params:', Array.from(hashParams.keys()));
-                throw new Error('Missing tokens in callback URL');
+                setLoading(false);
+                return;
             }
 
             const { error: sessErr } = await supabase.auth.setSession({
@@ -305,7 +271,6 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                 handleAPIError(sessErr);
             } else {
                 hapticSuccess();
-                // Proactively check for pending invitations
                 const userId = await identityAPI.getMyInternalId();
                 if (userId) {
                     const internalId = userId;
@@ -316,7 +281,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                             if (invite.school_id) {
                                 await supabase.from('users').update({ school_id: invite.school_id, role: (invite.role as Role) || 'teacher' }).eq('id', internalId);
                                 await AsyncStorage.removeItem('pending_invite');
-                                showToast('Welcome to your new school sanctuary!', 'success');
+                                showToast({
+                                    message: 'Welcome to your new school sanctuary!',
+                                    type: 'success'
+                                });
                             }
                         } catch (e) {
                             console.error('Failed to apply pending invite', e);
@@ -331,12 +299,8 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     if (onSuccess) onSuccess();
                 }
             }
-        } catch (err: any) {
-            console.error('❌ Auth: Session completion error', err);
-            showToast('Sign-in failed — please try again.', 'error');
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
     }
 
     async function handleAuth() {
@@ -365,7 +329,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     const internalId = await identityAPI.getMyInternalId();
 
                     hapticSuccess();
-                    showToast(t('auth.signupSuccess'), "success");
+                    showToast({ message: t('auth.signupSuccess'), type: "success" });
 
                     // Check for guest data to sync
                     const hasGuestData = await GuestDataSync.hasGuestData();
@@ -382,7 +346,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     });
                     if (error) {
                         if (error.message.includes('already registered') || error.message.includes('Email already in use') || (error as any).status === 422) {
-                            showToast(t('auth.alreadyRegistered') || "You already have a sanctuary soul! Switching to login...", "success");
+                            showToast({ message: t('auth.alreadyRegistered') || "You already have a sanctuary soul! Switching to login...", type: "success" });
                             setIsSignUp(false);
                             setLoading(false);
                             return;
@@ -390,7 +354,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         throw error;
                     }
                     hapticSuccess();
-                    showToast(t('auth.checkEmail'), "success");
+                    showToast({ message: t('auth.checkEmail'), type: "success" });
                 }
             } else {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -399,7 +363,6 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                 hapticSuccess();
                 const internalId = await identityAPI.getMyInternalId();
                 if (internalId) {
-                    // Proactively check for pending invitations
                     const pendingInvite = await AsyncStorage.getItem('pending_invite');
                     if (pendingInvite) {
                         try {
@@ -407,7 +370,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                             if (invite.school_id) {
                                 await supabase.from('users').update({ school_id: invite.school_id, role: (invite.role as Role) || 'teacher' }).eq('id', internalId);
                                 await AsyncStorage.removeItem('pending_invite');
-                                showToast('Reconnected to your school sanctuary!', 'success');
+                                showToast({ message: 'Reconnected to your school sanctuary!', type: 'success' });
                             }
                         } catch (e) {
                             console.error('Failed to apply pending invite', e);
@@ -417,232 +380,162 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                 if (onSuccess) onSuccess();
             }
         } catch (error: any) {
-            handleAPIError(error);
+            hapticError();
+            const apiError = handleAPIError(error);
+            showToast({
+                message: typeof apiError === 'string' ? apiError : (apiError as any).message || 'An authentication error occurred',
+                type: 'error'
+            });
         } finally {
             setLoading(false);
         }
     }
 
-    function showToast(message: string, action: "error" | "success") {
-        toast.show({
-            placement: "bottom",
-            render: ({ id }: { id: string }) => (
-                <Toast nativeID={id} action={action} variant="solid">
-                    <ToastTitle>{message}</ToastTitle>
-                </Toast>
-            ),
-        });
-    }
-
     return (
         <ScreenWrapper scroll>
-            <Box
-                sx={{
-                    flex: 1,
-                    backgroundColor: colors.primary,
-                    paddingHorizontal: Theme.spacing.lg,
-                    paddingVertical: Theme.spacing.xl,
-                }}
-            >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: -70,
-                        right: -40,
-                        width: 210,
-                        height: 210,
-                        borderRadius: 105,
-                        backgroundColor: `${colors.action}14`,
-                    }}
-                />
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        left: -24,
-                        bottom: 120,
-                        width: 160,
-                        height: 160,
-                        borderRadius: 80,
-                        backgroundColor: `${Theme.colors.gurudeviBlue}14`,
-                    }}
-                />
-                <VStack space="2xl" sx={{ width: '100%', maxWidth: 460, alignSelf: 'center' }}>
-                    {/* Back button row */}
+            <Box className="flex-1 px-6 py-8">
+                <SanctuaryBackground />
+                <VStack className="w-full max-w-[460px] self-center gap-6">
                     {onBack && (
-                        <Box sx={{ alignSelf: 'flex-start' }}>
-                            <Button variant="link" onPress={onBack} sx={{ pl: 0 }}>
-                                <HStack space="xs" alignItems="center">
-                                    <Text color={colors.textSecondary} size="lg">←</Text>
-                                    <ButtonText color={colors.textSecondary} size="sm">Back</ButtonText>
+                        <Box className="self-start">
+                            <Button variant="ghost" onPress={onBack} className="pl-0">
+                                <HStack className="gap-1 items-center">
+                                    <Text className="text-phase-secondary text-lg">←</Text>
+                                    <ButtonText className="text-phase-secondary text-sm">Back</ButtonText>
                                 </HStack>
                             </Button>
                         </Box>
                     )}
 
-                    <VStack space="lg" alignItems="center" sx={{ pt: Theme.spacing.md }}>
+                    <VStack className="gap-5 items-center pt-4">
                         <BreathAnimation delay={100}>
-                            <LivingGlow active size={132} glowColor={colors.glow} style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                <VStack space="sm" alignItems="center">
+                            <LivingGlow active size={132} style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <VStack className="gap-2 items-center">
                                     <Box
-                                        sx={{
-                                            px: Theme.spacing.md,
-                                            py: Theme.spacing.xs,
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: `${colors.action}12`,
-                                            borderWidth: 1,
-                                            borderColor: `${colors.action}28`,
+                                        className="px-4 py-1 rounded-full border"
+                                        style={{
+                                            backgroundColor: `${accent.action}12`,
+                                            borderColor: `${accent.action}28`,
                                         }}
                                     >
-                                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.5 }}>
+                                        <Text className="text-[10px] font-bold tracking-[0.5px]" style={{ color: accent.action }}>
                                             ENTER THE SANCTUARY
                                         </Text>
                                     </Box>
-                                    <Heading size="3xl" color={colors.text} textAlign="center" sx={{ fontFamily: '$english', fontWeight: '$bold', letterSpacing: -1.2 }}>
+                                    <Heading size="3xl" className="text-center font-bold tracking-[-1.2px]" style={{ color: text.primary }}>
                                         Gurudevi
                                     </Heading>
                                 </VStack>
                             </LivingGlow>
                         </BreathAnimation>
                         <BreathAnimation delay={200}>
-                            <Text color={colors.textSecondary} size="md" textAlign="center" sx={{ maxWidth: 320 }}>
+                            <Text className="text-phase-secondary text-center max-w-[320px]">
                                 {t('auth.tagline') || 'Enter the Sanctuary of Learning'}
                             </Text>
                         </BreathAnimation>
-                        <HStack space="sm" sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <HStack className="gap-2 flex-wrap justify-center">
                             {ENTRY_PILLARS.map((pillar) => (
                                 <Box
                                     key={pillar}
-                                    sx={{
-                                        px: Theme.spacing.sm,
-                                        py: '$1',
-                                        borderRadius: Theme.corners.full,
-                                        backgroundColor: `${colors.secondary}CC`,
-                                        borderWidth: 1,
-                                        borderColor: colors.border,
-                                    }}
+                                    className="px-2 py-1 rounded-full border bg-phase-surface border-phase-border"
                                 >
-                                    <Text size="xs" color={colors.textSecondary} bold>
+                                    <Text className="text-[10px] text-phase-secondary font-bold">
                                         {pillar}
                                     </Text>
                                 </Box>
                             ))}
                         </HStack>
                     </VStack>
-                    <Box
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            padding: Theme.spacing.lg,
-                            shadowColor: Theme.colors.shadowViolet,
-                            shadowOffset: { width: 0, height: 10 },
-                            shadowOpacity: 0.12,
-                            shadowRadius: 24,
-                            elevation: 5,
-                        }}
-                    >
-                        <VStack space="xl">
-                            <GlassCard
-                                style={{
-                                    padding: 18,
-                                    borderRadius: Theme.corners.generous,
-                                    backgroundColor: colors.overlay,
-                                }}
-                            >
-                                <VStack space="sm">
-                                    <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.8 }}>
+
+                    <Box className="p-0 overflow-hidden border-t-4 bg-phase-surface border-phase-border rounded-3xl" style={{ borderTopColor: accent.action }}>
+                        <VStack className="gap-6 p-6">
+                            <Box className="p-5 rounded-2xl bg-phase-surface/40 border border-phase-border">
+                                <VStack className="gap-2">
+                                    <Text className="text-[10px] text-phase-muted font-bold tracking-widest uppercase">
                                         SANCTUARY ENTRY
                                     </Text>
-                                    <Heading size="sm" color={colors.text}>
+                                    <Heading size="sm" className="text-phase-primary">
                                         {isSignUp ? 'Begin with a held identity' : 'Return to your learning sanctuary'}
                                     </Heading>
-                                    <Text color={colors.textSecondary} size="sm">
+                                    <Text className="text-phase-secondary text-sm">
                                         {isSignUp
                                             ? 'Choose the path that feels easiest now. You can start with Google or move more slowly with email.'
                                             : 'Reconnect with your profile, invitations, and saved learning flow without losing where you were.'}
                                     </Text>
                                 </VStack>
-                            </GlassCard>
+                            </Box>
+
                             {!shouldHideGeneralAuth && (
-                                <Box sx={{
-                                    backgroundColor: colors.overlay,
-                                    borderRadius: 50,
-                                    padding: 4,
-                                    flexDirection: 'row',
-                                    alignSelf: 'center',
-                                    borderWidth: 1,
-                                    borderColor: colors.border,
-                                }}>
-                                    <Pressable
-                                        onPress={() => { hapticLight(); setIsSignUp(true); setShowEmailAuth(false); setErrors({}); }}
-                                        sx={{
-                                            paddingHorizontal: 24,
-                                            paddingVertical: 10,
-                                            borderRadius: 50,
-                                            backgroundColor: isSignUp ? colors.action : 'transparent',
+                                <HStack
+                                    className="p-1 rounded-full items-center self-center border border-phase-border"
+                                    style={{ backgroundColor: `${accent.muted}20` }}
+                                >
+                                    <Button
+                                        variant="ghost"
+                                        className="px-6 py-2 rounded-full h-auto"
+                                        style={{
+                                            backgroundColor: isSignUp ? accent.action : 'transparent',
                                         }}
-                                        accessibilityRole="button"
-                                        accessibilityState={{ selected: isSignUp }}
+                                        onPress={() => {
+                                            hapticLight();
+                                            setIsSignUp(true);
+                                            setShowEmailAuth(false);
+                                            setErrors({});
+                                        }}
                                     >
-                                        <Text
-                                            size="sm"
-                                            fontWeight={isSignUp ? '$bold' : '$medium'}
-                                            color={isSignUp ? Theme.colors.sacredWhite : (colors.textSecondary as any)}
+                                        <ButtonText
+                                            className="text-sm font-bold"
+                                            style={{ color: isSignUp ? '#000' : text.secondary }}
                                         >
                                             {t('auth.signup') || 'Sign Up'}
-                                        </Text>
-                                    </Pressable>
-                                    <Pressable
-                                        onPress={() => { hapticLight(); setIsSignUp(false); setShowEmailAuth(false); setErrors({}); }}
-                                        sx={{
-                                            paddingHorizontal: 24,
-                                            paddingVertical: 10,
-                                            borderRadius: 50,
-                                            backgroundColor: !isSignUp ? colors.action : 'transparent',
+                                        </ButtonText>
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="px-6 py-2 rounded-full h-auto"
+                                        style={{
+                                            backgroundColor: !isSignUp ? accent.action : 'transparent',
                                         }}
-                                        accessibilityRole="button"
-                                        accessibilityState={{ selected: !isSignUp }}
+                                        onPress={() => {
+                                            hapticLight();
+                                            setIsSignUp(false);
+                                            setShowEmailAuth(false);
+                                            setErrors({});
+                                        }}
                                     >
-                                        <Text
-                                            size="sm"
-                                            fontWeight={!isSignUp ? '$bold' : '$medium'}
-                                            color={!isSignUp ? Theme.colors.sacredWhite : (colors.textSecondary as any)}
+                                        <ButtonText
+                                            className="text-sm font-bold"
+                                            style={{ color: !isSignUp ? '#000' : text.secondary }}
                                         >
                                             {t('auth.login') || 'Log In'}
-                                        </Text>
-                                    </Pressable>
-                                </Box>
+                                        </ButtonText>
+                                    </Button>
+                                </HStack>
                             )}
 
                             {!showEmailAuth && !shouldHideGeneralAuth && (
                                 <BreathAnimation delay={400}>
-                                    <VStack space="md">
-                                        <VStack space="xs">
-                                            <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}>
+                                    <VStack className="gap-5">
+                                        <VStack className="gap-1">
+                                            <Text className="text-[10px] text-phase-muted font-bold tracking-widest uppercase">
                                                 CHOOSE YOUR PATH
                                             </Text>
-                                            <Text color={colors.textSecondary}>
+                                            <Text className="text-phase-secondary">
                                                 Keep moving with Google, or enter with an email and password.
                                             </Text>
                                         </VStack>
                                         <Button
-                                            size="xl"
+                                            size="lg"
                                             onPress={() => handleOAuthSignIn('google')}
                                             isDisabled={loading}
-                                            sx={{
-                                                backgroundColor: colors.action,
-                                                borderRadius: Theme.corners.comfortable,
-                                                height: 64,
-                                                elevation: 4,
-                                                width: '100%'
-                                            }}
+                                            className="h-16 rounded-2xl w-full"
+                                            style={{ backgroundColor: accent.action }}
                                         >
-                                            <HStack space="md" alignItems="center">
-                                                <Box sx={{ p: '$2', backgroundColor: Theme.colors.sacredWhite, borderRadius: Theme.corners.full }}>
+                                            <HStack className="gap-3 items-center">
+                                                <Box className="p-2 rounded-full bg-white">
                                                     <GoogleIcon size={24} />
                                                 </Box>
-                                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">
+                                                <ButtonText className="text-lg font-bold" style={{ color: '#000' }}>
                                                     {isSignUp ? "Sign up with Google" : t('auth.signInWithGoogle')}
                                                 </ButtonText>
                                             </HStack>
@@ -650,13 +543,16 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                                         <Button
                                             size="lg"
                                             variant="outline"
-                                            onPress={() => { hapticLight(); setShowEmailAuth(true); }}
+                                            onPress={() => {
+                                                hapticLight();
+                                                setShowEmailAuth(true);
+                                            }}
                                             isDisabled={loading}
-                                            sx={{ borderColor: colors.border, borderRadius: Theme.corners.comfortable, height: 54, backgroundColor: 'transparent' }}
+                                            className="h-[54px] rounded-2xl border-phase-border bg-transparent"
                                         >
-                                            <HStack space="sm" alignItems="center">
-                                                <Mail size={18} color={colors.text} />
-                                                <ButtonText color={colors.text} fontWeight="$medium">
+                                            <HStack className="gap-2 items-center">
+                                                <Mail size={18} color={text.primary} />
+                                                <ButtonText className="text-phase-primary font-medium">
                                                     {isSignUp ? t('auth.signUpWithEmail') || 'Sign up with email' : t('auth.signInWithEmail') || 'Sign in with email'}
                                                 </ButtonText>
                                             </HStack>
@@ -667,97 +563,113 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
 
                             {showEmailAuth && (
                                 <BreathAnimation delay={400}>
-                                    <GlassCard style={{ padding: 24, borderRadius: Theme.corners.generous, backgroundColor: colors.overlay }}>
-                                        <VStack space="lg" sx={{ width: '100%' }}>
-                                            <VStack space="xs">
-                                                <Text size="xs" color={colors.textTertiary} bold sx={{ letterSpacing: 0.5 }}>
+                                    <Box className="p-6 rounded-2xl bg-phase-surface border border-phase-border">
+                                        <VStack className="gap-6 w-full">
+                                            <VStack className="gap-1">
+                                                <Text className="text-[10px] text-phase-muted font-bold tracking-widest uppercase">
                                                     EMAIL PATH
                                                 </Text>
-                                                <Heading size="md" color={colors.text}>
+                                                <Heading size="md" className="text-phase-primary">
                                                     {isSignUp ? t('auth.createAccount') : t('auth.signInEmail')}
                                                 </Heading>
                                             </VStack>
-                                            <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary, borderColor: colors.border }}>
-                                                <InputField
-                                                    placeholder={t('auth.email')}
-                                                    value={email}
-                                                    onChangeText={setEmail}
-                                                    keyboardType="email-address"
-                                                    autoComplete="email"
-                                                    textContentType="emailAddress"
-                                                    returnKeyType="next"
-                                                    onSubmitEditing={() => passwordRef.current?.focus()}
-                                                    blurOnSubmit={false}
-                                                />
-                                            </Input>
-                                            <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary, borderColor: colors.border }}>
-                                                <InputField
-                                                    ref={passwordRef}
-                                                    placeholder={t('auth.password')}
-                                                    value={password}
-                                                    onChangeText={setPassword}
-                                                    secureTextEntry
-                                                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                                                    textContentType={isSignUp ? 'newPassword' : 'password'}
-                                                    returnKeyType="go"
-                                                    onSubmitEditing={handleAuth}
-                                                />
-                                            </Input>
-                                            <Button
-                                                size="lg"
-                                                onPress={handleAuth}
-                                                isDisabled={loading}
-                                                sx={{ backgroundColor: colors.action, borderRadius: Theme.corners.comfortable, mt: '$2' }}
-                                            >
-                                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold">
-                                                    {loading ? t('auth.processing') : (isSignUp ? t('auth.signup') : t('auth.login'))}
-                                                </ButtonText>
-                                            </Button>
-                                            <Button variant="link" onPress={() => { setShowEmailAuth(false); setErrors({}); }}>
-                                                <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText>
-                                            </Button>
+
+                                            <VStack className="gap-4">
+                                                <Input
+                                                    className="rounded-xl border-phase-border bg-phase-surface"
+                                                >
+                                                    <InputField
+                                                        placeholder={t('auth.email')}
+                                                        value={email}
+                                                        onChangeText={setEmail}
+                                                        keyboardType="email-address"
+                                                        autoComplete="email"
+                                                        className="text-phase-primary"
+                                                        placeholderTextColor={text.muted}
+                                                        returnKeyType="next"
+                                                        onSubmitEditing={() => passwordRef.current?.focus()}
+                                                        blurOnSubmit={false}
+                                                    />
+                                                </Input>
+                                                <Input
+                                                    className="rounded-xl border-phase-border bg-phase-surface"
+                                                >
+                                                    <InputField
+                                                        ref={passwordRef}
+                                                        placeholder={t('auth.password')}
+                                                        value={password}
+                                                        onChangeText={setPassword}
+                                                        secureTextEntry
+                                                        autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                                                        className="text-phase-primary"
+                                                        placeholderTextColor={text.muted}
+                                                        returnKeyType="go"
+                                                        onSubmitEditing={handleAuth}
+                                                    />
+                                                </Input>
+
+                                                <Button
+                                                    size="lg"
+                                                    onPress={handleAuth}
+                                                    isDisabled={loading}
+                                                    className="h-[56px] rounded-xl mt-2"
+                                                    style={{ backgroundColor: accent.action }}
+                                                >
+                                                    {loading ? (
+                                                        <ButtonSpinner color="#000" />
+                                                    ) : (
+                                                        <ButtonText className="font-bold" style={{ color: '#000' }}>
+                                                            {isSignUp ? t('auth.signUp') : t('auth.signIn')}
+                                                        </ButtonText>
+                                                    )}
+                                                </Button>
+
+                                                <Button
+                                                    variant="ghost"
+                                                    onPress={() => {
+                                                        setShowEmailAuth(false);
+                                                        setErrors({});
+                                                    }}
+                                                    className="self-center"
+                                                >
+                                                    <ButtonText className="text-phase-secondary text-sm">
+                                                        {t('auth.useDifferentMethod') || 'Use a different method'}
+                                                    </ButtonText>
+                                                </Button>
+                                            </VStack>
                                         </VStack>
-                                    </GlassCard>
+                                    </Box>
                                 </BreathAnimation>
                             )}
 
                             {!shouldHideGeneralAuth && !showEmailAuth && !isSignUp && (
-                                <Box
-                                    sx={{
-                                        px: Theme.spacing.md,
-                                        py: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: `${Theme.colors.gurudeviBlue}12`,
-                                        borderWidth: 1,
-                                        borderColor: `${Theme.colors.gurudeviBlue}28`,
-                                    }}
-                                >
-                                    <Text color={colors.textSecondary} size="sm">
+                                <Box className="px-4 py-3 rounded-xl border" style={{ backgroundColor: `${text.secondary}12`, borderColor: `${text.secondary}28` }}>
+                                    <Text className="text-phase-secondary text-sm">
                                         You can still continue gently as a guest and create an account later when you want your sanctuary identity to persist.
                                     </Text>
                                 </Box>
                             )}
 
                             {errors._form ? (
-                                <Box
-                                    sx={{
-                                        px: Theme.spacing.md,
-                                        py: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: `${colors.error}12`,
-                                        borderWidth: 1,
-                                        borderColor: `${colors.error}24`,
-                                    }}
-                                >
-                                    <Text color={colors.error} size="sm">
-                                        {errors._form}
+                                <Box className="px-4 py-3 rounded-xl border" style={{ backgroundColor: `${accent.danger}12`, borderColor: `${accent.danger}24` }}>
+                                    <Text className="text-sm" style={{ color: accent.danger }}>
+                                        {errors._form as string}
                                     </Text>
                                 </Box>
                             ) : null}
                         </VStack>
                     </Box>
+
+                    <VStack className="gap-2 items-center mt-4">
+                        <Button variant="ghost" className="h-auto">
+                            <ButtonText className="text-phase-muted text-xs underline">
+                                {t('auth.privacyTerms') || 'Your progress is protected by our sanctuary protocols.'}
+                            </ButtonText>
+                        </Button>
+                    </VStack>
                 </VStack>
             </Box>
+
             {Scanner && (
                 <Scanner
                     visible={showScanner}
@@ -767,15 +679,15 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         setShowScanner(false);
                         const userId = await identityAPI.getMyInternalId();
                         if (!userId) {
-                            showToast('Please sign in first to use QR codes', 'error');
+                            showToast({ message: 'Please sign in first to use QR codes', type: 'error' });
                             return;
                         }
                         const result = await FlowResolver.resolveQR(JSON.parse(data), userId);
                         if (result.outcome === 'error') {
-                            showToast(result.message || 'Unrecognized QR', 'error');
+                            showToast({ message: result.message || 'Unrecognized QR', type: 'error' });
                             return;
                         }
-                        showToast(result.message, 'success');
+                        showToast({ message: result.message, type: 'success' });
                     }}
                     title="Scan Invite Code"
                 />

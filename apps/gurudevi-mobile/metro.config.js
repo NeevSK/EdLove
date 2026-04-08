@@ -1,4 +1,5 @@
 const { getSentryExpoConfig } = require("@sentry/react-native/metro");
+const { withNativeWind } = require("nativewind/metro");
 const path = require('path');
 const fs = require('fs');
 
@@ -44,104 +45,48 @@ config.resolver.blockList = [
     /packages\/.*\/node_modules\/@react-native-async-storage\/.*/,
 ];
 
-const resolvePackage = (name, parentPaths = []) => {
-    const searchPaths = [projectRoot, workspaceRoot, ...parentPaths];
-    try {
-        // 1. Try standard resolution (works if package.json is exported)
-        return path.dirname(require.resolve(`${name}/package.json`, { paths: searchPaths }));
-    } catch {
-        try {
-            // 2. Fallback: resolve entry point and discover root by walking up the tree.
-            const entryPoint = require.resolve(name, { paths: searchPaths });
-            let currentDir = path.dirname(entryPoint);
-            while (currentDir !== path.dirname(currentDir)) {
-                if (fs.existsSync(path.join(currentDir, 'package.json'))) {
-                    return currentDir;
-                }
-                currentDir = path.dirname(currentDir);
-            }
-        } catch {}
-        return null;
-    }
-};
-
 const SINGLETON_OVERRIDES = {
-    'react': resolvePackage('react') || path.resolve(projectRoot, 'node_modules/react'),
-    'react-dom': resolvePackage('react-dom') || path.resolve(projectRoot, 'node_modules/react-dom'),
-    'react-native-web': resolvePackage('react-native-web') || path.resolve(projectRoot, 'node_modules/react-native-web'),
-    '@react-navigation/native': resolvePackage('@react-navigation/native') || path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
-    '@react-navigation/core': resolvePackage('@react-navigation/core') || path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
-    '@react-native-async-storage/async-storage': resolvePackage('@react-native-async-storage/async-storage') || path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
+    'react': path.resolve(projectRoot, 'node_modules/react'),
+    'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
+    'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
+    '@react-navigation/native': path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
+    '@react-navigation/core': path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
+    '@react-native-async-storage/async-storage': path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
 };
 
-config.resolver.extraNodeModules = new Proxy(SINGLETON_OVERRIDES, {
-    get: (target, name) => {
-        // 0. Safety: if name is a symbol (like util.inspect.custom or React internals),
-        // we MUST return from the target immediately to avoid resolving it as a package.
-        if (typeof name !== 'string') return target[name];
-        
-        // 1. Explicit Check for exact matches
-        if (target[name]) return target[name];
-        
-        // 2. Handle Sub-paths of singletons (e.g. "react-dom/client" -> "node_modules/react-dom/client")
-        // This is critical for pnpm monorepos where sub-paths are not always discoverable.
-        for (const key in target) {
-            if (name.startsWith(key + '/')) {
-                const subPath = name.slice(key.length + 1);
-                const resolvedSubPath = path.resolve(target[key], subPath);
-                // console.log(`[Metro-Proxy] \ud83d\udd0d Sub-path Resolution: ${name} -> ${resolvedSubPath}`);
-                return resolvedSubPath;
+// 5. Dynamic Internal Package Discovery
+// We scan the packages/ directory at startup to map all internal names (from package.json)
+// to their physical paths. This ensures 100% coverage and native 'exports' support.
+const INTERNAL_PACKAGE_MAPPINGS = {};
+const packagesDir = path.resolve(workspaceRoot, 'packages');
+if (fs.existsSync(packagesDir)) {
+    fs.readdirSync(packagesDir).forEach(dir => {
+        const pkgJsonPath = path.join(packagesDir, dir, 'package.json');
+        if (fs.existsSync(pkgJsonPath)) {
+            try {
+                const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+                if (pkgJson.name) {
+                    INTERNAL_PACKAGE_MAPPINGS[pkgJson.name] = path.resolve(packagesDir, dir);
+                }
+            } catch (e) {
+                console.warn(`[Metro-Config] ⚠️ Failed to parse package.json in ${dir}:`, e.message);
             }
         }
-        
-        // 3. Dynamic Parent Search: libraries often expect their sub-packages to be nearby.
-        // We look for requested modules relative to these major anchor packages.
-        const parentPaths = [];
-        const anchors = ['expo', '@react-navigation/native', '@tanstack/react-query', '@gluestack-ui/themed'];
-        
-        anchors.forEach(anchor => {
-            try {
-                // We use our own resolvePackage logic for anchors too, just in case they hide package.json
-                const resolvedAnchor = resolvePackage(anchor);
-                if (resolvedAnchor) parentPaths.push(resolvedAnchor);
-            } catch {}
-        });
-        
-        const resolved = resolvePackage(name, parentPaths);
-        if (resolved) {
-             if (name.startsWith('@repo/') && !resolved.includes('packages')) {
-                 console.warn(`[Metro-Proxy] \u26a0\ufe0f Potential mis-resolution of internal package ${name} to ${resolved}`);
-             }
-            // console.log(`[Metro-Proxy] \u2705 Resolved ${name} -> ${resolved}`);
-            return resolved;
-        }
-        
-        // Fallback to local node_modules (this allows Metro to still find standard modules)
-        return path.resolve(projectRoot, 'node_modules', name);
-    }
-});
+    });
+}
 
-// 5b. Platform-aware react-native alias
-// Note: On web, we MUST allow Expo's default aliasing to react-native-web.
-// On native, we force it to the app's node_modules to ensure singleton behavior.
+// Ensure react-native is a singleton on native platforms
 const isWeb = process.argv.find(arg => arg.includes('platform=web'));
 if (!isWeb) {
     SINGLETON_OVERRIDES['react-native'] = path.resolve(projectRoot, 'node_modules/react-native');
 }
 
-// 6. Web-only shims: redirect native-only packages to no-op web implementations
-//    when Metro is bundling for the 'web' platform.
-//    This allows App.tsx and packages to import these packages unconditionally
-//    while keeping the web bundle free of native bridge calls.
-//
-//    Shim files live in src/shims/ and mirror the subset of the API used in
-//    this codebase. If you add a new usage of a shimmed package, update the
-//    matching shim file in src/shims/.
-// 6. Platform-aware Shims
-//
-// Web-only shims redirect native-only packages to no-op web implementations.
-// Universal shims (The "Firewall") redirect Node.js built-ins or Node-only packages 
-// to safe implementations on ALL platforms (web and native).
+config.resolver.extraNodeModules = {
+    ...SINGLETON_OVERRIDES,
+    ...INTERNAL_PACKAGE_MAPPINGS,
+};
+
+// 6. Platform Firewall & Deterministic Resolver
 const WEB_SHIMS = {
     '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
     'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
@@ -175,7 +120,6 @@ const WEB_SHIMS = {
     'react-native-wgpu': path.resolve(projectRoot, 'src/shims/wgpu-web.js'),
     'expo-camera': path.resolve(projectRoot, 'src/shims/expo-camera-web.js'),
     '@maplibre/maplibre-react-native': path.resolve(projectRoot, 'src/shims/maplibre-web.js'),
-    // Internal Monorepo Shims
     '@intuitui-labs/lk-edu-geo': path.resolve(projectRoot, 'src/shims/lk-edu-geo-web.js'),
     'srilankan-postalcode-backend': path.resolve(projectRoot, 'src/shims/postalcode-backend-web.js'),
 };
@@ -183,7 +127,6 @@ const WEB_SHIMS = {
 const UNIVERSAL_SHIMS = {
     '@repo/database': path.resolve(projectRoot, 'src/shims/database-shim.js'),
     '@nishansanjuka/srilanka_geographics': path.resolve(projectRoot, 'src/shims/srilanka-geographics-web.js'),
-    // Node.js Module Shims (Firewall against Node-only packages leaking into Native bundle)
     'events': path.resolve(projectRoot, 'src/shims/events-web.js'),
     'net': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
     'tls': path.resolve(projectRoot, 'src/shims/node-net-shim.js'),
@@ -202,39 +145,37 @@ const UNIVERSAL_SHIMS = {
     'vm': path.resolve(projectRoot, 'src/shims/stream-web.js'),
 };
 
-// 7. Platform Firewall (Universal Resolver)
 const defaultResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-    // A. Metadata Protection: Never redirect internal package metadata (package.json) 
-    // to JavaScript shims. This prevents "JSON Parse error: Unexpected end of input".
+    // A. Asset & Metadata Bypass
+    // This allows .json and .wasm to use Metro's native loaders directly.
     if (moduleName.endsWith('.json') || moduleName.endsWith('.wasm')) {
-        if (defaultResolveRequest) return defaultResolveRequest(context, moduleName, platform);
-        return context.resolveRequest(context, moduleName, platform);
+        return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
     }
 
-    // B. Universal Shims (Apply to all platforms including native)
+    // B. (Removed) Manual Internal Resolver
+    // Logic moved to dynamic extraNodeModules mapping for native 'exports' support.
+
+    // C. Universal Shims (The Firewall)
     for (const shimKey in UNIVERSAL_SHIMS) {
         if (moduleName === shimKey || moduleName.startsWith(shimKey + '/')) {
-            console.log(`[Metro-Firewall] \uD83D\uDEE1\uFE0F UNIVERSAL Intercept: ${moduleName} -> ${shimKey}`);
+            console.log(`[Metro-Firewall] 🛡️ UNIVERSAL Intercept: ${moduleName} -> ${shimKey}`);
             return { filePath: UNIVERSAL_SHIMS[shimKey], type: 'sourceFile' };
         }
     }
 
-    // C. Web-Only Shims
+    // D. Web-Only Shims
     if (platform === 'web') {
         for (const shimKey in WEB_SHIMS) {
             if (moduleName === shimKey || moduleName.startsWith(shimKey + '/')) {
-                console.log(`[Metro-Firewall] \uD83D\uDEE1\uFE0F WEB Intercept: ${moduleName} -> ${shimKey}`);
+                console.log(`[Metro-Firewall] 🛡️ WEB Intercept: ${moduleName} -> ${shimKey}`);
                 return { filePath: WEB_SHIMS[shimKey], type: 'sourceFile' };
             }
         }
     }
 
-    // Delegate to original/default resolver
-    if (defaultResolveRequest) {
-        return defaultResolveRequest(context, moduleName, platform);
-    }
-    return context.resolveRequest(context, moduleName, platform);
+    // Delegate to original/default resolver for everything else
+    return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
 };
 
 
@@ -251,8 +192,22 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 // pick e.g. `i18next/dist/cjs/i18next.js` instead of the ESM entry, which is
 // a plain CJS file that Metro can wrap without hitting the getter conflict.
 config.resolver.unstable_enablePackageExports = true;
+
+// 8. Condition Names & Priority
+// We prefer CJS ('require') over ESM ('import') to avoid getter conflicts
+// in modern packages like i18next and tanstack/react-query.
 config.resolver.unstable_conditionNames = isWeb 
     ? ['browser', 'require', 'default'] 
     : ['react-native', 'require', 'default'];
 
-module.exports = config;
+// 9. Source Extensions
+config.resolver.sourceExts = [
+    ...config.resolver.sourceExts,
+    'mjs',
+    'cjs'
+];
+
+// 10. Main Field Priority
+config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
+
+module.exports = withNativeWind(config, { input: "../../packages/ui/src/global.css" });

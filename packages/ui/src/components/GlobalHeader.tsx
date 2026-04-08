@@ -21,8 +21,6 @@ import {
     HStack,
     Text
 } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
 import { hapticLight } from '../utils/haptics';
 import { TemporalGlass } from '../components-native/TemporalGlass';
 import { UserAvatar } from './UserAvatar';
@@ -49,6 +47,10 @@ export interface GlobalHeaderProps {
     avatarUrl?: string;
 }
 
+/**
+ * GlobalHeader - Core navigation and brand identity component.
+ * Hardened v3 implementation.
+ */
 export default function GlobalHeader({
     title,
     subtitle,
@@ -67,7 +69,6 @@ export default function GlobalHeader({
 
     const user = useStore((state: any) => state.user);
     const navigation = useNavigation<any>();
-    const { glass, text, accent, isDark, blurEnabled, phase, scene } = useTheme();
     const insets = useSafeAreaInsets();
 
     const [showNotifications, setShowNotifications] = useState(false);
@@ -120,65 +121,39 @@ export default function GlobalHeader({
     const showFullNameAsPrimary = can('manage', 'StudentDashboard');
 
     return (
-        <Box sx={{
-            width: '100%',
-            height: headerHeight,
-            position: 'relative',
-        }}>
-            {/* GLASS BACKDROP */}
-            <Box sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                overflow: 'hidden',
-            }}>
-                <BlurView
-                    intensity={blurEnabled ? 36 : 0}
-                    tint={isDark ? 'dark' : 'light'}
-                    style={{ flex: 1, backgroundColor: scene.chrome.bg }}
-                />
-                <TemporalGlass
-                    width={Dimensions.get('window').width}
-                    height={headerHeight}
-                    phase={phase}
-                    cornerRadius={0}
-                    style={{ position: 'absolute', top: 0, left: 0 }}
-                >
-                    <></>
-                </TemporalGlass>
-            </Box>
+        <Box className="w-full relative" style={{ height: headerHeight }}>
+            {/* SOLID BACKDROP (REPLACED GLASS) */}
+            <Box 
+                className="absolute inset-0 bg-phase-canvas border-b border-white/5" 
+                style={{ opacity: 0.95 }}
+            />
 
-            <VStack sx={{
-                flex: 1,
-                gap: '$md',
-                paddingHorizontal: '$4',
-                paddingTop: insets.top + 14,
-                paddingBottom: '$4',
-            } as any}>
-                <HStack sx={{ gap: '$sm', alignItems: 'center', justifyContent: 'space-between' } as any}>
+            <VStack 
+                className="flex-1 px-4" 
+                style={{ 
+                    gap: 12, 
+                    paddingTop: insets.top + 14, 
+                    paddingBottom: 16 
+                }}
+            >
+                <HStack className="items-center justify-between gap-2">
                     {/* LEFT: Greeting or Title */}
-                    <HStack sx={{ gap: '$sm', alignItems: 'center' } as any}>
+                    <HStack className="items-center gap-2">
                         {showBack ? (
                             <Pressable accessibilityRole="button" onPress={onBack || (() => navigation.goBack())}>
-                                <Box sx={{
-                                    backgroundColor: glass.interact.bg,
-                                    padding: 8,
-                                    borderRadius: 12,
-                                }}>
-                                    <ChevronLeft size={24} color={text.onChrome} />
+                                <Box className="p-2 rounded-xl bg-phase-surface">
+                                    <ChevronLeft size={24} className="text-phase-text-primary" />
                                 </Box>
                             </Pressable>
                         ) : showMenu && (
                             <Pressable accessibilityRole="button" onPress={() => navigation.openDrawer && navigation.openDrawer()}>
-                                <Menu color={text.onChrome} size={24} />
+                                <Menu className="text-phase-text-primary" size={24} />
                             </Pressable>
                         )}
 
                         {isSelfView && (
                             <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Profile')}>
-                                <Box sx={{ marginRight: '$4' }}>
+                                <Box className="mr-2">
                                     <UserAvatar
                                         avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
                                         fullName={userFullName}
@@ -190,43 +165,27 @@ export default function GlobalHeader({
                             </Pressable>
                         )}
 
-                        <VStack>
+                        <VStack className="gap-0.5">
                             {(subtitle || (!title && greetingText)) && (
-                                <HStack sx={{ gap: 4, alignItems: 'center' } as any}>
-                                    <Text
-                                        sx={{
-                                            color: text.secondary,
-                                            fontSize: '$xs',
-                                            letterSpacing: 0.5,
-                                            fontWeight: '$bold',
-                                            paddingBottom: 2,
-                                            fontFamily: Theme.typography.fontFamily.english
-                                        } as any}
-                                    >
+                                <HStack className="items-center gap-1">
+                                    <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
                                         {title ? subtitle : greetingText}
                                     </Text>
                                     {!title && (
-                                        <Text sx={{ fontSize: 14, marginTop: -2 } as any}>
+                                        <Text className="text-sm -mt-0.5">
                                             {GreetingEmoji}
                                         </Text>
                                     )}
                                 </HStack>
                             )}
-                            <Text
-                                sx={{
-                                    color: text.onChrome,
-                                    fontSize: '$lg',
-                                    fontFamily: Theme.typography.fontFamily.english,
-                                    fontWeight: '$bold'
-                                } as any}
-                            >
+                            <Text className="text-lg font-bold text-phase-text-primary">
                                 {title ? title : (isSelfView ? (showFullNameAsPrimary ? userFullName : RoleLabel) : displayName)}
                             </Text>
                         </VStack>
                     </HStack>
 
                     {/* RIGHT: Actions */}
-                    <HStack sx={{ gap: '$md', alignItems: 'center' } as any}>
+                    <HStack className="items-center gap-4">
                         {showSearch && (
                             <TouchableOpacity
                                 accessibilityRole="button"
@@ -235,15 +194,13 @@ export default function GlobalHeader({
                                     setIsSearchActive(!isSearchActive);
                                 }}
                             >
-                                <Box sx={{
-                                    padding: 8,
-                                    borderRadius: 20,
-                                    backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'
-                                }}>
+                                <Box 
+                                    className={`p-2 rounded-full ${isSearchActive ? 'bg-phase-accent/20' : 'bg-transparent'}`}
+                                >
                                     {isSearchActive ? (
-                                        <X size={22} color={text.onChrome} />
+                                        <X size={22} className={isSearchActive ? 'text-phase-accent' : 'text-phase-text-primary'} />
                                     ) : (
-                                        <Search size={22} color={text.onChrome} />
+                                        <Search size={22} className="text-phase-text-primary" />
                                     )}
                                 </Box>
                             </TouchableOpacity>
@@ -257,21 +214,13 @@ export default function GlobalHeader({
                                     setShowNotifications(true);
                                 }}
                             >
-                                <Box sx={{ position: 'relative' }}>
-                                    <Bell size={24} color={text.onChrome} />
+                                <Box className="relative">
+                                    <Bell size={24} className="text-phase-text-primary" />
                                     {/* Notification Dot */}
                                     {unreadCount > 0 && (
-                                        <Box sx={{
-                                            position: 'absolute',
-                                            top: 0,
-                                            right: 2,
-                                            width: 8,
-                                            height: 8,
-                                            borderRadius: 4,
-                                            backgroundColor: accent.action,
-                                            borderWidth: 1.5,
-                                            borderColor: scene.chrome.bg
-                                        }} />
+                                        <Box 
+                                            className="absolute top-0 right-0.5 w-2.5 h-2.5 rounded-full border-2 bg-phase-accent border-phase-canvas" 
+                                        />
                                     )}
                                 </Box>
                             </TouchableOpacity>
@@ -281,7 +230,7 @@ export default function GlobalHeader({
 
                 {/* EXPANDABLE SEARCH BAR */}
                 {isSearchActive && (
-                    <Box sx={{ marginTop: Theme.spacing.sm }}>
+                    <Box className="mt-2">
                         <SanctuaryInput
                             value={searchQuery}
                             onChangeText={setSearchQuery}

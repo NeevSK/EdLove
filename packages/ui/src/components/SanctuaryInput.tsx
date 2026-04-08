@@ -3,18 +3,15 @@ import {
     FormControl,
     FormControlLabel,
     FormControlLabelText,
-    Input,
-    InputField,
     FormControlError,
     FormControlErrorText,
     FormControlErrorIcon,
-    Box,
+    Input,
+    InputField,
     InputSlot,
-    InputIcon
+    InputIcon,
 } from '../gluestack';
 import { AlertCircle } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
 
 interface SanctuaryInputProps {
     label?: string;
@@ -37,6 +34,12 @@ interface SanctuaryInputProps {
     accessibilityHint?: string;
 }
 
+/**
+ * SanctuaryInput
+ * 
+ * A hardened, phase-aware input component.
+ * Uses NativeWind for styling and hardened gluestack primitives.
+ */
 export default function SanctuaryInput({
     label,
     placeholder,
@@ -48,106 +51,59 @@ export default function SanctuaryInput({
     leftIcon,
     rightIcon,
     onRightIconPress,
-    helperText,
     isDisabled = false,
     multiline = false,
     numberOfLines = 1,
     autoFocus = false,
     keyboardType = 'default',
-    accessibilityLabel,
-    accessibilityHint
 }: SanctuaryInputProps) {
     const hasError = isInvalid || !!error;
-    const { accent, scene, text } = useTheme();
 
     return (
-        <FormControl isInvalid={hasError} isDisabled={isDisabled}>
+        <FormControl isInvalid={hasError} isDisabled={isDisabled} className="w-full">
             {label && (
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText
-                        sx={{ 
-                            color: text.secondary,
-                            fontSize: '$sm' as any, 
-                            fontWeight: '$medium' 
-                        }}
-                    >
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-phase-text-primary font-medium tracking-wide">
                         {label}
                     </FormControlLabelText>
                 </FormControlLabel>
             )}
 
             <Input
-                variant="outline"
                 isDisabled={isDisabled}
                 isInvalid={hasError}
-                accessible={true}
-                accessibilityLabel={accessibilityLabel || label}
-                accessibilityHint={accessibilityHint}
-                accessibilityRole="text"
-                accessibilityState={{
-                    disabled: isDisabled,
-                    invalid: hasError
-                }}
-                size="md"
-                sx={{
-                    borderColor: hasError ? Theme.colors.error : scene.interactive.border,
-                    backgroundColor: scene.interactive.bg,
-                    borderRadius: Theme.corners.comfortable,
-                    minHeight: multiline ? (24 * numberOfLines + 24) : 48,
-                    paddingHorizontal: Theme.spacing.md,
-                    borderWidth: 1,
-                    ':focus': {
-                        borderColor: accent.action,
-                        borderWidth: 2,
-                        backgroundColor: scene.interactive.bg
-                    },
-                    ':disabled': {
-                        opacity: 0.5,
-                        backgroundColor: scene.surface.bg
-                    }
-                }}
+                className="bg-phase-surface border-phase-surface focus:border-phase-accent h-12 rounded-xl"
             >
                 {leftIcon && (
-                    <InputSlot sx={{ paddingLeft: '$0' as any, paddingRight: '$3' as any }}>
-                        <InputIcon as={leftIcon} color={Theme.colors.dimGray} />
+                    <InputSlot className="pl-3">
+                        <InputIcon as={leftIcon} className="text-phase-text-secondary" />
                     </InputSlot>
                 )}
 
                 <InputField
                     placeholder={placeholder}
+                    placeholderTextColor="#6B6480"
                     value={value}
                     onChangeText={onChangeText}
                     autoFocus={autoFocus}
-                    type={type}
+                    secureTextEntry={type === 'password'}
                     keyboardType={keyboardType as any}
-                    sx={{
-                        color: text.onInteractive,
-                        fontFamily: Theme.typography.fontFamily.english,
-                        paddingVertical: multiline ? Theme.spacing.sm : 0,
-                    }}
-                    placeholderTextColor={text.muted}
+                    className="text-phase-text-primary px-3 text-base"
                     multiline={multiline}
                     numberOfLines={numberOfLines}
-                    textAlignVertical={multiline ? 'top' : 'center'}
                 />
 
                 {rightIcon && (
-                    <InputSlot sx={{ paddingRight: '$0' as any, paddingLeft: '$3' as any }} onPress={onRightIconPress}>
-                        <InputIcon as={rightIcon} color={Theme.colors.sanctuarySaffron} />
+                    <InputSlot onPress={onRightIconPress} className="pr-3">
+                        <InputIcon as={rightIcon} className="text-phase-text-secondary active:text-phase-accent" />
                     </InputSlot>
                 )}
             </Input>
 
             {hasError && (
-                <FormControlError sx={{ marginTop: '$1' as any }}>
-                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} size="xs" />
-                    <FormControlErrorText 
-                        sx={{ 
-                            color: Theme.colors.error,
-                            fontSize: '$xs' as any, 
-                            marginLeft: '$1' as any 
-                        }}
-                    >
+                <FormControlError className="mt-2">
+                    <FormControlErrorIcon as={AlertCircle} className="text-phase-danger" />
+                    <FormControlErrorText className="text-phase-danger text-sm">
                         {error || 'Invalid input'}
                     </FormControlErrorText>
                 </FormControlError>

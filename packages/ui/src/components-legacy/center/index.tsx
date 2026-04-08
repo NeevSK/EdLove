@@ -1,0 +1,29 @@
+import React from 'react';
+import { View, type ViewProps } from 'react-native';
+import { cssInterop } from 'nativewind';
+
+const StyledView = View;
+
+cssInterop(StyledView, {
+  className: {
+    target: 'style',
+  },
+});
+
+export interface ICenterProps extends ViewProps {
+  className?: string;
+}
+
+const Center = React.forwardRef<View, ICenterProps>(({ className, ...props }, ref) => {
+  return (
+    <StyledView
+      {...props}
+      ref={ref}
+      className={`items-center justify-center ${className || ''}`}
+    />
+  );
+});
+
+Center.displayName = 'Center';
+
+export { Center };

@@ -1,7 +1,5 @@
 import React from 'react';
 import { Box, HStack, Text, Pressable } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { hapticLight } from '../utils/haptics';
 import { useStore } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -13,47 +11,31 @@ interface SandboxBannerProps {
 
 const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
     const { isDemoMode } = useStore();
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     if (!isDemoMode) return null;
 
     return (
-        <Box>
-            sx={{
-                backgroundColor: Theme.colors.sanctuarySaffron,
-                padding: Theme.spacing.sm,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                zIndex: Theme.zIndex.sticky + 1,
-            }}
-        
-            <HStack space="xs" alignItems="center">
+        <Box className="bg-phase-accent py-2 px-4 flex-row justify-between items-center z-50">
+            <HStack space="xs" className="items-center">
                 <Zap color="white" size={16} fill="white" />
-                <Text color="white" bold size="xs">
+                <Text className="text-white font-bold text-xs">
                     {t('demoMode.simulationAlert') || 'Exploring Sample Sanctuary'}
                 </Text>
             </HStack>
 
             {onExit && (
-                <Pressable accessibilityRole="button">
+                <Pressable 
+                    accessibilityRole="button"
                     onPress={async () => {
                         hapticLight();
                         onExit();
                     }}
-                    sx={{
-                        padding: 4,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: 'rgba(0,0,0,0.1)',
-                        borderRadius: Theme.corners.comfortable,
-                        paddingHorizontal: Theme.spacing.sm
-                    }}
-                
-                    <HStack space="xs" alignItems="center">
-                        <Text color="white" bold size="xs">{t('common.exit') || 'Exit'}</Text
-                        ><X color="white" size={14} />
+                    className="flex-row items-center bg-black/10 px-3 py-1 rounded-lg"
+                >
+                    <HStack space="xs" className="items-center">
+                        <Text className="text-white font-bold text-xs">{t('common.exit') || 'Exit'}</Text>
+                        <X color="white" size={14} />
                     </HStack>
                 </Pressable>
             )}
@@ -62,4 +44,3 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
 };
 
 export default SandboxBanner;
-

@@ -38,7 +38,7 @@
  */
 
 import { supabase } from '../lib/supabase';
-import { userGrowthStateAPI, GrowthDimension } from './userGrowthState';
+import { userGrowthStateAPI } from './userGrowthState';
 import { naturePathsAPI } from './naturePaths';
 import { contextualChallengesAPI, ChallengeMetric } from './contextualChallenges';
 
@@ -283,19 +283,19 @@ export const growthSignalsAPI = {
      * Fire-and-forget convenience wrapper around `emitSignal`.
      *
      * Use this in existing API methods instead of the verbose pattern:
-     *   void growthSignalsAPI.emitSignal(userId, signalType, metadata).catch(() => {});
+     *   void growthSignalsAPI.emitSignal({ user_id, event_type, event_metadata }).catch(() => {});
      *
      * Equivalent shorter form:
-     *   growthSignalsAPI.emitSilent(userId, signalType, metadata);
+     *   growthSignalsAPI.emitSilent({ user_id, event_type, event_metadata });
      *
      * The primary operation always completes first; this call follows silently.
      */
-    emitSilent(
+    emitSilent(input: {
         user_id: string,
         event_type: GrowthSignalType,
-        event_metadata: Record<string, unknown> = {}
-    ): void {
-        void this.emitSignal({ user_id, event_type, event_metadata }).catch(() => { });
+        event_metadata?: Record<string, unknown>
+    }): void {
+        void this.emitSignal(input).catch(() => { });
     },
 };
 
@@ -321,7 +321,7 @@ async function checkWhisperedMoments(
         .eq('user_id', userId)
         .in('moment_key', momentKeys);
 
-    const alreadyExperienced = new Set((existingRows ?? []).map((r: any) => r.moment_key as string));
+    const alreadyExperienced = new Set((existingRows ?? []).map((r) => r.moment_key));
 
     // Evaluate conditions for all not-yet-experienced moments in parallel
     const candidateMoments = relevantMoments.filter(m => !alreadyExperienced.has(m.key));

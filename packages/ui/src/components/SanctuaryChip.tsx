@@ -1,7 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
+import { Pressable } from 'react-native';
+import { Box, Text } from '../gluestack';
 
 export interface SanctuaryChipProps {
     label: string;
@@ -9,11 +8,12 @@ export interface SanctuaryChipProps {
     onPress?: () => void;
     variant?: 'filter' | 'tag' | 'category';
     size?: 'sm' | 'md';
+    className?: string;
 }
 
 /**
  * SanctuaryChip - canonical chip/pill component for filters, tags, and categories.
- * Uses the scene token hierarchy so the chip always resolves against the
+ * Uses the phase token hierarchy so the chip always resolves against the
  * current interactive layer rather than hardcoded glass colors.
  */
 export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
@@ -22,58 +22,35 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
     onPress,
     variant = 'filter',
     size = 'md',
+    className
 }) => {
-    const { accent, scene, text } = useTheme();
     const isSmall = size === 'sm';
 
     return (
-        <TouchableOpacity
+        <Pressable
             onPress={onPress}
-            style={[
-                styles.chip,
-                {
-                    borderColor: selected ? accent.action : scene.interactive.border,
-                    backgroundColor: selected ? accent.action : scene.interactive.bg,
-                },
-                isSmall && styles.small,
-            ]}
             accessibilityRole="button"
             accessibilityState={{ selected }}
-            activeOpacity={0.75}
+            className={`
+                mr-2 border rounded-full
+                ${isSmall ? 'px-3 py-0.5' : 'px-4 py-1'}
+                ${selected 
+                    ? 'bg-phase-accent border-phase-accent' 
+                    : 'bg-phase-surface border-white/10'}
+                ${className || ''}
+            `}
         >
             <Text
-                style={[
-                    styles.label,
-                    {
-                        color: selected ? text.onAccent : text.onInteractive,
-                        fontWeight: selected ? '700' : '500',
-                    },
-                    isSmall && styles.smallLabel,
-                ]}
+                className={`
+                    ${isSmall ? 'text-xs' : 'text-sm'}
+                    ${selected 
+                        ? 'text-white font-bold' 
+                        : 'text-phase-text-secondary font-medium'}
+                `}
                 numberOfLines={1}
             >
                 {variant === 'tag' ? `#${label}` : label}
             </Text>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
-
-const styles = StyleSheet.create({
-    chip: {
-        paddingHorizontal: Theme.spacing.md,
-        paddingVertical: Theme.spacing.xs,
-        borderRadius: Theme.corners.full,
-        borderWidth: 1,
-        marginRight: Theme.spacing.sm,
-    },
-    small: {
-        paddingHorizontal: Theme.spacing.sm,
-        paddingVertical: 2,
-    },
-    label: {
-        fontSize: Theme.typography.fontSize.sm,
-    },
-    smallLabel: {
-        fontSize: Theme.typography.fontSize.xs,
-    },
-});

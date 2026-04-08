@@ -8,8 +8,6 @@ import Animated, {
     withSequence,
     Easing
 } from 'react-native-reanimated';
-import { useThemedColors } from '../hooks/useThemedColors';
-import { Theme } from '../theme/Theme';
 import { Box } from '../gluestack';
 
 interface LivingGlowProps extends ViewProps {
@@ -35,7 +33,6 @@ export function LivingGlow({
     style,
     ...props
 }: LivingGlowProps) {
-    const colors = useThemedColors();
     const opacity = useSharedValue(0.4);
 
     useEffect(() => {
@@ -54,7 +51,7 @@ export function LivingGlow({
     }, [active, duration]);
 
     const animatedStyle = useAnimatedStyle(() => ({
-        shadowColor: glowColor || colors.glow,
+        shadowColor: glowColor || (active ? '#FFC107' : 'transparent'), // Fallback to saffron if active
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: opacity.value,
         shadowRadius: size ? size / 4 : 10,
@@ -64,8 +61,16 @@ export function LivingGlow({
 
     return (
         <Animated.View style={[animatedStyle, style]} {...props}>
-            {children || (size ? <Box sx={{ width: size, height: size, borderRadius: size / 2, backgroundColor: glowColor || colors.glow }} /> : null)}
+            {children || (size ? (
+                <Box 
+                    className="rounded-full"
+                    style={{ 
+                        width: size, 
+                        height: size, 
+                        backgroundColor: glowColor || '#FFC107' 
+                    }} 
+                />
+            ) : null)}
         </Animated.View>
     );
 }
-

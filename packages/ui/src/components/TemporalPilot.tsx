@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
-import { Calendar, Search, Wifi, WifiOff, Zap, Layout } from 'lucide-react-native';
+import { Pressable, Modal } from 'react-native';
+import { Calendar, Search, Wifi, WifiOff, Zap, Layout as LayoutIcon } from 'lucide-react-native';
 import { useTemporalStore } from '@repo/core';
-import { Theme } from '../theme/Theme';
-
-
+import { Box, Text, HStack, VStack } from '../gluestack';
 import { TemporalScrubber } from './TemporalScrubber';
 
 /**
@@ -22,231 +20,110 @@ export const TemporalPilot: React.FC = () => {
     } = useTemporalStore();
     const [isCalendarVisible, setCalendarVisible] = useState(false);
 
-
-
     return (
-        <View style={styles.container}>
+        <Box className="bg-white/5 rounded-3xl p-4 mx-4 border border-white/10">
             {/* Tactical Switcher */}
-            <View style={styles.header}>
-                <View style={styles.scales}>
+            <HStack className="justify-between items-center mb-4">
+                <HStack className="gap-2">
                     {(['day', 'week', 'month'] as const).map((s) => (
-                        <TouchableOpacity
+                        <Pressable
                             accessibilityRole="button"
                             key={s}
                             onPress={() => setScale(s)}
-                            style={[styles.scaleButton, viewScale === s && styles.scaleButtonActive]}
+                            className={`py-1.5 px-3 rounded-xl ${viewScale === s ? 'bg-white/20' : 'bg-white/5'}`}
                         >
-                            <Text style={[styles.scaleText, viewScale === s && styles.scaleTextActive]}>
+                            <Text className={`text-[10px] font-bold ${viewScale === s ? 'text-white' : 'text-white/40'}`}>
                                 {s.toUpperCase()}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     ))}
-                </View>
+                </HStack>
 
-                <View style={styles.actions}>
+                <HStack className="gap-3">
                     {/* View Mode Toggle */}
-                    <TouchableOpacity
+                    <Pressable
                         accessibilityRole="button"
                         onPress={() => setViewMode(viewMode === 'spotlight' ? 'timeline' : 'spotlight')}
-                        style={[styles.iconButton, viewMode === 'timeline' && styles.iconButtonActive]}
+                        className={`w-9 h-9 rounded-full items-center justify-center ${viewMode === 'timeline' ? 'bg-white/20 border border-phase-accent/50' : 'bg-white/5'}`}
                     >
                         {viewMode === 'spotlight' ? (
-                            <Zap size={20} color={Theme.colors.resonance.present} />
+                            <Zap size={20} color="#F6BF8C" />
                         ) : (
-                            <Layout size={20} color={Theme.colors.resonance.present} />
+                            <LayoutIcon size={20} color="#F6BF8C" />
                         )}
-                    </TouchableOpacity>
+                    </Pressable>
 
-                    <TouchableOpacity
+                    <Pressable
                         accessibilityRole="button"
                         onPress={() => setOffline(!isOffline)}
-                        style={styles.iconButton}
+                        className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
                     >
                         {isOffline ? (
                             <WifiOff size={20} color="#FF6B6B" />
                         ) : (
-                            <Wifi size={20} color={Theme.colors.resonance.present} />
+                            <Wifi size={20} color="#F6BF8C" />
                         )}
-                    </TouchableOpacity>
+                    </Pressable>
 
-                    <TouchableOpacity
+                    <Pressable
                         accessibilityRole="button"
                         onPress={() => setCalendarVisible(true)}
-                        style={styles.iconButton}
+                        className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
                     >
-                        <Calendar size={20} color={Theme.colors.resonance.present} />
-                    </TouchableOpacity>
+                        <Calendar size={20} color="#F6BF8C" />
+                    </Pressable>
 
-                    <TouchableOpacity accessibilityRole="button" style={styles.iconButton}>
-                        <Search size={20} color={Theme.colors.resonance.present} />
-                    </TouchableOpacity>
-                </View>
-            </View>
+                    <Pressable accessibilityRole="button" className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10">
+                        <Search size={20} color="#F6BF8C" />
+                    </Pressable>
+                </HStack>
+            </HStack>
 
             {/* Focus Selector (Only in Timeline Mode) */}
             {viewMode === 'timeline' && (
-                <View style={styles.focusContainer}>
+                <HStack className="gap-2 mb-4 justify-center">
                     {(['all', 'mood', 'journal'] as const).map((f) => (
-                        <TouchableOpacity
+                        <Pressable
                             accessibilityRole="button"
                             key={f}
                             onPress={() => setTimelineFocus(f)}
-                            style={[styles.focusButton, timelineFocus === f && styles.focusButtonActive]}
+                            className={`py-1 px-3 rounded-full border ${timelineFocus === f ? 'bg-phase-accent/10 border-phase-accent' : 'bg-white/5 border-white/10'}`}
                         >
-                            <Text style={[styles.focusText, timelineFocus === f && styles.focusTextActive]}>
+                            <Text className={`text-[9px] font-extrabold tracking-widest ${timelineFocus === f ? 'text-phase-accent' : 'text-white/30'}`}>
                                 {f.toUpperCase()}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     ))}
-                </View>
+                </HStack>
             )}
 
             {/* Intuitive Flow */}
             <TemporalScrubber />
 
-
-            {/* Tactical Calendar Modal (Mock for now, to be populated with real library) */}
+            {/* Tactical Calendar Modal */}
             <Modal visible={isCalendarVisible} transparent animationType="fade">
-                <View style={styles.modalBackdrop}>
-                    <View style={styles.calendarContainer}>
-                        <Text style={styles.modalTitle}>Select Temporal Point</Text>
-                        {/* Placeholder for real calendar component */}
-                        <View style={styles.calendarPlaceholder}>
-                            <Text style={{ color: '#fff', opacity: 0.5 }}>[Tactical Calendar Utility]</Text>
-                        </View>
-                        <TouchableOpacity
+                <Box className="flex-1 bg-black/80 justify-center items-center">
+                    <Box className="w-[90%] bg-[#1A1A1A] rounded-[32px] p-6 border border-white/10">
+                        <Text className="text-white text-lg font-bold mb-6 text-center">
+                            Select Temporal Point
+                        </Text>
+                        
+                        <Box className="h-[300px] bg-white/5 rounded-2xl items-center justify-center mb-6">
+                            <Text className="text-white/50">[Tactical Calendar Utility]</Text>
+                        </Box>
+
+                        <Pressable
                             accessibilityRole="button"
                             onPress={() => setCalendarVisible(false)}
-                            style={styles.closeButton}
+                            className="bg-phase-accent p-4 rounded-2xl items-center active:opacity-90"
                         >
-                            <Text style={styles.closeButtonText}>LOCK TEMPORAL VIEW</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                            <Text className="text-black font-extrabold tracking-widest">
+                                LOCK TEMPORAL VIEW
+                            </Text>
+                        </Pressable>
+                    </Box>
+                </Box>
             </Modal>
-        </View>
+        </Box>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 24,
-        padding: 16,
-        marginHorizontal: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    scales: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    scaleButton: {
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    },
-    scaleButtonActive: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    },
-    scaleText: {
-        fontSize: 10,
-        fontWeight: '700',
-        color: 'rgba(255, 255, 255, 0.4)',
-    },
-    scaleTextActive: {
-        color: '#fff',
-    },
-    actions: {
-        flexDirection: 'row',
-        gap: 12,
-    },
-    iconButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    iconButtonActive: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderColor: '#F6BF8C',
-        borderWidth: 1,
-    },
-    focusContainer: {
-        flexDirection: 'row',
-        gap: 8,
-        marginBottom: 16,
-        justifyContent: 'center',
-    },
-    focusButton: {
-        paddingVertical: 4,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    focusButtonActive: {
-        backgroundColor: 'rgba(246, 191, 140, 0.1)',
-        borderColor: '#F6BF8C',
-    },
-    focusText: {
-        fontSize: 9,
-        fontWeight: '800',
-        color: 'rgba(255, 255, 255, 0.3)',
-        letterSpacing: 1,
-    },
-    focusTextActive: {
-        color: '#F6BF8C',
-    },
-
-    modalBackdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    calendarContainer: {
-        width: '90%',
-        backgroundColor: '#1A1A1A',
-        borderRadius: 32,
-        padding: 24,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    modalTitle: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '700',
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-    calendarPlaceholder: {
-        height: 300,
-        backgroundColor: 'rgba(255, 255, 255, 0.02)',
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 24,
-    },
-    closeButton: {
-        backgroundColor: '#F6BF8C',
-        padding: 16,
-        borderRadius: 16,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#000',
-        fontWeight: '800',
-        letterSpacing: 1,
-    }
-});

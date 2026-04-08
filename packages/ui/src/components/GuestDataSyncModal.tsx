@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Box, VStack, HStack, Text, Spinner } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
 import { GuestDataSync } from '@repo/core';
 import { Check, AlertCircle, AlertTriangle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +13,9 @@ interface GuestDataSyncModalProps {
     onSyncComplete: () => void;
 }
 
+/**
+ * GuestDataSyncModal - Hardened v3 implementation.
+ */
 export default function GuestDataSyncModal({
     isOpen,
     onClose,
@@ -22,7 +23,6 @@ export default function GuestDataSyncModal({
     onSyncComplete
 }: GuestDataSyncModalProps) {
     const { t } = useTranslation();
-    const { text, accent, glass } = useTheme();
 
     const [syncing, setSyncing] = useState(false);
     const [progress, setProgress] = useState({ current: 0, total: 0, step: '' });
@@ -80,7 +80,7 @@ export default function GuestDataSyncModal({
     };
 
     const footer = !completed ? (
-        <HStack sx={{ gap: '$md', width: '100%' } as any}>
+        <HStack className="gap-4 w-full">
             <SanctuaryButton
                 variant="ghost"
                 action="secondary"
@@ -93,6 +93,7 @@ export default function GuestDataSyncModal({
                 action="primary"
                 onPress={handleSync}
                 isLoading={syncing}
+                className="flex-1"
             >
                 {syncing ? (t('sync.syncing') || 'Syncing...') : (t('sync.syncButton') || 'Sync Data')}
             </SanctuaryButton>
@@ -106,25 +107,25 @@ export default function GuestDataSyncModal({
             title={completed ? (t('sync.completeTitle') || 'Sync Complete!') : (t('sync.title') || 'Sync Your Data')}
             footer={footer}
         >
-            <VStack sx={{ gap: '$lg' } as any}>
+            <VStack className="gap-6">
                 {/* Confirm-skip warning shown when user tries to skip with unsaved data */}
                 {confirmSkip && !completed && (
-                    <VStack sx={{ gap: '$md' } as any}>
-                        <HStack sx={{ gap: '$sm', alignItems: 'center' } as any}>
-                            <AlertTriangle size={18} color={Theme.colors.amberGlow} />
-                            <Text sx={{ fontWeight: '$bold' } as any}>
+                    <VStack className="gap-4">
+                        <HStack className="gap-2 items-center">
+                            <AlertTriangle size={18} className="text-phase-accent" />
+                            <Text className="font-bold text-phase-text-primary">
                                 {t('sync.skipWarningTitle') || 'Your data will be lost'}
                             </Text>
                         </HStack>
-                        <Text sx={{ color: text.secondary, fontSize: '$sm' } as any}>
+                        <Text className="text-phase-text-secondary text-sm">
                             {t('sync.skipWarningBody') || `Skipping will permanently discard ${summary.total} item${summary.total !== 1 ? 's' : ''} from your guest session. This cannot be undone.`}
                         </Text>
-                        <HStack sx={{ gap: '$sm' } as any}>
+                        <HStack className="gap-2">
                             <SanctuaryButton
                                 variant="ghost"
                                 action="secondary"
                                 onPress={() => setConfirmSkip(false)}
-                                style={{ flex: 1 }}
+                                className="flex-1"
                             >
                                 {t('common.back') || 'Back'}
                             </SanctuaryButton>
@@ -132,7 +133,7 @@ export default function GuestDataSyncModal({
                                 variant="solid"
                                 action="negative"
                                 onPress={onClose}
-                                style={{ flex: 1 }}
+                                className="flex-1"
                             >
                                 {t('sync.discardButton') || 'Discard data'}
                             </SanctuaryButton>
@@ -142,49 +143,41 @@ export default function GuestDataSyncModal({
 
                 {!confirmSkip && !completed && !syncing && (
                     <>
-                        <Text sx={{ color: text.secondary, fontSize: '$sm' } as any}>
+                        <Text className="text-phase-text-secondary text-sm">
                             {t('sync.description') || 'We found data from your guest session. Would you like to sync it to your new account?'}
                         </Text>
 
                         {/* Data Summary */}
-                        <Box
-                            sx={{
-                                backgroundColor: glass.interact.bg,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: glass.interact.border,
-                                padding: Theme.spacing.md
-                            }}
-                        >
-                            <VStack sx={{ gap: '$sm' } as any}>
+                        <Box className="bg-phase-surface rounded-xl border border-white/5 p-4">
+                            <VStack className="gap-2">
                                 {summary.timetablePeriods > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text sx={{ color: text.secondary, fontSize: '$sm' } as any}>Timetable Periods</Text>
-                                        <Text sx={{ color: text.primary, fontWeight: '$bold' } as any}>{summary.timetablePeriods}</Text>
+                                    <HStack className="justify-between">
+                                        <Text className="text-phase-text-secondary text-sm">Timetable Periods</Text>
+                                        <Text className="text-phase-text-primary font-bold">{summary.timetablePeriods}</Text>
                                     </HStack>
                                 )}
                                 {summary.moodLogs > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text sx={{ color: text.secondary, fontSize: '$sm' } as any}>Mood Logs</Text>
-                                        <Text sx={{ color: text.primary, fontWeight: '$bold' } as any}>{summary.moodLogs}</Text>
+                                    <HStack className="justify-between">
+                                        <Text className="text-phase-text-secondary text-sm">Mood Logs</Text>
+                                        <Text className="text-phase-text-primary font-bold">{summary.moodLogs}</Text>
                                     </HStack>
                                 )}
                                 {summary.journalEntries > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text sx={{ color: text.secondary, fontSize: '$sm' } as any}>Journal Entries</Text>
-                                        <Text sx={{ color: text.primary, fontWeight: '$bold' } as any}>{summary.journalEntries}</Text>
+                                    <HStack className="justify-between">
+                                        <Text className="text-phase-text-secondary text-sm">Journal Entries</Text>
+                                        <Text className="text-phase-text-primary font-bold">{summary.journalEntries}</Text>
                                     </HStack>
                                 )}
                                 {summary.students > 0 && (
-                                    <HStack justifyContent="space-between">
-                                        <Text sx={{ color: text.secondary, fontSize: '$sm' } as any}>Students</Text>
-                                        <Text sx={{ color: text.primary, fontWeight: '$bold' } as any}>{summary.students}</Text>
+                                    <HStack className="justify-between">
+                                        <Text className="text-phase-text-secondary text-sm">Students</Text>
+                                        <Text className="text-phase-text-primary font-bold">{summary.students}</Text>
                                     </HStack>
                                 )}
-                                <Box sx={{ height: 1, backgroundColor: glass.interact.border, marginVertical: 4 }} />
-                                <HStack justifyContent="space-between">
-                                    <Text sx={{ color: text.primary, fontWeight: '$bold', fontSize: '$sm' } as any}>Total Items</Text>
-                                    <Text sx={{ color: accent.action, fontWeight: '$bold' } as any}>{summary.total}</Text>
+                                <Box className="h-px bg-white/5 my-1" />
+                                <HStack className="justify-between">
+                                    <Text className="text-phase-text-primary font-bold text-sm">Total Items</Text>
+                                    <Text className="text-phase-accent font-bold">{summary.total}</Text>
                                 </HStack>
                             </VStack>
                         </Box>
@@ -192,31 +185,21 @@ export default function GuestDataSyncModal({
                 )}
 
                 {syncing && (
-                    <VStack sx={{ gap: '$md', alignItems: 'center' } as any}>
-                        <Spinner size="large" color={accent.action as any} />
-                        <Text sx={{ color: text.primary, textAlign: 'center' } as any}>
+                    <VStack className="gap-4 items-center">
+                        <Spinner size="large" className="text-phase-accent" />
+                        <Text className="text-phase-text-primary text-center">
                             {progress.step}
                         </Text>
-                        <Text sx={{ color: text.secondary, fontSize: '$xs' } as any}>
+                        <Text className="text-phase-text-secondary text-xs">
                             {progress.current} / {progress.total} items synced
                         </Text>
-                        <Box
-                            sx={{
-                                width: '100%',
-                                height: 8,
-                                backgroundColor: glass.interact.bg,
-                                borderRadius: 4,
-                                overflow: 'hidden'
-                            }}
-                        >
+                        <Box className="w-full h-2 bg-phase-surface rounded-full overflow-hidden">
                             <Box
-                                sx={{
-                                    // Guard against division by zero when total is 0
+                                className="h-full bg-phase-accent"
+                                style={{
                                     width: progress.total > 0
                                         ? `${Math.round((progress.current / progress.total) * 100)}%`
                                         : '0%',
-                                    height: '100%',
-                                    backgroundColor: accent.action
                                 }}
                             />
                         </Box>
@@ -224,41 +207,24 @@ export default function GuestDataSyncModal({
                 )}
 
                 {completed && (
-                    <VStack sx={{ gap: '$md', alignItems: 'center' } as any}>
-                        <Box
-                            sx={{
-                                width: 64,
-                                height: 64,
-                                borderRadius: 32,
-                                backgroundColor: `${accent.action}20`,
-                                alignItems: 'center',
-                                justifyContents: 'center'
-                            } as any}
-                        >
-                            <Check size={32} color={accent.action} />
+                    <VStack className="gap-4 items-center">
+                        <Box className="w-16 h-16 rounded-full bg-phase-accent/20 items-center justify-center">
+                            <Check size={32} className="text-phase-accent" />
                         </Box>
-                        <Text sx={{ color: text.primary, textAlign: 'center', fontWeight: '$bold' } as any}>
+                        <Text className="text-phase-text-primary text-center font-bold">
                             {t('sync.successMessage') || 'All your data has been synced successfully!'}
                         </Text>
-                        <Text sx={{ color: text.secondary, fontSize: '$xs', textAlign: 'center' } as any}>
+                        <Text className="text-phase-text-secondary text-xs text-center">
                             {t('sync.successDescription') || 'You can now access your data from any device.'}
                         </Text>
                     </VStack>
                 )}
 
                 {error && (
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.md,
-                            backgroundColor: `${accent.danger}20`,
-                            borderRadius: Theme.corners.comfortable,
-                            borderWidth: 1,
-                            borderColor: accent.danger
-                        }}
-                    >
-                        <HStack sx={{ gap: '$sm' } as any}>
-                            <AlertCircle size={20} color={accent.danger} />
-                            <Text sx={{ color: accent.danger, fontSize: '$sm', flex: 1 } as any}>
+                    <Box className="p-4 bg-phase-danger/10 rounded-xl border border-phase-danger">
+                        <HStack className="gap-2">
+                            <AlertCircle size={20} className="text-phase-danger" />
+                            <Text className="text-phase-danger text-sm flex-1">
                                 {error}
                             </Text>
                         </HStack>

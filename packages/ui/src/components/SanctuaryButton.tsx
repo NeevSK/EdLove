@@ -1,14 +1,12 @@
 import React from 'react';
 import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
 
 interface SanctuaryButtonProps {
     onPress: () => void;
-    children: React.ReactNode; // The text or content
+    children: React.ReactNode;
     variant?: 'solid' | 'outline' | 'ghost' | 'link';
     isLoading?: boolean;
-    isDisabled?: boolean; // Using Gluestack's isDisabled prop name
+    isDisabled?: boolean;
     leftIcon?: React.ElementType;
     rightIcon?: React.ElementType;
     size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -17,6 +15,7 @@ interface SanctuaryButtonProps {
     style?: any;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+    className?: string;
 }
 
 export default function SanctuaryButton({
@@ -32,101 +31,87 @@ export default function SanctuaryButton({
     action = 'primary',
     style,
     accessibilityLabel,
-    accessibilityHint
+    className = '',
 }: SanctuaryButtonProps) {
-    const { accent, scene, text, textOnReward } = useTheme();
-
-    // Determine colors based on action and variant
-    const getBgColor = () => {
-        if (variant === 'outline' || variant === 'ghost' || variant === 'link') return 'transparent';
-
+    
+    // Semantic Mapping using Phase Tokens
+    const getBgClass = () => {
+        if (variant === 'outline' || variant === 'ghost' || variant === 'link') return 'bg-transparent';
         switch (action) {
-            case 'primary': return accent.action;
-            case 'secondary': return scene.interactive.bg;
-            case 'negative': return accent.danger;
-            case 'positive': return accent.reward;
-            default: return accent.action;
+            case 'primary': return 'bg-phase-accent';
+            case 'secondary': return 'bg-phase-interactive';
+            case 'negative': return 'bg-phase-danger';
+            case 'positive': return 'bg-phase-reward';
+            default: return 'bg-phase-accent';
         }
     };
 
-    const getTextColor = () => {
+    const getTextClass = () => {
         if (variant === 'solid') {
             switch (action) {
-                case 'primary': return text.onAccent;
-                case 'positive': return textOnReward;
-                case 'negative': return text.onDanger;
-                case 'secondary': return text.onInteractive;
-                default: return text.onAccent;
+                case 'primary': return 'text-phase-text-on-accent';
+                case 'secondary': return 'text-phase-text-primary';
+                case 'negative': return 'text-white';
+                case 'positive': return 'text-phase-text-on-accent';
+                default: return 'text-phase-text-on-accent';
             }
         }
-
         switch (action) {
-            case 'primary': return accent.action;
-            case 'secondary': return accent.action;
-            case 'negative': return accent.danger;
-            case 'positive': return accent.reward;
-            default: return accent.action;
+            case 'primary': return 'text-phase-accent';
+            case 'secondary': return 'text-phase-text-primary';
+            case 'negative': return 'text-phase-danger';
+            case 'positive': return 'text-phase-reward';
+            default: return 'text-phase-accent';
         }
     };
 
-    const getBorderColor = () => {
-        if (variant !== 'outline') return 'transparent';
-
+    const getBorderClass = () => {
+        if (variant !== 'outline') return 'border-transparent';
         switch (action) {
-            case 'primary': return accent.action;
-            case 'secondary': return accent.action;
-            case 'negative': return accent.danger;
-            case 'positive': return accent.reward;
-            default: return accent.action;
+            case 'primary': return 'border-phase-accent';
+            case 'secondary': return 'border-phase-surface';
+            case 'negative': return 'border-phase-danger';
+            case 'positive': return 'border-phase-reward';
+            default: return 'border-phase-accent';
         }
+    };
+
+    const sizeClasses = {
+        xs: 'h-8 px-2',
+        sm: 'h-9 px-3',
+        md: 'h-11 px-6',
+        lg: 'h-14 px-8',
     };
 
     return (
         <Button
-            {...({ size } as any)}
-            variant={variant === 'ghost' ? 'link' : variant}
-            action={action === 'negative' ? 'negative' : 'primary'} // Map to Gluestack actions somewhat
+            className={`
+                ${fullWidth ? 'w-full' : 'w-auto'}
+                ${getBgClass()}
+                ${getBorderClass()}
+                ${variant === 'outline' ? 'border' : 'border-0'}
+                ${sizeClasses[size]}
+                ${(isDisabled || isLoading) ? 'opacity-40' : 'opacity-100'}
+                active:opacity-80
+                ${className}
+            `}
             isDisabled={isDisabled || isLoading}
-            isFocusVisible={false}
             onPress={onPress}
-            accessible={true}
-            accessibilityRole="button"
+            style={style}
             accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
-            accessibilityHint={accessibilityHint}
-            accessibilityState={{
-                disabled: isDisabled || isLoading,
-                busy: isLoading
-            }}
-            sx={{
-                width: fullWidth ? '100%' : 'auto',
-                backgroundColor: getBgColor(),
-                borderColor: getBorderColor(),
-                borderRadius: Theme.corners.comfortable,
-                opacity: (isDisabled || isLoading) ? 0.6 : 1,
-                ':active': {
-                    opacity: 0.8,
-                    transform: [{ scale: 0.98 }]
-                },
-                // Custom handling for 'secondary' styling that might conflict with Gluestack defaults
-                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: scene.interactive.bg } : {}),
-                ...style
-            }}
         >
             {isLoading ? (
-                <ButtonSpinner color={getTextColor()} sx={{ marginRight: '$2' as any }} />
+                <ButtonSpinner className={`mr-2 ${getTextClass()}`} />
             ) : leftIcon ? (
-                <ButtonIcon as={leftIcon} color={getTextColor()} sx={{ marginRight: '$2' as any }} />
+                <ButtonIcon as={leftIcon} className={`mr-2 ${getTextClass()}`} />
             ) : null}
 
-            <ButtonText
-                color={getTextColor()}
-                sx={{ fontWeight: '$semibold', letterSpacing: 0.5 }}
-            >
+            <ButtonText className={`font-semibold ${getTextClass()}`}>
                 {children}
             </ButtonText>
 
             {!isLoading && rightIcon && (
-                <ButtonIcon as={rightIcon} color={getTextColor()} sx={{ marginLeft: '$2' as any }} />
+                <ButtonIcon as={rightIcon} className={`ml-2 ${getTextClass()}`} />
             )}
         </Button>
     );

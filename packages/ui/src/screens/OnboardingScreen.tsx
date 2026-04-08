@@ -1,5 +1,17 @@
-import React, { useState, useMemo } from 'react';
-import { Box, Pressable, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle, Center } from '../gluestack';
+import React, { useState, useMemo, useEffect } from 'react';
+import { 
+    Box, 
+    Pressable, 
+    VStack, 
+    HStack, 
+    Input, 
+    InputField, 
+    Button, 
+    ButtonText, 
+    Text, 
+    Heading, 
+    Center 
+} from '../gluestack';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,10 +19,12 @@ import { Theme } from '../theme/Theme';
 import { Role, supabase, identityAPI, authAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import ScreenWrapper from '../components/ScreenWrapper';
-import { useThemedColors } from '../hooks/useThemedColors';
+import { useTheme } from '../hooks/useTheme';
+import { useSanctuaryToast } from '../providers/ToastProvider';
 import { ProgressIndicator } from '../components/ProgressIndicator';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
+const TOTAL_STEPS = 7;
 
 interface OnboardingScreenProps {
     onComplete: (name: string, role: Role, wantsAccount?: boolean) => void;
@@ -20,12 +34,13 @@ interface OnboardingScreenProps {
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const theme = useTheme();
+    const { accent, text, isDark } = theme;
     const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2-6: Tour
     const [name, setName] = useState('');
     const [role, setRole] = useState<Role>('teacher');
     const [isCompleting, setIsCompleting] = useState(false);
-    const toast = useToast();
+    const toast = useSanctuaryToast();
 
     const StepShell = ({
         step,
@@ -38,65 +53,47 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         subtitle: string;
         children: React.ReactNode;
     }) => (
-        <VStack flex={1} px="$5" pt="$5" pb="$6">
+        <VStack className="flex-1 px-5 pt-5 pb-6">
             <Box
-                sx={{
-                    borderRadius: Theme.corners.generous,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    backgroundColor: colors.secondary,
-                    overflow: 'hidden',
-                    shadowColor: Theme.colors.shadowViolet,
-                    shadowOffset: { width: 0, height: 14 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 24,
-                    elevation: 4,
+                className="rounded-generous border border-phase-border bg-phase-secondary overflow-hidden elevation-4"
+                style={{
+                  shadowColor: '#6B6480', // shadowViolet
+                  shadowOffset: { width: 0, height: 14 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 24,
                 }}
             >
                 <Box
-                    sx={{
-                        px: Theme.spacing.lg,
-                        py: Theme.spacing.lg,
-                        backgroundColor: colors.overlay,
-                        borderBottomWidth: 1,
-                        borderBottomColor: colors.border,
-                    }}
+                    className="px-6 py-6 bg-phase-surface border-b border-phase-border"
                 >
-                    <VStack space="md">
-                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                    <VStack className="gap-4">
+                        <HStack className="gap-2 flex-wrap">
                             {JOURNEY_PILLARS.map((pillar) => (
                                 <Box
                                     key={pillar}
-                                    sx={{
-                                        px: Theme.spacing.sm,
-                                        py: '$1',
-                                        borderRadius: Theme.corners.full,
-                                        backgroundColor: `${colors.primary}CC`,
-                                        borderWidth: 1,
-                                        borderColor: colors.border,
-                                    }}
+                                    className="px-3 py-1 rounded-full bg-phase-canvas border border-phase-border"
                                 >
-                                    <Text size="xs" color={colors.textSecondary} bold>
+                                    <Text className="text-xs text-phase-text-secondary font-bold">
                                         {pillar}
                                     </Text>
                                 </Box>
                             ))}
                         </HStack>
-                        <ProgressIndicator currentStep={currentStep} totalSteps={7} />
-                        <VStack space="xs">
-                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}>
+                        <ProgressIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+                        <VStack className="gap-1">
+                            <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase">
                                 {step}
                             </Text>
-                            <Heading size="2xl" color={colors.text}>
+                            <Heading size="2xl" className="text-phase-text-primary">
                                 {title}
                             </Heading>
-                            <Text color={colors.textSecondary}>
+                            <Text className="text-phase-text-secondary">
                                 {subtitle}
                             </Text>
                         </VStack>
                     </VStack>
                 </Box>
-                <Box sx={{ px: Theme.spacing.lg, py: Theme.spacing.xl }}>
+                <Box className="px-6 py-8">
                     {children}
                 </Box>
             </Box>
@@ -309,14 +306,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             console.error('Error completing onboarding:', error);
             hapticError();
             setIsCompleting(false);
-            toast.show({
-                placement: 'bottom',
-                render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>Failed to save profile. Please try again.</ToastTitle>
-                    </Toast>
-                ),
-            });
+            toast.showToast({ message: 'Failed to save profile. Please try again.', type: 'error' });
         }
     };
 
@@ -328,23 +318,23 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             title={t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
             subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
         >
-            <VStack space="lg">
-                <Input variant="outline" size="xl" sx={{ borderColor: colors.textTertiary, borderRadius: Theme.corners.comfortable }}>
+            <VStack className="gap-6">
+                <Input className="rounded-comfortable border-phase-text-tertiary">
                     <InputField
                         placeholder={t('onboarding.namePlaceholder')}
                         value={name}
                         onChangeText={setName}
-                        color={colors.text}
+                        className="text-phase-text-primary"
                     />
                 </Input>
-                <Text color={colors.textSecondary} size="sm">
+                <Text className="text-phase-text-secondary text-sm">
                     This name becomes the gentle way Gurudevi addresses you across your sanctuary surfaces.
                 </Text>
-                <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$2' }}>
-                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
+                <Button size="lg" onPress={handleNext} isDisabled={!canProceed} className="bg-phase-accent mt-2">
+                    <ButtonText className="text-phase-text-on-accent font-bold">{t('onboarding.continue')}</ButtonText>
                 </Button>
                 <Button
-                    variant="link"
+                    variant="ghost"
                     onPress={() => {
                         hapticLight();
                         if (navigation.canGoBack()) {
@@ -356,9 +346,9 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                             });
                         }
                     }}
-                    sx={{ mt: '$1' }}
+                    className="mt-1"
                 >
-                    <ButtonText color={colors.textTertiary}>{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText>
+                    <ButtonText className="text-phase-text-tertiary">{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText>
                 </Button>
             </VStack>
         </StepShell>
@@ -371,15 +361,15 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     ];
 
     const renderRoleStep = () => (
-        <VStack space="xl" mt="$8" px="$6">
-            <ProgressIndicator currentStep={1} totalSteps={7} />
-            <Heading size="2xl" color={colors.action} textAlign="center">
+        <VStack className="gap-6 mt-8 px-6">
+            <ProgressIndicator currentStep={1} totalSteps={TOTAL_STEPS} />
+            <Heading size="2xl" className="text-phase-accent text-center">
                 {t('onboarding.roleTitle')}
             </Heading>
-            <Text size="md" color={colors.textSecondary} textAlign="center">
+            <Text className="text-md text-phase-text-secondary text-center">
                 {t('onboarding.roleSubtitle')}
             </Text>
-            <VStack space="md">
+            <VStack className="gap-4">
                 {ROLE_OPTIONS.map((r) => {
                     const selected = role === r.value;
                     return (
@@ -388,53 +378,39 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                             onPress={() => { setRole(r.value); hapticLight(); }}
                             accessibilityRole="radio"
                             accessibilityState={{ selected }}
-                            sx={{
-                                borderWidth: 2,
-                                borderColor: selected ? colors.action : colors.border,
-                                borderRadius: Theme.corners.comfortable,
-                                backgroundColor: selected ? colors.action + '12' : colors.secondary,
-                                padding: 16,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}
+                            className={`
+                                border-2 rounded-comfortable p-4 flex-row items-center
+                                ${selected ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-secondary'}
+                            `}
                         >
-                            <Text size="2xl" mr="$3">{r.emoji}</Text>
-                            <VStack flex={1}>
+                            <Text className="text-2xl mr-3">{r.emoji}</Text>
+                            <VStack className="flex-1">
                                 <Text
-                                    size="md"
-                                    fontWeight="$bold"
-                                    color={selected ? colors.action : colors.text}
+                                    className={`text-md font-bold ${selected ? 'text-phase-accent' : 'text-phase-text-primary'}`}
                                 >
                                     {t(`role.${r.value}`)}
                                 </Text>
-                                <Text size="sm" color={colors.textSecondary}>
+                                <Text className="text-sm text-phase-text-secondary">
                                     {t(r.descKey)}
                                 </Text>
                             </VStack>
                             {selected && (
                                 <Box
-                                    sx={{
-                                        width: 22,
-                                        height: 22,
-                                        borderRadius: 11,
-                                        backgroundColor: colors.action,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
+                                    className="w-5.5 h-5.5 rounded-full bg-phase-accent items-center justify-center"
                                 >
-                                    <Text size="xs" color={Theme.colors.sacredWhite}>✓</Text>
+                                    <Text className="text-xs text-phase-text-on-accent">✓</Text>
                                 </Box>
                             )}
                         </Pressable>
                     );
                 })}
             </VStack>
-            <HStack space="md" mt="$6">
-                <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}>
-                    <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText>
+            <HStack className="gap-4 mt-6">
+                <Button variant="outline" onPress={handleBack} className="flex-1 border-phase-border">
+                    <ButtonText className="text-phase-text-primary">{t('onboarding.back')}</ButtonText>
                 </Button>
-                <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}>
-                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
+                <Button onPress={handleNext} className="bg-phase-accent flex-[2]">
+                    <ButtonText className="text-phase-text-on-accent font-bold">{t('onboarding.continue')}</ButtonText>
                 </Button>
             </HStack>
         </VStack>
@@ -446,44 +422,40 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         if (!screen) return null;
 
         return (
-            <VStack space="xl" mt="$8" px="$6" flex={1}>
-                <ProgressIndicator currentStep={index} totalSteps={7} />
+            <VStack className="gap-6 mt-8 px-6 flex-1">
+                <ProgressIndicator currentStep={index} totalSteps={TOTAL_STEPS} />
                 <VStack
-                    space="md"
-                    alignItems="center"
+                    className="gap-4 items-center"
                 >
                     <Text
-                        size="6xl"
-                        textAlign="center"
-                        sx={{ lineHeight: 80 }}
+                        className="text-6xl text-center leading-[80px]"
                         accessible={false}
                     >
                         {screen.emoji}
                     </Text>
                     <Heading
                         size="2xl"
-                        color={colors.action}
-                        textAlign="center"
+                        className="text-phase-accent text-center"
                         accessibilityRole="header"
                     >
                         {screen.title}
                     </Heading>
-                    <Text color={colors.textSecondary} textAlign="center" size="lg" fontWeight="$bold">{screen.subtitle}</Text>
-                    <Box sx={{ flex: 1, justifyContent: 'center', py: '$4' }}>
-                        <Text textAlign="center" color={colors.text} size="md" lineHeight="$xl">{screen.content}</Text>
+                    <Text className="text-phase-text-secondary text-center text-lg font-bold">{screen.subtitle}</Text>
+                    <Box className="flex-1 justify-center py-4">
+                        <Text className="text-center text-phase-text-primary text-md leading-relaxed">{screen.content}</Text>
                     </Box>
                 </VStack>
-                <VStack space="md" mt="$auto" pb="$4">
-                    <HStack space="md">
-                        <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}>
-                            <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText>
+                <VStack className="gap-4 mt-auto pb-6">
+                    <HStack className="gap-4">
+                        <Button variant="outline" onPress={handleBack} className="flex-1 border-phase-border">
+                            <ButtonText className="text-phase-text-primary">{t('onboarding.back')}</ButtonText>
                         </Button>
-                        <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}>
-                            <ButtonText color={Theme.colors.sacredWhite}>{index === 6 ? t('onboarding.finish') : t('onboarding.next')}</ButtonText>
+                        <Button onPress={handleNext} className="bg-phase-accent flex-[2]">
+                            <ButtonText className="text-phase-text-on-accent font-bold">{index === 6 ? t('onboarding.finish') : t('onboarding.next')}</ButtonText>
                         </Button>
                     </HStack>
-                    <Button variant="link" onPress={handleSkipTour}>
-                        <ButtonText color={colors.textTertiary}>{t('onboarding.skip')}</ButtonText>
+                    <Button variant="ghost" onPress={handleSkipTour}>
+                        <ButtonText className="text-phase-text-tertiary">{t('onboarding.skip')}</ButtonText>
                     </Button>
                 </VStack>
             </VStack>
@@ -492,57 +464,37 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     return (
         <ScreenWrapper>
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            <Box className="flex-1 bg-phase-world">
+                {/* Decorative Elements */}
                 <Box
-                    sx={{
-                        position: 'absolute',
-                        top: -50,
-                        right: -40,
-                        width: 180,
-                        height: 180,
-                        borderRadius: 90,
-                        backgroundColor: `${colors.action}12`,
-                    }}
+                    className="absolute -top-12 -right-10 w-44 h-44 rounded-full bg-phase-accent/10"
                 />
                 <Box
-                    sx={{
-                        position: 'absolute',
-                        left: -20,
-                        bottom: 100,
-                        width: 160,
-                        height: 160,
-                        borderRadius: 80,
-                        backgroundColor: `${Theme.colors.gurudeviBlue}12`,
-                    }}
+                    className="absolute -left-5 bottom-24 w-40 h-40 rounded-full bg-gurudeviBlue/10"
                 />
-                <VStack flex={1}>
-                    <VStack px="$6" pt="$5" pb="$2" space="sm">
-                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                
+                <VStack className="flex-1">
+                    <VStack className="px-6 pt-5 pb-2 gap-2">
+                        <HStack className="gap-2 flex-wrap">
                             {JOURNEY_PILLARS.map((pillar) => (
                                 <Box
                                     key={pillar}
-                                    sx={{
-                                        px: Theme.spacing.sm,
-                                        py: '$1',
-                                        borderRadius: Theme.corners.full,
-                                        backgroundColor: `${colors.secondary}CC`,
-                                        borderWidth: 1,
-                                        borderColor: colors.border,
-                                    }}
+                                    className="px-3 py-1 rounded-full bg-phase-secondary/80 border border-phase-border"
                                 >
-                                    <Text size="xs" color={colors.textSecondary} bold>
+                                    <Text className="text-xs text-phase-text-secondary font-bold">
                                         {pillar}
                                     </Text>
                                 </Box>
                             ))}
                         </HStack>
-                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}>
+                        <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase">
                             SANCTUARY JOURNEY
                         </Text>
                     </VStack>
+                    
                     {isCompleting ? (
-                        <Center flex={1}>
-                            <Text color={colors.text}>Finalizing your sanctuary...</Text>
+                        <Center className="flex-1">
+                            <Text className="text-phase-text-primary">Finalizing your sanctuary...</Text>
                         </Center>
                     ) : (
                         <>

@@ -134,9 +134,13 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        growthSignalsAPI.emitSilent(userId, 'community_post_created', {
-            post_id: data?.id,
-            school_id: schoolId,
+        growthSignalsAPI.emitSilent({
+            user_id: userId,
+            event_type: 'community_post_created',
+            event_metadata: {
+                post_id: data?.id,
+                school_id: schoolId,
+            }
         });
 
         return CommunityPostSchema.parse(data);
@@ -167,8 +171,12 @@ export const communityAPI = {
                 status: 'active'
             }]);
 
-        growthSignalsAPI.emitSilent(userId, 'circle_facilitated', {
-            group_id: data?.id,
+        growthSignalsAPI.emitSilent({
+            user_id: userId,
+            event_type: 'circle_facilitated',
+            event_metadata: {
+                group_id: data?.id,
+            }
         });
 
         return CommunityGroupSchema.parse(data);
@@ -196,8 +204,12 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        growthSignalsAPI.emitSilent(userId, 'group_joined', {
-            group_id: groupId,
+        growthSignalsAPI.emitSilent({
+            user_id: userId,
+            event_type: 'group_joined',
+            event_metadata: {
+                group_id: groupId,
+            }
         });
 
         if (group?.creator_id && group.creator_id !== userId) {
@@ -275,8 +287,12 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        growthSignalsAPI.emitSilent(myId, 'group_message_sent', {
-            group_id: groupId,
+        growthSignalsAPI.emitSilent({
+            user_id: myId,
+            event_type: 'group_message_sent',
+            event_metadata: {
+                group_id: groupId,
+            }
         });
 
         return GroupMessageSchema.parse(data);

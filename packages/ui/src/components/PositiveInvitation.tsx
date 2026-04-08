@@ -1,10 +1,8 @@
 import React from 'react';
-import { Box, VStack, Heading, Text, Button, ButtonText, Center } from '../gluestack';
+import { Box, VStack, Heading, Text, Center } from '../gluestack';
 import { Plus, Sparkles, LogIn } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
-import { useThemedColors } from '../hooks/useThemedColors';
+import SanctuaryButton from './SanctuaryButton';
 import { hapticLight } from '../utils/haptics';
 
 interface PositiveInvitationProps {
@@ -27,8 +25,6 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
     context = 'self'
 }) => {
     const { t } = useTranslation();
-    const colors = useThemedColors();
-    const { textOnAccent } = useTheme();
 
     const getMessages = () => {
         if (type === 'guest') {
@@ -79,59 +75,41 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
     const isValidComponent = typeof Icon === 'function' || (typeof Icon === 'object' && Icon !== null);
 
     return (
-        <Center sx={{ flex: 1, padding: Theme.spacing.xl, minHeight: 250 }}>
-            <VStack alignItems="center" sx={{ maxWidth: 300, gap: Theme.spacing.xl }}>
+        <Center className="flex-1 p-8 min-h-[250px]">
+            <VStack className="items-center max-w-[300px] gap-6">
 
-                <Box>
-                    sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: colors.tertiary,
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}
-                
+                <Box className="w-16 h-16 rounded-full bg-phase-accent/10 justify-center items-center">
                     {isValidComponent ? (
-                        <Icon size={32} color={colors.action} />
+                        <Icon size={32} className="text-phase-accent" />
                     ) : (
-                        <Sparkles size={32} color={colors.action} />
+                        <Sparkles size={32} className="text-phase-accent" />
                     )}
                 </Box>
 
-                <VStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                    <Heading>
-                        size="md"
-                        textAlign="center"
-                        color={colors.text}
-                    
+                <VStack className="items-center gap-1">
+                    <Heading 
+                        className="text-lg text-center text-phase-text-primary"
+                    >
                         {title || messages.title}
                     </Heading>
-                    <Text>
-                        sx={{ fontSize: 14 }}
-                        textAlign="center"
-                        color={colors.textSecondary}
-                    
+                    <Text 
+                        className="text-sm text-center text-phase-text-secondary leading-relaxed"
+                    >
                         {description || messages.desc}
                     </Text>
                 </VStack>
 
                 {onAction && (
-                    <Button>
-                        size="md"
+                    <SanctuaryButton
                         action="primary"
                         onPress={() => {
                             hapticLight();
                             onAction();
                         }}
-                        sx={{
-                            backgroundColor: colors.action,
-                            borderRadius: Theme.corners.full,
-                            paddingHorizontal: Theme.spacing.lg
-                        }}
-                    
-                        <ButtonText color={textOnAccent}>{actionLabel || messages.action}</ButtonText
-                    ></Button>
+                        className="px-8"
+                    >
+                        {actionLabel || messages.action}
+                    </SanctuaryButton>
                 )}
             </VStack>
         </Center>

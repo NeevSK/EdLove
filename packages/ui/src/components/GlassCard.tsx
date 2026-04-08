@@ -1,57 +1,27 @@
-import React, { useState } from 'react';
-import { View, ViewProps, LayoutChangeEvent, StyleSheet } from 'react-native';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
-import { LivingCard } from '../components-native/LivingCard';
+import React from 'react';
+import { LayoutChangeEvent } from 'react-native';
+import { Box } from '../gluestack';
 
-interface GlassCardProps extends ViewProps {
+interface GlassCardProps {
     children: React.ReactNode;
-    sx?: any; // For compatibility with existing patterns if needed
+    style?: any;
+    onLayout?: (event: LayoutChangeEvent) => void;
+    className?: string;
 }
 
 /**
  * GlassCard - Implements the "Glass Protocol"
- * A translucent, layered card for sanctuary depth, now powered by Skia LivingCard.
+ * Hardened v3 implementation using NativeWind primitives.
  */
-export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProps) => {
-    const { phase } = useTheme();
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-    const handleLayout = (event: LayoutChangeEvent) => {
-        const { width, height } = event.nativeEvent.layout;
-        setDimensions({ width, height });
-        if (onLayout) onLayout(event);
-    };
-
-    const LivingCardAny = LivingCard as any;
-
+export const GlassCard = ({ children, style, onLayout, className, ...props }: GlassCardProps) => {
     return (
-        <View
-            style={[
-                {
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.md,
-                    overflow: 'hidden',
-                    backgroundColor: 'transparent',
-                },
-                style,
-            ]}
-            onLayout={handleLayout}
+        <Box
+            className={`rounded-[32px] p-4 bg-phase-surface border border-white/10 shadow-xl ${className || ''}`}
+            style={style}
+            onLayout={onLayout}
             {...props}
         >
-            {dimensions.width > 0 && (
-                <View style={StyleSheet.absoluteFill}>
-                    <LivingCardAny
-                        width={dimensions.width}
-                        height={dimensions.height}
-                        cornerRadius={Theme.corners.generous}
-                        {...({ phase } as any)}
-                    >
-                        {null}
-                    </LivingCardAny>
-                </View>
-            )}
             {children}
-        </View>
+        </Box>
     );
 };

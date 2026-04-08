@@ -3,14 +3,11 @@ import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withSpring,
-    withDelay,
-    withSequence,
     withTiming,
     runOnJS
 } from 'react-native-reanimated';
-import { StyleSheet, Dimensions } from 'react-native';
-import { Box, VStack, Text } from '../gluestack';
-import { Theme } from '../theme/Theme';
+import { Dimensions } from 'react-native';
+import { Box, VStack, Text, Center } from '../gluestack';
 import { Trophy } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
@@ -21,6 +18,12 @@ interface AchievementUnlockOverlayProps {
     onHide: () => void;
 }
 
+/**
+ * AchievementUnlockOverlay
+ * 
+ * A high-impact, temporary overlay for celebrating progress.
+ * Hardened v3 implementation with NativeWind.
+ */
 export default function AchievementUnlockOverlay({
     title,
     visible,
@@ -67,37 +70,44 @@ export default function AchievementUnlockOverlay({
     if (!visible) return null;
 
     return (
-        <Animated.View style={[styles.container, animatedStyle]}>
-            <Box sx={{
-                width: width * 0.85,
-                backgroundColor: Theme.colors.ink,
-                borderRadius: Theme.corners.generous,
-                padding: Theme.spacing.lg,
-                borderWidth: 2,
-                borderColor: Theme.colors.templeGold,
-                shadowColor: Theme.colors.templeGold,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.5,
-                shadowRadius: 15,
-                elevation: 20,
-                alignItems: 'center',
-            }}>
-                <VStack space="sm" alignItems="center">
-                    <Box>
-                        p="$3"
-                        backgroundColor={`${Theme.colors.templeGold}20`}
-                        borderRadius={Theme.corners.full}
-                        mb="$2"
+        <Animated.View 
+            style={[
+                { 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    right: 0, 
+                    alignItems: 'center', 
+                    zIndex: 1000 
+                }, 
+                animatedStyle
+            ]}
+        >
+            <Box 
+                className="bg-ink border-2 border-templeGold rounded-generous p-6 shadow-2xl items-center"
+                style={{ 
+                    width: width * 0.85,
+                    shadowColor: '#FDD925',
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 15,
+                    elevation: 20,
+                }}
+            >
+                <VStack className="items-center gap-2">
+                    <Center className="p-3 bg-templeGold/20 rounded-full mb-2">
+                        <Trophy color="#FDD925" size={40} />
+                    </Center>
                     
-                        <Trophy color={Theme.colors.templeGold} size={40} />
-                    </Box>
-                    <Text color={Theme.colors.templeGold} bold size="lg">
-                        ACHIEVEMENT UNLOCKED!
+                    <Text className="text-templeGold font-bold text-lg uppercase tracking-wider">
+                        Achievement Unlocked!
                     </Text>
-                    <Text color={Theme.colors.sacredWhite} bold textAlign="center" size="xl">
+                    
+                    <Text className="text-sacredWhite font-bold text-center text-xl">
                         {title}
                     </Text>
-                    <Text color={Theme.colors.starlightGray} size="sm" textAlign="center">
+                    
+                    <Text className="text-starlightGray text-sm text-center">
                         Your discovery adds to the sanctuary.
                     </Text>
                 </VStack>
@@ -105,14 +115,3 @@ export default function AchievementUnlockOverlay({
         </Animated.View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        alignItems: 'center',
-        zIndex: Theme.zIndex.modal + 100,
-    }
-});

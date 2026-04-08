@@ -1,7 +1,7 @@
 import React from 'react';
-import { VStack, Text, Heading, InfoIcon, Icon, Box } from '../gluestack';
+import { VStack, Text, Heading, Box } from '../gluestack';
 import SanctuaryModal from './SanctuaryModal';
-import { Theme } from '../theme/Theme';
+import { Info } from 'lucide-react-native';
 
 export interface FeatureDiscoveryModalProps {
     isOpen: boolean;
@@ -13,7 +13,7 @@ export interface FeatureDiscoveryModalProps {
 
 /**
  * FeatureDiscoveryModal - A premium modal explaining a feature to the user.
- * Follows the "Sanctuary" aesthetic with glassmorphic layers.
+ * Hardened v3 implementation.
  */
 export default function FeatureDiscoveryModal({
     isOpen,
@@ -28,37 +28,29 @@ export default function FeatureDiscoveryModal({
             onClose={onClose}
             title={title}
             subtitle="Feature Discovery"
-            icon={<Icon as={InfoIcon} color="var(--water)" size="xl" />}
+            icon={<Info className="text-phase-accent" size={24} />}
         >
-            <VStack space="xl" sx={{ py: 8 }}>
+            <VStack className="gap-6 py-2">
                 <Box>
                     <Heading 
-                        size="xs" 
-                        sx={{ textTransform: 'uppercase', letterSpacing: 1.5, color: 'var(--ink-ghost)', mb: 8 }}
+                        className="uppercase tracking-[1.5px] text-phase-text-secondary text-[10px] mb-2"
                     >
                         What is it?
                     </Heading>
-                    <Text size="md" sx={{ lineHeight: '$md', color: 'var(--ink)' }}>
+                    <Text className="text-phase-text-primary text-base leading-relaxed">
                         {whatIsIt}
                     </Text>
                 </Box>
                 
                 <Box 
-                    sx={{ 
-                        p: 16, 
-                        borderRadius: Theme.corners.medium, 
-                        backgroundColor: 'rgba(var(--water-rgb), 0.05)', 
-                        borderLeftWidth: 4, 
-                        borderLeftColor: 'var(--water)' 
-                    }}
+                    className="p-4 rounded-xl bg-phase-accent/5 border-l-4 border-phase-accent"
                 >
                     <Heading 
-                        size="xs" 
-                        sx={{ textTransform: 'uppercase', letterSpacing: 1.5, color: 'var(--water)', mb: 8 }}
+                        className="uppercase tracking-[1.5px] text-phase-accent text-[10px] mb-2"
                     >
                         Where to find it?
                     </Heading>
-                    <Text size="sm" sx={{ color: 'var(--ink-ghost)', fontWeight: '500' }}>
+                    <Text className="text-phase-text-secondary font-medium text-sm">
                         {whereToFind}
                     </Text>
                 </Box>

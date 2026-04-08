@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, Dimensions, Image as RNImage } from 'react-native';
+import { Dimensions, Image as RNImage } from 'react-native';
 import {
     Box,
     VStack,
@@ -8,8 +8,6 @@ import {
     Pressable,
     Center,
 } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { hapticLight } from '../utils/haptics';
 import { UserAvatar } from './UserAvatar';
 import { useTranslation } from 'react-i18next';
@@ -24,12 +22,11 @@ import { QRCodeGenerator, QRBuilder } from '../qr';
 import { usePermissions } from '@repo/core';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
+const CARD_WIDTH = SCREEN_WIDTH - 48; // Standardized spacing
 const CARD_HEIGHT = 220;
 
 /**
  * IdentityData — Generic interface for person/entity display in the IdentityCard.
- * This allows @repo/ui to remain domain-agnostic.
  */
 export interface IdentityData {
     id: string;
@@ -46,15 +43,19 @@ interface IdentityCardProps {
     data: IdentityData;
     onEdit?: () => void;
     onViewFullProfile?: () => void;
-    style?: import('react-native').StyleProp<import('react-native').ViewStyle>;
-    /** Optional custom renderer for the back of the card. If not provided, it defaults to a QR code of the user invite. */
+    style?: any;
+    /** Optional custom renderer for the back of the card. */
     renderBackSide?: () => React.ReactNode;
-    /** Whether to allow flipping the card. Defaults to true if renderBackSide or QR logic is applicable. */
+    /** Whether to allow flipping the card. Defaults to true. */
     allowFlip?: boolean;
-    /** Optional permissions override. If not provided, uses the internal usePermissions hook. */
+    /** Optional permissions override. */
     canOverride?: (action: string, subject: string) => boolean;
 }
 
+/**
+ * IdentityCard - Flagship component for identity visualization.
+ * Hardened v3 implementation.
+ */
 export default function IdentityCard({ 
     data, 
     onEdit, 
@@ -65,7 +66,6 @@ export default function IdentityCard({
     canOverride
 }: IdentityCardProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const isFlipped = useSharedValue(0);
     const [flipState, setFlipState] = useState(false);
 
@@ -78,7 +78,6 @@ export default function IdentityCard({
             stiffness: 90,
         });
         
-        // Suppress unused warnings for now as these are planned API slots
         if (onEdit) onEdit();
         if (onViewFullProfile) onViewFullProfile();
     };
@@ -91,7 +90,7 @@ export default function IdentityCard({
             ],
             opacity: interpolate(isFlipped.value, [0, 0.5, 1], [1, 0, 0]),
             zIndex: isFlipped.value < 0.5 ? 2 : 1,
-        };
+        } as any;
     });
 
     const backStyle = useAnimatedStyle(() => {
@@ -102,63 +101,31 @@ export default function IdentityCard({
             ],
             opacity: interpolate(isFlipped.value, [0, 0.5, 1], [0, 0, 1]),
             zIndex: isFlipped.value > 0.5 ? 2 : 1,
-        };
+        } as any;
     });
 
-    // Use internal hook if no override provided. 
-    // This maintains backward compatibility while allowing decoupling.
     const { can: internalCan } = usePermissions();
     const can = canOverride || internalCan;
 
     const roleContext = useMemo(() => {
         if (can('manage', 'PrincipalDashboard')) {
-            return { label: t('roles.principal') || 'Principal 🏛️', icon: Crown, color: colors.warning, emoji: '🏛️' };
+            return { label: t('roles.principal') || 'Principal 🏛️', icon: Crown, colorClass: 'text-phase-accent', emoji: '🏛️' };
         }
         if (can('manage', 'TeacherDashboard')) {
-            return { label: t('roles.teacher') || 'Teacher 🌱', icon: Briefcase, color: colors.action, emoji: '🌱' };
+            return { label: t('roles.teacher') || 'Teacher 🌱', icon: Briefcase, colorClass: 'text-phase-accent', emoji: '🌱' };
         }
         if (can('manage', 'StudentDashboard')) {
-            return { label: t('roles.student') || 'Student 📚', icon: GraduationCap, color: colors.success, emoji: '📚' };
+            return { label: t('roles.student') || 'Student 📚', icon: GraduationCap, colorClass: 'text-phase-accent', emoji: '📚' };
         }
         if (can('manage', 'FounderDashboard')) {
-            return { label: 'Holden 🛡️', icon: ShieldAlert, color: colors.action, emoji: '🛡️' };
+            return { label: 'Holden 🛡️', icon: ShieldAlert, colorClass: 'text-phase-accent', emoji: '🛡️' };
         }
-        return { label: 'Explorer 🌿', icon: User, color: colors.textTertiary, emoji: '🌿' };
-    }, [can, t, colors]);
-
-    const styles = useMemo(() => StyleSheet.create({
-        cardCommon: {
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            borderRadius: Theme.corners.generous,
-            overflow: 'hidden',
-            backgroundColor: colors.secondary,
-            borderWidth: 1,
-            borderColor: colors.border,
-            backfaceVisibility: 'hidden',
-            ...Theme.shadows.md,
-        },
-        cardBack: {
-            backgroundColor: colors.tertiary,
-        },
-        glassLayer: {
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: Theme.colors.glass.dark.highlight,
-        },
-        watermark: {
-            position: 'absolute',
-            bottom: -20,
-            right: -20,
-            width: 140,
-            height: 140,
-            opacity: 0.1,
-        }
-    }), [colors]);
+        return { label: 'Explorer 🌿', icon: User, colorClass: 'text-phase-text-secondary', emoji: '🌿' };
+    }, [can, t]);
 
     const defaultBackSide = () => (
-        <Center h="100%">
-            <Box sx={{ p: Theme.spacing.md, bg: "white", borderRadius: Theme.corners.comfortable }}>
+        <Center className="h-full">
+            <Box className="p-4 bg-white rounded-xl">
                 <QRCodeGenerator
                     value={
                         data.id
@@ -168,10 +135,10 @@ export default function IdentityCard({
                     size={120}
                 />
             </Box>
-            <Text color={colors.text} mt={Theme.spacing.md} bold>
+            <Text className="mt-4 font-bold text-phase-text-primary uppercase tracking-widest">
                 INVITE
             </Text>
-            <Text color={colors.textSecondary} size="xs">
+            <Text className="text-xs text-phase-text-secondary">
                 {t('profile.scanToConnect')}
             </Text>
         </Center>
@@ -182,22 +149,21 @@ export default function IdentityCard({
             onPress={handleFlip}
             disabled={!allowFlip}
             accessibilityRole="button"
-            accessibilityLabel={t('profile.flipCard')}
-            accessibilityHint={t('profile.flipCardHint')}
+            className="shadow-xl"
         >
-            <Box style={[{
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                shadowColor: colors.glow,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.6,
-                shadowRadius: 20,
-                elevation: 10,
-            }, style]}>
+            <Box 
+                style={[{
+                    width: CARD_WIDTH,
+                    height: CARD_HEIGHT,
+                }, style]}
+            >
                 {/* FRONT SIDE - IDENTITY */}
-                <Animated.View style={[styles.cardCommon, frontStyle]}>
-                    <Box style={styles.glassLayer} />
-                    <HStack space="lg" alignItems="center" h="100%" sx={{ p: Theme.spacing.xl }}>
+                <Animated.View 
+                    style={frontStyle} 
+                    className="absolute inset-0 overflow-hidden bg-phase-surface border border-phase-surface rounded-[32px] backface-hidden"
+                >
+                    <Box className="absolute inset-0 bg-black/5" />
+                    <HStack className="items-center h-full p-6 gap-4">
                         <UserAvatar 
                             avatarUrl={data.avatar_url}
                             fullName={data.full_name}
@@ -205,23 +171,23 @@ export default function IdentityCard({
                             size={80}
                         />
                         {/* Details */}
-                        <VStack space="xs" flex={1}>
-                            <HStack alignItems="center" space="xs">
-                                <Text color={colors.textSecondary as string} size="xs" bold textTransform="uppercase">
+                        <VStack className="flex-1 gap-1">
+                            <HStack className="items-center gap-1">
+                                <Text className="text-[10px] font-bold uppercase text-phase-text-secondary tracking-widest">
                                     {roleContext.label}
                                 </Text>
-                                <roleContext.icon size={14} color={roleContext.color} />
+                                <roleContext.icon size={14} className={roleContext.colorClass} />
                             </HStack>
-                            <Text color={colors.text} size="xl" bold numberOfLines={1}>
+                            <Text className="text-xl font-bold text-phase-text-primary" numberOfLines={1}>
                                 {data.full_name || 'Guest User'}
                             </Text>
-                            <Text color={colors.textSecondary} size="xs" numberOfLines={1} mb={2}>
+                            <Text className="text-xs text-phase-text-secondary" numberOfLines={1}>
                                 {data.school_name || t('profile.noSchoolConnected')}
                             </Text>
                             {/* Identification Row */}
                             {(data.nic_number || data.index_number) && (
-                                <Box sx={{ bg: `${colors.action}10`, px: Theme.spacing.sm, py: Theme.spacing.xs, borderRadius: Theme.corners.tight, alignSelf: "flex-start" }}>
-                                    <Text color={colors.action} size="xxs" bold>
+                                <Box className="self-start px-2 py-1 rounded-md bg-phase-accent/10 mt-2">
+                                    <Text className="text-[10px] font-bold text-phase-accent">
                                         {can('manage', 'StudentDashboard') ? 'INDEX:' : 'NIC:'} {data.nic_number || data.index_number}
                                     </Text>
                                 </Box>
@@ -231,15 +197,24 @@ export default function IdentityCard({
                     <RNImage
                         // eslint-disable-next-line @typescript-eslint/no-require-imports
                         source={require('../../assets/images/lotus_bloom.png')}
-                        style={styles.watermark}
+                        style={{
+                            position: 'absolute',
+                            bottom: -20,
+                            right: -20,
+                            width: 140,
+                            height: 140,
+                            opacity: 0.1,
+                        }}
                         resizeMode="contain"
-                        accessibilityIgnoresInvertColors={true}
                     />
                 </Animated.View>
                 {/* BACK SIDE - CUSTOM OR QR CODE */}
                 {allowFlip && (
-                    <Animated.View style={[styles.cardCommon, styles.cardBack, backStyle]}>
-                        <Box style={styles.glassLayer} />
+                    <Animated.View 
+                        style={backStyle}
+                        className="absolute inset-0 overflow-hidden bg-phase-canvas border border-phase-surface rounded-[32px] backface-hidden"
+                    >
+                        <Box className="absolute inset-0 bg-black/10" />
                         {renderBackSide ? renderBackSide() : defaultBackSide()}
                     </Animated.View>
                 )}

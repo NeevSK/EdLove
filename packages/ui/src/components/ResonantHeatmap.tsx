@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
-import { Theme } from '../theme/Theme';
+import { ScrollView } from 'react-native';
+import { Box, Text, HStack, VStack } from '../gluestack';
 
 export interface HeatmapPoint {
     date: string;
@@ -43,58 +43,27 @@ export const ResonantHeatmap: React.FC<ResonantHeatmapProps> = ({ data, loading 
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Visualizing growth arc...</Text>
-            </View>
+            <Box className="h-24 justify-center items-center">
+                <Text className="text-white/40 text-xs italic">Visualizing growth arc...</Text>
+            </Box>
         );
     }
 
     return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-            <View style={styles.grid}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 10 }}>
+            <HStack className="gap-[3px]">
                 {weeks.map((week, wIndex) => (
-                    <View key={wIndex} style={styles.weekColumn}>
+                    <VStack key={wIndex} className="gap-[3px]">
                         {week.map((intensity, dIndex) => (
-                            <View 
+                            <Box 
                                 key={dIndex} 
-                                style={[
-                                    styles.dayCell, 
-                                    { backgroundColor: getIntensityColor(intensity) }
-                                ]} 
+                                className="w-2.5 h-2.5 rounded-[2px]" 
+                                style={{ backgroundColor: getIntensityColor(intensity) }}
                             />
                         ))}
-                    </View>
+                    </VStack>
                 ))}
-            </View>
+            </HStack>
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollContent: {
-        paddingVertical: 10,
-    },
-    grid: {
-        flexDirection: 'row',
-        gap: 3,
-    },
-    weekColumn: {
-        flexDirection: 'column',
-        gap: 3,
-    },
-    dayCell: {
-        width: 10,
-        height: 10,
-        borderRadius: 2,
-    },
-    loadingContainer: {
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        color: 'rgba(255, 255, 255, 0.4)',
-        fontSize: 12,
-        fontStyle: 'italic',
-    }
-});

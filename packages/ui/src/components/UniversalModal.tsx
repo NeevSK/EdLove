@@ -26,6 +26,7 @@ export const UniversalModal = ({
             transparent={transparent}
             onRequestClose={onClose}
             animationType="fade"
+            statusBarTranslucent
         >
             {children}
         </Modal>

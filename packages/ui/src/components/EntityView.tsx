@@ -16,13 +16,13 @@ export interface EntityViewProps {
  * Default fallback for viewing entity details when no specialized component is provided.
  */
 const DefaultEntityDetails = ({ instance }: { instance: EntityInstance }) => (
-    <VStack space="xs">
-        <Text size="sm" bold>Details</Text>
+    <VStack className="gap-1">
+        <Text className="text-sm font-bold">Details</Text>
         {Object.entries(instance || {}).map(([key, value]) => (
             key !== 'id' && key !== 'definition' && typeof value !== 'object' && (
-                <HStack key={key} justifyContent="space-between">
-                    <Text size="xs" color="$textLight600">{key}:</Text>
-                    <Text size="xs">{String(value)}</Text>
+                <HStack key={key} className="justify-between">
+                    <Text className="text-xs text-phase-text-secondary">{key}:</Text>
+                    <Text className="text-xs text-phase-text-primary">{String(value)}</Text>
                 </HStack>
             )
         ))}
@@ -36,13 +36,15 @@ export default function EntityView({
     renderView
 }: EntityViewProps) {
     return (
-        <VStack space="md" p={mode === 'compact' ? 0 : 16}>
-            <Text bold size="lg">{definition.type.toUpperCase()} {mode.toUpperCase()} VIEW</Text>
+        <VStack className={`gap-4 ${mode === 'compact' ? 'p-0' : 'p-4'}`}>
+            <Text className="font-bold text-lg text-phase-text-primary">
+                {definition.type.toUpperCase()} {mode.toUpperCase()} VIEW
+            </Text>
             
             {instance ? (
-                <VStack space="sm">
-                    <Text>ID: {instance.id}</Text>
-                    {mode === 'public' && <Text color="$textLight500">Public Profile View</Text>}
+                <VStack className="gap-2">
+                    <Text className="text-phase-text-primary">ID: {instance.id}</Text>
+                    {mode === 'public' && <Text className="text-phase-text-secondary opacity-70">Public Profile View</Text>}
                     {mode === 'view' && (
                         renderView ? renderView(instance) : <DefaultEntityDetails instance={instance} />
                     )}

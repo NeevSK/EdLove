@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Pressable, Icon, InfoIcon } from '../gluestack';
+import { Pressable } from 'react-native';
+import { Info } from 'lucide-react-native';
 import FeatureDiscoveryModal from './FeatureDiscoveryModal';
-import { Theme } from '../theme/Theme';
 
 export interface FeatureInfoIconProps {
     title: string;
@@ -19,7 +19,7 @@ export interface FeatureInfoIconProps {
 export default function FeatureInfoIcon({
     title,
     discoveryInfo,
-    color = 'var(--ink-ghost)',
+    color = 'text-phase-text-secondary opacity-60',
 }: FeatureInfoIconProps) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -30,18 +30,9 @@ export default function FeatureInfoIcon({
             <Pressable 
                 accessibilityRole="button"
                 onPress={() => setIsOpen(true)}
-                sx={{
-                    padding: 4,
-                    borderRadius: Theme.corners.full,
-                    ':hover': {
-                        backgroundColor: 'rgba(0,0,0,0.05)',
-                    },
-                    ':active': {
-                        transform: [{ scale: 0.92 }],
-                    }
-                }}
+                className="p-1 rounded-full active:scale-90 hover:bg-phase-surface/10"
             >
-                <Icon as={InfoIcon} color={color} size="sm" />
+                <Info size={16} className={color.startsWith('text-') ? color : 'text-phase-text-secondary'} />
             </Pressable>
             <FeatureDiscoveryModal
                 isOpen={isOpen}

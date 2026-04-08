@@ -9,7 +9,6 @@ import Animated, {
     withSequence
 } from 'react-native-reanimated';
 import { Text, VStack, Center } from '../gluestack';
-import { Theme } from '../theme/Theme';
 import { Flower } from 'lucide-react-native';
 
 interface LotusLoaderProps {
@@ -71,25 +70,20 @@ export default function LotusLoader({
     }));
 
     const content = (
-        <VStack space="md" alignItems="center" justifyContent="center">
+        <VStack space="md" className="items-center justify-center">
             <Animated.View style={animatedStyle}>
                 <Flower
                     size={SIZES[size]}
-                    color={Theme.colors.sanctuarySaffron}
+                    className="text-phase-accent"
                     strokeWidth={1.5}
                 />
             </Animated.View>
             <ActivityIndicator
                 size="large"
-                color={Theme.colors.starlightGray}
+                className="text-phase-text-secondary"
             />
             {text && (
-                <Text
-                    color={Theme.colors.starlightGray}
-                    fontFamily={Theme.typography.fontFamily.english}
-                    size="sm"
-                    sx={{ letterSpacing: 1 }}
-                >
+                <Text className="text-phase-text-secondary text-sm tracking-[1px]">
                     {text}
                 </Text>
             )}
@@ -98,24 +92,14 @@ export default function LotusLoader({
 
     if (fullscreen) {
         return (
-            <Center sx={{
-                flex: 1,
-                zIndex: Theme.zIndex.tooltip,
-                backgroundColor: Theme.colors.obsidian,
-                borderRadius: Theme.corners.comfortable,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-            }}>
+            <Center className="flex-1 z-[1000] bg-phase-canvas absolute top-0 left-0 right-0 bottom-0">
                 {content}
             </Center>
         );
     }
 
     return (
-        <Center sx={{ padding: Theme.spacing.lg }}>
+        <Center className="p-8">
             {content}
         </Center>
     );

@@ -31,7 +31,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
-import { VStack } from '../gluestack';
+import { VStack } from '../gluestack-legacy';
 import { authAPI, handleAPIError } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import { openExternalURL } from '../utils/linking';
@@ -396,7 +396,7 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                 // ── Desktop web: two-column layout ──────────────────────────────
                 <View style={styles.twoCol}>
                     <LeftPanel isNarrow={false} />
-                    <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <VStack className="flex-1 justify-center items-center">
                         <RightPanel
                             i18nLanguage={i18n.language}
                             acceptedTerms={acceptedTerms}

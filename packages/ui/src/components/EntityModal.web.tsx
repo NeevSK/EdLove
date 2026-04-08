@@ -12,6 +12,12 @@ export interface EntityModalProps {
     title?: string;
 }
 
+/**
+ * EntityModal.web
+ * 
+ * Web-optimized entity modal.
+ * Hardened v3 implementation.
+ */
 export default function EntityModal({
     isOpen,
     onClose,
@@ -29,15 +35,15 @@ export default function EntityModal({
             title={displayTitle}
             size="md"
         >
-            <VStack space="md">
+            <VStack className="gap-4">
                 {mode === 'view' ? (
                     <Box>
-                        <Text>Web View for {definition.type}</Text>
+                        <Text className="text-phase-text-primary">Web View for {definition.type}</Text>
                         {/* Web-optimized view component */}
                     </Box>
                 ) : (
                     <Box>
-                        <Text>Web Form for {definition.type}</Text>
+                        <Text className="text-phase-text-primary">Web Form for {definition.type}</Text>
                         {/* Web-optimized form component */}
                     </Box>
                 )}

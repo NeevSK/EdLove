@@ -2,8 +2,6 @@ import React from 'react';
 import { Text, VStack, HStack, Box } from '../gluestack';
 import SanctuaryButton from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';
-import { useTheme } from '../hooks/useTheme';
-import { Theme } from '../theme/Theme';
 import { LogOut } from 'lucide-react-native';
 
 interface LogoutModalProps {
@@ -15,14 +13,12 @@ interface LogoutModalProps {
 
 /**
  * LogoutModal - sanctuary-themed logout confirmation.
- * Uses SanctuaryModal for phase-aware glass styling (light + dark world).
+ * Hardened v3 implementation.
  */
 export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = false }: LogoutModalProps) {
-    const { text, accent } = useTheme();
-
     const footer = (
-        <HStack {...({ space: "md", width: "100%" } as any)}>
-            <Box sx={{ flex: 1 }}>
+        <HStack className="w-full gap-3">
+            <Box className="flex-1">
                 <SanctuaryButton
                     variant="ghost"
                     action="secondary"
@@ -32,7 +28,7 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
                     Stay
                 </SanctuaryButton>
             </Box>
-            <Box sx={{ flex: 1.5 }}>
+            <Box className="flex-[1.5]">
                 <SanctuaryButton
                     action="primary"
                     onPress={onLogout}
@@ -49,22 +45,16 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
             isOpen={isOpen}
             onClose={onClose}
             title="Sign Out"
-            icon={<LogOut color={accent.action} size={20} />}
+            icon={<LogOut className="text-phase-accent" size={20} />}
             footer={footer}
             size="md"
         >
-            <VStack {...({ space: "md", py: "$2" } as any)}>
-                <Text {...({ color: text.secondary, size: "md" } as any)}>
+            <VStack className="py-2 gap-4">
+                <Text className="text-phase-text-secondary text-base">
                     Are you sure you want to sign out? You'll need to log in again to access your garden.
                 </Text>
-                <Box sx={{
-                    backgroundColor: `${accent.action}15`,
-                    padding: Theme.spacing.md,
-                    borderRadius: Theme.corners.comfortable,
-                    borderWidth: 1,
-                    borderColor: `${accent.action}33`,
-                }}>
-                    <Text {...({ color: text.secondary, size: "sm" } as any)}>
+                <Box className="bg-phase-accent/10 p-4 rounded-xl border border-phase-accent/20">
+                    <Text className="text-phase-text-secondary text-sm">
                         Your streak, achievements, and connections will be here when you come back.
                     </Text>
                 </Box>

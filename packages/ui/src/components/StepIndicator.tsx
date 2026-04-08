@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, HStack, Text, VStack } from '../gluestack';
-import { Theme } from '../theme/Theme';
 
 interface StepIndicatorProps {
     currentStep: number;
@@ -14,46 +13,29 @@ export default function StepIndicator({
     stepLabels,
 }: StepIndicatorProps) {
     return (
-        <VStack sx={{ gap: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
-            <HStack sx={{ gap: Theme.spacing.xs, width: '100%', alignItems: 'center' }}>
+        <VStack space="sm" className="px-4 py-4">
+            <HStack space="xs" className="w-full items-center">
                 {Array.from({ length: totalSteps }).map((_, index) => {
                     const isCompleted = index + 1 < currentStep;
                     const isActive = index + 1 === currentStep;
 
                     return (
-                        <React.Fragment key={index}>
-                            <Box
-                                sx={{
-                                    flex: 1,
-                                    height: 4,
-                                    backgroundColor: isCompleted || isActive
-                                        ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.mistGray,
-                                    borderRadius: Theme.corners.full,
-                                    opacity: isActive ? 1 : isCompleted ? 0.8 : 0.3,
-                                }}
-                            />
-                            {index < totalSteps - 1 && <Box sx={{ width: 4 }} />}
-                        </React.Fragment>
+                        <Box
+                            key={index}
+                            className={`flex-1 h-1 rounded-full ${
+                                isCompleted || isActive 
+                                    ? 'bg-phase-accent' 
+                                    : 'bg-phase-surface'
+                            } ${isActive ? 'opacity-100' : isCompleted ? 'opacity-80' : 'opacity-30'}`}
+                        />
                     );
                 })}
             </HStack>
-            <HStack sx={{ justifyContent: 'space-between', width: '100%' }}>
-                <Text 
-                    sx={{ 
-                        color: Theme.colors.sanctuarySaffron,
-                        fontWeight: '700', 
-                        fontSize: Theme.typography.fontSize.sm 
-                    }}
-                >
+            <HStack className="justify-between w-full">
+                <Text className="text-phase-accent font-bold text-sm">
                     Step {currentStep} of {totalSteps}
                 </Text>
-                <Text 
-                    sx={{ 
-                        color: Theme.colors.mistGray,
-                        fontSize: Theme.typography.fontSize.sm 
-                    }}
-                >
+                <Text className="text-phase-text-secondary text-sm">
                     {stepLabels[currentStep - 1]}
                 </Text>
             </HStack>

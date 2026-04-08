@@ -1,7 +1,5 @@
 import React from 'react';
-import { VStack, Text, Center, Box } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
+import { VStack, Text, Center, Box, Heading } from '../gluestack';
 import SanctuaryButton from './SanctuaryButton';
 import { LucideIcon } from 'lucide-react-native';
 
@@ -22,46 +20,31 @@ export default function EmptyState({
     onAction,
     minHeight = 300
 }: EmptyStateProps) {
-    const { scene, text, accent } = useTheme();
-
     return (
-        <Center sx={{
-            minHeight,
-            opacity: 1.0,
-            padding: Theme.spacing.xl
-        }}>
-            <VStack space="md" alignItems="center" maxWidth={300}>
-                <Box sx={{
-                    padding: Theme.spacing.lg,
-                    backgroundColor: scene.interactive.bg,
-                    borderColor: scene.interactive.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.full,
-                    marginBottom: Theme.spacing.sm
-                }}>
-                    <Icon size={48} color={accent.action} strokeWidth={1.5} />
+        <Center 
+            style={{ minHeight }}
+            className="p-8"
+        >
+            <VStack space="md" className="items-center max-w-[300px]">
+                <Box className="p-6 bg-phase-surface border border-phase-surface rounded-full mb-2">
+                    <Icon size={48} className="text-phase-accent" strokeWidth={1.5} />
                 </Box>
 
-                <Text
-                    color={text.onCanvas}
-                    fontSize="$xl"
-                    fontWeight="$bold"
-                    textAlign="center"
+                <Heading
+                    size="xl"
+                    className="text-center text-phase-text-primary"
                 >
                     {title}
-                </Text>
+                </Heading>
 
                 <Text
-                    color={text.secondary}
-                    textAlign="center"
-                    fontSize="$md"
-                    sx={{ lineHeight: 24 }}
+                    className="text-center text-phase-text-secondary text-base leading-6"
                 >
                     {description}
                 </Text>
 
                 {actionLabel && onAction && (
-                    <Box mt="$4">
+                    <Box className="mt-4">
                         <SanctuaryButton
                             onPress={onAction}
                             size="md"

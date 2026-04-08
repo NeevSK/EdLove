@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 
 export interface UniversalModalProps {
     isOpen: boolean;
@@ -12,9 +12,7 @@ export interface UniversalModalProps {
 
 /**
  * UniversalModal.web - Web-optimized overlay.
- * 
- * Uses fixed-positioning instead of native Modals to ensure
- * reliable rendering in nested layouts and portal-like behavior.
+ * Hardened v3 implementation with NativeWind.
  */
 export const UniversalModal = ({
     isOpen,
@@ -25,46 +23,20 @@ export const UniversalModal = ({
     if (!isOpen) return null;
 
     return (
-        <View style={styles.webOverlay}>
+        <View className="fixed top-0 left-0 right-0 bottom-0 z-[9999] justify-center items-center">
             {hasBackdrop && (
                 <Pressable
-                    style={styles.webBackdrop}
+                    className="absolute top-0 left-0 right-0 bottom-0 bg-black/50"
                     onPress={onClose}
                     accessibilityRole="button"
                     accessibilityLabel="Close modal"
                 />
             )}
-            <View style={styles.webContent}>
-                {children}
+            <View className="z-[10000] w-full h-full justify-center items-center pointer-events-none">
+                 <View className="pointer-events-auto">
+                    {children}
+                 </View>
             </View>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    webOverlay: {
-        position: 'fixed' as any,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    webBackdrop: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    webContent: {
-        zIndex: 10000,
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
-});

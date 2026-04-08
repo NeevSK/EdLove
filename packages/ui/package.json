@@ -25,16 +25,16 @@
     "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\""
   },
   "dependencies": {
-    "@gluestack-style/react": "^1.0.57",
-    "@gluestack-ui/config": "^1.1.20",
-    "@gluestack-ui/themed": "^1.1.73",
+    "gluestack-ui": "3.0.0",
+    "nativewind": "4.1.23",
+    "tailwindcss": "3.4.17",
     "@repo/core": "workspace:*",
     "apca-w3": "^0.1.9",
     "culori": "^4.0.2",
     "lucide-react-native": "^0.563.0",
     "qrcode": "^1.5.4",
-    "react-native-reanimated": "~4.2.1",
-    "react-native-safe-area-context": "~5.6.0",
+    "react-native-reanimated": "3.16.7",
+    "react-native-safe-area-context": "4.15.0",
     "react-native-svg": "15.15.3",
     "expo-device": "~55.0.9",
     "expo-sharing": "~55.0.11",
@@ -44,8 +44,9 @@
     "date-fns": "^4.1.0",
     "expo-router": "~55.0.3"
   },
+
   "peerDependencies": {
-    "@react-native-async-storage/async-storage": "*",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/netinfo": "*",
     "@react-navigation/native": "*",
     "@shopify/flash-list": "2.0.2",
@@ -55,15 +56,17 @@
     "expo-linear-gradient": "~55.0.9",
     "expo-location": "~55.1.4",
     "i18next": "*",
-    "react": "*",
+    "react": "19.2.0",
     "react-i18next": "*",
-    "react-native": "*",
+    "react-native": "0.83.2",
     "svelte": "^5.0.0"
   },
+
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@types/react": "19.2.14",
-    "@types/react-native": "workspace:*",
+    "@types/react-native": "0.83.2",
+
     "@types/qrcode": "^1.x",
     "eslint": "^9.38.0",
     "i18next": "^25.8.0",

@@ -1,18 +1,13 @@
 import React from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, Pressable } from 'react-native';
 import {
     VStack,
     HStack,
     Text,
-    Heading,
-    Icon,
-    CloseIcon,
     Box,
 } from '../gluestack';
-import { useTheme } from '../hooks/useTheme';
-import { Theme } from '../theme/Theme';
 import { UniversalModal } from './UniversalModal';
-import { TouchableOpacity } from 'react-native';
+import { X } from 'lucide-react-native';
 
 export interface SanctuaryModalProps {
     isOpen: boolean;
@@ -27,7 +22,8 @@ export interface SanctuaryModalProps {
 }
 
 /**
- * SanctuaryModal.web  Optimized overlay for Desktop/Web.
+ * SanctuaryModal.web - Optimized overlay for Desktop/Web.
+ * Hardened v3 implementation with NativeWind.
  */
 export default function SanctuaryModal({
     isOpen,
@@ -40,57 +36,37 @@ export default function SanctuaryModal({
     showCloseButton = true,
     size = 'md',
 }: SanctuaryModalProps) {
-    const { scene, text } = useTheme();
-
-    // Responsive width based on size token
-    const getWidth = () => {
-        switch (size) {
-            case 'xs': return 400;
-            case 'sm': return 500;
-            case 'md': return 650;
-            case 'lg': return 800;
-            case 'full': return '90%' as any;
-            default: return 650;
-        }
+    // Responsive width classes
+    const sizeClasses = {
+        xs: 'w-[400px]',
+        sm: 'w-[500px]',
+        md: 'w-[650px]',
+        lg: 'w-[800px]',
+        full: 'w-[90%]',
     };
 
     return (
         <UniversalModal isOpen={isOpen} onClose={onClose}>
-            {/* Backdrop styling handled by UniversalModal, but we can wrap content here */}
             <Box
-                sx={{
-                    width: getWidth(),
-                    maxWidth: '95vw' as any,
-                    backgroundColor: scene.elevated.bg,
-                    borderColor: scene.elevated.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.generous,
-                    shadowColor: Theme.colors.shadowViolet,
+                className={`bg-phase-elevated border border-phase-surface rounded-generous shadow-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]}`}
+                style={{
+                    shadowColor: '#6B6480',
                     shadowOffset: { width: 0, height: 10 },
                     shadowOpacity: 0.3,
                     shadowRadius: 20,
                     elevation: 10,
-                    overflow: 'hidden',
                 }}
             >
                 {/* Header */}
-                <HStack
-                    sx={{
-                        p: 24,
-                        borderBottomWidth: 1,
-                        borderColor: scene.elevated.border,
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                    }}
-                >
-                    <HStack sx={{ gap: '$sm', alignItems: 'center', flex: 1 } as any}>
+                <HStack className="p-6 border-b border-phase-surface items-center justify-between">
+                    <HStack className="gap-3 items-center flex-1">
                         {icon && icon}
-                        <VStack sx={{ flex: 1 } as any}>
-                            <Heading size="md" sx={{ color: text.onElevated } as any}>
+                        <VStack className="flex-1">
+                            <Text className="text-xl font-bold text-phase-text-primary">
                                 {title}
-                            </Heading>
+                            </Text>
                             {subtitle && (
-                                <Text sx={{ fontSize: '$xs', color: text.secondary } as any}>
+                                <Text className="text-xs text-phase-text-secondary">
                                     {subtitle}
                                 </Text>
                             )}
@@ -98,37 +74,24 @@ export default function SanctuaryModal({
                     </HStack>
 
                     {showCloseButton && (
-                        <TouchableOpacity
+                        <Pressable
                             accessibilityRole="button"
                             onPress={onClose}
-                            style={[
-                                styles.closeBtn,
-                                {
-                                    backgroundColor: scene.interactive.bg,
-                                    borderColor: scene.interactive.border,
-                                },
-                            ]}
+                            className="p-2 bg-phase-interactive/10 border border-phase-interactive/20 rounded-xl active:opacity-60"
                         >
-                            <Icon as={CloseIcon} sx={{ color: text.onElevated, size: 'xl' } as any} />
-                        </TouchableOpacity>
+                            <X size={20} className="text-phase-text-primary" />
+                        </Pressable>
                     )}
                 </HStack>
 
                 {/* Body */}
-                <Box sx={{ p: 24, maxHeight: Dimensions.get('window').height * 0.7 }}>
+                <Box className="p-6" style={{ maxHeight: Dimensions.get('window').height * 0.7 }}>
                     {children}
                 </Box>
 
                 {/* Footer */}
                 {footer && (
-                    <Box
-                        sx={{
-                            p: 24,
-                            backgroundColor: scene.interactive.bg,
-                            borderTopWidth: 1,
-                            borderColor: scene.interactive.border,
-                        }}
-                    >
+                    <Box className="p-6 bg-phase-interactive/5 border-t border-phase-surface">
                         {footer}
                     </Box>
                 )}
@@ -136,11 +99,3 @@ export default function SanctuaryModal({
         </UniversalModal>
     );
 }
-
-const styles = StyleSheet.create({
-    closeBtn: {
-        padding: 8,
-        borderRadius: 12,
-        borderWidth: 1,
-    }
-});

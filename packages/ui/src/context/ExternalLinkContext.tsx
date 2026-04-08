@@ -7,9 +7,7 @@ import {
     VStack,
 } from '../gluestack';
 import { useEnvironment } from './EnvironmentContext';
-import { useLotusToast } from '../providers/ToastProvider';
-import { useTheme } from '../hooks/useTheme';
-import { Theme } from '../theme/Theme';
+import { useSanctuaryToast } from '../providers/ToastProvider';
 import SanctuaryButton from '../components/SanctuaryButton';
 import SanctuaryModal from '../components/SanctuaryModal';
 import {
@@ -93,8 +91,7 @@ function getTrustCopy(level: ExternalLinkTrustLevel | undefined) {
 
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
     const { reality } = useEnvironment();
-    const { showToast } = useLotusToast();
-    const { text, accent, glass } = useTheme();
+    const { showToast } = useSanctuaryToast();
     const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null);
     const [selectedMethod, setSelectedMethod] = useState<ExternalOpenMethod>('new_tab');
     const [rememberChoice, setRememberChoice] = useState(true);
@@ -145,11 +142,11 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                 onClose={() => closeRequest(null)}
                 title={pendingRequest?.options.title ?? 'Open external link'}
                 subtitle={modalSubtitle}
-                icon={<ExternalLink size={18} color={accent.action} />}
+                icon={<ExternalLink size={18} className="text-phase-accent" />}
                 size="md"
                 footer={pendingRequest ? (
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
+                    <VStack className="gap-2">
+                        <HStack className="gap-2 flex-wrap">
                             <SanctuaryButton
                                 onPress={() => closeRequest({
                                     method: selectedMethod,
@@ -160,7 +157,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                 Open Now
                             </SanctuaryButton>
                         </HStack>
-                        <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
+                        <HStack className="gap-2 flex-wrap">
                             <SanctuaryButton
                                 variant="outline"
                                 action="secondary"
@@ -193,40 +190,34 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                 ) : null}
             >
                 {pendingRequest && (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-4">
                         <Box
-                            sx={{
-                                backgroundColor: glass.surface.bg,
-                                borderColor: glass.surface.border,
-                                borderWidth: 1,
-                                borderRadius: Theme.corners.comfortable,
-                                padding: Theme.spacing.md,
-                            }}
+                            className="bg-phase-surface border border-white/10 rounded-xl p-4"
                         >
-                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', marginBottom: Theme.spacing.xs }}>
-                                <TrustIcon size={16} color={trustCopy.label === 'Broken or unverified' ? accent.danger : accent.action} />
-                                <Text sx={{ color: text.primary, fontWeight: '700' }}>
+                            <HStack className="gap-2 items-center mb-1">
+                                <TrustIcon size={16} className={trustCopy.label === 'Broken or unverified' ? 'text-phase-danger' : 'text-phase-accent'} />
+                                <Text className="text-phase-text-primary font-bold">
                                     {trustCopy.label}
                                 </Text>
                             </HStack>
-                            <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}>
+                            <Text className="text-phase-text-secondary text-[13px] leading-5">
                                 {trustCopy.note}
                             </Text>
-                            <Text sx={{ color: text.muted, fontSize: 12, marginTop: Theme.spacing.sm }}>
+                            <Text className="text-phase-text-secondary text-[12px] opacity-60 mt-2">
                                 Destination: {pendingRequest.domain}
                             </Text>
                             {pendingRequest.options.sourceBadge ? (
-                                <Text sx={{ color: accent.action, fontSize: 12, marginTop: 4, fontWeight: '700' }}>
+                                <Text className="text-phase-accent text-[12px] mt-1 font-bold">
                                     {pendingRequest.options.sourceBadge}
                                 </Text>
                             ) : null}
                             {pendingRequest.overrideCount >= 2 && !pendingRequest.currentPreference ? (
-                                <Text sx={{ color: text.secondary, fontSize: 12, marginTop: Theme.spacing.sm }}>
+                                <Text className="text-phase-text-secondary text-[12px] mt-2">
                                     You often choose a different link method. Saving a default may reduce friction.
                                 </Text>
                             ) : null}
                         </Box>
-                        <VStack sx={{ gap: Theme.spacing.sm }}>
+                        <VStack className="gap-2">
                             {methods.map((method) => {
                                 const isSelected = selectedMethod === method.id;
                                 return (
@@ -234,35 +225,21 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                                         key={method.id}
                                         accessibilityRole="button"
                                         onPress={() => setSelectedMethod(method.id)}
-                                        style={[
-                                            styles.optionCard,
-                                            {
-                                                borderColor: isSelected ? accent.action : glass.surface.border,
-                                                backgroundColor: isSelected ? `${accent.action}14` : glass.surface.bg,
-                                            },
-                                        ]}
+                                        className={`p-4 border rounded-xl flex-row items-center gap-3 ${isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-white/10 bg-phase-surface'}`}
                                     >
-                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                            <View
-                                                style={[
-                                                    styles.selectionDot,
-                                                    {
-                                                        borderColor: isSelected ? accent.action : text.muted,
-                                                        backgroundColor: isSelected ? accent.action : 'transparent',
-                                                    },
-                                                ]}
-                                            >
-                                                {isSelected ? <Check size={10} color={Theme.colors.sacredWhite} /> : null}
-                                            </View>
-                                            <VStack sx={{ flex: 1 }}>
-                                                <Text sx={{ color: text.primary, fontWeight: '700' }}>
-                                                    {method.title}
-                                                </Text>
-                                                <Text sx={{ color: text.secondary, fontSize: 13, lineHeight: 20 }}>
-                                                    {method.description}
-                                                </Text>
-                                            </VStack>
-                                        </HStack>
+                                        <View
+                                            className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center ${isSelected ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
+                                        >
+                                            {isSelected ? <Check size={10} className="text-white" /> : null}
+                                        </View>
+                                        <VStack className="flex-1">
+                                            <Text className="text-phase-text-primary font-bold">
+                                                {method.title}
+                                            </Text>
+                                            <Text className="text-phase-text-secondary text-[13px] leading-5">
+                                                {method.description}
+                                            </Text>
+                                        </VStack>
                                     </Pressable>
                                 );
                             })}
@@ -270,27 +247,18 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                         <Pressable
                             accessibilityRole="button"
                             onPress={() => setRememberChoice((current) => !current)}
-                            style={[
-                                styles.rememberRow,
-                                { borderColor: glass.surface.border },
-                            ]}
+                            className="flex-row items-center gap-3 border border-white/10 rounded-xl p-4"
                         >
                             <View
-                                style={[
-                                    styles.checkbox,
-                                    {
-                                        borderColor: rememberChoice ? accent.action : text.muted,
-                                        backgroundColor: rememberChoice ? accent.action : 'transparent',
-                                    },
-                                ]}
+                                className={`w-5 h-5 rounded-md border-[1.5px] items-center justify-center ${rememberChoice ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
                             >
-                                {rememberChoice ? <Check size={12} color={Theme.colors.sacredWhite} /> : null}
+                                {rememberChoice ? <Check size={12} className="text-white" /> : null}
                             </View>
-                            <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: text.primary, fontWeight: '700' }}>
+                            <VStack className="flex-1">
+                                <Text className="text-phase-text-primary font-bold">
                                     Remember my choice on this {pendingRequest.platform === 'web' ? 'browser' : 'device'}
                                 </Text>
-                                <Text sx={{ color: text.secondary, fontSize: 12 }}>
+                                <Text className="text-phase-text-secondary text-[12px]">
                                     You can still choose another method whenever you need to.
                                 </Text>
                             </VStack>
@@ -301,35 +269,3 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    optionCard: {
-        borderWidth: 1,
-        borderRadius: Theme.corners.comfortable,
-        padding: Theme.spacing.md,
-    },
-    selectionDot: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    rememberRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: Theme.spacing.sm,
-        borderWidth: 1,
-        borderRadius: Theme.corners.comfortable,
-        padding: Theme.spacing.md,
-    },
-    checkbox: {
-        width: 20,
-        height: 20,
-        borderRadius: 6,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

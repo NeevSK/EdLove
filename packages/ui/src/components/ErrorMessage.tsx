@@ -1,48 +1,11 @@
 /**
  * ERROR MESSAGE - Reusable Error/Warning/Info Message Component
- * 
- * A themed message component that supports:
- * - Three severity types: gentle, warning, severe
- * - Appropriate icons and colors for each type
- * - Optional dismiss functionality
- * - Horizontal layout with icon, message, and dismiss button
- * 
- * Philosophy: Clear, accessible feedback that matches sanctuary aesthetic
- * 
- * @example
- * ```tsx
- * import ErrorMessage from './components/ErrorMessage';
- * 
- * // Gentle info message
- * <ErrorMessage 
- *   message="Your progress has been saved" 
- *   type="gentle"
- * /
- * 
- * // Warning message with dismiss
- * <ErrorMessage 
- *   message="Please review your entries" 
- *   type="warning"
- *   onDismiss={() => console.log('dismissed')}
- * /
- * 
- * // Severe error message
- * <ErrorMessage 
- *   message="Connection failed. Please try again." 
- *   type="severe"
- * /
- * ```
+ * Hardened v3 implementation.
  */
 
-import React, { FC, useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { HStack } from '../gluestack';
+import React, { FC } from 'react';
+import { View, HStack, Text, Pressable } from '../gluestack';
 import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react-native';
-import { Theme, typography } from '../theme/Theme';
-
-// ============================================================================
-// TYPES
-// ============================================================================
 
 interface ErrorMessageProps {
     message: string;
@@ -50,97 +13,56 @@ interface ErrorMessageProps {
     onDismiss?: () => void;
 }
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
-
 const ErrorMessage: FC<ErrorMessageProps> = ({
     message,
     type = 'gentle',
     onDismiss,
 }) => {
-    const styles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: Theme.spacing.md,
-            borderRadius: Theme.corners.comfortable,
-            marginBottom: Theme.spacing.md,
-        },
-        hstack: {
-            alignItems: 'center',
-        },
-        message: {
-            flex: 1,
-            fontSize: typography.fontSize.md,
-            lineHeight: typography.lineHeight.relaxed * typography.fontSize.md,
-        },
-        dismissButton: {
-            padding: Theme.spacing.xs,
-        },
-    }), []);
-
-    // ============================================================================
-    // TYPE-SPECIFIC CONFIGURATION
-    // ============================================================================
-
     const getTypeConfig = () => {
         switch (type) {
             case 'gentle':
                 return {
-                    backgroundColor: Theme.colors.shroud,
-                    textColor: Theme.colors.sacredWhite,
+                    containerClass: 'bg-phase-surface',
+                    textClass: 'text-phase-text-primary',
                     Icon: Info,
                 };
             case 'warning':
                 return {
-                    backgroundColor: `${Theme.colors.amberGlow}33`, // 20% opacity (33 in hex = 51/255)
-                    textColor: Theme.colors.amberGlow,
+                    containerClass: 'bg-phase-accent/20 border border-phase-accent/30',
+                    textClass: 'text-phase-accent',
                     Icon: AlertTriangle,
                 };
             case 'severe':
                 return {
-                    backgroundColor: `${Theme.colors.emberRed}33`, // 20% opacity (33 in hex = 51/255)
-                    textColor: Theme.colors.emberRed,
+                    containerClass: 'bg-phase-danger/10 border border-phase-danger/20',
+                    textClass: 'text-phase-danger',
                     Icon: AlertCircle,
                 };
         }
     };
 
-    const { backgroundColor, textColor, Icon } = getTypeConfig();
-
-    // ============================================================================
-    // RENDER
-    // ============================================================================
+    const { containerClass, textClass, Icon } = getTypeConfig();
 
     return (
-        <View style={[styles.container, { backgroundColor }]}>
-            <HStack space="md" style={styles.hstack}>
+        <View className={`p-4 rounded-xl mb-4 ${containerClass}`}>
+            <HStack space="md" className="items-center">
                 {/* Icon */}
-                <Icon color={textColor} size={20} />
+                <Icon color="currentColor" className={textClass} size={20} />
 
                 {/* Message Text */}
-                <Text style={[styles.message, { color: textColor }]}>
+                <Text className={`flex-1 text-base leading-6 ${textClass}`}>
                     {message}
                 </Text>
 
                 {/* Dismiss Button (X) */}
                 {onDismiss && (
-                    <Pressable accessibilityRole="button" onPress={onDismiss} style={styles.dismissButton}>
-                        <X color={textColor} size={20} />
+                    <Pressable accessibilityRole="button" onPress={onDismiss} className="p-1">
+                        <X color="currentColor" className={textClass} size={20} />
                     </Pressable>
                 )}
             </HStack>
         </View>
     );
 };
-
-// ============================================================================
-// STYLES
-// ============================================================================
-
-// ============================================================================
-// STYLES
-// ============================================================================
-
-
 
 export default ErrorMessage;

@@ -1,37 +1,20 @@
-/**
- * SanctuaryModal - Phase-aware base modal for the Gurudevi ecosystem.
- *
- * Design laws enforced here:
- * - Backdrop uses Shadow Violet rgba(107,100,128,x) - NEVER black
- * - Background resolves from glass.modal tokens (phase + world aware)
- * - All text uses token-resolved colors - no hardcoded hex
- * - Border radius: Theme.corners.generous (24) - organic, never sharp
- * - Shadow: Shadow Violet only
- *
- * Usage:
- *   <SanctuaryModal isOpen={open} onClose={close} title="Confirm">
- *     <Text>Your content</Text>
- *   </SanctuaryModal>
- */
-
 import React from 'react';
 import {
     Modal,
-    ModalBackdrop,
     ModalContent,
     ModalHeader,
-    ModalCloseButton,
     ModalBody,
     ModalFooter,
-    Heading,
     Text,
-    Icon,
-    CloseIcon,
     HStack,
     VStack,
 } from '../gluestack';
-import { useTheme } from '../hooks/useTheme';
-import { Theme } from '../theme/Theme';
+import { X } from 'lucide-react-native';
+import { Pressable } from 'react-native';
+
+const Heading = ({ children, className }: any) => (
+  <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>
+);
 
 export interface SanctuaryModalProps {
     /** Controls visibility */
@@ -52,8 +35,16 @@ export interface SanctuaryModalProps {
     showCloseButton?: boolean;
     /** Gluestack size token */
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'full';
+    /** Custom class name for modal content */
+    className?: string;
 }
 
+/**
+ * SanctuaryModal
+ * 
+ * A premium, phase-aware modal for mobile.
+ * Hardened v3 implementation with NativeWind.
+ */
 export default function SanctuaryModal({
     isOpen,
     onClose,
@@ -63,55 +54,28 @@ export default function SanctuaryModal({
     children,
     footer,
     showCloseButton = true,
-    size = 'md',
+    className = '',
 }: SanctuaryModalProps) {
-    const { scene, text, isDark } = useTheme();
-
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            size={size}
         >
-            {/* Backdrop: Shadow Violet - NEVER black */}
-            <ModalBackdrop
-                sx={{
-                    _dark: {
-                        backgroundColor: 'rgba(107,100,128,0.65)',
-                    },
-                    backgroundColor: 'rgba(107,100,128,0.45)',
-                }}
-            />
-
             <ModalContent
-                sx={{
-                    width: '90%',
-                    backgroundColor: scene.elevated.bg,
-                    borderColor: scene.elevated.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.generous,
-                    // Shadow Violet only - never black
-                    shadowColor: Theme.colors.shadowViolet,
-                    shadowOffset: { width: 0, height: isDark ? 0 : 4 },
-                    shadowOpacity: isDark ? 0.28 : 0.10,
-                    shadowRadius: isDark ? 20 : 12,
-                    elevation: 8,
-                }}
+                className={`bg-phase-elevated border-phase-surface shadow-2xl ${className}`}
             >
-                <ModalHeader>
-                    <HStack space="sm" alignItems="center" flex={1}>
+                <ModalHeader className="border-b-0">
+                    <HStack className="items-center flex-1 gap-3">
                         {icon && icon}
-                        <VStack flex={1}>
+                        <VStack className="flex-1">
                             <Heading
-                                size="md"
-                                sx={{ color: text.onElevated }}
+                                className="text-phase-text-primary"
                             >
                                 {title}
                             </Heading>
                             {subtitle ? (
                                 <Text
-                                    size="xs"
-                                    sx={{ color: text.secondary }}
+                                    className="text-phase-text-secondary text-xs"
                                 >
                                     {subtitle}
                                 </Text>
@@ -120,20 +84,16 @@ export default function SanctuaryModal({
                     </HStack>
 
                     {showCloseButton && (
-                        <ModalCloseButton>
-                            <Icon
-                                as={CloseIcon}
-                                sx={{ color: text.onElevated }}
-                            />
-                        </ModalCloseButton>
+                        <Pressable onPress={onClose} className="p-2 active:opacity-60">
+                             <X size={20} className="text-phase-text-primary" />
+                        </Pressable>
                     )}
                 </ModalHeader>
 
-                <ModalBody>{children}</ModalBody>
+                <ModalBody className="py-2">{children}</ModalBody>
 
-                {footer ? <ModalFooter>{footer}</ModalFooter> : null}
+                {footer ? <ModalFooter className="border-t-0">{footer}</ModalFooter> : null}
             </ModalContent>
         </Modal>
     );
 }
-
