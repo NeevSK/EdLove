@@ -82,6 +82,8 @@ export default function GroupDetailsScreen() {
     const [commentPostId, setCommentPostId] = useState<string | null>(null);
     const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>();
     const [commentPostType, setCommentPostType] = useState<string | undefined>();
+    const canJoinGroup = can('create', 'Group') || can('create', 'CommunityGroup');
+    const canManageGroup = can('manage', 'Group') || can('manage', 'CommunityGroup');
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -120,8 +122,6 @@ export default function GroupDetailsScreen() {
     }, [groupId, user?.id, fetchPosts]);
 
     const handleJoin = async () => {
-        // 'create' CommunityGroup is the capability to join/become a member in POA
-        const canJoinGroup = can('create', 'CommunityGroup');
         if (!canJoinGroup || !user?.id) {
             await setPendingGateAction({ kind: 'community_join_group', createdAt: Date.now(), groupId, joinPolicy: group?.join_policy || 'open' });
             showToast({
@@ -158,7 +158,7 @@ export default function GroupDetailsScreen() {
     useEffect(() => {
         let cancelled = false;
         const maybeReplayJoin = async () => {
-            if (!can('create', 'CommunityGroup')) return;
+            if (!canJoinGroup) return;
             if (!user?.id) return;
             if (isMember) return;
             const pending = await getPendingGateAction();
@@ -170,7 +170,7 @@ export default function GroupDetailsScreen() {
         };
         maybeReplayJoin().catch(() => { });
         return () => { cancelled = true; };
-    }, [can, groupId, user?.id, isMember, group?.join_policy]);
+    }, [canJoinGroup, groupId, user?.id, isMember, group?.join_policy]);
 
     if (loading) {
         return (
@@ -185,7 +185,7 @@ export default function GroupDetailsScreen() {
     if (!group) return null;
 
     // Admin: circle creator OR users with management capability over groups
-    const isAdmin = group.created_by === user?.id || can('manage', 'CommunityGroup');
+    const isAdmin = group.created_by === user?.id || canManageGroup;
 
     if (showAdmin && isAdmin) {
         return (

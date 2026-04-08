@@ -9,10 +9,10 @@ import {
 } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import {
-    TemporalNavigator,
     TemporalProvider,
     JourneyHistoryCard,
     TemporalShield,
+    useThemedColors,
 } from '@repo/ui';
 import { Users, MessageSquare } from 'lucide-react-native';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
@@ -26,6 +26,16 @@ import { BaseSelfView } from '../../components/BaseSelfView';
 import MoodLotus from '../../components/MoodLotus';
 import DailyRhythm from '../../components/DailyRhythm';
 import WelcomeModal from '../../components/WelcomeModal';
+import FireJournal from '../../components/FireJournal';
+import JoyJar from '../../components/JoyJar';
+import GratitudeGlimmers from '../../components/GratitudeGlimmers';
+import WisdomSeeds from '../../components/WisdomSeeds';
+import TomorrowPrep from '../../components/TomorrowPrep';
+import SleepTracker from '../../components/SleepTracker';
+import RemindersManager from '../../components/RemindersManager';
+import VoiceJournaling from '../../components/VoiceJournaling';
+import DecisionJournalSection from '../../components/DecisionJournalSection';
+import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 import {
     JournalSection,
     MoodSection,
@@ -37,14 +47,16 @@ export default function TeacherSelfView() {
     const navigation = useNavigation<any>();
     const { context } = usePermissions();
     const userId = context.userId;
-    const { viewMode, viewDate, viewScale, setScale } = useTemporalStore();
+    const { viewDate } = useTemporalStore();
+    const colors = useThemedColors();
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
+    const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
     const { logs: moodLogs, loading: moodLoading, addMoodLog } = useMoodLogs();
     const { entries: journalEntries, loading: journalLoading } = useJournalEntries();
     const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
-    const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
+    const { events: journeyEvents, holisticView, isLoading: journeyLoading, currentScale: viewScale } = useJourneyHistory();
 
     const personalLayer = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -64,27 +76,6 @@ export default function TeacherSelfView() {
 
     const holisticSection = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '8px' }}>
-                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
-                    <button
-                        key={scale}
-                        className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
-                        onClick={() => setScale(scale)}
-                        style={{
-                            background: viewScale === scale ? 'var(--saffron-glass)' : 'rgba(255,255,255,0.05)',
-                            border: 'none',
-                            color: '#fff',
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '11px',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        {scale}
-                    </button>
-                ))}
-            </div>
             <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
@@ -123,16 +114,13 @@ export default function TeacherSelfView() {
                     </button>
                 </div>
             </div>
-            <ImpactRipplesCard ripples={[]} />
-            <WarmMirrorCard text="Your presence is the root of this sanctuary." />
+            <ImpactRipplesCard ripples={ripples} />
+            <WarmMirrorCard text={warmMirrorText ?? 'Your presence is the root of this sanctuary.'} />
         </>
     );
 
     return (
         <TemporalProvider>
-            <div style={{ padding: '20px 40px 0' }}>
-                <TemporalNavigator />
-            </div>
             <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDesc', 'Radiate clarity from the center of your instructional practice.')}
@@ -141,7 +129,8 @@ export default function TeacherSelfView() {
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#10B981',
-                        content: viewMode === 'timeline' ? <ResonanceTimeline /> : holisticSection,
+                        content: holisticSection,
+                        historyContent: <ResonanceTimeline />,
                     },
                     {
                         id: 'tools',
@@ -160,8 +149,22 @@ export default function TeacherSelfView() {
                                 content: <MoodLotus userId={userId ?? undefined} />,
                                 historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
                             },
+                            {
+                                id: 'fire_journal',
+                                label: 'Fire Journal',
+                                content: <FireJournal userId={userId ?? undefined} />,
+                                historyContent: <JournalSection entries={journalEntries} loading={journalLoading} />,
+                            },
                             { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
                             { id: 'professional_growth', label: 'Banyan Growth', content: <SpotlightEmpty date={viewDate} /> },
+                            { id: 'joy_jar', label: 'Joy Jar', content: <JoyJar userId={userId ?? undefined} /> },
+                            { id: 'gratitude', label: 'Gratitude Glimmers', content: <GratitudeGlimmers userId={userId ?? undefined} /> },
+                            { id: 'wisdom', label: 'Wisdom Seeds', content: <WisdomSeeds userId={userId ?? undefined} /> },
+                            { id: 'tomorrow', label: 'Tomorrow Prep', content: <TomorrowPrep userId={userId ?? undefined} /> },
+                            { id: 'sleep', label: 'Sleep Tracker', content: <SleepTracker userId={userId ?? undefined} /> },
+                            { id: 'reminders', label: 'Reminders', content: <RemindersManager userId={userId ?? undefined} /> },
+                            { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling userId={userId ?? undefined} /> },
+                            { id: 'decisions', label: 'Decision Journal', content: <DecisionJournalSection userId={userId} colors={colors} t={t} /> },
                         ],
                     },
                 ]}

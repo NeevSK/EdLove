@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ClassroomStackParamList, FlowResolver, identityAPI, useTemporalStore } from '@repo/core';
 import { useFeatureAccess, useStore } from '@repo/core';
-import { useLotusToast, useRegisterFAB, hapticLight } from '@repo/ui';
+import { useRegisterFAB, useSanctuaryToast, hapticLight } from '@repo/ui';
 import { Plus } from 'lucide-react-native';
 import { resolveQR } from '@repo/scanner-kit';
 import type { NavigationProp } from '@react-navigation/native';
@@ -18,7 +18,7 @@ export function useTeacherWorkspaceShell(
 ) {
     const { isDemoMode } = useStore();
     const { isGuest } = useFeatureAccess();
-    const { showToast } = useLotusToast();
+    const { showToast } = useSanctuaryToast();
     const { isPastView } = useTemporalStore();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

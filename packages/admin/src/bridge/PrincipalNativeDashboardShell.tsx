@@ -32,39 +32,29 @@ function ZoneButton({
   return (
     <TouchableOpacity onPress={() => onPress(id)} activeOpacity={0.85} style={{ flex: 1 }}>
       <Box
-        sx={{
-          padding: Theme.spacing.sm,
-          borderRadius: Theme.corners.comfortable,
-          borderWidth: 1,
-          borderColor: isActive ? Theme.colors.gurudeviBlue : Theme.colors.border,
-          backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}16` : Theme.colors.silk,
-          minHeight: 74,
-        }}
+        className={`p-sm rounded-xl border min-h-[74px] ${
+          isActive ? 'border-gurudeviBlue bg-gurudeviBlue/10' : 'border-phase-interactive/10 bg-phase-canvas'
+        }`}
       >
-        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>
+        <HStack className="justify-between items-center">
+          <Text className="text-[13px] font-bold text-phaseText-primary">
             {label}
           </Text>
           <Box
-            sx={{
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-              borderRadius: Theme.corners.full,
-              backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}24` : Theme.colors.linen,
-            }}
+            className={`px-2 py-0.5 rounded-full ${
+              isActive ? 'bg-gurudeviBlue/20' : 'bg-phase-interactive/5'
+            }`}
           >
             <Text
-              sx={{
-                fontSize: 10,
-                fontWeight: '800',
-                color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark,
-              }}
+              className={`text-[10px] font-extrabold ${
+                isActive ? 'text-gurudeviBlue' : 'text-phaseText-secondary'
+              }`}
             >
               {count}
             </Text>
           </Box>
         </HStack>
-        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}>
+        <Text className="text-[11px] leading-4 text-phaseText-secondary mt-1.5">
           {detail}
         </Text>
       </Box>
@@ -103,15 +93,9 @@ export function PrincipalNativeDashboardShell({
       <GlobalHeader title={title} subtitle={subtitle} />
 
       <Box
-        sx={{
-          paddingHorizontal: Theme.spacing.lg,
-          paddingBottom: Theme.spacing.md,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border,
-          backgroundColor: Theme.colors.vellum,
-        }}
+        className="px-lg pb-md border-b border-phase-surface/10 bg-phase-world"
       >
-        <HStack sx={{ gap: Theme.spacing.xs }}>
+        <HStack className="gap-1">
           <ZoneButton
             id="today"
             label="Today"
@@ -140,23 +124,17 @@ export function PrincipalNativeDashboardShell({
       </Box>
 
       <ScrollView>
-        <VStack sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}>
+        <VStack className="gap-lg p-lg pb-[120px]">
           {error ? (
             <Box
-              sx={{
-                padding: Theme.spacing.md,
-                backgroundColor: Theme.colors.errorBackground,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: Theme.colors.emberRed,
-              }}
+              className="p-md bg-phase-danger/10 rounded-xl border border-phase-danger"
             >
-              <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text>
+              <Text className="text-phaseText-primary">{error}</Text>
             </Box>
           ) : null}
 
           {isLoading ? (
-            <VStack sx={{ gap: Theme.spacing.md }}>
+            <VStack className="gap-md">
               <SkeletonCard height={120} />
               <SkeletonCard height={220} />
               <SkeletonCard height={220} />

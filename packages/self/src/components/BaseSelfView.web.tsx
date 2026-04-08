@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { VStack, HStack, FeatureInfoIcon, TemporalNavigator } from '@repo/ui';
-import { usePermissions } from '@repo/core';
-import { BaseSelfViewProps } from './BaseSelfView.types';
-import { FEATURE_EMOJIS } from '../constants/selfRegistry';
+import { VStack, FeatureInfoIcon, TemporalNavigator } from '@repo/ui';
+import { usePermissions, useTemporalStore } from '@repo/core';
+import { BaseSelfViewProps, SelfViewFeature } from './BaseSelfView.types';
+import { FEATURE_EMOJIS, FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
-import { FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
+
+const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 
 /**
- * BaseSelfView.web - The architectural kernel for GuruDevi Self sections on Web.
- * This component implements the "Control Center" hub.
+ * BaseSelfView.web - Restores the richer control-center sanctuary while
+ * adding a shell-owned temporal layer for feature history.
  */
 export function BaseSelfView({
     domains,
@@ -22,35 +23,45 @@ export function BaseSelfView({
 }: BaseSelfViewProps) {
     const { can } = usePermissions();
     const surfaceBg = can('manage', 'StudentDashboard') ? '#F5F3FF' : '#FFF7ED';
+    const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
+    const isHistoryMode = viewMode === 'timeline';
 
-
-
-    
-    const allFeatures = React.useMemo(() => [
-        ...domains.flatMap((domain: any) =>
-            (domain.features || []).map((feature: any) => ({
-                ...feature,
-                domainId: domain.id,
-                domainColor: domain.accentColor
-            }))
-        ),
-        // Inject Mirrors as "Reflections" if provided
-        ...(sideBar ? [{
-            id: 'mirrors',
-            label: 'Reflections',
-            content: sideBar,
-            domainId: 'reflections',
-            domainColor: '#8B5CF6'
-        }] : []),
-        // Inject Reminders if provided
-        ...(reminders ? [{
-            id: 'reminders',
-            label: 'Reminders',
-            content: reminders,
-            domainId: 'reminders',
-            domainColor: '#F59E0B'
-        }] : [])
-    ], [domains, sideBar, reminders]);
+    const allFeatures = React.useMemo(
+        () => [
+            ...domains.flatMap((domain: any) =>
+                (domain.features || []).map((feature: any) => ({
+                    ...feature,
+                    domainId: domain.id,
+                    domainColor: domain.accentColor,
+                }))
+            ),
+            ...(sideBar
+                ? [
+                      {
+                          id: 'mirrors',
+                          label: 'Reflections',
+                          content: sideBar,
+                          historyContent: sideBar,
+                          domainId: 'reflections',
+                          domainColor: '#8B5CF6',
+                      },
+                  ]
+                : []),
+            ...(reminders
+                ? [
+                      {
+                          id: 'reminders',
+                          label: 'Reminders',
+                          content: reminders,
+                          historyContent: reminders,
+                          domainId: 'reminders',
+                          domainColor: '#F59E0B',
+                      },
+                  ]
+                : []),
+        ],
+        [domains, sideBar, reminders]
+    );
 
     const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
     const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
@@ -58,19 +69,25 @@ export function BaseSelfView({
 
     const [activeCategoryId, setActiveCategoryId] = React.useState(domains[0]?.id);
     const [focusedItemId, setFocusedItemId] = React.useState<string | null>(null);
-    const [focusedHistoryId, setFocusedHistoryId] = React.useState<string | null>(null);
 
     const activeDomain = domains.find((d: any) => d.id === activeCategoryId) || domains[0];
+    const focusedFeature = activeDomain?.features?.find((f: any) => f.id === focusedItemId) || null;
 
-    const handleFeaturePress = (featureId: string) => {
-        setFocusedItemId(featureId);
-        trackFeatureAccess(featureId);
+    const renderFocusedFeature = (feature: SelfViewFeature | null) => {
+        if (!feature) return null;
+        if (!isHistoryMode) return feature.content;
+        return feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />;
+    };
+
+    const getActiveDomainContent = () => {
+        if (!activeDomain) return null;
+        if (!isHistoryMode) return activeDomain.content ?? null;
+        return activeDomain.historyContent ?? activeDomain.content ?? null;
     };
 
     return (
         <View style={[webStyles.container, { backgroundColor: surfaceBg }]}>
-            {/* Fixed Control Panel (Top Hub) - Category Navigation */}
-            {/* @ts-ignore - className is valid on web */}
+            {/* @ts-ignore */}
             <View style={webStyles.hubHeader} className="sanctuary-glass-hub">
                 <ScrollView
                     horizontal
@@ -83,129 +100,176 @@ export function BaseSelfView({
                             onPress={() => {
                                 setActiveCategoryId(domain.id);
                                 setFocusedItemId(null);
-                                setFocusedHistoryId(null);
                             }}
                             style={[
                                 webStyles.categoryCard,
                                 activeCategoryId === domain.id && {
                                     backgroundColor: domain.accentColor + '15',
-                                    borderColor: domain.accentColor
-                                }
+                                    borderColor: domain.accentColor,
+                                },
                             ]}
-                            // @ts-expect-error - className is valid on web
-                            className={activeCategoryId === domain.id ? "sanctuary-card interactive active" : "sanctuary-card interactive"}
+                            // @ts-ignore
+                            className={activeCategoryId === domain.id ? 'sanctuary-card interactive active' : 'sanctuary-card interactive'}
                         >
                             <View style={[webStyles.categoryIndicator, { backgroundColor: domain.accentColor }]} />
-                            <Text style={[
-                                webStyles.categoryTitle,
-                                { color: activeCategoryId === domain.id ? domain.accentColor : 'var(--text-muted)' }
-                            ]}>
+                            <Text
+                                style={[
+                                    webStyles.categoryTitle,
+                                    { color: activeCategoryId === domain.id ? domain.accentColor : 'var(--text-muted)' },
+                                ]}
+                            >
                                 {domain.title}
                             </Text>
                         </Pressable>
                     ))}
                 </ScrollView>
             </View>
-            
-            <View style={{ paddingHorizontal: 40, marginTop: 24 }}>
+
+            <View style={webStyles.temporalTopbar}>
                 <TemporalNavigator />
+                <View style={webStyles.temporalControls}>
+                    <View style={webStyles.modeRow}>
+                        <Pressable
+                            onPress={() => setViewMode('spotlight')}
+                            style={[webStyles.modeChip, !isHistoryMode && webStyles.modeChipActive]}
+                        >
+                            <Text style={[webStyles.modeChipText, !isHistoryMode && webStyles.modeChipTextActive]}>
+                                Now
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => setViewMode('timeline')}
+                            style={[webStyles.modeChip, isHistoryMode && webStyles.modeChipActive]}
+                        >
+                            <Text style={[webStyles.modeChipText, isHistoryMode && webStyles.modeChipTextActive]}>
+                                History
+                            </Text>
+                        </Pressable>
+                    </View>
+                    {isHistoryMode && (
+                        <View style={webStyles.scaleRow}>
+                            {TEMPORAL_SCALES.map((scale) => (
+                                <Pressable
+                                    key={scale}
+                                    onPress={() => setScale(scale)}
+                                    style={[webStyles.scaleChip, viewScale === scale && webStyles.scaleChipActive]}
+                                >
+                                    <Text
+                                        style={[
+                                            webStyles.scaleChipText,
+                                            viewScale === scale && webStyles.scaleChipTextActive,
+                                        ]}
+                                    >
+                                        {scale.toUpperCase()}
+                                    </Text>
+                                </Pressable>
+                            ))}
+                        </View>
+                    )}
+                </View>
             </View>
 
-            {/* Main Content Area - Multi-column based on active domain */}
             <View style={webStyles.contentWrapper}>
-                {/* Primary Focus Area */}
                 <ScrollView
                     style={webStyles.mainColumn}
                     contentContainerStyle={webStyles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* Featured Detail View (Conditional) */}
-                    {(focusedItemId || focusedHistoryId) && (
-                        <View style={[styles.card, { marginBottom: 48, backgroundColor: '#FFF', elevation: 8 }]}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+                    {focusedItemId && (
+                        <View style={[styles.card, webStyles.focusCard]}>
+                            <View style={webStyles.focusHeader}>
                                 <Text style={[styles.sectionHeading, { color: activeDomain?.accentColor || '#000' }]}>
-                                    {focusedHistoryId ? 'Historical Context' : 'Focused Detail'}
+                                    {isHistoryMode ? 'Historical Context' : 'Focused Detail'}
                                 </Text>
-                                <View 
-                                    onPointerDown={() => {
-                                        setFocusedItemId(null);
-                                        setFocusedHistoryId(null);
-                                    }} 
-                                    style={{ cursor: 'pointer', padding: 4 }}
-                                >
-                                    <Text style={{ fontSize: 20 }}>\u2715</Text>
-                                </View>
+                                <Pressable onPress={() => setFocusedItemId(null)} style={webStyles.closeButton}>
+                                    <Text style={{ fontSize: 20 }}>✕</Text>
+                                </Pressable>
                             </View>
-                            {/* Render the selected feature content or its history */}
-                            {focusedHistoryId 
-                                ? activeDomain?.features?.find((f: any) => f.id === focusedHistoryId)?.historyContent || <Text>No history available for this feature.</Text>
-                                : activeDomain?.features?.find((f: any) => f.id === focusedItemId)?.content || null
-                            }
+                            {renderFocusedFeature(focusedFeature)}
                         </View>
                     )}
 
-                    {activeDomain?.content && !focusedItemId && !focusedHistoryId && (
-                        <View style={webStyles.activeDomainContainer}>
-                            {activeDomain?.content}
-                        </View>
+                    {!focusedItemId && Boolean(getActiveDomainContent()) && (
+                        <View style={webStyles.activeDomainContainer}>{getActiveDomainContent()}</View>
                     )}
 
-                    {activeDomain?.features && !focusedItemId && !focusedHistoryId && !activeDomain.content && (
+                    {activeDomain?.features && !focusedItemId && !getActiveDomainContent() && (
                         <View style={webStyles.activeDomainContainer}>
                             <VStack space="xl">
                                 {sortedFeatures
-                                    .filter((f: any) => f.domainId === activeCategoryId || (activeCategoryId === 'reflections' && f.id === 'mirrors'))
+                                    .filter(
+                                        (f: any) =>
+                                            f.domainId === activeCategoryId ||
+                                            (activeCategoryId === 'reflections' && f.id === 'mirrors')
+                                    )
                                     .map((feature) => {
                                         const isPinned = pinned.includes(feature.id);
+                                        const hasHistory = Boolean(feature.historyContent);
+
                                         return (
                                             <View
                                                 key={feature.id}
-                                                style={[styles.card, { borderLeftWidth: 6, borderLeftColor: feature.domainColor, marginBottom: 24 }]}
-                                                // @ts-expect-error - className is valid on web
+                                                style={[
+                                                    styles.card,
+                                                    { borderLeftWidth: 6, borderLeftColor: feature.domainColor, marginBottom: 24 },
+                                                ]}
+                                                // @ts-ignore
                                                 className="sanctuary-card"
                                             >
                                                 <View style={webStyles.featureCardHeader}>
-                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
+                                                    <View style={webStyles.featureMetaRow}>
                                                         <Text style={{ fontSize: 24 }}>
-                                                            {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '\u2728'}
+                                                            {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨'}
                                                         </Text>
                                                         <VStack>
-                                                            <Text style={[styles.sectionHeading, { color: feature.domainColor, marginBottom: 2, opacity: 1 }]}>
+                                                            <Text
+                                                                style={[
+                                                                    styles.sectionHeading,
+                                                                    { color: feature.domainColor, marginBottom: 2, opacity: 1 },
+                                                                ]}
+                                                            >
                                                                 {feature.label}
                                                             </Text>
                                                         </VStack>
-                                                        <FeatureInfoIcon 
-                                                            title={feature.label} 
+                                                        <FeatureInfoIcon
+                                                            title={feature.label}
                                                             discoveryInfo={FEATURE_DISCOVERY_DATA[feature.id as keyof typeof FEATURE_DISCOVERY_DATA]}
                                                         />
-                                                    </HStack>
-                                                    
-                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
-                                                        {/* "Past" shortcut icon */}
-                                                        {feature.historyContent && (
-                                                            <Pressable 
-                                                                onPress={() => setFocusedHistoryId(feature.id)}
-                                                                style={{ padding: 4, marginRight: 8, opacity: 0.6 }}
+                                                    </View>
+
+                                                    <View style={webStyles.featureActionsRow}>
+                                                        {hasHistory && (
+                                                            <Pressable
+                                                                onPress={() => {
+                                                                    setViewMode('timeline');
+                                                                    setFocusedItemId(feature.id);
+                                                                }}
+                                                                style={{ padding: 4, marginRight: 8, opacity: 0.7 }}
                                                             >
-                                                                <Text style={{ fontSize: 16 }}>\u23F3</Text>
+                                                                <Text style={{ fontSize: 16 }}>⏳</Text>
                                                             </Pressable>
                                                         )}
-
-                                                        <Pressable 
-                                                            onPress={() => togglePin(feature.id)}
-                                                            style={{ padding: 4 }}
-                                                        >
-                                                            <Text style={{ 
-                                                                fontSize: 16, 
-                                                                color: isPinned ? feature.domainColor : 'rgba(0,0,0,0.1)' 
-                                                            }}>
-                                                                {isPinned ? '\uD83D\uDCCC' : '\uD83D\uDCCD'}
+                                                        <Pressable onPress={() => togglePin(feature.id)} style={{ padding: 4 }}>
+                                                            <Text
+                                                                style={{
+                                                                    fontSize: 16,
+                                                                    color: isPinned ? feature.domainColor : 'rgba(0,0,0,0.1)',
+                                                                }}
+                                                            >
+                                                                {isPinned ? '📌' : '📍'}
                                                             </Text>
                                                         </Pressable>
-                                                        <Pressable onPress={() => handleFeaturePress(feature.id)}>
-                                                            <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.2)', fontWeight: '700' }}>EXPAND</Text>
+                                                        <Pressable
+                                                            onPress={() => {
+                                                                trackFeatureAccess(feature.id);
+                                                                setFocusedItemId(feature.id);
+                                                            }}
+                                                        >
+                                                            <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.2)', fontWeight: '700' }}>
+                                                                {isHistoryMode ? 'OPEN HISTORY' : 'EXPAND'}
+                                                            </Text>
                                                         </Pressable>
-                                                    </HStack>
+                                                    </View>
                                                 </View>
                                                 {feature.content}
                                             </View>
@@ -227,19 +291,37 @@ export function BaseSelfView({
                     )}
                 </ScrollView>
 
-                {/* Support Sidebar (Unified Feedback) */}
-                {/* @ts-ignore - className is valid on web */}
+                {/* @ts-ignore */}
                 <View style={webStyles.sideColumn} className="sanctuary-sidebar-glass">
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={webStyles.sideBarContent}
-                    >
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={webStyles.sideBarContent}>
                         <Text style={styles.sectionHeading}>Mirrors & Ripples</Text>
                         {sideBar}
                         {reminders}
                     </ScrollView>
                 </View>
             </View>
+        </View>
+    );
+}
+
+function HistoryScaffold({
+    feature,
+    viewScale,
+}: {
+    feature: SelfViewFeature & { domainColor?: string };
+    viewScale: string;
+}) {
+    return (
+        <View
+            style={[
+                webStyles.historyScaffold,
+                { borderColor: feature.domainColor || '#8B5CF6', backgroundColor: 'rgba(255,252,247,0.84)' },
+            ]}
+        >
+            <Text style={webStyles.historyScaffoldTitle}>{feature.label} history scaffold</Text>
+            <Text style={webStyles.historyScaffoldBody}>
+                {`This feature can now live inside the temporal shell. A dedicated ${viewScale} history renderer can be added without changing BaseSelf again.`}
+            </Text>
         </View>
     );
 }
@@ -257,21 +339,17 @@ const webStyles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.4)',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(0,0,0,0.05)',
-        // Glass will be applied via CSS class
     } as any,
-    headerInfo: {
-        marginBottom: 32,
-    },
     categoryTabs: {
-        gap: 20, // Increased gap for organic breathing room
+        gap: 20,
         paddingRight: 40,
     } as any,
     categoryCard: {
-        width: 'auto', // Dynamic width for better text fit
+        width: 'auto',
         minWidth: 160,
         paddingHorizontal: 24,
         paddingVertical: 18,
-        borderRadius: 24, // Generous corners per TAIL_FIN
+        borderRadius: 24,
         backgroundColor: 'rgba(255,255,255,0.6)',
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.3)',
@@ -280,29 +358,81 @@ const webStyles = StyleSheet.create({
         gap: 12,
         transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     } as any,
-    featureCardHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    pinButton: {
-        cursor: 'pointer',
-        fontSize: 14,
-        padding: 4,
-    },
-    activeDomainContainer: {
-        padding: 24,
-    },
     categoryIndicator: {
         width: 6,
         height: 6,
-        borderRadius: 3, // Transform bar into a soulful dot
+        borderRadius: 3,
     },
     categoryTitle: {
         fontSize: 15,
         fontWeight: '700',
         letterSpacing: 0.2,
+    },
+    temporalTopbar: {
+        paddingHorizontal: 40,
+        paddingTop: 24,
+        gap: 16,
+    },
+    temporalControls: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 16,
+        flexWrap: 'wrap',
+    } as any,
+    modeRow: {
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center',
+    },
+    modeChip: {
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 999,
+        backgroundColor: 'rgba(255,252,247,0.82)',
+        borderWidth: 1,
+        borderColor: 'rgba(204,186,168,0.2)',
+    },
+    modeChipActive: {
+        backgroundColor: '#DEF2E8',
+        borderColor: 'rgba(41,161,125,0.24)',
+    },
+    modeChipText: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: '#6E594F',
+        textTransform: 'uppercase',
+        letterSpacing: 0.6,
+    },
+    modeChipTextActive: {
+        color: '#29A17D',
+    },
+    scaleRow: {
+        flexDirection: 'row',
+        gap: 8,
+        alignItems: 'center',
+        flexWrap: 'wrap',
+    } as any,
+    scaleChip: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 999,
+        backgroundColor: 'rgba(255,252,247,0.82)',
+        borderWidth: 1,
+        borderColor: 'rgba(204,186,168,0.2)',
+    },
+    scaleChipActive: {
+        backgroundColor: '#EBE5FA',
+        borderColor: 'rgba(131,92,246,0.18)',
+    },
+    scaleChipText: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: '#6E594F',
+        letterSpacing: 0.6,
+    },
+    scaleChipTextActive: {
+        color: '#5B3FD6',
     },
     contentWrapper: {
         flex: 1,
@@ -318,7 +448,6 @@ const webStyles = StyleSheet.create({
         borderLeftWidth: 1,
         borderLeftColor: 'rgba(0,0,0,0.05)',
         backgroundColor: 'rgba(255,255,255,0.15)',
-        // Side column also benefits from subtle glass
     } as any,
     scrollContent: {
         padding: 40,
@@ -326,6 +455,40 @@ const webStyles = StyleSheet.create({
     sideBarContent: {
         padding: 40,
         gap: 32,
+    } as any,
+    featureCardHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    featureMetaRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        flex: 1,
+    } as any,
+    featureActionsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    } as any,
+    activeDomainContainer: {
+        padding: 24,
+    },
+    focusCard: {
+        marginBottom: 48,
+        backgroundColor: '#FFF',
+        elevation: 8,
+    },
+    focusHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    closeButton: {
+        cursor: 'pointer',
+        padding: 4,
     } as any,
     ritualSection: {
         marginTop: 40,
@@ -341,19 +504,25 @@ const webStyles = StyleSheet.create({
         flex: 1,
         minWidth: 320,
     } as any,
-    roleTag: {
-        fontSize: 11,
-        fontWeight: '900',
-        letterSpacing: 2,
-        color: 'rgba(0,0,0,0.3)',
-        marginBottom: 8,
+    historyScaffold: {
+        borderWidth: 1,
+        borderRadius: 24,
+        paddingHorizontal: 20,
+        paddingVertical: 22,
     },
-    description: {
-        fontSize: 16,
-        color: 'rgba(0,0,0,0.5)',
-        lineHeight: 24,
-        maxWidth: 600,
-    }
+    historyScaffoldTitle: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: '#2E2924',
+        marginBottom: 10,
+        textTransform: 'uppercase',
+        letterSpacing: 0.6,
+    },
+    historyScaffoldBody: {
+        fontSize: 13,
+        lineHeight: 20,
+        color: '#6E594F',
+    },
 });
 
 const styles = StyleSheet.create({
@@ -373,5 +542,5 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         marginBottom: 24,
         opacity: 0.8,
-    }
+    },
 });

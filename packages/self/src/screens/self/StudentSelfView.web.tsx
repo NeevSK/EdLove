@@ -3,12 +3,10 @@ import { useTranslation } from 'react-i18next';
 import {
     TemporalProvider,
     TemporalShield,
-    TemporalNavigator,
     JourneyHistoryCard,
 } from '@repo/ui';
 import {
     usePermissions,
-    useTemporalStore,
     useNaturePaths,
     useStudentGoals,
     useJourneyHistory,
@@ -39,37 +37,15 @@ export default function StudentSelfView() {
     const { t } = useTranslation();
     const { context } = usePermissions();
     const userId = context.userId;
-    const { viewMode, viewScale, setScale } = useTemporalStore();
 
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { logs: moodLogs, loading: loadingMoods } = useMoodLogs();
     const { goals, isLoading: loadingGoals } = useStudentGoals();
     const { paths, isLoading: loadingPaths } = useNaturePaths();
-    const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
+    const { events: journeyEvents, holisticView, isLoading: journeyLoading, currentScale: viewScale } = useJourneyHistory();
 
     const holisticSection = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}>
-                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
-                    <button
-                        key={scale}
-                        className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
-                        onClick={() => setScale(scale)}
-                        style={{
-                            background: viewScale === scale ? 'var(--saffron-glass)' : 'rgba(255,255,255,0.05)',
-                            border: 'none',
-                            color: '#fff',
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '11px',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        {scale}
-                    </button>
-                ))}
-            </div>
             <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
@@ -89,9 +65,6 @@ export default function StudentSelfView() {
 
     return (
         <TemporalProvider>
-            <div style={{ padding: '20px 40px 0' }}>
-                <TemporalNavigator />
-            </div>
             <BaseSelfView
                 perspective="student"
                 description={t('self.studentDesc', 'A steady space to grow your mind and heart.')}
@@ -100,7 +73,8 @@ export default function StudentSelfView() {
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#8B5CF6',
-                        content: viewMode === 'timeline' ? <ResonanceTimeline /> : holisticSection,
+                        content: holisticSection,
+                        historyContent: <ResonanceTimeline />,
                     },
                     {
                         id: 'discovery',

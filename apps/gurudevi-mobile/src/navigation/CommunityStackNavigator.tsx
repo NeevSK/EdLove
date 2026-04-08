@@ -1,6 +1,13 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
+import {
+    AnnouncementsScreen,
+    DirectMessageScreen,
+    DirectMessagesListScreen,
+    GroupDetailsScreen,
+    GroupChatScreen,
+    UserPublicProfileScreen,
+} from '@repo/community';
 import { CommunityScreen } from '../screens';
 import { useThemedColors } from '@repo/ui';
 
@@ -33,6 +40,21 @@ export default function CommunityStackNavigator() {
             <Stack.Screen
                 name="UserProfile"
                 component={UserPublicProfileScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="DirectMessagesList"
+                component={DirectMessagesListScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="DirectMessage"
+                component={DirectMessageScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="Announcements"
+                component={AnnouncementsScreen as any}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
             />
         </Stack.Navigator>

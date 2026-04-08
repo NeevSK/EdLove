@@ -17,7 +17,7 @@ interface StepBasicInfoProps {
 export default function StepBasicInfo({ data, onUpdate }: StepBasicInfoProps) {
     const { t } = useTranslation();
     return (
-        <VStack sx={{ gap: '$lg' as any }}>
+        <VStack className="gap-6">
             <SanctuaryInput
                 label={t('schoolSetup.schoolName')}
                 placeholder={t('schoolSetup.schoolNamePlaceholder')}

@@ -1,14 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { VStack, GlobalHeader, FeatureInfoIcon, HStack, TemporalNavigator } from '@repo/ui';
-import { BaseSelfViewProps } from './BaseSelfView.types';
+import { useTemporalStore, type TemporalScale } from '@repo/core';
+import { BaseSelfViewProps, SelfViewFeature } from './BaseSelfView.types';
 import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
 
+const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
+
 /**
  * BaseSelfView - The architectural kernel for GuruDevi Self sections on Mobile.
- * This component implements the "Discovery Hub" with circular feature icons.
+ * Present-focused by default, with a shell-owned temporal layer that can surface
+ * feature history when a domain or feature opts in.
  */
 export function BaseSelfView({
     perspective,
@@ -19,86 +23,111 @@ export function BaseSelfView({
     nightRitual,
     voiceJournal,
 }: BaseSelfViewProps) {
-    // Default background based on perspective
     const surfaceBg = perspective === 'student' ? '#F5F3FF' : '#FFF7ED';
+    const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
+    const isHistoryMode = viewMode === 'timeline';
 
-    const allFeatures = React.useMemo(() => [
-        ...domains.flatMap(domain =>
-            (domain.features || []).map(feature => ({
-                ...feature,
-                domainId: domain.id,
-                domainColor: domain.accentColor
-            }))
-        ),
-        // Inject Holistic History if any domain provides content
-        ...(domains.some(domain => domain.content) ? [{
-            id: 'holistic_history',
-            label: 'History',
-            content: domains.find(domain => domain.content)?.content,
-            domainId: 'journey',
-            domainColor: '#8B5CF6'
-        }] : []),
-        // Inject Mirrors as "Reflections" if provided
-        ...(sideBar ? [{
-            id: 'mirrors',
-            label: 'Reflections',
-            content: sideBar,
-            domainId: 'reflections',
-            domainColor: '#8B5CF6'
-        }] : []),
-        // Inject Reminders if provided
-        ...(reminders ? [{
-            id: 'reminders',
-            label: 'Reminders',
-            content: reminders,
-            domainId: 'reminders',
-            domainColor: '#F59E0B'
-        }] : [])
-    ], [domains, sideBar, reminders]);
+    const allFeatures = React.useMemo(
+        () => [
+            ...domains.flatMap((domain) =>
+                (domain.features || []).map((feature) => ({
+                    ...feature,
+                    domainId: domain.id,
+                    domainColor: domain.accentColor,
+                }))
+            ),
+            ...(domains.some((domain) => domain.content)
+                ? [
+                      {
+                          id: 'holistic_history',
+                          label: 'Journey',
+                          content: domains.find((domain) => domain.content)?.content,
+                          historyContent:
+                              domains.find((domain) => domain.historyContent)?.historyContent ??
+                              domains.find((domain) => domain.content)?.content,
+                          domainId: 'journey',
+                          domainColor: '#8B5CF6',
+                          supportedScales: [...TEMPORAL_SCALES] as TemporalScale[],
+                      },
+                  ]
+                : []),
+            ...(sideBar
+                ? [
+                      {
+                          id: 'mirrors',
+                          label: 'Reflections',
+                          content: sideBar,
+                          historyContent: sideBar,
+                          domainId: 'reflections',
+                          domainColor: '#8B5CF6',
+                      },
+                  ]
+                : []),
+            ...(reminders
+                ? [
+                      {
+                          id: 'reminders',
+                          label: 'Reminders',
+                          content: reminders,
+                          historyContent: reminders,
+                          domainId: 'reminders',
+                          domainColor: '#F59E0B',
+                      },
+                  ]
+                : []),
+        ],
+        [domains, sideBar, reminders]
+    );
 
     const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
     const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
     const pinned = getPinnedFeatures();
 
     const [activeFeatureId, setActiveFeatureId] = React.useState(
-        sortedFeatures.find(f => f.id === 'energy_pulse' || f.id === 'mood_checkin')?.id || sortedFeatures[0]?.id
+        sortedFeatures.find((f) => f.id === 'energy_pulse' || f.id === 'mood_checkin')?.id || sortedFeatures[0]?.id
     );
 
-    const activeFeature = sortedFeatures.find(f => f.id === activeFeatureId) || sortedFeatures[0];
+    React.useEffect(() => {
+        if (!sortedFeatures.length) return;
+        const hasActiveFeature = sortedFeatures.some((feature) => feature.id === activeFeatureId);
+        if (!hasActiveFeature) {
+            setActiveFeatureId(sortedFeatures[0]?.id);
+        }
+    }, [sortedFeatures, activeFeatureId]);
 
-    const getEmoji = (feature: any) => {
-        return FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '\u2728';
-    };
+    const activeFeature = sortedFeatures.find((f) => f.id === activeFeatureId) || sortedFeatures[0];
+
+    const getEmoji = (feature: SelfViewFeature) =>
+        FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '\u2728';
 
     const handleFeaturePress = (featureId: string) => {
         setActiveFeatureId(featureId);
         trackFeatureAccess(featureId);
     };
 
+    const renderFeatureContent = (feature?: SelfViewFeature & { domainColor?: string }) => {
+        if (!feature) return null;
+        if (!isHistoryMode) return feature.content;
+        return feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />;
+    };
+
     return (
         <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}>
-            <GlobalHeader
-                isSelfView={true}
-                subtitle={perspective.toUpperCase()}
-                title="Sadhana"
-            />
+            <GlobalHeader isSelfView={true} subtitle={perspective.toUpperCase()} title="Sadhana" />
 
             <TemporalNavigator />
-            
+
+            <TemporalShellControls
+                isHistoryMode={isHistoryMode}
+                viewScale={viewScale}
+                onModeChange={setViewMode}
+                onScaleChange={setScale}
+            />
+
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                {voiceJournal && (
-                    <View style={nativeStyles.ritualWrapper}>
-                        {voiceJournal}
-                    </View>
-                )}
+                {voiceJournal && <View style={nativeStyles.ritualWrapper}>{voiceJournal}</View>}
+                {morningRitual && <View style={nativeStyles.ritualWrapper}>{morningRitual}</View>}
 
-                {morningRitual && (
-                    <View style={nativeStyles.ritualWrapper}>
-                        {morningRitual}
-                    </View>
-                )}
-
-                {/* Horizontal Circular Carousel with Domain Rings */}
                 <View style={nativeStyles.carouselContainer}>
                     <ScrollView
                         horizontal
@@ -109,6 +138,7 @@ export function BaseSelfView({
                             const isActive = activeFeatureId === feature.id;
                             const isPinned = pinned.includes(feature.id);
                             const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
+                            const hasHistory = Boolean(feature.historyContent);
 
                             return (
                                 <Pressable
@@ -124,7 +154,7 @@ export function BaseSelfView({
                                                 borderColor: isActive ? feature.domainColor : 'rgba(0,0,0,0.05)',
                                                 borderWidth: 2,
                                                 borderStyle: isInsight && !isActive ? 'dashed' : 'solid',
-                                            }
+                                            },
                                         ]}
                                     >
                                         <View
@@ -134,31 +164,41 @@ export function BaseSelfView({
                                                     backgroundColor: 'white',
                                                     shadowColor: feature.domainColor,
                                                     shadowOpacity: isActive ? 0.3 : 0.05,
-                                                }
+                                                },
                                             ]}
                                         >
-                                            <Text style={nativeStyles.circleIcon}>
-                                                {getEmoji(feature)}
-                                            </Text>
+                                            <Text style={nativeStyles.circleIcon}>{getEmoji(feature)}</Text>
                                             {isPinned && (
-                                                <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}>
+                                                <View
+                                                    style={[
+                                                        nativeStyles.pinIndicator,
+                                                        { backgroundColor: feature.domainColor },
+                                                    ]}
+                                                >
                                                     <Text style={{ fontSize: 10, color: 'white' }}>\uD83D\uDCCC</Text>
+                                                </View>
+                                            )}
+                                            {hasHistory && (
+                                                <View style={nativeStyles.historyDot}>
+                                                    <Text style={nativeStyles.historyDotText}>\u23F3</Text>
                                                 </View>
                                             )}
                                         </View>
                                     </View>
-                                    <View style={[
-                                        nativeStyles.activeIndicator,
-                                        { backgroundColor: isActive ? feature.domainColor : 'transparent' }
-                                    ]} />
+                                    <View
+                                        style={[
+                                            nativeStyles.activeIndicator,
+                                            { backgroundColor: isActive ? feature.domainColor : 'transparent' },
+                                        ]}
+                                    />
                                     <Text
                                         numberOfLines={1}
                                         style={[
                                             nativeStyles.circleLabel,
                                             {
                                                 color: isActive ? '#000' : 'rgba(0,0,0,0.4)',
-                                                fontWeight: isActive ? '800' : '600'
-                                            }
+                                                fontWeight: isActive ? '800' : '600',
+                                            },
                                         ]}
                                     >
                                         {feature.label}
@@ -169,47 +209,121 @@ export function BaseSelfView({
                     </ScrollView>
                 </View>
 
-                {/* Active Feature Content */}
                 <View style={nativeStyles.activeFeatureContainer}>
                     {activeFeature && (
                         <VStack style={{ marginBottom: 16 }}>
                             <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                                <HStack style={{ alignItems: 'center' }}>
+                                <HStack style={{ alignItems: 'center', flex: 1 }}>
                                     <Text style={nativeStyles.activeLabel}>
                                         {activeFeature.label}
+                                        {isHistoryMode ? ' History' : ''}
                                     </Text>
-                                    <FeatureInfoIcon 
+                                    <FeatureInfoIcon
                                         title={activeFeature.label}
-                                        discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
+                                        discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id as keyof typeof FEATURE_DISCOVERY_DATA]}
                                         color={activeFeature.domainColor}
                                     />
                                     {activeFeature.id !== 'holistic_history' && (
-                                        <Pressable 
-                                            onPress={() => handleFeaturePress('holistic_history')}
+                                        <Pressable
+                                            onPress={() => {
+                                                setViewMode('timeline');
+                                                handleFeaturePress('holistic_history');
+                                            }}
                                             style={{ padding: 4, marginLeft: 4 }}
                                         >
                                             <Text style={{ fontSize: 16 }}>\u23F3</Text>
                                         </Pressable>
                                     )}
                                 </HStack>
-                                {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
-                                    <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}>
-                                        ACTIVE FEATURE
-                                    </Text>
-                                )}
+                                <Text style={nativeStyles.modeBadge}>
+                                    {isHistoryMode ? `${viewScale.toUpperCase()} VIEW` : 'PRESENT FOCUS'}
+                                </Text>
                             </HStack>
-                            {activeFeature.content}
+                            {renderFeatureContent(activeFeature)}
                         </VStack>
                     )}
                 </View>
 
-                {nightRitual && (
-                    <View style={nativeStyles.ritualWrapper}>
-                        {nightRitual}
-                    </View>
-                )}
+                {nightRitual && <View style={nativeStyles.ritualWrapper}>{nightRitual}</View>}
             </ScrollView>
         </VStack>
+    );
+}
+
+function TemporalShellControls({
+    isHistoryMode,
+    viewScale,
+    onModeChange,
+    onScaleChange,
+}: {
+    isHistoryMode: boolean;
+    viewScale: string;
+    onModeChange: (mode: 'spotlight' | 'timeline') => void;
+    onScaleChange: (scale: any) => void;
+}) {
+    return (
+        <View style={nativeStyles.temporalControls}>
+            <HStack style={nativeStyles.modeRow}>
+                <Pressable
+                    onPress={() => onModeChange('spotlight')}
+                    style={[nativeStyles.modeChip, !isHistoryMode && nativeStyles.modeChipActive]}
+                >
+                    <Text style={[nativeStyles.modeChipText, !isHistoryMode && nativeStyles.modeChipTextActive]}>
+                        Now
+                    </Text>
+                </Pressable>
+                <Pressable
+                    onPress={() => onModeChange('timeline')}
+                    style={[nativeStyles.modeChip, isHistoryMode && nativeStyles.modeChipActive]}
+                >
+                    <Text style={[nativeStyles.modeChipText, isHistoryMode && nativeStyles.modeChipTextActive]}>
+                        History
+                    </Text>
+                </Pressable>
+            </HStack>
+            {isHistoryMode && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={nativeStyles.scaleRow}>
+                    {TEMPORAL_SCALES.map((scale) => (
+                        <Pressable
+                            key={scale}
+                            onPress={() => onScaleChange(scale)}
+                            style={[nativeStyles.scaleChip, viewScale === scale && nativeStyles.scaleChipActive]}
+                        >
+                            <Text
+                                style={[
+                                    nativeStyles.scaleChipText,
+                                    viewScale === scale && nativeStyles.scaleChipTextActive,
+                                ]}
+                            >
+                                {scale.toUpperCase()}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            )}
+        </View>
+    );
+}
+
+function HistoryScaffold({
+    feature,
+    viewScale,
+}: {
+    feature: SelfViewFeature & { domainColor?: string };
+    viewScale: string;
+}) {
+    return (
+        <View
+            style={[
+                nativeStyles.historyScaffold,
+                { borderColor: feature.domainColor || '#8B5CF6', backgroundColor: 'rgba(255,255,255,0.72)' },
+            ]}
+        >
+            <Text style={nativeStyles.historyScaffoldTitle}>{feature.label} history scaffold</Text>
+            <Text style={nativeStyles.historyScaffoldBody}>
+                {`The shell is ready to show ${viewScale}-range history here once this feature exposes its temporal view.`}
+            </Text>
+        </View>
     );
 }
 
@@ -220,6 +334,63 @@ const nativeStyles = StyleSheet.create({
     ritualWrapper: {
         paddingHorizontal: 20,
         paddingTop: 8,
+    },
+    temporalControls: {
+        paddingHorizontal: 20,
+        paddingTop: 8,
+        paddingBottom: 8,
+        gap: 8,
+    },
+    modeRow: {
+        gap: 8,
+        alignItems: 'center',
+    },
+    modeChip: {
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 999,
+        backgroundColor: 'rgba(255,255,255,0.58)',
+        borderWidth: 1,
+        borderColor: 'rgba(204,186,168,0.2)',
+    },
+    modeChipActive: {
+        backgroundColor: '#DEF2E8',
+        borderColor: 'rgba(41,161,125,0.24)',
+    },
+    modeChipText: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: '#6E594F',
+        textTransform: 'uppercase',
+        letterSpacing: 0.6,
+    },
+    modeChipTextActive: {
+        color: '#29A17D',
+    },
+    scaleRow: {
+        gap: 8,
+        paddingRight: 20,
+    },
+    scaleChip: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 999,
+        backgroundColor: 'rgba(255,255,255,0.58)',
+        borderWidth: 1,
+        borderColor: 'rgba(204,186,168,0.2)',
+    },
+    scaleChipActive: {
+        backgroundColor: '#EBE5FA',
+        borderColor: 'rgba(131,92,246,0.18)',
+    },
+    scaleChipText: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: '#6E594F',
+        letterSpacing: 0.6,
+    },
+    scaleChipTextActive: {
+        color: '#5B3FD6',
     },
     carouselContainer: {
         paddingVertical: 16,
@@ -274,6 +445,23 @@ const nativeStyles = StyleSheet.create({
         shadowRadius: 1,
         elevation: 2,
     },
+    historyDot: {
+        position: 'absolute',
+        bottom: -6,
+        right: -2,
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#EBE5FA',
+        borderWidth: 1,
+        borderColor: 'white',
+    },
+    historyDotText: {
+        fontSize: 8,
+        color: '#5B3FD6',
+    },
     activeIndicator: {
         width: 4,
         height: 4,
@@ -297,5 +485,30 @@ const nativeStyles = StyleSheet.create({
         color: '#1A1610',
         letterSpacing: -0.5,
         marginRight: 8,
+    },
+    modeBadge: {
+        fontSize: 10,
+        color: 'rgba(0,0,0,0.35)',
+        fontWeight: '700',
+        letterSpacing: 0.8,
+    },
+    historyScaffold: {
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingHorizontal: 18,
+        paddingVertical: 20,
+    },
+    historyScaffoldTitle: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: '#2E2924',
+        marginBottom: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 0.6,
+    },
+    historyScaffoldBody: {
+        fontSize: 13,
+        lineHeight: 20,
+        color: '#6E594F',
     },
 });

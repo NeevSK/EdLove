@@ -1,0 +1,2 @@
+# Husky prepare-commit-msg hook
+powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 "$1"

@@ -16,6 +16,7 @@ interface LivingGlowProps extends ViewProps {
     duration?: number;
     glowColor?: string;
     size?: number;
+    className?: string;
 }
 
 /**
@@ -31,6 +32,7 @@ export function LivingGlow({
     glowColor,
     size,
     style,
+    className,
     ...props
 }: LivingGlowProps) {
     const opacity = useSharedValue(0.4);
@@ -60,7 +62,7 @@ export function LivingGlow({
     }));
 
     return (
-        <Animated.View style={[animatedStyle, style]} {...props}>
+        <Animated.View style={[animatedStyle, style]} className={className} {...props}>
             {children || (size ? (
                 <Box 
                     className="rounded-full"

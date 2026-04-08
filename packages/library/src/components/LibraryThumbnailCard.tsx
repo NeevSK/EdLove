@@ -1,5 +1,5 @@
 /**
- * LibraryThumbnailCard — Netflix-Style Cover-Art Card for Individual Resources
+ * LibraryThumbnailCard - sanctuary-style resource card for mobile/native.
  */
 
 import React, { useMemo } from 'react';
@@ -12,7 +12,6 @@ import {
     TouchableOpacity,
     Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
     BookOpen,
     Video,
@@ -31,12 +30,9 @@ import {
 } from 'lucide-react-native';
 import { Theme, useThemedColors } from '@repo/ui';
 
-// ============================================================================
-// CONFIG
-// ============================================================================
-
-const CARD_WIDTH = 140;
-const CARD_HEIGHT = 180;
+const CARD_WIDTH = 148;
+const CARD_HEIGHT = 192;
+const ARTWORK_HEIGHT = 104;
 
 type ThumbnailType =
     | 'lesson' | 'worksheet' | 'guide' | 'reading' | 'pedagogy'
@@ -64,14 +60,9 @@ const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<{ size?: nu
 };
 
 function resolveType(type: string): ThumbnailType {
-    const t = type?.toLowerCase();
-    if (t in TYPE_CONFIG) return t as ThumbnailType;
-    return 'other';
+    const value = type?.toLowerCase();
+    return value in TYPE_CONFIG ? (value as ThumbnailType) : 'other';
 }
-
-// ============================================================================
-// PROPS
-// ============================================================================
 
 export interface LibraryThumbnailCardProps {
     title: string;
@@ -89,10 +80,6 @@ export interface LibraryThumbnailCardProps {
     href?: string;
     target?: '_blank' | '_self';
 }
-
-// ============================================================================
-// COMPONENT
-// ============================================================================
 
 export function LibraryThumbnailCard({
     title,
@@ -112,6 +99,8 @@ export function LibraryThumbnailCard({
     const colors = useThemedColors();
     const cfg = TYPE_CONFIG[resolveType(type)];
     const Icon = cfg.icon;
+    const tintSurface = cfg.color + '14';
+    const tintBorder = cfg.color + '26';
 
     const styles = useMemo(() => StyleSheet.create({
         pressable: {
@@ -125,131 +114,159 @@ export function LibraryThumbnailCard({
             borderRadius: Theme.corners.generous,
             overflow: 'hidden',
             backgroundColor: colors.secondary,
+            borderWidth: 1,
+            borderColor: colors.border,
             ...Theme.shadows.md,
+        },
+        imageShell: {
+            height: ARTWORK_HEIGHT,
+            backgroundColor: tintSurface,
+            overflow: 'hidden',
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+        },
+        image: {
+            flex: 1,
+        },
+        imageSoftener: {
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(255,255,255,0.08)',
         },
         fallback: {
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: cfg.color + '18',
+            backgroundColor: tintSurface,
         },
-        image: { flex: 1 },
-        overlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'space-between' },
+        topBar: {
+            position: 'absolute',
+            top: 8,
+            left: 8,
+            right: 8,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+        },
         typeBadge: {
             alignSelf: 'flex-start',
-            margin: 8,
-            paddingHorizontal: 7,
-            paddingVertical: 3,
-            borderRadius: Theme.corners.tight,
-            backgroundColor: cfg.color,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 999,
+            backgroundColor: 'rgba(252,249,242,0.94)',
+            borderWidth: 1,
+            borderColor: tintBorder,
         },
         typeText: {
             fontSize: 9,
             fontWeight: '800',
-            color: '#fff',
+            color: cfg.color,
             letterSpacing: 0.5,
             textTransform: 'uppercase',
         },
-        gradient: {
-            paddingHorizontal: 8,
-            paddingBottom: 8,
-            paddingTop: 24,
+        body: {
+            flex: 1,
+            paddingHorizontal: 10,
+            paddingVertical: 10,
+            justifyContent: 'space-between',
+        },
+        eyebrow: {
+            fontSize: 10,
+            fontWeight: '700',
+            color: cfg.color,
+            letterSpacing: 0.3,
+            marginBottom: 4,
         },
         title: {
             fontSize: 12,
             fontWeight: '700',
-            color: '#fff',
+            color: colors.textPrimary,
             lineHeight: 16,
-            marginBottom: 4,
+            marginBottom: 6,
         },
-        meta: {
+        metaRow: {
             flexDirection: 'row',
             alignItems: 'center',
-            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            gap: 8,
+        },
+        metaBadge: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 7,
+            paddingVertical: 4,
+            borderRadius: 999,
+            backgroundColor: tintSurface,
+            gap: 4,
         },
         metaText: {
             fontSize: 10,
-            color: 'rgba(255,255,255,0.7)',
+            color: colors.textSecondary,
         },
         copyrightBadge: {
-            marginTop: 4,
-            paddingHorizontal: 5,
-            paddingVertical: 2,
-            borderRadius: 4,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            borderWidth: 0.5,
-            borderColor: 'rgba(255,255,255,0.2)',
+            marginTop: 6,
+            paddingHorizontal: 6,
+            paddingVertical: 3,
+            borderRadius: 6,
+            backgroundColor: tintSurface,
+            alignSelf: 'flex-start',
         },
         copyrightText: {
             fontSize: 8,
-            color: 'rgba(255,255,255,0.65)',
+            color: colors.textSecondary,
         },
-    }), [colors, cfg]);
+    }), [cfg.color, colors.border, colors.secondary, colors.textPrimary, colors.textSecondary, tintBorder, tintSurface]);
 
-    const gradientColors = [
-        'transparent',
-        'rgba(0,0,0,0.6)',
-        'rgba(0,0,0,0.9)',
-    ] as const;
+    const artwork = (
+        <View style={styles.imageShell}>
+            {thumbnailUrl ? (
+                <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">
+                    <View style={styles.imageSoftener} />
+                </ImageBackground>
+            ) : (
+                <View style={styles.fallback}>
+                    <View
+                        style={{
+                            width: 54,
+                            height: 54,
+                            borderRadius: 18,
+                            backgroundColor: cfg.color + '20',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Icon size={24} color={cfg.color} />
+                    </View>
+                </View>
+            )}
 
-    const overlay = (
-        <View style={styles.overlay}>
-            {/* Top Row: Type Badge + Actions */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <View style={styles.topBar}>
                 <View style={styles.typeBadge}>
                     <Text style={styles.typeText}>{cfg.label}</Text>
                 </View>
-
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {onBookmarkToggle && (
-                        <TouchableOpacity 
-                            onPress={(e) => {
-                                if (Platform.OS === 'web') (e as any).stopPropagation();
-                                onBookmarkToggle();
+                        <TouchableOpacity
+                            onPress={(event) => {
+                                if (Platform.OS === 'web') (event as any).stopPropagation();
+                                void onBookmarkToggle();
                             }}
-                            style={{ margin: 8, padding: 4 }}
+                            style={{ marginLeft: 6, padding: 4 }}
                             accessibilityRole="button"
                         >
-                            <Bookmark 
-                                size={16} 
-                                color={has_bookmarked ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.8)'}
+                            <Bookmark
+                                size={16}
+                                color={has_bookmarked ? Theme.colors.sanctuarySaffron : colors.textPrimary}
                                 fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
                             />
                         </TouchableOpacity>
                     )}
                     {verified && (
-                        <View style={{ margin: 8, marginLeft: onBookmarkToggle ? 0 : 8 }}>
+                        <View style={{ marginLeft: 6, padding: 4 }}>
                             <BadgeCheck color={Theme.colors.sageGreen} size={14} />
                         </View>
                     )}
                 </View>
             </View>
-
-            {/* Bottom Section: Gradient + Title + Meta */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}>
-                <Text style={styles.title} numberOfLines={2}>{title}</Text>
-                <View style={styles.meta}>
-                    {subject && (
-                        <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>
-                    )}
-                    {endorsements > 0 && (
-                        <>
-                            {subject && <Text style={[styles.metaText, { marginHorizontal: 4 }]}>•</Text>}
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
-                                <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron, fontWeight: '700', marginLeft: 4 }]}>
-                                    {endorsements}
-                                </Text>
-                            </View>
-                        </>
-                    )}
-                </View>
-                {copyrightNotice && (
-                    <View style={styles.copyrightBadge}>
-                        <Text style={styles.copyrightText} numberOfLines={1}>© {copyrightNotice}</Text>
-                    </View>
-                )}
-            </LinearGradient>
         </View>
     );
 
@@ -259,29 +276,50 @@ export function LibraryThumbnailCard({
             onLongPress={onLongPress}
             style={(state: any) => [
                 styles.pressable,
-                Platform.OS === 'web' && state.hovered && { opacity: 0.9, transform: [{ scale: 1.02 }] }
+                Platform.OS === 'web' && state.hovered && { opacity: 0.96, transform: [{ scale: 1.01 }] },
             ]}
             accessibilityRole={href ? 'link' : 'button'}
             // @ts-ignore
             href={href}
             hrefAttrs={{
-                target: target,
+                target,
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,
             }}
         >
             <View style={styles.card}>
-                {thumbnailUrl ? (
-                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">
-                        {overlay}
-                    </ImageBackground>
-                ) : (
-                    <View style={{ flex: 1 }}>
-                        <View style={styles.fallback}>
-                            <Icon color={cfg.color} size={36} />
-                        </View>
-                        {overlay}
+                {artwork}
+                <View style={styles.body}>
+                    <View>
+                        <Text style={styles.eyebrow} numberOfLines={1}>
+                            {subject || 'General wisdom'}
+                        </Text>
+                        <Text style={styles.title} numberOfLines={2}>
+                            {title}
+                        </Text>
                     </View>
-                )}
+
+                    <View>
+                        <View style={styles.metaRow}>
+                            {endorsements > 0 ? (
+                                <View style={styles.metaBadge}>
+                                    <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
+                                    <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron, fontWeight: '700' }]}>
+                                        {endorsements}
+                                    </Text>
+                                </View>
+                            ) : <View />}
+                            <Text style={[styles.metaText, { fontWeight: '700' }]}>Open</Text>
+                        </View>
+
+                        {copyrightNotice ? (
+                            <View style={styles.copyrightBadge}>
+                                <Text style={styles.copyrightText} numberOfLines={1}>
+                                    (c) {copyrightNotice}
+                                </Text>
+                            </View>
+                        ) : null}
+                    </View>
+                </View>
             </View>
         </Pressable>
     );

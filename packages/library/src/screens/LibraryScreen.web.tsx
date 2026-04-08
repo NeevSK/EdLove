@@ -81,6 +81,7 @@ export default function LibraryScreenWeb() {
     }, [pending, can, isPastView]);
 
     const canContribute = can('create', 'LibraryResource');
+    const canReview = can('manage', 'LibraryReview') || can('manage', 'LibraryCuratorDashboard');
     const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
     const resourceTypeFilter = useMemo(() => {
         if (selectedCategoryId === 'All' || ['trending', 'bookmarks', 'activity'].includes(selectedCategoryId)) return undefined;
@@ -161,7 +162,14 @@ export default function LibraryScreenWeb() {
         });
         try {
             await libraryAPI.bookmarkResource(resource.id, user.id);
-            growthSignalsAPI.emitSilent(user.id, 'resource_read');
+            growthSignalsAPI.emitSilent({
+                user_id: user.id,
+                event_type: 'resource_read',
+                event_metadata: {
+                    resource_id: resource.id,
+                    school_id: user.school_id ?? undefined,
+                },
+            });
             if (resource.creator_id && resource.creator_id !== user.id) {
                 impactRipplesAPI.createRipple({
                     recipientUserId: resource.creator_id,
@@ -534,47 +542,50 @@ export default function LibraryScreenWeb() {
                         ) : (
                             /* DEFAULT VIEW */
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+                                <SanctuaryPulse
+                                    resourceCount={resources.length}
+                                    collectionCount={collections.length}
+                                    bookmarkCount={bookmarkedIds.size}
+                                />
+
+                                <div
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: canReview ? 'minmax(0, 1.2fr) minmax(280px, 0.8fr)' : '1fr',
+                                        gap: '20px',
+                                    }}
+                                >
+                                    <DoorwayCard
+                                        eyebrow="Knowledge map"
+                                        title="Enter the Cosmos"
+                                        description="Move from shelves into a calmer constellation view when you want relationships, not just search results."
+                                        accent="rgba(132, 111, 212, 0.14)"
+                                        ctaLabel="Open map"
+                                        onClick={() => navigation.navigate('LibraryMap')}
+                                    />
+                                    {canReview && (
+                                        <DoorwayCard
+                                            eyebrow="Curator pathway"
+                                            title="Review and publish"
+                                            description="Contributors and reviewers can move straight into publishing flow without turning the whole library into a workspace canvas."
+                                            accent="rgba(221, 155, 40, 0.16)"
+                                            ctaLabel="Curator review"
+                                            onClick={() => navigation.navigate('CuratorReview')}
+                                        />
+                                    )}
+                                </div>
+
                                 {collections.length > 0 && (
                                     <SmartShelf title="Featured Collections">
                                         <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
                                             {collections.map((col: any) => (
-                                                <div 
-                                                    key={`col-${col.id}`} 
-                                                    style={{ 
-                                                        width: '240px', 
-                                                        height: '140px', 
-                                                        borderRadius: '16px', 
-                                                        background: 'var(--action-soft)', 
-                                                        padding: '24px',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        justifyContent: 'center',
-                                                        cursor: 'pointer',
-                                                        border: '1px solid var(--border)',
-                                                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                        position: 'relative',
-                                                        overflow: 'hidden'
-                                                    }}
-                                                    className="sanctuary-card"
+                                                <CollectionPreviewCard
+                                                    key={`col-${col.id}`}
+                                                    title={col.name}
+                                                    typeLabel={col.is_virtual ? t('library.dynamic') : t('library.collection')}
+                                                    resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
                                                     onClick={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
-                                                >
-                                                    <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}>
-                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}
-                                                    </div>
-                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div>
-                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}>
-                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
-                                                    </div>
-                                                    <div style={{ 
-                                                        position: 'absolute', 
-                                                        bottom: 0, 
-                                                        left: 0, 
-                                                        right: 0, 
-                                                        height: '4px', 
-                                                        background: 'var(--action)', 
-                                                        opacity: 0.3 
-                                                    }} />
-                                                </div>
+                                                />
                                             ))}
                                         </div>
                                     </SmartShelf>
@@ -664,62 +675,207 @@ export default function LibraryScreenWeb() {
     );
 }
 
-function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick: () => void }) {
+function SanctuaryPulse({
+    resourceCount,
+    collectionCount,
+    bookmarkCount,
+}: {
+    resourceCount: number;
+    collectionCount: number;
+    bookmarkCount: number;
+}) {
+    const items = [
+        { label: 'Resources', value: resourceCount, accent: 'rgba(221,155,40,0.14)' },
+        { label: 'Collections', value: collectionCount, accent: 'rgba(103,152,214,0.14)' },
+        { label: 'Bookmarks', value: bookmarkCount, accent: 'rgba(90,154,124,0.14)' },
+    ];
+
     return (
-        <div 
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+                gap: '14px',
+            }}
+        >
+            {items.map((item) => (
+                <div
+                    key={item.label}
+                    className="sanctuary-card"
+                    style={{
+                        padding: '18px 20px',
+                        borderRadius: '18px',
+                        border: '1px solid var(--border)',
+                        background: `linear-gradient(180deg, ${item.accent} 0%, rgba(255,255,255,0.88) 100%)`,
+                    }}
+                >
+                    <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.04em', color: 'var(--ink-ghost)', marginBottom: '8px' }}>
+                        {item.label}
+                    </div>
+                    <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--ink)' }}>{item.value}</div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function DoorwayCard({
+    eyebrow,
+    title,
+    description,
+    accent,
+    ctaLabel,
+    onClick,
+}: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    accent: string;
+    ctaLabel: string;
+    onClick: () => void;
+}) {
+    return (
+        <button
+            type="button"
+            className="sanctuary-card"
+            onClick={onClick}
+            style={{
+                padding: '24px',
+                borderRadius: '22px',
+                border: '1px solid var(--border)',
+                background: `linear-gradient(135deg, ${accent} 0%, rgba(255,255,255,0.9) 100%)`,
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '12px',
+                textAlign: 'left',
+            }}
+        >
+            <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.05em', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
+                {eyebrow}
+            </div>
+            <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--ink)', lineHeight: 1.1 }}>{title}</div>
+            <div style={{ fontSize: '14px', lineHeight: 1.55, color: 'var(--ink-ghost)', maxWidth: '48ch' }}>{description}</div>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--action)' }}>{ctaLabel}</div>
+        </button>
+    );
+}
+
+function CollectionPreviewCard({
+    title,
+    typeLabel,
+    resourceCount,
+    onClick,
+}: {
+    title: string;
+    typeLabel: string;
+    resourceCount: number;
+    onClick: () => void;
+}) {
+    return (
+        <button
+            type="button"
+            className="sanctuary-card"
+            onClick={onClick}
+            style={{
+                width: '264px',
+                minHeight: '184px',
+                padding: '18px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                borderRadius: '20px',
+                border: '1px solid var(--border)',
+                background: 'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)',
+                textAlign: 'left',
+                cursor: 'pointer',
+            }}
+        >
+            <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                {typeLabel}
+            </div>
+            <div style={{ fontWeight: '700', fontSize: '20px', color: 'var(--ink)', lineHeight: 1.15 }}>{title}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--ink-ghost)', fontSize: '13px', fontWeight: '600' }}>
+                <span>{resourceCount} resources</span>
+                <span style={{ color: 'var(--action)' }}>Open</span>
+            </div>
+        </button>
+    );
+}
+
+function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick: () => void }) {
+    const artwork = resource.media?.url || resource.thumbnail_url;
+
+    return (
+        <button
+            type="button"
             className="sanctuary-hero-panel"
             onClick={onClick}
             style={{
-                height: '320px',
+                minHeight: '344px',
                 borderRadius: '24px',
                 overflow: 'hidden',
                 position: 'relative',
                 cursor: 'pointer',
                 marginBottom: '40px',
-                background: 'linear-gradient(180deg, var(--action-soft) 0%, var(--scene-surface) 100%)',
+                border: '1px solid var(--border)',
+                background: 'linear-gradient(135deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 48%, rgba(255,255,255,0.92) 100%)',
+                display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1.08fr) minmax(320px, 0.92fr)',
+                padding: '0',
+                textAlign: 'left',
             }}
         >
-            {resource.media?.url && (
-                <img 
-                    src={resource.media.url} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                    alt={resource.title}
-                />
-            )}
+            <div
+                style={{
+                    minHeight: '344px',
+                    background: artwork
+                        ? `linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)), url(${artwork}) center/cover no-repeat`
+                        : 'linear-gradient(180deg, rgba(221,155,40,0.18) 0%, rgba(103,152,214,0.18) 100%)',
+                    borderRight: '1px solid rgba(120, 120, 120, 0.12)',
+                }}
+            />
             <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
                 padding: '40px',
-                background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
-                color: '#FCF9F2',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '12px',
-                zIndex: 1,
+                justifyContent: 'space-between',
+                gap: '18px',
             }}>
                 <div style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '8px',
-                    fontSize: '12px',
+                    gap: '10px',
+                    fontSize: '11px',
                     fontWeight: '800',
-                    letterSpacing: '1px',
-                    color: 'var(--sanctuary-saffron)',
+                    letterSpacing: '0.08em',
+                    color: 'var(--action)',
+                    textTransform: 'uppercase',
                 }}>
-                    {resource.subjects?.[0] && <span>| {resource.subjects[0].toUpperCase()}</span>}
-                    {resource.subjects?.[0] && <span>&bull; {resource.subjects[0].toUpperCase()}</span>}
+                    <span>Featured</span>
+                    {resource.subjects?.[0] ? <span>{resource.subjects[0]}</span> : null}
                 </div>
-                <h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1>
-                <p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p>
-                <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
-                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <h1 style={{ fontSize: '36px', fontWeight: '800', margin: 0, color: 'var(--ink)', lineHeight: 1.02 }}>
+                        {resource.title}
+                    </h1>
+                    <p style={{ fontSize: '15px', color: 'var(--ink-ghost)', maxWidth: '42ch', margin: 0, lineHeight: '1.6' }}>
+                        {resource.description || 'Open the lead resource and move directly into reading, video, or study without leaving the sanctuary flow.'}
+                    </p>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="premium-button" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <Play size={16} fill="currentColor" />
                         Open Now
-                    </button>
+                    </div>
+                    {resource.creator_name ? (
+                        <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', fontWeight: '600' }}>
+                            Curated by {resource.creator_name}
+                        </div>
+                    ) : null}
                 </div>
             </div>
-        </div>
+        </button>
     );
 }

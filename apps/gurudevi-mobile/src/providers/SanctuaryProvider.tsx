@@ -35,8 +35,8 @@ function AssetLoaderWatcher({ children }: { children: React.ReactNode }) {
   if (!fontsLoaded || loading) {
     return (
       <SafeAreaProvider>
-        <Center sx={{ flex: 1, backgroundColor: Theme.colors.obsidian }}>
-          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+        <Center className="flex-1 bg-obsidian">
+          <Spinner size="large" className="text-sanctuarySaffron" />
         </Center>
       </SafeAreaProvider>
     );

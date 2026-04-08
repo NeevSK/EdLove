@@ -85,7 +85,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                     borderColor: colors.border,
                 }}>
                     <LinearGradient
-                        colors={[`${Theme.colors.gurudeviViolet}26`, 'transparent']}
+                        colors={[`${Theme.colors.gurudeviViolet}16`, `${Theme.colors.gurudeviBlue}0D`]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={StyleSheet.absoluteFill}
@@ -102,19 +102,22 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                             <MapIcon size={32} color={Theme.colors.sanctuarySaffron} />
                         </Box>
                         <VStack sx={{ flex: 1, gap: 4 }}>
+                            <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.textSecondary, letterSpacing: 1, textTransform: 'uppercase' }}>
+                                Knowledge map
+                            </Text>
                             <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.textPrimary }}>
                                 Enter the Cosmos
                             </Text>
                             <Text sx={{ fontSize: 13, color: colors.textSecondary, lineHeight: 18 }}>
-                                Explore the hidden connections between knowledge and shared wisdom.
+                                Shift from shelves into constellation-style discovery when you want relationships, not just a list.
                             </Text>
                         </VStack>
                         <Box sx={{
                             padding: 10,
-                            backgroundColor: colors.overlay,
+                            backgroundColor: Theme.colors.sacredWhite,
                             borderRadius: 12
                         }}>
-                            <Play size={16} color={colors.textPrimary} fill={colors.textPrimary} />
+                            <Play size={16} color={Theme.colors.gurudeviViolet} fill={Theme.colors.gurudeviViolet} />
                         </Box>
                     </HStack>
                 </Box>
@@ -138,6 +141,12 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                     borderWidth: 1,
                     borderColor: Theme.colors.sanctuarySaffron + '33',
                 }}>
+                    <LinearGradient
+                        colors={[`${Theme.colors.sanctuarySaffron}14`, 'rgba(255,255,255,0.2)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={StyleSheet.absoluteFill}
+                    />
                     <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}>
                         <Box sx={{
                             width: 48,
@@ -150,11 +159,14 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                             <FileText size={24} color={Theme.colors.sanctuarySaffron} />
                         </Box>
                         <VStack sx={{ flex: 1, gap: 2 }}>
+                            <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.textSecondary, letterSpacing: 1, textTransform: 'uppercase' }}>
+                                Curator pathway
+                            </Text>
                             <Text sx={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>
                                 Curator Dashboard
                             </Text>
                             <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                                Review {'&'} publish new knowledge streams.
+                                Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
                             </Text>
                         </VStack>
                         <Plus size={16} color={colors.textSecondary} />
@@ -553,6 +565,11 @@ export default function LibraryScreen() {
                                     <ActivityIndicator animating={refreshing} color={Theme.colors.sanctuarySaffron} />
                                 }
                             >
+                                <SanctuaryPulse
+                                    resourceCount={resources.length}
+                                    collectionCount={collections.length}
+                                    bookmarkCount={bookmarkedResources.length}
+                                />
                                 {heroResource && (
                                     <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} />
                                 )}
@@ -683,19 +700,64 @@ interface HeroBannerProps {
 
 const HERO_HEIGHT = 220;
 
+function SanctuaryPulse({
+    resourceCount,
+    collectionCount,
+    bookmarkCount,
+}: {
+    resourceCount: number;
+    collectionCount: number;
+    bookmarkCount: number;
+}) {
+    const colors = useThemedColors();
+
+    const items = [
+        { label: 'Resources', value: resourceCount, accent: Theme.colors.sanctuarySaffron + '18' },
+        { label: 'Collections', value: collectionCount, accent: Theme.colors.gurudeviBlue + '16' },
+        { label: 'Bookmarks', value: bookmarkCount, accent: Theme.colors.sageGreen + '16' },
+    ];
+
+    return (
+        <HStack sx={{ px: Theme.spacing.md, pt: Theme.spacing.sm, gap: 10 }}>
+            {items.map((item) => (
+                <Box
+                    key={item.label}
+                    sx={{
+                        flex: 1,
+                        borderRadius: 18,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        backgroundColor: colors.secondary,
+                        overflow: 'hidden',
+                    }}
+                >
+                    <Box sx={{ px: 14, py: 14, backgroundColor: item.accent }}>
+                        <Text sx={{ fontSize: 10, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', color: colors.textSecondary }}>
+                            {item.label}
+                        </Text>
+                        <Text sx={{ fontSize: 24, fontWeight: '800', color: colors.textPrimary, mt: 4 }}>
+                            {item.value}
+                        </Text>
+                    </Box>
+                </Box>
+            ))}
+        </HStack>
+    );
+}
+
 function HeroBanner({ resource, onPress }: HeroBannerProps) {
     const colors = useThemedColors();
     return (
         <Pressable onPress={onPress}>
-            <Box sx={{ height: HERO_HEIGHT, overflow: 'hidden', backgroundColor: colors.secondary, mb: Theme.spacing.md }}>
+            <Box sx={{ height: HERO_HEIGHT + 20, overflow: 'hidden', backgroundColor: colors.secondary, mb: Theme.spacing.md, mx: Theme.spacing.md, borderRadius: 24, borderWidth: 1, borderColor: colors.border }}>
                 {resource.media?.url ? (
                     <ImageBackground source={{ uri: resource.media.url as string }} style={{ flex: 1 }} resizeMode="cover">
                         <HeroOverlay resource={resource} colors={colors} />
                     </ImageBackground>
                 ) : (
-                    <Box sx={{ flex: 1, backgroundColor: `${colors.action}18` }}>
+                    <LinearGradient colors={[Theme.colors.sanctuarySaffron + '18', Theme.colors.gurudeviBlue + '16']} style={{ flex: 1 }}>
                         <HeroOverlay resource={resource} colors={colors} />
-                    </Box>
+                    </LinearGradient>
                 )}
             </Box>
         </Pressable>
@@ -705,15 +767,16 @@ function HeroBanner({ resource, onPress }: HeroBannerProps) {
 function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: any }) {
     return (
         <LinearGradient
-            colors={['transparent', `${colors.obsidian}88`, `${colors.obsidian}EE`]}
+            colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)', 'rgba(252,249,242,0.94)']}
             style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}
         >
-            <Box sx={{ alignSelf: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron, px: 8, py: 3, borderRadius: 4, mb: 8 }}>
-                <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sacredWhite, letterSpacing: 1 }}>\u2727 FEATURED</Text>
+            <Box sx={{ backgroundColor: 'rgba(252,249,242,0.9)', borderRadius: 20, padding: Theme.spacing.lg, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' }}>
+            <Box sx={{ alignSelf: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron + '18', px: 8, py: 3, borderRadius: 999, mb: 8 }}>
+                <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sanctuarySaffron, letterSpacing: 1 }}>\u2727 FEATURED</Text>
             </Box>
             <Text sx={{ fontSize: 22, fontWeight: '800', lineHeight: 28, mb: 6, color: colors.textPrimary }}>{resource.title}</Text>
             {resource.description && (
-                <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={2}>
+                <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={3}>
                     {resource.description}
                 </Text>
             )}
@@ -722,7 +785,13 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
                     <Play size={14} color={Theme.colors.sacredWhite} fill={Theme.colors.sacredWhite} />
                     <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 13 }}>Open</Text>
                 </Box>
+                {resource.creator_name ? (
+                    <Text sx={{ fontSize: 12, color: colors.textSecondary, fontWeight: '600' }}>
+                        Curated by {resource.creator_name}
+                    </Text>
+                ) : null}
             </HStack>
+            </Box>
         </LinearGradient>
     );
 }

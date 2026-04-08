@@ -8,68 +8,69 @@ module.exports = {
   ],
   theme: {
     extend: {
-        // --- Circadian Colors (Semantic & Phase-Aware) ---
-        phase: {
-          world: 'var(--phase-world)',
-          canvas: 'var(--phase-canvas)',
-          surface: 'var(--phase-surface)',
-          elevated: 'var(--phase-elevated)',
-          interactive: 'var(--phase-interactive)',
-          accent: 'var(--phase-accent)',
-          reward: 'var(--phase-reward)',
-          danger: 'var(--phase-danger)',
+        colors: {
+          // --- Circadian Colors (Semantic & Phase-Aware) ---
+          phase: {
+            world: 'var(--phase-world)',
+            canvas: 'var(--phase-canvas)',
+            surface: 'var(--phase-surface)',
+            elevated: 'var(--phase-elevated)',
+            interactive: 'var(--phase-interactive)',
+            accent: 'var(--phase-accent)',
+            reward: 'var(--phase-reward)',
+            danger: 'var(--phase-danger)',
+          },
+          phaseText: {
+            primary: 'var(--phase-text-primary)',
+            secondary: 'var(--phase-text-secondary)',
+            inverse: 'var(--phase-text-inverse)',
+            onAccent: 'var(--phase-text-on-accent)',
+            onSurface: 'var(--phase-text-on-surface)',
+          },
+
+          // Core sanctuary palette
+          sanctuarySaffron: '#F6BF8C',
+          saffronMuted: '#C4956A',
+          gurudeviBlue: '#7DD4C0',
+          gurudeviViolet: '#B8A9E0',
+          templeGold: '#FDD925',
+          amberGlow: '#FFB84D',
+
+          // Success & Growth
+          sageGreen: '#8BBF7A',
+          mossGreen: '#556B2F',
+
+          // Warnings & Attention
+          emberOrange: '#D35400',
+          emberRed: '#FF6347',
+          skyBlue: '#87CEEB',
+
+          // Backgrounds - Light
+          vellum: '#F5EDD6',
+          silk: '#FAF7ED',
+          linen: '#E8E2CF',
+          dawnWhite: '#FAF3E0',
+          eveningWarm: '#F0E8D0',
+
+          // Backgrounds - Dark
+          ink: '#2A2318',
+          obsidian: '#1A1610',
+          shroud: '#3D3528',
+
+          // Text Colors
+          inkTruth: '#2A2318',
+          bark: '#544A3D',
+          willow: '#72695E',
+          sacredWhite: '#FCF9F2',
+          starlightGray: '#C8BFB0',
+          mistGray: '#968E80',
+          dimGray: '#6A6358',
+
+          // Specialty
+          shadowViolet: '#6B6480',
+          lotusDeepPink: '#DA70D6',
+          twilightBlue: '#6A5ACD',
         },
-        phaseText: {
-          primary: 'var(--phase-text-primary)',
-          secondary: 'var(--phase-text-secondary)',
-          inverse: 'var(--phase-text-inverse)',
-          onAccent: 'var(--phase-text-on-accent)',
-          onSurface: 'var(--phase-text-on-surface)',
-        },
-
-        // Core sanctuary palette
-        sanctuarySaffron: '#F6BF8C',
-        saffronMuted: '#C4956A',
-        gurudeviBlue: '#7DD4C0',
-        gurudeviViolet: '#B8A9E0',
-        templeGold: '#FDD925',
-        amberGlow: '#FFB84D',
-
-        // Success & Growth
-        sageGreen: '#8BBF7A',
-        mossGreen: '#556B2F',
-
-        // Warnings & Attention
-        emberOrange: '#D35400',
-        emberRed: '#FF6347',
-        skyBlue: '#87CEEB',
-
-        // Backgrounds - Light
-        vellum: '#F5EDD6',
-        silk: '#FAF7ED',
-        linen: '#E8E2CF',
-        dawnWhite: '#FAF3E0',
-        eveningWarm: '#F0E8D0',
-
-        // Backgrounds - Dark
-        ink: '#2A2318',
-        obsidian: '#1A1610',
-        shroud: '#3D3528',
-
-        // Text Colors
-        inkTruth: '#2A2318',
-        bark: '#544A3D',
-        willow: '#72695E',
-        sacredWhite: '#FCF9F2',
-        starlightGray: '#C8BFB0',
-        mistGray: '#968E80',
-        dimGray: '#6A6358',
-
-        // Specialty
-        shadowViolet: '#6B6480',
-        lotusDeepPink: '#DA70D6',
-        twilightBlue: '#6A5ACD',
-      },
       borderRadius: {
         'tight': '8px',
         'comfortable': '16px',

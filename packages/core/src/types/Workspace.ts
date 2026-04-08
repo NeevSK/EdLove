@@ -23,6 +23,7 @@ export type WorkspaceRendererMode =
 
 export type WorkspaceOwnerPackage =
     | 'classroom'
+    | 'community'
     | 'admin'
     | 'people'
     | 'workforce'

@@ -12,9 +12,9 @@ const Input = React.forwardRef<View, IInputProps>(
     <View 
       {...props} 
       ref={ref} 
-      className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-silk
-        ${isInvalid ? 'border-emberRed' : 'border-linen'} 
-        ${isDisabled ? 'opacity-50' : ''} 
+      className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-canvas
+        ${isInvalid ? 'border-phase-danger' : 'border-phase-interactive/20'} 
+        ${isDisabled ? 'opacity-40' : ''} 
         ${className || ''}`} 
     />
   )
@@ -28,8 +28,8 @@ export const InputField = React.forwardRef<TextInput, TextInputProps & { classNa
       {...props}
       ref={ref}
       secureTextEntry={type === 'password'}
-      placeholderTextColor="#968E80" // mistGray
-      className={`flex-1 text-inkTruth text-base py-2 ${className || ''}`}
+      placeholderTextColor="var(--phase-text-secondary)" 
+      className={`flex-1 text-phaseText-primary text-base py-2 ${className || ''}`}
     />
   )
 );

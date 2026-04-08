@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     VStack,
-    HStack,
     Box,
-    Text,
-    Pressable,
     useThemedColors,
     ScreenWrapper,
+    PositiveInvitation,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
     usePermissions, 
-    useTemporalStore, 
     useJourneyHistory 
 } from '@repo/core';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -38,6 +35,9 @@ import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
+import MoodLotus from '../../components/MoodLotus';
+import DailyRhythm from '../../components/DailyRhythm';
+import WisdomSeeds from '../../components/WisdomSeeds';
 import VoiceJournaling from '../../components/VoiceJournaling';
 import DecisionJournalSection from '../../components/DecisionJournalSection';
 import ResonancePatternCard from '../../components/ResonancePatternCard';
@@ -66,31 +66,12 @@ export default function PrincipalSelfView() {
     const [isSavingMood, setIsSavingMood] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const { viewScale, setScale } = useTemporalStore();
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { decisions, isLoading: loadingDecisions } = useDecisionJournal(userId ?? undefined);
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}>
-            <HStack justifyContent="flex-end" space="xs">
-                {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box 
-                        key={scale}
-                        sx={{ 
-                            bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
-                            px: 12, 
-                            py: 4, 
-                            borderRadius: 12 
-                        }}
-                    >
-                        <Pressable onPress={() => setScale(scale)}>
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
-                        </Pressable>
-                    </Box>
-                ))}
-            </HStack>
-
+        <VStack space="lg" style={{ padding: 20 }}>
             <JournalSection entries={journalEntries} loading={loadingJournals} />
             <MoodSection logs={moodHistory} loading={loadingMoods} />
             <PrincipalPulse energy={null} decisions={decisions} loading={loadingDecisions} />
@@ -134,6 +115,12 @@ export default function PrincipalSelfView() {
                                 id: 'voice',
                                 label: 'Voice Journal',
                                 content: <VoiceJournaling userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'mood-lotus',
+                                label: 'Mood Lotus',
+                                content: <MoodLotus userId={userId ?? undefined} />,
+                                historyContent: <MoodSection logs={moodHistory} loading={loadingMoods} />
                             }
                         ]
                     },
@@ -161,13 +148,18 @@ export default function PrincipalSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box style={{ padding: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
                                         />
                                     </Box>
                                 )
+                            },
+                            {
+                                id: 'daily-rhythm',
+                                label: 'Daily Rhythm',
+                                content: <DailyRhythm />
                             }
                         ]
                     },
@@ -191,6 +183,22 @@ export default function PrincipalSelfView() {
                                         energyForecasts={forecasts}
                                     />
                                 ) : null
+                            },
+                            {
+                                id: 'wisdom',
+                                label: 'Leadership Wisdom',
+                                content: <WisdomSeeds userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'monthly',
+                                label: 'Monthly Reflection',
+                                content: (
+                                    <PositiveInvitation
+                                        context="self"
+                                        title={t('principal.monthlyComingSoon', 'Architect of Growth')}
+                                        description={t('principal.monthlyComingSoonDesc', 'A deep reflection module for your monthly milestones is on its way.')}
+                                    />
+                                )
                             }
                         ]
                     }

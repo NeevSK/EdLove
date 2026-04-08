@@ -11,25 +11,27 @@ import {
     Cpu,
     ThumbsUp,
     BadgeCheck,
-    Lock
+    Lock,
+    Bookmark,
 } from 'lucide-react-native';
 
 const TYPE_CONFIG: Record<string, { icon: React.ComponentType<{ size?: number; color?: string }>; color: string; label: string }> = {
-    lesson: { icon: BookOpen, color: '#f59e0b', label: 'Lesson' },
-    worksheet: { icon: FileText, color: '#d97706', label: 'Worksheet' },
-    guide: { icon: BookMarked, color: '#3b82f6', label: 'Guide' },
-    reading: { icon: BookOpen, color: '#10b981', label: 'Reading' },
-    video: { icon: Video, color: '#0ea5e9', label: 'Video' },
-    link: { icon: Link, color: '#f59e0b', label: 'Link' },
-    pdf: { icon: File, color: '#ef4444', label: 'PDF' },
-    story: { icon: BookOpen, color: '#8b5cf6', label: 'Story' },
-    movie_trailer: { icon: Clapperboard, color: '#ec4899', label: 'Film' },
-    tech_guide: { icon: Cpu, color: '#3b82f6', label: 'Tech' },
-    other: { icon: BookOpen, color: '#6b7280', label: 'File' },
+    lesson: { icon: BookOpen, color: '#dd9b28', label: 'Lesson' },
+    worksheet: { icon: FileText, color: '#c77b22', label: 'Worksheet' },
+    guide: { icon: BookMarked, color: '#6798d6', label: 'Guide' },
+    reading: { icon: BookOpen, color: '#5a9a7c', label: 'Reading' },
+    video: { icon: Video, color: '#5b9fcb', label: 'Video' },
+    link: { icon: Link, color: '#dd9b28', label: 'Link' },
+    pdf: { icon: File, color: '#d36d63', label: 'PDF' },
+    story: { icon: BookOpen, color: '#8e78cb', label: 'Story' },
+    movie_trailer: { icon: Clapperboard, color: '#c7658f', label: 'Film' },
+    tech_guide: { icon: Cpu, color: '#6798d6', label: 'Tech' },
+    other: { icon: BookOpen, color: '#8a8b95', label: 'File' },
 };
 
 function resolveType(type: string): keyof typeof TYPE_CONFIG {
-    return TYPE_CONFIG[type] ? type : 'other';
+    const normalized = type?.toLowerCase();
+    return TYPE_CONFIG[normalized] ? normalized : 'other';
 }
 
 export function LibraryThumbnailCard({
@@ -41,11 +43,15 @@ export function LibraryThumbnailCard({
     verified = false,
     onPress,
     onLongPress,
-    isLocked = false
+    isLocked = false,
+    has_bookmarked = false,
+    onBookmarkToggle,
 }: LibraryThumbnailCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const cfg = TYPE_CONFIG[resolveType(type)]!;
     const Icon = cfg.icon;
+    const tintSurface = `${cfg.color}18`;
+    const tintBorder = `${cfg.color}33`;
 
     return (
         <div
@@ -60,70 +66,128 @@ export function LibraryThumbnailCard({
             }}
             style={{
                 width: '100%',
-                height: '240px',
+                minHeight: '248px',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
-                transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-                transition: 'transform 160ms ease, box-shadow 160ms ease',
-                boxShadow: isHovered ? '0 18px 40px rgba(15, 23, 42, 0.14)' : '0 10px 24px rgba(15, 23, 42, 0.08)'
+                border: '1px solid var(--border)',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(252,249,242,0.96) 100%)',
+                transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+                transition: 'transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease',
+                boxShadow: isHovered ? '0 24px 44px rgba(15, 23, 42, 0.12)' : '0 10px 24px rgba(15, 23, 42, 0.06)',
+                borderColor: isHovered ? tintBorder : 'var(--border)',
             }}
         >
-            {/* Thumbnail / Visual Area */}
-            <div style={{
-                height: '140px',
-                width: '100%',
-                position: 'relative',
-                overflow: 'hidden',
-                background: thumbnailUrl ? `url(${thumbnailUrl}) center/cover no-repeat` : `rgba(var(--water-rgb), 0.05)`
-            }}>
-                {/* Overlay Grain/Gradient */}
-                <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6))',
-                    zIndex: 1
-                }} />
-
-                {/* Type Badge */}
-                <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    left: '12px',
-                    zIndex: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '4px 10px',
-                    background: 'rgba(255,255,255,0.2)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(255,255,255,0.2)'
-                }}>
-                    <Icon size={12} color="white" />
-                    <span style={{ fontSize: '10px', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        {cfg.label}
-                    </span>
-                </div>
-
-                {/* Verified Badge */}
-                {verified ? (
-                    <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 2 }}>
-                        <BadgeCheck size={18} color="#10b981" />
-                    </div>
-                ) : isLocked && (
-                    <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 2 }}>
-                        <Lock size={16} color="rgba(255,255,255,0.6)" />
+            <div
+                style={{
+                    height: '132px',
+                    width: '100%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    background: thumbnailUrl
+                        ? `linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)), url(${thumbnailUrl}) center/cover no-repeat`
+                        : `linear-gradient(135deg, ${tintSurface} 0%, rgba(255,255,255,0.72) 100%)`,
+                    borderBottom: '1px solid rgba(120, 120, 120, 0.12)',
+                }}
+            >
+                {!thumbnailUrl && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: '56px',
+                                height: '56px',
+                                borderRadius: '18px',
+                                background: tintSurface,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Icon size={24} color={cfg.color} />
+                        </div>
                     </div>
                 )}
+
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '12px',
+                        left: '12px',
+                        right: '12px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                    }}
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '5px 10px',
+                            background: 'rgba(252,249,242,0.94)',
+                            borderRadius: '999px',
+                            border: `1px solid ${tintBorder}`,
+                        }}
+                    >
+                        <Icon size={12} color={cfg.color} />
+                        <span style={{ fontSize: '10px', fontWeight: '800', color: cfg.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            {cfg.label}
+                        </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {onBookmarkToggle && (
+                            <button
+                                type="button"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    void onBookmarkToggle();
+                                }}
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '999px',
+                                    border: '1px solid rgba(255,255,255,0.6)',
+                                    background: 'rgba(252,249,242,0.9)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                }}
+                                aria-label={has_bookmarked ? 'Remove bookmark' : 'Bookmark resource'}
+                            >
+                                <Bookmark size={14} color={has_bookmarked ? '#dd9b28' : '#3d3a36'} fill={has_bookmarked ? '#dd9b28' : 'transparent'} />
+                            </button>
+                        )}
+                        {verified ? (
+                            <div style={{ width: '30px', height: '30px', borderRadius: '999px', background: 'rgba(252,249,242,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <BadgeCheck size={16} color="#5a9a7c" />
+                            </div>
+                        ) : isLocked ? (
+                            <div style={{ width: '30px', height: '30px', borderRadius: '999px', background: 'rgba(252,249,242,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Lock size={14} color="#6b6b72" />
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
             </div>
 
-            {/* Content Area */}
-            <div className="card-body-inner" style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1, padding: '16px 16px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
                 <div>
-                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--water)', marginBottom: '4px', opacity: 0.8 }}>
-                        {subject || 'General Wisdom'}
+                    <div style={{ fontSize: '10px', fontWeight: '700', color: cfg.color, marginBottom: '4px', letterSpacing: '0.02em' }}>
+                        {subject || 'General wisdom'}
                     </div>
                     <h3 style={{
                         fontSize: '15px',
@@ -134,26 +198,28 @@ export function LibraryThumbnailCard({
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
                     }}>
                         {title}
                     </h3>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px' }}>
-                    {endorsements > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <ThumbsUp size={12} color="var(--sun)" />
-                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}>{endorsements}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {endorsements > 0 ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 8px', borderRadius: '999px', background: tintSurface }}>
+                            <ThumbsUp size={12} color="#dd9b28" />
+                            <span style={{ fontSize: '12px', fontWeight: '700', color: '#dd9b28' }}>{endorsements}</span>
                         </div>
+                    ) : (
+                        <div />
                     )}
-                    <div style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: '600', color: 'var(--ink-ghost)' }}>
-                        Read More →
+                    <div style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}>
+                        Open
                     </div>
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default LibraryThumbnailCard;

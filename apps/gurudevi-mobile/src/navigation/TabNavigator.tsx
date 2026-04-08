@@ -230,20 +230,14 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         presentationStyle="pageSheet"
         onRequestClose={() => setBreathingOpen(false)}
       >
-        <Box flex={1} sx={{ backgroundColor: colors.primary }}>
-          <Box sx={{
-            paddingTop: 50,
-            paddingBottom: Theme.spacing.md,
-            paddingHorizontal: Theme.spacing.md,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border
-          }}>
-            <HStack justifyContent="space-between" alignItems="center">
+        <Box className="flex-1 bg-phase-canvas">
+          <Box className="pt-[50px] pb-md px-md border-b border-phase-surface/10">
+            <HStack className="justify-between items-center">
               <VStack>
-                <Text color={colors.text} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+                <Text className="text-phaseText-primary text-lg font-bold">
                   {t('self.breathingReset') || 'Breathing Reset'}
                 </Text>
-                <Text color={colors.textSecondary} sx={{ fontSize: '$xs' as any }}>
+                <Text className="text-phaseText-secondary text-xs">
                   1 minute of peace
                 </Text>
               </VStack>
@@ -254,7 +248,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 }}
                 style={{
                   padding: 8,
-                  borderRadius: Theme.corners.full,
+                  borderRadius: 9999,
                   backgroundColor: colors.tertiary,
                   borderColor: colors.border,
                   borderWidth: 1,
@@ -264,7 +258,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
               </TouchableOpacity>
             </HStack>
           </Box>
-          <Box sx={{ flex: 1, justifyContent: 'center' }}>
+          <Box className="flex-1 justify-center">
             <BreathGuide onComplete={() => {
               setBreathingOpen(false);
             }} />

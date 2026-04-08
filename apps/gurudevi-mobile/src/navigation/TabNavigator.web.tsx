@@ -640,16 +640,9 @@ export default function TabNavigator({
         isOpen={isBreathingOpen}
         onClose={() => setBreathingOpen(false)}
       >
-        <Box sx={{ 
-          backgroundColor: 'var(--background)',
-          borderRadius: '$xl' as any,
-          padding: Theme.spacing.xl, 
-          alignItems: 'center',
-          maxWidth: 600,
-          width: '90%'
-        }}>
-          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}>
-            <Text color="var(--ink)" sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+        <Box className="bg-phase-canvas rounded-3xl p-xl items-center max-w-[600px] w-11/12 mx-auto">
+          <HStack className="justify-between items-center w-full mb-md">
+            <Text className="text-phaseText-primary text-lg font-bold">
               {t('self.breathingReset') || 'Breathing Reset'}
             </Text>
             <button 

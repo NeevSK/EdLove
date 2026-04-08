@@ -3,13 +3,11 @@ import { Modal as RNModal, TouchableOpacity } from 'react-native';
 import { 
     Box, 
     Heading, 
-    HStack, 
+    HStack,
     SandboxBanner, 
     ScrollView, 
-    Text, 
     Theme, 
-    useThemedColors, 
-    WorkspaceCanvas 
+    useThemedColors
 } from '@repo/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { X } from 'lucide-react-native';
@@ -20,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { BreathGuide } from '@repo/self';
 import { TeacherAdminPortalModal, TeacherEchoHistoryModal, TeacherFeedbackModal } from '@repo/people';
 import { CreateClassroomModal } from '../components';
+import { TeacherWorkspaceShell } from '../components/teacher/TeacherWorkspaceShell';
 import { ScannerModal } from '@repo/scanner-kit';
 import { useTeacherWorkspaceShell } from '../workspace/useTeacherWorkspaceShell';
 import { useTeacherDashboardSurfaces } from '../workspace/useTeacherDashboardSurfaces';
@@ -91,22 +90,19 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
         },
     });
 
-    const { layout, surfaces, setSurfaceHidden, setSurfacePinned, setSurfaceZone } = useWorkspaceLayoutSync({
+    const { layout } = useWorkspaceLayoutSync({
         workspaceId: 'teacher-dashboard',
         userId: userId || 'teacher-dashboard-web-guest',
         surfaces: dashboardSurfaces,
         enableRemoteSync: false,
     });
 
-    const findSurfaceDefinition = (surfaceId: string) => 
-        dashboardSurfaces.find((candidate) => candidate.surfaceId === surfaceId);
-
     if (!layout) {
-        return <Box sx={{ flex: 1, backgroundColor: colors.primary }} />;
+        return <Box style={{ flex: 1, backgroundColor: colors.primary }} />;
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box style={{ flex: 1, backgroundColor: colors.primary }}>
             {isDemoMode ? <SandboxBanner /> : null}
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -117,71 +113,13 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                 }}
             >
                 <Animated.View entering={FadeInDown.delay(50)}>
-                    <WorkspaceCanvas
-                        surfaces={dashboardSurfaces}
+                    <TeacherWorkspaceShell
+                        surfaces={dashboardSurfaces as any}
                         layout={layout}
                         title="Teacher Workspace"
                         subtitle={t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
-                        renderSurfaceContent={(surface) => 
-                            findSurfaceDefinition(surface.surfaceId)?.content ?? null
-                        }
-                        getSurfaceSubtitle={(surface) => 
-                            findSurfaceDefinition(surface.surfaceId)?.subtitle
-                        }
-                        getSurfaceSummary={(surface) => 
-                            findSurfaceDefinition(surface.surfaceId)?.summary
-                        }
-                        getSurfaceTemporalLabel={(surface) => 
-                            findSurfaceDefinition(surface.surfaceId)?.temporalLabel
-                        }
-                        getSurfaceMetadata={(surface) => 
-                            findSurfaceDefinition(surface.surfaceId)?.metadata
-                        }
-                        onToggleHidden={(surface) => setSurfaceHidden(surface.surfaceId, !surface.hidden)}
-                        renderSurfaceActions={(surface) => {
-                            const resolved = surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId);
-                            if (!resolved) return null;
-
-                            return (
-                                <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
-                                    <TouchableOpacity
-                                        onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
-                                        style={{
-                                            paddingHorizontal: Theme.spacing.md,
-                                            paddingVertical: Theme.spacing.sm,
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: 'rgba(42, 35, 24, 0.06)',
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(42, 35, 24, 0.08)',
-                                        }}
-                                    >
-                                        <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}>
-                                            {resolved.pinned ? 'Unpin' : 'Pin'}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => 
-                                            setSurfaceZone(
-                                                resolved.surfaceId,
-                                                resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'outlook' : 'work'
-                                            )
-                                        }
-                                        style={{
-                                            paddingHorizontal: Theme.spacing.md,
-                                            paddingVertical: Theme.spacing.sm,
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: 'rgba(42, 35, 24, 0.06)',
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(42, 35, 24, 0.08)',
-                                        }}
-                                    >
-                                        <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}>
-                                            Move zone
-                                        </Text>
-                                    </TouchableOpacity>
-                                </HStack>
-                            );
-                        }}
+                        stats={stats}
+                        isDemoMode={isDemoMode}
                     />
                 </Animated.View>
             </ScrollView>
@@ -227,16 +165,16 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                 presentationStyle="pageSheet"
                 onRequestClose={() => setIsBreathingOpen(false)}
             >
-                <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-                    <Box sx={{
+                <Box style={{ flex: 1, backgroundColor: colors.primary }}>
+                    <Box style={{
                         paddingTop: 50,
                         paddingBottom: Theme.spacing.md,
                         paddingHorizontal: Theme.spacing.md,
                         borderBottomWidth: 1,
                         borderBottomColor: colors.border,
                     }}>
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Heading sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text }}>
+                        <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Heading style={{ fontSize: Theme.typography.fontSize.lg, color: colors.text }}>
                                 {t('self.breathingReset') || 'Breathing Reset'}
                             </Heading>
                             <TouchableOpacity

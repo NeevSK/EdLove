@@ -43,25 +43,25 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
     }, [data.provinceId]);
 
     return (
-        <VStack sx={{ gap: '$lg' as any }}>
+        <VStack className="gap-6">
             {/* Province Select */}
             <FormControl>
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' as any }}>
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-secondary-400 text-sm">
                         {t('schoolSetup.province')}
                     </FormControlLabelText>
                 </FormControlLabel>
                 <Select
                     selectedValue={data.provinceId}
-                    onValueChange={(value) => onUpdate({ provinceId: value, districtId: '' })}
+                    onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}
                 >
-                    <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}>
-                        <SelectInput placeholder={t('schoolSetup.selectProvince')} color={colors.text} sx={{ flex: 1 }} />
-                        <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} />
+                    <SelectTrigger className="h-12 rounded-2xl bg-secondary-900 border-white/10">
+                        <SelectInput placeholder={t('schoolSetup.selectProvince')} value={SRI_LANKAN_PROVINCES.find(p => p.id === data.provinceId)?.[lang]} className="flex-1" />
+                        <SelectIcon className="mr-3" as={ChevronDown} />
                     </SelectTrigger>
                     <SelectPortal>
                         <SelectBackdrop />
-                        <SelectContent sx={{ backgroundColor: colors.secondary }}>
+                        <SelectContent className="bg-secondary-900 border-t border-white/10">
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
@@ -75,22 +75,26 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
 
             {/* District Select */}
             <FormControl isDisabled={!data.provinceId}>
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' as any }}>
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-secondary-400 text-sm">
                         {t('schoolSetup.district')}
                     </FormControlLabelText>
                 </FormControlLabel>
                 <Select
                     selectedValue={data.districtId}
-                    onValueChange={(value) => onUpdate({ districtId: value })}
+                    onValueChange={(value: string) => onUpdate({ districtId: value })}
                 >
-                    <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}>
-                        <SelectInput placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} color={colors.text} sx={{ flex: 1 }} />
-                        <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} />
+                    <SelectTrigger className="h-12 rounded-2xl bg-secondary-900 border-white/10">
+                        <SelectInput 
+                            placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} 
+                            value={SRI_LANKAN_DISTRICTS.find(d => d.id === data.districtId)?.[lang]}
+                            className="flex-1" 
+                        />
+                        <SelectIcon className="mr-3" as={ChevronDown} />
                     </SelectTrigger>
                     <SelectPortal>
                         <SelectBackdrop />
-                        <SelectContent sx={{ backgroundColor: colors.secondary }}>
+                        <SelectContent className="bg-secondary-900 border-t border-white/10">
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>

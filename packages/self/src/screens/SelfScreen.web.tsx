@@ -6,6 +6,7 @@ import {
     TeacherSelfView, 
     PrincipalSelfView, 
     FounderSelfView, 
+    GuardianSelfView,
     AdminSelfView 
 } from './self';
 
@@ -14,11 +15,14 @@ import {
  * Now capability-driven (POA) instead of registry-intent based.
  */
 export default function SelfScreenWeb() {
-  const { can } = usePermissions();
+  const { can, context } = usePermissions();
 
   const getHeaderDetails = () => {
     if (can('manage', 'StudentDashboard')) {
       return { title: 'Mastery Hub', note: 'Personal Growth Stream' };
+    }
+    if (context.roles.includes('guardian') || context.roles.includes('parent')) {
+      return { title: 'Sadhana', note: 'Guardian Sanctuary' };
     }
     if (can('manage', 'PrincipalDashboard')) {
        return { title: 'Sadhana', note: "Principal's Inner Sanctuary" };
@@ -34,6 +38,7 @@ export default function SelfScreenWeb() {
     if (can('manage', 'AdminDashboard')) return <AdminSelfView />;
     if (can('manage', 'PrincipalDashboard')) return <PrincipalSelfView />;
     if (can('manage', 'TeacherDashboard')) return <TeacherSelfView />;
+    if (context.roles.includes('guardian') || context.roles.includes('parent')) return <GuardianSelfView />;
     if (can('manage', 'StudentDashboard')) return <StudentSelfView />;
     return <StudentSelfView />;
   };

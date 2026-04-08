@@ -7,6 +7,7 @@ interface FounderGlowProps {
     active?: boolean;
     intensity?: 'subtle' | 'medium' | 'high';
     style?: ViewStyle;
+    className?: string;
 }
 
 /**
@@ -18,7 +19,8 @@ export function FounderGlow({
     children,
     active = true,
     intensity = 'medium',
-    style
+    style,
+    className
 }: FounderGlowProps) {
     const sizeMap = {
         subtle: 8,
@@ -27,7 +29,7 @@ export function FounderGlow({
     } as const;
 
     return (
-        <View style={[{ position: 'relative' }, style]}>
+        <View style={[{ position: 'relative' }, style]} className={className}>
             <LivingGlow
                 active={active}
                 glowColor="rgba(255, 166, 0, 0.4)"

@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     VStack,
-    HStack,
     Box,
-    Text,
-    Pressable,
     useThemedColors,
     ScreenWrapper,
+    PositiveInvitation,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
     usePermissions, 
-    useTemporalStore, 
     useJourneyHistory
 } from '@repo/core';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -63,31 +60,12 @@ export default function FounderSelfView() {
     const [isSavingMood, setIsSavingMood] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const { viewScale, setScale } = useTemporalStore();
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom();
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}>
-            <HStack justifyContent="flex-end" space="xs">
-                {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box
-                        key={scale}
-                        sx={{ 
-                            bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
-                            px: 12, 
-                            py: 4, 
-                            borderRadius: 12 
-                        }}
-                    >
-                        <Pressable onPress={() => setScale(scale)}>
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
-                        </Pressable>
-                    </Box>
-                ))}
-            </HStack>
-
+        <VStack space="lg" style={{ padding: 20 }}>
             <JournalSection entries={journalEntries} loading={loadingJournals} />
             <MoodSection logs={moodHistory} loading={loadingMoods} />
             <VisionSection />
@@ -135,7 +113,8 @@ export default function FounderSelfView() {
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} />
+                                content: <MoodLotus userId={userId ?? undefined} />,
+                                historyContent: <MoodSection logs={moodHistory} loading={loadingMoods} />
                             },
                             {
                                 id: 'wisdom',
@@ -168,12 +147,33 @@ export default function FounderSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box style={{ padding: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
                                         />
                                     </Box>
+                                )
+                            },
+                            {
+                                id: 'vision',
+                                label: 'Vision Alignment',
+                                content: <VisionSection />
+                            },
+                            {
+                                id: 'philosophy',
+                                label: 'Philosophical Anchors',
+                                content: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />
+                            },
+                            {
+                                id: 'monthly',
+                                label: 'Monthly Reflection',
+                                content: (
+                                    <PositiveInvitation
+                                        context="self"
+                                        title={t('founder.visionComingSoon', 'Architecting the Future')}
+                                        description={t('founder.visionComingSoonDesc', 'The vision alignment dashboard is currently being synthesized.')}
+                                    />
                                 )
                             }
                         ]

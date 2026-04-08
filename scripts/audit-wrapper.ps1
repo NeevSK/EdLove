@@ -23,7 +23,9 @@ Write-Host ">>> Command: $Cmd" -ForegroundColor Cyan
 # We use a script block to ensure we can capture the exit code of the ACTUAL command
 $scriptBlock = {
     param($c, $l)
-    Invoke-Expression $c 2>&1 | Tee-Object -FilePath $l
+    # We use a subshell and redirect to ensure we can control encoding reliably
+    # The default redirected output in many PS versions is UTF-16LE, we force UTF8
+    Invoke-Expression $c 2>&1 | Out-File -FilePath $l -Encoding utf8 -Force
     return $LASTEXITCODE
 }
 
@@ -38,8 +40,8 @@ $errors = 0
 $warnings = 0
 if (Test-Path $Log) {
     $content = Get-Content $Log
-    $errors = ($content | Select-String -Pattern "error TS|Error:|(line \d+, col \d+): error|❌" -AllMatches).Matches.Count
-    $warnings = ($content | Select-String -Pattern "warning TS|Warning:|⚠️" -AllMatches).Matches.Count
+    $errors = ($content | Select-String -Pattern "error TS|Error:|(line \d+, col \d+): error|❌|Found \d+ errors\." -AllMatches).Matches.Count
+    $warnings = ($content | Select-String -Pattern "warning TS|Warning:|⚠️|Found \d+ warnings\." -AllMatches).Matches.Count
 }
 
 # Summary Report

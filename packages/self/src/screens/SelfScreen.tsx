@@ -5,6 +5,7 @@ import {
     TeacherSelfView,
     PrincipalSelfView,
     FounderSelfView,
+    GuardianSelfView,
     AdminSelfView,
 } from './self';
 
@@ -14,7 +15,7 @@ import {
  */
 export default function SelfScreen() {
     const { discoverFeature } = useTracking();
-    const { can } = usePermissions();
+    const { can, context } = usePermissions();
 
     React.useEffect(() => {
         discoverFeature('section_self');
@@ -34,6 +35,10 @@ export default function SelfScreen() {
 
     if (can('manage', 'TeacherDashboard')) {
         return <TeacherSelfView />;
+    }
+
+    if (context.roles.includes('guardian') || context.roles.includes('parent')) {
+        return <GuardianSelfView />;
     }
 
     if (can('manage', 'StudentDashboard')) {
