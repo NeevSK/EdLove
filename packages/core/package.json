@@ -9,6 +9,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./forms/form-manager": "./src/forms/form-manager.ts",
+    "./hooks/useForm": "./src/hooks/useForm.ts",
+    "./types/Form": "./src/types/Form.ts",
+    "./utils/validators": "./src/utils/validators.ts",
     "./workspace/layout": "./src/api/workspaceLayout.ts",
     "./workspace/layout-contract": "./src/api/workspaceLayout.contract.ts",
     "./workspace/canvas": "./src/lib/workspace/canvas.ts",
@@ -66,6 +70,8 @@
     "date-fns": "^4.1.0",
     "@react-native-community/netinfo": "^11.4.1",
     "@supabase/supabase-js": "2.102.1",
-    "@supabase/postgrest-js": "2.102.1"
+    "@supabase/postgrest-js": "2.102.1",
+    "@zenstackhq/zod": "3.5.5",
+    "@zenstackhq/schema": "3.5.5"
   }
 }

@@ -14,6 +14,9 @@ describe('POA Exhaustive Verification: Every Role, Every Power', () => {
         isAnonymous: false,
         hasGlobalAccess: false,
         isPersonal: false,
+        tier: 'free',
+        features: [],
+        flags: {},
     };
 
     /** ACADEMIC ROLES **/

@@ -25,6 +25,10 @@ export const UserContextSchema = z.object({
   isAnonymous: z.boolean().default(false),
   hasGlobalAccess: z.boolean().default(false), // e.g. Founder/Developer
   isPersonal: z.boolean().default(false),
+  
+  tier: z.string().nullable().default('free'),
+  features: z.array(z.string()).default([]),
+  flags: z.record(z.string(), z.union([z.boolean(), z.string()])).default({}),
 });
 
 export type UserContext = z.infer<typeof UserContextSchema>;

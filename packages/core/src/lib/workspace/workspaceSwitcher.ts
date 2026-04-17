@@ -1,0 +1,116 @@
+export type WorkspaceSwitcherTargetId =
+  | 'founder'
+  | 'principal'
+  | 'teacher'
+  | 'student'
+  | 'guardian';
+
+export type WorkspaceSwitcherDestination =
+  | {
+      kind: 'route';
+      name: string;
+    }
+  | {
+      kind: 'tab';
+      name: string;
+    };
+
+export interface WorkspaceSwitcherTarget {
+  id: WorkspaceSwitcherTargetId;
+  title: string;
+  description: string;
+  destination: WorkspaceSwitcherDestination | null;
+  enabled: boolean;
+  status: 'current' | 'available' | 'bridge' | 'coming_soon';
+  reason?: string;
+}
+
+export function resolveWorkspaceSwitcherTargets({
+  currentWorkspace = 'founder',
+  canManageFounderDashboard,
+  canManagePrincipalDashboard,
+  canManageTeacherDashboard,
+  canManageStudentDashboard,
+  canManageGuardianDashboard = false,
+  hasPrimaryInstitution = false,
+  hasMountedGuardianWorkspace = false}: {
+  currentWorkspace?: WorkspaceSwitcherTargetId;
+  canManageFounderDashboard: boolean;
+  canManagePrincipalDashboard: boolean;
+  canManageTeacherDashboard: boolean;
+  canManageStudentDashboard: boolean;
+  canManageGuardianDashboard?: boolean;
+  hasPrimaryInstitution?: boolean;
+  hasMountedGuardianWorkspace?: boolean;
+}): WorkspaceSwitcherTarget[] {
+  const founderEnabled = canManageFounderDashboard;
+  const principalEnabled = canManagePrincipalDashboard && hasPrimaryInstitution;
+  const teacherEnabled = canManageTeacherDashboard;
+  const studentEnabled = canManageStudentDashboard;
+  const guardianEnabled = canManageGuardianDashboard && hasMountedGuardianWorkspace;
+
+  return [
+    {
+      id: 'founder',
+      title: 'Founder workspace',
+      description: 'Platform-scale stewardship, cross-tenant signal, and founder-owned launch surfaces.',
+      destination: {
+        kind: 'route',
+        name: 'FounderDashboard'},
+      enabled: founderEnabled,
+      status: currentWorkspace === 'founder' ? 'current' : 'available',
+      reason: founderEnabled ? undefined : 'Founder authority is not active for this actor.'},
+    {
+      id: 'principal',
+      title: 'Principal operations',
+      description: 'Institution-specific governance and operational drill-in for a chosen school.',
+      destination: hasPrimaryInstitution
+        ? {
+            kind: 'route',
+            name: 'PrincipalDashboard'}
+        : null,
+      enabled: principalEnabled,
+      status: currentWorkspace === 'principal' ? 'current' : hasPrimaryInstitution ? 'bridge' : 'coming_soon',
+      reason: principalEnabled
+        ? undefined
+        : hasPrimaryInstitution
+        ? undefined
+        : 'Needs at least one institution context before the operational workspace can open.'},
+    {
+      id: 'teacher',
+      title: 'Teacher workspace',
+      description: 'Academic daily-work surfaces currently composed through the classroom shell.',
+      destination: {
+        kind: 'tab',
+        name: 'Classroom'},
+      enabled: teacherEnabled,
+      status: currentWorkspace === 'teacher' ? 'current' : 'available',
+      reason: teacherEnabled ? undefined : 'Teacher capability is not active for this actor.'},
+    {
+      id: 'student',
+      title: 'Student workspace',
+      description: 'Learning-flow and progress surfaces currently composed through the classroom shell.',
+      destination: {
+        kind: 'tab',
+        name: 'Classroom'},
+      enabled: studentEnabled,
+      status: currentWorkspace === 'student' ? 'current' : 'available',
+      reason: studentEnabled ? undefined : 'Student capability is not active for this actor.'},
+    {
+      id: 'guardian',
+      title: 'Guardian workspace',
+      description: 'Family-facing oversight with child visibility, announcements, events, and school communication.',
+      destination: hasMountedGuardianWorkspace
+        ? {
+            kind: 'route',
+            name: 'GuardianDashboard'}
+        : null,
+      enabled: guardianEnabled,
+      status: currentWorkspace === 'guardian' ? 'current' : hasMountedGuardianWorkspace ? 'available' : 'coming_soon',
+      reason: guardianEnabled
+        ? undefined
+        : canManageGuardianDashboard && !hasMountedGuardianWorkspace
+        ? 'Guardian authority exists, but the workspace route is not mounted yet.'
+        : 'Guardian authority is not active for this actor.'},
+  ];
+}

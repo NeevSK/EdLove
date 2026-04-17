@@ -12,9 +12,11 @@ export * from '../components/ui/box';
 export * from '../components/ui/center';
 export * from '../components/ui/hstack';
 export * from '../components/ui/vstack';
-export * from '../components/ui/view';
+export { View, ScrollView } from '../components/ui/view';
 export * from '../components/ui/text';
 export * from '../components/ui/divider';
+export * from '../components/ui/icon';
+export * from '../components/ui/pressable';
 
 // Core Form
 export * from '../components/ui/button';
@@ -25,6 +27,8 @@ export * from '../components/ui/checkbox';
 export * from '../components/ui/select';
 export * from '../components/ui/textarea';
 export * from '../components/ui/progress';
+export * from '../components/ui/slider';
+export * from '../components/ui/avatar';
 
 // Navigation
 export * from '../components/ui/link';

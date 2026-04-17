@@ -32,6 +32,9 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     isAnonymous: false,
     hasGlobalAccess: false,
     isPersonal: false,
+    tier: 'free',
+    features: [],
+    flags: {},
     ...rawContext
   });
 

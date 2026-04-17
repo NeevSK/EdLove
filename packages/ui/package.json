@@ -10,6 +10,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./gluestack": "./src/gluestack/index.tsx",
+    "./components/SanctuaryButton": "./src/components/SanctuaryButton.tsx",
+    "./components/SanctuaryInput": "./src/components/SanctuaryInput.tsx",
+    "./components/QRCodeGenerator": "./src/components/QRCodeGenerator.tsx",
     "./screens": "./src/screens/index.ts",
     "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
     "./screens/AppSettingsScreen.web": "./src/screens/AppSettingsScreen.web.tsx",
@@ -26,6 +30,7 @@
   },
   "dependencies": {
     "gluestack-ui": "3.0.0",
+    "@react-native-community/slider": "4.5.6",
     "nativewind": "4.1.23",
     "tailwindcss": "3.4.17",
     "@repo/core": "workspace:*",

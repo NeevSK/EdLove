@@ -128,6 +128,34 @@ export const colors = {
     glassBorder: 'rgba(252, 249, 242, 0.12)', // Sacred White based (Default)
 } as const;
 
+// Standalone exports for legacy compatibility
+export const {
+    sanctuarySaffron,
+    saffronMuted,
+    templeGold,
+    amberGlow,
+    sageGreen,
+    mossGreen,
+    emberOrange,
+    emberRed,
+    skyBlue,
+    vellum,
+    silk,
+    linen,
+    dawnWhite,
+    eveningWarm,
+    ink,
+    obsidian,
+    shroud,
+    inkTruth,
+    bark,
+    willow,
+    sacredWhite,
+    starlightGray,
+    mistGray,
+    dimGray
+} = colors;
+
 // ============================================================================
 // TYPOGRAPHY - Readable & Respectful
 // ============================================================================
