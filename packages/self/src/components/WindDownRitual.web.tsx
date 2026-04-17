@@ -24,35 +24,29 @@ const STEPS: RitualStep[] = [
     {
         id: 'breathe',
         title: '<, Breathe',
-        description: 'Take three slow, deep breaths. Breathe in for 4 counts, hold for 4, out for 6.',
-    },
+        description: 'Take three slow, deep breaths. Breathe in for 4 counts, hold for 4, out for 6.'},
     {
         id: 'reflect',
         title: '< What went well?',
         description: 'One thing that went well today, however small.',
         hasInput: true,
-        placeholder: 'Something I noticed...',
-    },
+        placeholder: 'Something I noticed...'},
     {
         id: 'release',
         title: '<C Release',
         description: 'One thing to let go of before you sleep.',
         hasInput: true,
-        placeholder: 'I release...',
-    },
-    {
+        placeholder: 'I release...'}, {
         id: 'intent',
         title: "P Tomorrow's seed",
         description: 'One gentle intention for tomorrow.',
         hasInput: true,
-        placeholder: 'Tomorrow I will...',
-    },
+        placeholder: 'Tomorrow I will...'},
 ];
 const DEFAULT_STEP: RitualStep = {
     id: 'breathe',
     title: '<, Breathe',
-    description: 'Take three slow, deep breaths. Breathe in for 4 counts, hold for 4, out for 6.',
-};
+    description: 'Take three slow, deep breaths. Breathe in for 4 counts, hold for 4, out for 6.'};
 
 export default function WindDownRitual({ userId }: WindDownRitualProps) {
     const [step, setStep] = useState(0);
@@ -73,8 +67,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                     await saveWindDownRitual(userId, {
                         went_well: values.reflect ?? '',
                         to_release: values.release ?? '',
-                        tomorrow_intent: values.intent ?? '',
-                    });
+                        tomorrow_intent: values.intent ?? ''});
                 }
             } catch {
                 // Non-fatal; completing the ritual matters more than the save succeeding.
@@ -129,10 +122,9 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <button
                     onClick={handleNext}
                     disabled={saving}
-                    style={{ padding: '11px 24px', borderRadius: '10px', background: '#8B5CF6', color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', cursor: saving ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                >    {saving ? 'Saving...' : isLast ? (
+                    style={{ padding: '11px 24px', borderRadius: '10px', background: '#8B5CF6', color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', cursor: saving ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>    {saving ? 'Saving...' : isLast ? (
                         <>
-                            <CheckCircle2 size={16} color="#fff" /> Complete Ritual
+                            <Icon as={CheckCircle2} size={16} color="#fff" /> Complete Ritual
                         </>
                     ) : (
                         `Next -> ${nextStepLabel}`
@@ -142,8 +134,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
             {step > 0 && (
                 <button
                     onClick={() => setStep((value) => value - 1)}
-                    style={{ background: 'none', border: 'none', color: 'var(--ink-ghost)', fontSize: '12px', cursor: 'pointer', alignSelf: 'flex-start' }}
-                >                    {'<- Back'}
+                    style={{ background: 'none', border: 'none', color: 'var(--ink-ghost)', fontSize: '12px', cursor: 'pointer', alignSelf: 'flex-start' }}>                    {'<- Back'}
                 </button>
             )}
         </div>

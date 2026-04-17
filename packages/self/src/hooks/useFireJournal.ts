@@ -1,10 +1,9 @@
-import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { FireJournalEntry } from '../types';
 import {
     burnFireJournalEntry,
-    fetchFireJournalHistoryForView,
-} from '../api/wellbeingRepository';
+    fetchFireJournalHistoryForView} from '../api/wellbeingRepository';
 
 const JOURNAL_CACHE_KEY = 'gurudevi-journal-cache';
 

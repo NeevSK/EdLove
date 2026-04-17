@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Self Screen Views (Web)
  * Export role-specific Self section views for Web
  */

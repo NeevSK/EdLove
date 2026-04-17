@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { Box, PositiveInvitation, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    Box,
-    useThemedColors,
-    ScreenWrapper,
-    PositiveInvitation,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
@@ -43,7 +40,7 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function FounderSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -88,13 +85,11 @@ export default function FounderSelfView() {
             <BaseSelfView
                 perspective="founder"
                 description={t('self.founderDescription', 'The steady eye of the hurricane - a space for vision and personal pulse.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Ecosystem Journey',
                         accentColor: '#FBBF24',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'pulse',
                         title: 'Ecosystem Pulse',
@@ -195,3 +190,4 @@ export default function FounderSelfView() {
         </ScreenWrapper>
     );
 }
+

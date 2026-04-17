@@ -5,27 +5,26 @@
  * EROI 60:1 (1 min → calm for hour)
  */
 
-import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    VStack,
-    Text,
-    Button,
-    ButtonText,
-    Pressable,
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+    Box, 
+    Button, 
+    ButtonText, 
+    Pressable, 
+    Text, 
+    VStack, 
+    Icon 
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withTiming,
-    Easing,
+    Easing
 } from 'react-native-reanimated';
 import { Wind } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
-import { useThemedColors } from '@repo/ui';
 
 interface BreathGuideProps {
     onComplete?: () => void;
@@ -40,71 +39,81 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     const [currentCycle, setCurrentCycle] = useState(0);
     const [phaseIndex, setPhaseIndex] = useState(0);
 
-    const BREATH_CYCLE = [
-        { phase: 'inhale' as BreathPhase, duration: 4000, instruction: t('self.inhale') },
-        { phase: 'hold' as BreathPhase, duration: 2000, instruction: t('self.hold') },
-        { phase: 'exhale' as BreathPhase, duration: 6000, instruction: t('self.exhale') },
-        { phase: 'rest' as BreathPhase, duration: 2000, instruction: t('self.rest') },
-    ];
+    const BREATH_CYCLE = React.useMemo(() => [
+        { phase: 'inhale' as BreathPhase, duration: 4000, instruction: t('self.inhale') || 'Inhale' },
+        { phase: 'hold' as BreathPhase, duration: 2000, instruction: t('self.hold') || 'Hold' },
+        { phase: 'exhale' as BreathPhase, duration: 6000, instruction: t('self.exhale') || 'Exhale' },
+        { phase: 'rest' as BreathPhase, duration: 2000, instruction: t('self.rest') || 'Rest' },
+    ], [t]);
 
     // Animation values
     const petalScale = useSharedValue(0.8);
     const petalOpacity = useSharedValue(0.5);
     const petalRotation = useSharedValue(0);
 
-    const animatePetal = (phase: BreathPhase, duration: number) => {
+    const animatePetal = useCallback((phase: BreathPhase, duration: number) => {
         switch (phase) {
             case 'inhale':
                 petalScale.value = withTiming(1.4, {
                     duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
+                    easing: Easing.inOut(Easing.ease)});
                 petalOpacity.value = withTiming(1, {
                     duration,
-                    easing: Easing.linear,
-                });
+                    easing: Easing.linear});
                 break;
 
             case 'hold':
                 petalScale.value = withTiming(1.4, {
                     duration,
-                    easing: Easing.linear,
-                });
+                    easing: Easing.linear});
                 break;
 
             case 'exhale':
                 petalScale.value = withTiming(0.8, {
                     duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
+                    easing: Easing.inOut(Easing.ease)});
                 petalOpacity.value = withTiming(0.5, {
                     duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
+                    easing: Easing.inOut(Easing.ease)});
                 petalRotation.value = withTiming(petalRotation.value + 45, {
                     duration,
-                    easing: Easing.linear,
-                });
+                    easing: Easing.linear});
                 break;
 
             case 'rest':
                 petalScale.value = withTiming(0.9, {
                     duration: duration / 2,
-                    easing: Easing.inOut(Easing.ease),
-                });
+                    easing: Easing.inOut(Easing.ease)});
+                break;
+        }
+    }, [petalScale, petalOpacity, petalRotation]);
+
+    const triggerHaptic = (phase: BreathPhase) => {
+        if (Platform.OS === 'web') return;
+
+        switch (phase) {
+            case 'inhale':
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                break;
+            case 'hold':
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                break;
+            case 'exhale':
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                break;
+            case 'rest':
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 break;
         }
     };
 
-    const completeSession = () => {
+    const completeSession = useCallback(() => {
         setIsActive(false);
-
         if (Platform.OS !== 'web') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-
         onComplete?.();
-    };
+    }, [onComplete]);
 
     useEffect(() => {
         let timeout: NodeJS.Timeout;
@@ -126,26 +135,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             completeSession();
         }
         return () => clearTimeout(timeout);
-    }, [isActive, currentCycle, phaseIndex, BREATH_CYCLE, TOTAL_CYCLES, animatePetal, completeSession]);
-
-    const triggerHaptic = (phase: BreathPhase) => {
-        if (Platform.OS === 'web') return;
-
-        switch (phase) {
-            case 'inhale':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                break;
-            case 'hold':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                break;
-            case 'exhale':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                break;
-            case 'rest':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                break;
-        }
-    };
+    }, [isActive, currentCycle, phaseIndex, BREATH_CYCLE, animatePetal, completeSession]);
 
     const startSession = () => {
         setIsActive(true);
@@ -169,95 +159,55 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         transform: [
             { scale: petalScale.value },
             { rotate: `${petalRotation.value}deg` },
-        ] as any,
-        opacity: petalOpacity.value,
+        ],
+        opacity: petalOpacity.value
     }));
 
-    const colors = useThemedColors();
     const currentInstruction = BREATH_CYCLE[phaseIndex]?.instruction || 'Begin...';
 
     return (
-        <VStack space="lg" sx={{ alignItems: 'center', padding: Theme.spacing.lg }}>
+        <VStack className="items-center p-lg gap-lg">
             {/* Breath visualization - Lotus Petal */}
-            <Box
-                sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 250,
-                }}
-            >
+            <Box className="items-center justify-center min-h-[250px]">
                 <Animated.View style={petalStyle}>
-                    <Box
-                        sx={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 75,
-                            backgroundColor: colors.action, // Use theme-aware action color
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: colors.action,
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowOpacity: 0.6,
-                            shadowRadius: 20,
-                            elevation: 10,
-                        }}
+                    <Box 
+                        className="w-[150px] h-[150px] rounded-full bg-gurudeviViolet items-center justify-center shadow-xl shadow-gurudeviViolet/60"
+                        style={{ elevation: 10 }}
                     >
-                        <Text style={{ fontSize: 48 }}>🌸</Text>
+                        <Text className="text-5xl">🌸</Text>
                     </Box>
                 </Animated.View>
             </Box>
 
             {/* Instruction text */}
             {isActive && (
-                <VStack space="sm" sx={{ alignItems: 'center' }}>
-                    <Text
-                        color={colors.text}
-                        size="2xl"
-                        sx={{ fontWeight: typography.fontWeight.semibold }}
-                    >
+                <VStack className="items-center gap-1">
+                    <Text className="text-ink text-2xl font-semibold text-center">
                         {currentInstruction}
                     </Text>
-                    <Text
-                        color={colors.textSecondary}
-                        size="sm"
-                    >
-                        {t('self.cycleCount', { current: currentCycle + 1, total: TOTAL_CYCLES })}
+                    <Text className="text-mistGray text-sm">
+                        {t('self.cycleCount', { current: currentCycle + 1, total: TOTAL_CYCLES }) || `Cycle ${currentCycle + 1} of ${TOTAL_CYCLES}`}
                     </Text>
                 </VStack>
             )}
 
             {/* Controls */}
-            <Box sx={{ marginTop: Theme.spacing.lg }}>
+            <Box className="mt-lg">
                 {!isActive ? (
                     <Button
                         size="lg"
                         onPress={startSession}
-                        sx={{
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: colors.action,
-                            paddingHorizontal: Theme.spacing.xl,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                        className="rounded-full bg-gurudeviViolet px-xl flex-row items-center justify-center"
                     >
-                        <Wind
-                            color={Theme.colors.sacredWhite}
-                            size={20}
-                            style={{ marginRight: Theme.spacing.sm }}
-                        />
-                        <ButtonText color={Theme.colors.sacredWhite}>
-                            {t('self.startBreathing')}
+                        <Icon as={Wind} className="text-white mr-2" size={20} />
+                        <ButtonText className="text-white">
+                            {t('self.startBreathing') || 'Start Breathing'}
                         </ButtonText>
                     </Button>
                 ) : (
                     <Pressable onPress={stopSession}>
-                        <Text
-                            color={colors.textTertiary}
-                            size="sm"
-                            sx={{ textDecorationLine: 'underline' }}
-                        >
-                            {t('self.stop')}
+                        <Text className="text-mistGray text-sm underline">
+                            {t('self.stop') || 'Stop'}
                         </Text>
                     </Pressable>
                 )}
@@ -265,21 +215,9 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
 
             {/* Info */}
             {!isActive && (
-                <Box
-                    sx={{
-                        marginTop: Theme.spacing.md,
-                        padding: Theme.spacing.md,
-                        backgroundColor: colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                    }}
-                >
-                    <Text
-                        color={colors.textSecondary}
-                        size="xs"
-                        textAlign="center"
-                        sx={{ fontStyle: 'italic' }}
-                    >
-                        {t('self.breathHero')}
+                <Box className="mt-md p-md bg-black/5 rounded-comfortable items-center">
+                    <Text className="text-mistGray text-xs text-center italic">
+                        {t('self.breathHero') || 'One minute of breathing, an hour of calm.'}
                     </Text>
                 </Box>
             )}

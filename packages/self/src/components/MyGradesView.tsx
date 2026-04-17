@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MyGradesView
  *
  * Student-facing grade summary: shows graded submissions ordered by most recent.
@@ -7,16 +7,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    SkeletonCard,
-    useThemedColors,
-    Theme,
-} from '@repo/ui';
+import { Box, HStack, Heading, SkeletonCard, Text, Theme, VStack, amberGlow, emberRed, sageGreen, useTheme, useThemedColors } from '@repo/ui';
+
+
+
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -42,14 +36,14 @@ const GRADE_THRESHOLD_EXCELLENT = 75;
 const GRADE_THRESHOLD_PASSING = 50;
 
 const GRADE_COLOR = (grade: number): string => {
-    if (grade >= GRADE_THRESHOLD_EXCELLENT) return Theme.colors.sageGreen ?? '#4caf50';
-    if (grade >= GRADE_THRESHOLD_PASSING) return Theme.colors.amberGlow ?? '#ffc107';
-    return Theme.colors.emberRed ?? '#f44336';
+    if (grade >= GRADE_THRESHOLD_EXCELLENT) return sageGreen ?? '#4caf50';
+    if (grade >= GRADE_THRESHOLD_PASSING) return amberGlow ?? '#ffc107';
+    return emberRed ?? '#f44336';
 };
 
 export default function MyGradesView({ userId }: MyGradesViewProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const [grades, setGrades] = useState<GradeRow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -83,7 +77,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
 
     if (isLoading) {
         return (
-            <VStack space="sm" sx={{ flex: 1 }}>
+            <VStack space="sm" style={{ flex: 1 }}>
                 <SkeletonCard height={72} />
                 <SkeletonCard height={72} />
                 <SkeletonCard height={72} />
@@ -95,13 +89,12 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
         return (
             <Box>
                 p={Theme.spacing.lg}
-                sx={{
+                style={{
                     backgroundColor: colors.tertiary,
                     borderRadius: Theme.corners.comfortable,
-                    alignItems: 'center',
-                }}
+                    alignItems: 'center'}}
             
-                <Text color={colors.textSecondary} size="sm" textAlign="center">
+                <Text style={{ color: colors.textSecondary }} size="sm" textAlign="center">
                     {t('student.noGradesYet')}
                 </Text>
             </Box>
@@ -115,39 +108,36 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                     <Animated.View key={item.id} entering={FadeInDown.delay(i * 40)}>
                         <Box>
                             p={Theme.spacing.md}
-                            sx={{
+                            style={{
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
-                                borderLeftColor: GRADE_COLOR(item.grade),
-                            }}
+                                borderLeftColor: GRADE_COLOR(item.grade)}}
                         
                             <HStack justifyContent="space-between" alignItems="flex-start">
-                                <VStack sx={{ flex: 1, marginRight: Theme.spacing.sm }}>
-                                    <Text color={colors.text} size="sm" bold numberOfLines={1}>
+                                <VStack style={{ flex: 1, marginRight: Theme.spacing.sm }}>
+                                    <Text style={{ color: colors.text }} size="sm" bold numberOfLines={1}>
                                         {item.assignments?.title ?? t('student.unknownAssignment')}
                                     </Text>
-                                    <Text color={colors.textSecondary} size="xs">
+                                    <Text style={{ color: colors.textSecondary }} size="xs">
                                         {item.classrooms?.name ?? ''}
                                     </Text>
                                     {!!item.feedback && (
-                                        <Text color={colors.textTertiary} size="xs" mt="$1" numberOfLines={2}>
+                                        <Text style={{ color: colors.textTertiary }} size="xs" mt="$1" numberOfLines={2}>
                                             {item.feedback}
                                         </Text>
                                     )}
                                 </VStack>
                                 <Box>
-                                    sx={{
+                                    style={{
                                         backgroundColor: GRADE_COLOR(item.grade),
                                         borderRadius: Theme.corners.full,
                                         width: 44,
                                         height: 44,
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
+                                        justifyContent: 'center'}}
                                 
-                                    <Text color={Theme.colors.white} bold size="sm">{item.grade}</Text
-                                ></Box>
+                                    <Text style={{ color: white }} bold size="sm">{item.grade}</Text></Box>
                             </HStack>
                         </Box>
                     </Animated.View>

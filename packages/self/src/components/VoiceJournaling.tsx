@@ -1,43 +1,58 @@
+/**
+ * VOICE SANCTUARY
+ * Voice-based journaling for emotional release.
+ * Simple, focused, and intimate interface.
+ */
+
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import { 
-    VStack, 
+    Icon, 
+    Box, 
     HStack, 
     Text, 
-    Theme, 
-    useThemedColors,
-    GlassCard,
-    Box
+    VStack, 
+    Button,
+    ButtonText,
+    Heading,
+    hapticLight,
+    hapticSuccess
 } from '@repo/ui';
-import { Mic, Square, Check, X } from 'lucide-react-native';
+import { Mic, Square, Check, X, Volume2 } from 'lucide-react-native';
 import Animated, { 
     useSharedValue, 
     useAnimatedStyle, 
     withRepeat, 
     withTiming, 
     Easing,
-    interpolate
+    interpolate,
+    FadeInUp,
+    FadeIn
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
-// Mocking audio for now as per @repo/core patterns if not available
-const AudioModule = {
-    startRecording: async () => {},
-    stopRecording: async () => ({ uri: 'mock-uri', duration: 1000 }),
-    playAsync: async (uri: string) => {},
+// Mock audio controller for now
+const audioController = {
+    start: async () => { console.log('Recording started'); },
+    stop: async () => { console.log('Recording stopped'); return { uri: 'mock-uri', duration: 5000 }; },
+    play: async (uri: string) => { console.log('Playing', uri); }
 };
 
 interface VoiceJournalingProps {
     userId?: string;
+    onFinished?: (uri: string) => void;
 }
 
-export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId }) => {
+export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFinished }) => {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'finished'>('idle');
     const [duration, setDuration] = useState(0);
+    
+    // Animation shared values
     const pulseScale = useSharedValue(1);
-    const waveHeight = useSharedValue(10);
+    const audioGraph = [
+        useSharedValue(10), useSharedValue(25), useSharedValue(40), 
+        useSharedValue(20), useSharedValue(35)
+    ];
 
     useEffect(() => {
         if (recordingState === 'recording') {
@@ -46,11 +61,18 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId }) => {
                 -1,
                 true
             );
-            waveHeight.value = withRepeat(
-                withTiming(40, { duration: 500, easing: Easing.inOut(Easing.ease) }),
-                -1,
-                true
-            );
+            
+            // Random-ish animation for the wave
+            audioGraph.forEach((val, i) => {
+                val.value = withRepeat(
+                    withTiming(15 + Math.random() * 40, { 
+                        duration: 400 + i * 100, 
+                        easing: Easing.inOut(Easing.ease) 
+                    }),
+                    -1,
+                    true
+                );
+            });
 
             const interval = setInterval(() => {
                 setDuration(prev => prev + 1);
@@ -58,9 +80,9 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId }) => {
             return () => clearInterval(interval);
         } else {
             pulseScale.value = withTiming(1);
-            waveHeight.value = withTiming(10);
+            audioGraph.forEach(val => val.value = withTiming(4));
         }
-    }, [recordingState]);
+    }, [recordingState, pulseScale]);
 
     const formatDuration = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -69,122 +91,127 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId }) => {
     };
 
     const handleStart = async () => {
+        hapticLight();
         setRecordingState('recording');
         setDuration(0);
-        await AudioModule.startRecording();
+        await audioController.start();
     };
 
     const handleStop = async () => {
+        hapticLight();
         setRecordingState('finished');
-        await AudioModule.stopRecording();
+        await audioController.stop();
     };
 
     const handleReset = () => {
+        hapticLight();
         setRecordingState('idle');
         setDuration(0);
     };
 
-    const pulseStyle = useAnimatedStyle(() => ({
+    const handleConfirm = () => {
+        hapticSuccess();
+        onFinished?.('mock-uri');
+        handleReset();
+    };
+
+    const pulseAnimatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: pulseScale.value }],
-        opacity: interpolate(pulseScale.value, [1, 1.2], [0.6, 1])
+        opacity: interpolate(pulseScale.value, [1, 1.2], [0.3, 0.6])
     }));
 
     return (
-        <GlassCard style={styles.container}>
-            <VStack space="xl" alignItems="center">
-                <Text fontWeight="700" size="lg">
-                    {t('self.voiceJournal', 'Voice Sanctuary')}
+        <VStack className="p-lg gap-lg items-center bg-obsidian rounded-comfortable border border-white/5 shadow-xl">
+            <VStack className="items-center gap-1">
+                <Heading size="md" className="text-sacredWhite">
+                    {t('self.voiceJournal') || 'Voice Sanctuary'}
+                </Heading>
+                <Text className="text-mistGray text-xs italic">
+                    {recordingState === 'recording' ? t('self.recordingHint') || 'The void is listening...' : t('self.voiceJournalSubtitle') || 'Speak your truth, let it go.'}
                 </Text>
+            </VStack>
 
-                <Box style={styles.recordOuter}>
-                    {recordingState === 'recording' && (
-                        <Animated.View style={[styles.pulseCircle, pulseStyle]} />
-                    )}
-                    <TouchableOpacity 
-                        onPress={recordingState === 'recording' ? handleStop : handleStart}
-                        style={[
-                            styles.recordBtn, 
-                            recordingState === 'recording' && styles.recordBtnActive
-                        ]}
-                    >
-                        {recordingState === 'recording' ? (
-                            <Square size={32} color="white" fill="white" />
-                        ) : (
-                            <Mic size={32} color="white" />
-                        )}
-                    </TouchableOpacity>
-                </Box>
+            {/* Recording Visual */}
+            <Box className="w-40 h-40 items-center justify-center relative my-4">
+                {recordingState === 'recording' && (
+                    <Animated.View 
+                        style={[pulseAnimatedStyle]} 
+                        className="absolute w-32 h-32 rounded-full bg-sanctuarySaffron"
+                    />
+                )}
+                
+                <Button
+                    onPress={recordingState === 'recording' ? handleStop : handleStart}
+                    className={`w-24 h-24 rounded-full items-center justify-center transition-all duration-300 shadow-lg ${
+                        recordingState === 'recording' ? 'bg-emberRed scale-110 shadow-emberRed/30' : 'bg-sanctuarySaffron shadow-sanctuarySaffron/30'
+                    }`}
+                >
+                    <Icon 
+                        as={recordingState === 'recording' ? Square : Mic} 
+                        className="text-white" 
+                        size={32} 
+                        fill={recordingState === 'recording' ? 'white' : 'none'} 
+                    />
+                </Button>
+            </Box>
 
-                <VStack space="xs" alignItems="center">
-                    <Text size="xl" fontWeight="800" color={recordingState === 'recording' ? Theme.colors.sanctuarySaffron : colors.text}>
-                        {formatDuration(duration)}
-                    </Text>
-                    <Text size="xs" color={colors.textSecondary}>
-                        {recordingState === 'recording' ? t('self.recording', 'Listening...') : t('self.tapToStart', 'Tap to start reflecting')}
-                    </Text>
-                </VStack>
-
-                {recordingState === 'finished' && (
-                    <HStack space="md">
-                        <TouchableOpacity onPress={handleReset} style={styles.actionBtn}>
-                            <X size={20} color={colors.textSecondary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.actionBtn, styles.actionBtnConfirm]}>
-                            <Check size={20} color="white" />
-                        </TouchableOpacity>
+            {/* Waveform / Status */}
+            <VStack className="items-center gap-4 w-full">
+                {recordingState === 'recording' && (
+                    <HStack className="items-center gap-1.5 h-12">
+                        {audioGraph.map((val, i) => (
+                            <Animated.View
+                                key={i}
+                                style={useAnimatedStyle(() => ({ height: val.value }))}
+                                className="w-1 bg-sanctuarySaffron rounded-full"
+                            />
+                        ))}
                     </HStack>
                 )}
+
+                <VStack className="items-center">
+                    <Text className={`text-4xl font-black ${recordingState === 'recording' ? 'text-sanctuarySaffron' : 'text-sacredWhite'}`}>
+                        {formatDuration(duration)}
+                    </Text>
+                    <Text className="text-mistGray text-xs mt-1">
+                        {recordingState === 'recording' ? t('self.recording') || 'Active Recording' : t('self.tapToStart') || 'Tap the Mic to Begin'}
+                    </Text>
+                </VStack>
             </VStack>
-        </GlassCard>
+
+            {/* Controls */}
+            {recordingState === 'finished' && (
+                <Animated.View entering={FadeInUp} className="w-full">
+                    <HStack className="justify-center gap-6 mt-2">
+                        <Button 
+                            onPress={handleReset} 
+                            variant="outline"
+                            className="w-14 h-14 rounded-full border-white/10 bg-white/5 p-0 items-center justify-center"
+                        >
+                            <Icon as={X} size={24} className="text-mistGray" />
+                        </Button>
+                        
+                        <Button 
+                            onPress={handleConfirm}
+                            className="w-14 h-14 rounded-full bg-emeraldGreen p-0 items-center justify-center shadow-lg shadow-emeraldGreen/30"
+                        >
+                            <Icon as={Check} size={24} className="text-white" />
+                        </Button>
+                    </HStack>
+                </Animated.View>
+            )}
+
+            {/* Philosophy Note */}
+            <Box className="mt-4 p-md bg-white/5 rounded-comfort border border-white/5 w-full">
+                <HStack className="items-center gap-2 justify-center">
+                    <Icon as={Volume2} size={12} className="text-dimGray" />
+                    <Text className="text-dimGray text-[10px] italic">
+                        Your voice is a vessel for healing. Release it.
+                    </Text>
+                </HStack>
+            </Box>
+        </VStack>
     );
 };
 
 export default VoiceJournaling;
-
-const styles = StyleSheet.create({
-    container: {
-        padding: 24,
-        borderRadius: 24,
-    },
-    recordOuter: {
-        width: 100,
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    recordBtn: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 10,
-        shadowColor: Theme.colors.sanctuarySaffron,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-    },
-    recordBtnActive: {
-        backgroundColor: '#EF4444',
-        shadowColor: '#EF4444',
-    },
-    pulseCircle: {
-        position: 'absolute',
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-    },
-    actionBtn: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    actionBtnConfirm: {
-        backgroundColor: Theme.colors.sageGreen,
-    }
-});

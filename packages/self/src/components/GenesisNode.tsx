@@ -1,87 +1,59 @@
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { Rocket } from 'lucide-react-native';
-
 /**
- * GenesisNode
- * 
- * A specialized marker that signals the beginning of a user's journey.
+ * GENESIS NODE
+ * A specialized marker that signals the beginning of a user's sanctuary journey.
+ * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
-export const GenesisNode: React.FC<{ timestamp: string }> = ({ timestamp }) => {
-    return (
-        <View style={styles.container}>
-            <View style={styles.pathContainer}>
-                <View style={styles.node}>
-                    <Rocket size={16} color="#F6BF8C" />
-                </View>
-                <View style={styles.line} />
-            </View>
 
-            <View style={styles.content}>
-                <Text style={styles.title}>JOURNEY STARTS HERE</Text>
-                <Text style={styles.subtitle}>
-                    {new Date(timestamp).toLocaleDateString(undefined, { 
-                        month: 'long', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                    })}
-                </Text>
-                <Text style={styles.body}>
-                    The first pulse of your temporal resonance. Every step from here builds your story.
-                </Text>
-            </View>
-        </View>
+import React from 'react';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Icon 
+} from '@repo/ui';
+import { Rocket } from 'lucide-react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+
+interface GenesisNodeProps {
+    timestamp: string;
+}
+
+export const GenesisNode: React.FC<GenesisNodeProps> = ({ timestamp }) => {
+    return (
+        <Animated.View entering={FadeInUp.duration(1000)}>
+            <HStack className="min-h-[120px] gap-2">
+                {/* Visual Path Container */}
+                <VStack className="w-10 items-center">
+                    <Box className="w-10 h-10 rounded-full bg-sanctuarySaffron/20 border border-sanctuarySaffron items-center justify-center z-10 shadow-lg shadow-sanctuarySaffron/10">
+                        <Icon as={Rocket} size={18} className="text-sanctuarySaffron" />
+                    </Box>
+                    <Box className="w-0.5 flex-1 bg-sanctuarySaffron/20 z-0" />
+                </VStack>
+
+                {/* Content Area */}
+                <VStack className="flex-1 pt-1 pl-3 gap-2">
+                    <Text className="text-sanctuarySaffron font-black text-base tracking-[0.2em] uppercase">
+                        Journey Starts Here
+                    </Text>
+                    
+                    <Text className="text-mistGray/40 text-[11px] font-black uppercase tracking-widest">
+                        {new Date(timestamp).toLocaleDateString(undefined, { 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                        })}
+                    </Text>
+
+                    <Text className="text-mistGray/60 text-xs leading-relaxed italic pr-4 mt-1">
+                        "The first pulse of your temporal resonance. Every step from here builds your story."
+                    </Text>
+
+                    <Box className="mt-4 w-8 h-1 bg-sanctuarySaffron/20 rounded-full" />
+                </VStack>
+            </HStack>
+        </Animated.View>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        minHeight: 120,
-    },
-    pathContainer: {
-        width: 40,
-        alignItems: 'center',
-    },
-    node: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(246, 191, 140, 0.2)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#F6BF8C',
-        zIndex: 2,
-    },
-    line: {
-        width: 2,
-        flex: 1,
-        backgroundColor: 'rgba(246, 191, 140, 0.2)',
-        zIndex: 1,
-    },
-    content: {
-        flex: 1,
-        paddingTop: 4,
-        paddingLeft: 12,
-    },
-    title: {
-        fontSize: 16,
-        fontWeight: '900',
-        color: '#F6BF8C',
-        letterSpacing: 2,
-        marginBottom: 4,
-    },
-    subtitle: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: 'rgba(255, 255, 255, 0.4)',
-        marginBottom: 8,
-    },
-    body: {
-        fontSize: 13,
-        color: 'rgba(255, 255, 255, 0.6)',
-        lineHeight: 20,
-        fontStyle: 'italic',
-    }
-});
+export default GenesisNode;

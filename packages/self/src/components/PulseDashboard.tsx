@@ -1,43 +1,40 @@
-import React from 'react';
-import { ScrollView, RefreshControl } from 'react-native';
-import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Theme,
-    GlassCard,
-    DailyResonanceCard,
-    useThemedColors,
-    BreathAnimation,
+/**
+ * PulseDashboard - The "Entrance" to the Daily Sanctuary
+ * Provides high-level briefings, context, and daily motivation.
+ * Refactored to Zero-Legacy: fixed syntax corruption in navigation, standardized design tokens, 
+ * and improved visual hierarchy with Sanctuary V3 components.
+ */
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Pressable, 
+    ScrollView, 
+    RefreshControl,
+    BreathAnimation, 
+    DailyResonanceCard, 
+    GlassCard, 
     SkeletonCard,
-    useTheme,
-    Pressable
+    Icon
 } from '@repo/ui';
-import { usePermissions, useStore, usePendingActions } from '@repo/core';
-import { ClassroomStackParamList } from '@repo/core'; 
+import { usePermissions, useStore, usePendingActions, ClassroomStackParamList } from '@repo/core'; 
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Calendar, BookOpen, Clock, CheckCircle } from 'lucide-react-native';
+import { Sparkles, Calendar, BookOpen, Clock, CheckCircle, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { dailyContentAPI } from '../api/dailyContent';
 
-/**
- * PulseDashboard - The "Entrance" to the Daily Sanctuary
- * Provides high-level briefings, context, and daily motivation.
- */
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
     const { t } = useTranslation();
-    const { can, context } = usePermissions();
-    const authority = context.roles[0];
     const user = useStore((state) => state.user);
     const userName = useStore((state) => state.userName);
-    const { isDark, accent, glass, glow, text, gradientNodes } = useTheme();
-    const colors = useThemedColors();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
-    const [refreshing, setRefreshing] = React.useState(false);
-    const [dailyContent, setDailyContent] = React.useState<{ motivation: any; didYouKnow: any } | null>(null);
+    
+    const [refreshing, setRefreshing] = useState(false);
+    const [dailyContent, setDailyContent] = useState<{ motivation: any; didYouKnow: any } | null>(null);
 
     const { attendancePending, gradingPending, isLoading: actionsLoading, refresh: refreshActions } =
         usePendingActions(user?.id);
@@ -51,11 +48,9 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
         }
     };
 
-    React.useEffect(() => {
-        loadContent();
-    }, []);
+    useEffect(() => { loadContent(); }, []);
 
-    const onRefresh = React.useCallback(async () => {
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await Promise.all([loadContent(), refreshActions()]);
         setRefreshing(false);
@@ -72,20 +67,26 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
 
     return (
         <ScrollView
-            contentContainerStyle={{ paddingBottom: 100 }}
+            className="flex-1 bg-obsidian"
+            contentContainerStyle={{ paddingBottom: 120 }}
+            showsVerticalScrollIndicator={false}
             refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.action} />
+                <RefreshControl 
+                    refreshing={refreshing} 
+                    onRefresh={onRefresh} 
+                    tintColor="#F6BF8C" 
+                />
             }
         >
-            <VStack space="xl" sx={{ paddingHorizontal: 16, paddingTop: 32 }}>
+            <VStack className="px-lg pt-xl gap-8">
                 {/* 1. The Welcome Breath */}
                 <BreathAnimation delay={100}>
-                    <VStack space="xs">
-                        <Text sx={{ color: colors.textSecondary, fontSize: 14, fontFamily: 'Inter_400Regular' }}>
+                    <VStack className="gap-1">
+                        <Text className="text-mistGray text-sm font-medium tracking-wide">
                             {getGreeting()},
                         </Text>
-                        <Heading size="2xl" sx={{ color: colors.text, fontFamily: 'Outfit_700Bold' }}>
-                            {userName}
+                        <Heading size="3xl" className="text-sacredWhite font-bold">
+                            {userName || 'Seeker'}
                         </Heading>
                     </VStack>
                 </BreathAnimation>
@@ -113,39 +114,43 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
 
                 {/* 4. Clerical Relief / Action Pulse */}
                 <BreathAnimation delay={550}>
-                    <GlassCard sx={{ padding: Theme.spacing.lg, borderRadius: Theme.corners.generous }}>
-                        <VStack space="md">
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Heading size="md" sx={{ color: colors.text }}>
-                                    {t('pulse.actions') || "Today's Pulse"}
-                                </Heading>
-                                <Calendar color={colors.action} size={20} />
+                    <GlassCard className="p-lg rounded-comfortable border border-white/5 shadow-2xl bg-white/5">
+                        <VStack className="gap-6">
+                            <HStack className="justify-between items-center">
+                                <VStack className="gap-1">
+                                    <Heading size="md" className="text-sacredWhite">
+                                        {t('pulse.actions') || "Pulse Items"}
+                                    </Heading>
+                                    <Text className="text-mistGray text-xs">Essential check-ins and tasks.</Text>
+                                </VStack>
+                                <Box className="bg-sanctuarySaffron/10 p-2 rounded-full border border-sanctuarySaffron/20">
+                                    <Icon as={Calendar} className="text-sanctuarySaffron" size={20} />
+                                </Box>
                             </HStack>
 
                             {actionsLoading ? (
-                                <VStack space="sm">
-                                    <SkeletonCard height={56} />
-                                    <SkeletonCard height={56} />
+                                <VStack className="gap-sm">
+                                    <SkeletonCard height={72} />
+                                    <SkeletonCard height={72} />
                                 </VStack>
                             ) : !hasActions ? (
-                                <HStack space="sm" sx={{ alignItems: 'center', paddingVertical: 8 }}>
-                                    <CheckCircle size={16} color={Theme.colors.sageGreen} />
-                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
-                                        {t('pulse.allClear') || 'Your day is clear 🧘'}
+                                <HStack className="items-center py-4 gap-3 bg-emeraldGreen/5 border border-emeraldGreen/10 rounded-xl px-4 justify-center">
+                                    <Icon as={CheckCircle} size={20} className="text-emeraldGreen" />
+                                    <Text className="text-emeraldGreen font-bold text-sm">
+                                        {t('pulse.allClear') || 'Your Sanctuary path is clear 🧘'}
                                     </Text>
                                 </HStack>
                             ) : (
-                                <VStack space="sm">
+                                <VStack className="gap-3">
                                     {attendancePending.map((item) => (
                                         <PulseActionItem
                                             key={item.classroomId}
                                             title={`${t('pulse.markAttendance') || 'Mark Attendance'}: ${item.classroomName}`}
-                                            time={t('pulse.beforeNine') || 'Before 9:00 AM'}
+                                            time={t('pulse.beforeNine') || 'Immediate Attention'}
                                             status="pending"
-                                            isDark={isDark}
                                             onPress={() => navigation.navigate('Attendance', {
                                                 classroomId: item.classroomId,
-                                                classroomName: item.classroomName,
+                                                classroomName: item.classroomName
                                             })}
                                         />
                                     ))}
@@ -155,10 +160,9 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                                             title={`${t('pulse.grade') || 'Grade'}: ${item.assignmentTitle}`}
                                             time={`${item.ungradedCount} ${t('pulse.submissions') || 'submission(s)'} · ${item.classroomName}`}
                                             status="upcoming"
-                                            isDark={isDark}
                                             onPress={() => navigation.navigate('Gradebook', {
                                                 classroomId: item.classroomId,
-                                                classroomName: item.classroomName,
+                                                classroomName: item.classroomName
                                             })}
                                         />
                                     ))}
@@ -170,17 +174,15 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
 
                 {/* 5. Entrance to Full View */}
                 <BreathAnimation delay={700}>
-                    <HStack sx={{ justifyContent: "center", paddingTop: 16 }}>
-                        <Pressable onPress={onEnterDetails}>
-                            <Text
-                                sx={{
-                                    color: colors.action,
-                                    fontSize: 14,
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {t('pulse.view_full') || 'Enter Full Sanctuary'} →
+                    <HStack className="justify-center pt-8">
+                        <Pressable 
+                            onPress={onEnterDetails}
+                            className="flex-row items-center gap-2 bg-sanctuarySaffron px-8 py-4 rounded-full shadow-lg shadow-sanctuarySaffron/30"
+                        >
+                            <Text className="text-obsidian font-black uppercase tracking-[1px] text-sm">
+                                {t('pulse.view_full') || 'Explore Full Sanctuary'}
                             </Text>
+                            <Icon as={ChevronRight} size={16} className="text-obsidian" />
                         </Pressable>
                     </HStack>
                 </BreathAnimation>
@@ -189,46 +191,33 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
     );
 }
 
-function PulseActionItem({ title, time, status, onPress, isDark }: any) {
-    const colors = useThemedColors();
+function PulseActionItem({ title, time, status, onPress }: any) {
     return (
-        <Pressable onPress={onPress}>
-            <HStack
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: isDark ? colors.tertiary : '#FAF7ED',
-                    borderRadius: Theme.corners.comfortable,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                }}
-            >
-                <VStack space="xs" sx={{ flex: 1, marginRight: Theme.spacing.sm }}>
-                    <Text sx={{ color: colors.text, fontSize: 14, fontWeight: '600' }} numberOfLines={3}>
+        <Pressable 
+            onPress={onPress}
+            className="active:opacity-70 transition-opacity"
+        >
+            <HStack className="p-4 bg-white/[0.03] rounded-xl border border-white/5 justify-between items-center">
+                <VStack className="flex-1 mr-4 gap-1.5">
+                    <Text className="text-sacredWhite text-sm font-bold" numberOfLines={2}>
                         {title}
                     </Text>
-                    <HStack space="xs" sx={{ alignItems: "center" }}>
-                        <Clock size={12} color={colors.textTertiary} />
-                        <Text sx={{ color: colors.textTertiary, fontSize: 12 }}>{time}</Text>
+                    <HStack className="items-center gap-2">
+                        <Icon as={Clock} size={12} className="text-mistGray opacity-60" />
+                        <Text className="text-mistGray text-[11px] italic font-medium">{time}</Text>
                     </HStack>
                 </VStack>
                 <Box
-                    sx={{
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        borderRadius: 50,
-                        backgroundColor: status === 'pending'
-                            ? `${Theme.colors.sanctuarySaffron}26`
-                            : Theme.colors.skyBlue
-                    }}
+                    className={`px-3 py-1.5 rounded-full border ${
+                        status === 'pending' 
+                            ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron/20' 
+                            : 'bg-indigo-400/10 border-indigo-400/20'
+                    }`}
                 >
-                    <Text sx={{
-                        color: status === 'pending' ? Theme.colors.sanctuarySaffron : colors.textTertiary,
-                        fontSize: 12,
-                        fontWeight: '600'
-                    }}>
-                        {status.toUpperCase()}
+                    <Text className={`text-[10px] font-black uppercase tracking-wider ${
+                        status === 'pending' ? 'text-sanctuarySaffron' : 'text-indigo-400'
+                    }`}>
+                        {status}
                     </Text>
                 </Box>
             </HStack>

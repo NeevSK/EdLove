@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import { 
-    VStack, 
+    Icon, 
+    GlassCard, 
     HStack, 
     Text, 
-    Theme, 
-    useThemedColors,
-    GlassCard
+    VStack, 
+    Pressable,
+    Heading
 } from '@repo/ui';
+import { StyleSheet } from 'react-native';
 import { Flower2, Wind, Sun, CloudRain, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { 
@@ -33,18 +34,17 @@ interface MoodLotusProps {
     disabled?: boolean;
 }
 
-export const MoodLotus: React.FC<MoodLotusProps> = ({ userId, onMoodChange, disabled }) => {
+export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) => {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const [selectedMood, setSelectedMood] = useState<number | null>(null);
     const rotation = useSharedValue(0);
 
     const moodOptions = [
-        { level: 1, icon: CloudRain, label: t('self.moodHeavy') || 'Heavy', color: '#4B5563' },
-        { level: 2, icon: Wind, label: t('self.moodChallenging') || 'Challenging', color: '#6366F1' },
-        { level: 3, icon: Flower2, label: t('self.moodNeutral') || 'Neutral', color: '#10B981' },
-        { level: 4, icon: Sun, label: t('self.moodPositive') || 'Positive', color: '#F59E0B' },
-        { level: 5, icon: Zap, label: t('self.moodRadiant') || 'Radiant', color: Theme.colors.sanctuarySaffron },
+        { level: 1, icon: CloudRain, label: t('self.moodHeavy') || 'Heavy', colorClass: 'text-dimGray', bgClass: 'bg-dimGray/10' },
+        { level: 2, icon: Wind, label: t('self.moodChallenging') || 'Challenging', colorClass: 'text-skyBlue', bgClass: 'bg-skyBlue/10' },
+        { level: 3, icon: Flower2, label: t('self.moodNeutral') || 'Neutral', colorClass: 'text-emeraldGreen', bgClass: 'bg-emeraldGreen/10' },
+        { level: 4, icon: Sun, label: t('self.moodPositive') || 'Positive', colorClass: 'text-goldenApricot', bgClass: 'bg-goldenApricot/10' },
+        { level: 5, icon: Zap, label: t('self.moodRadiant') || 'Radiant', colorClass: 'text-sanctuarySaffron', bgClass: 'bg-sanctuarySaffron/10' },
     ];
 
     const handleMoodSelect = (level: number) => {
@@ -55,44 +55,50 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ userId, onMoodChange, disa
     };
 
     const lotusStyle = useAnimatedStyle(() => ({
-        transform: [{ rotate: `${rotation.value}deg` }],
+        transform: [{ rotate: `${rotation.value}deg` }]
     }));
 
-    return (
-        <GlassCard style={styles.container}>
-            <VStack space="xl" alignItems="center">
-                <Text fontWeight="700" size="lg">
-                    {t('self.moodHowAreYou') || 'How is your inner lotus today?'}
-                </Text>
+    const selectedOption = selectedMood !== null ? moodOptions[selectedMood - 1] : null;
 
-                <Animated.View style={[styles.lotusContainer, lotusStyle]}>
-                    <Flower2 
+    return (
+        <GlassCard className="p-xl rounded-[32px]">
+            <VStack className="items-center gap-xl">
+                <Heading size="md" className="text-sacredWhite font-bold text-center">
+                    {t('self.moodHowAreYou') || 'How is your inner lotus today?'}
+                </Heading>
+
+                <Animated.View style={[lotusStyle]} className="items-center justify-center w-[120px] h-[120px]">
+                    <Icon 
+                        as={Flower2}
                         size={80} 
-                        color={(selectedMood !== null && moodOptions[selectedMood - 1]) ? (moodOptions[selectedMood - 1] as any).color : colors.textTertiary} 
+                        className={selectedOption ? selectedOption.colorClass : 'text-mistGray'} 
                         strokeWidth={1.5}
                     />
                 </Animated.View>
 
-                <HStack space="md" justifyContent="center">
+                <HStack className="justify-center gap-4">
                     {moodOptions.map((option) => {
-                        const Icon = option.icon;
                         const isSelected = selectedMood === option.level;
                         return (
-                            <VStack key={option.level} space="xs" alignItems="center">
-                                <TouchableOpacity
+                            <VStack key={option.level} className="items-center gap-2">
+                                <Pressable
                                     onPress={() => handleMoodSelect(option.level)}
                                     disabled={disabled}
-                                    style={[
-                                        styles.moodBtn,
-                                        isSelected && { backgroundColor: `${option.color}20`, borderColor: option.color, borderWidth: 2 }
-                                    ]}
+                                    className={`w-12 h-12 rounded-full items-center justify-center border-2 transition-all ${
+                                        isSelected 
+                                            ? `${option.bgClass} border-sanctuarySaffron` 
+                                            : 'bg-white/5 border-transparent'
+                                    }`}
                                 >
                                     <Icon 
+                                        as={option.icon}
                                         size={24} 
-                                        color={isSelected ? option.color : colors.textSecondary} 
+                                        className={isSelected ? option.colorClass : 'text-mistGray'} 
                                     />
-                                </TouchableOpacity>
-                                <Text size="xs" color={isSelected ? colors.text : colors.textTertiary} fontWeight={isSelected ? "600" : "400"}>
+                                </Pressable>
+                                <Text 
+                                    className={`text-[10px] text-center ${isSelected ? 'text-sacredWhite font-semibold' : 'text-mistGray font-normal'}`}
+                                >
                                     {option.label}
                                 </Text>
                             </VStack>
@@ -102,28 +108,6 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ userId, onMoodChange, disa
             </VStack>
         </GlassCard>
     );
-}
+};
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 24,
-        borderRadius: 24,
-    },
-    lotusContainer: {
-        width: 120,
-        height: 120,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    moodBtn: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'transparent',
-    }
-});
 export default MoodLotus;

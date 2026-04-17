@@ -1,17 +1,14 @@
-import React from 'react';
+﻿import React from 'react';
+import { JourneyHistoryCard, TemporalProvider, TemporalShield, ink, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useTranslation } from 'react-i18next';
 import {
     usePermissions,
     useStore,
-    useJourneyHistory,
-} from '@repo/core';
+    useJourneyHistory} from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
-import {
-    TemporalProvider,
-    JourneyHistoryCard,
-    TemporalShield,
-    useThemedColors,
-} from '@repo/ui';
+
 import { Sparkles, Lightbulb } from 'lucide-react-native';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -30,15 +27,14 @@ import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 import {
     VisionSection,
     PhilosophySection,
-    MoodSection,
-} from '../../views/sections';
+    MoodSection} from '../../views/sections';
 
 export default function FounderSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { context } = usePermissions();
     const { userId } = context;
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
@@ -102,14 +98,12 @@ export default function FounderSelfView() {
             <BaseSelfView
                 perspective="founder"
                 description={t('self.founderDesc', 'Navigate the vast currents of the educational ecosystem.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Ecosystem Overview',
                         accentColor: '#FBBF24',
                         content: holisticSection,
-                        historyContent: <ResonanceTimeline />,
-                    },
+                        historyContent: <ResonanceTimeline />},
                     {
                         id: 'tools',
                         title: 'Visionary Tools',
@@ -120,15 +114,13 @@ export default function FounderSelfView() {
                                 id: 'philosophy_lab',
                                 label: 'Philosophy Lab',
                                 content: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />,
-                                historyContent: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />,
-                            },
+                                historyContent: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />},
                             { id: 'ecosystem_dash', label: 'Global Dash', content: <PulseDashboard onEnterDetails={() => {}} /> },
                             {
                                 id: 'mood_lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
-                            },
+                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />},
                             { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling userId={userId ?? undefined} /> },
                             { id: 'wisdom', label: 'Wisdom Seeds', content: <WisdomSeeds userId={userId ?? undefined} /> },
                             {
@@ -143,10 +135,8 @@ export default function FounderSelfView() {
                                             {t('founder.visionComingSoonDesc', 'The vision alignment dashboard is currently being synthesized.')}
                                         </p>
                                     </div>
-                                ),
-                            },
-                        ],
-                    },
+                                )},
+                        ]},
                 ]}
                 sideBar={sideBar}
             />
@@ -157,3 +147,4 @@ export default function FounderSelfView() {
         </TemporalProvider>
     );
 }
+

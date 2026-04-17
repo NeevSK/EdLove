@@ -1,18 +1,19 @@
 /**
  * COMMUNITY PRESENCE
- * Shows how many teachers/students are currently online based on role.
- * Provides instant comfort and combats isolation.
- * Follows TAIL_FIN resonance principles with glass-morphic status indicator.
+ * Real-time visualization of the sanctuary's collective pulse.
+ * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in animations/renders.
  */
 
 import React, { useEffect, useMemo } from 'react';
-import {
-    Box,
-    HStack,
-    VStack,
-    Text,
-    Heading,
-    Spinner,
+import { 
+    Icon, 
+    Box, 
+    HStack, 
+    Heading, 
+    Spinner, 
+    Text, 
+    VStack, 
+    hapticLight 
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
@@ -20,9 +21,9 @@ import Animated, {
     withRepeat,
     withTiming,
     Easing,
+    FadeIn
 } from 'react-native-reanimated';
-import { Users, WifiOff } from 'lucide-react-native';
-import { Theme, useThemedColors } from '@repo/ui';
+import { Users, WifiOff, Globe } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useCommunityPresence } from '../hooks/useCommunityPresence';
 
@@ -37,10 +38,9 @@ export default function CommunityPresence({
     compact = false,
     hidePadding = false,
     userVibe = 'active',
-    userId,
+    userId
 }: CommunityPresenceProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const dominantVibe = userVibe;
     const { onlineCount, isLoading, isOffline, perspective } = useCommunityPresence({ userId, userVibe });
 
@@ -49,139 +49,118 @@ export default function CommunityPresence({
 
     useEffect(() => {
         pulseScale.value = withRepeat(
-            withTiming(1.3, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
+            withTiming(1.5, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
             -1,
             true
         );
         pulseOpacity.value = withRepeat(
-            withTiming(0.2, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
+            withTiming(0.1, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
             -1,
             true
         );
-    }, [pulseOpacity, pulseScale]);
+    }, []);
 
     const pulseStyle = useAnimatedStyle(() => ({
         transform: [{ scale: pulseScale.value }],
-        opacity: pulseOpacity.value,
+        opacity: pulseOpacity.value
     }));
 
-    const getVibeColor = (vibe: string) => {
-        switch (vibe.toLowerCase()) {
-            case 'active': return colors.action;
-            case 'focused': return colors.action;
-            case 'reflecting': return colors.secondary;
-            case 'teaching': return colors.success;
-            case 'planning': return colors.action;
-            default: return colors.success;
+    const vibeColorClass = useMemo(() => {
+        if (isOffline) return 'text-mistGray';
+        switch (dominantVibe.toLowerCase()) {
+            case 'active': return 'text-sanctuarySaffron';
+            case 'focused': return 'text-skyBlue';
+            case 'reflecting': return 'text-emeraldGreen';
+            case 'teaching': return 'text-templeGold';
+            default: return 'text-emeraldGreen';
         }
-    };
-
-    const vibeColor = useMemo(
-        () => isOffline ? colors.textTertiary : getVibeColor(dominantVibe),
-        [isOffline, dominantVibe, colors, getVibeColor]
-    );
+    }, [isOffline, dominantVibe]);
 
     const roleLabel = useMemo(() => {
-        if (perspective === 'student') return t('community.students');
-        if (perspective === 'principal') return t('community.members');
-        return t('community.educators');
+        if (perspective === 'student') return t('community.students') || 'Students';
+        if (perspective === 'principal') return t('community.members') || 'Members';
+        return t('community.educators') || 'Educators';
     }, [perspective, t]);
 
     const motivationText = useMemo(() => {
-        if (perspective === 'student') return t('community.studentMotivation');
-        if (perspective === 'principal') return t('community.principalMotivation');
-        return t('community.teacherMotivation');
+        if (perspective === 'student') return t('community.studentMotivation') || 'Flowing together through the learning path.';
+        if (perspective === 'principal') return t('community.principalMotivation') || 'Unified leadership in the sanctuary.';
+        return t('community.teacherMotivation') || 'Vibrant energy shared across the collective.';
     }, [perspective, t]);
 
     if (isLoading) {
         return (
-            <HStack space="md" alignItems="center" p={hidePadding || compact ? 0 : "$4"} opacity={0.6}>
-                <Spinner size="small" color={colors.action} />
-                <Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>Locating Sanctuary Presence...</Text>
+            <HStack className={`items-center gap-3 ${hidePadding || compact ? '' : 'p-4'} opacity-50`}>
+                <Spinner size="small" className="text-sanctuarySaffron" />
+                <Text className="text-mistGray text-xs font-bold uppercase tracking-widest">
+                    Synchronizing Presence...
+                </Text>
             </HStack>
         );
     }
 
     if (compact) {
         return (
-            <HStack space="xs" alignItems="center">
-                <Box
-                    style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: vibeColor,
-                    }}
-                />
-                <Text size="xs" color={colors.textSecondary} bold>
-                    {isOffline ? t('community.offline') : `${onlineCount} ${roleLabel}`}
+            <HStack className="items-center gap-2">
+                <Box className={`w-2 h-2 rounded-full ${vibeColorClass.replace('text-', 'bg-')}`} />
+                <Text className="text-mistGray text-[10px] font-black uppercase tracking-wider">
+                    {isOffline ? t('community.offline') || 'Lurking' : `${onlineCount} ${roleLabel}`}
                 </Text>
             </HStack>
         );
     }
 
     return (
-        <VStack space="md" p={hidePadding || compact ? 0 : "$4"}>
-            <HStack space="md" alignItems="center">
-                <Box sx={{ position: 'relative' }}>
-                    {isOffline ? (
-                        <WifiOff color={colors.textTertiary} size={28} />
-                    ) : (
-                        <Users color={vibeColor} size={28} />
-                    )}
-
-                    {!isOffline && (
-                        <Animated.View
-                            style={[
-                                pulseStyle,
-                                {
-                                    position: 'absolute',
-                                    top: -4,
-                                    right: -4,
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: 6,
-                                    backgroundColor: vibeColor,
-                                },
-                            ]}
-                        />
-                    )}
-                </Box>
-                <VStack>
-                    <Heading size="sm" color={colors.text}>
-                        {isOffline ? t('community.offlineTitle') : t('community.sanctuaryPulse')}
-                    </Heading>
-                    <Text color={colors.textSecondary} size="sm">
-                        {isOffline
-                            ? t('community.offlineDesc')
-                            : `${onlineCount} ${roleLabel} ${t('community.onlineNow')}`}
-                    </Text>
-                    {!isOffline && (
-                        <Text
-                            color={colors.textTertiary}
-                            size="xs"
-                            sx={{ mt: '$1' }}
-                        >
-                            {t('community.dominantVibe')}: {dominantVibe}
+        <Animated.View entering={FadeIn.duration(1000)}>
+            <VStack className={`gap-4 ${hidePadding ? '' : 'p-4'}`}>
+                <HStack className="items-center gap-4">
+                    <Box className="relative">
+                        {isOffline ? (
+                            <Icon as={WifiOff} className="text-mistGray/30" size={32} />
+                        ) : (
+                            <Box className="w-12 h-12 bg-white/5 rounded-2xl items-center justify-center border border-white/10">
+                                <Icon as={Users} className={vibeColorClass} size={24} />
+                                <Animated.View
+                                    style={pulseStyle}
+                                    className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border border-white/20 ${vibeColorClass.replace('text-', 'bg-')}`}
+                                />
+                            </Box>
+                        )}
+                    </Box>
+                    
+                    <VStack className="gap-0.5">
+                        <Heading size="xs" className="text-sacredWhite/90 uppercase tracking-widest font-black">
+                            {isOffline ? t('community.offlineTitle') || 'Connection Drift' : t('community.sanctuaryPulse') || 'Collective Pulse'}
+                        </Heading>
+                        <Text className="text-mistGray text-xs font-medium">
+                            {isOffline
+                                ? t('community.offlineDesc') || 'Offline Resonance'
+                                : `${onlineCount} ${roleLabel} breathing with you.`}
                         </Text>
-                    )}
-                </VStack>
-            </HStack>
-            {!isOffline && onlineCount > 0 && (
-                <Box
-                    sx={{
-                        bg: colors.secondary,
-                        p: '$3',
-                        borderRadius: Theme.corners.comfortable,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}
-                >
-                    <Text size="xs" color={colors.textSecondary} italic>
-                        {motivationText}
-                    </Text>
-                </Box>
-            )}
-        </VStack>
+                        {!isOffline && (
+                            <HStack className="items-center gap-1.5 mt-1">
+                                <Icon as={Globe} size={10} className="text-emeraldGreen" />
+                                <Text className="text-emeraldGreen text-[9px] font-black uppercase tracking-widest">
+                                    Vibe: {dominantVibe}
+                                </Text>
+                            </HStack>
+                        )}
+                    </VStack>
+                </HStack>
+
+                {!isOffline && onlineCount > 0 && (
+                    <Box className="p-4 bg-white/5 rounded-2xl border border-white/5 shadow-sm">
+                        <HStack className="gap-3 items-start">
+                            <Text className="text-2xl mt-1">✨</Text>
+                            <VStack className="flex-1">
+                                <Text className="text-mistGray/80 text-[11px] leading-relaxed italic font-medium">
+                                    "{motivationText}"
+                                </Text>
+                            </VStack>
+                        </HStack>
+                    </Box>
+                )}
+            </VStack>
+        </Animated.View>
     );
 }

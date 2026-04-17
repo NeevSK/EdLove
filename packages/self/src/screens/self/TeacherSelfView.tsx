@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    Box,
-    useThemedColors,
-    ScreenWrapper,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import {
     supabase,
@@ -20,8 +18,7 @@ import { useJournalEntries } from '../../hooks/useJournalEntries';
 import { 
     JournalSection, 
     MoodSection, 
-    TeacherPulse,
-} from '../../views/sections';
+    TeacherPulse} from '../../views/sections';
 
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -53,7 +50,7 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function TeacherSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -98,13 +95,11 @@ export default function TeacherSelfView() {
             <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#10B981',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'pulse',
                         title: 'Inner Pulse',
@@ -243,3 +238,4 @@ export default function TeacherSelfView() {
         </ScreenWrapper>
     );
 }
+

@@ -1,4 +1,4 @@
-import { SafeZustandStorage, useStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { JoyMoment } from '../types';
 import { createJoyMoment, fetchJoyMoments } from '../api/selfFeatureRepository';
@@ -68,6 +68,5 @@ export function useJoyJar(userId?: string) {
         addJoyMoment: async (input: Pick<JoyMoment, 'student_name' | 'moment_description' | 'category'>) => {
             if (!userId) return null;
             return createJoyMoment(userId, input);
-        },
-    };
+        }};
 }

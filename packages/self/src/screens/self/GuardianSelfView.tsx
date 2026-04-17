@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { VStack, Box, ScreenWrapper } from '@repo/ui';
+﻿import React, { useState } from 'react';
+import { Box, JourneyHistoryCard, ScreenWrapper, VStack } from '@repo/ui';
+
+
+
 import { useTranslation } from 'react-i18next';
 import { useStore, usePermissions, useJourneyHistory } from '@repo/core';
 
@@ -22,7 +25,7 @@ import RemindersManager from '../../components/RemindersManager';
 import DailyRhythm from '../../components/DailyRhythm';
 import SleepTracker from '../../components/SleepTracker';
 import { JournalSection, MoodSection } from '../../views/sections';
-import { JourneyHistoryCard } from '@repo/ui';
+
 
 export default function GuardianSelfView() {
     const { t } = useTranslation();
@@ -57,13 +60,11 @@ export default function GuardianSelfView() {
                     'self.guardianDescription',
                     'A steady sanctuary for parents and guardians to stay centered while caring for their children.'
                 )}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Family Journey',
                         accentColor: '#8B5CF6',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'presence',
                         title: 'Inner Presence',
@@ -73,26 +74,21 @@ export default function GuardianSelfView() {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />,
-                            },
+                                historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />},
                             {
                                 id: 'fire-journal',
                                 label: 'Fire Journal',
                                 content: <FireJournal userId={userId ?? undefined} />,
-                                historyContent: <JournalSection entries={journalEntries} loading={loadingJournals} />,
-                            },
+                                historyContent: <JournalSection entries={journalEntries} loading={loadingJournals} />},
                             {
                                 id: 'voice',
                                 label: 'Voice Journal',
-                                content: <VoiceJournaling userId={userId ?? undefined} />,
-                            },
+                                content: <VoiceJournaling userId={userId ?? undefined} />},
                             {
                                 id: 'wisdom',
                                 label: 'Wisdom Seeds',
-                                content: <WisdomSeeds userId={userId ?? undefined} />,
-                            },
-                        ],
-                    },
+                                content: <WisdomSeeds userId={userId ?? undefined} />},
+                        ]},
                     {
                         id: 'care',
                         title: 'Care Rhythm',
@@ -102,14 +98,12 @@ export default function GuardianSelfView() {
                             {
                                 id: 'gratitude',
                                 label: 'Gratitude Glimmers',
-                                content: <GratitudeGlimmers userId={userId ?? undefined} />,
-                            },
+                                content: <GratitudeGlimmers userId={userId ?? undefined} />},
                             { id: 'tomorrow', label: 'Tomorrow Prep', content: <TomorrowPrep userId={userId ?? undefined} /> },
                             { id: 'reminders', label: 'Reminders', content: <RemindersManager userId={userId ?? undefined} /> },
                             { id: 'rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
                             { id: 'sleep', label: 'Sleep Tracker', content: <SleepTracker userId={userId ?? undefined} /> },
-                        ],
-                    },
+                        ]},
                 ]}
                 sideBar={
                     <VStack space="lg">
@@ -126,3 +120,4 @@ export default function GuardianSelfView() {
         </ScreenWrapper>
     );
 }
+

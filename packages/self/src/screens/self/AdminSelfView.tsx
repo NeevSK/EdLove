@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    Box,
-    useThemedColors,
-    ScreenWrapper,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import {
     useStore,
@@ -33,7 +31,7 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function AdminSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -67,8 +65,7 @@ export default function AdminSelfView() {
             <BaseSelfView
                 perspective="admin"
                 description={t('self.adminDescription', 'Operational clarity from a source of inner stillness.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'pulse',
                         title: 'Inner Pulse',
                         accentColor: '#8B5CF6',
@@ -109,7 +106,7 @@ export default function AdminSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box style={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
@@ -159,3 +156,4 @@ export default function AdminSelfView() {
         </ScreenWrapper>
     );
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CommunityPresence.web.tsx
  *
  * Web override. Uses the shared self presence hook and keeps the web UI
@@ -31,7 +31,7 @@ export default function CommunityPresence({ compact = false, userId }: Community
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'var(--background-alt)', borderRadius: '12px' }}>
-            {isOffline ? <WifiOff size={16} color="var(--ink-ghost)" /> : <Users size={16} color="#22C55E" />}
+            {isOffline ? <WifiOff size={16} color="var(--ink-ghost)" /> : <Icon as={Users} size={16} color="#22C55E" />}
             <div>
                 <div style={{ fontSize: '12px', fontWeight: '700' }}>
                     {isLoading ? 'Checking presence' : isOffline ? 'Offline' : `${onlineCount} ${label} online`}

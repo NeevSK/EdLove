@@ -1,6 +1,19 @@
+/**
+ * TIMELINE EVENT
+ * A high-fidelity node representing a single step in the user's sanctuary journey.
+ * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
+ */
+
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { MessageSquare, Heart, Star } from 'lucide-react-native';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Icon 
+} from '@repo/ui';
+import { MessageSquare, Heart, Star, Compass } from 'lucide-react-native';
+import Animated, { FadeInLeft } from 'react-native-reanimated';
 
 interface TimelineEventProps {
     type: 'mood' | 'journal' | 'growth' | 'path';
@@ -11,88 +24,63 @@ interface TimelineEventProps {
     isLast?: boolean;
 }
 
-/**
- * TimelineEvent
- * 
- * A high-fidelity card representing a single node in the user's journey.
- */
 export const TimelineEvent: React.FC<TimelineEventProps> = ({ 
     type, title, content, timestamp, intensity, isLast 
 }) => {
-    const Icon = type === 'mood' ? Heart : type === 'journal' ? MessageSquare : Star;
-    const color = type === 'mood' ? '#FF6B6B' : type === 'journal' ? '#4D96FF' : '#F6BF8C';
+    // Determine visuals based on event type
+    const { icon, colorClass, borderClass } = (() => {
+        switch (type) {
+            case 'mood': return { icon: Heart, colorClass: 'text-rose-400', borderClass: 'border-rose-400/20' };
+            case 'journal': return { icon: MessageSquare, colorClass: 'text-skyBlue', borderClass: 'border-skyBlue/20' };
+            case 'growth': return { icon: Star, colorClass: 'text-sanctuarySaffron', borderClass: 'border-sanctuarySaffron/20' };
+            case 'path': return { icon: Compass, colorClass: 'text-emeraldGreen', borderClass: 'border-emeraldGreen/20' };
+            default: return { icon: Star, colorClass: 'text-mistGray', borderClass: 'border-white/10' };
+        }
+    })();
 
     return (
-        <View style={styles.container}>
-            {/* The Connecting Path */}
-            <View style={styles.pathContainer}>
-                <View style={[styles.node, { backgroundColor: color, opacity: intensity }]} />
-                {!isLast && <View style={[styles.line, { backgroundColor: color, opacity: 0.2 }]} />}
-            </View>
+        <Animated.View entering={FadeInLeft.duration(600)}>
+            <HStack className="min-h-[80px] gap-2">
+                {/* Visual Connector Path */}
+                <VStack className="w-10 items-center">
+                    <Box 
+                        className={`w-3 h-3 rounded-full z-10 mt-1.5 shadow-sm ${colorClass.replace('text-', 'bg-')}`} 
+                        style={{ opacity: intensity * 0.8 + 0.2 }}
+                    />
+                    {!isLast && (
+                        <Box 
+                            className={`w-0.5 flex-1 -mt-1 z-0 rounded-full ${colorClass.replace('text-', 'bg-')}/10`} 
+                        />
+                    )}
+                </VStack>
 
-            {/* The Event Card */}
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <Icon size={14} color={color} />
-                    <Text style={styles.time}>{new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                </View>
-                <Text style={styles.title}>{title}</Text>
-                {content && <Text style={styles.body} numberOfLines={2}>{content}</Text>}
-            </View>
-        </View>
+                {/* Event Card Content */}
+                <VStack className={`flex-1 p-4 mb-4 rounded-2xl bg-white/5 border border-white/5 shadow-sm ${borderClass}/10`}>
+                    <HStack className="items-center justify-between mb-1">
+                        <HStack className="items-center gap-2">
+                            <Icon as={icon} size={12} className={colorClass} />
+                            <Text className={`text-[10px] font-black uppercase tracking-[0.2em] ${colorClass}`}>
+                                {type}
+                            </Text>
+                        </HStack>
+                        <Text className="text-mistGray/30 text-[10px] font-bold">
+                            {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Text>
+                    </HStack>
+
+                    <Text className="text-sacredWhite/90 text-sm font-black mb-1">
+                        {title}
+                    </Text>
+
+                    {content && (
+                        <Text className="text-mistGray/60 text-xs leading-relaxed italic" numberOfLines={2}>
+                            {content}
+                        </Text>
+                    )}
+                </VStack>
+            </HStack>
+        </Animated.View>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        minHeight: 80,
-    },
-    pathContainer: {
-        width: 40,
-        alignItems: 'center',
-    },
-    node: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        marginTop: 6,
-        zIndex: 2,
-    },
-    line: {
-        width: 2,
-        flex: 1,
-        zIndex: 1,
-    },
-    content: {
-        flex: 1,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 16,
-        padding: 12,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.05)',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    time: {
-        fontSize: 10,
-        color: 'rgba(255, 255, 255, 0.4)',
-        fontWeight: '700',
-    },
-    title: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#fff',
-        marginBottom: 4,
-    },
-    body: {
-        fontSize: 12,
-        color: 'rgba(255, 255, 255, 0.6)',
-        lineHeight: 18,
-    }
-});
+export default TimelineEvent;

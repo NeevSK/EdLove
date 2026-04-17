@@ -1,4 +1,4 @@
-import { SafeZustandStorage, useStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { GratitudeEntry } from '../types';
 import { createGratitudeEntry, fetchGratitudeEntries } from '../api/selfFeatureRepository';
@@ -68,6 +68,5 @@ export function useGratitude(userId?: string) {
         addGratitudeEntry: async (input: Pick<GratitudeEntry, 'content' | 'category'>) => {
             if (!userId) return null;
             return createGratitudeEntry(userId, input);
-        },
-    };
+        }};
 }

@@ -1,19 +1,16 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+﻿import React from 'react';
+import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, ink, useTheme, useThemedColors } from '@repo/ui';
+
+
+import { useTranslation  } from 'react-i18next';
 import {
     usePermissions,
     useStore,
     useTemporalStore,
     useBanyanGrowth,
-    useJourneyHistory,
-} from '@repo/core';
+    useJourneyHistory} from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
-import {
-    TemporalProvider,
-    JourneyHistoryCard,
-    TemporalShield,
-    useThemedColors,
-} from '@repo/ui';
+
 import { Users, MessageSquare } from 'lucide-react-native';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -39,8 +36,7 @@ import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 import {
     JournalSection,
     MoodSection,
-    TeacherPulse,
-} from '../../views/sections';
+    TeacherPulse} from '../../views/sections';
 
 export default function TeacherSelfView() {
     const { t } = useTranslation();
@@ -48,7 +44,7 @@ export default function TeacherSelfView() {
     const { context } = usePermissions();
     const userId = context.userId;
     const { viewDate } = useTemporalStore();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
@@ -107,7 +103,7 @@ export default function TeacherSelfView() {
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}>
-                        <Users size={16} /> <span>Educational Ecology</span>
+                        <Icon as={Users} size={16} /> <span>Educational Ecology</span>
                     </button>
                     <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
                         <MessageSquare size={16} /> <span>Faculty Resonance</span>
@@ -124,14 +120,12 @@ export default function TeacherSelfView() {
             <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDesc', 'Radiate clarity from the center of your instructional practice.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#10B981',
                         content: holisticSection,
-                        historyContent: <ResonanceTimeline />,
-                    },
+                        historyContent: <ResonanceTimeline />},
                     {
                         id: 'tools',
                         title: 'Instructional Tools',
@@ -141,20 +135,17 @@ export default function TeacherSelfView() {
                                 id: 'teacher_pulse',
                                 label: 'Instructional Pulse',
                                 content: <TeacherPulse banyan={banyan} loading={banyanLoading} />,
-                                historyContent: <TeacherPulse banyan={banyan} loading={banyanLoading} />,
-                            },
+                                historyContent: <TeacherPulse banyan={banyan} loading={banyanLoading} />},
                             {
                                 id: 'mood_lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
-                            },
+                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />},
                             {
                                 id: 'fire_journal',
                                 label: 'Fire Journal',
                                 content: <FireJournal userId={userId ?? undefined} />,
-                                historyContent: <JournalSection entries={journalEntries} loading={journalLoading} />,
-                            },
+                                historyContent: <JournalSection entries={journalEntries} loading={journalLoading} />},
                             { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
                             { id: 'professional_growth', label: 'Banyan Growth', content: <SpotlightEmpty date={viewDate} /> },
                             { id: 'joy_jar', label: 'Joy Jar', content: <JoyJar userId={userId ?? undefined} /> },
@@ -165,8 +156,7 @@ export default function TeacherSelfView() {
                             { id: 'reminders', label: 'Reminders', content: <RemindersManager userId={userId ?? undefined} /> },
                             { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling userId={userId ?? undefined} /> },
                             { id: 'decisions', label: 'Decision Journal', content: <DecisionJournalSection userId={userId} colors={colors} t={t} /> },
-                        ],
-                    },
+                        ]},
                 ]}
                 sideBar={sideBar}
             />
@@ -177,3 +167,4 @@ export default function TeacherSelfView() {
         </TemporalProvider>
     );
 }
+

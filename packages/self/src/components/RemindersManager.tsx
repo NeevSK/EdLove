@@ -23,9 +23,9 @@ import {
     ModalCloseButton,
     ModalBody,
     ModalFooter,
+    Icon,
 } from '@repo/ui';
 import { Plus, Trash2, Edit, Bell, Droplet, Clock } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
 import { hapticLight, hapticMedium } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import {
@@ -189,43 +189,32 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     }
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+        <VStack className="p-lg gap-lg">
             {/* Header */}
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <VStack space="xs" sx={{ flex: 1 }}>
-                    <Heading sx={{ color: Theme.colors.sacredWhite }} size="lg">
+            <HStack className="justify-between items-center">
+                <VStack className="gap-1 flex-1">
+                    <Heading className="text-sacredWhite" size="lg">
                         {t('reminders.title') || 'Reminders'}
                     </Heading>
-                    <Text sx={{ color: Theme.colors.mistGray }} size="sm">
+                    <Text className="text-mistGray text-sm">
                         Gentle nudges for self-care
                     </Text>
                 </VStack>
                 <Button
                     size="sm"
                     onPress={openCreateModal}
-                    sx={{
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        paddingHorizontal: Theme.spacing.md,
-                    }}
+                    className="rounded-full bg-sanctuarySaffron px-4"
                 >
-                    <Plus color={Theme.colors.sacredWhite} size={16} />
-                    <ButtonText sx={{ marginLeft: 4 }}>{t('reminders.addReminder') || 'Add'}</ButtonText>
+                    <Icon as={Plus} className="text-sacredWhite" size={16} />
+                    <ButtonText className="ml-1 text-sacredWhite">{t('reminders.addReminder') || 'Add'}</ButtonText>
                 </Button>
             </HStack>
 
             {/* Reminders List */}
-            <VStack space="md">
+            <VStack className="gap-md">
                 {reminders.length === 0 ? (
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            backgroundColor: Theme.colors.ink,
-                            borderRadius: Theme.corners.comfortable,
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text sx={{ color: Theme.colors.mistGray }} size="md" textAlign="center">
+                    <Box className="p-xl bg-ink rounded-comfortable items-center">
+                        <Text className="text-mistGray text-md text-center">
                             {t('reminders.noReminders') || 'No reminders set yet.'}
                         </Text>
                     </Box>
@@ -235,92 +224,53 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                         return (
                             <Box
                                 key={reminder.id}
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: reminder.is_active
-                                        ? Theme.colors.ink
-                                        : Theme.colors.obsidian,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderLeftWidth: 3,
-                                    borderLeftColor: reminder.is_active
-                                        ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.dimGray,
-                                    opacity: reminder.is_active ? 1 : 0.6,
-                                }}
+                                className={`p-md rounded-comfortable border-l-[3px] ${
+                                    reminder.is_active 
+                                        ? 'bg-ink border-sanctuarySaffron opacity-100' 
+                                        : 'bg-obsidian border-dimGray opacity-60'
+                                }`}
                             >
-                                <HStack space="md" sx={{ alignItems: 'center' }}>
+                                <HStack className="gap-4 items-center">
                                     {/* Icon */}
                                     <Pressable onPress={() => toggleReminder(reminder)}>
-                                        <Box
-                                            sx={{
-                                                width: 40,
-                                                height: 40,
-                                                borderRadius: 20,
-                                                backgroundColor: Theme.colors.obsidian,
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}
-                                        >
-                                            <IconComponent
-                                                color={reminder.is_active ? Theme.colors.sanctuarySaffron : Theme.colors.dimGray}
+                                        <Box className="w-10 h-10 rounded-full bg-obsidian items-center justify-center">
+                                            <Icon
+                                                as={IconComponent}
+                                                className={reminder.is_active ? 'text-sanctuarySaffron' : 'text-dimGray'}
                                                 size={20}
                                             />
                                         </Box>
                                     </Pressable>
 
                                     {/* Content */}
-                                    <VStack space="xs" sx={{ flex: 1 }}>
-                                        <Text
-                                            sx={{ 
-                                                color: Theme.colors.sacredWhite,
-                                                fontWeight: typography.fontWeight.semibold 
-                                            }}
-                                            size="md"
-                                        >
+                                    <VStack className="gap-1 flex-1">
+                                        <Text className="text-sacredWhite font-semibold text-md">
                                             {reminder.title}
                                         </Text>
                                         {reminder.description ? (
-                                            <Text sx={{ color: Theme.colors.mistGray }} size="sm">
+                                            <Text className="text-mistGray text-sm">
                                                 {reminder.description}
                                             </Text>
                                         ) : null}
                                         {reminder.is_default && (
-                                            <Text sx={{ color: Theme.colors.shadowViolet }} size="xs">
+                                            <Text className="text-shadowViolet text-xs">
                                                 💧 Default reminder
                                             </Text>
                                         )}
                                     </VStack>
 
                                     {/* Actions */}
-                                    <HStack space="xs">
+                                    <HStack className="gap-2">
                                         {!reminder.is_default && (
                                             <>
                                                 <Pressable onPress={() => openEditModal(reminder)}>
-                                                    <Box
-                                                        sx={{
-                                                            width: 36,
-                                                            height: 36,
-                                                            borderRadius: 18,
-                                                            backgroundColor: Theme.colors.obsidian,
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                        }}
-                                                    >
-                                                        <Edit color={Theme.colors.mistGray} size={16} />
+                                                    <Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
+                                                        <Icon as={Edit} className="text-mistGray" size={16} />
                                                     </Box>
                                                 </Pressable>
                                                 <Pressable onPress={() => deleteReminder(reminder.id)}>
-                                                    <Box
-                                                        sx={{
-                                                            width: 36,
-                                                            height: 36,
-                                                            borderRadius: 18,
-                                                            backgroundColor: Theme.colors.obsidian,
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                        }}
-                                                    >
-                                                        <Trash2 color={Theme.colors.emberRed} size={16} />
+                                                    <Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
+                                                        <Icon as={Trash2} className="text-emberRed" size={16} />
                                                     </Box>
                                                 </Pressable>
                                             </>
@@ -334,18 +284,8 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
             </VStack>
 
             {/* Info */}
-            <Box
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                }}
-            >
-                <Text
-                    sx={{ color: Theme.colors.mistGray, fontStyle: 'italic' }}
-                    size="xs"
-                    textAlign="center"
-                >
+            <Box className="p-md bg-ink rounded-comfortable">
+                <Text className="text-mistGray italic text-xs text-center">
                     🔔 Tap the icon to toggle reminders on/off
                 </Text>
             </Box>
@@ -353,98 +293,67 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
             {/* Create/Edit Modal */}
             <Modal isOpen={showCreateModal} onClose={closeModal}>
                 <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: Theme.colors.obsidian,
-                        maxWidth: 400,
-                    }}
-                >
+                <ModalContent className="bg-obsidian max-w-[400px]">
                     <ModalHeader>
-                        <Heading sx={{ color: Theme.colors.sacredWhite }} size="lg">
+                        <Heading className="text-sacredWhite" size="lg">
                             {editingReminder ? 'Edit Reminder' : 'New Reminder'}
                         </Heading>
                         <ModalCloseButton />
                     </ModalHeader>
                     <ModalBody>
-                        <VStack space="md">
+                        <VStack className="gap-4">
                             {/* Title */}
-                            <VStack space="xs">
-                                <Text sx={{ color: Theme.colors.starlightGray }} size="sm">
-                                    Title
-                                </Text>
-                                <Input
-                                    variant="outline"
-                                    size="md"
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,
-                                    }}
-                                >
+                            <VStack className="gap-1">
+                                <Text className="text-starlightGray text-sm">Title</Text>
+                                <Input variant="outline" size="md" className="bg-ink border-obsidian">
                                     <InputField
                                         value={title}
                                         onChangeText={setTitle}
                                         placeholder="e.g., Take a break"
-                                        sx={{ color: Theme.colors.sacredWhite }}
-                                        placeholderTextColor={Theme.colors.dimGray}
+                                        className="text-sacredWhite"
+                                        placeholderTextColor="#6A6358"
                                     />
                                 </Input>
                             </VStack>
 
                             {/* Description */}
-                            <VStack space="xs">
-                                <Text sx={{ color: Theme.colors.starlightGray }} size="sm">
-                                    Description (optional)
-                                </Text>
-                                <Input
-                                    variant="outline"
-                                    size="md"
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,
-                                    }}
-                                >
+                            <VStack className="gap-1">
+                                <Text className="text-starlightGray text-sm">Description (optional)</Text>
+                                <Input variant="outline" size="md" className="bg-ink border-obsidian min-h-[80px]">
                                     <InputField
                                         value={description}
                                         onChangeText={setDescription}
                                         placeholder="e.g., Every 2 hours during class"
-                                        sx={{ color: Theme.colors.sacredWhite }}
-                                        placeholderTextColor={Theme.colors.dimGray}
+                                        className="text-sacredWhite"
+                                        placeholderTextColor="#6A6358"
                                         multiline
                                     />
                                 </Input>
                             </VStack>
 
                             {/* Icon Type */}
-                            <VStack space="xs">
-                                <Text sx={{ color: Theme.colors.starlightGray }} size="sm">
-                                    Icon
-                                </Text>
-                                <HStack space="md">
+                            <VStack className="gap-1">
+                                <Text className="text-starlightGray text-sm">Icon</Text>
+                                <HStack className="gap-4">
                                     {Object.keys(ICON_MAP).map((type) => {
                                         const IconComp = ICON_MAP[type];
                                         const isSelected = iconType === type;
                                         return (
                                             <Pressable
                                                 key={type}
-                                                onPress={() => {
+                                                onPress={() => { 
                                                     setIconType(type);
                                                     hapticLight();
                                                 }}
                                             >
                                                 <Box
-                                                    sx={{
-                                                        width: 48,
-                                                        height: 48,
-                                                        borderRadius: 24,
-                                                        backgroundColor: isSelected
-                                                            ? Theme.colors.sanctuarySaffron
-                                                            : Theme.colors.ink,
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}
+                                                    className={`w-12 h-12 rounded-full items-center justify-center ${
+                                                        isSelected ? 'bg-sanctuarySaffron' : 'bg-ink'
+                                                    }`}
                                                 >
-                                                    <IconComp
-                                                        color={isSelected ? Theme.colors.white : Theme.colors.mistGray}
+                                                    <Icon
+                                                        as={IconComp}
+                                                        className={isSelected ? 'text-white' : 'text-mistGray'}
                                                         size={24}
                                                     />
                                                 </Box>
@@ -456,26 +365,20 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <HStack space="md" sx={{ width: '100%' }}>
+                        <HStack className="gap-4 w-full">
                             <Button
-                                flex={1}
+                                className="flex-1 border-dimGray"
                                 variant="outline"
                                 onPress={closeModal}
-                                sx={{
-                                    borderColor: Theme.colors.dimGray,
-                                }}
                             >
-                                <ButtonText sx={{ color: Theme.colors.mistGray }}>Cancel</ButtonText>
+                                <ButtonText className="text-mistGray">Cancel</ButtonText>
                             </Button>
                             <Button
-                                flex={1}
+                                className="flex-1 bg-sanctuarySaffron"
                                 onPress={saveReminder}
                                 isDisabled={!title.trim()}
-                                sx={{
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
                             >
-                                <ButtonText>
+                                <ButtonText className="text-white">
                                     {editingReminder ? 'Update' : 'Create'}
                                 </ButtonText>
                             </Button>

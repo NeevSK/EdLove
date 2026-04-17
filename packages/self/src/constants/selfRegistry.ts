@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SelfSection Registry
  * Defines the logical layering for each user role.
  */
@@ -54,8 +54,7 @@ export const FEATURE_EMOJIS: Record<string, string> = {
     'fire_journal': '\uD83D\uDD25',
     'tomorrow': '\uD83C\uDF05',
     'vision_lab': '\uD83D\uDD2C',
-    'philosophy_lab': '\uD83C\uDFDB\uFE0F',
-};
+    'philosophy_lab': '\uD83C\uDFDB\uFE0F'};
 
 /**
  * Feature Discovery Metadata

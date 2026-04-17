@@ -1,11 +1,10 @@
-import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { Goal } from '../types';
 import {
     createStudentGoal,
     fetchStudentGoalsForView,
-    updateStudentGoal,
-} from '../api/selfFeatureRepository';
+    updateStudentGoal} from '../api/selfFeatureRepository';
 
 const GOALS_CACHE_KEY = 'gurudevi-student-goals-cache';
 
@@ -87,6 +86,5 @@ export function useStudentGoals(userId?: string) {
         refreshData,
         addGoal,
         updateGoal,
-        setGoals,
-    };
+        setGoals};
 }

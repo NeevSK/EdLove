@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ProgressTree.web.tsx
  *
  * Web override. The native version uses react-native-reanimated for a breathing
@@ -68,9 +68,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                     style={{
                         fontSize: '56px',
                         animation: 'breathe 4s ease-in-out infinite',
-                        lineHeight: 1,
-                    }}
-                >
+                        lineHeight: 1}}>
                     {currentStage.emoji}
                 </div>
                 <div>

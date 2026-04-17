@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    Box,
-    useThemedColors,
-    ScreenWrapper,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import {
     useStore,
@@ -55,7 +53,7 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function StudentSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -101,13 +99,11 @@ export default function StudentSelfView() {
             <BaseSelfView
                 perspective="student"
                 description={t('self.studentDescription', 'A steady space to grow your mind and heart.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#8B5CF6',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'pulse',
                         title: 'Inner Pulse',
@@ -257,3 +253,4 @@ export default function StudentSelfView() {
         </ScreenWrapper>
     );
 }
+

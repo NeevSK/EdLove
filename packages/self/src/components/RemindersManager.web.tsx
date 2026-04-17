@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RemindersManager.web.tsx
  *
  * Web override. Manages user reminders (CRUD) with the same `reminders` table.
@@ -11,8 +11,7 @@ import {
     deleteReminder,
     fetchReminders,
     type ReminderRecord,
-    updateReminder,
-} from '../api/selfFeatureRepository';
+    updateReminder} from '../api/selfFeatureRepository';
 
 type Reminder = ReminderRecord;
 
@@ -24,8 +23,7 @@ const DEFAULT_REMINDER = {
     title: 'Stay Hydrated',
     description: 'Drink water intermittently while teaching',
     icon_type: 'droplet',
-    is_default: true,
-};
+    is_default: true};
 
 export default function RemindersManager({ userId }: RemindersManagerProps) {
     const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -63,8 +61,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                 description: description.trim() || undefined,
                 icon_type: 'bell',
                 is_default: false,
-                is_active: true,
-            });
+                is_active: true});
             setReminders(p => [...p, data]);
             setTitle('');
             setDescription('');
@@ -90,7 +87,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Bell size={15} color="var(--sanctuary-saffron)" />
+                    <Icon as={Bell} size={15} color="var(--sanctuary-saffron)" />
                     <span style={{ fontSize: '13px', fontWeight: '800' }}>Gentle Reminders</span>
                 </div>
                 <button onClick={() => setShowForm(v => !v)} style={{ fontSize: '11px', padding: '5px 11px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? 'var(--sanctuary-saffron)' : 'transparent', color: showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700' }}>
@@ -114,7 +111,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {reminders.map(r => (
                         <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: 'var(--background-alt)', borderRadius: '10px', opacity: r.is_active ? 1 : 0.5 }}>
-                            {r.icon_type === 'droplet' ? <Droplets size={14} color="var(--water)" /> : <Bell size={14} color="var(--sanctuary-saffron)" />}
+                            {r.icon_type === 'droplet' ? <Droplets size={14} color="var(--water)" /> : <Icon as={Bell} size={14} color="var(--sanctuary-saffron)" />}
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontSize: '13px', fontWeight: '700' }}>{r.title}</div>
                                 {r.description && <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{r.description}</div>}
@@ -122,7 +119,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                             <input type="checkbox" checked={r.is_active} onChange={() => handleToggle(r)} disabled={toggling === r.id} style={{ accentColor: 'var(--sanctuary-saffron)', cursor: 'pointer' }} />
                             {!r.is_default && (
                                 <button onClick={() => handleDelete(r.id)} disabled={deleting === r.id} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', opacity: 0.5 }}>
-                                    <Trash2 size={12} color="var(--ink-ghost)" />
+                                    <Icon as={Trash2} size={12} color="var(--ink-ghost)" />
                                 </button>
                             )}
                         </div>

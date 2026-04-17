@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WisdomSeeds.web.tsx
  *
  * Web override. The native version uses expo-haptics + useSafeMutation.
@@ -54,8 +54,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                 </div>
                 <button
                     onClick={() => setShowForm(v => !v)}
-                    style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? 'var(--sanctuary-saffron)' : 'transparent', color: showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
-                >
+                    style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? 'var(--sanctuary-saffron)' : 'transparent', color: showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}>
                     {showForm ? 'Cancel' : '+ Plant Seed'}
                 </button>
             </div>
@@ -74,8 +73,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                     <button
                         onClick={handleSave}
                         disabled={saving || !insight.trim()}
-                        style={{ padding: '10px 16px', borderRadius: '10px', background: 'var(--sanctuary-saffron)', color: 'var(--text-on-action)', border: 'none', fontWeight: '700', fontSize: '12px', cursor: saving || !insight.trim() ? 'not-allowed' : 'pointer', opacity: saving || !insight.trim() ? 0.6 : 1, whiteSpace: 'nowrap' }}
-                    >
+                        style={{ padding: '10px 16px', borderRadius: '10px', background: 'var(--sanctuary-saffron)', color: 'var(--text-on-action)', border: 'none', fontWeight: '700', fontSize: '12px', cursor: saving || !insight.trim() ? 'not-allowed' : 'pointer', opacity: saving || !insight.trim() ? 0.6 : 1, whiteSpace: 'nowrap' }}>
                         {saving ? '...' : '+ Plant'}
                     </button>
                 </div>
@@ -95,8 +93,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                     {notes.slice(0, 6).map((note: any) => (
                         <div
                             key={note.id}
-                            style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: '3px solid var(--sanctuary-saffron)' }}
-                        >
+                            style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: '3px solid var(--sanctuary-saffron)' }}>
                             <p style={{ fontSize: '13px', fontStyle: 'italic', lineHeight: '1.6', color: 'var(--ink-soft)', margin: 0 }}>
                                 "{note.insight}"
                             </p>

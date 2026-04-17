@@ -1,18 +1,15 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+﻿import React from 'react';
+import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, ink, useTheme, useThemedColors } from '@repo/ui';
+
+
+import { useTranslation  } from 'react-i18next';
 import {
     usePermissions,
     useStore,
     useTemporalStore,
-    useJourneyHistory,
-} from '@repo/core';
+    useJourneyHistory} from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
-import {
-    TemporalProvider,
-    JourneyHistoryCard,
-    TemporalShield,
-    useThemedColors,
-} from '@repo/ui';
+
 import { Activity, BookOpen } from 'lucide-react-native';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -33,15 +30,14 @@ import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 import {
     MoodSection,
     PrincipalPulse,
-    DecisionSection,
-} from '../../views/sections';
+    DecisionSection} from '../../views/sections';
 
 export default function PrincipalSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { can, context } = usePermissions();
     const userId = context.userId;
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
@@ -89,10 +85,10 @@ export default function PrincipalSelfView() {
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
-                        <Activity size={16} /> <span>Leadership Ecology</span>
+                        <Icon as={Activity} size={16} /> <span>Leadership Ecology</span>
                     </button>
                     <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
-                        <BookOpen size={16} /> <span>Governance Ledger</span>
+                        <Icon as={BookOpen} size={16} /> <span>Governance Ledger</span>
                     </button>
                 </div>
             </div>
@@ -106,14 +102,12 @@ export default function PrincipalSelfView() {
             <BaseSelfView
                 perspective="principal"
                 description={t('self.principalDesc', 'Orchestrate systemic harmony from a place of centered wisdom.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#F59E0B',
                         content: holisticSection,
-                        historyContent: <ResonanceTimeline />,
-                    },
+                        historyContent: <ResonanceTimeline />},
                     {
                         id: 'tools',
                         title: 'Leadership Tools',
@@ -125,14 +119,12 @@ export default function PrincipalSelfView() {
                                 id: 'decision_mirror',
                                 label: 'Decision Mirror',
                                 content: <DecisionJournalSection userId={userId ?? ''} colors={colors} t={t} />,
-                                historyContent: <DecisionSection decisions={decisions} loading={decisionLoading} />,
-                            },
+                                historyContent: <DecisionSection decisions={decisions} loading={decisionLoading} />},
                             {
                                 id: 'mood_lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
-                            },
+                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />},
                             { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
                             { id: 'wisdom', label: 'Leadership Wisdom', content: <WisdomSeeds userId={userId ?? undefined} /> },
                             {
@@ -147,10 +139,8 @@ export default function PrincipalSelfView() {
                                             {t('principal.monthlyComingSoonDesc', 'A deep reflection module for your monthly milestones is on its way.')}
                                         </p>
                                     </div>
-                                ),
-                            },
-                        ],
-                    },
+                                )},
+                        ]},
                 ]}
                 sideBar={sideBar}
             />
@@ -161,3 +151,4 @@ export default function PrincipalSelfView() {
         </TemporalProvider>
     );
 }
+

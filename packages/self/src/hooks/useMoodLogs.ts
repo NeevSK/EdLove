@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { GuestDataManager, authAPI, SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
 
 import { MoodLog } from '../types';
@@ -6,8 +6,7 @@ import {
     createMoodLog,
     fetchMoodHistoryForView,
     moodToScore,
-    scoreToMood,
-} from '../api/wellbeingRepository';
+    scoreToMood} from '../api/wellbeingRepository';
 
 const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
 
@@ -46,8 +45,7 @@ export const useMoodLogs = (userId?: string) => {
                         mood_score: moodToScore(scoreToMood(gl.mood)),
                         mood: scoreToMood(gl.mood),
                         note: gl.note,
-                        created_at: gl.timestamp,
-                    }));
+                        created_at: gl.timestamp}));
                     setMoodHistory(mappedLogs as MoodLog[]);
                 } else if (userId) {
                     const cached = await SafeZustandStorage.getItem(`${MOOD_CACHE_KEY}-${userId}-${viewDate}`);
@@ -75,8 +73,7 @@ export const useMoodLogs = (userId?: string) => {
                 mood_score: moodToScore(scoreToMood(gl.mood)),
                 mood: scoreToMood(gl.mood),
                 note: gl.note,
-                created_at: gl.timestamp,
-            }));
+                created_at: gl.timestamp}));
             setMoodHistory(mappedLogs as MoodLog[]);
             return;
         }
@@ -113,8 +110,7 @@ export const useMoodLogs = (userId?: string) => {
                     mood_score: score,
                     mood,
                     note,
-                    created_at: guestLog.timestamp,
-                };
+                    created_at: guestLog.timestamp};
                 setMoodHistory((prev) => [newLog, ...prev]);
                 return newLog;
             }
@@ -144,6 +140,5 @@ export const useMoodLogs = (userId?: string) => {
         isAnonymous,
         refreshData,
         addMoodLog,
-        setMoodHistory,
-    };
+        setMoodHistory};
 };

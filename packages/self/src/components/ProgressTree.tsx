@@ -2,33 +2,30 @@
  * GENTLE PROGRESS TREE
  * Visual growth (seed → sapling → tree) over months
  * NO streaks, NO pressure, just organic growth
- * 
- * Philosophy:
- * - Growth is natural, not forced
- * - Every interaction nurtures the tree
- * - Blooms appear at meaningful milestones
- * - No punishment for "missed days"
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    VStack,
-    Text,
-    Heading,
+import { 
+    Box, 
+    Heading, 
+    PositiveInvitation, 
+    SkeletonCard, 
+    Text, 
+    VStack, 
+    Icon,
+    Progress,
+    ProgressFilledTrack
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
-    withSpring,
     withRepeat,
     withTiming,
+    withSpring,
     Easing,
+    FadeIn
 } from 'react-native-reanimated';
-import { Theme, typography } from '@repo/ui';
 import { supabase } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
-import { PositiveInvitation } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 
@@ -49,7 +46,7 @@ const GROWTH_STAGES = [
 export default function ProgressTree({ userId }: ProgressTreeProps) {
     const navigation = useNavigation<any>();
     const [interactionCount, setInteractionCount] = useState(0);
-    const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]);
+    const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]!);
     const [showBloom, setShowBloom] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const { t } = useTranslation();
@@ -61,6 +58,27 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
     useEffect(() => {
         if (userId) {
+            const fetchInteractionCount = async () => {
+                try {
+                    const [moodLogs, fireJournal] = await Promise.all([
+                        supabase
+                            .from('mood_logs')
+                            .select('id', { count: 'exact', head: true })
+                            .eq('user_id', userId),
+                        supabase
+                            .from('fire_journal')
+                            .select('id', { count: 'exact', head: true })
+                            .eq('user_id', userId),
+                    ]);
+
+                    const total = (moodLogs.count || 0) + (fireJournal.count || 0);
+                    setInteractionCount(total);
+                } catch (error) {
+                    console.error('Error fetching interaction count:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
             fetchInteractionCount();
         } else {
             setIsLoading(false);
@@ -70,87 +88,40 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
         treeScale.value = withRepeat(
             withTiming(1, {
                 duration: 4000,
-                easing: Easing.inOut(Easing.ease),
+                easing: Easing.inOut(Easing.ease)
             }),
             -1,
             true
         );
-    }, [userId]);
+    }, [userId, treeScale]);
 
     useEffect(() => {
-        // Determine current stage based on interaction count
         const stage = [...GROWTH_STAGES]
             .reverse()
-            .find(s => interactionCount >= s.minInteractions) || GROWTH_STAGES[0];
+            .find(s => interactionCount >= s.minInteractions) || GROWTH_STAGES[0]!;
 
-        if (!stage) return; // Extreme safety fallback
+        if (stage.stage !== currentStage.stage && stage.minInteractions > 0) {
+            // Milestone animation
+            setShowBloom(true);
+            bloomOpacity.value = withTiming(1, { duration: 600 });
+            bloomScale.value = withSpring(1.2, { damping: 10, stiffness: 100 });
 
-        // Check if we just reached a new stage
-        const previousStage = currentStage;
-        if (stage && previousStage && stage.stage !== previousStage.stage && stage.minInteractions > 0) {
-            // Show bloom animation when reaching milestone
-            triggerBloomAnimation();
+            setTimeout(() => {
+                bloomOpacity.value = withTiming(0, { duration: 600 });
+                setTimeout(() => setShowBloom(false), 600);
+            }, 3000);
         }
 
-        if (stage) setCurrentStage(stage);
+        setCurrentStage(stage);
     }, [interactionCount]);
 
-    const fetchInteractionCount = async () => {
-        try {
-            // Count all meaningful interactions across different tables
-            const [moodLogs, fireJournal] = await Promise.all([
-                supabase
-                    .from('mood_logs')
-                    .select('id', { count: 'exact', head: true })
-                    .eq('user_id', userId),
-                supabase
-                    .from('fire_journal')
-                    .select('id', { count: 'exact', head: true })
-                    .eq('user_id', userId),
-                // Add more interaction types as they're built
-            ]);
-
-            const total = (moodLogs.count || 0) + (fireJournal.count || 0);
-            setInteractionCount(total);
-        } catch (error) {
-            console.error('Error fetching interaction count:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const triggerBloomAnimation = () => {
-        setShowBloom(true);
-
-        // Bloom animation
-        bloomOpacity.value = 0;
-        bloomScale.value = 0.5;
-
-        bloomOpacity.value = withTiming(1, {
-            duration: Theme.motion.gentle,
-        });
-
-        bloomScale.value = withSpring(1.2, {
-            damping: 10,
-            stiffness: 100,
-        });
-
-        // Hide after 3 seconds
-        setTimeout(() => {
-            bloomOpacity.value = withTiming(0, {
-                duration: Theme.motion.gentle,
-            });
-            setTimeout(() => setShowBloom(false), 500);
-        }, 3000);
-    };
-
     const treeStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: treeScale.value }],
+        transform: [{ scale: treeScale.value }]
     }));
 
     const bloomStyle = useAnimatedStyle(() => ({
         opacity: bloomOpacity.value,
-        transform: [{ scale: bloomScale.value }],
+        transform: [{ scale: bloomScale.value }]
     }));
 
     // Calculate progress to next stage
@@ -162,7 +133,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
     if (isLoading && userId) {
         return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+            <VStack className="p-lg gap-lg">
                 <SkeletonCard height={40} />
                 <SkeletonCard height={280} />
                 <SkeletonCard height={80} />
@@ -180,143 +151,68 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     }
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+        <VStack className="p-lg gap-lg">
             {/* Header */}
-            <VStack space="xs">
-                <Heading color={Theme.colors.sacredWhite} size="lg">
-                    {t('progressTree.title')}
+            <VStack className="gap-1">
+                <Heading className="text-sacredWhite" size="lg">
+                    {t('progressTree.title') || 'Gentle Progress'}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm">
-                    {t('progressTree.subtitle')}
+                <Text className="text-mistGray text-sm">
+                    {t('progressTree.subtitle') || 'Organic growth at your own pace.'}
                 </Text>
             </VStack>
 
             {/* Tree Visualization */}
-            <Box
-                sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                    minHeight: 200,
-                    position: 'relative',
-                }}
-            >
+            <Box className="items-center justify-center p-xl bg-obsidian rounded-comfortable min-h-[250px] relative border border-white/5 overflow-hidden">
                 {/* Bloom effect */}
                 {showBloom && (
-                    <Animated.View
-                        style={[
-                            bloomStyle,
-                            {
-                                position: 'absolute',
-                                top: '20%',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            },
-                        ]}
-                    >
-                        <Text style={{ fontSize: 72 }}>🌸</Text>
-                        <Text
-                            color={Theme.colors.sanctuarySaffron}
-                            size="lg"
-                            sx={{
-                                fontWeight: typography.fontWeight.bold,
-                                marginTop: Theme.spacing.sm,
-                            }}
-                        >
+                    <Animated.View style={[bloomStyle]} className="absolute top-[20%] items-center justify-center z-10">
+                        <Text className="text-7xl mb-4">🌸</Text>
+                        <Text className="text-sanctuarySaffron text-lg font-bold text-center">
                             Milestone reached!
                         </Text>
                     </Animated.View>
                 )}
 
                 {/* Main tree */}
-                <Animated.View style={treeStyle}>
-                    <Text style={{ fontSize: 96 }}>
-                        {currentStage?.emoji || '🌱'}
+                <Animated.View style={treeStyle} className="items-center justify-center">
+                    <Text className="text-[120px]">
+                        {currentStage.emoji}
                     </Text>
                 </Animated.View>
 
-                <Text
-                    color={Theme.colors.sacredWhite}
-                    size="2xl"
-                    sx={{
-                        fontWeight: typography.fontWeight.semibold,
-                        marginTop: Theme.spacing.md,
-                    }}
-                >
-                    {currentStage?.label || ''}
-                </Text>
-                <Text
-                    color={Theme.colors.mistGray}
-                    size="sm"
-                    sx={{ fontStyle: 'italic' }}
-                >
-                    {currentStage?.description || ''}
-                </Text>
+                <VStack className="items-center mt-4">
+                    <Text className="text-sacredWhite text-2xl font-bold">
+                        {currentStage.label}
+                    </Text>
+                    <Text className="text-mistGray text-sm italic">
+                        {currentStage.description}
+                    </Text>
+                </VStack>
             </Box>
 
-            {/* Gentle progress indicator */}
-            <Box
-                sx={{
-                    backgroundColor: Theme.colors.ink,
-                    padding: Theme.spacing.md,
-                    borderRadius: Theme.corners.comfortable,
-                }}
-            >
-                <Text
-                    color={Theme.colors.dimGray}
-                    size="xs"
-                    sx={{ marginBottom: Theme.spacing.sm }}
-                >
-                    {interactionCount} {t('progressTree.interactionsLabel', 'interactions nurturing your tree')}
-                </Text>
-
-                {nextStage && (
-                    <>
-                        <Box
-                            sx={{
-                                width: '100%',
-                                height: 8,
-                                backgroundColor:Theme.colors.ink,
-                                borderRadius: 4,
-                                overflow: 'hidden',
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: `${progressPercent}%`,
-                                    height: '100%',
-                                    backgroundColor: Theme.colors.sageGreen,
-                                }}
-                            />
-                        </Box>
-                        <Text
-                            color={Theme.colors.dimGray}
-                            size="xs"
-                            sx={{ marginTop: Theme.spacing.sm }}
-                        >
-                            Next: {nextStage.label} ({nextStage.minInteractions - interactionCount} more interactions)
+            {/* Progress indicator */}
+            <VStack className="bg-obsidian p-lg rounded-comfortable border border-white/5 gap-4">
+                <HStack className="justify-between items-center">
+                    <Text className="text-dimGray text-xs">
+                        {interactionCount} {t('progressTree.interactionsLabel') || 'nurturing actions'}
+                    </Text>
+                    {nextStage && (
+                        <Text className="text-dimGray text-xs">
+                            {nextStage.minInteractions - interactionCount} more to {nextStage.label}
                         </Text>
-                    </>
-                )}
-            </Box>
+                    )}
+                </HStack>
+
+                <Progress value={progressPercent} className="h-2 bg-white/5 rounded-full">
+                    <ProgressFilledTrack className="bg-emeraldGreen" />
+                </Progress>
+            </VStack>
 
             {/* Philosophy note */}
-            <Box
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                }}
-            >
-                <Text
-                    color={Theme.colors.mistGray}
-                    size="xs"
-                    textAlign="center"
-                    sx={{ fontStyle: 'italic' }}
-                >
-                    Growth happens in its own time. Every small action counts. 🌱
+            <Box className="p-md bg-white/5 rounded-comfortable">
+                <Text className="text-mistGray text-xs text-center italic">
+                    {t('progressTree.philosophy') || 'Growth happens in its own time. Every small action counts. 🌱'}
                 </Text>
             </Box>
         </VStack>

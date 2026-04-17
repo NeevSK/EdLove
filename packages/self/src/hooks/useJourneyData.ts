@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useMoodLogs } from './useMoodLogs';
 import { useJournalEntries } from './useJournalEntries';
 import { useEnergyForecast } from './useEnergyForecast';
@@ -166,7 +166,6 @@ export const useJourneyData = () => {
 
     return {
         journey,
-        loading: loadingMoods || loadingJournals || loadingStudentPaths || loadingBanyan || loadingEnergy || loadingDecisions || loadingWisdom,
-    };
+        loading: loadingMoods || loadingJournals || loadingStudentPaths || loadingBanyan || loadingEnergy || loadingDecisions || loadingWisdom};
 };
 

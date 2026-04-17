@@ -1,4 +1,4 @@
-import { SafeZustandStorage, useStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { SleepLog } from '../types';
 import { createSleepLog, fetchSleepLogs } from '../api/selfFeatureRepository';
@@ -68,6 +68,5 @@ export function useSleepTracker(userId?: string) {
         addSleepLog: async (quality: SleepLog['quality']) => {
             if (!userId) return null;
             return createSleepLog(userId, quality);
-        },
-    };
+        }};
 }

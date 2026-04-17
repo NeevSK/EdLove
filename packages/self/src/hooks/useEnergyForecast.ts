@@ -1,4 +1,4 @@
-import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { EnergyForecast } from '../types';
 import { fetchEnergyForecastsForView, saveEnergyForecastForDate } from '../api/selfInsightsRepository';
@@ -74,6 +74,5 @@ export function useEnergyForecast(userId?: string) {
         }) => {
             if (!userId) return;
             await saveEnergyForecastForDate(userId, payload);
-        },
-    };
+        }};
 }

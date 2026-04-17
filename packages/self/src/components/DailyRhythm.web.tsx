@@ -1,15 +1,36 @@
 /**
  * DailyRhythm.web.tsx
  *
- * Web override. The native version uses @repo/ui Modal/Select components.
- * On web we deliver the same weekly timetable manager with HTML dialogs,
- * native <select>, and the same useTimetable hook.
- * Metro resolves this over DailyRhythm.tsx on the web platform.
+ * Web-specific implementation for the timetable manager.
+ * Purged raw HTML/inline-styles in favor of @repo/ui primitives and NativeWind v4.
  */
+
 import React, { useState } from 'react';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Button, 
+    ButtonText, 
+    Icon, 
+    Pressable,
+    Input,
+    InputField,
+    Select,
+    SelectTrigger,
+    SelectInput,
+    SelectPortal,
+    SelectBackdrop,
+    SelectContent,
+    SelectDragIndicatorWrapper,
+    SelectDragIndicator,
+    SelectItem
+} from '@repo/ui';
 import { useTimetable } from '../hooks/useTimetable';
 import type { Period } from '../types';
-import { Plus, Trash2, Clock } from 'lucide-react-native';
+import { Plus, Trash2, Clock, ChevronDown } from 'lucide-react-native';
 
 const DAYS = [
     { id: 1, label: 'Mon' },
@@ -25,17 +46,10 @@ const PERIOD_TYPES: Array<{ value: Period['type']; label: string }> = [
     { value: 'interval', label: 'Interval / Break' },
 ];
 
-const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid var(--border)',
-    background: 'white',
-    color: 'var(--ink)',
-    fontSize: '13px',
-    fontFamily: 'var(--font-body)',
-    outline: 'none',
-    boxSizing: 'border-box',
+const TYPE_CLASSES: Record<Period['type'], string> = {
+    subject: 'border-skyBlue text-skyBlue bg-skyBlue/10',
+    relief: 'border-emeraldGreen text-emeraldGreen bg-emeraldGreen/10',
+    interval: 'border-mistGray text-mistGray bg-mistGray/10'
 };
 
 export default function DailyRhythm() {
@@ -50,7 +64,7 @@ export default function DailyRhythm() {
         class_name: '',
         type: 'subject' as Period['type'],
         start_time: '08:00',
-        end_time: '09:00',
+        end_time: '09:00'
     });
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<string | null>(null);
@@ -67,7 +81,7 @@ export default function DailyRhythm() {
                 class_name: form.class_name || undefined,
                 type: form.type,
                 start_time: form.start_time,
-                end_time: form.end_time,
+                end_time: form.end_time
             } as Omit<Period, 'id' | 'user_id'>);
             setForm({ subject: '', activity: '', class_name: '', type: 'subject', start_time: '08:00', end_time: '09:00' });
             setShowForm(false);
@@ -81,152 +95,181 @@ export default function DailyRhythm() {
         try { await deletePeriod(id); } finally { setDeleting(null); }
     };
 
-    const TYPE_COLORS: Record<Period['type'], string> = {
-        subject: 'var(--water)',
-        relief: 'var(--moss)',
-        interval: 'var(--ink-ghost)',
-    };
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <VStack className="gap-lg">
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '14px', fontWeight: '800' }}>Daily Rhythm</div>
-                <button
-                    onClick={() => setShowForm(v => !v)}
-                    style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '6px', 
-                        fontSize: '12px', 
-                        padding: '7px 14px', 
-                        borderRadius: '8px', 
-                        border: '1px solid var(--border)', 
-                        background: showForm ? 'var(--water)' : 'transparent', 
-                        color: showForm ? '#fff' : 'var(--ink-ghost)', 
-                        cursor: 'pointer', 
-                        fontWeight: '700', 
-                        transition: 'all 0.2s' 
-                    }}
+            <HStack className="items-center justify-between">
+                <Heading size="sm" className="text-sacredWhite font-bold">
+                    Daily Rhythm
+                </Heading>
+                <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => setShowForm(v => !v)}
+                    className={`border-dimGray rounded-comfortable ${showForm ? 'bg-skyBlue border-skyBlue' : ''}`}
                 >
-                    <Plus size={14} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
-                    {showForm ? 'Cancel' : 'Add Period'}
-                </button>
-            </div>
+                    <Icon as={Plus} size={14} className={showForm ? 'text-white' : 'text-mistGray'} />
+                    <ButtonText className={`ml-1 ${showForm ? 'text-white' : 'text-mistGray'}`}>
+                        {showForm ? 'Cancel' : 'Add Period'}
+                    </ButtonText>
+                </Button>
+            </HStack>
 
             {/* Day selector */}
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <HStack className="gap-2">
                 {DAYS.map(d => (
-                    <button
+                    <Pressable
                         key={d.id}
-                        onClick={() => setActiveDay(d.id)}
-                        style={{ 
-                            flex: 1, 
-                            padding: '10px 4px', 
-                            borderRadius: '10px', 
-                            border: `1.5px solid ${activeDay === d.id ? 'var(--water)' : 'var(--border)'}`, 
-                            background: activeDay === d.id ? 'var(--water)' : 'var(--background-alt)', 
-                            color: activeDay === d.id ? '#fff' : 'var(--ink-ghost)', 
-                            fontWeight: '700', 
-                            fontSize: '12px', 
-                            cursor: 'pointer', 
-                            transition: 'all 0.2s' 
-                        }}
+                        onPress={() => setActiveDay(d.id)}
+                        className={`flex-1 py-3 rounded-comfortable border-2 items-center justify-center transition-all ${
+                            activeDay === d.id ? 'border-skyBlue bg-skyBlue' : 'border-obsidian bg-ink'
+                        }`}
                     >
-                        {d.label}
+                        <Text className={`text-xs font-bold ${activeDay === d.id ? 'text-white' : 'text-mistGray'}`}>
+                            {d.label}
+                        </Text>
                         {d.id === today && (
-                            <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: activeDay === d.id ? 'rgba(255,255,255,0.8)' : 'var(--water)', margin: '4px auto 0' }} />
+                            <Box className={`w-1 h-1 rounded-full mt-1 ${activeDay === d.id ? 'bg-white/80' : 'bg-skyBlue'}`} />
                         )}
-                    </button>
+                    </Pressable>
                 ))}
-            </div>
+            </HStack>
 
             {/* Add period form */}
             {showForm && (
-                <div style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '14px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Subject / Topic</label>
-                            <input value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="e.g. Mathematics" style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Class</label>
-                            <input value={form.class_name} onChange={e => setForm(f => ({ ...f, class_name: e.target.value }))} placeholder="e.g. Grade 10A" style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Start</label>
-                            <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))} style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>End</label>
-                            <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))} style={inputStyle} />
-                        </div>
-                    </div>
-                    <div>
-                        <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Type</label>
-                        <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as Period['type'] }))} style={{ ...inputStyle, cursor: 'pointer' }}>
-                            {PERIOD_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                        </select>
-                    </div>
-                    <button
-                        onClick={handleAdd}
-                        disabled={saving || (!form.subject.trim() && !form.activity.trim())}
-                        style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--water)', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1 }}
+                <VStack className="p-lg bg-obsidian rounded-xl border border-dimGray gap-4">
+                    <Box className="grid grid-cols-2 gap-4">
+                        <VStack className="gap-1">
+                            <Text className="text-[11px] font-bold text-mistGray ml-1">Subject / Topic</Text>
+                            <Input className="bg-ink border-transparent">
+                                <InputField 
+                                    value={form.subject} 
+                                    onChangeText={text => setForm(f => ({ ...f, subject: text }))} 
+                                    placeholder="e.g. Mathematics"
+                                    className="text-sacredWhite"
+                                />
+                            </Input>
+                        </VStack>
+                        <VStack className="gap-1">
+                            <Text className="text-[11px] font-bold text-mistGray ml-1">Class</Text>
+                            <Input className="bg-ink border-transparent">
+                                <InputField 
+                                    value={form.class_name} 
+                                    onChangeText={text => setForm(f => ({ ...f, class_name: text }))} 
+                                    placeholder="e.g. Grade 10A"
+                                    className="text-sacredWhite"
+                                />
+                            </Input>
+                        </VStack>
+                        <VStack className="gap-1">
+                            <Text className="text-[11px] font-bold text-mistGray ml-1">Start</Text>
+                            <Input className="bg-ink border-transparent">
+                                <InputField 
+                                    type="text" 
+                                    value={form.start_time} 
+                                    onChangeText={text => setForm(f => ({ ...f, start_time: text }))} 
+                                    className="text-sacredWhite"
+                                />
+                            </Input>
+                        </VStack>
+                        <VStack className="gap-1">
+                            <Text className="text-[11px] font-bold text-mistGray ml-1">End</Text>
+                            <Input className="bg-ink border-transparent">
+                                <InputField 
+                                    type="text" 
+                                    value={form.end_time} 
+                                    onChangeText={text => setForm(f => ({ ...f, end_time: text }))} 
+                                    className="text-sacredWhite"
+                                />
+                            </Input>
+                        </VStack>
+                    </Box>
+                    <VStack className="gap-1">
+                        <Text className="text-[11px] font-bold text-mistGray ml-1">Type</Text>
+                        <Select
+                            selectedValue={form.type}
+                            onValueChange={(value) => setForm(f => ({ ...f, type: value as Period['type'] }))}
+                        >
+                            <SelectTrigger className="bg-ink border-transparent justify-between px-4 py-2 rounded-md">
+                                <SelectInput placeholder="Select type" className="text-sacredWhite" />
+                                <Icon as={ChevronDown} className="text-mistGray" size={16} />
+                            </SelectTrigger>
+                            <SelectPortal>
+                                <SelectBackdrop />
+                                <SelectContent className="bg-obsidian">
+                                    <SelectDragIndicatorWrapper>
+                                        <SelectDragIndicator />
+                                    </SelectDragIndicatorWrapper>
+                                    {PERIOD_TYPES.map(t => (
+                                        <SelectItem key={t.value} label={t.label} value={t.value} />
+                                    ))}
+                                </SelectContent>
+                            </SelectPortal>
+                        </Select>
+                    </VStack>
+                    <Button
+                        onPress={handleAdd}
+                        isDisabled={saving || (!form.subject.trim() && !form.activity.trim())}
+                        className="bg-skyBlue rounded-comfortable h-12"
                     >
-                        {saving ? 'Saving...' : '+ Add to Schedule'}
-                    </button>
-                </div>
+                        <ButtonText className="text-white font-bold">
+                            {saving ? 'Saving...' : '+ Add to Schedule'}
+                        </ButtonText>
+                    </Button>
+                </VStack>
             )}
 
             {/* Period list */}
             {loading ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {[1, 2].map(i => <div key={i} style={{ height: '52px', background: 'var(--background-alt)', borderRadius: '10px' }} />)}
-                </div>
+                <VStack className="gap-2">
+                    <Box className="h-14 bg-obsidian rounded-xl animate-pulse" />
+                    <Box className="h-14 bg-obsidian rounded-xl animate-pulse" />
+                </VStack>
             ) : periods.length === 0 ? (
-                <div style={{ padding: '24px', background: 'var(--background-alt)', borderRadius: '14px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
-                        No periods scheduled for this day. Add one above.
-                    </p>
-                </div>
+                <Box className="p-xl bg-obsidian rounded-xl items-center border border-dashed border-dimGray">
+                    <Text className="text-sm text-mistGray italic">
+                        No periods scheduled for this day
+                    </Text>
+                </Box>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <VStack className="gap-2">
                     {periods.map(p => (
-                        <div
+                        <HStack
                             key={p.id}
-                            style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 16px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${TYPE_COLORS[p.type]}` }}
+                            className="items-center p-md bg-obsidian rounded-xl border-l-4 gap-4"
+                            style={{ borderLeftColor: p.type === 'subject' ? '#0EA5E9' : p.type === 'relief' ? '#10B981' : '#6A6358' }}
                         >
-                            {/* Time */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-ghost)', flexShrink: 0 }}>
-                                <Clock size={13} color="var(--ink-ghost)" />
-                                <span style={{ fontSize: '11px', fontWeight: '600' }}>{p.start_time} - {p.end_time}</span>
-                            </div>
-                            {/* Content */}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: '13px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <HStack className="items-center gap-2 flex-shrink-0">
+                                <Icon as={Clock} size={14} className="text-mistGray" />
+                                <Text className="text-[11px] font-semibold text-mistGray">
+                                    {p.start_time} - {p.end_time}
+                                </Text>
+                            </HStack>
+                            
+                            <VStack className="flex-1 min-w-0">
+                                <Text className="text-sacredWhite font-bold text-sm truncate">
                                     {p.subject ?? p.activity ?? p.type}
-                                </div>
+                                </Text>
                                 {p.class_name && (
-                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{p.class_name}</div>
+                                    <Text className="text-[11px] text-mistGray truncate">{p.class_name}</Text>
                                 )}
-                            </div>
-                            {/* Type badge */}
-                            <span style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: TYPE_COLORS[p.type], background: `${TYPE_COLORS[p.type]}18`, padding: '3px 8px', borderRadius: '5px', flexShrink: 0 }}>
-                                {p.type}
-                            </span>
-                            {/* Delete */}
-                            <button
-                                onClick={() => handleDelete(p.id)}
+                            </VStack>
+
+                            <Box className={`px-2 py-0.5 rounded border ${TYPE_CLASSES[p.type]}`}>
+                                <Text className="text-[10px] font-bold uppercase">{p.type}</Text>
+                            </Box>
+
+                            <Pressable
+                                onPress={() => handleDelete(p.id)}
                                 disabled={deleting === p.id}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '6px', opacity: deleting === p.id ? 0.4 : 1 }}
-                                title="Remove period"
+                                className={`p-2 rounded-md ${deleting === p.id ? 'opacity-40' : 'opacity-100'}`}
                             >
-                                <Trash2 size={14} color="var(--ink-ghost)" />
-                            </button>
-                        </div>
+                                <Icon as={Trash2} size={14} className="text-dimGray hover:text-emberRed" />
+                            </Pressable>
+                        </HStack>
                     ))}
-                </div>
+                </VStack>
             )}
-        </div>
+        </VStack>
     );
 }

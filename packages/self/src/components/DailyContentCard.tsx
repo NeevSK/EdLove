@@ -1,11 +1,25 @@
+/**
+ * DAILY CONTENT CARD
+ * Renders motivation or trivia snippets for the mobile platform.
+ * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
+ */
+
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Pressable, 
+    Heading, 
+    Icon,
+    SkeletonCard 
+} from '@repo/ui';
+import { Sparkles, Lightbulb, User, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { dailyContentAPI } from '../api/dailyContent';
-import type { DailyContent } from '../types';
-import { useThemedColors } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { Text, Pressable, SkeletonCard } from '@repo/ui';
+import type { DailyContent } from '../types/Wellbeing';
+import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
 interface DailyContentCardProps {
     type: 'motivation' | 'did_you_know';
@@ -13,65 +27,17 @@ interface DailyContentCardProps {
 
 export default function DailyContentCard({ type }: DailyContentCardProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const [content, setContent] = useState<DailyContent | null>(null);
     const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const isMotivation = type === 'motivation';
-    const title = isMotivation ? t('self.dailyMotivation') : t('self.didYouKnow');
-    const emoji = isMotivation ? '✨' : '💡';
-
-    const styles = useMemo(() => StyleSheet.create({
-        card: {
-            padding: 16,
-            borderRadius: Theme.corners.comfortable,
-            marginBottom: 12,
-            ...Theme.shadows.sm,
-        },
-        motivationCard: {
-            backgroundColor: colors.secondary,
-            borderLeftWidth: 4,
-            borderLeftColor: colors.action,
-        },
-        didYouKnowCard: {
-            backgroundColor: colors.tertiary,
-            borderLeftWidth: 4,
-            borderLeftColor: colors.success,
-        },
-        header: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 12,
-        },
-        emoji: {
-            fontSize: 24,
-            marginRight: 8,
-        },
-        titleText: {
-            fontSize: 16,
-            fontWeight: '600',
-            color: colors.text,
-        },
-        contentText: {
-            fontSize: 15,
-            lineHeight: 24,
-            color: colors.textSecondary,
-            marginBottom: 8,
-        },
-        authorText: {
-            fontSize: 13,
-            fontStyle: 'italic',
-            color: colors.textTertiary,
-            marginTop: 4,
-        },
-        tapToExpand: {
-            fontSize: 12,
-            color: colors.action,
-            marginTop: 8,
-            textAlign: 'center',
-        },
-    }), [colors]);
+    const title = isMotivation ? t('self.dailyMotivation') || 'Daily Motivation' : t('self.didYouKnow') || 'Did You Know?';
+    const icon = isMotivation ? Sparkles : Lightbulb;
+    
+    const accentColorClass = isMotivation ? 'text-sanctuarySaffron' : 'text-emeraldGreen';
+    const borderClass = isMotivation ? 'border-l-sanctuarySaffron' : 'border-l-emeraldGreen';
+    const bgClass = isMotivation ? 'bg-sanctuarySaffron/5' : 'bg-emeraldGreen/5';
 
     useEffect(() => {
         const loadContent = async () => {
@@ -91,42 +57,70 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
     }, [type]);
 
     if (loading) {
-        return <SkeletonCard height={120} />;
+        return <SkeletonCard className="h-32 mb-4" />;
     }
 
     if (!content) {
         return null;
     }
 
-    // Truncate content if not expanded
-    const displayContent = expanded || content.content.length <= 120
-        ? content.content
-        : `${content.content.substring(0, 120)}...`;
-
     const needsExpansion = content.content.length > 120;
 
     return (
-        <Pressable
-            onPress={() => needsExpansion && setExpanded(!expanded)}
-            sx={{
-                ...styles.card,
-                ...(isMotivation ? styles.motivationCard : styles.didYouKnowCard),
-            }}
-        >
-            <View style={styles.header}>
-                <Text style={styles.emoji}>{emoji}</Text>
-                <Text style={styles.titleText}>{title}</Text>
-            </View>
+        <Animated.View layout={Layout} entering={FadeIn.duration(800)}>
+            <Pressable
+                onPress={() => needsExpansion && setExpanded(!expanded)}
+                className={`p-xl rounded-3xl border-l-4 border-y border-r border-white/5 shadow-sm transition-all active:scale-[0.98] ${bgClass} ${borderClass}`}
+            >
+                <VStack className="gap-4">
+                    {/* Header */}
+                    <HStack className="items-center justify-between">
+                        <HStack className="items-center gap-2">
+                            <Box className={`p-2 rounded-full ${bgClass.replace('/5', '/10')}`}>
+                                <Icon as={icon} size={14} className={accentColorClass} />
+                            </Box>
+                            <Heading size="xs" className={`${accentColorClass} uppercase tracking-[0.2em] font-black`}>
+                                {title}
+                            </Heading>
+                        </HStack>
+                        
+                        {needsExpansion && (
+                            <Icon 
+                                as={expanded ? ChevronUp : ChevronDown} 
+                                size={14} 
+                                className="text-mistGray/30" 
+                            />
+                        )}
+                    </HStack>
 
-            <Text style={styles.contentText}>{displayContent}</Text>
+                    {/* Content */}
+                    <VStack className="gap-2">
+                        <Text 
+                            className="text-sacredWhite/80 text-base leading-relaxed italic font-medium"
+                            numberOfLines={expanded ? undefined : 3}
+                        >
+                            "{content.content}"
+                        </Text>
 
-            {content.author && expanded && (
-                <Text style={styles.authorText}>— {content.author}</Text>
-            )}
+                        {content.author && expanded && (
+                            <HStack className="items-center gap-2 mt-2 opacity-60">
+                                <Icon as={User} size={10} className="text-mistGray" />
+                                <Text className="text-mistGray text-[10px] uppercase font-black tracking-widest italic">
+                                    — {content.author}
+                                </Text>
+                            </HStack>
+                        )}
+                    </VStack>
 
-            {needsExpansion && !expanded && (
-                <Text style={styles.tapToExpand}>{t('self.tapToReadMore')}</Text>
-            )}
-        </Pressable>
+                    {needsExpansion && !expanded && (
+                        <Box className="mt-2 border-t border-white/5 pt-3">
+                            <Text className={`${accentColorClass} text-[10px] font-black uppercase tracking-widest text-center`}>
+                                {t('self.tapToReadMore') || 'Tap to Expand Bloom'}
+                            </Text>
+                        </Box>
+                    )}
+                </VStack>
+            </Pressable>
+        </Animated.View>
     );
 }

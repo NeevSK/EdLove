@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SleepTracker.web.tsx
  *
  * Web override. Uses an HTML range input and the shared self repository
@@ -18,13 +18,11 @@ const QUALITY_LABELS: Record<number, { label: string; emoji: string; color: stri
     2: { label: 'Poor', emoji: '😔', color: '#F97316' },
     3: { label: 'Fair', emoji: '😐', color: '#EAB308' },
     4: { label: 'Good', emoji: '😊', color: '#22C55E' },
-    5: { label: 'Excellent', emoji: '😍', color: '#8B5CF6' },
-};
+    5: { label: 'Excellent', emoji: '😍', color: '#8B5CF6' }};
 const DEFAULT_QUALITY_META: { label: string; emoji: string; color: string } = {
     label: 'Fair',
     emoji: '\uD83D\uDE10',
-    color: '#EAB308',
-};
+    color: '#EAB308'};
 
 function getQualityMeta(value: number) {
     return QUALITY_LABELS[value] ?? DEFAULT_QUALITY_META;
@@ -117,8 +115,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            style={{ padding: '10px', borderRadius: '10px', background: meta.color, color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1 }}
-                        >
+                            style={{ padding: '10px', borderRadius: '10px', background: meta.color, color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1 }}>
                             {saving ? 'Logging...' : saved ? 'Logged' : 'Log Sleep Quality'}
                         </button>
                     ) : (

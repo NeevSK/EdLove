@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TomorrowPrep.web.tsx
  *
  * Web override. The native version uses expo-haptics + @repo/ui Checkbox.
@@ -82,7 +82,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Calendar size={16} color="var(--sanctuary-saffron)" />
+                    <Icon as={Calendar} size={16} color="var(--sanctuary-saffron)" />
                     <span style={{ fontSize: '14px', fontWeight: '800' }}>Tomorrow's Preparation</span>
                     {tomorrowItems.length > 0 && (
                         <span style={{ fontSize: '11px', padding: '2px 8px', background: 'var(--background-alt)', borderRadius: '6px', color: 'var(--ink-ghost)' }}>
@@ -93,9 +93,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 <button
                     onClick={() => !isPastView && setShowForm(v => !v)}
                     disabled={isPastView}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: isPastView ? 'transparent' : (showForm ? 'var(--sanctuary-saffron)' : 'transparent'), color: isPastView ? 'var(--ink-ghost)' : (showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)'), cursor: isPastView ? 'default' : 'pointer', fontWeight: '700', transition: 'all 0.2s', opacity: isPastView ? 0.5 : 1 }}
-                >
-                    <Plus size={12} color={isPastView ? 'var(--ink-ghost)' : (showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)')} />
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: isPastView ? 'transparent' : (showForm ? 'var(--sanctuary-saffron)' : 'transparent'), color: isPastView ? 'var(--ink-ghost)' : (showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)'), cursor: isPastView ? 'default' : 'pointer', fontWeight: '700', transition: 'all 0.2s', opacity: isPastView ? 0.5 : 1 }}>
+                    <Icon as={Plus} size={12} color={isPastView ? 'var(--ink-ghost)' : (showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)')} />
                     {showForm ? 'Cancel' : 'Add'}
                 </button>
             </div>
@@ -121,9 +120,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                     <button
                         onClick={handleAdd}
                         disabled={saving || !itemText.trim()}
-                        style={{ padding: '9px 16px', borderRadius: '10px', background: 'var(--sanctuary-saffron)', color: 'var(--text-on-action)', border: 'none', fontWeight: '700', fontSize: '12px', cursor: saving || !itemText.trim() ? 'not-allowed' : 'pointer', opacity: saving || !itemText.trim() ? 0.6 : 1 }}
-                    >
-                        {saving ? '...' : <Check size={14} color="var(--text-on-action)" />}
+                        style={{ padding: '9px 16px', borderRadius: '10px', background: 'var(--sanctuary-saffron)', color: 'var(--text-on-action)', border: 'none', fontWeight: '700', fontSize: '12px', cursor: saving || !itemText.trim() ? 'not-allowed' : 'pointer', opacity: saving || !itemText.trim() ? 0.6 : 1 }}>
+                        {saving ? '...' : <Icon as={Check} size={14} color="var(--text-on-action)" />}
                     </button>
                 </div>
             )}
@@ -142,8 +140,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                     {tomorrowItems.map(item => (
                         <div
                             key={item.id}
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: 'var(--background-alt)', borderRadius: '10px', opacity: item.is_completed ? 0.6 : 1, transition: 'opacity 0.2s' }}
-                        >
+                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: 'var(--background-alt)', borderRadius: '10px', opacity: item.is_completed ? 0.6 : 1, transition: 'opacity 0.2s' }}>
                             <input
                                 type="checkbox"
                                 checked={item.is_completed}
@@ -157,9 +154,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                             <button
                                 onClick={() => !isPastView && handleDelete(item.id)}
                                 disabled={deleting === item.id || isPastView}
-                                style={{ background: 'none', border: 'none', cursor: isPastView ? 'default' : 'pointer', padding: '2px', opacity: (deleting === item.id || isPastView) ? 0.4 : 0.6 }}
-                            >
-                                <Trash2 size={13} color="var(--ink-ghost)" />
+                                style={{ background: 'none', border: 'none', cursor: isPastView ? 'default' : 'pointer', padding: '2px', opacity: (deleting === item.id || isPastView) ? 0.4 : 0.6 }}>
+                                <Icon as={Trash2} size={13} color="var(--ink-ghost)" />
                             </button>
                         </div>
                     ))}

@@ -41,8 +41,7 @@ export async function fetchMoodHistoryForView(
     query = applyTemporalFilter(query, {
         column: 'created_at',
         mode: 'event_time',
-        capability: 'event_stream',
-    });
+        capability: 'event_stream'});
 
     if (options.phase === 'present') {
         query = query.order('created_at', { ascending: false }).limit(30);
@@ -55,8 +54,7 @@ export async function fetchMoodHistoryForView(
     return (data ?? []).map((entry) => ({
         ...entry,
         mood_score: normalizeMoodScore(entry.mood_score),
-        mood: (entry.mood as MoodLog['mood'] | null | undefined) ?? scoreToMood(entry.mood_score),
-    }));
+        mood: (entry.mood as MoodLog['mood'] | null | undefined) ?? scoreToMood(entry.mood_score)}));
 }
 
 export async function createMoodLog(
@@ -69,8 +67,7 @@ export async function createMoodLog(
     return {
         ...entry,
         mood_score: normalizeMoodScore(entry.mood_score),
-        mood: (entry.mood as MoodLog['mood'] | null | undefined) ?? mood,
-    };
+        mood: (entry.mood as MoodLog['mood'] | null | undefined) ?? mood};
 }
 
 export async function fetchFireJournalHistoryForView(

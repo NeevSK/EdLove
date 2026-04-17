@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ShadowAgentDrawer.web.tsx
  *
  * Web override. The native version uses RN Modal + react-native-reanimated.
@@ -37,8 +37,7 @@ export default function ShadowAgentDrawer() {
                     bottom: '80px',
                     right: '24px',
                     width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
+                    height: '44px',  borderRadius: '50%',
                     border: 'none',
                     background: 'radial-gradient(circle, rgba(139,92,246,0.8) 0%, rgba(139,92,246,0.2) 100%)',
                     boxShadow: '0 0 20px rgba(139,92,246,0.4)',
@@ -48,9 +47,7 @@ export default function ShadowAgentDrawer() {
                     zIndex: 100,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
+                    justifyContent: 'center'}>
                 
             </button>
 
@@ -58,28 +55,22 @@ export default function ShadowAgentDrawer() {
             {isOpen && (
                 <div
                     style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'flex-end' }}
-                    onClick={() => setIsOpen(false)}
-                >
+                    onClick={() => setIsOpen(false)}>
                     <div
                         onClick={e => e.stopPropagation()}
                         style={{
                             width: '100%',
-                            maxWidth: '600px',
-                            margin: '0 auto',
-                            background: 'linear-gradient(180deg, #1a0a2e 0%, #0f0520 100%)',
-                            borderRadius: '20px 20px 0 0',
-                            padding: '32px 28px 40px',
-                            animation: 'slide-up 0.3s ease',
-                        }}
-                    >
-                        {/* Header */}
+                            maxWidth: '600px',  margin: '0 auto',
+                            background: 'linear-gradient(180deg, #1a0a2e 0%, #0f0520 100%)',  borderRadius: '20px 20px 0 0',  padding: '32px 28px 40px',
+                            animation: 'slide-up 0.3s ease'>
+                        {/* Header */
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
                             <div>
                                 <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', color: 'rgba(139,92,246,0.8)', textTransform: 'uppercase' }}>The Quiet Space</div>
                                 <div style={{ fontSize: '20px', fontWeight: '800', color: '#F5F3FF', marginTop: '4px' }}>Shadow Agent</div>
                             </div>
                             <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                                <X size={20} color="rgba(255,255,255,0.5)" />
+                                <Icon as={X} size={20} color="rgba(255,255,255,0.5)" />
                             </button>
                         </div>
 

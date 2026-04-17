@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { Box, PositiveInvitation, ScreenWrapper, VStack, hapticLight, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    Box,
-    useThemedColors,
-    ScreenWrapper,
-    PositiveInvitation,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
@@ -21,7 +18,7 @@ import {
     PrincipalPulse,
     DecisionSection
 } from '../../views/sections';
-import { hapticLight } from '@repo/ui';
+
 
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -47,7 +44,7 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function PrincipalSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -94,13 +91,11 @@ export default function PrincipalSelfView() {
             <BaseSelfView
                 perspective="principal"
                 description={t('self.principalDescription', 'A restorative space for leadership clarity and personal rhythm.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#F59E0B',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'pulse',
                         title: 'Inner Pulse',
@@ -219,3 +214,4 @@ export default function PrincipalSelfView() {
         </ScreenWrapper>
     );
 }
+

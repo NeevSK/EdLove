@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePermissions } from '@repo/core';
 import {
     fetchPresenceFallbackCount,
-    startPresenceSession,
-} from '../api/selfInsightsRepository';
+    startPresenceSession} from '../api/selfInsightsRepository';
 
 interface UseCommunityPresenceOptions {
     userId: string;
@@ -12,8 +11,7 @@ interface UseCommunityPresenceOptions {
 
 export function useCommunityPresence({
     userId,
-    userVibe = 'active',
-}: UseCommunityPresenceOptions) {
+    userVibe = 'active'}: UseCommunityPresenceOptions) {
     const { can, context } = usePermissions();
     const userRole = context.roles[0] || 'guest';
     const [onlineCount, setOnlineCount] = useState(0);
@@ -26,8 +24,7 @@ export function useCommunityPresence({
                 targetRoles: ['teacher', 'student', 'section_head', 'grade_head', 'principal', 'developer'],
                 channelName: 'presence:school',
                 isCumulative: true,
-                perspective: 'principal' as const,
-            };
+                perspective: 'principal' as const};
         }
 
         if (can('read', 'TeacherPulse') || can('manage', 'TeacherDashboard')) {
@@ -35,16 +32,14 @@ export function useCommunityPresence({
                 targetRoles: ['teacher', 'section_head', 'grade_head', 'principal'],
                 channelName: 'presence:educators',
                 isCumulative: false,
-                perspective: 'teacher' as const,
-            };
+                perspective: 'teacher' as const};
         }
 
         return {
             targetRoles: ['student'],
             channelName: 'presence:students',
             isCumulative: false,
-            perspective: 'student' as const,
-        };
+            perspective: 'student' as const};
     }, [can]);
 
     const refreshFallbackCount = useCallback(async () => {
@@ -52,8 +47,7 @@ export function useCommunityPresence({
             const count = await fetchPresenceFallbackCount({
                 targetRoles: presenceConfig.targetRoles,
                 isCumulative: presenceConfig.isCumulative,
-                userId,
-            });
+                userId});
             setOnlineCount(count);
             setIsOffline(false);
         } catch (error) {
@@ -75,8 +69,7 @@ export function useCommunityPresence({
             userVibe,
             channelName: presenceConfig.channelName,
             onCountChange: setOnlineCount,
-            onOfflineChange: setIsOffline,
-        });
+            onOfflineChange: setIsOffline});
 
         const heartbeat = setInterval(refreshFallbackCount, 30000);
 
@@ -90,6 +83,5 @@ export function useCommunityPresence({
         onlineCount,
         isLoading,
         isOffline,
-        perspective: presenceConfig.perspective,
-    };
+        perspective: presenceConfig.perspective};
 }

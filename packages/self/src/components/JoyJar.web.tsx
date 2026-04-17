@@ -1,4 +1,4 @@
-/**
+﻿/**
  * JoyJar.web.tsx
  *
  * Web override. The native version uses expo-haptics + @repo/ui.
@@ -40,8 +40,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
             const data = await addJoyMoment({
                 student_name: studentName.trim() || undefined,
                 moment_description: description.trim(),
-                category,
-            });
+                category});
             if (data) {
                 setJoyMoments(prev => [data, ...prev]);
                 setStudentName('');
@@ -70,9 +69,8 @@ export default function JoyJar({ userId }: JoyJarProps) {
                 </div>
                 <button
                     onClick={() => setShowForm(v => !v)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? '#F59E0B' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
-                >
-                    <Plus size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? '#F59E0B' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}>
+                    <Icon as={Plus} size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
                     {showForm ? 'Cancel' : 'Capture Moment'}
                 </button>
             </div>
@@ -86,8 +84,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                             <button
                                 key={cat.value}
                                 onClick={() => setCategory(cat.value)}
-                                style={{ padding: '8px 4px', borderRadius: '8px', border: `1.5px solid ${category === cat.value ? cat.color : 'var(--border)'}`, background: category === cat.value ? `${cat.color}18` : 'transparent', cursor: 'pointer', fontSize: '9px', fontWeight: '700', color: category === cat.value ? cat.color : 'var(--ink-ghost)', transition: 'all 0.2s', textAlign: 'center' }}
-                            >
+                                style={{ padding: '8px 4px', borderRadius: '8px', border: `1.5px solid ${category === cat.value ? cat.color : 'var(--border)'}`, background: category === cat.value ? `${cat.color}18` : 'transparent', cursor: 'pointer', fontSize: '9px', fontWeight: '700', color: category === cat.value ? cat.color : 'var(--ink-ghost)', transition: 'all 0.2s', textAlign: 'center' }}>
                                 <div style={{ fontSize: '16px', marginBottom: '3px' }}>{cat.emoji}</div>
                                 {cat.label}
                             </button>
@@ -111,8 +108,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                     <button
                         onClick={handleSave}
                         disabled={saving || !description.trim()}
-                        style={{ padding: '10px', borderRadius: '10px', background: '#F59E0B', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving || !description.trim() ? 'not-allowed' : 'pointer', opacity: saving || !description.trim() ? 0.6 : 1 }}
-                    >
+                        style={{ padding: '10px', borderRadius: '10px', background: '#F59E0B', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving || !description.trim() ? 'not-allowed' : 'pointer', opacity: saving || !description.trim() ? 0.6 : 1 }}>
                         {saving ? 'Saving\u2026' : '\u2728 Add to Jar'}
                     </button>
                 </div>
@@ -134,8 +130,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                         return (
                             <div
                                 key={moment.id}
-                                style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${meta.color}` }}
-                            >
+                                style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${meta.color}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                                     <span>{meta.emoji}</span>
                                     {moment.student_name && (

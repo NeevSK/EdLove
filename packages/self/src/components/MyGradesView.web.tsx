@@ -1,14 +1,15 @@
 /**
  * MyGradesView.web.tsx
  *
- * Web override. The native version uses react-native-reanimated FadeInDown
- * entrance animations and RN ScrollView. On web we use a clean HTML table
- * with the same Supabase query and colour logic.
- * Metro resolves this over MyGradesView.tsx on the web platform.
+ * Web override for grade display.
+ * Purged raw Tailwind colors in favor of Sanctuary tokens.
  */
 import React, { useState, useEffect } from 'react';
+import { Box, VStack, HStack, Text, Heading, SkeletonCard } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { formatDistanceToNow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { Award, BookOpen, Clock } from 'lucide-react-native';
 
 interface GradeRow {
     id: string;
@@ -26,26 +27,44 @@ interface MyGradesViewProps {
 }
 
 const GRADE_THRESHOLD_EXCELLENT = 75;
-const GRADE_THRESHOLD_PASSING   = 50;
+const GRADE_THRESHOLD_PASSING = 50;
 
-function gradeColor(grade: number): string {
-    if (grade >= GRADE_THRESHOLD_EXCELLENT) return '#4caf50';
-    if (grade >= GRADE_THRESHOLD_PASSING)   return '#ffc107';
-    return '#f44336';
-}
-
-function gradeLabel(grade: number): string {
-    if (grade >= GRADE_THRESHOLD_EXCELLENT) return 'Excellent';
-    if (grade >= GRADE_THRESHOLD_PASSING)   return 'Passing';
-    return 'Needs work';
+function getGradeStyles(grade: number): { color: string; border: string; bg: string; label: string } {
+    if (grade >= GRADE_THRESHOLD_EXCELLENT) {
+        return { 
+            color: 'text-emeraldGreen', 
+            border: 'border-emeraldGreen/20', 
+            bg: 'bg-emeraldGreen/10', 
+            label: 'Excellent' 
+        };
+    }
+    if (grade >= GRADE_THRESHOLD_PASSING) {
+        return { 
+            color: 'text-sanctuarySaffron', 
+            border: 'border-sanctuarySaffron/20', 
+            bg: 'bg-sanctuarySaffron/10', 
+            label: 'Passing' 
+        };
+    }
+    return { 
+        color: 'text-emberRed', 
+        border: 'border-emberRed/20', 
+        bg: 'bg-emberRed/10', 
+        label: 'Needs work' 
+    };
 }
 
 export default function MyGradesView({ userId }: MyGradesViewProps) {
+    const { t } = useTranslation();
     const [grades, setGrades] = useState<GradeRow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!userId) { setIsLoading(false); return; }
+        if (!userId) {
+            setIsLoading(false);
+            return;
+        }
+
         const loadGrades = async () => {
             setIsLoading(true);
             try {
@@ -57,7 +76,8 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                     .order('submitted_at', { ascending: false })
                     .limit(20);
                 setGrades((data as any[] ?? []).filter(r => r && typeof r.grade === 'number'));
-            } catch {
+            } catch (error) {
+                console.error('Failed to load grades:', error);
                 setGrades([]);
             } finally {
                 setIsLoading(false);
@@ -69,111 +89,116 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
 
     if (isLoading) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {[1, 2, 3].map(i => (
-                    <div key={i} style={{ height: '56px', background: 'var(--background-alt)', borderRadius: '10px' }} />
-                ))}
-            </div>
+            <VStack className="gap-4">
+                <SkeletonCard height={80} />
+                <SkeletonCard height={80} />
+                <SkeletonCard height={80} />
+            </VStack>
         );
     }
 
     if (!grades.length) {
         return (
-            <div style={{ padding: '24px', background: 'var(--background-alt)', borderRadius: '14px', textAlign: 'center' }}>
-                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
-                    No graded assignments yet. Your grades will appear here when teachers mark your work.
-                </p>
-            </div>
+            <Box className="p-12 bg-obsidian rounded-comfortable items-center border border-white/5">
+                <Text className="text-sm text-mistGray text-center italic">
+                    {t('grades.empty') || 'No graded assignments yet. Your growth will be reflected here soon.'}
+                </Text>
+            </Box>
         );
     }
 
     const avgGrade = grades.reduce((sum, g) => sum + g.grade, 0) / grades.length;
+    const avgStats = getGradeStyles(avgGrade);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <VStack className="gap-6 mt-4">
             {/* Summary banner */}
-            <div style={{ display: 'flex', gap: '16px' }}>
-                <div style={{ flex: 1, padding: '16px 20px', background: 'var(--background-alt)', borderRadius: '12px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '6px' }}>Assignments</div>
-                    <div style={{ fontSize: '24px', fontWeight: '800' }}>{grades.length}</div>
-                </div>
-                <div style={{ flex: 1, padding: '16px 20px', background: 'var(--background-alt)', borderRadius: '12px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '6px' }}>Average</div>
-                    <div style={{ fontSize: '24px', fontWeight: '800', color: gradeColor(avgGrade) }}>
-                        {Math.round(avgGrade)}%
-                    </div>
-                </div>
-            </div>
+            <HStack className="gap-4">
+                <Box className="flex-1 p-5 bg-obsidian rounded-comfortable border border-white/5">
+                    <Text className="text-[10px] font-bold text-mistGray uppercase tracking-widest mb-1.5">Completed</Text>
+                    <HStack className="items-center gap-2">
+                        <BookOpen size={16} className="text-sanctuarySaffron" />
+                        <Text className="text-2xl font-extrabold text-sacredWhite">{grades.length}</Text>
+                    </HStack>
+                </Box>
+                <Box className="flex-1 p-5 bg-obsidian rounded-comfortable border border-white/5">
+                    <Text className="text-[10px] font-bold text-mistGray uppercase tracking-widest mb-1.5">Average Grade</Text>
+                    <HStack className="items-center gap-2">
+                        <Award size={16} className={avgStats.color} />
+                        <Text className={`text-2xl font-extrabold ${avgStats.color}`}>
+                            {Math.round(avgGrade)}%
+                        </Text>
+                    </HStack>
+                </Box>
+            </HStack>
+
+            {/* Title */}
+            <Heading size="md" className="text-sacredWhite px-1">Recent Grades</Heading>
 
             {/* Grade rows */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {grades.map(item => (
-                    <div
-                        key={item.id}
-                        style={{ padding: '16px 20px', background: 'var(--background-alt)', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '16px' }}
-                    >
-                        {/* Grade circle */}
-                        <div style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            background: `${gradeColor(item.grade)}18`,
-                            border: `2px solid ${gradeColor(item.grade)}`,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                        }}>
-                            <span style={{ fontSize: '13px', fontWeight: '800', color: gradeColor(item.grade) }}>
-                                {item.grade}%
-                            </span>
-                        </div>
+            <VStack className="gap-3">
+                {grades.map(item => {
+                    const stats = getGradeStyles(item.grade);
+                    return (
+                        <HStack
+                            key={item.id}
+                            className="p-4 bg-obsidian rounded-comfortable items-center gap-4 border border-white/5 hover:border-white/10 transition-colors"
+                        >
+                            {/* Grade circle */}
+                            <Box className={`w-14 h-14 rounded-full border-2 items-center justify-center flex-shrink-0 ${stats.bg} ${stats.border}`}>
+                                <Text className={`text-sm font-black ${stats.color}`}>
+                                    {item.grade}%
+                                </Text>
+                            </Box>
 
-                        {/* Assignment info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {item.assignments?.title ?? 'Assignment'}
-                            </div>
-                            <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>
-                                {item.classrooms?.name ?? ''}
-                                {item.classrooms?.name && ' \u00B7 '}
-                                {formatDistanceToNow(new Date(item.submitted_at), { addSuffix: true })}
-                            </div>
-                        </div>
+                            {/* Assignment info */}
+                            <VStack className="flex-1 min-w-0 gap-0.5">
+                                <Text className="text-sm font-bold text-sacredWhite truncate">
+                                    {item.assignments?.title ?? 'Untitled Assignment'}
+                                </Text>
+                                <HStack className="items-center gap-2">
+                                    <Text className="text-xs text-mistGray truncate max-w-[120px]">
+                                        {item.classrooms?.name ?? 'Classroom'}
+                                    </Text>
+                                    <Box className="w-1 h-1 rounded-full bg-white/10" />
+                                    <HStack className="items-center gap-1">
+                                        <Clock size={10} className="text-dimGray" />
+                                        <Text className="text-[10px] text-dimGray">
+                                            {formatDistanceToNow(new Date(item.submitted_at), { addSuffix: true })}
+                                        </Text>
+                                    </HStack>
+                                </HStack>
+                            </VStack>
 
-                        {/* Label badge */}
-                        <div style={{
-                            fontSize: '10px',
-                            fontWeight: '800',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            background: `${gradeColor(item.grade)}18`,
-                            color: gradeColor(item.grade),
-                            flexShrink: 0,
-                        }}>
-                            {gradeLabel(item.grade)}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                            {/* Label badge */}
+                            <Box className={`px-3 py-1 rounded-full flex-shrink-0 ${stats.bg} border ${stats.border}`}>
+                                <Text className={`text-[10px] font-bold uppercase tracking-wider ${stats.color}`}>
+                                    {stats.label}
+                                </Text>
+                            </Box>
+                        </HStack>
+                    );
+                })}
+            </VStack>
 
             {/* Feedback section (last graded that has feedback) */}
             {(() => {
                 const withFeedback = grades.find(g => g.feedback);
                 if (!withFeedback) return null;
                 return (
-                    <div style={{ padding: '16px 20px', background: 'rgba(139,92,246,0.06)', borderRadius: '12px', border: '1px solid rgba(139,92,246,0.15)' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#8B5CF6', marginBottom: '8px' }}>
-                            Latest Feedback
-                        </div>
-                        <p style={{ fontSize: '13px', color: 'var(--ink-soft)', lineHeight: '1.6', fontStyle: 'italic', margin: 0 }}>
+                    <Box className="p-5 bg-sanctuarySaffron/5 rounded-comfortable border border-sanctuarySaffron/10 mt-2">
+                        <HStack className="items-center gap-2 mb-3">
+                            <Box className="w-1.5 h-4 bg-sanctuarySaffron rounded-full" />
+                            <Text className="text-[11px] font-extrabold uppercase text-sanctuarySaffron tracking-widest">
+                                Latest Feedback
+                            </Text>
+                        </HStack>
+                        <Text className="text-sm text-sacredWhite leading-relaxed italic opacity-80">
                             "{withFeedback.feedback}"
-                        </p>
-                    </div>
+                        </Text>
+                    </Box>
                 );
             })()}
-        </div>
+        </VStack>
     );
 }

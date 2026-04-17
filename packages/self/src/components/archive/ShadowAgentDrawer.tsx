@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SHADOW AGENT DRAWER
  * The Quiet Drawer - A space for reflection and gentle guidance
  * 
@@ -11,9 +11,12 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, VStack, Text, Pressable, hapticLight, Theme, typography } from '@repo/ui';
+import { Icon, Box, Pressable, Text, Theme, VStack, hapticLight, mistGray, sacredWhite, sanctuarySaffron, shroud, starlightGray, typography } from '@repo/ui';
+
+
+
 import { Modal, StyleSheet, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { X } from 'lucide-react-native';
 import Animated, {
     useAnimatedStyle,
@@ -22,14 +25,13 @@ import Animated, {
     withTiming,
     withSpring,
     Easing,
-    FadeIn,
-} from 'react-native-reanimated';
+    FadeIn} from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ShadowAgentDrawer() {
-    const { bottom: bottomInset } = useSafeAreaInsets();
+    const { bottom: bottomInset } = { top: 0, bottom: 0, left: 0, right: 0 };
     const { t, i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
@@ -79,20 +81,12 @@ export default function ShadowAgentDrawer() {
             position: 'absolute',
             bottom: bottomInset + 80, // Positioned above the tab bar
             right: 24,
-            zIndex: Theme.zIndex.fab,
-        },
-        orb: {
-            borderRadius: 28,
-        },
-        modalOverlay: {
+            zIndex: Theme.zIndex.fab, orb: {
+            borderRadius: 28,  modalOverlay: {
             flex: 1,
             backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            justifyContent: 'flex-end',
-        },
-        drawerContainer: {
-            width: '100%',
-        },
-    }), [bottomInset]);
+            justifyContent: 'flex-end',  drawerContainer: {
+            width: '100%'}}), [bottomInset]);
 
     // Orb breathing animation
     const orbScale = useSharedValue(1);
@@ -103,8 +97,7 @@ export default function ShadowAgentDrawer() {
         orbScale.value = withRepeat(
             withTiming(1.1, {
                 duration: Theme.motion.breathing,
-                easing: Easing.inOut(Easing.ease),
-            }),
+                easing: Easing.inOut(Easing.ease)}),
             -1,
             true
         );
@@ -112,8 +105,7 @@ export default function ShadowAgentDrawer() {
         orbGlow.value = withRepeat(
             withTiming(0.6, {
                 duration: Theme.motion.breathing,
-                easing: Easing.inOut(Easing.ease),
-            }),
+                easing: Easing.inOut(Easing.ease)}),
             -1,
             true
         );
@@ -122,8 +114,7 @@ export default function ShadowAgentDrawer() {
     const orbStyle = useAnimatedStyle(() => {
         return {
             transform: [{ scale: orbScale.value }],
-            opacity: orbGlow.value,
-        };
+            opacity: orbGlow.value};
     });
 
     const handleOpenDrawer = () => {
@@ -161,20 +152,17 @@ export default function ShadowAgentDrawer() {
             {/* Glowing Orb Trigger */}
             <Pressable
                 onPress={handleOpenDrawer}
-                style={styles.orbContainer}
-            >
+                style={styles.orbContainer}>
                 <Animated.View style={[styles.orb, orbStyle]}>
                     <Box
-                        sx={{
+                        style={{
                             width: 56,
                             height: 56,
                             borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
+                            backgroundColor: sanctuarySaffron,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            ...Theme.shadows.glow,
-                        }}
-                    >
+                            ...Theme.shadows.glow}}>
                         <Text style={{ fontSize: 24 }}>\uD83E\uDEB7</Text>
                     </Box>
                 </Animated.View>
@@ -185,36 +173,30 @@ export default function ShadowAgentDrawer() {
                 visible={isOpen}
                 transparent
                 animationType="slide"
-                onRequestClose={handleCloseDrawer}
-            >
+                onRequestClose={handleCloseDrawer}>
                 <Pressable
                     style={styles.modalOverlay}
-                    onPress={handleCloseDrawer}
-                >
+                    onPress={handleCloseDrawer}>
                     <Pressable
                         style={styles.drawerContainer}
-                        onPress={(e: any) => e.stopPropagation()}
-                    >
+                        onPress={(e: any) => e.stopPropagation()}>
                         <Box
-                            sx={{
-                                backgroundColor: Theme.colors.ink,
+                            style={{
+                                backgroundColor: '#2A2318',
                                 borderTopLeftRadius: Theme.corners.generous,
                                 borderTopRightRadius: Theme.corners.generous,
                                 padding: Theme.spacing.xl,
-                                minHeight: SCREEN_HEIGHT * 0.5,
-                            }}
-                        >
+                                minHeight: SCREEN_HEIGHT * 0.5}}>
                             {/* Handle bar */}
                             <Box
-                                sx={{
+                                style={{
                                     width: 40,
                                     height: 4,
-                                    backgroundColor: Theme.colors.starlightGray,
+                                    backgroundColor: starlightGray,
                                     borderRadius: 2,
                                     alignSelf: 'center',
                                     marginBottom: Theme.spacing.md,
-                                    opacity: 0.3,
-                                }}
+                                    opacity: 0.3}}
                             />
 
                             {/* Close Button */}
@@ -225,15 +207,12 @@ export default function ShadowAgentDrawer() {
                                     top: 16,
                                     right: 16,
                                     zIndex: 10,
-                                    padding: 8,
-                                }}
-                            >
-                                <Box sx={{
-                                    backgroundColor: 'rgba(255,255,255,0.05)',
-                                    borderRadius: 20,
+                                    padding: 8}}>
+                                <Box style={{
+                                    backgroundColor: 'rgba(255,255,255,0.05)',  borderRadius: 20,
                                     padding: 4
-                                }}>
-                                    <X color={Theme.colors.mistGray} size={20} />
+                                }>
+                                    <Icon as={X} color={mistGray} size={20} />
                                 </Box>
                             </Pressable>
 
@@ -241,17 +220,15 @@ export default function ShadowAgentDrawer() {
                                 {/* Title */}
                                 <Animated.View entering={FadeIn.duration(Theme.motion.gentle)}>
                                     <Text
-                                        color={Theme.colors.sacredWhite}
+                                        style={{ color: sacredWhite }}
                                         size="2xl"
-                                        sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
-                                    >
+                                        style={{ fontWeight: Theme.typography.fontWeight.semibold }}>
                                         {t('shadowAgent.title')}
                                     </Text>
                                     <Text
-                                        color={Theme.colors.mistGray}
+                                        style={{ color: mistGray }}
                                         size="sm"
-                                        mt="$2"
-                                    >
+                                        mt="$2">
                                         {t('shadowAgent.subtitle')}
                                     </Text>
                                 </Animated.View>
@@ -259,36 +236,28 @@ export default function ShadowAgentDrawer() {
                                 {/* Contextual Suggestion */}
                                 {contextualSuggestion && (
                                     <Animated.View
-                                        entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.quick)}
-                                    >
+                                        entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.quick)}>
                                         <Box
-                                            sx={{
-                                                backgroundColor: Theme.colors.ink,
-                                                padding: Theme.spacing.lg,
+                                            style={{
+                                                backgroundColor: '#2A2318',  padding: Theme.spacing.lg,
                                                 borderRadius: Theme.corners.comfortable,
                                                 borderWidth: 1,
-                                                borderColor: Theme.colors.twilightBlue,
-                                            }}
-                                        >
+                                                borderColor: twilightBlue}>
                                             <Text
-                                                color={Theme.colors.shroud}
+                                                style={{ color: shroud }}
                                                 size="xs"
-                                                sx={{
+                                                style={{
                                                     textTransform: 'uppercase',
                                                     letterSpacing: 1,
-                                                    marginBottom: Theme.spacing.sm,
-                                                }}
-                                            >
+                                                    marginBottom: Theme.spacing.sm}}>
                                                 Gentle Reminder
                                             </Text>
                                             <Text
-                                                color={Theme.colors.starlightGray}
+                                                style={{ color: starlightGray }}
                                                 size="lg"
-                                                sx={{
+                                                style={{
                                                     fontWeight: typography.fontWeight.medium,
-                                                    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
-                                                }}
-                                            >
+                                                    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg}}>
                                                 {contextualSuggestion.emoji} {contextualSuggestion.message}
                                             </Text>
                                         </Box>
@@ -297,36 +266,28 @@ export default function ShadowAgentDrawer() {
 
                                 {/* Thought Seed */}
                                 <Animated.View
-                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard)}
-                                >
+                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard)}>
                                     <Box
-                                        sx={{
-                                            backgroundColor: Theme.colors.ink,
-                                            padding: Theme.spacing.lg,
+                                        style={{
+                                            backgroundColor: '#2A2318',  padding: Theme.spacing.lg,
                                             borderRadius: Theme.corners.comfortable,
                                             borderLeftWidth: 3,
-                                            borderLeftColor: Theme.colors.sanctuarySaffron,
-                                        }}
-                                    >
+                                            borderLeftColor: sanctuarySaffron}>
                                         <Text
-                                            color={Theme.colors.shroud}
+                                            style={{ color: shroud }}
                                             size="xs"
-                                            sx={{
+                                            style={{
                                                 textTransform: 'uppercase',
                                                 letterSpacing: 1,
-                                                marginBottom: Theme.spacing.sm,
-                                            }}
-                                        >
+                                                marginBottom: Theme.spacing.sm}}>
                                             Thought Seed
                                         </Text>
                                         <Text
-                                            color={Theme.colors.sacredWhite}
+                                            style={{ color: sacredWhite }}
                                             size="xl"
-                                            sx={{
+                                            style={{
                                                 fontWeight: typography.fontWeight.medium,
-                                                lineHeight: typography.lineHeight.relaxed * typography.fontSize.xl,
-                                            }}
-                                        >
+                                                lineHeight: typography.lineHeight.relaxed * typography.fontSize.xl}}>
                                             {currentSeed}
                                         </Text>
                                     </Box>
@@ -334,26 +295,22 @@ export default function ShadowAgentDrawer() {
 
                                 {/* Contemplation Space */}
                                 <Animated.View
-                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 2)}
-                                >
+                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 2)}>
                                     <VStack space="md">
                                         <Text
-                                            color={Theme.colors.mistGray}
-                                            size="sm"
-                                        >
+                                            style={{ color: mistGray }}
+                                            size="sm">
                                             Take a moment to sit with this question.
                                         </Text>
                                         <Text
-                                            color={Theme.colors.mistGray}
-                                            size="sm"
-                                        >
+                                            style={{ color: mistGray }}
+                                            size="sm">
                                             There's no need to answer right away.
                                         </Text>
                                         <Text
-                                            color={Theme.colors.mistGray}
+                                            style={{ color: mistGray }}
                                             size="sm"
-                                            sx={{ fontStyle: 'italic' }}
-                                        >
+                                            style={{ fontStyle: 'italic' }}>
                                             Sometimes questions are more valuable than answers.
                                         </Text>
                                     </VStack>
@@ -361,22 +318,17 @@ export default function ShadowAgentDrawer() {
 
                                 {/* Note about future feature */}
                                 <Animated.View
-                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 3)}
-                                >
+                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 3)}>
                                     <Box
-                                        sx={{
+                                        style={{
                                             marginTop: Theme.spacing.xl,
                                             padding: Theme.spacing.md,
                                             borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: Theme.colors.ink,
-                                            opacity: 0.5,
-                                        }}
-                                    >
+                                            backgroundColor: '#2A2318',  opacity: 0.5}>
                                         <Text
-                                            color={Theme.colors.shroud}
+                                            style={{ color: shroud }}
                                             size="xs"
-                                            textAlign="center"
-                                        >
+                                            textAlign="center">
                                             \uD83D\uDCAB This space will grow with you
                                         </Text>
                                     </Box>

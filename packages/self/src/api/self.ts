@@ -1,12 +1,11 @@
-import {
+﻿import {
     APIError,
     assertContractCoverage,
     createPOAProxy,
     defineContractCoverage,
     growthSignalsAPI,
     selfContract,
-    supabase,
-} from '@repo/core';
+    supabase} from '@repo/core';
 import { MoodLog, FireJournalEntry } from '../types';
 
 // ============================================================================
@@ -32,8 +31,7 @@ const rawSelfAPI = {
                     user_id: userId,
                     mood_score: score,
                     mood,
-                    note,
-                },
+                    note},
             ])
             .select()
             .single();
@@ -45,8 +43,7 @@ const rawSelfAPI = {
 
         // Growth signal: teacher chose to check in with themselves (Presence  Tier 2 Care Signal)
         growthSignalsAPI.emitSilent(userId, 'mood_checkin', {
-            mood_score: score,
-        });
+            mood_score: score});
 
         return data;
     },
@@ -82,8 +79,7 @@ const rawSelfAPI = {
                 {
                     user_id: userId,
                     content_preview: contentPreview,
-                    is_burned: true,
-                },
+                    is_burned: true},
             ])
             .select()
             .single();
@@ -142,16 +138,13 @@ const rawSelfAPI = {
         }
 
         return data;
-    },
-};
+    }};
 
 const selfCoverage = assertContractCoverage(rawSelfAPI, defineContractCoverage({
     moduleName: 'self',
     contract: selfContract,
     methodMapping: {
-        getBurnedHistory: 'getJournalHistory',
-    },
-}));
+        getBurnedHistory: 'getJournalHistory'}}));
 
 export const selfAPI = createPOAProxy(
     'self',

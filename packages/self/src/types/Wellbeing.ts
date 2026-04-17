@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Types for progressive wellbeing features
  * Aligned with teacher sanctuary philosophy
  */

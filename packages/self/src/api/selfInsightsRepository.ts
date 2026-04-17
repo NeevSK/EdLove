@@ -1,4 +1,4 @@
-import { getTemporalRange, supabase } from '@repo/core';
+﻿import { getTemporalRange, supabase } from '@repo/core';
 import type { EnergyForecast } from '../types';
 
 export interface PresenceFallbackCountOptions {
@@ -49,8 +49,7 @@ export async function saveEnergyForecastForDate(
 ): Promise<void> {
     const updatePayload = {
         energy_level: payload.energyLevel,
-        notes: payload.notes ?? '',
-    };
+        notes: payload.notes ?? ''};
 
     if (payload.existingId) {
         const { error } = await supabase
@@ -86,8 +85,7 @@ export async function saveEnergyForecastForDate(
         .insert({
             user_id: userId,
             forecast_date: payload.forecastDate,
-            ...updatePayload,
-        });
+            ...updatePayload});
 
     if (error) throw error;
 }
@@ -160,8 +158,7 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
             await selfChannel.track({
                 user_id: options.userId,
                 vibe: options.userVibe ?? 'active',
-                online_at: new Date().toISOString(),
-            });
+                online_at: new Date().toISOString()});
         } catch {
             options.onOfflineChange(true);
         }

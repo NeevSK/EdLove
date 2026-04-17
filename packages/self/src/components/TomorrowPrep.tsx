@@ -12,14 +12,17 @@ import {
   Pressable,
   Checkbox,
   CheckboxIndicator,
-  CheckboxIcon
+  CheckboxIcon,
+  Icon,
+  SkeletonCard,
+  PositiveInvitation,
+  hapticLight,
+  hapticSuccess
 } from '@repo/ui';
 import { Calendar, Plus, Trash2, Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
-import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '../types';
 
@@ -41,11 +44,10 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const { prepItems: items, refreshData, isLoading } = useTomorrowPrep(userId);
 
   const [showForm, setShowForm] = useState(false);
-
   const [itemText, setItemText] = useState('');
 
   // Recomputes at midnight so the date stays correct if the component stays
-  // mounted overnight (same pattern as TomorrowPrep.web.tsx).
+  // mounted overnight.
   const [tomorrowDate, setTomorrowDate] = useState<string>(getTomorrowDate());
   useEffect(() => {
     const now = new Date();
@@ -54,8 +56,6 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
     const timer = setTimeout(() => setTomorrowDate(getTomorrowDate()), msUntilMidnight);
     return () => clearTimeout(timer);
   }, [tomorrowDate]);
-
-  // Removed manual loadItems as it's handled by the hook
 
   const { mutate: saveItem, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {
@@ -106,7 +106,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   if (isLoading && userId) {
     return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
+      <VStack className="flex-1 p-lg gap-lg">
         <SkeletonCard height={48} />
         <SkeletonCard height={48} />
         <SkeletonCard height={48} />
@@ -124,118 +124,90 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   }
 
   return (
-    <VStack space="lg" sx={{ flex: 1 }}>
-      <VStack space="xs">
-        <HStack space="sm" alignItems="center">
-          <Calendar color={Theme.colors.sanctuarySaffron} size={24} />
-          <Heading color={Theme.colors.sacredWhite} size="lg">
-            {t('self.tomorrowPrep')}
+    <VStack className="flex-1 gap-lg">
+      <VStack className="gap-1">
+        <HStack className="items-center gap-2">
+          <Icon as={Calendar} className="text-sanctuarySaffron" size={24} />
+          <Heading className="text-sacredWhite" size="lg">
+            {t('self.tomorrowPrep') || 'Tomorrow\'s Prep'}
           </Heading>
         </HStack>
-        <Text color={Theme.colors.mistGray} size="sm">
-          {t('self.tomorrowPrepDesc')}
+        <Text className="text-mistGray text-sm">
+          {t('self.tomorrowPrepDesc') || 'Three gentle things for tomorrow'}
         </Text>
       </VStack>
 
       {items.length < 3 && !showForm && (
         <Button
           size="md"
-          action="primary"
-          onPress={() => {
+          onPress={() => { 
             hapticLight();
-            setShowForm(true);
+            setShowForm(true); 
           }}
-          sx={{
-            backgroundColor: Theme.colors.sanctuarySaffron,
-            borderRadius: Theme.corners.comfortable
-          }}
+          className="bg-sanctuarySaffron rounded-comfortable"
         >
-          <Plus color={Theme.colors.sacredWhite} size={20} />
-          <ButtonText ml="$2">{t('self.addPrepItem')}</ButtonText>
+          <Icon as={Plus} className="text-sacredWhite" size={20} />
+          <ButtonText className="ml-2 text-sacredWhite">{t('self.addPrepItem') || 'Add Item'}</ButtonText>
         </Button>
       )}
 
       {items.length >= 3 && (
-        <Box
-          p="$3"
-          sx={{
-            backgroundColor: Theme.colors.ink,
-            borderRadius: Theme.corners.comfortable
-          }}
-        >
-          <Text color={Theme.colors.dimGray} size="sm" textAlign="center">
-            {t('self.maxItems')}
+        <Box className="p-3 bg-ink rounded-comfortable">
+          <Text className="text-dimGray text-sm text-center">
+            {t('self.maxItems') || 'Maximum 3 items reached'}
           </Text>
         </Box>
       )}
 
       {showForm ? (
-        <VStack space="md">
+        <VStack className="gap-4">
           <Box>
             <Input
               variant="outline"
               size="md"
-              sx={{
-                backgroundColor: Theme.colors.ink,
-                borderWidth: 1,
-                borderColor: Theme.colors.transparent
-              }}
+              className="bg-ink border-transparent border"
             >
               <InputField
-                placeholder={t('self.prepItem')}
+                placeholder={t('self.prepItem') || 'What needs to be done?'}
                 value={itemText}
                 onChangeText={setItemText}
-                color={Theme.colors.sacredWhite}
-                placeholderTextColor={Theme.colors.dimGray}
+                className="text-sacredWhite"
+                placeholderTextColor="#6A6358"
               />
             </Input>
           </Box>
 
-          <HStack space="md" justifyContent="flex-end">
+          <HStack className="justify-end gap-4">
             <Button
               size="md"
               variant="outline"
-              onPress={() => {
+              onPress={() => { 
                 hapticLight();
                 setShowForm(false);
                 setItemText('');
               }}
-              sx={{
-                borderColor: Theme.colors.ink,
-                borderRadius: Theme.corners.comfortable
-              }}
+              className="border-ink rounded-comfortable"
             >
-              <ButtonText color={Theme.colors.mistGray}>
-                {t('common.cancel')}
+              <ButtonText className="text-mistGray">
+                {t('common.cancel') || 'Cancel'}
               </ButtonText>
             </Button>
             <Button
               size="md"
-              action="primary"
               onPress={handleSave}
               isDisabled={!itemText.trim() || isSaving}
-              sx={{
-                backgroundColor: Theme.colors.sanctuarySaffron,
-                borderRadius: Theme.corners.comfortable
-              }}
+              className="bg-sanctuarySaffron rounded-comfortable"
             >
-              <ButtonText>{t('common.save')}</ButtonText>
+              <ButtonText className="text-white">{t('common.save') || 'Save'}</ButtonText>
             </Button>
           </HStack>
         </VStack>
       ) : (
-        <VStack space="md">
+        <VStack className="gap-4">
           {items.map((item) => (
             <HStack
               key={item.id}
-              space="md"
-              alignItems="center"
-              p="$3"
-              sx={{
-                backgroundColor: Theme.colors.ink,
-                borderRadius: Theme.corners.comfortable,
-                opacity: item.is_completed ? 0.6 : 1
-              }}
+              className={`items-center p-3 bg-ink rounded-comfortable gap-4 ${item.is_completed ? 'opacity-60' : 'opacity-100'}`}
             >
               <Checkbox
                 value={item.id}
@@ -244,24 +216,14 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 aria-label={item.item_text}
               >
                 <CheckboxIndicator
-                  sx={{
-                    borderColor: Theme.colors.sanctuarySaffron,
-                    backgroundColor: item.is_completed
-                      ? Theme.colors.sanctuarySaffron
-                      : 'transparent'
-                  }}
+                  className={`border-sanctuarySaffron ${item.is_completed ? 'bg-sanctuarySaffron' : 'bg-transparent'}`}
                 >
-                  <CheckboxIcon as={Check} color={Theme.colors.sacredWhite} />
+                  <CheckboxIcon as={Check} className="text-sacredWhite" />
                 </CheckboxIndicator>
               </Checkbox>
 
               <Text
-                color={Theme.colors.sacredWhite}
-                size="md"
-                sx={{
-                  flex: 1,
-                  textDecorationLine: item.is_completed ? 'line-through' : 'none'
-                }}
+                className={`flex-1 text-sacredWhite text-md ${item.is_completed ? 'line-through' : ''}`}
               >
                 {item.item_text}
               </Text>
@@ -270,8 +232,9 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 onPress={() => handleDelete(item.id)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Trash2
-                  color={Theme.colors.dimGray}
+                <Icon
+                  as={Trash2}
+                  className="text-dimGray"
                   size={18}
                 />
               </Pressable>
@@ -281,7 +244,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
           {items.length === 0 && (
             <PositiveInvitation
               icon={Calendar}
-              title={t('self.threeGentleThings')}
+              title={t('self.threeGentleThings') || 'Start your prep'}
             />
           )}
         </VStack>

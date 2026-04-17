@@ -1,4 +1,4 @@
-import { getTemporalRange, supabase } from '@repo/core';
+﻿import { getTemporalRange, supabase } from '@repo/core';
 import type { DailyPrepItem, Goal, GratitudeEntry, JoyMoment, SleepLog } from '../types';
 
 export interface ReminderRecord {
@@ -41,8 +41,7 @@ export async function createReminder(userId: string, input: ReminderInput): Prom
             icon_type: input.icon_type,
             is_default: input.is_default ?? false,
             is_active: input.is_active ?? true,
-            created_at: new Date().toISOString(),
-        })
+            created_at: new Date().toISOString()})
         .select()
         .single();
 
@@ -92,8 +91,7 @@ export async function createSleepLog(
         .insert({
             user_id: userId,
             quality,
-            created_at: new Date().toISOString(),
-        })
+            created_at: new Date().toISOString()})
         .select()
         .single();
 
@@ -122,8 +120,7 @@ export async function createJoyMoment(
             user_id: userId,
             student_name: input.student_name ?? null,
             moment_description: input.moment_description,
-            category: input.category,
-        })
+            category: input.category})
         .select()
         .single();
 
@@ -151,8 +148,7 @@ export async function createGratitudeEntry(
         .insert({
             user_id: userId,
             content: input.content,
-            category: input.category,
-        })
+            category: input.category})
         .select()
         .single();
 
@@ -187,8 +183,7 @@ export async function createStudentGoal(userId: string, text: string): Promise<G
             user_id: userId,
             text,
             progress: 0,
-            is_completed: false,
-        })
+            is_completed: false})
         .select()
         .single();
 
@@ -230,8 +225,7 @@ export async function createTomorrowPrepItem(
             user_id: userId,
             item_text: itemText,
             prep_date: prepDate,
-            is_completed: false,
-        })
+            is_completed: false})
         .select()
         .single();
 
@@ -272,8 +266,7 @@ export async function saveWindDownRitual(
         .insert({
             user_id: userId,
             ...payload,
-            completed_at: new Date().toISOString(),
-        });
+            completed_at: new Date().toISOString()});
 
     if (error) throw error;
 }
@@ -293,8 +286,7 @@ export async function saveVoiceJournalRecord(
             .from('voice-journals')
             .upload(fileName, payload.blob, {
                 contentType: payload.contentType ?? 'audio/webm',
-                upsert: false,
-            })
+                upsert: false})
             .catch(() => {});
     }
 
@@ -303,8 +295,7 @@ export async function saveVoiceJournalRecord(
         .insert({
             user_id: userId,
             duration_seconds: payload.durationSeconds,
-            created_at: new Date().toISOString(),
-        });
+            created_at: new Date().toISOString()});
 
     if (error) throw error;
 }

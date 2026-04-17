@@ -1,6 +1,9 @@
-import React from 'react';
+﻿import React from 'react';
+import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui';
+
+
 import { useTranslation } from 'react-i18next';
-import { TemporalProvider, JourneyHistoryCard, TemporalShield } from '@repo/ui';
+
 import { usePermissions, useJourneyHistory } from '@repo/core';
 
 import { useMoodLogs } from '../../hooks/useMoodLogs';
@@ -58,14 +61,12 @@ export default function GuardianSelfView() {
                     'self.guardianDescription',
                     'A steady sanctuary for parents and guardians to stay centered while caring for their children.'
                 )}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Family Journey',
                         accentColor: '#8B5CF6',
                         content: holisticSection,
-                        historyContent: <ResonanceTimeline />,
-                    },
+                        historyContent: <ResonanceTimeline />},
                     {
                         id: 'presence',
                         title: 'Inner Presence',
@@ -75,18 +76,15 @@ export default function GuardianSelfView() {
                                 id: 'mood_lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />,
-                            },
+                                historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />},
                             {
                                 id: 'fire_journal',
                                 label: 'Fire Journal',
                                 content: <FireJournal userId={userId ?? undefined} />,
-                                historyContent: <JournalSection entries={journalEntries} loading={loadingJournals} />,
-                            },
+                                historyContent: <JournalSection entries={journalEntries} loading={loadingJournals} />},
                             { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling userId={userId ?? undefined} /> },
                             { id: 'wisdom', label: 'Wisdom Seeds', content: <WisdomSeeds userId={userId ?? undefined} /> },
-                        ],
-                    },
+                        ]},
                     {
                         id: 'care',
                         title: 'Care Rhythm',
@@ -98,8 +96,7 @@ export default function GuardianSelfView() {
                             { id: 'reminders', label: 'Reminders', content: <RemindersManager userId={userId ?? undefined} /> },
                             { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
                             { id: 'sleep', label: 'Sleep Tracker', content: <SleepTracker userId={userId ?? undefined} /> },
-                        ],
-                    },
+                        ]},
                 ]}
                 sideBar={
                     <>
@@ -111,3 +108,4 @@ export default function GuardianSelfView() {
         </TemporalProvider>
     );
 }
+

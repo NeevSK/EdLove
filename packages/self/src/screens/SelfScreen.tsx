@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTracking, usePermissions } from '@repo/core';
 import {
     StudentSelfView,
@@ -6,8 +6,7 @@ import {
     PrincipalSelfView,
     FounderSelfView,
     GuardianSelfView,
-    AdminSelfView,
-} from './self';
+    AdminSelfView} from './self';
 
 /**
  * SelfScreen  declarative entry point for the user's sanctuary.
