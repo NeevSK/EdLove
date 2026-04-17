@@ -3,12 +3,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
 import { getCollection } from 'astro:content';
+import { absoluteUrl } from '../lib/site';
 
 const projectEntries = await getCollection('projects', ({ data }) => !data.draft);
 projectEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Projects',
+    description: 'A collection of digital artifacts, philosophical experiments, and cybernetic systems.',
+    url: absoluteUrl('/projects'),
+    hasPart: projectEntries.map((entry, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: entry.data.title,
+        url: absoluteUrl('/projects'),
+    })),
+};
 ---
 
-<BaseLayout title="Projects">
+<BaseLayout title="Projects | NeevSK" description="A collection of digital artifacts, philosophical experiments, and cybernetic systems." structuredData={structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-4xl mx-auto px-6 pb-24">

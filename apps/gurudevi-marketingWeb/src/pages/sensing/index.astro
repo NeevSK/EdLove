@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ClimateSensingScreenWeb } from '@repo/form-builder/climate-sensing-web';
+
+// Standard public sensing entry point
+export const prerender = true;
+---
+
+<Layout 
+    title="School Resonance Sensing | Gurudevi" 
+    description="Select your school and broadcast the material and human resonance of your environment."
+>
+    <main class="flex-1">
+        <ClimateSensingScreenWeb client:only="react" />
+    </main>
+</Layout>

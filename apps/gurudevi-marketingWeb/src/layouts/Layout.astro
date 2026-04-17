@@ -1,19 +1,77 @@
 ---
 import SEO from '../components/SEO.astro';
+import StructuredData from '../components/StructuredData.astro';
 import '../styles/global.css';
+import {
+	ORGANIZATION,
+	SITE_DESCRIPTION,
+	SITE_NAME,
+	SITE_TITLE,
+	SITE_URL,
+	SITE_KEYWORDS,
+	defaultOgImage,
+} from '../lib/site';
 
 interface Props {
-	title: string;
+	title?: string;
 	description?: string;
+	image?: string;
+	noindex?: boolean;
+	structuredData?: Record<string, any> | Array<Record<string, any>>;
 }
 
-const { title, description = "Education Ecology Support System" } = Astro.props;
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	image,
+	noindex = false,
+	structuredData = [],
+} = Astro.props;
+
+const canonical = Astro.url.href;
+const ogImage = image ?? defaultOgImage(Astro.url.pathname);
+const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
+const baseStructuredData = [
+	{
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		...ORGANIZATION,
+	},
+	{
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: SITE_NAME,
+		url: SITE_URL,
+		description: SITE_DESCRIPTION,
+	},
+	{
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		name: title,
+		description,
+		url: canonical,
+	},
+].concat(Array.isArray(structuredData) ? structuredData : [structuredData]).filter(Boolean);
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<SEO title={title} description={description} />
+		<meta name="robots" content={robotsContent} />
+		<meta name="keywords" content={SITE_KEYWORDS.join(', ')} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={SITE_NAME} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={ogImage} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<StructuredData data={baseStructuredData} />
 	</head>
 	<body class="bg-cream-silence text-charcoal-truth min-h-screen flex flex-col">
 		<slot />

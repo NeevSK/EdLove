@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { FormManager, validators, type FormConfig } from '@repo/core';
+  import { FormManager, type FormConfig } from '@repo/core/forms/form-manager';
+  import { validators } from '@repo/core/utils/validators';
 
   const formAction = import.meta.env.PUBLIC_SUPPORT_FORM_ACTION as string | undefined;
   const SUPPORT_EMAIL = "support@gurudevi.lk";

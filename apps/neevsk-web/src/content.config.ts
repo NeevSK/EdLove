@@ -1,7 +1,9 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const archive = defineCollection({
-    type: 'content',
+    loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/archive' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string().optional(),
@@ -12,7 +14,7 @@ const archive = defineCollection({
 });
 
 const hallOfFlame = defineCollection({
-    type: 'content',
+    loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/hall-of-flame' }),
     schema: z.object({
         name: z.string(),
         subtitle: z.string(),
@@ -30,7 +32,7 @@ const hallOfFlame = defineCollection({
 });
 
 const projects = defineCollection({
-    type: 'content',
+    loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/projects' }),
     schema: z.object({
         title: z.string(),
         description: z.string(),
@@ -43,7 +45,7 @@ const projects = defineCollection({
 });
 
 export const collections = {
-    'archive': archive,
+    archive,
     'hall-of-flame': hallOfFlame,
-    'projects': projects,
+    projects,
 };

@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import CosmicParticles from '../../components/CosmicParticles.astro';
 import { getCollection, render } from 'astro:content';
+import { absoluteUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
   const cosmosEntries = await getCollection('cosmos');
@@ -13,9 +14,35 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const articleSlug = entry.id.replace(/\.(md|mdx)$/i, '');
+const articleUrl = absoluteUrl(`/cosmos/${articleSlug}`);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.subtitle,
+  url: articleUrl,
+  datePublished: entry.data.publishDate?.toISOString?.() ?? undefined,
+  author: {
+    '@type': 'Organization',
+    name: 'EdLove',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'EdLove',
+    url: absoluteUrl('/'),
+  },
+  articleSection: 'Cosmos',
+  keywords: [entry.data.origin, entry.data.coreLogic].filter(Boolean),
+};
 ---
 
-<Layout title={`${entry.data.title} | The Cosmos`} theme="cosmic">
+<Layout
+    title={`${entry.data.title} | The Cosmos`}
+    description={entry.data.subtitle}
+    theme="cosmic"
+    structuredData={structuredData}
+>
     <CosmicParticles />
     
     <main class="relative z-10 min-h-screen pb-32 sanctuary-container pt-32">

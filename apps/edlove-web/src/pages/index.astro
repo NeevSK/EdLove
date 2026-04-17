@@ -2,9 +2,27 @@
 import Layout from '../layouts/Layout.astro';
 import CinematicBackground from '../components/CinematicBackground.astro';
 import FloatingParticles from '../components/FloatingParticles.astro';
+import { absoluteUrl } from '../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'EdLove',
+  description:
+    'EdLove is the educational transformation ecosystem reimagining education with love through philosophy, care, local context, resources, community, and the epistemic core.',
+  url: absoluteUrl('/'),
+  about: {
+    '@type': 'Thing',
+    name: 'Educational Transformation',
+  },
+};
 ---
 
-<Layout>
+<Layout
+  title="EdLove | The Educational Transformation Ecosystem"
+  description="EdLove is a digital sanctuary for educational transformation, connecting philosophy, Sri Lankan ground realities, Gurudevi, resources, community, and the epistemic core."
+  structuredData={structuredData}
+>
   <div class="relative z-10 min-h-[calc(100vh-var(--spacing-nav-height))] flex flex-col justify-center items-center px-[var(--space-4)] overflow-hidden">
     <!-- Cinematic Background Video/Gradient -->
     <CinematicBackground showVideo={true} />

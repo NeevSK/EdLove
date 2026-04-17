@@ -1,7 +1,9 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const cosmos = defineCollection({
-    type: 'content',
+    loader: glob({ base: './src/content/cosmos', pattern: '**/*.{md,mdx}' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string(),
@@ -16,10 +18,11 @@ const cosmos = defineCollection({
 });
 
 const library = defineCollection({
-    type: 'content',
+    loader: glob({ base: './src/content/library', pattern: '**/*.{md,mdx}' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string(),
+        icon: z.string().optional(),
         category: z.enum(['thinker', 'framework', 'guide', 'story']),
         tags: z.array(z.string()).default([]),
         readingTime: z.number().optional(),
@@ -29,7 +32,7 @@ const library = defineCollection({
 });
 
 const sriLanka = defineCollection({
-    type: 'content',
+    loader: glob({ base: './src/content/sri-lanka', pattern: '**/*.{md,mdx}' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string(),
@@ -41,7 +44,7 @@ const sriLanka = defineCollection({
 });
 
 const community = defineCollection({
-    type: 'content',
+    loader: glob({ base: './src/content/community', pattern: '**/*.{md,mdx}' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string(),
@@ -52,7 +55,7 @@ const community = defineCollection({
 });
 
 const gurudevi = defineCollection({
-    type: 'content',
+    loader: glob({ base: './src/content/gurudevi', pattern: '**/*.{md,mdx}' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string(),
@@ -63,7 +66,7 @@ const gurudevi = defineCollection({
 });
 
 const resources = defineCollection({
-    type: 'content',
+    loader: glob({ base: './src/content/resources', pattern: '**/*.{md,mdx}' }),
     schema: z.object({
         title: z.string(),
         subtitle: z.string(),
@@ -74,10 +77,10 @@ const resources = defineCollection({
 });
 
 export const collections = {
-    'cosmos': cosmos,
-    'library': library,
+    cosmos,
+    library,
     'sri-lanka': sriLanka,
-    'community': community,
-    'gurudevi': gurudevi,
-    'resources': resources,
+    community,
+    gurudevi,
+    resources,
 };

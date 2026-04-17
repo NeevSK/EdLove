@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ClimateSensingScreenWeb } from '@repo/form-builder/climate-sensing-web';
+
+// Astro dynamic routing
+export function getStaticPaths() {
+  return [
+    { params: { schoolId: 'S-CENTRAL-01' } }, // Optional: Pre-generate some known schools
+  ];
+}
+
+// Set to 'server' or 'hybrid' to allow dynamic IDs at runtime
+export const prerender = false;
+
+const { schoolId } = Astro.params;
+---
+
+<Layout 
+    title="School Climate Sensing | Gurudevi" 
+    description="Broadcast the material and human resonance of your school environment."
+>
+    <main class="flex-1">
+        <ClimateSensingScreenWeb 
+            client:only="react" 
+            initialSchoolId={schoolId} 
+            initialSchoolName={schoolId === 'S-CENTRAL-01' ? 'Ananda College' : undefined}
+        />
+    </main>
+</Layout>
+
+<style is:global>
+    /* Ensure Gluestack/NativeWind styles are respected in the Astro context */
+    :root {
+        --phase-accent: #008080; /* Sanctuary Teal */
+        --phase-surface: #F8F9FA;
+        --phase-canvas: #EBEEF2;
+        --phase-interactive: #2D3748;
+        --phase-success: #38A169;
+    }
+</style>

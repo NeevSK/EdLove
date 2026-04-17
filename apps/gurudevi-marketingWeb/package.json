@@ -13,11 +13,17 @@
     "dependencies": {
         "@repo/ui": "workspace:*",
         "@repo/core": "workspace:*",
-        "@astrojs/svelte": "^7.2.5",
+        "@repo/form-builder": "workspace:*",
+        "@astrojs/sitemap": "^3.6.0",
+        "@astrojs/svelte": "^8.0.5",
+        "@astrojs/vercel": "^10.0.4",
         "@tailwindcss/vite": "^4.1.18",
-        "astro": "^5.17.1",
-        "svelte": "^5.49.1",
+        "astro": "^6.1.7",
+        "svelte": "^5.55.4",
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.14"
     }
 }

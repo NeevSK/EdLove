@@ -11,12 +11,13 @@
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec astro check\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.7",
-    "@astrojs/svelte": "^7.2.5",
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/svelte": "^8.0.5",
     "@tailwindcss/vite": "^4.1.18",
     "@types/three": "^0.182.0",
-    "astro": "^5.17.1",
-    "svelte": "^5.49.1",
+    "astro": "^6.1.7",
+    "svelte": "^5.55.4",
     "tailwindcss": "^4.1.18",
     "three": "^0.182.0",
     "typescript": "^5.9.3"

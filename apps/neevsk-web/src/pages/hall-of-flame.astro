@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
 import { getCollection } from 'astro:content';
+import { absoluteUrl } from '../lib/site';
 
 const flameEntries = await getCollection('hall-of-flame', ({ data }) => !data.draft);
 
@@ -51,9 +52,17 @@ const groupedEntries = chambers.map(chamber => ({
         .filter(entry => entry.data.chamber === chamber.id)
         .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
 }));
+
+const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Hall of Flame',
+    description: 'A chambered archive of people, lighthouses, and lineages that shaped the work.',
+    url: absoluteUrl('/hall-of-flame'),
+};
 ---
 
-<BaseLayout title="Hall of Flame">
+<BaseLayout title="Hall of Flame | NeevSK" description="A chambered archive of people, lighthouses, and lineages that shaped the work." structuredData={structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-6xl mx-auto px-6 pb-24">

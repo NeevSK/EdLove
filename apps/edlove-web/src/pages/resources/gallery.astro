@@ -95,10 +95,12 @@ const regionColors = {
     "Europe": { border: "#4A90E2", accent: "#5D6D7E", bg: "#F0F7FF" },
     "Americas": { border: "#E74C3C", accent: "#27AE60", bg: "#FFF0F0" },
     "Oceania": { border: "#16A085", accent: "#3498DB", bg: "#F0FFFF" }
-};
+} as const;
+
+type RegionName = keyof typeof regionColors;
 
 // Card style variants
-const getCardStyle = (index) => {
+const getCardStyle = (index: number) => {
     const styles = ['exhibition', 'artifact', 'catalog'];
     return styles[index % 3];
 };
@@ -145,12 +147,12 @@ const getCardStyle = (index) => {
                 </div>
                 
                 <div class="relative z-10 grid grid-cols-2 md:grid-cols-5 gap-6">
-                    {regions.map((region, i) => (
+                    {regions.map((region) => (
                         <button 
                             class="region-selector p-6 bg-slate-50 border border-slate-200 hover:border-slate-800 transition-all text-left w-full group/btn" 
                             data-region={region.name}
                         >
-                            <h3 class="font-bold text-sm mb-1 uppercase tracking-tighter" style={`color: ${regionColors[region.name].accent}`}>{region.name}</h3>
+                            <h3 class="font-bold text-sm mb-1 uppercase tracking-tighter" style={`color: ${regionColors[region.name as RegionName].accent}`}>{region.name}</h3>
                             <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-3">{region.subtitle}</p>
                             <div class="text-xs font-mono text-slate-600 font-semibold">{region.innovations.length} Exhibits</div>
                         </button>
@@ -191,7 +193,7 @@ const getCardStyle = (index) => {
         <!-- Regional Breakdown -->
         <div class="space-y-60">
             {regions.map((region) => {
-                const colors = regionColors[region.name];
+                const colors = regionColors[region.name as RegionName];
                 return (
                     <section id={region.name} class="scroll-mt-32 animate-fade-in-up relative">
                         <!-- Region Backdrop -->
@@ -288,6 +290,8 @@ const getCardStyle = (index) => {
         selectors.forEach(el => {
             el.addEventListener('click', () => {
                 const regionId = el.getAttribute('data-region');
+                if (!regionId) return;
+
                 const target = document.getElementById(regionId);
                 
                 if (target) {

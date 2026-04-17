@@ -13,6 +13,8 @@ Agents MUST read these before starting major work:
 1. [Docs/00_INDEX.md](./Docs/00_INDEX.md) - The Master Navigator. Start here.
 2. [Docs/02_DESIGN.md](./Docs/02_DESIGN.md) - The Design System. Critical for all UI work.
 3. [Docs/03_TECH.md](./Docs/03_TECH.md) - The Technical Guide.
+4. [Docs/18_WEB_PLATFORM_STATUS_2026-04-17.md](./Docs/18_WEB_PLATFORM_STATUS_2026-04-17.md) - Current cross-site web migration status.
+5. [Docs/19_AI_NATIVE_WEB_ROADMAP.md](./Docs/19_AI_NATIVE_WEB_ROADMAP.md) - The layered AI-native migration path.
 
 ## DESIGN SYSTEM
 - **Foundation**: Typography (Inter/Lora), Spacing (8px scale), Gold Thread (`#e7cb16`).

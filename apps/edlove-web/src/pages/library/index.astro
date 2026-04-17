@@ -3,15 +3,37 @@ import Layout from '../../layouts/Layout.astro';
 import CinematicBackground from '../../components/CinematicBackground.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
 import { getCollection, render } from 'astro:content';
+import { absoluteUrl } from '../../lib/site';
 
 const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
 
 const thinkers = libraryEntries.filter(e => e.data.category === 'thinker').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 const frameworks = libraryEntries.filter(e => e.data.category === 'framework').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 const stories = libraryEntries.filter(e => e.data.category === 'story').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'The Epistemic Core | EdLove',
+    description: 'A browsable library of thinkers, frameworks, and stories shaping the educational transformation ecosystem.',
+    url: absoluteUrl('/library'),
+    mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: libraryEntries.map((entry, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: entry.data.title,
+            url: absoluteUrl('/library'),
+        })),
+    },
+};
 ---
 
-<Layout title="The Library | EdLove">
+<Layout
+    title="The Library | EdLove"
+    description="Explore the epistemic core of EdLove through thinkers, frameworks, stories, and practical educational wisdom."
+    structuredData={structuredData}
+>
     <CinematicBackground />
 
     <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
