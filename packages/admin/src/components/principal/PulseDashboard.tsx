@@ -1,16 +1,14 @@
 import React from 'react';
-import {
-    VStack,
+import { Icon, VStack,
     HStack,
     Text,
     Box,
     SanctuaryCard,
     useThemedColors,
-    Theme,
+    
     LivingGlow,
     SkeletonLoader,
-    SanctuaryChip,
-} from '@repo/ui';
+    SanctuaryChip} from '@repo/ui';
 import { Zap, TrendingUp, Users, HeartPulse } from 'lucide-react-native';
 import { useSchoolPulse } from '@repo/profile/hooks/useSchoolPulse';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -21,7 +19,7 @@ interface PulseDashboardProps {
 
 export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
     const { pulse, loading, error } = useSchoolPulse(schoolId);
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     if (loading) {
         return (
@@ -52,8 +50,8 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                     >
                         <HStack justifyContent="space-between" alignItems="center">
                             <HStack space="sm" alignItems="center">
-                                <Box sx={{ backgroundColor: `${Theme.colors.emberRed}20`, p: Theme.spacing.sm, borderRadius: Theme.corners.comfortable }}>
-                                    <HeartPulse color={Theme.colors.emberRed} size={20} />
+                                <Box sx={{ backgroundColor: `${emberRed}20`, p: Theme.spacing.sm, borderRadius: Theme.corners.comfortable }}>
+                                    <HeartPulse color={emberRed} size={20} />
                                 </Box>
                                 <Text color={colors.text} size="md" bold>Institutional Resonance</Text>
                             </HStack>
@@ -69,7 +67,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                                 <Text color={colors.text} size="4xl" bold>{pulse.resonance_score}%</Text>
                                 <Text color={colors.textSecondary} size="sm">Alignment with Sanctuary Values</Text>
                             </VStack>
-                            <LivingGlow glowColor={Theme.colors.sanctuarySaffron} size={60} />
+                            <LivingGlow glowColor={sanctuarySaffron} size={60} />
                         </HStack>
                     </VStack>
                 </SanctuaryCard>
@@ -82,7 +80,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                         <SanctuaryCard>
                             <VStack space="xs" p="$3">
                                 <HStack space="xs" alignItems="center">
-                                    <Users color={colors.textTertiary} size={14} />
+                                    <Icon as={User}s color={colors.textTertiary} size={14} />
                                     <Text color={colors.textSecondary} size="xs" bold>Participation</Text>
                                 </HStack>
                                 <Text color={colors.text} size="lg" bold>{pulse.participation_rate}%</Text>
@@ -109,7 +107,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
             <Animated.View entering={FadeInUp.delay(400)}>
                 <VStack space="sm">
                     <HStack space="xs" alignItems="center">
-                        <Zap color={Theme.colors.sanctuarySaffron} size={16} />
+                        <Zap color={sanctuarySaffron} size={16} />
                         <Text color={colors.text} size="sm" bold>Trending Interests</Text>
                     </HStack>
                     <HStack space="sm" flexWrap="wrap">

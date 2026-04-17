@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+﻿import fs from 'node:fs';
 import path from 'node:path';
 import { PRINCIPAL_FEATURE_REGISTRY } from '../../../../../packages/admin/src/screens/principal/PrincipalFeatureRegistry';
 import { PRINCIPAL_FEATURE_SCOPE_MAP } from '../../../../../packages/admin/src/screens/principal/PrincipalIAScope';
@@ -62,8 +62,7 @@ describe('Principal IA coherence', () => {
       'principal.ia.scope.crossEcosystem',
       'principal.ia.help.institutional',
       'principal.ia.help.classroom',
-      'principal.ia.help.crossEcosystem',
-    ];
+      'principal.ia.help.crossEcosystem'];
 
     for (const keyPath of requiredKeys) {
       expect(get(en, keyPath)).toBeTruthy();

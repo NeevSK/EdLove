@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useWebPageTitle \u2014 Web-only hook
  *
  * Keeps `document.title` in sync with the current navigation screen so that:
@@ -14,7 +14,7 @@ import { Platform } from 'react-native';
 const APP_NAME = 'Gurudevi';
 
 /** Maps internal route names to human-friendly tab titles. */
-const ROUTE_LABELS: Record<string, string> = {
+const ROUTE_LABELS: Record<string, string>  = {
     Home: 'Sanctuary',
     Self: 'Your Inner Compass',
     Community: 'The Circle',
@@ -33,10 +33,9 @@ const ROUTE_LABELS: Record<string, string> = {
     PulseDashboard: 'Pulse',
     Scanner: 'Scanner',
     ContentLibrary: 'Content Library',
-    VideoPlayer: 'Video Player',
-};
+    VideoPlayer: 'Video Player'};
 
-type NavState = { routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
+type NavState =>  routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
 
 /** Drills into nested navigators to find the innermost active route name. */
 function getLeafRouteName(state: NavState): string | undefined {

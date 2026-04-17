@@ -1,23 +1,22 @@
 import React, { useMemo } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, HStack, Heading, Text, Theme, VStack, useThemedColors } from '@repo/ui';
+import { Box, HStack, Heading, Text,  VStack, useThemedColors } from '@repo/ui';
 import { Building2, MessageSquare, NotebookPen, QrCode, Wind } from 'lucide-react-native';
 import { ManagementStation, PrincipalGovernanceTimeline } from '../components';
 import {
   getPrincipalCapabilitiesByZone,
   type PrincipalWorkspaceView,
-  type PrincipalZoneId,
-} from '../principal/workspace';
+  type PrincipalZoneId} from '../principal/workspace';
 import { PrincipalModuleAtlas } from '../components';
 
-type PrincipalWorkspaceStats = {
+type PrincipalWorkspaceStats = { 
   total_students?: number;
   total_teachers?: number;
   total_classrooms?: number;
   total_sections?: number;
 } | null | undefined;
 
-type PrincipalWorkspaceSurface = {
+type PrincipalWorkspaceSurface = { 
   id: PrincipalZoneId;
   eyebrow: string;
   title: string;
@@ -25,7 +24,7 @@ type PrincipalWorkspaceSurface = {
   content: React.ReactNode;
 };
 
-type PrincipalWorkspaceShellArgs = {
+type PrincipalWorkspaceShellArgs = { 
   schoolId: string;
   principalId: string;
   stats?: PrincipalWorkspaceStats;
@@ -42,8 +41,7 @@ type PrincipalWorkspaceShellArgs = {
 function ZoneIntro({
   eyebrow,
   title,
-  copy,
-}: {
+  copy}: {
   eyebrow: string;
   title: string;
   copy: string;
@@ -54,17 +52,16 @@ function ZoneIntro({
         sx={{
           fontSize: 12,
           fontWeight: '800',
-          color: Theme.colors.gurudeviViolet,
+          color: gurudeviViolet,
           textTransform: 'uppercase',
-          letterSpacing: 1.2,
-        }}
+          letterSpacing: 1.2}}
       >
         {eyebrow}
       </Text>
-      <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.inkTruth }}>
+      <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: '#2A2318'Truth }}>
         {title}
       </Heading>
-      <Text sx={{ fontSize: 13, lineHeight: 20, color: Theme.colors.bark }}>{copy}</Text>
+      <Text sx={{ fontSize: 13, lineHeight: 20, color: bark }}>{copy}</Text>
     </VStack>
   );
 }
@@ -75,25 +72,23 @@ function SnapshotTile({ label, value }: { label: string; value: number | string 
       sx={{
         flex: 1,
         minWidth: '47%',
-        backgroundColor: Theme.colors.silk,
+        backgroundColor: silk,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
-        borderColor: Theme.colors.border,
-        padding: Theme.spacing.md,
-      }}
+        borderColor: '#E8E2CF',
+        padding: Theme.spacing.md}}
     >
       <Text
         sx={{
           fontSize: 11,
           fontWeight: '700',
-          color: Theme.colors.bark,
+          color: bark,
           textTransform: 'uppercase',
-          letterSpacing: 0.6,
-        }}
+          letterSpacing: 0.6}}
       >
         {label}
       </Text>
-      <Text sx={{ fontSize: 24, fontWeight: '700', color: Theme.colors.inkTruth, marginTop: 6 }}>
+      <Text sx={{ fontSize: 24, fontWeight: '700', color: '#2A2318'Truth, marginTop: 6 }}>
         {value}
       </Text>
     </Box>
@@ -105,22 +100,20 @@ function InstitutionLinks({
   onOpenCommons,
   onOpenQr,
   onOpenBreathing,
-  onEditSchool,
-}: {
+  onEditSchool}: {
   onOpenProfile: () => void;
   onOpenCommons: () => void;
   onOpenQr: () => void;
   onOpenBreathing: () => void;
   onEditSchool: () => void;
 }) {
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
 
   const LinkRow = ({
     icon: Icon,
     label,
     hint,
-    onPress,
-  }: {
+    onPress}: {
     icon: any;
     label: string;
     hint: string;
@@ -129,12 +122,11 @@ function InstitutionLinks({
     <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
       <Box
         sx={{
-          backgroundColor: Theme.colors.silk,
+          backgroundColor: silk,
           borderRadius: Theme.corners.comfortable,
           borderWidth: 1,
           borderColor: colors.border,
-          padding: Theme.spacing.md,
-        }}
+          padding: Theme.spacing.md}}
       >
         <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}>
           <Box
@@ -142,12 +134,11 @@ function InstitutionLinks({
               width: 36,
               height: 36,
               borderRadius: Theme.corners.medium,
-              backgroundColor: `${Theme.colors.gurudeviBlue}18`,
+              backgroundColor: `${gurudeviBlue}18`,
               alignItems: 'center',
-              justifyContent: 'center',
-            }}
+              justifyContent: 'center'}}
           >
-            <Icon size={18} color={Theme.colors.gurudeviBlue} />
+            <Icon size={18} color={gurudeviBlue} />
           </Box>
           <VStack sx={{ flex: 1 }}>
             <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.text }}>{label}</Text>
@@ -180,14 +171,12 @@ export function usePrincipalWorkspaceShell({
   onOpenBreathing,
   onEditSchool,
   renderTodayContent,
-  renderOutlookContent,
-}: PrincipalWorkspaceShellArgs) {
+  renderOutlookContent}: PrincipalWorkspaceShellArgs) {
   const zoneCounts = useMemo(
     () => ({
       today: getPrincipalCapabilitiesByZone('today', 'live').length,
       institution: getPrincipalCapabilitiesByZone('institution', 'live').length,
-      outlook: getPrincipalCapabilitiesByZone('outlook').filter((capability) => capability.status !== 'hidden').length,
-    }),
+      outlook: getPrincipalCapabilitiesByZone('outlook').filter((capability) => capability.status !== 'hidden').length}),
     [],
   );
 
@@ -207,8 +196,7 @@ export function usePrincipalWorkspaceShell({
             />
             {renderTodayContent()}
           </VStack>
-        ),
-      },
+        )},
       institution: {
         id: 'institution',
         eyebrow: 'Institution',
@@ -223,7 +211,7 @@ export function usePrincipalWorkspaceShell({
             />
             <ManagementStation onAction={(view) => navigatePrincipalView(view as PrincipalWorkspaceView)} />
             <VStack sx={{ gap: Theme.spacing.sm }}>
-              <Text sx={{ fontSize: 16, fontWeight: '700', color: Theme.colors.inkTruth }}>School snapshot</Text>
+              <Text sx={{ fontSize: 16, fontWeight: '700', color: '#2A2318'Truth }}>School snapshot</Text>
               <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
                 <SnapshotTile label="Students" value={stats?.total_students ?? 0} />
                 <SnapshotTile label="Teachers" value={stats?.total_teachers ?? 0} />
@@ -240,8 +228,7 @@ export function usePrincipalWorkspaceShell({
             />
             <PrincipalGovernanceTimeline schoolId={schoolId} principalId={principalId} />
           </VStack>
-        ),
-      },
+        )},
       outlook: {
         id: 'outlook',
         eyebrow: 'Outlook',
@@ -257,14 +244,11 @@ export function usePrincipalWorkspaceShell({
             {renderOutlookContent()}
             <PrincipalModuleAtlas />
           </VStack>
-        ),
-      },
-    }),
+        )}}),
     [schoolId, principalId, stats, navigatePrincipalView, onOpenProfile, onOpenCommons, onOpenQr, onOpenBreathing, onEditSchool, renderTodayContent, renderOutlookContent],
   );
 
   return {
     zoneCounts,
-    surfaces,
-  };
+    surfaces};
 }

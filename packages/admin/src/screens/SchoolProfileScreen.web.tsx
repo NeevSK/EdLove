@@ -1,10 +1,9 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { Icon, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { 
     useThemedColors, 
-    SkeletonCard 
-} from '@repo/ui';
+    SkeletonCard } from '@repo/ui';
 import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
 import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
 import { EditableItem } from '@repo/profile/components/EditableItem';
@@ -22,7 +21,7 @@ import {
 export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
     const navigation = useNavigation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const { school, stats, loading, updateField, isEditable } = useSchoolProfile(schoolId);
 
     if (loading) return <div style={{ padding: '40px' }}><SkeletonCard /></div>;
@@ -37,7 +36,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     className="secondary-button"
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', border: '1px solid var(--border)', borderRadius: '12px', background: 'transparent', cursor: 'pointer' }}
                 >
-                    <ArrowLeft size={16} /> 
+                    <Icon as={ArrowLeft} size={16} /> 
                     <span style={{ fontWeight: '600' }}>Back</span>
                 </button>
             </div>
@@ -70,7 +69,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                                 />
                                 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginBottom: '16px', marginTop: '12px' }}>
-                                    <Shield size={14} />
+                                    <Icon as={Shield} size={14} />
                                     <span style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                         {school.type} School
                                     </span>
@@ -93,7 +92,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                             <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}>
-                                <Users size={24} color="var(--water)" />
+                                <Icon as={User}s size={24} color="var(--water)" />
                             </div>
                             <div>
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_students || 0}</div>
@@ -102,7 +101,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                         </div>
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                             <div style={{ padding: '12px', background: 'var(--moss-soft)', borderRadius: '12px' }}>
-                                <BookOpen size={24} color="var(--moss)" />
+                                <Icon as={Book}Open size={24} color="var(--moss)" />
                             </div>
                             <div>
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_teachers || 0}</div>
@@ -125,7 +124,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                      {/* Social Sanctuary */}
                      <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                            <Globe size={18} color="var(--ink-ghost)" />
+                            <Icon as={Globe} size={18} color="var(--ink-ghost)" />
                             <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
                                 Official Links
                             </h3>
@@ -143,7 +142,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     {/* Info Card */}
                     <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                            <Layout size={16} color="var(--ink-ghost)" />
+                            <Icon as={Layout} size={16} color="var(--ink-ghost)" />
                             <span style={{ fontSize: '13px', fontWeight: '700' }}>School Structure</span>
                         </div>
                         <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}>

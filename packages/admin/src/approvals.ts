@@ -1,4 +1,4 @@
-import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
+﻿import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
 
 export type { StaffLeaveDTO };
 
@@ -12,7 +12,7 @@ export interface PendingApprovalItem {
   payload: StaffLeaveDTO;
 }
 
-export const approvalsAPI = {
+export const approvalsAPI = { 
   async listPendingLeaveApprovals(schoolId: string): Promise<StaffLeaveDTO[]> {
     return staffManagementAPI.getPendingLeaves(schoolId);
   },
@@ -26,8 +26,7 @@ export const approvalsAPI = {
       createdAt: leave.created_at,
       status: leave.status,
       title: `${leave.leave_type} leave`,
-      payload: leave,
-    }));
+      payload: leave}));
   },
 
   async approveLeave(leaveId: string, principalId: string): Promise<boolean> {
@@ -36,5 +35,4 @@ export const approvalsAPI = {
 
   async rejectLeave(leaveId: string, principalId: string): Promise<boolean> {
     return staffManagementAPI.approveLeave(leaveId, principalId, false);
-  },
-};
+  };

@@ -8,7 +8,7 @@ interface SchoolOverviewProps {
 }
 
 export default function SchoolOverview({ school }: SchoolOverviewProps) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     
     if (!school) return null;
 

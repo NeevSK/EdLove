@@ -33,29 +33,24 @@ const REPORT_CATALOG: ReportDefinition[] = [
     id: 'attendance_overview',
     title: 'Attendance Overview',
     description: 'Cross-school attendance trend and absence summary.',
-    category: 'attendance',
-  },
+    category: 'attendance'},
   {
     id: 'operations_snapshot',
     title: 'Operations Snapshot',
     description: 'Pending approvals, inventory requests, and institutional load.',
-    category: 'operations',
-  },
+    category: 'operations'},
   {
     id: 'resource_needs',
     title: 'Resource Needs',
     description: 'Aggregated classroom requests and urgent institutional needs.',
-    category: 'inventory',
-  },
-];
+    category: 'inventory'}];
 
 const DOCUMENT_TEMPLATES: DocumentTemplateDefinition[] = [
   { id: 'attendance_letter', title: 'Attendance Letter', category: 'letter', audience: 'guardian' },
   { id: 'school_summary', title: 'School Summary Report', category: 'report', audience: 'principal' },
-  { id: 'character_certificate', title: 'Character Certificate', category: 'certificate', audience: 'staff' },
-];
+  { id: 'character_certificate', title: 'Character Certificate', category: 'certificate', audience: 'staff' }];
 
-export const reportingAPI = {
+export const reportingAPI = { 
   async listReports(): Promise<ReportDefinition[]> {
     return REPORT_CATALOG;
   },
@@ -101,16 +96,14 @@ export const reportingAPI = {
       filteredStudentUsersQuery,
       supabase.from('classrooms').select('id', { count: 'exact', head: true }).eq('school_id', schoolId),
       supabase.from('staff_leaves').select('id', { count: 'exact', head: true }).eq('school_id', schoolId).eq('status', 'pending'),
-      supabase.from('inventory_requests').select('id', { count: 'exact', head: true }).eq('school_id', schoolId).eq('status', 'pending'),
-    ]);
+      supabase.from('inventory_requests').select('id', { count: 'exact', head: true }).eq('school_id', schoolId).eq('status', 'pending')]);
 
     return {
       totalStaff: staff.count ?? 0,
       totalStudents: students.count ?? 0,
       totalClassrooms: classrooms.count ?? 0,
       pendingLeaves: pendingLeaves.count ?? 0,
-      pendingInventoryRequests: pendingInventoryRequests.count ?? 0,
-    };
+      pendingInventoryRequests: pendingInventoryRequests.count ?? 0};
   },
 
   async getOperationalSnapshotSegmented(
@@ -122,17 +115,14 @@ export const reportingAPI = {
 
   getCustomerReportingFilter(): ReportingTenantFilter {
     return {
-      tenantKinds: CUSTOMER_REPORTING_TENANT_KINDS,
-    };
+      tenantKinds: CUSTOMER_REPORTING_TENANT_KINDS};
   },
 
   async getCustomerOperationalSnapshot(schoolId: string): Promise<OperationalSnapshot> {
     return this.getOperationalSnapshot(schoolId, this.getCustomerReportingFilter());
-  },
-};
+  };
 
-export const documentsAPI = {
+export const documentsAPI = { 
   async listTemplates(): Promise<DocumentTemplateDefinition[]> {
     return DOCUMENT_TEMPLATES;
-  },
-};
+  };

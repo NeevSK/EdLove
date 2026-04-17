@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+﻿const fs = require('node:fs');
 const path = require('node:path');
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
@@ -44,8 +44,7 @@ describe('Principal view architecture boundaries', () => {
     PRINCIPAL_ROOT_VIEW,
     CLASSROOM_PRINCIPAL_SCREEN,
     ...collectPrincipalViewFiles(PRINCIPAL_VIEWS_DIR),
-    ...collectPrincipalViewFiles(CLASSROOM_PRINCIPAL_COMPONENTS_DIR),
-  ];
+    ...collectPrincipalViewFiles(CLASSROOM_PRINCIPAL_COMPONENTS_DIR)];
 
   it('tracks at least one principal view file', () => {
     expect(filesUnderTest.length).toBeGreaterThan(0);

@@ -1,19 +1,18 @@
-import React from 'react';
-import { View } from 'react-native';
+﻿import React from 'react';
+import { Icon, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Theme, SanctuaryBackground, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
-import { ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
-import { Modal, TouchableOpacity } from 'react-native';
+import {  SanctuaryBackground, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
+import { Icon, ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
+import { Icon, Modal, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
 import { BreathGuide } from '@repo/self';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui';
 
 // Icons
-import {
-  User,
+import { Icon, User,
   Users,
   Library,
   Heart,
@@ -44,7 +43,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
   const { context } = usePermissions();
   const role = context.roles[0];
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
   const { phase } = useTheme();
   const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const insets = useSafeAreaInsets();
@@ -90,8 +89,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 onTabChange(tabName);
               }
             }
-          },
-        }}
+          }}}
         screenOptions={{
           headerShown: false,
           tabBarHideOnKeyboard: true, // Universal keyboard behavior
@@ -110,18 +108,14 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -2 },
             shadowOpacity: 0.1,
-            shadowRadius: 4,
-          },
+            shadowRadius: 4},
           tabBarActiveTintColor: colors.action,
           tabBarInactiveTintColor: colors.textTertiary,
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: 'Inter_500Medium',
-            marginBottom: insets.bottom > 0 ? 0 : 4,
-          },
-          tabBarBackground: () => <View style={StyleSheet.absoluteFill} />,
-        }}
-      >
+            marginBottom: insets.bottom > 0 ? 0 : 4},
+          tabBarBackground: () => <View style={StyleSheet.absoluteFill} />}}>
         {/* 1. Profile Tab */}
         <Tab.Screen
           name="Profile"
@@ -129,11 +123,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
               <View>
-                <User color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
+                <Icon as={User} color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
               </View>
-            ),
-          }}
-        >
+            )}}>
           {() => (
             <ErrorBoundary name="Profile Stack">
               <ProfileStackNavigator />
@@ -148,9 +140,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarLabel: getClassroomLabel(),
             tabBarIcon: ({ color, size }) => (
               <School color={color} size={size} fill={currentTab === 'classroom' ? color : 'none'} />
-            ),
-          }}
-        >
+            )}}>
           {() => (
             <ErrorBoundary name="Classroom Tab">
               <ClassroomStackNavigator />
@@ -167,9 +157,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
               <View>
                 <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} />
               </View>
-            ),
-          }}
-        >
+            )}}>
           {() => (
             <ErrorBoundary name="Self Screen">
               <SelfScreen />
@@ -184,11 +172,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
               <View>
-                <Users color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
+                <Icon as={User}s color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
               </View>
-            ),
-          }}
-        >
+            )}}>
           {() => (
             <ErrorBoundary name="Community Stack">
               <CommunityStackNavigator />
@@ -205,9 +191,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
               <View>
                 <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
               </View>
-            ),
-          }}
-        >
+            )}}>
           {() => (
             <ErrorBoundary name="Library Stack">
               <LibraryStackNavigator />
@@ -228,8 +212,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         visible={isBreathingOpen}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setBreathingOpen(false)}
-      >
+        onRequestClose={() => setBreathingOpen(false)}>
         <Box className="flex-1 bg-phase-canvas">
           <Box className="pt-[50px] pb-md px-md border-b border-phase-surface/10">
             <HStack className="justify-between items-center">
@@ -251,10 +234,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                   borderRadius: 9999,
                   backgroundColor: colors.tertiary,
                   borderColor: colors.border,
-                  borderWidth: 1,
-                }}
-              >
-                <X size={24} color={colors.text} />
+                  borderWidth: 1}}>
+                <Icon as={X} size={24} color={colors.text} />
               </TouchableOpacity>
             </HStack>
           </Box>

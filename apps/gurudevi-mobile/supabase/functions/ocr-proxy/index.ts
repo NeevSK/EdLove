@@ -50,8 +50,7 @@ interface OCRRawResult {
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'};
 
 serve(async (req: Request) => {
   // CORS preflight
@@ -144,11 +143,8 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
         requests: [
           {
             image: { content: imageBase64 },
-            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
-          },
-        ],
-      }),
-    },
+            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]},
+        ]})},
   );
 
   const data = await response.json();
@@ -176,8 +172,7 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
           text,
           confidence: paragraph.confidence,
           boundingBox: { x, y, width: Math.abs(width), height: Math.abs(height) },
-          language: paragraph.property?.detectedLanguages?.[0]?.languageCode,
-        });
+          language: paragraph.property?.detectedLanguages?.[0]?.languageCode});
       }
     }
   }
@@ -185,8 +180,7 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
   return {
     text: annotation.text ?? '',
     blocks,
-    confidence: annotation.pages?.[0]?.confidence,
-  };
+    confidence: annotation.pages?.[0]?.confidence};
 }
 
 //  OpenAI GPT-4o Vision 
@@ -212,8 +206,7 @@ Return ONLY the JSON object, no markdown, no explanation.`;
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'},
     body: JSON.stringify({
       model: 'gpt-4o',
       max_tokens: 4096,
@@ -224,13 +217,9 @@ Return ONLY the JSON object, no markdown, no explanation.`;
             { type: 'text', text: systemPrompt },
             {
               type: 'image_url',
-              image_url: { url: `data:image/jpeg;base64,${imageBase64}` },
-            },
-          ],
-        },
-      ],
-    }),
-  });
+              image_url: { url: `data:image/jpeg;base64,${imageBase64}` }},
+          ]},
+      ]})});
 
   const data = await response.json();
   const content = data?.choices?.[0]?.message?.content ?? '';
@@ -239,14 +228,12 @@ Return ONLY the JSON object, no markdown, no explanation.`;
     const parsed = JSON.parse(content) as OCRRawResult;
     return {
       text: parsed.text ?? '',
-      blocks: parsed.blocks ?? [],
-    };
+      blocks: parsed.blocks ?? []};
   } catch {
     // If model didn't return valid JSON, return raw text as single block
     return {
       text: content,
-      blocks: [{ text: content, confidence: 0.8 }],
-    };
+      blocks: [{ text: content, confidence: 0.8 }]};
   }
 }
 
@@ -255,6 +242,5 @@ Return ONLY the JSON object, no markdown, no explanation.`;
 function json(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-  });
+    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }});
 }

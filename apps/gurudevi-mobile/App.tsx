@@ -7,7 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider, SanctuaryToast, ToastProvider, ErrorBoundary, NetworkStatusBanner, Theme, EnvironmentProvider, useTheme } from '@repo/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider, SanctuaryToast, ToastProvider, ErrorBoundary, NetworkStatusBanner,  EnvironmentProvider, useTheme } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Library, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -36,6 +36,15 @@ import {
 
 // Import screens and navigation
 import TabNavigator from './src/navigation/TabNavigator';
+import {
+  AdminDashboard,
+  AdminIncidentQueue,
+  AdminTenantDetail,
+  AdminAuthorityRepair,
+  AdminJobControl,
+  AdminAuditLog,
+  AdminReleaseControl,
+} from '@repo/admin';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { LanguageUtils } from './src/utils/LanguageUtils';
 import CommandPalette from './src/components/web/CommandPalette';
@@ -161,15 +170,13 @@ function App() {
     setSentryUser({
       id: currentUser.id,
       email: currentUser.email ?? undefined,
-      username: currentUser.full_name ?? undefined,
-    });
+      username: currentUser.full_name ?? undefined});
 
     identifyUser(currentUser.id, {
       email: currentUser.email ?? undefined,
       full_name: currentUser.full_name ?? undefined,
       role: currentUser.authority ?? undefined,
-      school_id: currentUser.school_id ?? undefined,
-    });
+      school_id: currentUser.school_id ?? undefined});
   }, [currentUser?.id, currentUser?.email, currentUser?.full_name, currentUser?.authority, currentUser?.school_id]);
 
   useEffect(() => {
@@ -271,8 +278,7 @@ function App() {
         if (access_token && refresh_token) {
           const { error } = await supabase.auth.setSession({
             access_token,
-            refresh_token,
-          });
+            refresh_token});
           if (error && (error.message?.includes('Refresh Token') || (error as any).status === 400)) {
             await supabase.auth.signOut({ scope: 'local' });
           }
@@ -295,8 +301,8 @@ function App() {
     return (
       <SafeAreaProvider>
         <GluestackUIProvider config={config}>
-          <Center sx={{ flex: 1, backgroundColor: Theme.colors.obsidian }}>
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+          <Center sx={{ flex: 1, backgroundColor: obsidian }}>
+            <Spinner size="large" color={sanctuarySaffron} />
           </Center>
         </GluestackUIProvider>
       </SafeAreaProvider>
@@ -371,8 +377,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
       if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
         navigationRef.current?.reset({
           index: 0,
-          routes: [{ name: 'Welcome' }],
-        });
+          routes: [{ name: 'Welcome' }]});
       }
     }
   }, [onboardingCompleted, session]);
@@ -413,6 +418,13 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                     QRHandler: 'qr',
                     ThuthimalClaim: 'thuthimal',
                     InvitationWelcome: 'invite',
+                    AdminDashboard: 'admin',
+                    AdminIncidentQueue: 'admin/incidents',
+                    AdminTenantDetail: 'admin/tenants',
+                    AdminAuthorityRepair: 'admin/authority',
+                    AdminJobControl: 'admin/actions',
+                    AdminAuditLog: 'admin/audit',
+                    AdminReleaseControl: 'admin/release',
                     Main: {
                       path: 'app',
                       screens: {
@@ -422,19 +434,13 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                         Community: 'community',
                         Library: 'library',
                         NotificationsPanel: 'notifications',
-                        SettingsPanel: 'settings',
-                        },
-                     },
-                    PublicForm: 'f/:slug',
-                  },
-                },
-              }}
+                        SettingsPanel: 'settings'}},
+                    PublicForm: 'f/:slug'}}}}
             >
               {/* <AnalyticsProvider
                 apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                 options={{
-                  host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                }}
+                  host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}}
               > */}
                 <RootStack.Navigator
                   screenOptions={{ headerShown: false }}
@@ -488,6 +494,13 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                           </ErrorBoundary>
                         )}
                       </RootStack.Screen>
+                      <RootStack.Screen name="AdminDashboard" component={AdminDashboard} />
+                      <RootStack.Screen name="AdminIncidentQueue" component={AdminIncidentQueue} />
+                      <RootStack.Screen name="AdminTenantDetail" component={AdminTenantDetail} />
+                      <RootStack.Screen name="AdminAuthorityRepair" component={AdminAuthorityRepair} />
+                      <RootStack.Screen name="AdminJobControl" component={AdminJobControl} />
+                      <RootStack.Screen name="AdminAuditLog" component={AdminAuditLog} />
+                      <RootStack.Screen name="AdminReleaseControl" component={AdminReleaseControl} />
                       <RootStack.Screen name="AIAssistant" component={AIAssistantScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="Auth" options={{ presentation: 'modal' }}>
                         {(props: any) => (

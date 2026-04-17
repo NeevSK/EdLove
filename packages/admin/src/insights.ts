@@ -1,4 +1,4 @@
-import { supabase, getTemporalRange } from '@repo/core';
+﻿import { supabase, getTemporalRange } from '@repo/core';
 
 export interface GradeProgress {
   grade: string;
@@ -21,7 +21,7 @@ export interface FeedbackEcho {
   responded_at?: string;
 }
 
-export const insightsAPI = {
+export const insightsAPI = { 
   async listCurriculumProgress(schoolId: string): Promise<GradeProgress[]> {
     const { data, error } = await supabase
       .from('curriculum_progress')
@@ -63,11 +63,9 @@ export const insightsAPI = {
         principal_response: response,
         responded_by: principalId,
         responded_at: respondedAt,
-        is_read: true,
-      })
+        is_read: true})
       .eq('id', id);
 
     if (error) throw error;
     return respondedAt;
-  },
-};
+  };

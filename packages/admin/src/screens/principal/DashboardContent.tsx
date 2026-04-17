@@ -1,11 +1,10 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Icon, useTranslation } from 'react-i18next';
 import { Building2, LayoutGrid, NotebookPen, Share2 } from 'lucide-react-native';
 import type { PublishedSchoolGradingCompletion } from '@repo/core';
 import {
   getPrincipalCapabilitiesByZone,
-  type PrincipalWorkspaceView,
-} from '../../principal/workspace';
+  type PrincipalWorkspaceView} from '../../principal/workspace';
 import { WebScreenHeader } from '@repo/ui';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 
@@ -50,8 +49,7 @@ function ZoneShell({
   title,
   subtitle,
   count,
-  children,
-}: {
+  children}: {
   title: string;
   subtitle: string;
   count: number;
@@ -67,8 +65,7 @@ function ZoneShell({
         background: 'rgba(250, 247, 237, 0.55)',
         border: '1px solid var(--border)',
         borderRadius: '24px',
-        padding: '20px',
-      }}
+        padding: '20px'}}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
         <div style={{ minWidth: 0 }}>
@@ -85,8 +82,7 @@ function ZoneShell({
             fontSize: '11px',
             fontWeight: '800',
             textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-          }}
+            letterSpacing: '0.04em'}}
         >
           {count} modules
         </div>
@@ -108,8 +104,7 @@ export function DashboardContent({
   onShowAtRisk,
   renderTodayZone,
   renderInstitutionZone,
-  renderOutlookZone,
-}: DashboardContentProps) {
+  renderOutlookZone}: DashboardContentProps) {
   const { t } = useTranslation();
   const schoolId = school?.id ?? '';
   const principalId = user?.id ?? '';
@@ -129,8 +124,7 @@ export function DashboardContent({
           borderRadius: '999px',
           background: 'var(--background-alt)',
           color: 'var(--ink-ghost)',
-          letterSpacing: '0.4px',
-        }}
+          letterSpacing: '0.4px'}}
       >
         {t(scopeMeta.scopeBadgeLabelKey)}
       </span>
@@ -162,7 +156,7 @@ export function DashboardContent({
               style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--water)', borderColor: 'var(--water)' }}
               onClick={onOpenCommons}
             >
-              <Share2 size={18} /> {t('principal.ia.actions.commonsCta') || 'Open Community Commons'}
+              <Icon as={Share}2 size={18} /> {t('principal.ia.actions.commonsCta') || 'Open Community Commons'}
               {renderScopeBadge('open_commons')}
             </button>
           </div>
@@ -174,8 +168,7 @@ export function DashboardContent({
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '24px',
-          alignItems: 'start',
-        }}
+          alignItems: 'start'}}
       >
         <ZoneShell
           title="Today"
@@ -194,8 +187,7 @@ export function DashboardContent({
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap: '12px',
-            }}
+              gap: '12px'}}
           >
             <button
               className="secondary-button"
@@ -203,7 +195,7 @@ export function DashboardContent({
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <LayoutGrid size={16} /> Shape structure
+                <Icon as={Layout}Grid size={16} /> Shape structure
               </span>
               {renderScopeBadge('hierarchy')}
             </button>
@@ -245,8 +237,7 @@ export function DashboardContent({
                 background: 'rgba(250,247,237,0.72)',
                 color: 'var(--ink-ghost)',
                 fontSize: '12px',
-                lineHeight: '1.6',
-              }}
+                lineHeight: '1.6'}}
             >
               Published grading is live in {publishedGradingCompletion.classroomsWithPublishedGrades} of {publishedGradingCompletion.totalClassrooms} classrooms.
             </div>

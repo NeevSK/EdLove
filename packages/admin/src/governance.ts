@@ -1,6 +1,6 @@
-import { supabase } from '@repo/core';
+﻿import { supabase } from '@repo/core';
 
-export const governanceAPI = {
+export const governanceAPI = { 
   async getCommunityHQGroupId(schoolId: string): Promise<string | null> {
     const { data, error } = await supabase
       .from('community_groups')
@@ -10,6 +10,5 @@ export const governanceAPI = {
 
     if (error) throw error;
     return data?.[0]?.id ?? null;
-  },
-};
+  };
 

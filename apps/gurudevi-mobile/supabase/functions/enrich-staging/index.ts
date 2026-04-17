@@ -46,13 +46,11 @@ serve(async (req) => {
 
         return new Response(JSON.stringify({ message: "Enrichment complete" }), {
             headers: { "Content-Type": "application/json" },
-            status: 200,
-        });
+            status: 200});
 
     } catch (error) {
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { "Content-Type": "application/json" },
-            status: 400,
-        });
+            status: 400});
     }
 });

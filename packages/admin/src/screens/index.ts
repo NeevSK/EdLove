@@ -3,6 +3,14 @@ import FounderDashboard from './FounderDashboard';
 import FounderDashboardWeb from './FounderDashboard.web';
 import FounderSchoolDashboard from './FounderSchoolDashboard';
 import GradeHeadDashboard from './GradeHeadDashboard';
+import AdminDashboard from './AdminDashboard';
+import AdminDashboardWeb from './AdminDashboard.web';
+import AdminIncidentQueue from './AdminIncidentQueue';
+import AdminTenantDetail from './AdminTenantDetail';
+import AdminAuthorityRepair from './AdminAuthorityRepair';
+import AdminJobControl from './AdminJobControl';
+import AdminAuditLog from './AdminAuditLog';
+import AdminReleaseControl from './AdminReleaseControl';
 import PrincipalDashboard from './PrincipalDashboard';
 import PrincipalDashboardWeb from './PrincipalDashboard.web';
 import { PrincipalNativeWorkspace } from './PrincipalNativeWorkspace';
@@ -43,6 +51,14 @@ export {
     FounderDashboardWeb,
     FounderSchoolDashboard,
     GradeHeadDashboard,
+    AdminDashboard,
+    AdminDashboardWeb,
+    AdminIncidentQueue,
+    AdminTenantDetail,
+    AdminAuthorityRepair,
+    AdminJobControl,
+    AdminAuditLog,
+    AdminReleaseControl,
     HierarchyDashboard,
     InstitutionalArcCard,
     InvitesDashboard,
@@ -51,5 +67,4 @@ export {
     SchoolForestScreenWeb,
     SchoolProfileScreenWeb,
     SectionHeadDashboard,
-    FounderVisionScreen,
-};
+    FounderVisionScreen};

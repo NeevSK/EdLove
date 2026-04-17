@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AuthScreen as UIAuthScreen } from '@repo/ui/screens';
 import { ScannerModal } from '@repo/scanner-kit';
 

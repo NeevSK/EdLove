@@ -5,7 +5,6 @@ import {
     HStack,
     Pressable,
     useThemedColors,
-    Theme,
     FormControl,
     FormControlLabel,
     FormControlLabelText,
@@ -21,44 +20,48 @@ interface StepDemographicsProps {
         religiousAffiliation: string;
         studentCount: string;
     };
-    onUpdate: (demo: Partial<StepDemographicsProps['data']>) => void;
+    onUpdate: (demo: Partial<{
+        studentType: 'mixed' | 'boys' | 'girls' | '';
+        religiousAffiliation: string;
+        studentCount: string;
+    }>) => void;
 }
 
 export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
-    const colors = useThemedColors();
+    const theme = useThemedColors();
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     return (
-        <VStack space="lg">
+        <VStack style={{ gap: theme.spacing.lg }}>
             <FormControl>
-                <FormControlLabel sx={{ marginBottom: '$2' }}>
-                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}>
+                <FormControlLabel style={{ marginBottom: theme.spacing.xs }}>
+                    <FormControlLabelText style={{ color: theme.text.secondary, fontSize: 14 }}>
                         {t('schoolSetup.studentBodyType')}
                     </FormControlLabelText>
                 </FormControlLabel>
-                <HStack sx={{ gap: '$sm', flexWrap: 'wrap' }}>
+                <HStack style={{ gap: theme.spacing.sm, flexWrap: 'wrap' }}>
                     {STUDENT_TYPES.map((type) => (
                         <Pressable
                             key={type.id}
                             accessibilityRole="button"
                             onPress={() => onUpdate({ studentType: type.id as any })}
-                            sx={{
+                            style={{
                                 flex: 1,
                                 minWidth: '30%',
-                                padding: '$3',
-                                borderRadius: Theme.corners.comfortable,
+                                padding: theme.spacing.md,
+                                borderRadius: theme.corners.md,
                                 borderWidth: 2,
-                                borderColor: data.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                backgroundColor: data.studentType === type.id ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
+                                borderColor: data.studentType === type.id ? theme.status.warning : theme.scene.border,
+                                backgroundColor: data.studentType === type.id ? theme.status.warning + '10' : theme.scene.backgroundPrimary,
                                 alignItems: 'center'
-                            }}
-                        >
+                            }}>
                             <Text
-                                color={data.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.text}
-                                bold={data.studentType === type.id}
-                                sx={{ fontSize: '$sm' }}
-                            >
+                                style={{
+                                    color: data.studentType === type.id ? theme.status.warning : theme.text.primary,
+                                    fontWeight: data.studentType === type.id ? '700' : '400',
+                                    fontSize: 14
+                                }}>
                                 {(type[lang] ?? type.en).split(' ')[0]}
                             </Text>
                         </Pressable>
@@ -76,31 +79,31 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
             />
 
             <FormControl>
-                <FormControlLabel sx={{ marginBottom: '$2' }}>
-                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}>
+                <FormControlLabel style={{ marginBottom: theme.spacing.xs }}>
+                    <FormControlLabelText style={{ color: theme.text.secondary, fontSize: 14 }}>
                         {t('schoolSetup.religiousContext')}
                     </FormControlLabelText>
                 </FormControlLabel>
-                <VStack space="xs">
-                    <HStack sx={{ gap: '$xs', flexWrap: 'wrap' }}>
+                <VStack style={{ gap: theme.spacing.xs }}>
+                    <HStack style={{ gap: theme.spacing.xs, flexWrap: 'wrap' }}>
                         {RELIGIOUS_AFFILIATIONS.map((rel) => (
                             <Pressable
                                 key={rel.id}
                                 accessibilityRole="button"
                                 onPress={() => onUpdate({ religiousAffiliation: rel.id })}
-                                sx={{
-                                    paddingHorizontal: '$3',
-                                    paddingVertical: '$2',
-                                    borderRadius: Theme.corners.full,
+                                style={{
+                                    paddingHorizontal: theme.spacing.md,
+                                    paddingVertical: theme.spacing.xs,
+                                    borderRadius: theme.corners.full,
                                     borderWidth: 1,
-                                    borderColor: data.religiousAffiliation === rel.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                    backgroundColor: data.religiousAffiliation === rel.id ? Theme.colors.sanctuarySaffron : 'transparent',
-                                }}
-                            >
+                                    borderColor: data.religiousAffiliation === rel.id ? theme.status.warning : theme.scene.border,
+                                    backgroundColor: data.religiousAffiliation === rel.id ? theme.status.warning : 'transparent'
+                                }}>
                                 <Text
-                                    color={data.religiousAffiliation === rel.id ? Theme.colors.sacredWhite : colors.textSecondary}
-                                    sx={{ fontSize: '$xs' as any }}
-                                >
+                                    style={{
+                                        color: data.religiousAffiliation === rel.id ? '#FFFFFF' : theme.text.secondary,
+                                        fontSize: 12
+                                    }}>
                                     {rel[lang] ?? rel.en}
                                 </Text>
                             </Pressable>

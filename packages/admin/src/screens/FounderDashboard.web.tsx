@@ -9,7 +9,7 @@
  * Personal wellbeing (mood, energy, vision, philosophy) lives in FounderSelfView.
  */
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { Icon, useNavigation } from '@react-navigation/native';
 import {
     School, 
     FounderStackParamList,
@@ -23,7 +23,7 @@ import {
     useStore
 } from '@repo/core';
 import { SkeletonCard, TemporalNavigator } from '@repo/ui';
-import { GlobalCreateModal } from '../components';
+import { Icon, GlobalCreateModal } from '../components';
 import {
     Activity,
     Building,
@@ -112,8 +112,7 @@ export default function FounderDashboardWeb() {
             color: 'var(--lotus)',
             bg: 'rgba(180,80,100,0.1)',
             isText: true
-        },
-    ];
+        }];
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -122,7 +121,7 @@ export default function FounderDashboardWeb() {
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                         <div style={{ padding: '8px', background: 'rgba(255,166,0,0.1)', borderRadius: '8px', color: 'var(--sanctuary-saffron)' }}>
-                            <Globe size={20} />
+                            <Icon as={Globe} size={20} />
                         </div>
                         <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
                             Ecosystem Command
@@ -157,7 +156,7 @@ export default function FounderDashboardWeb() {
                                 opacity: (isPastView || !ability.can('create', 'School')) ? 0.5 : 1
                             }}
                         >
-                            <Plus size={18} /> Initialize New
+                            <Icon as={Plus} size={18} /> Initialize New
                         </button>
                         <button
                             onClick={refreshData}
@@ -343,7 +342,7 @@ export default function FounderDashboardWeb() {
                         <div className="sanctuary-card" style={{ padding: '0', overflow: 'hidden', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)' }}>
                             <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <Activity size={18} color="var(--water)" />
+                                    <Icon as={Activity} size={18} color="var(--water)" />
                                     <h3 style={{ fontSize: '15px', fontWeight: '800', margin: 0 }}>Resonance Flow</h3>
                                 </div>
                                 <span style={{ fontSize: '11px', fontWeight: '700', padding: '2px 8px', background: 'rgba(58,122,154,0.1)', color: 'var(--water)', borderRadius: '4px' }}>
@@ -433,7 +432,7 @@ export default function FounderDashboardWeb() {
                             <h2 style={{ fontSize: '22px', fontWeight: '800', margin: 0 }}>Institutional Gallery</h2>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ position: 'relative' }}>
-                                    <Search size={16} color="var(--ink-ghost)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                                    <Icon as={Search} size={16} color="var(--ink-ghost)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                                     <input
                                         value={searchQuery}
                                         onChange={e => setSearchQuery(e.target.value)}
@@ -468,7 +467,7 @@ export default function FounderDashboardWeb() {
                                         className="premium-button"
                                         style={{ background: 'var(--sanctuary-saffron)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                                     >
-                                        <Plus size={16} /> Initialize First Institution
+                                        <Icon as={Plus} size={16} /> Initialize First Institution
                                     </button>
                                 )}
                             </div>
@@ -480,8 +479,7 @@ export default function FounderDashboardWeb() {
                                         school={school}
                                         onPress={() => (navigation as any).navigate('FounderSchoolDashboard', {
                                             schoolId: String(school.id),
-                                            userId: user?.id ?? '',
-                                        })}
+                                            userId: user?.id ?? ''})}
                                     />
                                 ))}
                             </div>
@@ -572,7 +570,7 @@ export default function FounderDashboardWeb() {
                                 <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0 }}>Sentinel Governance Ledger</h2>
                                 <p style={{ fontSize: '12px', opacity: 0.5, marginTop: '4px' }}>Non-repudiable audit trails of institutional evolution.</p>
                             </div>
-                            <Shield size={24} color="var(--sanctuary-saffron)" />
+                            <Icon as={Shield} size={24} color="var(--sanctuary-saffron)" />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
                             {sentinelLogs.length > 0 ? sentinelLogs.map((log, i) => (
@@ -587,12 +585,12 @@ export default function FounderDashboardWeb() {
                                     <div style={{ fontSize: '12px', fontWeight: '600' }}>{log.executor_id || 'SYSTEM'}</div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span style={{ fontSize: '12px', opacity: 0.5 }}>{new Date(log.created_at).toLocaleString()}</span>
-                                        <Shield size={14} color="#10B981" />
+                                        <Icon as={Shield} size={14} color="#10B981" />
                                     </div>
                                 </div>
                             )) : (
                                 <div style={{ textAlign: 'center', padding: '60px', background: 'var(--surface)', opacity: 0.5 }}>
-                                    <Shield size={48} style={{ margin: '0 auto', marginBottom: '16px' } as any} />
+                                    <Icon as={Shield} size={48} style={{ margin: '0 auto', marginBottom: '16px' } as any} />
                                     <div>No critical governance events logged. Resonance is steady.</div>
                                 </div>
                             )}
@@ -621,8 +619,7 @@ function SchoolCard({ school, onPress }: { school: School; onPress: () => void }
             style={{
                 cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
                 width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0,
-                font: 'inherit',
-            }}
+                font: 'inherit'}}
             onClick={onPress}
         >
             <div className="card-body-inner">

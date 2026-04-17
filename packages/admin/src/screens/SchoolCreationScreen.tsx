@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { Icon, View, ScrollView, ActivityIndicator } from 'react-native';
 import {
     Box,
     VStack,
@@ -11,8 +11,7 @@ import {
     SanctuaryButton,
     StepIndicator,
     useThemedColors,
-    Theme
-} from '@repo/ui';
+     } from '@repo/ui';
 import { useSchoolCreation, SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS, STUDENT_TYPES, useStore, schoolAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
@@ -36,7 +35,7 @@ const STEP_LABELS = [
 
 export default function SchoolCreationScreen() {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const navigation = useNavigation<any>();
     const { user, setUser, setDemoMode } = useStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,14 +56,12 @@ export default function SchoolCreationScreen() {
             updateStep(state.step + 1);
         } else {
             handleFinalSubmit();
-        }
-    };
+        };
 
     const handleBack = () => {
         if (state.step > 1) {
             updateStep(state.step - 1);
-        }
-    };
+        };
 
     const handleFinalSubmit = async () => {
         if (!user) return;
@@ -74,15 +71,14 @@ export default function SchoolCreationScreen() {
 
             const hasPrimary = state.hierarchy.levels.some(l => l.toLowerCase().includes('primary'));
             const hasSecondary = state.hierarchy.levels.some(l => l.toLowerCase().includes('secondary'));
-            const type = (hasPrimary && hasSecondary) ? 'mixed' : hasPrimary ? 'primary' : 'secondary';
+            const type = { hasPrimary && hasSecondary) ? 'mixed' : hasPrimary ? 'primary' : 'secondary';
 
             // 1. Create School
             const school = await schoolAPI.create({
                 name: state.basicInfo.name || 'My Sanctuary',
                 handle: state.basicInfo.handle,
                 type: type,
-                created_by: user.id,
-            });
+                created_by: user.id});
 
             // 2. Create Community Group \u2014 creator is auto-added as owner
             const group = await communityAPI.createGroupWithOwner({
@@ -91,8 +87,7 @@ export default function SchoolCreationScreen() {
                 description: `Official community portal for ${school.name}`,
                 group_type: 'general',
                 join_policy: 'open',
-                school_id: school.id,
-            }, user.id);
+                school_id: school.id}, user.id);
 
             // 3. Update Global Store & Disable Demo Mode
             setUser({
@@ -112,8 +107,7 @@ export default function SchoolCreationScreen() {
             console.error('Failed to establish school', error);
         } finally {
             setIsSubmitting(false);
-        }
-    };
+        };
 
     const renderStep = () => {
         switch (state.step) {
@@ -127,15 +121,14 @@ export default function SchoolCreationScreen() {
                 return <StepHierarchy data={state.hierarchy} onUpdate={updateHierarchy} />;
             default:
                 return null;
-        }
-    };
+        };
 
     if (isSubmitting) {
         return (
             <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Establishing Sanctuary..." />
                 <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
+                    <Icon as={Activity}Indicator size="large" color={sanctuarySaffron} />
                     <Text sx={{ marginTop: Theme.spacing.lg, color: colors.textSecondary, textAlign: 'center' }}>
                         Constructing digital foundations...
                     </Text>
@@ -154,16 +147,16 @@ export default function SchoolCreationScreen() {
                             width: 100,
                             height: 100,
                             borderRadius: 50,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
+                            backgroundColor: sanctuarySaffron,
                             alignItems: 'center',
                             justifyContent: 'center',
                             elevation: 8,
-                            shadowColor: Theme.colors.sanctuarySaffron,
+                            shadowColor: sanctuarySaffron,
                             shadowOffset: { width: 0, height: 4 },
                             shadowOpacity: 0.3,
                             shadowRadius: 10
                         }}>
-                            <Check size={60} color={Theme.colors.obsidian} strokeWidth={3} />
+                            <Icon as={Check} size={60} color={obsidian} strokeWidth={3} />
                         </Box>
 
                         <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
@@ -185,7 +178,7 @@ export default function SchoolCreationScreen() {
                             borderWidth: 1,
                             borderColor: colors.border
                         }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: Theme.colors.sanctuarySaffron, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: sanctuarySaffron, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
                                 Share this QR to invite others
                             </Text>
                             <QRCodeGenerator
@@ -205,9 +198,8 @@ export default function SchoolCreationScreen() {
                                 onPress={() => navigation.navigate('ClassroomList')}
                                 action="primary"
                                 size="lg"
-                                fullWidth
-                            >
-                                Set Up School Structure →
+                                fullWidth>
+                                Set Up School Structure ?
                             </SanctuaryButton>
                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textAlign: 'center' }}>
                                 Add grades, sections and grade heads. Teachers join via the QR above, then create their own classrooms.
@@ -257,8 +249,7 @@ export default function SchoolCreationScreen() {
                             <SanctuaryButton
                                 variant="outline"
                                 onPress={handleBack}
-                                leftIcon={ArrowLeft}
-                            >
+                                leftIcon={ArrowLeft}>
                                 Back
                             </SanctuaryButton>
                         </Box>
@@ -266,8 +257,7 @@ export default function SchoolCreationScreen() {
                     <Box sx={{ flex: 2 }}>
                         <SanctuaryButton
                             onPress={handleNext}
-                            rightIcon={state.step === TOTAL_STEPS ? Check : ArrowRight}
-                        >
+                            rightIcon={state.step === TOTAL_STEPS ? Check : ArrowRight}>
                             {state.step === TOTAL_STEPS ? 'Complete Setup' : 'Continue'}
                         </SanctuaryButton>
                     </Box>

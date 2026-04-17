@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Platform, Linking } from 'react-native';
-import { Button, ButtonText, VStack, Text, Box, Theme, hapticLight } from '@repo/ui';
+import { Button, ButtonText, VStack, Text, Box,  hapticLight } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { supabase, identityAPI } from '@repo/core';
 
@@ -63,8 +63,7 @@ export const RedirectToApp = () => {
                 <Button 
                     size="sm"
                     onPress={handleOpenApp}
-                    className="bg-warning-500 rounded-full mt-2 self-start"
-                >
+                    className="bg-warning-500 rounded-full mt-2 self-start">
                     <ButtonText className="font-bold">
                         {session ? (t('auth.openAppAndSync') || "Open App & Sync") : (t('auth.openApp') || "Open App")}
                     </ButtonText>

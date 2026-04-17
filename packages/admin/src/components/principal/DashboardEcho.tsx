@@ -5,21 +5,19 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-    Box,
+import { Icon, Box,
     VStack,
     HStack,
     Text,
     Heading,
-    Theme,
+    
     useThemedColors,
     Spinner,
     Pressable,
     Input,
     InputField,
     Button,
-    ButtonText,
-} from '@repo/ui';
+    ButtonText} from '@repo/ui';
 import { MessageSquare, Heart, AlertTriangle, CheckCircle2, ChevronRight, Send } from 'lucide-react-native';
 import { supabase, useStore } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -40,12 +38,11 @@ const CATEGORY_ICONS = {
     support: MessageSquare,
     morale: Heart,
     facility: AlertTriangle,
-    recognition: CheckCircle2,
-};
+    recognition: CheckCircle2};
 
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const { user } = useStore();
     const [feedback, setFeedback] = useState<FeedbackEcho[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -75,15 +72,13 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
             setMockData();
         } finally {
             setIsLoading(false);
-        }
-    };
+        };
 
     const handleMarkRead = async (id: string) => {
         try {
             await supabase.from('school_echo_feedback').update({ is_read: true }).eq('id', id);
             setFeedback(prev => prev.map(e => e.id === id ? { ...e, is_read: true } : e));
-        } catch { /**/ }
-    };
+        } catch { /**/ };
 
     const handleSendReply = async (id: string) => {
         if (!replyText.trim() || !user?.id) return;
@@ -94,23 +89,20 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                 principal_response: replyText.trim(),
                 responded_by: user.id,
                 responded_at: now,
-                is_read: true,
-            }).eq('id', id);
+                is_read: true}).eq('id', id);
             setFeedback(prev => prev.map(e =>
                 e.id === id ? { ...e, principal_response: replyText.trim(), responded_at: now, is_read: true } : e
             ));
             setReplyingTo(null);
             setReplyText('');
         } catch { /**/ }
-        finally { setSavingReply(false); }
-    };
+        finally { setSavingReply(false); };
 
     const setMockData = () => {
         setFeedback([
             { id: '1', source: 'teacher', category: 'support', content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high', is_read: false, created_at: new Date().toISOString() },
             { id: '2', source: 'student', category: 'morale', content: 'The new common area is great! Everyone is enjoying the study space.', priority: 'low', is_read: true, created_at: new Date(Date.now() - 3600000).toISOString() },
-            { id: '3', source: 'teacher', category: 'facility', content: 'Multimedia projector in Room 4 is flickering intermittently.', priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
-        ]);
+            { id: '3', source: 'teacher', category: 'facility', content: 'Multimedia projector in Room 4 is flickering intermittently.', priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() }]);
     };
 
     if (isLoading) return <Spinner color={colors.action} />;
@@ -127,7 +119,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                     </Text>
                 </VStack>
                 {feedback.filter(e => !e.is_read).length > 0 && (
-                    <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 10, paddingHorizontal: Theme.spacing.sm, paddingVertical: 2 }}>
+                    <Box sx={{ backgroundColor: emberRed, borderRadius: 10, paddingHorizontal: Theme.spacing.sm, paddingVertical: 2 }}>
                         <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '800', color: '#fff' }}>
                             {feedback.filter(e => !e.is_read).length} new
                         </Text>
@@ -147,8 +139,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                     backgroundColor: item.is_read ? colors.tertiary : colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 4,
-                                    borderLeftColor: item.priority === 'high' ? Theme.colors.emberRed : colors.action,
-                                }}
+                                    borderLeftColor: item.priority === 'high' ? emberRed : colors.action}}
                             >
                                 <HStack sx={{ gap: Theme.spacing.md, alignItems: 'flex-start' }}>
                                     <Box sx={{ padding: Theme.spacing.sm, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable }}>
@@ -158,7 +149,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                         <HStack sx={{ justifyContent: 'space-between' }}>
                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={colors.textSecondary}>
                                                 {item.source.toUpperCase()} · {item.category.toUpperCase()}
-                                                {!item.is_read && <Text color={Theme.colors.emberRed}>  ●</Text>}
+                                                {!item.is_read && <Text color={emberRed}>  ●</Text>}
                                             </Text>
                                             <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textTertiary}>
                                                 {new Date(item.created_at).toLocaleDateString()}
@@ -207,7 +198,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                             </VStack>
                                         )}
                                     </VStack>
-                                    {!isExpanded && <ChevronRight size={16} color={colors.textTertiary} />}
+                                    {!isExpanded && <Icon as={ChevronRight} size={16} color={colors.textTertiary} />}
                                 </HStack>
                             </Box>
                         </Pressable>

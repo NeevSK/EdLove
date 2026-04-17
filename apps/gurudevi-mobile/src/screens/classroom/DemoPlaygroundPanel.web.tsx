@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DemoPlaygroundPanel.web.tsx
  *
  * Thin wrapper for the Classroom Demo UI.

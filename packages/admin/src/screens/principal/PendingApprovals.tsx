@@ -11,7 +11,7 @@ interface PendingApprovalsProps {
     onReject: (id: string) => void;
 }
 
-export const PendingApprovals: React.FC<PendingApprovalsProps> = ({ 
+export const PendingApprovals: React.FC<PendingApprovalsProps> = { { 
     leaves, 
     processingId, 
     onApprove, 

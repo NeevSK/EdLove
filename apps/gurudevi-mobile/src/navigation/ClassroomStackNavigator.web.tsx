@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -35,9 +35,7 @@ export default function ClassroomStackNavigatorWeb() {
             id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
-            }}
-        >
+                contentStyle: { backgroundColor: gradientNodes[0] }}}>
             <Stack.Screen name="ClassroomList" component={ClassroomScreenWeb} />
             <Stack.Screen name="ClassroomDetails" component={ClassroomDetailScreenWeb} />
             <Stack.Screen name="Attendance" component={AttendanceScreen} />

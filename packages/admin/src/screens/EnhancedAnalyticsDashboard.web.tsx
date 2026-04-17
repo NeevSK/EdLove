@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { VStack, HStack, Card,  } from '@repo/ui';
 import { useStudentPerformance, useClassPerformance, usePredictions, PerformanceDashboard, GPAInsights } from '@repo/analytics';
 
 interface EnhancedAnalyticsDashboardProps {
@@ -141,67 +141,53 @@ export default function EnhancedAnalyticsDashboard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
-  },
+    backgroundColor: '#FCF9F2'},
   headerCard: {
     padding: Theme.spacing.lg,
-    marginBottom: Theme.spacing.md,
-  },
+    marginBottom: Theme.spacing.md},
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.xs,
-  },
+    color: '#2A2318',
+    marginBottom: Theme.spacing.xs},
   subtitle: {
     fontSize: 16,
-    color: Theme.colors.textSecondary,
-    marginBottom: Theme.spacing.md,
-  },
+    color: '#6B6480',
+    marginBottom: Theme.spacing.md},
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.sm,
-  },
+    color: '#2A2318',
+    marginBottom: Theme.spacing.sm},
   metricsRow: {
     justifyContent: 'space-around',
-    marginBottom: Theme.spacing.lg,
-  },
+    marginBottom: Theme.spacing.lg},
   metricValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: Theme.colors.text,
-    textAlign: 'center',
-  },
+    color: '#2A2318',
+    textAlign: 'center'},
   metricLabel: {
     fontSize: 12,
-    color: Theme.colors.textSecondary,
-    textAlign: 'center',
-  },
+    color: '#6B6480',
+    textAlign: 'center'},
   atRiskText: {
     fontSize: 14,
-    color: Theme.colors.error,
-    marginBottom: Theme.spacing.xs,
-  },
+    color: error,
+    marginBottom: Theme.spacing.xs},
   moreText: {
     fontSize: 14,
-    color: Theme.colors.textSecondary,
-    fontStyle: 'italic',
-  },
+    color: '#6B6480',
+    fontStyle: 'italic'},
   noRiskText: {
     fontSize: 14,
-    color: Theme.colors.success,
-    fontWeight: '600',
-  },
+    color: success,
+    fontWeight: '600'},
   insightText: {
     fontSize: 14,
-    color: Theme.colors.text,
-    lineHeight: 20,
-  },
+    color: '#2A2318',
+    lineHeight: 20},
   actionText: {
     fontSize: 16,
-    color: Theme.colors.gurudeviBlue,
-    marginBottom: Theme.spacing.xs,
-  },
-});
+    color: gurudeviBlue,
+    marginBottom: Theme.spacing.xs}});

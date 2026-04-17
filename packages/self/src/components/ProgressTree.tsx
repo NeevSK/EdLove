@@ -1,20 +1,22 @@
 /**
  * GENTLE PROGRESS TREE
  * Visual growth (seed → sapling → tree) over months
- * NO streaks, NO pressure, just organic growth
+ * Standardized to Zero-Legacy: purged legacy components and integrated Sanctuary design system.
  */
 
 import React, { useState, useEffect } from 'react';
 import { 
     Box, 
     Heading, 
-    PositiveInvitation, 
-    SkeletonCard, 
     Text, 
     VStack, 
+    HStack,
     Icon,
     Progress,
-    ProgressFilledTrack
+    ProgressFilledTrack,
+    Spinner,
+    Button,
+    ButtonText
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
@@ -23,24 +25,26 @@ import Animated, {
     withTiming,
     withSpring,
     Easing,
-    FadeIn
+    FadeIn,
+    FadeInDown,
+    Layout
 } from 'react-native-reanimated';
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { Sparkles, Sprout, TreePine, Leaf, Flower2, Shapes } from 'lucide-react-native';
 
 interface ProgressTreeProps {
     userId?: string;
 }
 
-// Growth stages based on interaction count (very gentle curve)
 const GROWTH_STAGES = [
-    { minInteractions: 0, stage: 'seed', emoji: '🌱', label: 'Seed', description: 'Just beginning' },
-    { minInteractions: 5, stage: 'sprout', emoji: '🌱', label: 'Sprout', description: 'Taking root' },
-    { minInteractions: 15, stage: 'sapling', emoji: '🌿', label: 'Sapling', description: 'Growing steadily' },
-    { minInteractions: 30, stage: 'young_tree', emoji: '🌳', label: 'Young Tree', description: 'Finding strength' },
-    { minInteractions: 50, stage: 'tree', emoji: '🌲', label: 'Tree', description: 'Standing tall' },
-    { minInteractions: 75, stage: 'blooming', emoji: '🌸', label: 'Blooming', description: 'Flourishing' },
+    { minInteractions: 0, stage: 'seed', emoji: '🌱', label: 'Seed', description: 'Just beginning', icon: Sprout },
+    { minInteractions: 5, stage: 'sprout', emoji: '🌱', label: 'Sprout', description: 'Taking root', icon: Sprout },
+    { minInteractions: 15, stage: 'sapling', emoji: '🌿', label: 'Sapling', description: 'Growing steadily', icon: Leaf },
+    { minInteractions: 30, stage: 'young_tree', emoji: '🌳', label: 'Young Tree', description: 'Finding strength', icon: TreePine },
+    { minInteractions: 50, stage: 'tree', emoji: '🌲', label: 'Tree', description: 'Standing tall', icon: TreePine },
+    { minInteractions: 75, stage: 'blooming', emoji: '🌸', label: 'Blooming', description: 'Flourishing', icon: Flower2 },
 ];
 
 export default function ProgressTree({ userId }: ProgressTreeProps) {
@@ -51,8 +55,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     const [isLoading, setIsLoading] = useState(true);
     const { t } = useTranslation();
 
-    // Animation values
-    const treeScale = useSharedValue(0.8);
+    const treeScale = useSharedValue(0.9);
     const bloomOpacity = useSharedValue(0);
     const bloomScale = useSharedValue(0.5);
 
@@ -84,16 +87,15 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             setIsLoading(false);
         }
 
-        // Gentle breathing animation for the tree
         treeScale.value = withRepeat(
-            withTiming(1, {
+            withTiming(1.05, {
                 duration: 4000,
                 easing: Easing.inOut(Easing.ease)
             }),
             -1,
             true
         );
-    }, [userId, treeScale]);
+    }, [userId]);
 
     useEffect(() => {
         const stage = [...GROWTH_STAGES]
@@ -101,30 +103,28 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             .find(s => interactionCount >= s.minInteractions) || GROWTH_STAGES[0]!;
 
         if (stage.stage !== currentStage.stage && stage.minInteractions > 0) {
-            // Milestone animation
             setShowBloom(true);
             bloomOpacity.value = withTiming(1, { duration: 600 });
             bloomScale.value = withSpring(1.2, { damping: 10, stiffness: 100 });
 
             setTimeout(() => {
-                bloomOpacity.value = withTiming(0, { duration: 600 });
-                setTimeout(() => setShowBloom(false), 600);
+                bloomOpacity.value = withTiming(0, { duration: 1000 });
+                setTimeout(() => setShowBloom(false), 1000);
             }, 3000);
         }
 
         setCurrentStage(stage);
     }, [interactionCount]);
 
-    const treeStyle = useAnimatedStyle(() => ({
+    const treeAnimatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: treeScale.value }]
     }));
 
-    const bloomStyle = useAnimatedStyle(() => ({
+    const bloomAnimatedStyle = useAnimatedStyle(() => ({
         opacity: bloomOpacity.value,
         transform: [{ scale: bloomScale.value }]
     }));
 
-    // Calculate progress to next stage
     const nextStage = GROWTH_STAGES.find(s => s.minInteractions > interactionCount);
     const progressPercent = (nextStage && currentStage)
         ? ((interactionCount - currentStage.minInteractions) /
@@ -133,88 +133,131 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
     if (isLoading && userId) {
         return (
-            <VStack className="p-lg gap-lg">
-                <SkeletonCard height={40} />
-                <SkeletonCard height={280} />
-                <SkeletonCard height={80} />
+            <VStack className="gap-6 w-full animate-pulse">
+                <Box className="h-24 bg-white/5 rounded-3xl" />
+                <Box className="h-[350px] bg-white/5 rounded-[40px]" />
+                <Box className="h-32 bg-white/5 rounded-3xl" />
             </VStack>
         );
     }
 
     if (!userId) {
         return (
-            <PositiveInvitation
-                type="guest"
-                onAction={() => navigation.navigate('Auth' as never)}
-            />
+            <VStack className="items-center justify-center py-20 gap-8 bg-shroud rounded-[40px] border border-dashed border-white/10 px-8">
+                <VStack className="items-center gap-3">
+                    <Box className="w-16 h-16 rounded-[24px] bg-sanctuarySaffron/10 items-center justify-center">
+                        <Icon as={Shapes} size={32} className="text-sanctuarySaffron" />
+                    </Box>
+                    <Heading className="text-sacredWhite text-center" size="md">Begin Your Journey</Heading>
+                    <Text className="text-mistGray/60 text-center text-sm max-w-[280px]">
+                        Authentication is required to nurture your personal progress tree and track organic growth.
+                    </Text>
+                </VStack>
+                <Button 
+                    onPress={() => navigation.navigate('Auth' as never)}
+                    className="bg-sanctuarySaffron rounded-2xl h-14 px-10 shadow-lg shadow-sanctuarySaffron/20"
+                >
+                    <ButtonText className="text-obsidian font-black uppercase tracking-widest text-xs">Establish Presence</ButtonText>
+                </Button>
+            </VStack>
         );
     }
 
     return (
-        <VStack className="p-lg gap-lg">
-            {/* Header */}
-            <VStack className="gap-1">
-                <Heading className="text-sacredWhite" size="lg">
-                    {t('progressTree.title') || 'Gentle Progress'}
+        <VStack className="gap-8 w-full">
+            {/* Header Area */}
+            <VStack className="gap-1.5 px-1">
+                <HStack className="items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5 self-start">
+                    <Icon as={Sparkles} size={10} className="text-sanctuarySaffron" />
+                    <Text className="text-[9px] font-black uppercase tracking-[0.3em] text-mistGray/60">Vitality Manifest</Text>
+                </HStack>
+                <Heading className="text-sacredWhite font-black tracking-tighter" size="lg">
+                    {t('progressTree.title') || 'Organic Growth'}
                 </Heading>
-                <Text className="text-mistGray text-sm">
-                    {t('progressTree.subtitle') || 'Organic growth at your own pace.'}
-                </Text>
             </VStack>
 
-            {/* Tree Visualization */}
-            <Box className="items-center justify-center p-xl bg-obsidian rounded-comfortable min-h-[250px] relative border border-white/5 overflow-hidden">
-                {/* Bloom effect */}
+            {/* Tree Visualization (Main Core) */}
+            <Box className="items-center justify-center p-12 bg-shroud rounded-[48px] min-h-[380px] relative border border-white/5 overflow-hidden shadow-2xl">
+                {/* Background Ambient Glow */}
+                <Box className="absolute w-[250px] h-[250px] bg-emeraldGreen/5 blur-[120px] rounded-full" />
+                
+                {/* Milestone Bloom Overlay */}
                 {showBloom && (
-                    <Animated.View style={[bloomStyle]} className="absolute top-[20%] items-center justify-center z-10">
-                        <Text className="text-7xl mb-4">🌸</Text>
-                        <Text className="text-sanctuarySaffron text-lg font-bold text-center">
-                            Milestone reached!
-                        </Text>
+                    <Animated.View 
+                        style={[bloomAnimatedStyle, { position: 'absolute', top: 40, zIndex: 20, alignItems: 'center' }]}
+                    >
+                        <Box className="p-6 bg-sanctuarySaffron/10 rounded-[32px] border border-sanctuarySaffron/20 items-center gap-2 backdrop-blur-md">
+                            <Text className="text-6xl mb-2">🌸</Text>
+                            <Text className="text-sanctuarySaffron font-black uppercase tracking-[0.2em] text-[10px]">Threshold Transcended</Text>
+                        </Box>
                     </Animated.View>
                 )}
 
-                {/* Main tree */}
-                <Animated.View style={treeStyle} className="items-center justify-center">
-                    <Text className="text-[120px]">
+                {/* The Resonant Entity */}
+                <Animated.View style={[treeAnimatedStyle, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <Text className="text-[140px] drop-shadow-2xl select-none">
                         {currentStage.emoji}
                     </Text>
                 </Animated.View>
 
-                <VStack className="items-center mt-4">
-                    <Text className="text-sacredWhite text-2xl font-bold">
-                        {currentStage.label}
-                    </Text>
-                    <Text className="text-mistGray text-sm italic">
-                        {currentStage.description}
-                    </Text>
-                </VStack>
+                <Animated.View entering={FadeInDown.delay(200)} className="items-center mt-8">
+                    <HStack className="items-center gap-3">
+                        <Icon as={currentStage.icon} size={24} className="text-emeraldGreen opacity-40" />
+                        <Heading className="text-sacredWhite text-3xl font-black tracking-tighter">
+                            {currentStage.label}
+                        </Heading>
+                    </HStack>
+                    <Box className="mt-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/5">
+                        <Text className="text-mistGray/60 text-[11px] font-black uppercase tracking-[0.2em]">
+                            {currentStage.description}
+                        </Text>
+                    </Box>
+                </Animated.View>
             </Box>
 
-            {/* Progress indicator */}
-            <VStack className="bg-obsidian p-lg rounded-comfortable border border-white/5 gap-4">
-                <HStack className="justify-between items-center">
-                    <Text className="text-dimGray text-xs">
-                        {interactionCount} {t('progressTree.interactionsLabel') || 'nurturing actions'}
-                    </Text>
+            {/* Growth Metrics */}
+            <VStack className="bg-shroud p-8 rounded-[32px] border border-white/5 gap-6 shadow-xl">
+                <HStack className="justify-between items-end">
+                    <VStack className="gap-1">
+                        <Text className="text-mistGray/40 text-[9px] font-black uppercase tracking-widest pl-1">Accumulated Resonance</Text>
+                        <Heading size="xs" className="text-sacredWhite font-black tracking-tight pl-1">
+                            {interactionCount} <Text className="text-emeraldGreen opacity-80">{t('progressTree.interactionsLabel') || 'Vitality Totals'}</Text>
+                        </Heading>
+                    </VStack>
+                    
                     {nextStage && (
-                        <Text className="text-dimGray text-xs">
-                            {nextStage.minInteractions - interactionCount} more to {nextStage.label}
-                        </Text>
+                        <Box className="px-3 py-1.5 bg-white/5 rounded-xl border border-white/5">
+                            <Text className="text-mistGray/60 text-[10px] font-black uppercase tracking-widest">
+                                {nextStage.minInteractions - interactionCount} Units to <Text className="text-sanctuarySaffron">{nextStage.label}</Text>
+                            </Text>
+                        </Box>
                     )}
                 </HStack>
 
-                <Progress value={progressPercent} className="h-2 bg-white/5 rounded-full">
-                    <ProgressFilledTrack className="bg-emeraldGreen" />
-                </Progress>
+                <VStack className="gap-2">
+                    <Box className="h-2.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <Box 
+                            className="h-full bg-emeraldGreen transition-all duration-1000 ease-in-out"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </Box>
+                    <HStack className="justify-between px-1">
+                        <Text className="text-[8px] text-mistGray/20 font-black uppercase tracking-[0.3em]">Rooted</Text>
+                        <Text className="text-[8px] text-mistGray/20 font-black uppercase tracking-[0.3em]">Ascending</Text>
+                    </HStack>
+                </VStack>
             </VStack>
 
-            {/* Philosophy note */}
-            <Box className="p-md bg-white/5 rounded-comfortable">
-                <Text className="text-mistGray text-xs text-center italic">
-                    {t('progressTree.philosophy') || 'Growth happens in its own time. Every small action counts. 🌱'}
-                </Text>
-            </Box>
+            {/* Guiding Philosophy */}
+            <Animated.View entering={FadeInDown.delay(400)} className="p-6 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                <HStack className="items-center gap-4">
+                    <Icon as={Leaf} size={16} className="text-emeraldGreen/30" />
+                    <Text className="text-mistGray/40 text-[11px] font-medium leading-relaxed flex-1 italic">
+                        {t('progressTree.philosophy') || 'Growth is an organic unfolding, not a performance. Every breath, every reflection, and every moment of presence nourishes the whole. 🌱'}
+                    </Text>
+                </HStack>
+            </Animated.View>
         </VStack>
     );
 }
+

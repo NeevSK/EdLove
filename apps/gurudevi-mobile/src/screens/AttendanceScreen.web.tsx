@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AttendanceScreen.web.tsx
  *
  * Thin wrapper for the Classroom Attendance UI.

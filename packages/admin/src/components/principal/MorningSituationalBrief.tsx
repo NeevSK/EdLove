@@ -11,7 +11,7 @@
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
-import { Theme } from '@repo/ui';
+import {  } from '@repo/ui';
 import { staffManagementAPI, StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
 
 interface MorningSituationalBriefProps {
@@ -23,17 +23,16 @@ interface MorningSituationalBriefProps {
 function presenceColor(present: number, total: number): string {
   if (total === 0) return '#888';
   const pct = present / total;
-  if (pct >= 0.9) return Theme.colors.sageGreen ?? '#4caf50';
-  if (pct >= 0.7) return Theme.colors.amberGlow ?? '#ffc107';
-  return Theme.colors.emberRed ?? '#f44336';
+  if (pct >= 0.9) return sageGreen ?? '#4caf50';
+  if (pct >= 0.7) return amberGlow ?? '#ffc107';
+  return emberRed ?? '#f44336';
 }
 
 export default function MorningSituationalBrief({
   schoolId,
   onViewStaff,
-  onViewApprovals,
-}: MorningSituationalBriefProps) {
-  const colors = useThemedColors();
+  onViewApprovals}: MorningSituationalBriefProps) {
+  const colors = useTheme().scene;
   const [loading, setLoading] = useState(true);
   const [presence, setPresence] = useState<StaffPresenceSummary | null>(null);
   const [pulse, setPulse] = useState<StudentAttendancePulse | null>(null);
@@ -46,8 +45,7 @@ export default function MorningSituationalBrief({
       const [pres, puls, leaves] = await Promise.all([
         staffManagementAPI.getStaffPresenceSummary(schoolId),
         staffManagementAPI.getStudentAttendancePulse(schoolId),
-        staffManagementAPI.getPendingLeaves(schoolId),
-      ]);
+        staffManagementAPI.getPendingLeaves(schoolId)]);
       if (!mounted) return;
       setPresence(pres);
       setPulse(puls);
@@ -86,8 +84,7 @@ export default function MorningSituationalBrief({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,
-          }}
+            borderColor: colors.border}}
         >
           <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
             <Box
@@ -95,8 +92,7 @@ export default function MorningSituationalBrief({
                 width: 10,
                 height: 10,
                 borderRadius: 5,
-                backgroundColor: dotColor,
-              }}
+                backgroundColor: dotColor}}
             />
             <Text sx={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '600' }}>
               {presence
@@ -120,8 +116,7 @@ export default function MorningSituationalBrief({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,
-          }}
+            borderColor: colors.border}}
         >
           <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
             Student Attendance
@@ -132,8 +127,7 @@ export default function MorningSituationalBrief({
           <Text
             sx={{
               fontSize: 11,
-              color: attendanceDelta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336'),
-            }}
+              color: attendanceDelta >= 0 ? (sageGreen ?? '#4caf50') : (emberRed ?? '#f44336')}}
           >
             {pulse ? deltaLabel : ''}
           </Text>
@@ -147,8 +141,7 @@ export default function MorningSituationalBrief({
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors.border,
-          }}
+            borderColor: colors.border}}
         >
           <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
             At-Risk Students
@@ -159,9 +152,8 @@ export default function MorningSituationalBrief({
               fontWeight: '700',
               color:
                 (pulse?.atRiskCount ?? 0) > 0
-                  ? (Theme.colors.amberGlow ?? '#ffc107')
-                  : colors.text,
-            }}
+                  ? (amberGlow ?? '#ffc107')
+                  : colors.text}}
           >
             {pulse?.atRiskCount ?? 0}
           </Text>
@@ -177,8 +169,7 @@ export default function MorningSituationalBrief({
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
-              borderColor: colors.border,
-            }}
+              borderColor: colors.border}}
           >
             <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
               Pending Leaves
@@ -189,9 +180,8 @@ export default function MorningSituationalBrief({
                 fontWeight: '700',
                 color:
                   pendingLeaves > 0
-                    ? (Theme.colors.amberGlow ?? '#ffc107')
-                    : colors.text,
-              }}
+                    ? (amberGlow ?? '#ffc107')
+                    : colors.text}}
             >
               {pendingLeaves}
             </Text>

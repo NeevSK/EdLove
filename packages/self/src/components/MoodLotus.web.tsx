@@ -1,8 +1,7 @@
 /**
- * MoodLotus.web.tsx
- *
- * Web-specific implementation for the mood resonance module.
- * Purged raw HTML fragments and inline styles in favor of @repo/ui primitives and Sanctuary design tokens.
+ * MOOD LOTUS (Web)
+ * Somatic mood resonance and paced breathing module.
+ * Standardized to Zero-Legacy: purged raw HTML/inline styles and integrated Sanctuary design tokens.
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -17,11 +16,16 @@ import {
     Input, 
     InputField, 
     Icon,
-    SkeletonCard
+    SkeletonLoader,
+    Spinner,
+    Pressable,
+    Progress,
+    ProgressFilledTrack
 } from '@repo/ui';
 import { supabase, useTemporalStore } from '@repo/core';
 import { useMoodLogs } from '../hooks/useMoodLogs';
-import { Wind, CheckCircle, Info, Sparkles } from 'lucide-react-native';
+import { Wind, CheckCircle, Info, Sparkles, Clock, ChevronRight, Activity } from 'lucide-react-native';
+import Animated, { FadeIn, FadeInDown, Layout, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 interface MoodLotusProps {
     userId?: string;
@@ -33,11 +37,12 @@ const LOTUS_EMOJIS = ['', '🪷', '🌷', '🌸', '💐', '✨'];
 const MOOD_OPTION_LABELS = ['', 'Struggling', 'Challenging', 'Okay', 'Good', 'Flourishing'];
 const MOOD_TOKEN_COLORS = ['', 'text-emberRed', 'text-amberGlow', 'text-mistGray', 'text-emeraldGreen', 'text-sanctuarySaffron'];
 const MOOD_TOKEN_BGS = ['', 'bg-emberRed', 'bg-amberGlow', 'bg-mistGray', 'bg-emeraldGreen', 'bg-sanctuarySaffron'];
+const MOOD_ACCENTS = ['', '#FF453A', '#FF9F0A', '#6A6358', '#34C759', '#F6B100'];
 
 const BREATH_STEPS = [
-    { label: 'Breathe in', seconds: 4, color: 'text-indigo-400' },
-    { label: 'Hold', seconds: 4, color: 'text-amber-400' },
-    { label: 'Breathe out', seconds: 6, color: 'text-emeraldGreen' },
+    { label: 'Breathe In', seconds: 4, color: 'text-skyBlue', accent: '#3B82F6' },
+    { label: 'Sustain', seconds: 4, color: 'text-amberGlow', accent: '#FF9F0A' },
+    { label: 'Breathe Out', seconds: 6, color: 'text-emeraldGreen', accent: '#10B981' },
 ];
 
 export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }: MoodLotusProps) {
@@ -51,7 +56,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
     const [showBreath, setShowBreath] = useState(false);
     const [breathStep, setBreathStep] = useState(0);
     const [breathActive, setBreathActive] = useState(false);
-    const breathTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const breathTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         return () => {
@@ -107,153 +112,211 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
     };
 
     return (
-        <VStack className={`gap-lg ${isDetail ? 'max-w-4xl' : ''}`}>
-            <HStack className={`gap-xl ${isDetail ? 'flex-col md:flex-row' : 'flex-col'}`}>
-                {/* Main Interaction Area */}
-                <VStack className="flex-1 gap-lg">
-                    {/* Header */}
+        <VStack className={`gap-8 ${isDetail ? 'w-full' : ''}`}>
+            <HStack className={`gap-8 ${isDetail ? 'flex-col lg:flex-row' : 'flex-col'}`}>
+                {/* Interaction Mainframe */}
+                <VStack className="flex-1 gap-8">
+                    {/* Semantic Header */}
                     <HStack className="justify-between items-center">
-                        <VStack className="gap-0">
-                            <Text className="text-[10px] font-bold uppercase tracking-widest text-mistGray">Mood Resonance</Text>
-                            <Heading size="md" className="text-sacredWhite">How are you feeling?</Heading>
+                        <VStack className="gap-1">
+                            <HStack className="items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5 self-start">
+                                <Icon as={Activity} size={10} className="text-sanctuarySaffron" />
+                                <Text className="text-[9px] font-black uppercase tracking-[0.3em] text-mistGray/60">Somatic Resonance</Text>
+                            </HStack>
+                            <Heading size="md" className="text-sacredWhite font-black tracking-tighter">Your Current Presence</Heading>
                         </VStack>
                         {!isDetail && (
-                            <Button
-                                variant="outline"
-                                size="sm"
+                            <Pressable
                                 onPress={() => {
                                     if (showBreath) stopBreath();
                                     setShowBreath(v => !v);
                                 }}
-                                className="border-white/10 rounded-full h-9"
+                                className={`px-4 py-2 rounded-xl transition-all active:scale-95 ${showBreath ? 'bg-shroud border border-white/10' : 'bg-white/5 border border-white/10'}`}
                             >
-                                <Icon as={Wind} size={14} className="text-mistGray mr-2" />
-                                <ButtonText className="text-mistGray text-xs">Breath</ButtonText>
-                            </Button>
+                                <HStack className="items-center gap-2">
+                                    <Icon as={Wind} size={14} className={showBreath ? 'text-mistGray' : 'text-sanctuarySaffron'} />
+                                    <Text className={`text-[11px] font-black uppercase tracking-widest ${showBreath ? 'text-mistGray' : 'text-sanctuarySaffron'}`}>
+                                        Breath Control
+                                    </Text>
+                                </HStack>
+                            </Pressable>
                         )}
                     </HStack>
 
-                    {/* Lotus Display */}
-                    <VStack className="items-center justify-center p-xl bg-obsidian rounded-comfortable border border-white/5 min-h-[250px] relative overflow-hidden">
-                        <Box className={`absolute inset-0 opacity-10 blur-3xl rounded-full ${displayScore ? MOOD_TOKEN_BGS[displayScore] : ''}`} />
+                    {/* Aesthetic Lotus Visualization */}
+                    <Box className="items-center justify-center p-12 bg-shroud rounded-[40px] border border-white/5 min-h-[300px] relative overflow-hidden shadow-2xl">
+                        {/* Dynamic Glow Aura */}
+                        {displayScore && (
+                            <Box 
+                                className={`absolute w-[200px] h-[200px] blur-[100px] opacity-20 rounded-full transition-all duration-1000 ${MOOD_TOKEN_BGS[displayScore]}`}
+                                style={{ transform: [{ scale: 1.5 }] }}
+                            />
+                        )}
                         
-                        <Box className="transition-all duration-500 ease-in-out">
-                            <Text className={`${isDetail ? 'text-[120px]' : 'text-[80px]'} animate-in zoom-in duration-500`}>
+                        <Animated.View layout={Layout} entering={FadeIn.duration(600)}>
+                            <Text className={`${isDetail ? 'text-[140px]' : 'text-[100px]'} select-none transition-transform duration-500 hover:scale-110 drop-shadow-2xl`}>
                                 {LOTUS_EMOJIS[displayScore ?? 0] || '🪷'}
                             </Text>
-                        </Box>
+                        </Animated.View>
                         
                         {displayScore !== null && (
-                            <VStack className="items-center mt-4">
-                                <Text className={`text-xl font-bold ${MOOD_TOKEN_COLORS[displayScore]}`}>
+                            <Animated.View entering={FadeInDown} className="items-center mt-6">
+                                <Heading className={`text-2xl font-black tracking-tighter ${MOOD_TOKEN_COLORS[displayScore]}`}>
                                     {MOOD_OPTION_LABELS[displayScore]}
-                                </Text>
-                            </VStack>
+                                </Heading>
+                                <Text className="text-mistGray/40 text-[10px] uppercase font-black tracking-[0.2em] mt-1">Status Synchronized</Text>
+                            </Animated.View>
+                        )}
+                    </Box>
+
+                    {/* Petal Input Array */}
+                    <VStack className="gap-6">
+                        <HStack className="justify-center gap-4">
+                            {[1, 2, 3, 4, 5].map(score => (
+                                <Pressable
+                                    key={score}
+                                    onPress={() => !isPastView && setSelected(score)}
+                                    disabled={isPastView}
+                                    className={`w-16 h-16 rounded-[20px] items-center justify-center transition-all duration-300 active:scale-90 ${
+                                        selected === score 
+                                            ? `${MOOD_TOKEN_BGS[score]} border-2 border-white/20 shadow-xl -translate-y-2` 
+                                            : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                                    }`}
+                                >
+                                    <Text className="text-3xl">{LOTUS_EMOJIS[score]}</Text>
+                                </Pressable>
+                            ))}
+                        </HStack>
+
+                        {/* Intention Log */}
+                        {selected !== null && (
+                            <Animated.View entering={FadeInDown} layout={Layout} className="gap-4">
+                                <VStack className="gap-1.5">
+                                    <Text className="text-[10px] uppercase font-black tracking-widest text-mistGray/40 pl-1">Resonance Note</Text>
+                                    <Input className="bg-shroud border-white/10 h-14 rounded-2xl shadow-inner">
+                                        <InputField
+                                            placeholder={isPastView ? "Preserved Record" : "Capture the essence of this moment..."}
+                                            value={note}
+                                            onChangeText={setNote}
+                                            isDisabled={isPastView}
+                                            className="text-sacredWhite text-sm"
+                                            placeholderTextColor="#6A635844"
+                                        />
+                                    </Input>
+                                </VStack>
+                                <Button
+                                    onPress={handleSave}
+                                    isDisabled={saving || isPastView}
+                                    className={`h-14 rounded-2xl shadow-xl transition-all active:scale-[0.98] ${displayScore ? MOOD_TOKEN_BGS[displayScore] : 'bg-sanctuarySaffron'}`}
+                                >
+                                    <HStack className="items-center gap-2">
+                                        {saving ? <Spinner size="small" color="#FFFFFF" /> : saved ? <Icon as={CheckCircle} size={18} className="text-white" /> : null}
+                                        <ButtonText className="text-white font-black uppercase tracking-widest text-xs">
+                                            {saving ? 'Syncing...' : saved ? 'Resonance Captured' : 'Commit Intention'}
+                                        </ButtonText>
+                                    </HStack>
+                                </Button>
+                            </Animated.View>
                         )}
                     </VStack>
 
-                    {/* Selectable Petals */}
-                    <HStack className="justify-center gap-4">
-                        {[1, 2, 3, 4, 5].map(score => (
-                            <Button
-                                key={score}
-                                onPress={() => !isPastView && setSelected(score)}
-                                isDisabled={isPastView}
-                                className={`w-14 h-14 rounded-full transition-all duration-300 ${
-                                    selected === score 
-                                        ? `${MOOD_TOKEN_BGS[score]} border-2 border-white/20 scale-110 shadow-lg` 
-                                        : 'bg-white/5 border border-white/10 hover:bg-white/10'
-                                }`}
-                            >
-                                <Text className="text-2xl">{LOTUS_EMOJIS[score]}</Text>
-                            </Button>
-                        ))}
-                    </HStack>
-
-                    {/* Logging Form */}
-                    {selected !== null && (
-                        <VStack className="gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <Input className="bg-obsidian border-white/10 h-14 rounded-comfortable">
-                                <InputField
-                                    placeholder={isPastView ? "Historical resonance view" : "What is on your mind? (optional)"}
-                                    value={note}
-                                    onChangeText={setNote}
-                                    isDisabled={isPastView}
-                                    className="text-sacredWhite"
-                                    placeholderTextColor="#6A6358"
-                                />
-                            </Input>
-                            <Button
-                                onPress={handleSave}
-                                isDisabled={saving || isPastView}
-                                className={`h-14 rounded-full ${displayScore ? MOOD_TOKEN_BGS[displayScore] : 'bg-sanctuarySaffron'}`}
-                            >
-                                <ButtonText className="text-white font-bold">
-                                    {saving ? 'Syncing...' : saved ? '✓ Logged' : 'Log Mood'}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    )}
-
-                    {/* Breath Guide */}
+                    {/* Dynamic Paced Breathing (Web Optimized) */}
                     {(showBreath || isDetail) && (
-                        <Box className="p-lg bg-indigo-400/5 rounded-comfortable border border-indigo-400/10 items-center justify-center">
-                            <Text className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Paced Breathing</Text>
-                            {breathActive ? (
-                                <VStack className="items-center gap-4">
-                                    <Text className={`text-3xl font-extrabold transition-colors duration-500 ${BREATH_STEPS[breathStep]?.color}`}>
-                                        {BREATH_STEPS[breathStep]?.label}
-                                    </Text>
-                                    <HStack className="items-center gap-2">
-                                        <Icon as={Clock} className="text-mistGray" size={14} />
-                                        <Text className="text-mistGray font-bold">{BREATH_STEPS[breathStep]?.seconds}s</Text>
+                        <Animated.View entering={FadeInDown} layout={Layout}>
+                            <Box className="p-8 bg-skyBlue/5 rounded-[32px] border border-skyBlue/10 items-center justify-center shadow-xl">
+                                <VStack className="items-center gap-6 w-full">
+                                    <HStack className="items-center gap-2 px-3 py-1 bg-skyBlue/10 rounded-full border border-skyBlue/20">
+                                        <Icon as={Wind} size={10} className="text-skyBlue" />
+                                        <Text className="text-[9px] font-black uppercase tracking-[0.2em] text-skyBlue">Nervous System Calibration</Text>
                                     </HStack>
-                                    <Button variant="outline" size="sm" onPress={stopBreath} className="rounded-full border-white/10 mt-2">
-                                        <ButtonText className="text-dimGray">Stop</ButtonText>
-                                    </Button>
+
+                                    {breathActive ? (
+                                        <VStack className="items-center gap-6">
+                                            <VStack className="items-center gap-1">
+                                                <Text className={`text-4xl font-black tracking-tighter transition-colors duration-500 ${BREATH_STEPS[breathStep]?.color}`}>
+                                                    {BREATH_STEPS[breathStep]?.label}
+                                                </Text>
+                                                <HStack className="items-center gap-2 opacity-40">
+                                                    <Icon as={Clock} className="text-mistGray" size={12} />
+                                                    <Text className="text-[10px] text-mistGray font-black uppercase tracking-widest">
+                                                        {BREATH_STEPS[breathStep]?.seconds}s Remaining
+                                                    </Text>
+                                                </HStack>
+                                            </VStack>
+                                            
+                                            {/* Pulsing Visualizer */}
+                                            <Box 
+                                                className="w-24 h-24 rounded-full transition-all duration-700 items-center justify-center"
+                                                style={{ 
+                                                    background: `radial-gradient(circle, ${BREATH_STEPS[breathStep]?.accent}44 0%, transparent 70%)`,
+                                                    transform: [{ scale: breathStep === 1 ? 1.5 : breathStep === 2 ? 0.8 : 1.2 }]
+                                                }}
+                                            />
+
+                                            <Button variant="outline" size="sm" onPress={stopBreath} className="rounded-xl border-white/10 h-10 px-8">
+                                                <ButtonText className="text-mistGray text-[10px] font-black uppercase tracking-widest">End Session</ButtonText>
+                                            </Button>
+                                        </VStack>
+                                    ) : (
+                                        <VStack className="items-center gap-6">
+                                            <Text className="text-sm text-mistGray/60 text-center max-w-sm leading-relaxed font-medium">
+                                                Harmonize your pulse with a 4-4-6 rhythmic flow designed to root your presence and dissolve cognitive static.
+                                            </Text>
+                                            <Button onPress={startBreath} className="bg-skyBlue rounded-2xl h-12 px-10 shadow-lg shadow-skyBlue/20">
+                                                <HStack className="items-center gap-2">
+                                                    <Icon as={Activity} size={16} className="text-white" />
+                                                    <ButtonText className="text-white font-black uppercase tracking-widest text-[11px]">Initiate Flow</ButtonText>
+                                                </HStack>
+                                            </Button>
+                                        </VStack>
+                                    )}
                                 </VStack>
-                            ) : (
-                                <VStack className="items-center gap-4">
-                                    <Text className="text-sm text-mistGray text-center italic max-w-xs">
-                                        A 4-4-6 cycle to ground your energy and calm the nervous system.
-                                    </Text>
-                                    <Button onPress={startBreath} className="bg-indigo-500 rounded-full h-11 px-8">
-                                        <ButtonText className="text-white font-bold">Begin Breath</ButtonText>
-                                    </Button>
-                                </VStack>
-                            )}
-                        </Box>
+                            </Box>
+                        </Animated.View>
                     )}
                 </VStack>
 
-                {/* History Sidebar (Detail Only) */}
+                {/* Historical Temporal Sidebar */}
                 {isDetail && (
-                    <VStack className="w-full md:w-80 gap-lg">
+                    <VStack className="w-full lg:w-[360px] gap-6">
                         <HStack className="items-center gap-2 px-1">
-                            <Icon as={Clock} className="text-mistGray" size={16} />
-                            <Text className="text-[11px] font-bold uppercase tracking-widest text-mistGray">Recent History</Text>
+                            <Box className="w-6 h-6 rounded-full bg-mistGray/10 items-center justify-center">
+                                <Icon as={Clock} className="text-mistGray" size={12} />
+                            </Box>
+                            <Heading size="xs" className="text-mistGray/60 font-black uppercase tracking-[0.2em]">Temporal Echoes</Heading>
                         </HStack>
                         
                         <VStack className="gap-3">
-                            {!isLoading && moodHistory.length > 0 ? (
-                                moodHistory.slice(0, 10).map(m => (
-                                    <HStack key={m.id} className="p-4 bg-obsidian rounded-comfortable border border-white/5 items-center gap-4">
-                                        <Box className={`w-10 h-10 rounded-full items-center justify-center shadow-sm ${MOOD_TOKEN_BGS[m.mood_score]}`}>
-                                            <Text className="text-xl">{LOTUS_EMOJIS[m.mood_score]}</Text>
-                                        </Box>
-                                        <VStack className="flex-1 gap-0.5">
-                                            <Text className="text-sm font-bold text-sacredWhite">{MOOD_OPTION_LABELS[m.mood_score]}</Text>
-                                            <Text className="text-[10px] text-dimGray italic">
-                                                {new Date(m.created_at).toLocaleDateString()} at {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </Text>
-                                            {m.note && (
-                                                <Text className="text-xs text-mistGray mt-1.5 italic line-clamp-2">"{m.note}"</Text>
-                                            )}
-                                        </VStack>
-                                    </HStack>
+                            {isLoading ? (
+                                [1, 2, 3, 4].map(i => <Box key={i} className="h-24 bg-shroud rounded-2xl border border-white/5 animate-pulse" />)
+                            ) : moodHistory.length > 0 ? (
+                                moodHistory.slice(0, 10).map((m, idx) => (
+                                    <Animated.View key={m.id} entering={FadeInDown.delay(idx * 100)}>
+                                        <HStack className="p-5 bg-shroud rounded-[24px] border border-white/5 items-center gap-5 hover:border-white/10 transition-colors">
+                                            <Box className={`w-12 h-12 rounded-[18px] items-center justify-center shadow-lg ${MOOD_TOKEN_BGS[m.mood_score]}`}>
+                                                <Text className="text-2xl">{LOTUS_EMOJIS[m.mood_score]}</Text>
+                                            </Box>
+                                            <VStack className="flex-1">
+                                                <HStack className="justify-between items-center w-full">
+                                                    <Text className="text-sm font-black tracking-tight text-sacredWhite">{MOOD_OPTION_LABELS[m.mood_score]}</Text>
+                                                    <Icon as={ChevronRight} size={12} className="text-mistGray/20" />
+                                                </HStack>
+                                                <Text className="text-[10px] text-mistGray/40 uppercase font-black tracking-widest">
+                                                    {new Date(m.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })} • {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </Text>
+                                                {m.note && (
+                                                    <Box className="mt-3 p-3 bg-white/5 rounded-xl border border-white/5">
+                                                        <Text className="text-[11px] text-mistGray/80 leading-relaxed italic">"{m.note}"</Text>
+                                                    </Box>
+                                                )}
+                                            </VStack>
+                                        </HStack>
+                                    </Animated.View>
                                 ))
                             ) : (
-                                <SkeletonCard height={80} />
+                                <Box className="py-12 items-center opacity-20">
+                                    <Text className="text-xs font-black uppercase tracking-widest text-mistGray">No echoes found</Text>
+                                </Box>
                             )}
                         </VStack>
                     </VStack>
@@ -262,3 +325,4 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
         </VStack>
     );
 }
+

@@ -4,8 +4,7 @@ import {
     Box, 
     Text, 
     InfoIcon,
-    SanctuaryModal,
-} from '@repo/ui';
+    SanctuaryModal} from '@repo/ui';
 import { Plus, Clock } from 'lucide-react-native';
 import { PRINCIPAL_FEATURE_REGISTRY } from './PrincipalFeatureRegistry';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
@@ -29,7 +28,7 @@ interface InstitutionalArcCardProps {
  * 2. [+] Action — CRUD (Add/Update)
  * 3. [⌛] History — Temporal Navigator
  */
-export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
+export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = { {
     featureId,
     title,
     children,
@@ -93,8 +92,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 borderRadius: 999,
                                 backgroundColor: 'var(--background-alt)',
                                 color: 'var(--ink-ghost)',
-                                letterSpacing: 0.4,
-                            }}
+                                letterSpacing: 0.4}}
                         >
                             {scopeBadgeLabel}
                         </span>
@@ -128,7 +126,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 backgroundColor: 'var(--lotus-soft)'
                             }}
                         >
-                            <Plus size={16} color="var(--lotus)" />
+                            <Icon as={Plus} size={16} color="var(--lotus)" />
                         </Pressable>
                     )}
 
@@ -147,7 +145,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 justifyContent: 'center'
                             }}
                         >
-                            <Clock size={16} color="var(--ink-ghost)" />
+                            <Icon as={Clock} size={16} color="var(--ink-ghost)" />
                         </Pressable>
                     )}
                 </div>

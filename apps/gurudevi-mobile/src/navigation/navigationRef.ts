@@ -1,4 +1,4 @@
-/**
+﻿/**
  * navigationRef.ts
  *
  * Shared imperative navigation reference  used by components that need to

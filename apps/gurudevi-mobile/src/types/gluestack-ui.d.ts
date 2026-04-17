@@ -1,4 +1,4 @@
-declare module '@gluestack-ui/themed' {
+﻿declare module '@gluestack-ui/themed' {
     export const GluestackUIProvider: any;
     export const VStack: any;
     export const HStack: any;

@@ -33,6 +33,5 @@ export function useGuardianWorkspaceData(guardianId: string) {
     dashboard,
     isLoading,
     error,
-    refreshData: loadDashboard,
-  };
+    refreshData: loadDashboard};
 }

@@ -1,7 +1,7 @@
-import { supabase } from '@repo/core';
+﻿import { supabase } from '@repo/core';
 import { APIError, StaffAttendance, StaffLeave } from '@repo/core';
 
-export const staffAPI = {
+export const staffAPI = { 
     /**
      * Check-in staff
      */
@@ -105,5 +105,4 @@ export const staffAPI = {
         }
 
         return data as StaffLeave[];
-    }
-};
+    };

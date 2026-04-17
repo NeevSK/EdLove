@@ -22,8 +22,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'};
 
 // \u2500\u2500 Types \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
@@ -116,8 +115,7 @@ As a founder, they hold vision across many schools. They think in ecosystems and
             full_moon: 'Full moon \u2014 illumination and completion. Help them see clearly what has been accomplished and what needs releasing.',
             waning_gibbous: 'The moon is waning \u2014 reflection and gratitude. This is a time to honour what has been done.',
             last_quarter: 'Last quarter \u2014 release and forgiveness. Help them let go of what no longer serves.',
-            waning_crescent: 'Waning crescent \u2014 rest and restoration. This is the quietest phase. Honour the need for stillness.',
-        };
+            waning_crescent: 'Waning crescent \u2014 rest and restoration. This is the quietest phase. Honour the need for stillness.'};
         const moonNote = moonGuide[moon.toLowerCase().replace(' ', '_')];
         if (moonNote) moonContext = `\n${moonNote}`;
     }
@@ -168,15 +166,12 @@ async function callOpenAI(
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-        },
+            'Content-Type': 'application/json'},
         body: JSON.stringify({
             model: 'gpt-4o',
             messages,
             max_tokens: 512,
-            temperature: 0.7,
-        }),
-    });
+            temperature: 0.7})});
 
     if (!response.ok) {
         const err = await response.text();
@@ -205,15 +200,12 @@ async function callClaude(
         headers: {
             'x-api-key': apiKey,
             'anthropic-version': '2023-06-01',
-            'Content-Type': 'application/json',
-        },
+            'Content-Type': 'application/json'},
         body: JSON.stringify({
             model: 'claude-3-5-sonnet-20241022',
             system: systemPrompt,
             messages,
-            max_tokens: 512,
-        }),
-    });
+            max_tokens: 512})});
 
     if (!response.ok) {
         const err = await response.text();
@@ -242,8 +234,7 @@ Deno.serve(async (req: Request) => {
         if (!authHeader) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                 status: 401,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }});
         }
 
         const token = authHeader.replace('Bearer ', '');
@@ -252,8 +243,7 @@ Deno.serve(async (req: Request) => {
         if (authError || !user) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                 status: 401,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }});
         }
 
         const body: RequestBody = await req.json();
@@ -262,8 +252,7 @@ Deno.serve(async (req: Request) => {
         if (!message?.trim()) {
             return new Response(JSON.stringify({ error: 'Message is required' }), {
                 status: 400,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }});
         }
 
         // Build the contextual system prompt
@@ -284,8 +273,7 @@ Deno.serve(async (req: Request) => {
         }
 
         return new Response(JSON.stringify({ reply }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }});
 
     } catch (err) {
         console.error('[ai-assistant] error:', err);

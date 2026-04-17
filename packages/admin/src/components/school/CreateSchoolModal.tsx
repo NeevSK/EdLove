@@ -13,8 +13,7 @@ import {
     ButtonText,
     Spinner,
     Icon,
-    Theme,
-} from '@repo/ui';
+    } from '@repo/ui';
 import { 
     CheckCircle, 
     School as SchoolIcon, 
@@ -59,12 +58,11 @@ export default function CreateSchoolModal({
     isOpen,
     onClose,
     onSuccess,
-    initialData,
-}: CreateSchoolModalProps) {
+    initialData}: CreateSchoolModalProps) {
     const navigation = useNavigation<any>();
     const user = useStore((state) => state.user);
     const setUser = useStore((state) => state.setUser);
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const { glass } = useTheme();
     const isEdit = !!initialData;
     
@@ -111,8 +109,7 @@ export default function CreateSchoolModal({
         handleClose();
         navigation.navigate('FounderSchoolDashboard' as never, {
             schoolId: sId,
-            userId: user?.id ?? '',
-        } as never);
+            userId: user?.id ?? ''} as never);
     };
 
     const handleSubmit = async () => {
@@ -124,7 +121,7 @@ export default function CreateSchoolModal({
             const userId = await identityAPI.getMyInternalId();
             if (!userId) throw new Error('Not authenticated');
 
-            const payload: any = {
+            const payload: any  = {
                 name: state.basicInfo.name.trim(),
                 handle: state.basicInfo.handle.trim(),
                 official_type: state.basicInfo.officialType,
@@ -163,8 +160,7 @@ export default function CreateSchoolModal({
                         description: `Official community portal for ${state.basicInfo.name.trim()}`,
                         type: 'general',
                         join_policy: 'open',
-                        school_id: school.id,
-                    }, userId);
+                        school_id: school.id}, userId);
                     communityGroupId = group.id;
                 } catch (groupErr) {
                     console.warn('Failed to create default group:', groupErr);
@@ -181,8 +177,7 @@ export default function CreateSchoolModal({
             setError(message);
         } finally {
             setIsSubmitting(false);
-        }
-    };
+        };
 
     const renderFooter = () => {
         if (state.step === 5) {
@@ -191,10 +186,10 @@ export default function CreateSchoolModal({
                     <Button
                         action="primary"
                         onPress={handleEnterDashboard}
-                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
+                        sx={{ backgroundColor: sanctuarySaffron }}
                     >
-                        <ButtonText color={Theme.colors.sacredWhite}>Enter Dashboard</ButtonText>
-                        <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} />
+                        <ButtonText color={sacredWhite}>Enter Dashboard</ButtonText>
+                        <Icon as={ChevronRight} color={sacredWhite} sx={{ marginLeft: 8 }} />
                     </Button>
                 </VStack>
             );
@@ -217,18 +212,17 @@ export default function CreateSchoolModal({
                     onPress={state.step === 4 ? handleSubmit : () => updateStep(state.step + 1)}
                     sx={{
                         flex: 2,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                    }}
+                        backgroundColor: sanctuarySaffron}}
                     isDisabled={isSubmitting || (state.step === 1 && !state.basicInfo.name)}
                 >
                     {isSubmitting ? (
-                        <Spinner color={Theme.colors.sacredWhite} />
+                        <Spinner color={sacredWhite} />
                     ) : (
                         <HStack alignItems="center">
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={sacredWhite}>
                                 {state.step === 4 ? 'Establish Sanctuary' : 'Next Step'}
                             </ButtonText>
-                            {state.step < 4 && <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} />}
+                            {state.step < 4 && <Icon as={ChevronRight} color={sacredWhite} sx={{ marginLeft: 8 }} />}
                         </HStack>
                     )}
                 </Button>
@@ -253,8 +247,7 @@ export default function CreateSchoolModal({
                                     height: 4,
                                     flex: 1,
                                     borderRadius: 2,
-                                    backgroundColor: s <= state.step ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                }}
+                                    backgroundColor: s <= state.step ? sanctuarySaffron : colors.tertiary}}
                             />
                         ))}
                     </HStack>
@@ -298,11 +291,11 @@ export default function CreateSchoolModal({
                                                     paddingVertical: 8,
                                                     borderRadius: 20,
                                                     borderWidth: 1,
-                                                    borderColor: state.basicInfo.officialType === type.key ? Theme.colors.sanctuarySaffron : colors.border,
+                                                    borderColor: state.basicInfo.officialType === type.key ? sanctuarySaffron : colors.border,
                                                     backgroundColor: state.basicInfo.officialType === type.key ? 'rgba(212,132,58,0.1)' : 'transparent'
                                                 }}
                                             >
-                                                <Text sx={{ fontSize: 12, color: state.basicInfo.officialType === type.key ? Theme.colors.sanctuarySaffron : colors.text }}>
+                                                <Text sx={{ fontSize: 12, color: state.basicInfo.officialType === type.key ? sanctuarySaffron : colors.text }}>
                                                     {type.en}
                                                 </Text>
                                             </TouchableOpacity>
@@ -330,11 +323,11 @@ export default function CreateSchoolModal({
                                                         paddingVertical: 10,
                                                         borderRadius: 12,
                                                         borderWidth: 1,
-                                                        borderColor: state.location.provinceId === p.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                        borderColor: state.location.provinceId === p.id ? sanctuarySaffron : colors.border,
                                                         backgroundColor: state.location.provinceId === p.id ? 'rgba(212,132,58,0.1)' : colors.tertiary
                                                     }}
                                                 >
-                                                    <Text sx={{ fontWeight: '600', color: state.location.provinceId === p.id ? Theme.colors.sanctuarySaffron : colors.text }}>
+                                                    <Text sx={{ fontWeight: '600', color: state.location.provinceId === p.id ? sanctuarySaffron : colors.text }}>
                                                         {p.en}
                                                     </Text>
                                                 </TouchableOpacity>
@@ -358,11 +351,11 @@ export default function CreateSchoolModal({
                                                         paddingVertical: 8,
                                                         borderRadius: 8,
                                                         borderWidth: 1,
-                                                        borderColor: state.location.districtId === d.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                        borderColor: state.location.districtId === d.id ? sanctuarySaffron : colors.border,
                                                         backgroundColor: state.location.districtId === d.id ? 'rgba(212,132,58,0.05)' : 'transparent'
                                                     }}
                                                 >
-                                                    <Text sx={{ fontSize: 13, color: state.location.districtId === d.id ? Theme.colors.sanctuarySaffron : colors.text }}>
+                                                    <Text sx={{ fontSize: 13, color: state.location.districtId === d.id ? sanctuarySaffron : colors.text }}>
                                                         {d.en}
                                                     </Text>
                                                 </TouchableOpacity>
@@ -406,7 +399,7 @@ export default function CreateSchoolModal({
                                                     padding: 16,
                                                     borderRadius: 16,
                                                     borderWidth: 2,
-                                                    borderColor: state.demographics.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                    borderColor: state.demographics.studentType === type.id ? sanctuarySaffron : colors.border,
                                                     backgroundColor: state.demographics.studentType === type.id ? 'rgba(212,132,58,0.05)' : colors.tertiary,
                                                     alignItems: 'center'
                                                 }}
@@ -434,11 +427,11 @@ export default function CreateSchoolModal({
                                                     paddingVertical: 10,
                                                     borderRadius: 12,
                                                     borderWidth: 1,
-                                                    borderColor: state.demographics.religiousAffiliation === r.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                    borderColor: state.demographics.religiousAffiliation === r.id ? sanctuarySaffron : colors.border,
                                                     backgroundColor: state.demographics.religiousAffiliation === r.id ? 'rgba(212,132,58,0.1)' : 'transparent'
                                                 }}
                                             >
-                                                <Text sx={{ fontSize: 13, color: state.demographics.religiousAffiliation === r.id ? Theme.colors.sanctuarySaffron : colors.text }}>
+                                                <Text sx={{ fontSize: 13, color: state.demographics.religiousAffiliation === r.id ? sanctuarySaffron : colors.text }}>
                                                     {r.en}
                                                 </Text>
                                             </TouchableOpacity>
@@ -469,7 +462,7 @@ export default function CreateSchoolModal({
                                     <VStack sx={{ gap: 16 }}>
                                         <HStack sx={{ gap: 12, alignItems: 'center' }}>
                                             <Box sx={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(212,132,58,0.1)', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Icon as={SchoolIcon} color={Theme.colors.sanctuarySaffron} size={20} />
+                                                <Icon as={SchoolIcon} color={sanctuarySaffron} size={20} />
                                             </Box>
                                             <VStack>
                                                 <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{state.basicInfo.name}</Text>
@@ -524,11 +517,11 @@ export default function CreateSchoolModal({
                                 <Box sx={{ backgroundColor: colors.tertiary, padding: 16, borderRadius: 16, width: '100%' }}>
                                     <VStack sx={{ gap: 12 }}>
                                         <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                            <Icon as={BookOpen} color={Theme.colors.sanctuarySaffron} size={16} />
+                                            <Icon as={BookOpen} color={sanctuarySaffron} size={16} />
                                             <Text sx={{ fontSize: 14 }}>Academic Cycle Initialized</Text>
                                         </HStack>
                                         <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                            <Icon as={MessageSquare} color={Theme.colors.sanctuarySaffron} size={16} />
+                                            <Icon as={MessageSquare} color={sanctuarySaffron} size={16} />
                                             <Text sx={{ fontSize: 14 }}>Community Space Ready</Text>
                                         </HStack>
                                     </VStack>

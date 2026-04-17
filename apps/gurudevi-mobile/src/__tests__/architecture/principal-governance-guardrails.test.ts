@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+﻿const fs = require('node:fs');
 const path = require('node:path');
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
@@ -9,8 +9,7 @@ describe('Principal governance boundary guardrails', () => {
   it('prevents direct supabase imports in principal web views', () => {
     const principalFiles = [
       path.join(PACKAGES_ROOT, 'admin/src/screens/PrincipalDashboard.web.tsx'),
-      path.join(PACKAGES_ROOT, 'classroom/src/screens/PrincipalDashboard.web.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'classroom/src/screens/PrincipalDashboard.web.tsx')];
 
     principalFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -26,8 +25,7 @@ describe('Principal governance boundary guardrails', () => {
   it('prevents classroom package from importing admin governance orchestrators', () => {
     const classroomFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/screens/PrincipalDashboard.web.tsx'),
-      path.join(PACKAGES_ROOT, 'classroom/src/screens/PrincipalDashboard.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'classroom/src/screens/PrincipalDashboard.tsx')];
 
     classroomFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -43,8 +41,7 @@ describe('Principal governance boundary guardrails', () => {
   it('ensures principal-only actions have school.manage capability checks', () => {
     const adminFiles = [
       path.join(PACKAGES_ROOT, 'admin/src/screens/PrincipalDashboard.web.tsx'),
-      path.join(PACKAGES_ROOT, 'admin/src/screens/PrincipalNativeWorkspace.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'admin/src/screens/PrincipalNativeWorkspace.tsx')];
 
     adminFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -61,8 +58,7 @@ describe('Principal governance boundary guardrails', () => {
   it('ensures app-level principal screens remain thin adapters', () => {
     const appPrincipalFiles = [
       path.join(APP_ROOT, 'src/screens/PrincipalDashboard.web.tsx'),
-      path.join(APP_ROOT, 'src/screens/classroom/views/PrincipalSchoolView.web.tsx'),
-    ];
+      path.join(APP_ROOT, 'src/screens/classroom/views/PrincipalSchoolView.web.tsx')];
 
     appPrincipalFiles.forEach(file => {
       if (fs.existsSync(file)) {

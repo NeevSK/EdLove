@@ -1,8 +1,7 @@
 /**
- * DailyRhythm.web.tsx
- *
+ * DAILY RHYTHM COMPONENT (WEB)
  * Web-specific implementation for the timetable manager.
- * Purged raw HTML/inline-styles in favor of @repo/ui primitives and NativeWind v4.
+ * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
 import React, { useState } from 'react';
@@ -24,13 +23,11 @@ import {
     SelectPortal,
     SelectBackdrop,
     SelectContent,
-    SelectDragIndicatorWrapper,
-    SelectDragIndicator,
     SelectItem
 } from '@repo/ui';
 import { useTimetable } from '../hooks/useTimetable';
 import type { Period } from '../types';
-import { Plus, Trash2, Clock, ChevronDown } from 'lucide-react-native';
+import { Plus, Trash2, Clock, ChevronDown, Calendar, MapPin, Activity } from 'lucide-react-native';
 
 const DAYS = [
     { id: 1, label: 'Mon' },
@@ -41,16 +38,10 @@ const DAYS = [
 ];
 
 const PERIOD_TYPES: Array<{ value: Period['type']; label: string }> = [
-    { value: 'subject', label: 'Subject' },
-    { value: 'relief',  label: 'Relief / Cover' },
-    { value: 'interval', label: 'Interval / Break' },
+    { value: 'subject', label: 'Standard Focus' },
+    { value: 'relief',  label: 'Relief / Alternative' },
+    { value: 'interval', label: 'Internal Interval' },
 ];
-
-const TYPE_CLASSES: Record<Period['type'], string> = {
-    subject: 'border-skyBlue text-skyBlue bg-skyBlue/10',
-    relief: 'border-emeraldGreen text-emeraldGreen bg-emeraldGreen/10',
-    interval: 'border-mistGray text-mistGray bg-mistGray/10'
-};
 
 export default function DailyRhythm() {
     const today = new Date().getDay();
@@ -96,40 +87,44 @@ export default function DailyRhythm() {
     };
 
     return (
-        <VStack className="gap-lg">
+        <VStack className="gap-8">
             {/* Header */}
             <HStack className="items-center justify-between">
-                <Heading size="sm" className="text-sacredWhite font-bold">
-                    Daily Rhythm
-                </Heading>
+                <VStack className="gap-1">
+                    <Heading size="md" className="text-sacredWhite font-black tracking-tighter">
+                        Daily Rhythm
+                    </Heading>
+                    <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-[0.2em]">
+                        Sequence Mapping
+                    </Text>
+                </VStack>
                 <Button
                     size="sm"
-                    variant="outline"
                     onPress={() => setShowForm(v => !v)}
-                    className={`border-dimGray rounded-comfortable ${showForm ? 'bg-skyBlue border-skyBlue' : ''}`}
+                    className={`rounded-xl px-4 h-10 transition-all ${showForm ? 'bg-emberRed/10 border border-emberRed/20' : 'bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20'}`}
                 >
-                    <Icon as={Plus} size={14} className={showForm ? 'text-white' : 'text-mistGray'} />
-                    <ButtonText className={`ml-1 ${showForm ? 'text-white' : 'text-mistGray'}`}>
-                        {showForm ? 'Cancel' : 'Add Period'}
+                    <Icon as={showForm ? Trash2 : Plus} size={14} className={showForm ? 'text-emberRed' : 'text-obsidian'} />
+                    <ButtonText className={`ml-2 font-black uppercase tracking-widest text-[10px] ${showForm ? 'text-emberRed' : 'text-obsidian'}`}>
+                        {showForm ? 'Cancel' : 'Add Resonance'}
                     </ButtonText>
                 </Button>
             </HStack>
 
             {/* Day selector */}
-            <HStack className="gap-2">
+            <HStack className="gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
                 {DAYS.map(d => (
                     <Pressable
                         key={d.id}
                         onPress={() => setActiveDay(d.id)}
-                        className={`flex-1 py-3 rounded-comfortable border-2 items-center justify-center transition-all ${
-                            activeDay === d.id ? 'border-skyBlue bg-skyBlue' : 'border-obsidian bg-ink'
+                        className={`flex-1 py-3 rounded-xl items-center justify-center transition-all ${
+                            activeDay === d.id ? 'bg-sanctuarySaffron' : 'hover:bg-white/5'
                         }`}
                     >
-                        <Text className={`text-xs font-bold ${activeDay === d.id ? 'text-white' : 'text-mistGray'}`}>
+                        <Text className={`text-[10px] font-black uppercase tracking-widest ${activeDay === d.id ? 'text-obsidian' : 'text-mistGray/40'}`}>
                             {d.label}
                         </Text>
                         {d.id === today && (
-                            <Box className={`w-1 h-1 rounded-full mt-1 ${activeDay === d.id ? 'bg-white/80' : 'bg-skyBlue'}`} />
+                            <Box className={`w-1 h-1 rounded-full mt-1 ${activeDay === d.id ? 'bg-obsidian/40' : 'bg-sanctuarySaffron'}`} />
                         )}
                     </Pressable>
                 ))}
@@ -137,69 +132,68 @@ export default function DailyRhythm() {
 
             {/* Add period form */}
             {showForm && (
-                <VStack className="p-lg bg-obsidian rounded-xl border border-dimGray gap-4">
-                    <Box className="grid grid-cols-2 gap-4">
-                        <VStack className="gap-1">
-                            <Text className="text-[11px] font-bold text-mistGray ml-1">Subject / Topic</Text>
-                            <Input className="bg-ink border-transparent">
+                <VStack className="p-8 bg-shroud rounded-3xl border border-white/10 gap-6 shadow-2xl">
+                    <Box className="grid grid-cols-2 gap-6">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Identity</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
                                 <InputField 
                                     value={form.subject} 
                                     onChangeText={text => setForm(f => ({ ...f, subject: text }))} 
-                                    placeholder="e.g. Mathematics"
-                                    className="text-sacredWhite"
+                                    placeholder="Mathematics, etc."
+                                    className="text-sacredWhite text-sm font-bold"
+                                    placeholderTextColor="#333"
                                 />
                             </Input>
                         </VStack>
-                        <VStack className="gap-1">
-                            <Text className="text-[11px] font-bold text-mistGray ml-1">Class</Text>
-                            <Input className="bg-ink border-transparent">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Space</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
                                 <InputField 
                                     value={form.class_name} 
                                     onChangeText={text => setForm(f => ({ ...f, class_name: text }))} 
-                                    placeholder="e.g. Grade 10A"
-                                    className="text-sacredWhite"
+                                    placeholder="Room 101"
+                                    className="text-sacredWhite text-sm font-bold"
+                                    placeholderTextColor="#333"
                                 />
                             </Input>
                         </VStack>
-                        <VStack className="gap-1">
-                            <Text className="text-[11px] font-bold text-mistGray ml-1">Start</Text>
-                            <Input className="bg-ink border-transparent">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Arrival</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
                                 <InputField 
-                                    type="text" 
                                     value={form.start_time} 
                                     onChangeText={text => setForm(f => ({ ...f, start_time: text }))} 
-                                    className="text-sacredWhite"
+                                    className="text-sacredWhite text-sm font-bold"
                                 />
+                                <Icon as={Clock} size={14} className="text-mistGray/20 ml-2" />
                             </Input>
                         </VStack>
-                        <VStack className="gap-1">
-                            <Text className="text-[11px] font-bold text-mistGray ml-1">End</Text>
-                            <Input className="bg-ink border-transparent">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Departure</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
                                 <InputField 
-                                    type="text" 
                                     value={form.end_time} 
                                     onChangeText={text => setForm(f => ({ ...f, end_time: text }))} 
-                                    className="text-sacredWhite"
+                                    className="text-sacredWhite text-sm font-bold"
                                 />
+                                <Icon as={Clock} size={14} className="text-mistGray/20 ml-2" />
                             </Input>
                         </VStack>
                     </Box>
-                    <VStack className="gap-1">
-                        <Text className="text-[11px] font-bold text-mistGray ml-1">Type</Text>
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Resonance Type</Text>
                         <Select
                             selectedValue={form.type}
                             onValueChange={(value) => setForm(f => ({ ...f, type: value as Period['type'] }))}
                         >
-                            <SelectTrigger className="bg-ink border-transparent justify-between px-4 py-2 rounded-md">
-                                <SelectInput placeholder="Select type" className="text-sacredWhite" />
-                                <Icon as={ChevronDown} className="text-mistGray" size={16} />
+                            <SelectTrigger className="bg-white/5 border-white/10 h-12 px-4 rounded-xl flex-row items-center justify-between">
+                                <SelectInput placeholder="Select frequency" className="text-sacredWhite text-sm font-bold" />
+                                <Icon as={ChevronDown} className="text-mistGray/40" size={16} />
                             </SelectTrigger>
                             <SelectPortal>
                                 <SelectBackdrop />
-                                <SelectContent className="bg-obsidian">
-                                    <SelectDragIndicatorWrapper>
-                                        <SelectDragIndicator />
-                                    </SelectDragIndicatorWrapper>
+                                <SelectContent className="bg-shroud border-white/10">
                                     {PERIOD_TYPES.map(t => (
                                         <SelectItem key={t.value} label={t.label} value={t.value} />
                                     ))}
@@ -210,10 +204,10 @@ export default function DailyRhythm() {
                     <Button
                         onPress={handleAdd}
                         isDisabled={saving || (!form.subject.trim() && !form.activity.trim())}
-                        className="bg-skyBlue rounded-comfortable h-12"
+                        className="bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20 rounded-2xl h-14 active:scale-[0.98]"
                     >
-                        <ButtonText className="text-white font-bold">
-                            {saving ? 'Saving...' : '+ Add to Schedule'}
+                        <ButtonText className="text-obsidian font-black uppercase tracking-[0.2em] text-sm">
+                            {saving ? 'Synchronizing...' : 'Establish Resonance'}
                         </ButtonText>
                     </Button>
                 </VStack>
@@ -221,50 +215,54 @@ export default function DailyRhythm() {
 
             {/* Period list */}
             {loading ? (
-                <VStack className="gap-2">
-                    <Box className="h-14 bg-obsidian rounded-xl animate-pulse" />
-                    <Box className="h-14 bg-obsidian rounded-xl animate-pulse" />
+                <VStack className="gap-3">
+                    <Box className="h-20 bg-white/5 rounded-3xl animate-pulse" />
+                    <Box className="h-20 bg-white/5 rounded-3xl animate-pulse" />
                 </VStack>
             ) : periods.length === 0 ? (
-                <Box className="p-xl bg-obsidian rounded-xl items-center border border-dashed border-dimGray">
-                    <Text className="text-sm text-mistGray italic">
+                <Box className="p-16 bg-white/2 rounded-[40px] items-center border border-dashed border-white/5 group hover:border-sanctuarySaffron/20 transition-all">
+                    <Icon as={Calendar} size={32} className="text-mistGray/10 group-hover:text-sanctuarySaffron/10 mb-4" />
+                    <Text className="text-xs text-mistGray/30 font-bold uppercase tracking-widest italic text-center">
                         No periods scheduled for this day
                     </Text>
                 </Box>
             ) : (
-                <VStack className="gap-2">
+                <VStack className="gap-3">
                     {periods.map(p => (
                         <HStack
                             key={p.id}
-                            className="items-center p-md bg-obsidian rounded-xl border-l-4 gap-4"
-                            style={{ borderLeftColor: p.type === 'subject' ? '#0EA5E9' : p.type === 'relief' ? '#10B981' : '#6A6358' }}
+                            className="items-center p-6 bg-white/5 rounded-3xl border border-white/5 gap-6 group hover:border-white/10 transition-all shadow-sm"
                         >
-                            <HStack className="items-center gap-2 flex-shrink-0">
-                                <Icon as={Clock} size={14} className="text-mistGray" />
-                                <Text className="text-[11px] font-semibold text-mistGray">
-                                    {p.start_time} - {p.end_time}
-                                </Text>
-                            </HStack>
+                            <VStack className="items-center gap-1 w-20 border-r border-white/5 pr-4">
+                                <Text className="text-[10px] font-black text-mistGray/40 tracking-tighter">{p.start_time}</Text>
+                                <Box className={`w-0.5 h-3 rounded-full ${p.type === 'subject' ? 'bg-sanctuarySaffron' : 'bg-emeraldGreen'}`} />
+                                <Text className="text-[10px] font-black text-mistGray/80 tracking-tighter">{p.end_time}</Text>
+                            </VStack>
                             
-                            <VStack className="flex-1 min-w-0">
-                                <Text className="text-sacredWhite font-bold text-sm truncate">
+                            <VStack className="flex-1 min-w-0 gap-1">
+                                <Text className="text-sacredWhite font-black text-sm tracking-tight truncate">
                                     {p.subject ?? p.activity ?? p.type}
                                 </Text>
-                                {p.class_name && (
-                                    <Text className="text-[11px] text-mistGray truncate">{p.class_name}</Text>
-                                )}
+                                <HStack className="items-center gap-2">
+                                    <Icon as={MapPin} size={10} className="text-mistGray/20" />
+                                    <Text className="text-[11px] font-medium text-mistGray/40 truncate">{p.class_name ?? 'Fluid Space'}</Text>
+                                </HStack>
                             </VStack>
 
-                            <Box className={`px-2 py-0.5 rounded border ${TYPE_CLASSES[p.type]}`}>
-                                <Text className="text-[10px] font-bold uppercase">{p.type}</Text>
+                            <Box className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+                                p.type === 'subject' ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron/20 text-sanctuarySaffron' :
+                                p.type === 'relief' ? 'bg-emeraldGreen/10 border-emeraldGreen/20 text-emeraldGreen' :
+                                'bg-white/10 border-white/20 text-mistGray'
+                            }`}>
+                                {p.type}
                             </Box>
 
                             <Pressable
                                 onPress={() => handleDelete(p.id)}
                                 disabled={deleting === p.id}
-                                className={`p-2 rounded-md ${deleting === p.id ? 'opacity-40' : 'opacity-100'}`}
+                                className={`w-10 h-10 items-center justify-center rounded-xl bg-white/3 hover:bg-emberRed/10 group/btn transition-all ${deleting === p.id ? 'opacity-40' : 'opacity-100'}`}
                             >
-                                <Icon as={Trash2} size={14} className="text-dimGray hover:text-emberRed" />
+                                <Icon as={Trash2} size={16} className="text-mistGray/20 group-hover/btn:text-emberRed" />
                             </Pressable>
                         </HStack>
                     ))}
@@ -273,3 +271,4 @@ export default function DailyRhythm() {
         </VStack>
     );
 }
+

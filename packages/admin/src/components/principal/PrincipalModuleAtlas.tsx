@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, HStack, Text, VStack, Theme, useThemedColors } from '@repo/ui';
+import { Box, HStack, Text, VStack,  useThemedColors } from '@repo/ui';
 import {
   BookCopy,
   BriefcaseBusiness,
@@ -7,13 +7,11 @@ import {
   FileSpreadsheet,
   Files,
   Landmark,
-  Package,
-} from 'lucide-react-native';
+  Package} from 'lucide-react-native';
 import {
   PRINCIPAL_CAPABILITY_REGISTRY,
   type PrincipalCapabilityId,
-  type PrincipalCapabilityMeta,
-} from '../../principal/workspace';
+  type PrincipalCapabilityMeta} from '../../principal/workspace';
 
 interface PrincipalModuleAtlasProps {
   capabilityIds?: PrincipalCapabilityId[];
@@ -28,10 +26,9 @@ const DEFAULT_ATLAS_CAPABILITIES: PrincipalCapabilityId[] = [
   'reporting',
   'circulars',
   'documents',
-  'compliance',
-];
+  'compliance'];
 
-const CAPABILITY_ICONS: Record<string, any> = {
+const CAPABILITY_ICONS: Record<string, any>  = {
   morning_brief: Landmark,
   faculty_overview: BriefcaseBusiness,
   student_pulse: Landmark,
@@ -56,15 +53,13 @@ const CAPABILITY_ICONS: Record<string, any> = {
   documents: Files,
   compliance: ClipboardCheck,
   curriculum_pulse: BriefcaseBusiness,
-  timetable: ClipboardCheck,
-};
+  timetable: ClipboardCheck};
 
 function CapabilityCard({
-  capability,
-}: {
+  capability}: {
   capability: PrincipalCapabilityMeta;
 }) {
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
   const Icon = CAPABILITY_ICONS[capability.id] ?? Files;
 
   return (
@@ -75,8 +70,7 @@ function CapabilityCard({
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
-        padding: Theme.spacing.md,
-      }}
+        padding: Theme.spacing.md}}
     >
       <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: Theme.spacing.sm }}>
         <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, flex: 1 }}>
@@ -89,20 +83,19 @@ function CapabilityCard({
               justifyContent: 'center',
               backgroundColor:
                 capability.zone === 'today'
-                  ? `${Theme.colors.sanctuarySaffron}22`
+                  ? `${sanctuarySaffron}22`
                   : capability.zone === 'institution'
-                    ? `${Theme.colors.gurudeviBlue}22`
-                    : `${Theme.colors.gurudeviViolet}22`,
-            }}
+                    ? `${gurudeviBlue}22`
+                    : `${gurudeviViolet}22`}}
           >
             <Icon
               size={18}
               color={
                 capability.zone === 'today'
-                  ? Theme.colors.sanctuarySaffron
+                  ? sanctuarySaffron
                   : capability.zone === 'institution'
-                    ? Theme.colors.gurudeviBlue
-                    : Theme.colors.gurudeviViolet
+                    ? gurudeviBlue
+                    : gurudeviViolet
               }
             />
           </Box>
@@ -118,10 +111,9 @@ function CapabilityCard({
             paddingHorizontal: Theme.spacing.sm,
             paddingVertical: 4,
             borderRadius: Theme.corners.full,
-            backgroundColor: `${Theme.colors.gurudeviViolet}20`,
-          }}
+            backgroundColor: `${gurudeviViolet}20`}}
         >
-          <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.gurudeviViolet, textTransform: 'uppercase' }}>
+          <Text sx={{ fontSize: 10, fontWeight: '800', color: gurudeviViolet, textTransform: 'uppercase' }}>
             {capability.status}
           </Text>
         </Box>
@@ -136,9 +128,8 @@ function CapabilityCard({
 export default function PrincipalModuleAtlas({
   capabilityIds = DEFAULT_ATLAS_CAPABILITIES,
   title = 'Module Atlas',
-  subtitle = 'Planned ERP families that will slot into this principal workspace without reshaping the home cockpit.',
-}: PrincipalModuleAtlasProps) {
-  const colors = useThemedColors();
+  subtitle = 'Planned ERP families that will slot into this principal workspace without reshaping the home cockpit.'}: PrincipalModuleAtlasProps) {
+  const colors = useTheme().scene;
   const capabilities = capabilityIds
     .map((capabilityId) => PRINCIPAL_CAPABILITY_REGISTRY[capabilityId])
     .filter(Boolean);

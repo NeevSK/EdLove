@@ -15,7 +15,7 @@ import {
     Icon,
     Heading
 } from '@repo/ui';
-import { Wind, Play, Pause, RotateCcw, Sparkles } from 'lucide-react-native';
+import { Wind, Play, Pause, RotateCcw, Sparkles, Activity, ShieldCheck } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface BreathGuideProps {
@@ -24,11 +24,11 @@ interface BreathGuideProps {
 
 type Phase = 'inhale' | 'hold' | 'exhale' | 'rest';
 
-const CYCLE: Array<{ phase: Phase; duration: number; label: string; colorClass: string; accentColor: string }> = [
-    { phase: 'inhale', duration: 4000, label: 'Breathe in...', colorClass: 'text-skyBlue', accentColor: '#3B82F6' },
-    { phase: 'hold', duration: 2000, label: 'Hold...', colorClass: 'text-sanctuarySaffron', accentColor: '#FCD34D' },
-    { phase: 'exhale', duration: 6000, label: 'Breathe out...', colorClass: 'text-emeraldGreen', accentColor: '#10B981' },
-    { phase: 'rest', duration: 2000, label: 'Rest...', colorClass: 'text-mistGray', accentColor: '#94A3B8' },
+const CYCLE: Array<{ phase: Phase; duration: number; label: string; color: string; accentColor: string }> = [
+    { phase: 'inhale', duration: 4000, label: 'Inspire Deeply', color: 'text-skyBlue', accentColor: '#3B82F6' },
+    { phase: 'hold', duration: 2000, label: 'Pause in Fullness', color: 'text-sanctuarySaffron', accentColor: '#F6B100' },
+    { phase: 'exhale', duration: 6000, label: 'Release Slowly', color: 'text-emeraldGreen', accentColor: '#10B981' },
+    { phase: 'rest', duration: 2000, label: 'Rest in Stillness', color: 'text-mistGray', accentColor: '#6A6358' },
 ];
 
 const TOTAL_CYCLES = 4;
@@ -55,6 +55,8 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             return;
         }
 
+        if (!nextPhase) return;
+
         setPhaseIdx(nextPhaseIndex);
         setCycleIdx(nextCycleIndex);
         timerRef.current = setTimeout(() => advance(nextCycleIndex, nextPhaseIndex), nextPhase.duration);
@@ -66,7 +68,10 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         setCycleIdx(0);
         setActive(true);
         // Start after first phase duration
-        timerRef.current = setTimeout(() => advance(0, 0), CYCLE[0].duration);
+        const firstPhase = CYCLE[0];
+        if (firstPhase) {
+            timerRef.current = setTimeout(() => advance(0, 0), firstPhase.duration);
+        }
     };
 
     const stop = () => {
@@ -78,111 +83,143 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         return () => { if (timerRef.current) clearTimeout(timerRef.current); };
     }, []);
 
-    // Web Scale Logic using CSS
+    // Web Scale Logic using ARRAYS for React Native compatibility
     const scale = active && (current.phase === 'inhale' || current.phase === 'hold')
-        ? 1.4
+        ? 1.5
         : active && current.phase === 'exhale'
-            ? 0.8
+            ? 0.75
             : 1.0;
 
     return (
-        <VStack className="items-center gap-6 py-4">
-            <Box className="items-center gap-1">
-                <Text className="text-[10px] uppercase font-black tracking-[0.2em] text-mistGray/60">
-                    Somatic Grounding
-                </Text>
-                <Heading size="sm" className="text-sacredWhite/80">Breath Guide</Heading>
-            </Box>
+        <VStack className="items-center gap-10 py-8">
+            <VStack className="items-center gap-2">
+                <HStack className="items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                    <Icon as={Activity} size={10} className="text-sanctuarySaffron" />
+                    <Text className="text-[9px] uppercase font-black tracking-[0.3em] text-mistGray/60">
+                        Somatic Regulation
+                    </Text>
+                </HStack>
+                <Heading size="md" className="text-sacredWhite font-black tracking-tighter">Breath Resonance</Heading>
+            </VStack>
 
             {done ? (
-                <VStack className="items-center p-6 bg-white/5 rounded-3xl border border-white/10 shadow-xl">
-                    <Icon as={Sparkles} className="text-sanctuarySaffron mb-4" size={48} />
-                    <Text className="text-center text-sacredWhite font-medium text-lg mb-2">
+                <VStack className="items-center p-10 bg-shroud rounded-[40px] border border-white/10 shadow-2xl max-w-sm">
+                    <Box className="w-20 h-20 rounded-full bg-emeraldGreen/10 items-center justify-center mb-6">
+                        <Icon as={ShieldCheck} className="text-emeraldGreen" size={40} />
+                    </Box>
+                    <Heading size="sm" className="text-center text-sacredWhite font-black tracking-tight mb-3">
                         Grounded & Presence
+                    </Heading>
+                    <Text className="text-center text-mistGray/60 text-sm leading-relaxed mb-8">
+                        Breath cycle established. Your nervous system is now back in its natural equilibrium.
                     </Text>
-                    <Text className="text-center text-mistGray text-sm">
-                        {TOTAL_CYCLES} cycles complete. Your nervous system is regulated.
-                    </Text>
+                    <Button
+                        onPress={start}
+                        className="bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20 rounded-2xl w-full h-14"
+                    >
+                        <HStack className="items-center gap-2">
+                            <Icon as={RotateCcw} size={18} className="text-obsidian" />
+                            <ButtonText className="font-black uppercase tracking-widest text-xs text-obsidian">
+                                Resume Flow
+                            </ButtonText>
+                        </HStack>
+                    </Button>
                 </VStack>
             ) : (
-                <VStack className="items-center gap-8">
+                <VStack className="items-center gap-12 w-full">
                     {/* Breathing Orb */}
-                    <Box 
-                        className="relative w-32 h-32 items-center justify-center rounded-full transition-all duration-500"
-                        style={{
-                            transform: `scale(${scale})`,
-                            transition: `transform ${active ? current.duration : 400}ms ease-in-out, background 500ms, border-color 500ms`,
-                            background: active 
-                                ? `radial-gradient(circle, ${current.accentColor}44 0%, ${current.accentColor}11 100%)`
-                                : 'rgba(255,255,255,0.05)',
-                            border: `2px solid ${active ? current.accentColor : 'rgba(255,255,255,0.1)'}`,
-                            boxShadow: active ? `0 0 40px ${current.accentColor}22` : 'none'
-                        }}
-                    >
-                        <Icon as={Wind} size={40} className={active ? current.colorClass : 'text-mistGray/30'} />
+                    <Box className="relative items-center justify-center">
+                        <Box 
+                            className="w-40 h-40 items-center justify-center rounded-full transition-all duration-700"
+                            style={{
+                                transform: [{ scale }],
+                                transition: `transform ${active ? current.duration : 600}ms cubic-bezier(0.4, 0, 0.2, 1), background 500ms, border-color 500ms`,
+                                background: active 
+                                    ? `radial-gradient(circle, ${current.accentColor}33 0%, ${current.accentColor}05 100%)`
+                                    : 'rgba(255,255,255,0.03)',
+                                border: `2px solid ${active ? current.accentColor : 'rgba(255,255,255,0.05)'}`,
+                                boxShadow: active ? `0 0 60px ${current.accentColor}11` : 'none'
+                            } as any}
+                        >
+                            <Icon as={Wind} size={48} className={active ? current.color : 'text-mistGray/10'} />
+                        </Box>
                         
-                        {/* Pulse Ring */}
+                        {/* Outer Pulse Rings */}
                         {active && (
-                            <Box 
-                                className="absolute inset-0 rounded-full border-2 animate-ping"
-                                style={{ borderColor: `${current.accentColor}44` }}
-                            />
+                            <>
+                                <Box 
+                                    className="absolute inset-[-20px] rounded-full border border-white/5 animate-ping opacity-20"
+                                    style={{ borderColor: current.accentColor, animationDuration: '3s' }}
+                                />
+                                <Box 
+                                    className="absolute inset-[-40px] rounded-full border border-white/5 animate-ping opacity-10"
+                                    style={{ borderColor: current.accentColor, animationDuration: '4s' }}
+                                />
+                            </>
                         )}
                     </Box>
 
                     {/* Status Text */}
-                    <VStack className="items-center min-h-[60px] gap-2">
+                    <VStack className="items-center h-24 gap-4 w-64">
                         {active ? (
                             <>
-                                <Heading className={`${current.colorClass} transition-colors duration-300 text-2xl`}>
+                                <Heading className={`${current.color} transition-colors duration-500 text-3xl font-black tracking-tighter text-center`}>
                                     {current.label}
                                 </Heading>
-                                <HStack className="items-center gap-2">
-                                    <Box className="h-1 w-24 bg-white/10 rounded-full overflow-hidden">
+                                <VStack className="items-center gap-3 w-full">
+                                    <Box className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
                                         <Box 
-                                            className={`h-full ${current.colorClass.replace('text-', 'bg-')} transition-all`}
+                                            className={`h-full ${current.color.replace('text-', 'bg-')} transition-all duration-300`}
                                             style={{ width: `${((cycleIdx * CYCLE.length + phaseIdx + 1) / (TOTAL_CYCLES * CYCLE.length)) * 100}%` }}
                                         />
                                     </Box>
-                                    <Text className="text-mistGray text-[10px] font-bold uppercase tracking-widest">
-                                        Cycle {cycleIdx + 1}/{TOTAL_CYCLES}
-                                    </Text>
-                                </HStack>
+                                    <HStack className="justify-between w-full px-1">
+                                        <Text className="text-mistGray/30 text-[9px] font-black uppercase tracking-widest">
+                                            Rhythm Cycle
+                                        </Text>
+                                        <Text className="text-sacredWhite/60 text-[9px] font-black uppercase tracking-widest">
+                                            {cycleIdx + 1} of {TOTAL_CYCLES}
+                                        </Text>
+                                    </HStack>
+                                </VStack>
                             </>
                         ) : (
-                            <VStack className="items-center opacity-60">
-                                <Text className="text-mistGray text-sm font-medium">
-                                    4-2-6-2 Rhythmic Breath
+                            <VStack className="items-center gap-2 opacity-40">
+                                <Text className="text-mistGray text-sm font-bold tracking-tight">
+                                    Harmonize your pulse
                                 </Text>
-                                <Text className="text-mistGray/40 text-[10px] uppercase font-bold tracking-widest">
-                                    ~1 Minute Duration
+                                <Text className="text-mistGray/60 text-[10px] uppercase font-black tracking-[0.2em] italic">
+                                    ~1 Minute 4-2-6-2 Calibration
                                 </Text>
                             </VStack>
                         )}
                     </VStack>
+
+                    {/* Action Button */}
+                    {!done && (
+                        <Button
+                            onPress={active ? stop : start}
+                            className={`px-12 h-16 rounded-[20px] shadow-2xl transition-all active:scale-[0.98] ${
+                                active 
+                                    ? 'bg-shroud border border-white/10' 
+                                    : 'bg-sanctuarySaffron shadow-sanctuarySaffron/30'
+                            }`}
+                        >
+                            <HStack className="items-center gap-3">
+                                <Icon 
+                                    as={active ? Pause : Play} 
+                                    size={20} 
+                                    className={active ? 'text-sacredWhite' : 'text-obsidian'} 
+                                />
+                                <ButtonText className={`font-black uppercase tracking-[0.15em] text-xs ${active ? 'text-sacredWhite' : 'text-obsidian'}`}>
+                                    {active ? 'Cease Exercise' : 'Initiate Resonance'}
+                                </ButtonText>
+                            </HStack>
+                        </Button>
+                    )}
                 </VStack>
             )}
-
-            {/* Action Button */}
-            <Button
-                onPress={active ? stop : start}
-                className={`px-8 py-3 rounded-comfortable shadow-lg transition-all ${
-                    active 
-                        ? 'bg-white/10 border border-white/10' 
-                        : done ? 'bg-emeraldGreen shadow-emeraldGreen/20' : 'bg-sanctuarySaffron shadow-sanctuarySaffron/20'
-                }`}
-            >
-                <HStack className="items-center gap-2">
-                    <Icon 
-                        as={done ? RotateCcw : active ? Pause : Play} 
-                        size={18} 
-                        className={active ? 'text-sacredWhite' : 'text-obsidian'} 
-                    />
-                    <ButtonText className={`font-black uppercase tracking-widest text-xs ${active ? 'text-sacredWhite' : 'text-obsidian'}`}>
-                        {done ? 'Try Again' : active ? 'Stop Session' : 'Begin Now'}
-                    </ButtonText>
-                </HStack>
-            </Button>
         </VStack>
     );
 }
+

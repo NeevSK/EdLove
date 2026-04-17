@@ -7,7 +7,7 @@ interface GuardianHeaderProps {
   isDesktop?: boolean;
 }
 
-export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, isDesktop }) => {
+export const GuardianHeader: React.FC<GuardianHeaderProps> = { { studentCount, isDesktop }) => {
   const theme = useTheme();
   return (
     <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
@@ -17,9 +17,7 @@ export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, is
           {
             color: theme.text.primary,
             fontWeight: '700',
-            fontSize: isDesktop ? 32 : 24,
-          },
-        ]}
+            fontSize: isDesktop ? 32 : 24}]}
       >
         Guardian Dashboard
       </Text>
@@ -28,9 +26,7 @@ export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, is
           styles.subtitle,
           {
             color: theme.text.secondary,
-            fontSize: isDesktop ? 16 : 14,
-          },
-        ]}
+            fontSize: isDesktop ? 16 : 14}]}
       >
         {studentCount} {studentCount === 1 ? 'Student' : 'Students'}
       </Text>
@@ -42,12 +38,8 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingVertical: 20,
-    borderBottomWidth: 1,
-  },
+    borderBottomWidth: 1},
   title: {
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   subtitle: {
-    opacity: 0.7,
-  },
-});
+    opacity: 0.7}});

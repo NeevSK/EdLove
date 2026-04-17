@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { ProfileScreen, FullProfileScreen } from '../screens';
@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator();
 
 export default function ProfileStackNavigator() {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     return (
         <Stack.Navigator
@@ -17,8 +17,7 @@ export default function ProfileStackNavigator() {
             screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: colors.secondary }, // contentStyle for native-stack
-            }}
-        >
+            }}>
             <Stack.Screen name="ProfileMain" component={ProfileScreen} />
             <Stack.Screen
                 name="FullProfile"
@@ -26,8 +25,7 @@ export default function ProfileStackNavigator() {
                 options={{
                     headerShown: false,
                     presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
+                    animation: 'slide_from_bottom'}}
             />
             <Stack.Screen
                 name="PrivacyLedger"
@@ -35,8 +33,7 @@ export default function ProfileStackNavigator() {
                 options={{
                     headerShown: false,
                     presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
+                    animation: 'slide_from_bottom'}}
             />
         </Stack.Navigator>
     );

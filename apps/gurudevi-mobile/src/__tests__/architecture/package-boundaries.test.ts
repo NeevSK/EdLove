@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+﻿const fs = require('node:fs');
 const path = require('node:path');
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
@@ -131,8 +131,7 @@ describe('Package architecture boundaries', () => {
       'LeaveApprovalSection',
       'InstitutionalCalendarSection',
       'ManagementStation',
-      'AddStudentModal',
-    ];
+      'AddStudentModal'];
 
     for (const symbol of forbiddenWidgets) {
       expect(classroomRootImport.includes(symbol)).toBe(false);
@@ -156,8 +155,7 @@ describe('Package architecture boundaries', () => {
       'LeaveApprovalSection',
       'InstitutionalCalendarSection',
       'ManagementStation',
-      'PrincipalObservationsSection',
-    ];
+      'PrincipalObservationsSection'];
 
     for (const symbol of forbiddenExports) {
       expect(source.includes(`as ${symbol}`)).toBe(false);

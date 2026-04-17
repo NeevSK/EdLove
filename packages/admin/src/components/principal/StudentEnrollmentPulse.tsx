@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, Theme } from '@repo/ui';
+import { Icon, TouchableOpacity } from 'react-native';
+import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors,  } from '@repo/ui';
 import { ChevronRight, TrendingUp } from 'lucide-react-native';
 import { staffOperationsAPI, type StudentPrincipalPulse } from '../../staff';
 
@@ -13,9 +13,9 @@ interface StudentPulseSectionProps {
 }
 
 function attendanceColor(rate: number): string {
-  if (rate >= 90) return Theme.colors.sageGreen ?? '#4caf50';
-  if (rate >= 75) return Theme.colors.amberGlow ?? '#ffc107';
-  return Theme.colors.emberRed ?? '#f44336';
+  if (rate >= 90) return sageGreen ?? '#4caf50';
+  if (rate >= 75) return amberGlow ?? '#ffc107';
+  return emberRed ?? '#f44336';
 }
 
 export default function StudentPulseSection({
@@ -23,9 +23,8 @@ export default function StudentPulseSection({
   classroomId,
   onViewAtRisk,
   onViewEnrollments,
-  onViewFullReport,
-}: StudentPulseSectionProps) {
-  const colors = useThemedColors();
+  onViewFullReport}: StudentPulseSectionProps) {
+  const colors = useTheme().scene;
   const [loading, setLoading] = useState(true);
   const [pulse, setPulse] = useState<StudentPrincipalPulse | null>(null);
 
@@ -69,12 +68,11 @@ export default function StudentPulseSection({
         <Box
           sx={{
             flex: 1,
-            backgroundColor: colors?.primary || Theme.colors.ink,
+            backgroundColor: colors?.primary || '#2A2318',
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)',
-          }}
+            borderColor: colors?.border || 'rgba(255,255,255,0.1)'}}
         >
           <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
             Attendance Today
@@ -83,8 +81,7 @@ export default function StudentPulseSection({
             sx={{
               fontSize: 28,
               fontWeight: '700',
-              color: pulse ? attendanceColor(pulse.todayRate) : (colors?.text || '#fff'),
-            }}
+              color: pulse ? attendanceColor(pulse.todayRate) : (colors?.text || '#fff')}}
           >
             {pulse ? `${pulse.todayRate}%` : '-'}
           </Text>
@@ -96,12 +93,11 @@ export default function StudentPulseSection({
         <Box
           sx={{
             flex: 1,
-            backgroundColor: colors?.primary || Theme.colors.ink,
+            backgroundColor: colors?.primary || '#2A2318',
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)',
-          }}
+            borderColor: colors?.border || 'rgba(255,255,255,0.1)'}}
         >
           <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
             Submissions This Week
@@ -129,12 +125,11 @@ export default function StudentPulseSection({
           <Box
             sx={{
               flex: 1,
-              backgroundColor: colors?.primary || Theme.colors.ink,
+              backgroundColor: colors?.primary || '#2A2318',
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
-              borderColor: (pulse?.atRiskCount ?? 0) > 0 ? (colors?.error || '#f44336') : (colors?.border || 'rgba(255,255,255,0.1)'),
-            }}
+              borderColor: (pulse?.atRiskCount ?? 0) > 0 ? (colors?.error || '#f44336') : (colors?.border || 'rgba(255,255,255,0.1)')}}
           >
             <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
               <Box
@@ -142,8 +137,7 @@ export default function StudentPulseSection({
                   backgroundColor: colors?.error || '#f44336',
                   borderRadius: 10,
                   paddingHorizontal: 8,
-                  paddingVertical: 2,
-                }}
+                  paddingVertical: 2}}
               >
                 <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
                   {pulse?.atRiskCount ?? 0}
@@ -152,7 +146,7 @@ export default function StudentPulseSection({
               <Text sx={{ fontSize: 12, color: colors?.text || '#fff', flex: 1 }}>
                 At-risk students
               </Text>
-              <ChevronRight size={16} color={colors?.textTertiary || '#666'} />
+              <Icon as={ChevronRight} size={16} color={colors?.textTertiary || '#666'} />
             </HStack>
             {onViewAtRisk && (
               <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa', marginTop: 2 }}>
@@ -175,12 +169,11 @@ export default function StudentPulseSection({
             <Box
               sx={{
                 flex: 1,
-                backgroundColor: colors?.primary || Theme.colors.ink,
+                backgroundColor: colors?.primary || '#2A2318',
                 borderRadius: Theme.corners.comfortable,
                 padding: Theme.spacing.md,
                 borderWidth: 1,
-                borderColor: (pulse?.pendingEnrollments ?? 0) > 0 ? (colors?.warning || '#ff9800') : (colors?.border || 'rgba(255,255,255,0.1)'),
-              }}
+                borderColor: (pulse?.pendingEnrollments ?? 0) > 0 ? (colors?.warning || '#ff9800') : (colors?.border || 'rgba(255,255,255,0.1)')}}
             >
               <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
                 <Box
@@ -188,8 +181,7 @@ export default function StudentPulseSection({
                     backgroundColor: colors?.warning || '#ff9800',
                     borderRadius: 10,
                     paddingHorizontal: 8,
-                    paddingVertical: 2,
-                  }}
+                    paddingVertical: 2}}
                 >
                   <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
                     {pulse?.pendingEnrollments ?? 0}
@@ -198,7 +190,7 @@ export default function StudentPulseSection({
                 <Text sx={{ fontSize: 12, color: colors?.text || '#fff', flex: 1 }}>
                   Pending enrollments
                 </Text>
-                <ChevronRight size={16} color={colors?.textTertiary || '#666'} />
+                <Icon as={ChevronRight} size={16} color={colors?.textTertiary || '#666'} />
               </HStack>
               {onViewEnrollments && (
                 <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa', marginTop: 2 }}>
@@ -227,8 +219,7 @@ export default function StudentPulseSection({
               gap: 4,
               paddingVertical: 8,
               borderTopWidth: 1,
-              borderTopColor: colors?.border || 'rgba(255,255,255,0.1)',
-            }}
+              borderTopColor: colors?.border || 'rgba(255,255,255,0.1)'}}
           >
             <Text sx={{ fontSize: 12, fontWeight: '700', color: colors?.action || '#2196f3' }}>
               VIEW FULL ANALYTICS

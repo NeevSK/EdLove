@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ThuthimalClaimScreen.tsx
  */
 import React from 'react';

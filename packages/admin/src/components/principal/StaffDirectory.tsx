@@ -1,5 +1,5 @@
 import React from 'react';
-import { VStack, HStack, Text, Box, Theme, useThemedColors, SanctuaryCard, ScrollView } from '@repo/ui';
+import { Icon, VStack, HStack, Text, Box,  useThemedColors, SanctuaryCard, ScrollView } from '@repo/ui';
 import { User, Mail, Phone, ChevronRight } from 'lucide-react-native';
 
 interface StaffMember {
@@ -16,7 +16,7 @@ interface StaffDirectoryProps {
 }
 
 export default function StaffDirectory({ staff, onSelect }: StaffDirectoryProps) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     if (!staff?.length) return (
         <Box sx={{ p: '$4', alignItems: 'center' }}>
@@ -35,13 +35,13 @@ export default function StaffDirectory({ staff, onSelect }: StaffDirectoryProps)
                     >
                         <HStack space="md" alignItems="center" p="$3">
                             <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: colors.tertiary }}>
-                                <User size={20} color={colors.action} />
+                                <Icon as={User} size={20} color={colors.action} />
                             </Box>
                             <VStack flex={1}>
                                 <Text bold color={colors.text}>{member.name}</Text>
                                 <Text size="xs" color={colors.textSecondary}>{member.role}</Text>
                             </VStack>
-                            <ChevronRight size={16} color={colors.textTertiary} />
+                            <Icon as={ChevronRight} size={16} color={colors.textTertiary} />
                         </HStack>
                     </SanctuaryCard>
                 ))}

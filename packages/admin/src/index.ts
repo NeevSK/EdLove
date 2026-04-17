@@ -35,6 +35,14 @@ export { default as AnalyticsDashboardScreen } from './screens/AnalyticsDashboar
 export { default as FounderDashboard } from './screens/FounderDashboard';
 export { default as FounderDashboardWeb } from './screens/FounderDashboard.web';
 export { default as FounderSchoolDashboard } from './screens/FounderSchoolDashboard';
+export { default as AdminDashboard } from './screens/AdminDashboard';
+export { default as AdminDashboardWeb } from './screens/AdminDashboard.web';
+export { default as AdminIncidentQueue } from './screens/AdminIncidentQueue';
+export { default as AdminTenantDetail } from './screens/AdminTenantDetail';
+export { default as AdminAuthorityRepair } from './screens/AdminAuthorityRepair';
+export { default as AdminJobControl } from './screens/AdminJobControl';
+export { default as AdminAuditLog } from './screens/AdminAuditLog';
+export { default as AdminReleaseControl } from './screens/AdminReleaseControl';
 export {
   PrincipalDashboard,
   PrincipalDashboardWeb,
@@ -42,8 +50,7 @@ export {
   PrincipalWorkspaceContainer,
   SectionHeadDashboard,
   GradeHeadDashboard,
-  AcademicCycleManager,
-} from './screens';
+  AcademicCycleManager} from './screens';
 export { default as SchoolCreationScreen } from './screens/SchoolCreationScreen';
 export * from './sections';
 export * from './structure';
@@ -74,5 +81,4 @@ export const adminAPI = {
   sections: sectionsAPI,
   reporting: reportingAPI,
   documents: documentsAPI,
-  structure: structureAPI,
-};
+  structure: structureAPI};

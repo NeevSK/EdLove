@@ -1,5 +1,6 @@
 export type WorkspaceSwitcherTargetId =
   | 'founder'
+  | 'admin'
   | 'principal'
   | 'teacher'
   | 'student'
@@ -28,6 +29,7 @@ export interface WorkspaceSwitcherTarget {
 export function resolveWorkspaceSwitcherTargets({
   currentWorkspace = 'founder',
   canManageFounderDashboard,
+  canManageAdminDashboard,
   canManagePrincipalDashboard,
   canManageTeacherDashboard,
   canManageStudentDashboard,
@@ -36,6 +38,7 @@ export function resolveWorkspaceSwitcherTargets({
   hasMountedGuardianWorkspace = false}: {
   currentWorkspace?: WorkspaceSwitcherTargetId;
   canManageFounderDashboard: boolean;
+  canManageAdminDashboard: boolean;
   canManagePrincipalDashboard: boolean;
   canManageTeacherDashboard: boolean;
   canManageStudentDashboard: boolean;
@@ -44,6 +47,7 @@ export function resolveWorkspaceSwitcherTargets({
   hasMountedGuardianWorkspace?: boolean;
 }): WorkspaceSwitcherTarget[] {
   const founderEnabled = canManageFounderDashboard;
+  const adminEnabled = canManageAdminDashboard;
   const principalEnabled = canManagePrincipalDashboard && hasPrimaryInstitution;
   const teacherEnabled = canManageTeacherDashboard;
   const studentEnabled = canManageStudentDashboard;
@@ -60,6 +64,16 @@ export function resolveWorkspaceSwitcherTargets({
       enabled: founderEnabled,
       status: currentWorkspace === 'founder' ? 'current' : 'available',
       reason: founderEnabled ? undefined : 'Founder authority is not active for this actor.'},
+    {
+      id: 'admin',
+      title: 'Admin workspace',
+      description: 'Platform-system operations, tenant health, authority repair, and audit-driven interventions.',
+      destination: {
+        kind: 'route',
+        name: 'AdminDashboard'},
+      enabled: adminEnabled,
+      status: currentWorkspace === 'admin' ? 'current' : 'available',
+      reason: adminEnabled ? undefined : 'Admin authority is not active for this actor.'},
     {
       id: 'principal',
       title: 'Principal operations',

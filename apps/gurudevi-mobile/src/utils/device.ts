@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Device Detection Utilities
  * Detect device capabilities and adapt app behavior accordingly
  */
@@ -45,7 +45,7 @@ export function getDeviceTier(): DeviceTier {
 export function getDeviceConfig(tier?: DeviceTier): DeviceConfig {
     const deviceTier = tier || getDeviceTier();
 
-    const configs: Record<DeviceTier, DeviceConfig> = {
+    const configs: Record<DeviceTier, DeviceConfig>  = {
         low: {
             tier: 'low',
             enableAnimations: false,        // Disable to save CPU
@@ -53,8 +53,7 @@ export function getDeviceConfig(tier?: DeviceTier): DeviceConfig {
             enableShadows: false,            // Flat design
             enableBlur: false,               // Heavy on GPU
             imageQuality: 'low',
-            maxConcurrentImages: 5,
-        },
+            maxConcurrentImages: 5},
         mid: {
             tier: 'mid',
             enableAnimations: true,
@@ -62,8 +61,7 @@ export function getDeviceConfig(tier?: DeviceTier): DeviceConfig {
             enableShadows: true,
             enableBlur: false,               // Still heavy
             imageQuality: 'medium',
-            maxConcurrentImages: 10,
-        },
+            maxConcurrentImages: 10},
         high: {
             tier: 'high',
             enableAnimations: true,
@@ -71,8 +69,7 @@ export function getDeviceConfig(tier?: DeviceTier): DeviceConfig {
             enableShadows: true,
             enableBlur: true,
             imageQuality: 'high',
-            maxConcurrentImages: 20,
-        }
+            maxConcurrentImages: 20}
     };
 
     return configs[deviceTier];
@@ -92,8 +89,7 @@ export async function getDeviceInfo() {
         osName: Device.osName,
         osVersion: Device.osVersion,
         totalMemory: Device.totalMemory,
-        supportedCpuArchitectures: Device.supportedCpuArchitectures,
-    };
+        supportedCpuArchitectures: Device.supportedCpuArchitectures};
 }
 
 /**

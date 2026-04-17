@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InviteCodeEntry.tsx
  *
  * Thin wrapper for the Invite Code entry UI.

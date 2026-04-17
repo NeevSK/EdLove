@@ -148,7 +148,7 @@ describe('MultiTenantAnalyticsEngine', () => {
 
   describe('Custom Reports', () => {
     it('should create custom report with specified configuration', async () => {
-      const config: CustomReportConfig = {
+      const config: CustomReportConfig  = {
         id: 'report-1',
         name: 'Test Report',
         description: 'Test Description',
@@ -168,7 +168,7 @@ describe('MultiTenantAnalyticsEngine', () => {
     });
 
     it('should generate appropriate visualizations based on chart type', async () => {
-      const config: CustomReportConfig = {
+      const config: CustomReportConfig  = {
         id: 'report-1',
         name: 'Test Report',
         description: 'Test Description',
@@ -189,7 +189,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       const chartTypes = ['line', 'bar', 'pie', 'scatter', 'heatmap'] as const;
       
       for (const chartType of chartTypes) {
-        const config: CustomReportConfig = {
+        const config: CustomReportConfig  = {
           id: `report-${chartType}`,
           name: `${chartType} Report`,
           description: `Test ${chartType} chart`,
@@ -276,8 +276,8 @@ describe('MultiTenantAnalyticsEngine', () => {
   describe('Recommendations Engine', () => {
     it('should generate insights based on metrics', async () => {
       const tenantId = 'tenant-1';
-      const context = { userRole: 'admin' };
-      const options = { limit: 10 };
+      const context = {  userRole: 'admin' };
+      const options = {  limit: 10 };
 
       const result = await multiTenantAnalyticsEngine.generateRecommendations(tenantId, context);
 

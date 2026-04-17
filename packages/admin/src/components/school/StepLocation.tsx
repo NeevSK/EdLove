@@ -15,8 +15,7 @@ import {
     FormControl,
     FormControlLabel,
     FormControlLabelText,
-    useThemedColors,
-    Theme
+    useTheme
 } from '@repo/ui';
 import { MapPin, ChevronDown, Flag } from 'lucide-react-native';
 import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
@@ -33,7 +32,8 @@ interface StepLocationProps {
 }
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
-    const colors = useThemedColors();
+    const theme = useTheme();
+    const colors = theme.scene;
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
@@ -42,38 +42,37 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
         return SRI_LANKAN_DISTRICTS.filter(d => d.provinceId === data.provinceId);
     }, [data.provinceId]);
 
+    const sanctuarySaffron = theme.templeGold;
+
     return (
         <VStack space="lg">
-            {/* Province Select */}
             <FormControl>
-                <FormControlLabel sx={{ marginBottom: '$2' }}>
-                    <FormControlLabelText sx={{ color: colors?.textSecondary || '#aaa', fontSize: '$sm' }}>
+                <FormControlLabel style={{ marginBottom: 8 }}>
+                    <FormControlLabelText style={{ color: colors?.textSecondary || '#aaa', fontSize: 14 }}>
                         {t('schoolSetup.province')}
                     </FormControlLabelText>
                 </FormControlLabel>
                 <Select
                     selectedValue={data.provinceId}
-                    onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}
-                >
+                    onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}>
                     <SelectTrigger 
                         variant="outline" 
-                        sx={{ 
+                        style={{ 
                             height: 48, 
-                            borderRadius: Theme.corners.comfortable, 
-                            backgroundColor: colors?.secondary || Theme.colors.ink 
-                        }}
-                    >
+                            borderRadius: 12, 
+                            backgroundColor: colors?.secondary || '#2A2318' 
+                        }}>
                         <SelectInput 
                             placeholder={t('schoolSetup.selectProvince')} 
-                            sx={{ color: colors?.text || '#fff', flex: 1 }} 
+                            style={{ color: colors?.text || '#fff', flex: 1 }} 
                         />
-                        <SelectIcon sx={{ marginRight: '$3' }}>
-                            <ChevronDown size={20} color={Theme.colors.sanctuarySaffron} />
+                        <SelectIcon style={{ marginRight: 12 }}>
+                            <ChevronDown size={20} color={sanctuarySaffron} />
                         </SelectIcon>
                     </SelectTrigger>
                     <SelectPortal>
                         <SelectBackdrop />
-                        <SelectContent sx={{ backgroundColor: colors?.secondary || Theme.colors.ink }}>
+                        <SelectContent style={{ backgroundColor: colors?.secondary || '#2A2318' }}>
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
@@ -89,36 +88,33 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                 </Select>
             </FormControl>
 
-            {/* District Select */}
             <FormControl isDisabled={!data.provinceId}>
-                <FormControlLabel sx={{ marginBottom: '$2' }}>
-                    <FormControlLabelText sx={{ color: colors?.textSecondary || '#aaa', fontSize: '$sm' }}>
+                <FormControlLabel style={{ marginBottom: 8 }}>
+                    <FormControlLabelText style={{ color: colors?.textSecondary || '#aaa', fontSize: 14 }}>
                         {t('schoolSetup.district')}
                     </FormControlLabelText>
                 </FormControlLabel>
                 <Select
                     selectedValue={data.districtId}
-                    onValueChange={(value: string) => onUpdate({ districtId: value })}
-                >
+                    onValueChange={(value: string) => onUpdate({ districtId: value })}>
                     <SelectTrigger 
                         variant="outline" 
-                        sx={{ 
+                        style={{ 
                             height: 48, 
-                            borderRadius: Theme.corners.comfortable, 
-                            backgroundColor: colors?.secondary || Theme.colors.ink 
-                        }}
-                    >
+                            borderRadius: 12, 
+                            backgroundColor: colors?.secondary || '#2A2318' 
+                        }}>
                         <SelectInput 
                             placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} 
-                            sx={{ color: colors?.text || '#fff', flex: 1 }} 
+                            style={{ color: colors?.text || '#fff', flex: 1 }} 
                         />
-                        <SelectIcon sx={{ marginRight: '$3' }}>
-                            <ChevronDown size={20} color={Theme.colors.sanctuarySaffron} />
+                        <SelectIcon style={{ marginRight: 12 }}>
+                            <ChevronDown size={20} color={sanctuarySaffron} />
                         </SelectIcon>
                     </SelectTrigger>
                     <SelectPortal>
                         <SelectBackdrop />
-                        <SelectContent sx={{ backgroundColor: colors?.secondary || Theme.colors.ink }}>
+                        <SelectContent style={{ backgroundColor: colors?.secondary || '#2A2318' }}>
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>

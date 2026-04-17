@@ -3,8 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import {
   useFeatureAccess,
   usePermissions,
-  useStore,
-} from '@repo/core';
+  useStore} from '@repo/core';
 import {
   Box,
   Button,
@@ -18,26 +17,22 @@ import {
   ModalHeader,
   ScreenWrapper,
   Text,
-  Theme,
+  
   hapticLight,
   QRBuilder,
   QRCodeGenerator,
   useThemedColors,
-  useRegisterFAB,
-} from '@repo/ui';
+  useRegisterFAB} from '@repo/ui';
 import {
   Building2,
   LayoutGrid,
-  NotebookPen,
-} from 'lucide-react-native';
+  NotebookPen} from 'lucide-react-native';
 import {
-  PrincipalNativeWorkspace,
-} from './PrincipalNativeWorkspace';
+  PrincipalNativeWorkspace} from './PrincipalNativeWorkspace';
 import { PrincipalNativeDashboardShell } from '../bridge/PrincipalNativeDashboardShell';
 import { 
   PrincipalNotes,
-  CreateSchoolModal,
-} from '../components';
+  CreateSchoolModal} from '../components';
 import { type PrincipalZoneId, type PrincipalWorkspaceView } from '../principal/workspace';
 import { usePrincipalWorkspaceSurfaces } from '../principal/usePrincipalWorkspaceSurfaces';
 import { useTranslation } from 'react-i18next';
@@ -55,10 +50,9 @@ export default function PrincipalDashboard({
   schoolId,
   userId,
   forceDemo,
-  onRefresh,
-}: PrincipalDashboardProps) {
+  onRefresh}: PrincipalDashboardProps) {
   const { t } = useTranslation();
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
   const navigation = useNavigation<any>();
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
@@ -84,8 +78,7 @@ export default function PrincipalDashboard({
     onOpenCommons: () => navigation.navigate('CommunityStack' as any),
     onOpenQr: () => setIsQrModalOpen(true),
     onOpenBreathing: () => setBreathingOpen(true),
-    onEditSchool: () => setIsCreateModalOpen(true),
-  });
+    onEditSchool: () => setIsCreateModalOpen(true)});
 
   useRegisterFAB({
     tabType: 'principal',
@@ -96,26 +89,19 @@ export default function PrincipalDashboard({
             {
               label: t('principal.actions.hierarchy') || 'Manage Hierarchy',
               onPress: () => setActiveView('hierarchy'),
-              icon: LayoutGrid,
-            },
-          ]
+              icon: LayoutGrid}]
         : []),
       ...(canManageStaff
         ? [
             {
               label: t('principal.actions.invites') || 'Manage Invites',
               onPress: () => setActiveView('invites'),
-              icon: Building2,
-            },
-          ]
+              icon: Building2}]
         : []),
       {
         label: t('principal.actions.notes') || 'School Logbook',
         onPress: () => setActiveView('notes'),
-        icon: NotebookPen,
-      },
-    ],
-  });
+        icon: NotebookPen}]});
 
   return (
     <>
@@ -162,8 +148,7 @@ export default function PrincipalDashboard({
                 id: school.id,
                 name: school.name,
                 handle: school.handle ?? undefined,
-                type: school.type as any,
-              }
+                type: school.type as any}
             : undefined
         }
         onSuccess={() => {
@@ -181,7 +166,7 @@ export default function PrincipalDashboard({
             </Heading>
           </ModalHeader>
           <ModalBody sx={{ alignItems: 'center', paddingVertical: 20 }}>
-            <Box sx={{ padding: 16, backgroundColor: Theme.colors.sacredWhite, borderRadius: 16 }}>
+            <Box sx={{ padding: 16, backgroundColor: sacredWhite, borderRadius: 16 }}>
               <QRCodeGenerator
                 value={QRBuilder.school(schoolId, '', school?.handle ?? undefined)}
                 size={220}
@@ -203,9 +188,9 @@ export default function PrincipalDashboard({
                 hapticLight();
                 setIsQrModalOpen(false);
               }}
-              sx={{ width: '100%', backgroundColor: Theme.colors.sanctuarySaffron }}
+              sx={{ width: '100%', backgroundColor: sanctuarySaffron }}
             >
-              <ButtonText color={Theme.colors.sacredWhite}>Close</ButtonText>
+              <ButtonText color={sacredWhite}>Close</ButtonText>
             </Button>
           </ModalFooter>
         </ModalContent>

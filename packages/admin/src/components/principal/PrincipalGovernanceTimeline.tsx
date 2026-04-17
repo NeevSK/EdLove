@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { TouchableOpacity, TextInput } from 'react-native';
+import { TouchableOpacity, TextInput, Alert } from 'react-native';
 import { api, useTemporalStore, type PrincipalGovernanceEventZod } from '@repo/core';
-import { Box, HStack, Text, Theme, VStack, useThemedColors } from '@repo/ui';
+import { Box, HStack, Text, VStack, useThemedColors } from '@repo/ui';
 
 interface PrincipalGovernanceTimelineProps {
   schoolId: string;
@@ -9,19 +9,19 @@ interface PrincipalGovernanceTimelineProps {
   limit?: number;
 }
 
-const EVENT_LABELS: Record<PrincipalGovernanceEventZod['event_type'], string> = {
+const EVENT_LABELS: Record<string, string> = {
   create: 'Created',
   read: 'Read',
   use: 'Used',
   expire: 'Expired',
   revoke: 'Revoked',
   follow_up: 'Follow-up',
-  approve: 'Approved',
+  approve: 'Approved'
 };
 
-const ENTITY_LABELS: Record<PrincipalGovernanceEventZod['entity_type'], string> = {
+const ENTITY_LABELS: Record<string, string> = {
   principal_observation: 'Observation',
-  school_invite: 'Invite',
+  school_invite: 'Invite'
 };
 
 function formatWhen(timestamp: string) {
@@ -35,9 +35,9 @@ function formatWhen(timestamp: string) {
 export default function PrincipalGovernanceTimeline({
   schoolId,
   principalId,
-  limit = 6,
+  limit = 6
 }: PrincipalGovernanceTimelineProps) {
-  const colors = useThemedColors();
+  const theme = useThemedColors();
   const { viewDate } = useTemporalStore();
   const [events, setEvents] = useState<PrincipalGovernanceEventZod[]>([]);
   const [snapshot, setSnapshot] = useState<PrincipalGovernanceEventZod[]>([]);
@@ -50,7 +50,7 @@ export default function PrincipalGovernanceTimeline({
 
   const observationSnapshot = useMemo(
     () => snapshot.filter((event) => event.entity_type === 'principal_observation'),
-    [snapshot],
+    [snapshot]
   );
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function PrincipalGovernanceTimeline({
       try {
         const [timelineData, snapshotData] = await Promise.all([
           api.principalWorkspace.getGovernanceTimeline(principalId, viewDate, limit),
-          api.principalWorkspace.getGovernanceSnapshotAsOf(principalId, viewDate, 12),
+          api.principalWorkspace.getGovernanceSnapshotAsOf(principalId, viewDate, 12)
         ]);
         if (!isMounted) return;
         setEvents(timelineData);
@@ -108,12 +108,12 @@ export default function PrincipalGovernanceTimeline({
         principalId,
         observationId: followUpTarget,
         content: followUpContent.trim(),
-        status: followUpStatus,
+        status: followUpStatus
       });
 
       const [timelineData, snapshotData] = await Promise.all([
         api.principalWorkspace.getGovernanceTimeline(principalId, viewDate, limit),
-        api.principalWorkspace.getGovernanceSnapshotAsOf(principalId, viewDate, 12),
+        api.principalWorkspace.getGovernanceSnapshotAsOf(principalId, viewDate, 12)
       ]);
       setEvents(timelineData);
       setSnapshot(snapshotData);
@@ -129,68 +129,65 @@ export default function PrincipalGovernanceTimeline({
   };
 
   return (
-    <VStack sx={{ gap: Theme.spacing.sm }}>
-      <Text sx={{ fontSize: 16, fontWeight: '700', color: Theme.colors.inkTruth }}>
+    <VStack style={{ gap: theme.spacing.sm }}>
+      <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text.primary }}>
         Governance timeline
       </Text>
-      <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}>
+      <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
         Official institutional events for invites and principal observations as of {viewDate}.
       </Text>
 
       {!isLoading && !error && observationSnapshot.length > 0 && (
         <Box
-          sx={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: Theme.colors.silk,
+          style={{
+            borderRadius: theme.corners.md,
+            padding: theme.spacing.md,
+            backgroundColor: theme.scene.backgroundBody,
             borderWidth: 1,
-            borderColor: colors.border,
-            gap: Theme.spacing.sm,
-          }}
-        >
-          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>
+            borderColor: theme.scene.border,
+            gap: theme.spacing.sm
+          }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
             Active governance snapshot
           </Text>
-          <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}>
+          <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
             Latest official observation state as of {viewDate}. This is the current institutional surface, not the full history.
           </Text>
           {observationSnapshot.map((event) => (
             <Box
               key={`snapshot-${event.id}`}
-              sx={{
-                borderRadius: Theme.corners.comfortable,
-                padding: Theme.spacing.sm,
-                backgroundColor: colors.primary,
+              style={{
+                borderRadius: theme.corners.md,
+                padding: theme.spacing.sm,
+                backgroundColor: theme.scene.backgroundPrimary,
                 borderWidth: 1,
-                borderColor: colors.border,
-                gap: Theme.spacing.xs,
-              }}
-            >
-              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}>
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.inkTruth }}>
+                borderColor: theme.scene.border,
+                gap: theme.spacing.xs
+              }}>
+              <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.sm }}>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.primary }}>
                   Observation {event.entity_id}
                 </Text>
-                <Text sx={{ fontSize: 11, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}>
+                <Text style={{ fontSize: 11, color: theme.status.info, fontWeight: '700' }}>
                   {EVENT_LABELS[event.event_type] || event.event_type}
                 </Text>
               </HStack>
-              <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}>
+              <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
                 {(event.snapshot?.content as string) || 'Official observation state is available.'}
               </Text>
               <TouchableOpacity onPress={() => setFollowUpTarget(event.entity_id)} activeOpacity={0.85}>
                 <Box
-                  sx={{
+                  style={{
                     alignSelf: 'flex-start',
-                    marginTop: Theme.spacing.xs,
-                    paddingHorizontal: Theme.spacing.md,
-                    paddingVertical: Theme.spacing.xs,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: `${Theme.colors.gurudeviBlue}18`,
+                    marginTop: theme.spacing.xs,
+                    paddingHorizontal: theme.spacing.md,
+                    paddingVertical: theme.spacing.xs,
+                    borderRadius: theme.corners.full,
+                    backgroundColor: `${theme.status.info}18`,
                     borderWidth: 1,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.gurudeviBlue }}>
+                    borderColor: theme.scene.border
+                  }}>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: theme.status.info }}>
                     Add follow-up
                   </Text>
                 </Box>
@@ -202,43 +199,40 @@ export default function PrincipalGovernanceTimeline({
 
       {isLoading && (
         <Box
-          sx={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: Theme.colors.silk,
+          style={{
+            borderRadius: theme.corners.md,
+            padding: theme.spacing.md,
+            backgroundColor: theme.scene.backgroundBody,
             borderWidth: 1,
-            borderColor: colors.border,
-          }}
-        >
-          <Text sx={{ color: colors.textSecondary }}>Loading governance history...</Text>
+            borderColor: theme.scene.border
+          }}>
+          <Text style={{ color: theme.text.secondary }}>Loading governance history...</Text>
         </Box>
       )}
 
       {!isLoading && error && (
         <Box
-          sx={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: Theme.colors.errorBackground,
+          style={{
+            borderRadius: theme.corners.md,
+            padding: theme.spacing.md,
+            backgroundColor: theme.status.error + '10',
             borderWidth: 1,
-            borderColor: Theme.colors.emberRed,
-          }}
-        >
-          <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text>
+            borderColor: theme.status.error
+          }}>
+          <Text style={{ color: theme.text.primary }}>{error}</Text>
         </Box>
       )}
 
       {!isLoading && !error && events.length === 0 && (
         <Box
-          sx={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: Theme.colors.silk,
+          style={{
+            borderRadius: theme.corners.md,
+            padding: theme.spacing.md,
+            backgroundColor: theme.scene.backgroundBody,
             borderWidth: 1,
-            borderColor: colors.border,
-          }}
-        >
-          <Text sx={{ color: colors.textSecondary }}>
+            borderColor: theme.scene.border
+          }}>
+          <Text style={{ color: theme.text.secondary }}>
             No official governance events are recorded for this view yet.
           </Text>
         </Box>
@@ -247,27 +241,26 @@ export default function PrincipalGovernanceTimeline({
       {!isLoading && !error && events.length > 0 && events.map((event) => (
         <Box
           key={event.id}
-          sx={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: Theme.colors.silk,
+          style={{
+            borderRadius: theme.corners.md,
+            padding: theme.spacing.md,
+            backgroundColor: theme.scene.backgroundBody,
             borderWidth: 1,
-            borderColor: colors.border,
-          }}
-        >
-          <VStack sx={{ gap: Theme.spacing.xs }}>
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}>
-              <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>
+            borderColor: theme.scene.border
+          }}>
+          <VStack style={{ gap: theme.spacing.xs }}>
+            <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.sm }}>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
                 {ENTITY_LABELS[event.entity_type] || event.entity_type} {EVENT_LABELS[event.event_type] || event.event_type}
               </Text>
-              <Text sx={{ fontSize: 11, fontWeight: '700', color: Theme.colors.gurudeviBlue }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: theme.status.info }}>
                 {event.entity_type === 'school_invite' ? 'Invite' : 'Official'}
               </Text>
             </HStack>
-            <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}>
+            <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
               {formatWhen(event.occurred_at)}
             </Text>
-            <Text sx={{ fontSize: 12, color: colors.textSecondary, lineHeight: 18 }}>
+            <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
               {event.entity_type === 'school_invite'
                 ? `Invite code ${event.entity_id} entered the governance timeline.`
                 : event.event_type === 'follow_up'
@@ -280,88 +273,83 @@ export default function PrincipalGovernanceTimeline({
 
       {followUpTarget && (
         <Box
-          sx={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: colors.primary,
+          style={{
+            borderRadius: theme.corners.md,
+            padding: theme.spacing.md,
+            backgroundColor: theme.scene.backgroundPrimary,
             borderWidth: 1,
-            borderColor: colors.border,
-            gap: Theme.spacing.sm,
-          }}
-        >
-          <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.inkTruth }}>
+            borderColor: theme.scene.border,
+            gap: theme.spacing.sm
+          }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
             Follow up on observation {followUpTarget}
           </Text>
           <TextInput
             value={followUpContent}
             onChangeText={setFollowUpContent}
             placeholder="Record the next official step, decision, or resolution..."
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.text.secondary}
             multiline
             style={{
               minHeight: 88,
               borderWidth: 1,
-              borderColor: colors.border,
-              borderRadius: Theme.corners.comfortable,
-              padding: Theme.spacing.sm,
-              color: colors.text,
-              backgroundColor: Theme.colors.silk,
-              textAlignVertical: 'top',
+              borderColor: theme.scene.border,
+              borderRadius: theme.corners.md,
+              padding: theme.spacing.sm,
+              color: theme.text.primary,
+              backgroundColor: theme.scene.backgroundBody,
+              textAlignVertical: 'top'
             }}
           />
-          <HStack sx={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}>
+          <HStack style={{ gap: theme.spacing.xs, flexWrap: 'wrap' }}>
             {(['noted', 'escalated', 'resolved'] as const).map((status) => (
               <TouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}>
                 <Box
-                  sx={{
-                    paddingHorizontal: Theme.spacing.md,
-                    paddingVertical: Theme.spacing.xs,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: followUpStatus === status ? Theme.colors.gurudeviBlue : Theme.colors.silk,
+                  style={{
+                    paddingHorizontal: theme.spacing.md,
+                    paddingVertical: theme.spacing.xs,
+                    borderRadius: theme.corners.full,
+                    backgroundColor: followUpStatus === status ? theme.status.info : theme.scene.backgroundBody,
                     borderWidth: 1,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <Text sx={{ fontSize: 11, fontWeight: '700', color: followUpStatus === status ? Theme.colors.sacredWhite : colors.textSecondary }}>
+                    borderColor: theme.scene.border
+                  }}>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: followUpStatus === status ? '#FFFFFF' : theme.text.secondary }}>
                     {status}
                   </Text>
                 </Box>
               </TouchableOpacity>
             ))}
           </HStack>
-          <HStack sx={{ gap: Theme.spacing.sm }}>
-            <TouchableOpacity 
+          <HStack style={{ gap: theme.spacing.sm }}>
+            <TouchableOpacity
               onPress={() => {
                 setFollowUpTarget(null);
                 setFollowUpContent('');
                 setFollowUpStatus('noted');
-              }} 
-              activeOpacity={0.85}
-            >
+              }}
+              activeOpacity={0.85}>
               <Box
-                sx={{
-                  paddingHorizontal: Theme.spacing.md,
-                  paddingVertical: Theme.spacing.sm,
-                  borderRadius: Theme.corners.full,
-                  backgroundColor: Theme.colors.silk,
+                style={{
+                  paddingHorizontal: theme.spacing.md,
+                  paddingVertical: theme.spacing.sm,
+                  borderRadius: theme.corners.full,
+                  backgroundColor: theme.scene.backgroundBody,
                   borderWidth: 1,
-                  borderColor: colors.border,
-                }}
-              >
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary }}>Cancel</Text>
+                  borderColor: theme.scene.border
+                }}>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.secondary }}>Cancel</Text>
               </Box>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSaveFollowUp} activeOpacity={0.85} disabled={savingFollowUp}>
               <Box
-                sx={{
-                  paddingHorizontal: Theme.spacing.md,
-                  paddingVertical: Theme.spacing.sm,
-                  borderRadius: Theme.corners.full,
-                  backgroundColor: Theme.colors.sanctuarySaffron,
-                  opacity: savingFollowUp ? 0.65 : 1,
-                }}
-              >
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                style={{
+                  paddingHorizontal: theme.spacing.md,
+                  paddingVertical: theme.spacing.sm,
+                  borderRadius: theme.corners.full,
+                  backgroundColor: theme.status.warning,
+                  opacity: savingFollowUp ? 0.65 : 1
+                }}>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
                   {savingFollowUp ? 'Saving...' : 'Save follow-up'}
                 </Text>
               </Box>

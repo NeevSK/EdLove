@@ -14,7 +14,7 @@ import {
     Spinner,
     SanctuaryModal,
     useThemedColors,
-    Theme,
+    
     Actionsheet,
     ActionsheetBackdrop,
     ActionsheetContent,
@@ -61,7 +61,7 @@ export default function GlobalCreateModal({
     availableSchools
 }: GlobalCreateModalProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     const [type, setType] = useState<CreateType>('school');
     const [name, setName] = useState('');
@@ -158,8 +158,7 @@ export default function GlobalCreateModal({
             if (type === 'classroom' && result) {
                 void growthSignalsAPI.emitSignal(userId, 'classroom_created', {
                     classroom_id: result.id,
-                    school_id: selectedSchoolId,
-                }).catch(() => { });
+                    school_id: selectedSchoolId}).catch(() => { });
             }
             onSuccess(type, result);
             handleClose();
@@ -168,8 +167,7 @@ export default function GlobalCreateModal({
             setError(apiError.message);
         } finally {
             setIsSubmitting(false);
-        }
-    };
+        };
 
     const selectedSchool = availableSchools.find(s => s.id === selectedSchoolId);
 
@@ -200,15 +198,15 @@ export default function GlobalCreateModal({
                             onPress={handleSubmit}
                             sx={{
                                 flex: 2, // Larger primary button
-                                backgroundColor: Theme.colors.sanctuarySaffron,
+                                backgroundColor: sanctuarySaffron,
                                 _hover: { opacity: 0.9 }
                             }}
                             isDisabled={isSubmitting || !name.trim()}
                         >
                             {isSubmitting ? (
-                                <Spinner color={Theme.colors.sacredWhite} size="small" />
+                                <Spinner color={sacredWhite} size="small" />
                             ) : (
-                                <ButtonText color={Theme.colors.sacredWhite}>Initialize Entity</ButtonText>
+                                <ButtonText color={sacredWhite}>Initialize Entity</ButtonText>
                             )}
                         </Button>
                     </HStack>
@@ -227,13 +225,13 @@ export default function GlobalCreateModal({
                             active={type === 'classroom'}
                             onPress={() => setType('classroom')}
                             label="New Classroom"
-                            icon={<LayoutGrid size={18} />}
+                            icon={<Icon as={Layout}Grid size={18} />}
                         />
                         <TypeButton
                             active={type === 'group'}
                             onPress={() => setType('group')}
                             label="New Sanctuary"
-                            icon={<Users size={18} />}
+                            icon={<Icon as={User}s size={18} />}
                         />
                     </HStack>
 
@@ -246,7 +244,7 @@ export default function GlobalCreateModal({
                             borderColor: '#ef4444'
                         }}>
                             <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                <Activity size={14} color="#ef4444" />
+                                <Icon as={Activity} size={14} color="#ef4444" />
                                 <Text sx={{ color: '#ef4444', fontSize: 13, fontWeight: '600' }}>{error}</Text>
                             </HStack>
                         </Box>
@@ -268,11 +266,11 @@ export default function GlobalCreateModal({
                                         backgroundColor: colors.tertiary,
                                         height: 52,
                                         borderRadius: 12,
-                                        _hover: { borderColor: Theme.colors.sanctuarySaffron }
+                                        _hover: { borderColor: sanctuarySaffron }
                                     }}
                                 >
                                     <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                        <Globe size={16} color={colors.textTertiary} />
+                                        <Icon as={Globe} size={16} color={colors.textTertiary} />
                                         <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}>
                                             {selectedSchool ? selectedSchool.name : "Select Target Institution..."}
                                         </ButtonText>
@@ -293,7 +291,7 @@ export default function GlobalCreateModal({
                                 backgroundColor: colors.tertiary,
                                 borderColor: colors.border,
                                 borderRadius: 12,
-                                _focus: { borderColor: Theme.colors.sanctuarySaffron }
+                                _focus: { borderColor: sanctuarySaffron }
                             }}>
                                 <InputField
                                     value={name}
@@ -319,8 +317,8 @@ export default function GlobalCreateModal({
                                                 flex: 1,
                                                 height: 44,
                                                 borderRadius: 22,
-                                                backgroundColor: schoolType === t ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                borderColor: schoolType === t ? Theme.colors.sanctuarySaffron : colors.border,
+                                                backgroundColor: schoolType === t ? sanctuarySaffron : 'transparent',
+                                                borderColor: schoolType === t ? sanctuarySaffron : colors.border,
                                                 _hover: { opacity: 0.9 }
                                             }}
                                         >
@@ -387,7 +385,7 @@ export default function GlobalCreateModal({
                                 }}
                             >
                                 <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                    <SchoolIcon size={18} color={Theme.colors.sanctuarySaffron} />
+                                    <SchoolIcon size={18} color={sanctuarySaffron} />
                                     <ActionsheetItemText color={colors.text}>{school.name}</ActionsheetItemText>
                                 </HStack>
                             </ActionsheetItem>
@@ -403,14 +401,13 @@ function TypeButton({
   active,
   onPress,
   label,
-  icon,
-}: {
+  icon}: {
   active: boolean;
   onPress: () => void;
   label: string;
   icon: React.ReactElement;
 }) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     return (
         <Button
             variant={active ? 'solid' : 'outline'}
@@ -421,9 +418,9 @@ function TypeButton({
                 height: 80,
                 gap: 8,
                 borderRadius: 16,
-                backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
-                borderColor: active ? Theme.colors.sanctuarySaffron : colors.border,
-                _hover: { backgroundColor: active ? Theme.colors.sanctuarySaffron : colors.tertiary }
+                backgroundColor: active ? sanctuarySaffron : 'transparent',
+                borderColor: active ? sanctuarySaffron : colors.border,
+                _hover: { backgroundColor: active ? sanctuarySaffron : colors.tertiary }
             }}
         >
             <Box sx={{ marginBottom: 4 }}>

@@ -1,8 +1,8 @@
-import { api, type PrincipalInviteRole } from '@repo/core';
+﻿import { api, type PrincipalInviteRole } from '@repo/core';
 
 export type InviteCode = Awaited<ReturnType<typeof api.principalWorkspace.listInviteCodes>>[number];
 
-export const invitesAPI = {
+export const invitesAPI = { 
   async listInviteCodes(schoolId: string): Promise<InviteCode[]> {
     return api.principalWorkspace.listInviteCodes(schoolId);
   },
@@ -20,7 +20,5 @@ export const invitesAPI = {
       schoolId,
       principalId: userId,
       inviteCode,
-      eventType: 'revoke',
-    });
-  },
-};
+      eventType: 'revoke'});
+  };

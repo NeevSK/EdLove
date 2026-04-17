@@ -9,7 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
+import {  } from '@repo/ui';
 import { staffManagementAPI, StaffLeaveDTO } from '@repo/core';
 
 interface LeaveApprovalSectionProps {
@@ -17,14 +17,13 @@ interface LeaveApprovalSectionProps {
   principalId: string;
 }
 
-const LEAVE_TYPE_COLORS: Record<string, string> = {
-  sick: Theme.colors.emberRed ?? '#f44336',
-  casual: Theme.colors.gurudeviBlue ?? '#2196f3',
-  annual: Theme.colors.sageGreen ?? '#4caf50',
-  maternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  paternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  other: '#9e9e9e',
-};
+const LEAVE_TYPE_COLORS: Record<string, string>  = {
+  sick: emberRed ?? '#f44336',
+  casual: gurudeviBlue ?? '#2196f3',
+  annual: sageGreen ?? '#4caf50',
+  maternity: sanctuarySaffron ?? '#ff9800',
+  paternity: sanctuarySaffron ?? '#ff9800',
+  other: '#9e9e9e'};
 
 function leaveTypeColor(type: string): string {
   return LEAVE_TYPE_COLORS[type.toLowerCase()] ?? '#9e9e9e';
@@ -36,9 +35,8 @@ function shortId(id: string): string {
 
 export default function LeaveApprovalSection({
   schoolId,
-  principalId,
-}: LeaveApprovalSectionProps) {
-  const colors = useThemedColors();
+  principalId}: LeaveApprovalSectionProps) {
+  const colors = useTheme().scene;
   const [loading, setLoading] = useState(true);
   const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -68,8 +66,7 @@ export default function LeaveApprovalSection({
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
-        padding: Theme.spacing.md,
-      }}
+        padding: Theme.spacing.md}}
     >
       {/* Header */}
       <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}>
@@ -79,11 +76,10 @@ export default function LeaveApprovalSection({
         {leaves.length > 0 && (
           <Box
             sx={{
-              backgroundColor: Theme.colors.amberGlow ?? '#ffc107',
+              backgroundColor: amberGlow ?? '#ffc107',
               borderRadius: 10,
               paddingHorizontal: 8,
-              paddingVertical: 2,
-            }}
+              paddingVertical: 2}}
           >
             <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
               {leaves.length}
@@ -112,8 +108,7 @@ export default function LeaveApprovalSection({
               paddingVertical: Theme.spacing.sm,
               borderBottomWidth: 1,
               borderBottomColor: colors.border,
-              gap: 6,
-            }}
+              gap: 6}}
           >
             <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
               {/* Leave type badge */}
@@ -122,8 +117,7 @@ export default function LeaveApprovalSection({
                   backgroundColor: leaveTypeColor(leave.leave_type),
                   borderRadius: 8,
                   paddingHorizontal: 7,
-                  paddingVertical: 2,
-                }}
+                  paddingVertical: 2}}
               >
                 <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>
                   {leave.leave_type}
@@ -156,12 +150,11 @@ export default function LeaveApprovalSection({
               >
                 <Box
                   sx={{
-                    backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
+                    backgroundColor: sageGreen ?? '#4caf50',
                     borderRadius: Theme.corners.medium ?? 8,
                     padding: Theme.spacing.xs,
                     alignItems: 'center',
-                    opacity: isProcessing ? 0.5 : 1,
-                  }}
+                    opacity: isProcessing ? 0.5 : 1}}
                 >
                   <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text>
                 </Box>
@@ -181,10 +174,9 @@ export default function LeaveApprovalSection({
                     alignItems: 'center',
                     opacity: isProcessing ? 0.5 : 1,
                     borderWidth: 1,
-                    borderColor: Theme.colors.emberRed ?? '#f44336',
-                  }}
+                    borderColor: emberRed ?? '#f44336'}}
                 >
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.emberRed ?? '#f44336' }}>
+                  <Text sx={{ fontSize: 13, fontWeight: '700', color: emberRed ?? '#f44336' }}>
                     Reject
                   </Text>
                 </Box>

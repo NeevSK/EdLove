@@ -26,8 +26,7 @@ export function PrincipalNativeWorkspace({
   activeView: controlledActiveView,
   onActiveViewChange,
   renderMain,
-  renderAdditionalView,
-}: PrincipalNativeWorkspaceProps) {
+  renderAdditionalView}: PrincipalNativeWorkspaceProps) {
   const { can } = usePermissions();
   const [internalActiveView, setInternalActiveView] = useState<PrincipalWorkspaceView>('main');
   const activeView = controlledActiveView ?? internalActiveView;
@@ -47,8 +46,7 @@ export function PrincipalNativeWorkspace({
         setInternalActiveView(view);
       }
       onActiveViewChange?.(view);
-    }
-  };
+    };
 
   useEffect(() => {
     if (!canManageSchoolScope && activeView !== 'main') {
@@ -59,11 +57,10 @@ export function PrincipalNativeWorkspace({
     }
   }, [activeView, canManageSchoolScope, controlledActiveView, onActiveViewChange]);
 
-  const ctx: PrincipalNativeWorkspaceRenderCtx = {
+  const ctx: PrincipalNativeWorkspaceRenderCtx  = {
     activeView,
     canManageSchoolScope,
-    navigatePrincipalView,
-  };
+    navigatePrincipalView};
 
   const renderWorkspaceView = () => {
     if (activeView === 'hierarchy') {

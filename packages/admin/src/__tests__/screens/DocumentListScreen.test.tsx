@@ -15,8 +15,7 @@ describe('DocumentListScreen', () => {
     userId: 'test-user-1',
     userRole: 'teacher',
     onDocumentPress: jest.fn(),
-    onCreateNew: jest.fn(),
-  };
+    onCreateNew: jest.fn()};
 
   const mockDocuments: DocumentWorkflow[] = [
     {
@@ -32,8 +31,7 @@ describe('DocumentListScreen', () => {
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-02T00:00:00Z',
       version: 1,
-      metadata: {},
-    },
+      metadata: {}},
     {
       id: 'doc-2',
       templateId: 'template-2',
@@ -47,9 +45,7 @@ describe('DocumentListScreen', () => {
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-02T00:00:00Z',
       version: 1,
-      metadata: {},
-    },
-  ];
+      metadata: {}}];
 
   beforeEach(() => {
     jest.clearAllMocks();

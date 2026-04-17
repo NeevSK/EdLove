@@ -1,7 +1,7 @@
-import { createConfig, gluestackConfig as defaultConfig, Theme } from '@repo/ui';
+import { createConfig, gluestackConfig as defaultConfig,  } from '@repo/ui';
 
 // Extend the default config with our Sanctuary colors
-// This allows using bg="$sanctuarySaffron" instead of Theme.colors.sanctuarySaffron
+// This allows using bg="$sanctuarySaffron" instead of sanctuarySaffron
 export const config = createConfig({
     ...defaultConfig,
     tokens: {
@@ -9,29 +9,26 @@ export const config = createConfig({
         colors: {
             ...defaultConfig.tokens.colors,
             // Core
-            sanctuarySaffron: Theme.colors.sanctuarySaffron,
-            saffronMuted: Theme.colors.saffronMuted,
-            gurudeviBlue: Theme.colors.gurudeviBlue,
-            gurudeviViolet: Theme.colors.gurudeviViolet,
+            sanctuarySaffron: sanctuarySaffron,
+            saffronMuted: saffronMuted,
+            gurudeviBlue: gurudeviBlue,
+            gurudeviViolet: gurudeviViolet,
             // Dark Mode
-            obsidian: Theme.colors.obsidian,
-            ink: Theme.colors.ink,
-            shroud: Theme.colors.shroud,
-            sacredWhite: Theme.colors.sacredWhite,
-            starlightGray: Theme.colors.starlightGray,
+            obsidian: obsidian,
+            ink: '#2A2318',
+            shroud: shroud,
+            sacredWhite: sacredWhite,
+            starlightGray: starlightGray,
             // Light Mode
-            vellum: Theme.colors.vellum,
-            silk: Theme.colors.silk,
-            linen: Theme.colors.linen,
-            inkTruth: Theme.colors.inkTruth,
-            bark: Theme.colors.bark,
+            vellum: vellum,
+            silk: silk,
+            linen: linen,
+            inkTruth: '#2A2318'Truth,
+            bark: bark,
             // Functional
-            emberRed: Theme.colors.emberRed,
-            sageGreen: Theme.colors.sageGreen,
-            mossGreen: Theme.colors.mossGreen,
-            amberGlow: Theme.colors.amberGlow,
-            shadowViolet: Theme.colors.shadowViolet,
-            mistGray: Theme.colors.mistGray,
-        },
-    },
-});
+            emberRed: emberRed,
+            sageGreen: sageGreen,
+            mossGreen: mossGreen,
+            amberGlow: amberGlow,
+            shadowViolet: shadowViolet,
+            mistGray: mistGray}}});

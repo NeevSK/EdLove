@@ -1,6 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import {  useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { SelfStackParamList } from '@repo/core';
 
@@ -26,18 +26,14 @@ export default function SelfStackNavigatorWeb() {
                 contentStyle: {
                     backgroundColor: gradientNodes[0],
                     overflow: 'visible',
-                    minHeight: '100%',
-                },
-            }}
-        >
+                    minHeight: '100%'}}}>
             <Stack.Screen name="SelfMain" component={SelfScreenWeb} />
             <Stack.Screen
                 name="AIAssistant"
                 component={AIAssistantScreen}
                 options={{
                     presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
+                    animation: 'slide_from_bottom'}}
             />
         </Stack.Navigator>
         </React.Suspense>

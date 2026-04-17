@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WebScreenShimmer — pure HTML/CSS shimmer skeleton for web Suspense fallbacks.
  *
  * Matches the sanctuary design language: vellum background (#F5EDD6),

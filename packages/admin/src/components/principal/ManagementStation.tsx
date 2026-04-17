@@ -1,14 +1,12 @@
 import React from 'react';
-import {
-    VStack,
+import { Icon, VStack,
     HStack,
     Box,
     Text,
     Pressable,
-    Theme,
+    
     useThemedColors,
-    hapticLight
-} from '@repo/ui';
+    hapticLight } from '@repo/ui';
 import {
     LayoutGrid,
     UserPlus,
@@ -24,7 +22,7 @@ interface ManagementStationProps {
 
 export default function ManagementStation({ onAction }: ManagementStationProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     const ActionItem = ({ icon: LucideIcon, label, description, target }: any) => (
         <Pressable
@@ -38,8 +36,7 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
                 padding: Theme.spacing.md,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: colors.border,
-            }}
+                borderColor: colors.border}}
         >
             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <HStack space="md" alignItems="center">
@@ -59,7 +56,7 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
                         </Text>
                     </VStack>
                 </HStack>
-                <ArrowRight size={14} color={colors.textTertiary} />
+                <Icon as={ArrowRight} size={14} color={colors.textTertiary} />
             </HStack>
         </Pressable>
     );
@@ -68,16 +65,16 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
         <Box
             sx={{
                 padding: Theme.spacing.lg,
-                backgroundColor: Theme.colors.twilightBlue + '08',
+                backgroundColor: twilightBlue + '08',
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
-                borderColor: Theme.colors.twilightBlue + '22',
+                borderColor: twilightBlue + '22',
                 borderStyle: 'dashed'
             }}
         >
             <VStack space="md">
                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text color={Theme.colors.twilightBlue} sx={{ fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.5 }}>
+                    <Text color={twilightBlue} sx={{ fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.5 }}>
                         {t('principal.management.station') || 'Principal\'s Management Station'} 👔
                     </Text>
                 </HStack>

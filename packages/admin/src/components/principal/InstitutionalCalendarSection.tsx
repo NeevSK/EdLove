@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InstitutionalCalendarSection
  *
  * Compact calendar widget for the principal:
@@ -8,9 +8,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, TextInput, ScrollView as RNScrollView } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { staffManagementAPI, CalendarEvent } from '@repo/core';
+import { Box, HStack, VStack, Text, useThemedColors } from '@repo/ui';
+import { staffManagementAPI, type CalendarEvent } from '@repo/core';
 
 interface InstitutionalCalendarSectionProps {
   schoolId: string;
@@ -18,34 +17,22 @@ interface InstitutionalCalendarSectionProps {
   onAddEvent?: () => void;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  term_start: Theme.colors.gurudeviBlue ?? '#2196f3',
-  exam: Theme.colors.amberGlow ?? '#f44336',
-  holiday: Theme.colors.sageGreen ?? '#4caf50',
-  event: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  other: '#9e9e9e',
-};
-
 const TYPE_LABELS: Record<string, string> = {
   term_start: 'Term Start',
   exam: 'Exam',
   holiday: 'Holiday',
   event: 'Event',
-  other: 'Other',
+  other: 'Other'
 };
 
 const TYPE_OPTIONS = ['term_start', 'exam', 'holiday', 'event', 'other'];
 
-function typeBadgeColor(type: string): string {
-  return TYPE_COLORS[type] ?? '#9e9e9e';
-}
-
 export default function InstitutionalCalendarSection({
   schoolId,
   principalId,
-  onAddEvent,
+  onAddEvent
 }: InstitutionalCalendarSectionProps) {
-  const colors = useThemedColors();
+  const theme = useThemedColors();
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -57,10 +44,25 @@ export default function InstitutionalCalendarSection({
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const typeBadgeColor = (type: string): string => {
+    switch (type) {
+      case 'term_start': return theme.status.info;
+      case 'exam': return theme.status.error;
+      case 'holiday': return theme.status.success;
+      case 'event': return theme.status.warning;
+      default: return theme.text.tertiary;
+    }
+  };
+
   async function fetchEvents() {
-    const data = await staffManagementAPI.getUpcomingCalendarEvents(schoolId, 5);
-    setEvents(data);
-    setLoading(false);
+    try {
+      const data = await staffManagementAPI.getUpcomingCalendarEvents(schoolId, 5);
+      setEvents(data);
+    } catch (err) {
+      console.error('InstitutionalCalendar: fetch error', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -71,75 +73,79 @@ export default function InstitutionalCalendarSection({
   async function handleSave() {
     if (!title.trim() || !startDate.trim()) return;
     setSaving(true);
-    const ok = await staffManagementAPI.createCalendarEvent(schoolId, principalId, {
-      title: title.trim(),
-      type: selectedType,
-      start_date: startDate.trim(),
-      end_date: endDate.trim() || undefined,
-    });
-    setSaving(false);
-    if (ok) {
-      setTitle('');
-      setStartDate('');
-      setEndDate('');
-      setSelectedType('event');
-      setShowForm(false);
-      await fetchEvents();
+    try {
+      const ok = await staffManagementAPI.createCalendarEvent(schoolId, principalId, {
+        title: title.trim(),
+        type: selectedType,
+        start_date: startDate.trim(),
+        end_date: endDate.trim() || undefined
+      });
+      if (ok) {
+        setTitle('');
+        setStartDate('');
+        setEndDate('');
+        setSelectedType('event');
+        setShowForm(false);
+        await fetchEvents();
+      }
+    } catch (err) {
+      console.error('InstitutionalCalendar: save error', err);
+    } finally {
+      setSaving(false);
     }
   }
 
   const inputStyle = {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: Theme.corners.medium ?? 8,
-    padding: Theme.spacing.sm,
-    color: colors.text,
-    backgroundColor: colors.primary,
+    borderColor: theme.scene.border,
+    borderRadius: theme.corners.md,
+    padding: theme.spacing.sm,
+    color: theme.text.primary,
+    backgroundColor: theme.scene.backgroundBody,
     fontSize: 14,
-    marginBottom: Theme.spacing.sm,
-  } as const;
+    marginBottom: theme.spacing.sm
+  };
 
   return (
     <Box
-      sx={{
-        backgroundColor: colors.primary,
-        borderRadius: Theme.corners.comfortable,
+      style={{
+        backgroundColor: theme.scene.backgroundPrimary,
+        borderRadius: theme.corners.md,
         borderWidth: 1,
-        borderColor: colors.border,
-        padding: Theme.spacing.md,
-      }}
-    >
-      {/* Header */}
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
-        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
-          📅 School Calendar
+        borderColor: theme.scene.border,
+        padding: theme.spacing.md
+      }}>
+      <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.sm }}>
+        <Text style={{ fontSize: 15, fontWeight: '700', color: theme.text.primary }}>
+          School Calendar
         </Text>
         <TouchableOpacity
           onPress={() => {
             setShowForm(!showForm);
             onAddEvent?.();
           }}
-          activeOpacity={0.8}
-        >
+          activeOpacity={0.8}>
           <Box
-            sx={{
-              backgroundColor: Theme.colors.gurudeviBlue ?? '#2196f3',
-              borderRadius: Theme.corners.medium ?? 8,
+            style={{
+              backgroundColor: theme.status.info,
+              borderRadius: theme.corners.md,
               paddingHorizontal: 10,
-              paddingVertical: 4,
-            }}
-          >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ Add</Text>
+              paddingVertical: 4
+            }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>+ Add</Text>
           </Box>
         </TouchableOpacity>
       </HStack>
 
-      {/* Loading */}
-      {loading && <SkeletonCard height={60} />}
+      {loading && (
+        <VStack style={{ gap: theme.spacing.sm }}>
+          <Box style={{ height: 40, backgroundColor: theme.scene.backgroundBody, borderRadius: theme.corners.md, opacity: 0.5 }} />
+          <Box style={{ height: 40, backgroundColor: theme.scene.backgroundBody, borderRadius: theme.corners.md, opacity: 0.3 }} />
+        </VStack>
+      )}
 
-      {/* Event list */}
       {!loading && events.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text style={{ fontSize: 13, color: theme.text.secondary, textAlign: 'center', paddingVertical: theme.spacing.md }}>
           No upcoming events
         </Text>
       )}
@@ -147,61 +153,60 @@ export default function InstitutionalCalendarSection({
       {!loading && events.map((ev) => (
         <HStack
           key={ev.id}
-          sx={{ alignItems: 'center', gap: Theme.spacing.sm, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border }}
-        >
+          style={{ 
+            alignItems: 'center', 
+            gap: theme.spacing.sm, 
+            paddingVertical: theme.spacing.xs, 
+            borderBottomWidth: 1, 
+            borderBottomColor: theme.scene.border 
+          }}>
           <Box
-            sx={{
+            style={{
               backgroundColor: typeBadgeColor(ev.type),
               borderRadius: 8,
               paddingHorizontal: 7,
-              paddingVertical: 2,
-            }}
-          >
-            <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>
-              {TYPE_LABELS[ev.type] ?? ev.type}
+              paddingVertical: 2
+            }}>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#FFFFFF' }}>
+              {TYPE_LABELS[ev.type] || ev.type}
             </Text>
           </Box>
-          <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}>
+          <Text style={{ flex: 1, fontSize: 13, color: theme.text.primary }} numberOfLines={1}>
             {ev.title}
           </Text>
-          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(ev.start_date)}</Text>
+          <Text style={{ fontSize: 11, color: theme.text.secondary }}>
+            {ev.start_date.split('T')[0]}
+          </Text>
         </HStack>
       ))}
 
-      {/* Inline add form */}
       {showForm && (
-        <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}>
+        <VStack style={{ marginTop: theme.spacing.md }}>
           <TextInput
             placeholder="Event title"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.text.tertiary}
             value={title}
             onChangeText={setTitle}
             style={inputStyle}
           />
 
-          {/* Type chips */}
-          <RNScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: Theme.spacing.sm }}>
-            <HStack sx={{ gap: Theme.spacing.xs }}>
+          <RNScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: theme.spacing.sm }}>
+            <HStack style={{ gap: theme.spacing.xs }}>
               {TYPE_OPTIONS.map((t) => (
                 <TouchableOpacity key={t} onPress={() => setSelectedType(t)} activeOpacity={0.8}>
                   <Box
-                    sx={{
+                    style={{
                       borderRadius: 14,
                       paddingHorizontal: 10,
                       paddingVertical: 4,
-                      backgroundColor:
-                        selectedType === t
-                          ? (typeBadgeColor(t))
-                          : (colors.border),
-                    }}
-                  >
+                      backgroundColor: selectedType === t ? typeBadgeColor(t) : theme.scene.border
+                    }}>
                     <Text
-                      sx={{
+                      style={{
                         fontSize: 12,
                         fontWeight: '600',
-                        color: selectedType === t ? '#fff' : colors.textSecondary,
-                      }}
-                    >
+                        color: selectedType === t ? '#FFFFFF' : theme.text.secondary
+                      }}>
                       {TYPE_LABELS[t]}
                     </Text>
                   </Box>
@@ -212,14 +217,14 @@ export default function InstitutionalCalendarSection({
 
           <TextInput
             placeholder="Start date (YYYY-MM-DD)"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.text.tertiary}
             value={startDate}
             onChangeText={setStartDate}
             style={inputStyle}
           />
           <TextInput
             placeholder="End date (YYYY-MM-DD, optional)"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.text.tertiary}
             value={endDate}
             onChangeText={setEndDate}
             style={inputStyle}
@@ -227,16 +232,15 @@ export default function InstitutionalCalendarSection({
 
           <TouchableOpacity onPress={handleSave} activeOpacity={0.8} disabled={saving}>
             <Box
-              sx={{
-                backgroundColor: Theme.colors.gurudeviBlue ?? '#2196f3',
-                borderRadius: Theme.corners.medium ?? 8,
-                padding: Theme.spacing.sm,
+              style={{
+                backgroundColor: theme.status.info,
+                borderRadius: theme.corners.md,
+                padding: theme.spacing.sm,
                 alignItems: 'center',
-                opacity: saving ? 0.6 : 1,
-              }}
-            >
-              <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}>
-                {saving ? 'Saving…' : 'Save Event'}
+                opacity: saving ? 0.6 : 1
+              }}>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>
+                {saving ? 'Saving...' : 'Save Event'}
               </Text>
             </Box>
           </TouchableOpacity>

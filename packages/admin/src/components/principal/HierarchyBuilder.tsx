@@ -30,12 +30,11 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-    Spinner,
-} from '@repo/ui';
+    Spinner} from '@repo/ui';
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { api, Section, SchoolGrade } from '@repo/core';
-import { Theme } from '@repo/ui';
+import {  } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 
 interface HierarchyBuilderProps {
@@ -45,7 +44,7 @@ interface HierarchyBuilderProps {
 
 export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const [sections, setSections] = useState<Section[]>([]);
     const [gradesBySection, setGradesBySection] = useState<{ [sectionId: string]: SchoolGrade[] }>({});
     const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +67,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
             setSections(sectionsData);
 
             // Load grades for each section
-            const gradesMap: { [sectionId: string]: SchoolGrade[] } = {};
+            const gradesMap: { [sectionId: string]: SchoolGrade[] } = { };
             for (const section of sectionsData) {
                 const grades = await api.school.getGrades(section.id);
                 gradesMap[section.id] = grades;
@@ -79,8 +78,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
             setError(err.message || t('errors.fetchFailed'));
         } finally {
             setIsLoading(false);
-        }
-    };
+        };
 
     const handleAddSection = async () => {
         if (!newSectionName.trim()) {
@@ -96,8 +94,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         } catch (err: any) {
             console.error('Failed to create section:', err);
             setError(err.message || t('errors.somethingWentWrong'));
-        }
-    };
+        };
 
     const handleAddGrade = async () => {
         if (!selectedSectionId) return;
@@ -117,15 +114,13 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         } catch (err: any) {
             console.error('Failed to create grade:', err);
             setError(err.message || t('errors.somethingWentWrong'));
-        }
-    };
+        };
 
     return (
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: 'transparent',
-            }}
+                backgroundColor: 'transparent'}}
         >
             <ScrollView>
                 <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
@@ -133,8 +128,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     <HStack
                         sx={{
                             justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
+                            alignItems: 'center'}}
                     >
                         <Heading color={colors.action} sx={{ fontSize: 32 }}>
                             {t('principal.hierarchy.title')}
@@ -144,8 +138,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             variant="outline"
                             size="sm"
                             sx={{
-                                borderColor: colors.border,
-                            }}
+                                borderColor: colors.border}}
                             onPress={onBack}
                         >
                             <ButtonText color={colors.text}>
@@ -157,11 +150,10 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     {/* Add Section Button */}
                     <Button
                         sx={{
-                            backgroundColor: colors.action,
-                        }}
+                            backgroundColor: colors.action}}
                         onPress={() => setShowAddSection(true)}
                     >
-                        <ButtonText color={Theme.colors.sacredWhite}>
+                        <ButtonText color={sacredWhite}>
                             {t('principal.hierarchy.addSection')}
                         </ButtonText>
                     </Button>
@@ -171,8 +163,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                         <Box
                             sx={{
                                 padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
+                                alignItems: 'center'}}
                         >
                             <Spinner color={colors.action} />
                         </Box>
@@ -184,8 +175,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: colors.error,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
+                                borderRadius: Theme.corners.comfortable}}
                         >
                             <Text color={colors.text}>{error}</Text>
                         </Box>
@@ -200,16 +190,14 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
-                                borderLeftColor: colors.action,
-                            }}
+                                borderLeftColor: colors.action}}
                         >
                             {/* Section Header */}
                             <HStack
                                 sx={{
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    marginBottom: Theme.spacing.md,
-                                }}
+                                    marginBottom: Theme.spacing.md}}
                             >
                                 <Text
                                     color={colors.text}
@@ -242,8 +230,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: colors.tertiary,
-                                                borderRadius: Theme.corners.tight,
-                                            }}
+                                                borderRadius: Theme.corners.tight}}
                                         >
                                             <Text color={colors.textTertiary}>└─</Text>
                                             <Text color={colors.text}>
@@ -265,8 +252,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                         <Box
                             sx={{
                                 padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
+                                alignItems: 'center'}}
                         >
                             <Text
                                 color={colors.textSecondary}
@@ -291,8 +277,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
-                        backgroundColor: colors.secondary,
-                    }}
+                        backgroundColor: colors.secondary}}
                 >
                     <ModalHeader>
                         <Heading color={colors.action} sx={{ fontSize: 24 }}>
@@ -306,16 +291,14 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             </Text>
                             <Input
                                 sx={{
-                                    backgroundColor: colors.tertiary,
-                                }}
+                                    backgroundColor: colors.tertiary}}
                             >
                                 <InputField
                                     placeholder={t('principal.hierarchy.sectionNamePlaceholder')}
                                     value={newSectionName}
                                     onChangeText={setNewSectionName}
                                     sx={{
-                                        color: colors.text,
-                                    }}
+                                        color: colors.text}}
                                 />
                             </Input>
                         </VStack>
@@ -337,11 +320,10 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             <Button
                                 sx={{
                                     flex: 1,
-                                    backgroundColor: colors.action,
-                                }}
+                                    backgroundColor: colors.action}}
                                 onPress={handleAddSection}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                                <ButtonText color={sacredWhite}>
                                     {t('common.add') || 'Add'}
                                 </ButtonText>
                             </Button>
@@ -362,8 +344,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
-                        backgroundColor: colors.secondary,
-                    }}
+                        backgroundColor: colors.secondary}}
                 >
                     <ModalHeader>
                         <Heading color={colors.action} sx={{ fontSize: 24 }}>
@@ -377,8 +358,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             </Text>
                             <Input
                                 sx={{
-                                    backgroundColor: colors.tertiary,
-                                }}
+                                    backgroundColor: colors.tertiary}}
                             >
                                 <InputField
                                     placeholder={t('principal.hierarchy.gradeNumberPlaceholder')}
@@ -386,8 +366,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                     onChangeText={setNewGradeNumber}
                                     keyboardType="numeric"
                                     sx={{
-                                        color: colors.text,
-                                    }}
+                                        color: colors.text}}
                                 />
                             </Input>
                         </VStack>
@@ -410,11 +389,10 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             <Button
                                 sx={{
                                     flex: 1,
-                                    backgroundColor: colors.action,
-                                }}
+                                    backgroundColor: colors.action}}
                                 onPress={handleAddGrade}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                                <ButtonText color={sacredWhite}>
                                     {t('common.add') || 'Add'}
                                 </ButtonText>
                             </Button>

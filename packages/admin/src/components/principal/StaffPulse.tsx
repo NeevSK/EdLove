@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Icon, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { 
     Text, 
     GlassCard, 
@@ -8,16 +8,14 @@ import {
     useThemedColors, 
     Box, 
     Button, 
-    ButtonText 
-} from '@repo/ui';
+    ButtonText } from '@repo/ui';
 import { useStaffPresence } from '../../hooks/useStaffPresence';
 import {
     Clock,
     Calendar,
     CheckCircle2,
     LogIn,
-    LogOut,
-} from 'lucide-react-native';
+    LogOut} from 'lucide-react-native';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
@@ -34,8 +32,8 @@ interface StaffPresencePulseProps {
 // COMPONENT
 // —————————————————————————————————————————————————————————————————————————————
 
-export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, schoolId }) => {
-    const colors = useThemedColors();
+export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = { { userId, schoolId }) => {
+    const colors = useTheme().scene;
     const { t, i18n } = useTranslation();
     const { attendance, isCheckedIn, checkIn, checkOut, loading } = useStaffPresence(userId, schoolId);
     const [actionLoading, setActionLoading] = useState(false);
@@ -52,8 +50,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
             console.error('Attendance toggle failed:', err);
         } finally {
             setActionLoading(false);
-        }
-    };
+        };
 
     if (loading) return null;
 
@@ -100,7 +97,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
 
                     <HStack space="md">
                         <VStack style={styles.statBox}>
-                            <Clock size={18} color={colors.primary} />
+                            <Icon as={Clock} size={18} color={colors.primary} />
                             <Text sx={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}>
                                 {t('staffPresence.checkedInAt')}
                             </Text>
@@ -155,7 +152,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                         borderColor: 'rgba(255,255,255,0.1)',
                         alignItems: 'center' 
                     }}>
-                        <Calendar size={20} color={colors.primary} />
+                        <Icon as={Calendar} size={20} color={colors.primary} />
                         <Text sx={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
                             {t('staffPresence.requestLeave')}
                         </Text>
@@ -176,7 +173,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                         borderColor: 'rgba(255,255,255,0.1)',
                         alignItems: 'center' 
                     }}>
-                        <CheckCircle2 size={20} color={colors.success} />
+                        <Icon as={Check}Circle2 size={20} color={colors.success} />
                         <Text sx={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
                             {t('staffPresence.viewHistory')}
                         </Text>
@@ -190,39 +187,32 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
 const styles = StyleSheet.create({
     container: {
         marginVertical: 16,
-        paddingHorizontal: 4,
-    },
+        paddingHorizontal: 4},
     title: {
         marginBottom: 12,
-        letterSpacing: 0.5,
-    },
+        letterSpacing: 0.5},
     mainCard: {
         padding: 20,
-        borderRadius: 20,
-    },
+        borderRadius: 20},
     statusBadge: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 6,
         paddingHorizontal: 12,
-        borderRadius: 20,
-    },
+        borderRadius: 20},
     statusDot: {
         width: 6,
         height: 6,
         borderRadius: 3,
-        marginRight: 8,
-    },
+        marginRight: 8},
     statBox: {
         flex: 1,
         backgroundColor: 'rgba(255,255,255,0.03)',
         padding: 12,
         borderRadius: 16,
-        alignItems: 'center',
-    },
+        alignItems: 'center'},
     secondaryAction: {
-        flex: 1,
-    }
+        flex: 1}
 });
 
 export default StaffPresencePulse;

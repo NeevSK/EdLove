@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SchoolForestScreen.web.tsx
  *
  * Thin wrapper for the Classroom School Forest (Vibes) UI.

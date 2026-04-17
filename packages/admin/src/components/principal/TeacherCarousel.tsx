@@ -11,7 +11,7 @@
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, ScrollView, SkeletonCard, useThemedColors, getInitialsFromName } from '@repo/ui';
-import { Theme } from '@repo/ui';
+import {  } from '@repo/ui';
 import { staffManagementAPI, TeacherCarouselItem } from '@repo/core';
 
 interface TeacherCarouselProps {
@@ -19,21 +19,19 @@ interface TeacherCarouselProps {
   onTapTeacher?: (userId: string) => void;
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  present: Theme.colors.sageGreen ?? '#4caf50',
-  late: Theme.colors.sageGreen ?? '#8bc34a',
-  absent: Theme.colors.emberRed ?? '#f44336',
-  on_leave: Theme.colors.amberGlow ?? '#ffc107',
-  half_day: Theme.colors.amberGlow ?? '#ffc107',
-};
+const STATUS_COLORS: Record<string, string>  = {
+  present: sageGreen ?? '#4caf50',
+  late: sageGreen ?? '#8bc34a',
+  absent: emberRed ?? '#f44336',
+  on_leave: amberGlow ?? '#ffc107',
+  half_day: amberGlow ?? '#ffc107'};
 
-const STATUS_LABELS: Record<string, string> = {
+const STATUS_LABELS: Record<string, string>  = {
   present: 'Present',
   late: 'Late',
   absent: 'Absent',
   on_leave: 'On Leave',
-  half_day: 'Half Day',
-};
+  half_day: 'Half Day'};
 
 function formatRole(role: string): string {
   return role
@@ -47,8 +45,7 @@ const AVATAR_BG_OPACITY = '33';
 function TeacherCard({
   item,
   onTap,
-  colors,
-}: {
+  colors}: {
   item: TeacherCarouselItem;
   onTap?: () => void;
   colors: ReturnType<typeof useThemedColors>;
@@ -69,8 +66,7 @@ function TeacherCard({
           padding: Theme.spacing.md,
           alignItems: 'center',
           justifyContent: 'center',
-          gap: Theme.spacing.sm,
-        }}
+          gap: Theme.spacing.sm}}
       >
         {/* Avatar */}
         <Box
@@ -78,13 +74,12 @@ function TeacherCard({
             width: 56,
             height: 56,
             borderRadius: 28,
-            backgroundColor: Theme.colors.amberGlow + AVATAR_BG_OPACITY,
+            backgroundColor: amberGlow + AVATAR_BG_OPACITY,
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: 4,
-          }}
+            marginBottom: 4}}
         >
-          <Text sx={{ fontSize: 20, fontWeight: '700', color: Theme.colors.amberGlow ?? colors.text }}>
+          <Text sx={{ fontSize: 20, fontWeight: '700', color: amberGlow ?? colors.text }}>
             {getInitialsFromName(item.fullName)}
           </Text>
         </Box>
@@ -103,8 +98,7 @@ function TeacherCard({
             backgroundColor: colors.secondary,
             borderRadius: 999,
             paddingHorizontal: 8,
-            paddingVertical: 2,
-          }}
+            paddingVertical: 2}}
         >
           <Text sx={{ fontSize: 10, color: colors.textSecondary }}>
             {formatRole(item.role)}
@@ -118,8 +112,7 @@ function TeacherCard({
               width: 8,
               height: 8,
               borderRadius: 4,
-              backgroundColor: statusColor,
-            }}
+              backgroundColor: statusColor}}
           />
           <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{statusLabel}</Text>
         </HStack>
@@ -134,7 +127,7 @@ function TeacherCard({
 }
 
 export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarouselProps) {
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState<TeacherCarouselItem[]>([]);
 
@@ -175,8 +168,7 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
         sx={{
           gap: Theme.spacing.sm,
           paddingHorizontal: Theme.spacing.lg,
-          paddingVertical: Theme.spacing.xs,
-        }}
+          paddingVertical: Theme.spacing.xs}}
       >
         {teachers.map((t) => (
           <TeacherCard

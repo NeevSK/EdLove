@@ -15,6 +15,7 @@ import {
     ScrollView, 
     Text, 
     VStack, 
+    HStack,
     Icon,
     hapticLight 
 } from '@repo/ui';
@@ -77,7 +78,7 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
                 <Box className="bg-white/5 rounded-3xl border border-white/10 p-xl shadow-sm">
                     <VStack className="gap-lg">
                         <Box className="bg-white/5 rounded-2xl border border-white/5 p-4 min-h-[120px]">
-                            <Input variant="underlined" className="border-0">
+                            <Input className="border-0 bg-transparent">
                                 <InputField
                                     placeholder="What decision is weighing on you today?"
                                     multiline

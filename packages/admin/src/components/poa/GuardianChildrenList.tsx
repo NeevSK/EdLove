@@ -10,7 +10,7 @@ interface GuardianChildrenListProps {
   isDesktop?: boolean;
 }
 
-export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ students, onStudentPress, isDesktop }) => {
+export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = { { students, onStudentPress, isDesktop }) => {
   const theme = useTheme();
   return (
     <View style={styles.section}>
@@ -20,9 +20,7 @@ export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ stud
           {
             color: theme.text.primary,
             fontWeight: '700',
-            fontSize: isDesktop ? 20 : 16,
-          },
-        ]}
+            fontSize: isDesktop ? 20 : 16}]}
       >
         Your Students
       </Text>
@@ -33,9 +31,6 @@ export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ stud
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 24,
-  },
+    marginBottom: 24},
   sectionHeader: {
-    marginBottom: 16,
-  },
-});
+    marginBottom: 16}});

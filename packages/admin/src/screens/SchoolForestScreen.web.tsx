@@ -8,36 +8,33 @@
  * forest weather narrative.
  */
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { Icon, useNavigation } from '@react-navigation/native';
 import { usePermissions, schoolForestAPI } from '@repo/core';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { ArrowLeft, RefreshCw } from 'lucide-react-native';
 
-const WEATHER_EMOJI: Record<string, string> = {
+const WEATHER_EMOJI: Record<string, string>  = {
     radiant: '\u2600\uFE0F',
     lush: '\uD83C\uDF3F',
     resting: '\uD83C\uDF19',
     steady: '\u26C5',
     quiet: '\uD83C\uDF2B\uFE0F',
-    changing: '\uD83C\uDF24',
-};
+    changing: '\uD83C\uDF24'};
 
-const HEALTH_EMOJI: Record<TeacherTree['tree_health'], string> = {
+const HEALTH_EMOJI: Record<TeacherTree['tree_health'], string> = { 
     seedling: '\uD83C\uDF31',
     growing: '\uD83C\uDF3F',
     flourishing: '\uD83C\uDF33',
     flowering: '\uD83C\uDF38',
-    ancient: '\uD83E\uDEB5',
-};
+    ancient: '\uD83E\uDEB5'};
 
-const HEALTH_COLOR: Record<TeacherTree['tree_health'], string> = {
+const HEALTH_COLOR: Record<TeacherTree['tree_health'], string> = { 
     seedling: 'var(--amber-glow)',
     growing: 'var(--water)',
     flourishing: 'var(--moss)',
     flowering: 'var(--lotus)',
-    ancient: 'var(--sanctuary-saffron)',
-};
+    ancient: 'var(--sanctuary-saffron)'};
 
 function lastSignalLabel(days: number): string {
     if (days === 0) return '\u2705 Active today';
@@ -67,8 +64,7 @@ export default function SchoolForestScreen() {
         } finally {
             setLoading(false);
             setRefreshing(false);
-        }
-    };
+        };
 
     useEffect(() => { void load(); }, [schoolId]);
 
@@ -93,7 +89,7 @@ export default function SchoolForestScreen() {
                         fontFamily: 'var(--font-body)' 
                     }}
                 >
-                    <ArrowLeft size={16} /> Back
+                    <Icon as={ArrowLeft} size={16} /> Back
                 </button>
                 <div style={{ flex: 1 }}>
                     <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '800', color: 'var(--ink)' }}>
@@ -153,8 +149,7 @@ export default function SchoolForestScreen() {
                             padding: '28px',
                             marginBottom: '24px',
                             background: 'linear-gradient(135deg, var(--moss-soft) 0%, var(--background-alt) 100%)',
-                            border: '1px solid var(--moss-soft)',
-                        }}
+                            border: '1px solid var(--moss-soft)'}}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
                             <span style={{ fontSize: '36px' }}>
@@ -184,8 +179,7 @@ export default function SchoolForestScreen() {
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
-                            gap: '16px',
-                        }}
+                            gap: '16px'}}
                     >
                         {forest.trees.map(tree => (
                             <div
@@ -194,8 +188,7 @@ export default function SchoolForestScreen() {
                                 style={{
                                     padding: '20px',
                                     border: tree.needs_rain ? '1px solid rgba(192,57,43,0.3)' : undefined,
-                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined,
-                                }}
+                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined}}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                                     <span style={{ fontSize: '32px' }}>{HEALTH_EMOJI[tree.tree_health] ?? '\uD83C\uDF31'}</span>
@@ -213,8 +206,7 @@ export default function SchoolForestScreen() {
                                                 fontWeight: '700',
                                                 color: HEALTH_COLOR[tree.tree_health],
                                                 textTransform: 'uppercase',
-                                                letterSpacing: '0.5px',
-                                            }}
+                                                letterSpacing: '0.5px'}}
                                         >
                                             {tree.tree_health}
                                         </div>
@@ -227,8 +219,7 @@ export default function SchoolForestScreen() {
                                                 borderRadius: '6px',
                                                 fontSize: '10px',
                                                 fontWeight: '800',
-                                                color: '#c0392b',
-                                            }}
+                                                color: '#c0392b'}}
                                         >
                                             {'\uD83D\uDCA7'} Needs care
                                         </div>

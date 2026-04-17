@@ -1,4 +1,4 @@
-/**
+﻿/**
  * QRHandlerScreen.tsx
  */
 import React from 'react';

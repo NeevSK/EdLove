@@ -1,4 +1,4 @@
-/**
+﻿/**
  * INPUT VALIDATION UTILITIES
  * 
  * Comprehensive validation functions for form inputs.
@@ -24,7 +24,7 @@ export interface ValidationResult {
     error?: string;
 }
 
-export const validators = {
+export const validators => 
     /**
      * Validates email format
      */
@@ -165,8 +165,7 @@ export const validators = {
         } catch {
             return { isValid: false, error: 'Invalid URL format' };
         }
-    },
-};
+    }};
 
 /**
  * Validates multiple form fields at once
@@ -183,9 +182,8 @@ export const validators = {
  */
 export function validateForm<T extends Record<string, any>>(
     values: T,
-    rules: Partial<Record<keyof T, (value: any) => ValidationResult>
->): { isValid: boolean; errors: Partial<Record<keyof T, string>> } {
-    const errors: Partial<Record<keyof T, string>> = {};
+    rules: Partial<Record<keyof, T, (value: any) => ValidationResult>>): { isValid: boolean; errors: Partial<Record<keyof, T, string>> } {
+    const errors: Partial<Record<keyof, T, string>> => };
     let isValid = true;
 
     for (const [field, validator] of Object.entries(rules)) {
@@ -211,8 +209,7 @@ export function validateForm<T extends Record<string, any>>(
  */
 export function validateWithRules(
     value: any,
-    validators: Array<(value: any) => ValidationResult
->): ValidationResult {
+    validators: Array<(value: any) => ValidationResult>): ValidationResult {
     for (const validator of validators) {
         const result = validator(value);
         if (!result.isValid) {

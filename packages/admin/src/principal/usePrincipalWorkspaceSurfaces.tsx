@@ -1,5 +1,5 @@
 import React from 'react';
-import { Theme, VStack } from '@repo/ui';
+import {  VStack } from '@repo/ui';
 import { usePrincipalWorkspaceShell } from '../bridge/principalWorkspaceShell';
 import type { PrincipalWorkspaceView, PrincipalZoneId } from './workspace';
 import MorningSituationalBrief from '../components/principal/MorningSituationalBrief';
@@ -11,7 +11,7 @@ import PulseDashboard from '../components/principal/PulseDashboard';
 import ResourceNeedsDashboard from '../components/principal/ResourceNeedsDashboard';
 import DashboardEcho from '../components/principal/DashboardEcho';
 
-type ZoneSurfaceArgs = {
+type ZoneSurfaceArgs = { 
   schoolId: string;
   userId: string;
   stats?: {
@@ -23,7 +23,7 @@ type ZoneSurfaceArgs = {
   navigatePrincipalView: (view: PrincipalWorkspaceView) => void;
 };
 
-export type PrincipalZoneSurface = {
+export type PrincipalZoneSurface = { 
   id: PrincipalZoneId;
   eyebrow: string;
   title: string;
@@ -40,8 +40,7 @@ export function usePrincipalWorkspaceSurfaces({
   onOpenCommons,
   onOpenQr,
   onOpenBreathing,
-  onEditSchool,
-}: ZoneSurfaceArgs & {
+  onEditSchool}: ZoneSurfaceArgs & {
   onOpenProfile: () => void;
   onOpenCommons: () => void;
   onOpenQr: () => void;
@@ -73,11 +72,9 @@ export function usePrincipalWorkspaceSurfaces({
         <ResourceNeedsDashboard schoolId={schoolId} />
         <DashboardEcho schoolId={schoolId} />
       </VStack>
-    ),
-  });
+    )});
 
   return {
     zoneCounts: shell.zoneCounts,
-    surfaces: shell.surfaces as Record<PrincipalZoneId, PrincipalZoneSurface>,
-  };
+    surfaces: shell.surfaces as Record<PrincipalZoneId, PrincipalZoneSurface>};
 }

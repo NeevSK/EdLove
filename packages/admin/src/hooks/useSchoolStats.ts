@@ -22,7 +22,7 @@ export function useSchoolStats(schoolId: string) {
       try {
         const [cachedStats, cachedSchool] = await Promise.all([
           SafeZustandStorage.getItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`),
-          SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`),
+          SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`)
         ]);
 
         if (cachedStats) setStats(JSON.parse(cachedStats));
@@ -55,14 +55,16 @@ export function useSchoolStats(schoolId: string) {
           handle: 'wisdom-academy',
           official_type: 'Primary',
           status: 'active',
-          created_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
         } as School;
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
       } else {
-        [schoolData, statsData] = await Promise.all([
+        const [sData, stData] = await Promise.all([
           api.school.getSchool(schoolId),
-          api.school.getSchoolStats(schoolId, viewDate),
+          api.school.getSchoolStats(schoolId, viewDate)
         ]);
+        schoolData = sData;
+        statsData = stData;
       }
 
       setSchool(schoolData);
@@ -71,7 +73,7 @@ export function useSchoolStats(schoolId: string) {
       if (schoolId) {
         await Promise.all([
           SafeZustandStorage.setItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`, JSON.stringify(schoolData)),
-          SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`, JSON.stringify(statsData)),
+          SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`, JSON.stringify(statsData))
         ]);
       }
 
@@ -93,6 +95,6 @@ export function useSchoolStats(schoolId: string) {
     stats,
     isLoading,
     error,
-    refreshData,
+    refreshData
   };
 }

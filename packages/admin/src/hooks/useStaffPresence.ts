@@ -40,8 +40,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
                     event: '*',
                     schema: 'public',
                     table: 'staff_attendance',
-                    filter: `user_id=eq.${userId}`,
-                },
+                    filter: `user_id=eq.${userId}`},
                 (payload) => {
                     if (payload.eventType === 'INSERT') {
                         setAttendance(prev => [payload.new as StaffAttendance, ...prev]);
@@ -69,14 +68,12 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
             // Growth signal: teacher/principal chose to be present
             growthSignalsAPI.emitSilent(userId, 'attendance_marked', {
                 school_id: schoolId,
-                type: 'check_in',
-            });
+                type: 'check_in'});
             return { success: true, data: result };
         } catch (error) {
             handleAPIError(error);
             return { success: false, error };
-        }
-    };
+        };
 
     const checkOut = async () => {
         if (!userId) return { success: false };
@@ -87,8 +84,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
         } catch (error) {
             handleAPIError(error);
             return { success: false, error };
-        }
-    };
+        };
 
     const requestLeave = async (leave: Omit<StaffLeave, 'id' | 'user_id' | 'school_id' | 'status' | 'created_at'>) => {
         if (!userId || !schoolId) return { success: false };
@@ -103,8 +99,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
         } catch (error) {
             handleAPIError(error);
             return { success: false, error };
-        }
-    };
+        };
 
     const isCheckedIn = attendance.length > 0 && attendance[0] ? !attendance[0].check_out : false;
 

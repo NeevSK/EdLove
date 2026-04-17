@@ -1,6 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import {  useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { CommunityStackParamList } from '@repo/core';
 
@@ -34,9 +34,7 @@ export default function CommunityStackNavigatorWeb() {
             id="CommunityStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
-            }}
-        >
+                contentStyle: { backgroundColor: gradientNodes[0] }}}>
             <Stack.Screen name="CommunityMain" component={CommunityScreenWeb} />
             <Stack.Screen name="UserProfile" component={UserPublicProfileScreen} />
             <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />

@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Icon, useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import {
     Box,
@@ -18,15 +18,14 @@ import {
     VStack,
     HStack,
     ScrollView,
-    Theme,
+    
     GlobalHeader,
     useThemedColors,
     ScreenWrapper,
     SandboxBanner,
     SkeletonCard,
     PositiveInvitation,
-    hapticLight
-} from '@repo/ui';
+    hapticLight } from '@repo/ui';
 import { useStore, useFeatureAccess, type FounderStackParamList } from '@repo/core';
 import { Compass, Zap, Globe, Heart, Plus } from 'lucide-react-native';
 import { CreateSchoolModal } from '../components';
@@ -42,7 +41,7 @@ interface FounderSchoolDashboardProps {
 
 export default function FounderSchoolDashboard({ schoolId, userId }: FounderSchoolDashboardProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const { isGuest } = useFeatureAccess();
     const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
@@ -66,19 +65,19 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                         <VStack sx={{ gap: Theme.spacing.lg }}>
                             {(stats as any).is_sample && (
                                 <Box sx={{
-                                    backgroundColor: (Theme.colors.amberGlow || '#ffc107') + '22',
+                                    backgroundColor: (amberGlow || '#ffc107') + '22',
                                     padding: Theme.spacing.md,
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
-                                    borderColor: Theme.colors.amberGlow || '#ffc107',
+                                    borderColor: amberGlow || '#ffc107',
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: Theme.spacing.sm,
                                     marginBottom: Theme.spacing.sm
                                 }}>
-                                    <Zap size={16} color={Theme.colors.amberGlow || '#ffc107'} fill={Theme.colors.amberGlow || '#ffc107'} />
-                                    <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow || '#ffc107', fontWeight: '700' }}>
+                                    <Zap size={16} color={amberGlow || '#ffc107'} fill={amberGlow || '#ffc107'} />
+                                    <Text sx={{ fontSize: 13, color: amberGlow || '#ffc107', fontWeight: '700' }}>
                                         {t('demoMode.visionaryEcology') || "VISIONARY ECOLOGY: Previewing platform potential"}
                                     </Text>
                                 </Box>
@@ -95,8 +94,8 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                             >
                                 <VStack sx={{ gap: Theme.spacing.sm }}>
                                     <HStack sx={{ alignItems: "center", gap: Theme.spacing.sm }}>
-                                        <Compass color={Theme.colors.white || '#fff'} size={24} />
-                                        <Text sx={{ color: Theme.colors.white || '#fff', fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
+                                        <Icon as={Compass} color={white || '#fff'} size={24} />
+                                        <Text sx={{ color: white || '#fff', fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
                                             {t('founder.ecologyStatus', { status: 'Balanced' })}
                                         </Text>
                                     </HStack>
@@ -114,8 +113,8 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                 <HStack sx={{ gap: Theme.spacing.md }}>
                                     <Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors?.secondary || '#111', borderRadius: Theme.corners.comfortable }}>
                                         <HStack sx={{ justifyContent: "space-between", alignItems: "center" }}>
-                                            <Globe color={colors?.action || '#2196f3'} size={20} />
-                                            {isDemoMode && <Zap size={12} color={Theme.colors.sanctuarySaffron || '#ff9800'} fill={Theme.colors.sanctuarySaffron || '#ff9800'} />}
+                                            <Icon as={Globe} color={colors?.action || '#2196f3'} size={20} />
+                                            {isDemoMode && <Zap size={12} color={sanctuarySaffron || '#ff9800'} fill={sanctuarySaffron || '#ff9800'} />}
                                         </HStack>
                                         <Text sx={{ color: colors?.text || '#fff', fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>
                                             {stats?.total_students || 0}
@@ -194,7 +193,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                             {t('founder.manageOperations') || "Manage staff, students, and operations"}
                                         </Text>
                                     </VStack>
-                                    <Compass color={colors?.textSecondary || '#aaa'} size={20} />
+                                    <Icon as={Compass} color={colors?.textSecondary || '#aaa'} size={20} />
                                 </Box>
                             </TouchableOpacity>
 
@@ -235,14 +234,14 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                     width: 56,
                     height: 56,
                     borderRadius: 28,
-                    backgroundColor: Theme.colors.sanctuarySaffron || '#ff9800',
+                    backgroundColor: sanctuarySaffron || '#ff9800',
                     justifyContent: 'center',
                     alignItems: 'center',
                     ...Theme.shadows.md,
                     zIndex: 10
                 }}
             >
-                <Plus size={24} color="white" />
+                <Icon as={Plus} size={24} color="white" />
             </TouchableOpacity>
 
             <CreateSchoolModal

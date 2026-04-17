@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '@repo/core';
+import { Icon, api } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { ArrowLeft, Plus } from 'lucide-react-native';
 
@@ -9,7 +9,7 @@ interface CyclesDashboardProps {
     onBack: () => void;
 }
 
-export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPastView, onBack }) => {
+export const CyclesDashboard: React.FC<CyclesDashboardProps> = { { schoolId, isPastView, onBack }) => {
     const [academicCycles, setAcademicCycles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [newName, setNewName] = useState('');
@@ -26,8 +26,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
             console.error('Failed to load academic cycles:', err);
         } finally {
             setLoading(false);
-        }
-    };
+        };
 
     useEffect(() => {
         loadAcademicCycles();
@@ -52,8 +51,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
             console.error('Failed to create academic cycle:', err);
         } finally {
             setSaving(false);
-        }
-    };
+        };
 
     return (
         <div>
@@ -72,11 +70,10 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                     fontSize: 13, 
                     fontWeight: '600', 
                     marginBottom: 24 
-                }}
-            >
-                <ArrowLeft size={14} /> Back to Dashboard
+                }}>
+                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
             </button>
-            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>📅 Academic Cycles</h2>
+            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>?? Academic Cycles</h2>
             <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: 14 }}>
                 Define terms, semesters and academic periods.
             </p>
@@ -116,9 +113,8 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                     onClick={handleCreateCycle} 
                     disabled={!newName.trim() || !newStart || saving || isPastView} 
                     className="premium-button" 
-                    style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: 8 }}
-                >
-                    {saving ? '⏳' : <><Plus size={14} /> Create</>}
+                    style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {saving ? '?' : <><Icon as={Plus} size={14} /> Create</>}
                 </button>
             </div>
 
@@ -134,7 +130,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                                 <div>
                                     <div style={{ fontWeight: '800', fontSize: 16 }}>{c.name}</div>
                                     <div style={{ fontSize: 12, color: 'var(--ink-ghost)', marginTop: 4 }}>
-                                        {c.start_date} → {c.end_date ?? 'ongoing'}
+                                        {c.start_date} ? {c.end_date ?? 'ongoing'}
                                     </div>
                                 </div>
                                 <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: '700', background: c.status === 'active' ? 'rgba(34,197,94,0.1)' : 'rgba(59,130,246,0.1)', color: c.status === 'active' ? 'var(--moss)' : 'var(--water)' }}>

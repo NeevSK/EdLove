@@ -1,14 +1,12 @@
 import React from 'react';
-import {
-  VStack,
+import { Icon, VStack,
   HStack,
   Box,
   Text,
   Pressable,
-  Theme,
+  
   useThemedColors,
-  hapticLight,
-} from '@repo/ui';
+  hapticLight} from '@repo/ui';
 import { Banknote, CalendarDays, UserCheck, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +16,7 @@ interface PrincipalActionsProps {
 
 export default function PrincipalActions({ onAction }: PrincipalActionsProps) {
   const { t } = useTranslation();
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
 
   interface ActionCardProps {
     icon: React.ElementType;
@@ -40,12 +38,11 @@ export default function PrincipalActions({ onAction }: PrincipalActionsProps) {
       accessibilityHint={description}
       sx={{
         flex: 1,
-        backgroundColor: colors?.secondary || Theme.colors.ink,
+        backgroundColor: colors?.secondary || '#2A2318',
         padding: Theme.spacing.lg,
         borderRadius: Theme.corners.generous,
         borderWidth: 1,
-        borderColor: colors?.border || 'rgba(255,255,255,0.1)',
-      }}
+        borderColor: colors?.border || 'rgba(255,255,255,0.1)'}}
     >
       <VStack sx={{ gap: Theme.spacing.sm }}>
         <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
@@ -53,10 +50,9 @@ export default function PrincipalActions({ onAction }: PrincipalActionsProps) {
             sx={{
               padding: Theme.spacing.sm,
               borderRadius: Theme.corners.medium,
-              backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',
-            }}
+              backgroundColor: (color || sanctuarySaffron) + '22'}}
           >
-            <LucideIcon size={24} color={color || Theme.colors.sanctuarySaffron} />
+            <LucideIcon size={24} color={color || sanctuarySaffron} />
           </Box>
           <TrendingUp size={16} color={colors?.textTertiary || '#666'} style={{ opacity: 0.3 }} />
         </HStack>
@@ -92,25 +88,24 @@ export default function PrincipalActions({ onAction }: PrincipalActionsProps) {
             icon={Banknote}
             label={t('principal.admin.finance') || 'Financials'}
             description={t('principal.admin.financeDesc') || 'Fees & Dues Summary'}
-            color={Theme.colors.sageGreen}
+            color={sageGreen}
           />
           <ActionCard
             icon={CalendarDays}
             label={t('principal.admin.events') || 'Event Approvals'}
             description={t('principal.admin.eventsDesc') || 'Approve school events'}
-            color={Theme.colors.amberGlow}
+            color={amberGlow}
           />
         </HStack>
 
         {/* Staff Leave Requests Wide Card */}
         <Box
           sx={{
-            backgroundColor: colors?.secondary || Theme.colors.ink,
+            backgroundColor: colors?.secondary || '#2A2318',
             padding: Theme.spacing.lg,
             borderRadius: Theme.corners.generous,
             borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)',
-          }}
+            borderColor: colors?.border || 'rgba(255,255,255,0.1)'}}
         >
           <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
@@ -118,10 +113,9 @@ export default function PrincipalActions({ onAction }: PrincipalActionsProps) {
                 sx={{
                   padding: Theme.spacing.sm,
                   borderRadius: Theme.corners.medium,
-                  backgroundColor: (colors?.action || '#2196f3') + '22',
-                }}
+                  backgroundColor: (colors?.action || '#2196f3') + '22'}}
               >
-                <UserCheck size={24} color={colors?.action || '#2196f3'} />
+                <Icon as={User}Check size={24} color={colors?.action || '#2196f3'} />
               </Box>
               <VStack>
                 <Text sx={{ color: colors?.text || '#fff', fontSize: 14, fontWeight: '700' }}>
@@ -145,8 +139,7 @@ export default function PrincipalActions({ onAction }: PrincipalActionsProps) {
                 backgroundColor: colors?.tertiary || 'rgba(255,255,255,0.05)',
                 paddingHorizontal: Theme.spacing.md,
                 paddingVertical: Theme.spacing.xs,
-                borderRadius: 20,
-              }}
+                borderRadius: 20}}
             >
               <Text sx={{ color: colors?.action || '#2196f3', fontSize: 12, fontWeight: '700' }}>
                 View All

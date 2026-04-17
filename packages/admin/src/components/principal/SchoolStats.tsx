@@ -1,5 +1,5 @@
 import React from 'react';
-import { HStack, VStack, Text, SanctuaryCard, Theme, useThemedColors } from '@repo/ui';
+import { HStack, VStack, Text, SanctuaryCard,  useThemedColors } from '@repo/ui';
 import { Users, GraduationCap, Building } from 'lucide-react-native';
 import { type SchoolStats as ISchoolStats } from '@repo/core';
 
@@ -8,7 +8,7 @@ interface SchoolStatsProps {
 }
 
 export default function SchoolStats({ stats }: SchoolStatsProps) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     if (!stats) return null;
 
     const StatItem = ({ label, value, icon: Icon, color }: any) => (
@@ -29,19 +29,19 @@ export default function SchoolStats({ stats }: SchoolStatsProps) {
                 label="Students" 
                 value={stats?.total_students?.toString() || '0'} 
                 icon={Users} 
-                color={Theme.colors.gurudeviBlue}
+                color={gurudeviBlue}
             />
             <StatItem 
                 label="Staff" 
                 value={stats?.total_teachers?.toString() || '0'} 
                 icon={GraduationCap} 
-                color={Theme.colors.gurudeviViolet}
+                color={gurudeviViolet}
             />
             <StatItem 
                 label="Classrooms" 
                 value={stats?.total_classrooms?.toString() || '0'} 
                 icon={Building} 
-                color={Theme.colors.sanctuarySaffron}
+                color={sanctuarySaffron}
             />
         </HStack>
     );

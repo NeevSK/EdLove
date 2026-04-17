@@ -1,0 +1,172 @@
+{
+  "totalErrors": 194,
+  "timestamp": "2026-04-17T03:12:52.309Z",
+  "categories": [
+    {
+      "name": "Missing className Support",
+      "count": 138,
+      "percent": "71.13%"
+    },
+    {
+      "name": "Legacy SX Prop",
+      "count": 46,
+      "percent": "23.71%"
+    },
+    {
+      "name": "Other",
+      "count": 9,
+      "percent": "4.64%"
+    },
+    {
+      "name": "Legacy Flex Prop (justifyContent)",
+      "count": 1,
+      "percent": "0.52%"
+    }
+  ],
+  "topOffendingFiles": [
+    {
+      "file": "src/components/TeacherEchoHistoryModal.tsx",
+      "count": 21
+    },
+    {
+      "file": "src/components/TeacherFeedbackModal.tsx",
+      "count": 18
+    },
+    {
+      "file": "../ui/src/components/CollectionCard.tsx",
+      "count": 16
+    },
+    {
+      "file": "../ui/src/components/TemporalNavigator.tsx",
+      "count": 12
+    },
+    {
+      "file": "../ui/src/components/GlobalHeader.tsx",
+      "count": 10
+    },
+    {
+      "file": "../ui/src/components/LotusPetalFAB.tsx",
+      "count": 10
+    },
+    {
+      "file": "src/components/TeacherAdminWidget.tsx",
+      "count": 9
+    },
+    {
+      "file": "../ui/src/components/JourneyHistoryCard.tsx",
+      "count": 8
+    },
+    {
+      "file": "../ui/src/components/SanctuaryProgressBar.tsx",
+      "count": 8
+    },
+    {
+      "file": "../ui/src/components/GuestDataSyncModal.tsx",
+      "count": 6
+    },
+    {
+      "file": "../ui/src/components/IdentityCard.tsx",
+      "count": 6
+    },
+    {
+      "file": "../ui/src/components/LotusDropdown.tsx",
+      "count": 6
+    },
+    {
+      "file": "../ui/src/components/ErrorMessage.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/components/FeatureInfoIcon.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/components/LotusLoader.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/components/NotificationDrawer.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/components/SanctuaryModal.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/components/SanctuaryToast.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/components/ui/avatar/index.tsx",
+      "count": 4
+    },
+    {
+      "file": "../ui/src/utils/a11yUtils.ts",
+      "count": 4
+    },
+    {
+      "file": "src/components/TeacherAdminPortalModal.tsx",
+      "count": 3
+    },
+    {
+      "file": "../ui/src/components/DailyResonanceCard.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/EmptyState.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/ErrorBoundary.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/FeatureDiscoveryModal.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/FounderGlow.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/LivingGlow.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/LogoutModal.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/SanctuaryCard.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/SanctuaryChip.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/ScreenWrapper.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/SkeletonLoader.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/ui/actionsheet/index.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/ui/image/index.tsx",
+      "count": 2
+    },
+    {
+      "file": "../ui/src/components/ui/link/index.tsx",
+      "count": 2
+    },
+    {
+      "file": "﻿src/components/TeacherAdminPortalModal.tsx",
+      "count": 1
+    }
+  ]
+}

@@ -87,49 +87,33 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           marginBottom: index === filteredDocuments.length - 1 ? 0 : 12
         }
       ]}
-      onPress={() => onDocumentPress(document)}
-    >
+      onPress={() => onDocumentPress(document)}>
       <View style={styles.documentHeader}>
         <Text
           style={[
             styles.documentTitle,
             { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
           ]}
-          numberOfLines={2}
-        >
+          numberOfLines={2}>
           {document.title}
         </Text>
-        <View 
-          style={[
-            styles.statusBadge,
-            { backgroundColor: getStatusColor(document.status) }
-          ]}
-        >
+        <div style={{ backgroundColor: getStatusColor(document.status), padding: '4px 8px', borderRadius: '12px' }}>
           <Text
             style={[
               styles.statusText,
               { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
-            ]}
-          >
+            ]}>
             {document.status.toUpperCase()}
           </Text>
-        </View>
+        </div>
       </View>
       <Text
         style={[
           styles.documentMeta,
           { color: theme.text.secondary, fontFamily: 'System' }
-        ]}
-      >
+        ]}>
         Version {document.version} • Updated {formatDate(document.updatedAt)}
       </Text>
-      {document.status === 'review' && document.authorId !== user.userId && (
-        <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
-          <Text style={[styles.reviewText, { color: theme.accent.action }]}>
-            Pending Review
-          </Text>
-        </View>
-      )}
     </TouchableOpacity>
   );
 
@@ -149,8 +133,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
             borderColor: isActive ? theme.accent.action : theme.glass.surface.border
           }
         ]}
-        onPress={() => setSelectedStatus(status)}
-      >
+        onPress={() => setSelectedStatus(status)}>
         <Text
           style={[
             styles.filterText,
@@ -159,8 +142,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
               fontFamily: 'System', 
               fontWeight: '500'
             }
-          ]}
-        >
+          ]}>
           {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
         </Text>
@@ -180,160 +162,58 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   return (
     <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] || '#000' }]}>
-      {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
         <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}>
           Documents
         </Text>
         <TouchableOpacity
           style={[styles.createButton, { backgroundColor: theme.accent.action }]}
-          onPress={onCreateNew}
-        >
+          onPress={onCreateNew}>
           <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
             + New
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Status Filters */}
       <View style={styles.filterContainer}>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterContent}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContent}>
           {statusFilters.map(renderStatusFilter)}
         </ScrollView>
       </View>
-
-      {/* Documents List */}
-      <ScrollView 
-        style={styles.documentsContainer}
-        contentContainerStyle={styles.documentsContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.documentsContainer} contentContainerStyle={styles.documentsContent} showsVerticalScrollIndicator={false}>
         {filteredDocuments.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
-              {selectedStatus === 'all' 
-                ? 'No documents yet. Create your first document to get started.'
-                : `No ${selectedStatus} documents found.`
-              }
+              {selectedStatus === 'all' ? 'No documents yet.' : `No ${selectedStatus} documents found.`}
             </Text>
           </View>
         ) : (
-          filteredDocuments.map(renderDocumentItem)
+          filteredDocuments.map((doc, idx) => renderDocumentItem(doc, idx))
         )}
       </ScrollView>
     </View>
   );
 };
 
-// Mobile-first responsive styles
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  createButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  createButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  filterContainer: {
-    height: 60,
-  },
-  filterContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  filterText: {
-    fontSize: 14,
-  },
-  documentsContainer: {
-    flex: 1,
-  },
-  documentsContent: {
-    padding: 16,
-  },
-  documentItem: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  documentHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  documentTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-    marginRight: 12,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  documentMeta: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  reviewBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  reviewText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  loadingText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 60,
-  },
+  container: { flex: 1 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1 },
+  title: { fontSize: 24, fontWeight: 'bold' },
+  createButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
+  createButtonText: { fontSize: 14, fontWeight: '600' },
+  filterContainer: { height: 60 },
+  filterContent: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1 },
+  filterText: { fontSize: 14 },
+  documentsContainer: { flex: 1 },
+  documentsContent: { padding: 16 },
+  documentItem: { padding: 16, borderRadius: 12, borderWidth: 1 },
+  documentHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
+  documentTitle: { fontSize: 16, fontWeight: '600', flex: 1, marginRight: 12 },
+  statusText: { fontSize: 10, fontWeight: '600' },
+  documentMeta: { fontSize: 14, marginBottom: 8 },
+  emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 60 },
+  emptyText: { fontSize: 16, textAlign: 'center', lineHeight: 24 },
+  loadingText: { fontSize: 16, textAlign: 'center', marginTop: 60 }
 });
 
 export default DocumentListScreen;

@@ -12,12 +12,12 @@ export type MetricDefinition =
   | 'operational_efficiency'
   | 'compliance_score';
 
-export type DateRange = {
+export type DateRange = { 
   startDate: string;
   endDate: string;
 };
 
-export type TenantMetrics = {
+export type TenantMetrics = { 
   tenantId: string;
   tenantName: string;
   tenantKind: 'internal' | 'customer' | 'demo' | 'sandbox';
@@ -26,7 +26,7 @@ export type TenantMetrics = {
   benchmarks?: Record<MetricDefinition, number>;
 };
 
-export type TenantComparison = {
+export type TenantComparison = { 
   metric: MetricDefinition;
   tenants: Array<{
     tenantId: string;
@@ -39,7 +39,7 @@ export type TenantComparison = {
   period: DateRange;
 };
 
-export type BenchmarkReport = {
+export type BenchmarkReport = { 
   industry: EducationSector;
   metric: MetricDefinition;
   benchmarks: {
@@ -57,7 +57,7 @@ export type BenchmarkReport = {
   period: DateRange;
 };
 
-export type LiveMetrics = {
+export type LiveMetrics = { 
   timestamp: string;
   active_users: number;
   concurrent_sessions: number;
@@ -71,7 +71,7 @@ export type LiveMetrics = {
   };
 };
 
-export type CustomReportConfig = {
+export type CustomReportConfig = { 
   id: string;
   name: string;
   description: string;
@@ -86,13 +86,13 @@ export type CustomReportConfig = {
   schedule?: ScheduleConfig;
 };
 
-export type ReportFilter = {
+export type ReportFilter = { 
   field: string;
   operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'in';
   value: any;
 };
 
-export type ScheduleConfig = {
+export type ScheduleConfig = { 
   frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
   time: string; // HH:mm
   timezone: string;
@@ -100,7 +100,7 @@ export type ScheduleConfig = {
   format: 'pdf' | 'excel' | 'csv';
 };
 
-export type ReportResult = {
+export type ReportResult = { 
   id: string;
   configId: string;
   data: any[];
@@ -113,14 +113,14 @@ export type ReportResult = {
   visualizations: ChartData[];
 };
 
-export type ChartData = {
+export type ChartData = { 
   type: 'line' | 'bar' | 'pie' | 'scatter' | 'heatmap';
   title: string;
   data: any[];
   config: ChartConfig;
 };
 
-export type ChartConfig = {
+export type ChartConfig = { 
   xAxis?: string;
   yAxis?: string;
   colorScheme?: string[];
@@ -138,7 +138,7 @@ export type EducationSector =
   | 'vocational'
   | 'special_education';
 
-export type Anomaly = {
+export type Anomaly = { 
   id: string;
   tenantId: string;
   metric: MetricDefinition;
@@ -154,7 +154,7 @@ export type Anomaly = {
   recommendations: string[];
 };
 
-export type Trend = {
+export type Trend = { 
   metric: MetricDefinition;
   direction: 'increasing' | 'decreasing' | 'stable';
   strength: number; // 0-1
@@ -167,7 +167,7 @@ export type Trend = {
   };
 };
 
-export type Prediction = {
+export type Prediction = { 
   metric: MetricDefinition;
   model: string;
   accuracy: number; // 0-1
@@ -182,7 +182,7 @@ export type Prediction = {
   generatedAt: string;
 };
 
-export type Insight = {
+export type Insight = { 
   id: string;
   tenantId: string;
   type: 'performance' | 'efficiency' | 'compliance' | 'engagement' | 'financial';
@@ -196,7 +196,7 @@ export type Insight = {
   expiresAt?: string;
 };
 
-export type BenchmarkInsights = {
+export type BenchmarkInsights = { 
   industry: EducationSector;
   tenant_performance: {
     overall_rank: number;

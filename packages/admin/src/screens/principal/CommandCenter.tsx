@@ -8,8 +8,7 @@ import {
     HStack, 
     Text, 
     Heading, 
-    Theme, 
-} from '@repo/ui';
+    } from '@repo/ui';
 import type { PrincipalWorkspaceView } from '../../principal/workspace';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 
@@ -17,28 +16,28 @@ interface CommandCenterProps {
     onNavigate: (view: PrincipalWorkspaceView) => void;
 }
 
-export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
+export const CommandCenter: React.FC<CommandCenterProps> = { { onNavigate }) => {
     const { t } = useTranslation();
 
     const actions = [
         { 
             icon: Users, 
             label: t('principal.ia.actions.hierarchy') || t('principal.actions.hierarchy') || 'School Structure', 
-            color: Theme.colors.lotusDeepPink || '#9b59b6', 
+            color: lotusDeepPink || '#9b59b6', 
             featureId: 'hierarchy', 
             view: 'hierarchy' as PrincipalWorkspaceView 
         },
         { 
             icon: FileText, 
             label: t('principal.ia.actions.invites') || t('principal.actions.invites') || 'Role Invites', 
-            color: Theme.colors.mossGreen || '#27ae60', 
+            color: mossGreen || '#27ae60', 
             featureId: 'invites', 
             view: 'invites' as PrincipalWorkspaceView 
         },
         { 
             icon: CalendarCheck, 
             label: t('principal.ia.actions.timetable') || 'Timetable Planning', 
-            color: Theme.colors.skyBlue || '#3498db', 
+            color: skyBlue || '#3498db', 
             featureId: 'timetable', 
             isAgentic: true, 
             view: 'main' as PrincipalWorkspaceView 
@@ -46,11 +45,10 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
         { 
             icon: NotebookPen, 
             label: t('principal.ia.actions.logbook') || t('principal.actions.notes') || 'Leadership Logbook', 
-            color: Theme.colors.sanctuarySaffron || '#f1c40f', 
+            color: sanctuarySaffron || '#f1c40f', 
             featureId: 'log', 
             view: 'log' as PrincipalWorkspaceView 
-        },
-    ];
+        }];
 
     return (
         <VStack sx={{ padding: Theme.spacing.md, gap: Theme.spacing.md }}>
@@ -58,7 +56,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                 fontSize: 14, 
                 fontWeight: '800', 
                 textTransform: 'uppercase', 
-                color: Theme.colors.willow || '#7f8c8d', 
+                color: willow || '#7f8c8d', 
                 letterSpacing: 1 
             }}>
                 {t('principal.commandCenter') || 'Command Center'} \uD83C\uDFDB\uFE0F
@@ -85,9 +83,9 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                             <Box sx={{
                                 padding: Theme.spacing.lg,
                                 borderRadius: Theme.corners.generous,
-                                backgroundColor: Theme.colors.silk || '#f9f9f9',
+                                backgroundColor: silk || '#f9f9f9',
                                 borderWidth: 1,
-                                borderColor: Theme.colors.border || '#eeeeee',
+                                borderColor: '#E8E2CF' || '#eeeeee',
                                 alignItems: 'center',
                                 gap: Theme.spacing.sm,
                                 opacity: action.isAgentic ? 0.6 : 1,
@@ -104,7 +102,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                                 <Text sx={{ 
                                     fontSize: 13, 
                                     fontWeight: '700', 
-                                    color: Theme.colors.ink || '#2c3e50',
+                                    color: '#2A2318' || '#2c3e50',
                                     textAlign: 'center'
                                 }}>
                                     {action.label}
@@ -112,7 +110,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
 
                                 {scopeMeta && (
                                     <Box sx={{
-                                        backgroundColor: Theme.colors.background || '#ffffff',
+                                        backgroundColor: '#FCF9F2' || '#ffffff',
                                         paddingVertical: 2,
                                         paddingHorizontal: 8,
                                         borderRadius: 999,
@@ -123,8 +121,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                                             fontWeight: '800', 
                                             textTransform: 'uppercase', 
                                             letterSpacing: 0.4, 
-                                            color: Theme.colors.willow || '#7f8c8d', 
-                                        }}>
+                                            color: willow || '#7f8c8d'}}>
                                             {t(scopeMeta.scopeBadgeLabelKey)}
                                         </Text>
                                     </Box>
@@ -133,7 +130,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                                 {action.isAgentic && (
                                     <Text sx={{ 
                                         fontSize: 10, 
-                                        color: Theme.colors.willow || '#7f8c8d', 
+                                        color: willow || '#7f8c8d', 
                                         textTransform: 'uppercase',
                                         fontWeight: '600'
                                     }}>

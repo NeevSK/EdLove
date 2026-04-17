@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 interface WebSkeletonProps {
   width?: string | number;
@@ -13,7 +13,7 @@ interface WebSkeletonProps {
  * WebSkeleton - A high-performance, web-native skeleton component.
  * Uses vanilla CSS animations for maximum smoothness and low-overhead.
  */
-export const WebSkeleton: React.FC<WebSkeletonProps> = ({
+export const WebSkeleton: React.FC<WebSkeletonProps> => {
   width = '100%',
   height = '1rem',
   borderRadius = '12px',
@@ -23,7 +23,7 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
 }) => {
   const isCircle = variant === 'circle';
   
-  const baseStyle: React.CSSProperties = {
+  const baseStyle: React.CSSProperties => 
     width,
     height: isCircle ? width : height,
     borderRadius: isCircle ? '50%' : borderRadius,

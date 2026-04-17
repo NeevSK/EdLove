@@ -134,8 +134,7 @@ export default function PrincipalDashboardWeb({
   CyclesDashboardComponent = CyclesDashboard,
   PrincipalOnboardingViewComponent,
   CreateSchoolModalComponent,
-  CreateClassroomModalComponent,
-}: PrincipalDashboardWebProps) {
+  CreateClassroomModalComponent}: PrincipalDashboardWebProps) {
   const user = useAuthStore(state => state.user) as User | null;
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
@@ -172,20 +171,16 @@ export default function PrincipalDashboardWeb({
     queryFn: () => staffOperationsAPI.getStudentPrincipalPulse(principalSchoolId, undefined, viewDate, {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
-        reason: 'principal_dashboard_attendance_pulse',
-      }),
-    enabled: !!principalSchoolId,
-  });
+        reason: 'principal_dashboard_attendance_pulse'}),
+    enabled: !!principalSchoolId});
 
   const publishedGradingCompletionQuery = useQuery({
     queryKey: ['principal-published-grading-completion', principalSchoolId, viewDate],
     queryFn: () => api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
-        reason: 'principal_dashboard_published_grading_completion',
-      }),
-    enabled: !!principalSchoolId,
-  });
+        reason: 'principal_dashboard_published_grading_completion'}),
+    enabled: !!principalSchoolId});
 
   const presence = staff.presence.data || null;
   const teachers = staff.teachers.data || [];
@@ -218,8 +213,7 @@ export default function PrincipalDashboardWeb({
     }
     if (canManageSchoolScope) {
       setActiveView(nextView);
-    }
-  };
+    };
 
   useEffect(() => {
     if (!canManageSchoolScope && activeView !== 'main') {

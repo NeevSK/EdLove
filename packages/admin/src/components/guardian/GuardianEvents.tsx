@@ -10,7 +10,7 @@ interface GuardianEventsProps {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventPress, limit = 5 }) => {
+export const GuardianEvents: React.FC<GuardianEventsProps> = { { events, onEventPress, limit = 5 }) => {
   const theme = useTheme();
   const isDesktop = screenWidth > 1024;
 
@@ -22,9 +22,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventP
         {
           backgroundColor: theme.glass.surface.bg,
           borderColor: theme.glass.surface.border,
-          borderWidth: 1,
-        },
-      ]}
+          borderWidth: 1}]}
       onPress={() => onEventPress(event)}
       activeOpacity={0.85}
     >
@@ -36,9 +34,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventP
               color: theme.accent.action,
               fontFamily: 'System',
               fontWeight: '700',
-              fontSize: isDesktop ? 18 : 14,
-            },
-          ]}
+              fontSize: isDesktop ? 18 : 14}]}
         >
           {new Date(event.date).getDate()}
         </Text>
@@ -48,9 +44,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventP
             {
               color: theme.text.secondary,
               fontFamily: 'System',
-              fontSize: isDesktop ? 10 : 8,
-            },
-          ]}
+              fontSize: isDesktop ? 10 : 8}]}
         >
           {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
         </Text>
@@ -64,9 +58,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventP
               color: theme.text.primary,
               fontFamily: 'System',
               fontWeight: '600',
-              fontSize: isDesktop ? 14 : 12,
-            },
-          ]}
+              fontSize: isDesktop ? 14 : 12}]}
         >
           {event.title}
         </Text>
@@ -76,9 +68,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventP
             {
               color: theme.text.secondary,
               fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10,
-            },
-          ]}
+              fontSize: isDesktop ? 12 : 10}]}
         >
           {event.time}
           {event.location ? ` · ${event.location}` : ''}
@@ -98,42 +88,31 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventP
 
 const styles = StyleSheet.create({
   eventsList: {
-    gap: 8,
-  },
+    gap: 8},
   eventItem: {
     flexDirection: 'row',
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
-    alignItems: 'center',
-  },
+    alignItems: 'center'},
   eventDate: {
     alignItems: 'center',
     marginRight: 12,
-    minWidth: 40,
-  },
+    minWidth: 40},
   eventDateDay: {
-    marginBottom: 2,
-  },
+    marginBottom: 2},
   eventDateMonth: {
-    textTransform: 'uppercase',
-  },
+    textTransform: 'uppercase'},
   eventDetails: {
-    flex: 1,
-  },
+    flex: 1},
   eventTitle: {
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   eventTime: {
-    opacity: 0.7,
-  },
+    opacity: 0.7},
   rsvpBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
-  },
+    borderRadius: 12},
   rsvpText: {
     fontSize: 10,
-    fontWeight: '600',
-  },
-});
+    fontWeight: '600'}});

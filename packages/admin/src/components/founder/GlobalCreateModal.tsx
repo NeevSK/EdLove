@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Actionsheet,
+import { Icon, Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
   ActionsheetDragIndicator,
@@ -19,11 +18,10 @@ import {
   SanctuaryModal,
   Spinner,
   Text,
-  Theme,
+  
   VStack,
-  useThemedColors,
-} from '@repo/ui';
-import { School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
+  useThemedColors} from '@repo/ui';
+import { Icon, School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 import { communityAPI } from '@repo/community';
 import { hapticLight, hapticSuccess, Textarea, useTranslation } from '@repo/ui';
@@ -42,10 +40,9 @@ export default function GlobalCreateModal({
   isOpen,
   onClose,
   onSuccess,
-  availableSchools,
-}: GlobalCreateModalProps) {
+  availableSchools}: GlobalCreateModalProps) {
   const { t } = useTranslation();
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
 
   const [type, setType] = useState<CreateType>('school');
   const [name, setName] = useState('');
@@ -94,8 +91,7 @@ export default function GlobalCreateModal({
         result = await createFounderSchool({
           name: name.trim(),
           type: schoolType,
-          created_by: userId,
-        });
+          created_by: userId});
 
         if (result) {
           await communityAPI.createGroupWithOwner(
@@ -104,8 +100,7 @@ export default function GlobalCreateModal({
               description: `The primary sanctuary for ${name.trim()} members to share and resonate.`,
               group_type: 'school',
               join_policy: 'open',
-              school_id: result.id,
-            },
+              school_id: result.id},
             userId,
           );
         }
@@ -114,8 +109,7 @@ export default function GlobalCreateModal({
           name: name.trim(),
           school_id: selectedSchoolId,
           grade_number: 1, // Defaulting to 1 for global creator
-          created_by: userId,
-        });
+          created_by: userId});
 
         if (result) {
           await communityAPI.createGroupWithOwner(
@@ -125,8 +119,7 @@ export default function GlobalCreateModal({
               group_type: 'class',
               join_policy: 'restricted',
               school_id: selectedSchoolId,
-              classroom_id: result.id,
-            },
+              classroom_id: result.id},
             userId,
           );
         }
@@ -137,8 +130,7 @@ export default function GlobalCreateModal({
             description: description.trim(),
             school_id: selectedSchoolId,
             group_type: 'general',
-            join_policy: 'open',
-          },
+            join_policy: 'open'},
           userId,
         );
       }
@@ -147,8 +139,7 @@ export default function GlobalCreateModal({
       if (type === 'classroom' && result) {
         growthSignalsAPI.emitSilent(userId, 'classroom_created', {
           classroom_id: result.id,
-          school_id: selectedSchoolId,
-        });
+          school_id: selectedSchoolId});
       }
 
       onSuccess(type, result);
@@ -158,8 +149,7 @@ export default function GlobalCreateModal({
       setError(apiError.message);
     } finally {
       setIsSubmitting(false);
-    }
-  };
+    };
 
   const selectedSchool = availableSchools.find((s) => s.id === selectedSchoolId);
 
@@ -183,13 +173,13 @@ export default function GlobalCreateModal({
             <Button
               action="primary"
               onPress={handleSubmit}
-              sx={{ flex: 1, backgroundColor: Theme.colors.sanctuarySaffron }}
+              sx={{ flex: 1, backgroundColor: sanctuarySaffron }}
               isDisabled={isSubmitting || !name.trim()}
             >
               {isSubmitting ? (
-                <Spinner color={Theme.colors.sacredWhite} size="small" />
+                <Spinner color={sacredWhite} size="small" />
               ) : (
-                <ButtonText color={Theme.colors.sacredWhite}>Initialize</ButtonText>
+                <ButtonText color={sacredWhite}>Initialize</ButtonText>
               )}
             </Button>
           </HStack>
@@ -207,13 +197,13 @@ export default function GlobalCreateModal({
               active={type === 'classroom'}
               onPress={() => setType('classroom')}
               label="Class"
-              icon={<LayoutGrid size={16} />}
+              icon={<Icon as={Layout}Grid size={16} />}
             />
             <TypeButton
               active={type === 'group'}
               onPress={() => setType('group')}
               label="Group"
-              icon={<Users size={16} />}
+              icon={<Icon as={User}s size={16} />}
             />
           </HStack>
 
@@ -224,8 +214,7 @@ export default function GlobalCreateModal({
                 backgroundColor: '#fee2e2',
                 borderRadius: 8,
                 borderWidth: 1,
-                borderColor: '#ef4444',
-              }}
+                borderColor: '#ef4444'}}
             >
               <Text sx={{ color: '#b91c1c', fontSize: 13 }}>{error}</Text>
             </Box>
@@ -244,8 +233,7 @@ export default function GlobalCreateModal({
                     justifyContent: 'space-between',
                     borderColor: colors.border,
                     backgroundColor: colors.tertiary,
-                    height: 48,
-                  }}
+                    height: 48}}
                 >
                   <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}>
                     {selectedSchool ? selectedSchool.name : 'Select School...'}
@@ -326,14 +314,13 @@ function TypeButton({
   active,
   onPress,
   label,
-  icon,
-}: {
+  icon}: {
   active: boolean;
   onPress: () => void;
   label: string;
   icon: React.ReactElement;
 }) {
-  const colors = useThemedColors();
+  const colors = useTheme().scene;
   return (
     <Button
       variant={active ? 'solid' : 'outline'}
@@ -341,9 +328,8 @@ function TypeButton({
       sx={{
         flex: 1,
         gap: 4,
-        backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
-        borderColor: active ? Theme.colors.sanctuarySaffron : colors.border,
-      }}
+        backgroundColor: active ? sanctuarySaffron : 'transparent',
+        borderColor: active ? sanctuarySaffron : colors.border}}
       size="sm"
     >
       {React.cloneElement(icon as React.ReactElement<{ color?: string }>, { color: active ? '#fff' : colors.textSecondary })}

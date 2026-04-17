@@ -7,7 +7,7 @@ import {
   SchoolStats,
   useFeatureAccess,
   useStore,
-  useTemporalStore,
+  useTemporalStore
 } from '@repo/core';
 
 const ECOSYSTEM_STATS_CACHE_KEY = 'gurudevi-ecosystem-stats-cache';
@@ -58,7 +58,7 @@ export function useFounderEcosystemStats() {
       try {
         const [cachedStats, cachedSchools] = await Promise.all([
           SafeZustandStorage.getItem(ECOSYSTEM_STATS_CACHE_KEY),
-          SafeZustandStorage.getItem(ECOSYSTEM_SCHOOLS_CACHE_KEY),
+          SafeZustandStorage.getItem(ECOSYSTEM_SCHOOLS_CACHE_KEY)
         ]);
 
         if (cachedStats) setStats(JSON.parse(cachedStats));
@@ -103,7 +103,7 @@ export function useFounderEcosystemStats() {
           pending_echo_responses: 12,
           avg_student_performance: 78.5,
           total_submissions: 1250,
-          submissions_7d: 145,
+          submissions_7d: 145
         };
         setStats(mockStats);
         setSchools([]);
@@ -113,7 +113,7 @@ export function useFounderEcosystemStats() {
 
       const [statsData, schoolsData] = await Promise.all([
         api.founder.getEcosystemStats(),
-        api.founder.getAllSchools(),
+        api.founder.getAllSchools()
       ]);
 
       setStats(statsData);
@@ -121,7 +121,7 @@ export function useFounderEcosystemStats() {
 
       await Promise.all([
         SafeZustandStorage.setItem(ECOSYSTEM_STATS_CACHE_KEY, JSON.stringify(statsData)),
-        SafeZustandStorage.setItem(ECOSYSTEM_SCHOOLS_CACHE_KEY, JSON.stringify(schoolsData)),
+        SafeZustandStorage.setItem(ECOSYSTEM_SCHOOLS_CACHE_KEY, JSON.stringify(schoolsData))
       ]);
 
       setError(null);
@@ -142,7 +142,7 @@ export function useFounderEcosystemStats() {
     schools,
     isLoading,
     error,
-    refreshData,
+    refreshData
   };
 }
 
@@ -180,7 +180,7 @@ export function useFounderSchoolStats(schoolId: string) {
       try {
         const [cachedStats, cachedSchool] = await Promise.all([
           SafeZustandStorage.getItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`),
-          SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`),
+          SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`)
         ]);
 
         if (cachedStats) setStats(JSON.parse(cachedStats));
@@ -213,13 +213,13 @@ export function useFounderSchoolStats(schoolId: string) {
           handle: 'wisdom-academy',
           official_type: 'Primary',
           status: 'active',
-          created_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
         } as School;
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
       } else {
         [schoolData, statsData] = await Promise.all([
           api.school.getSchool(schoolId),
-          api.school.getSchoolStats(schoolId, viewDate),
+          api.school.getSchoolStats(schoolId, viewDate)
         ]);
       }
 
@@ -229,7 +229,7 @@ export function useFounderSchoolStats(schoolId: string) {
       if (schoolId) {
         await Promise.all([
           SafeZustandStorage.setItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`, JSON.stringify(schoolData)),
-          SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`, JSON.stringify(statsData)),
+          SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`, JSON.stringify(statsData))
         ]);
       }
 
@@ -251,6 +251,6 @@ export function useFounderSchoolStats(schoolId: string) {
     stats,
     isLoading,
     error,
-    refreshData,
+    refreshData
   };
 }

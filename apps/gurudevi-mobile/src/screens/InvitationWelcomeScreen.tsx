@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InvitationWelcomeScreen.tsx
  *
  * Thin wrapper for the Community Invitation Welcome UI.

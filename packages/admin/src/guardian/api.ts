@@ -1,11 +1,10 @@
-import { 
+﻿import { 
   GuardianIdentity, 
   StudentGuardianRelationship, 
   GuardianPermissionConfig,
   GuardianDashboard,
   VerificationDocument,
-  RelationshipType,
-} from './types';
+  RelationshipType} from './types';
 import { api } from '@repo/core';
 
 export interface GuardianAPI {
@@ -29,7 +28,7 @@ export interface GuardianAPI {
   updateNotificationSettings(guardianId: string, settings: any): Promise<void>;
 }
 
-export const guardianAPI: GuardianAPI = {
+export const guardianAPI: GuardianAPI  = {
   // Identity management
   async createGuardianProfile(data: Omit<GuardianIdentity, 'id' | 'createdAt' | 'updatedAt'>): Promise<GuardianIdentity> {
     return api.guardian.createProfile(data as any) as unknown as Promise<GuardianIdentity>;
@@ -80,5 +79,4 @@ export const guardianAPI: GuardianAPI = {
 
   async updateNotificationSettings(guardianId: string, settings: any): Promise<void> {
     await api.guardian.updateNotificationSettings(guardianId, settings);
-  }
-};
+  };

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import {
     VStack,
     SanctuaryInput,
@@ -15,9 +15,7 @@ import {
     FormControl,
     FormControlLabel,
     FormControlLabelText,
-    useThemedColors,
-    Theme
-} from '@repo/ui';
+    useThemedColors} from '@repo/ui';
 import { MapPin, ChevronDown, Flag } from 'lucide-react-native';
 import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -29,13 +27,13 @@ interface StepLocationProps {
         city: string;
         address: string;
     };
-    onUpdate: (loc: Partial<StepLocationProps['data']>) => void;
+    onUpdate: (loc: Partial<StepLocationProps>['data']>) => void;
 }
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const { t, i18n } = useTranslation();
-    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
+    const lang => i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     const filteredDistricts = useMemo(() => {
         if (!data.provinceId) return [];
@@ -53,8 +51,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                 </FormControlLabel>
                 <Select
                     selectedValue={data.provinceId}
-                    onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}
-                >
+                    onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}>
                     <SelectTrigger className="h-12 rounded-2xl bg-secondary-900 border-white/10">
                         <SelectInput placeholder={t('schoolSetup.selectProvince')} value={SRI_LANKAN_PROVINCES.find(p => p.id === data.provinceId)?.[lang]} className="flex-1" />
                         <SelectIcon className="mr-3" as={ChevronDown} />
@@ -82,8 +79,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                 </FormControlLabel>
                 <Select
                     selectedValue={data.districtId}
-                    onValueChange={(value: string) => onUpdate({ districtId: value })}
-                >
+                    onValueChange={(value: string) => onUpdate({ districtId: value })}>
                     <SelectTrigger className="h-12 rounded-2xl bg-secondary-900 border-white/10">
                         <SelectInput 
                             placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} 

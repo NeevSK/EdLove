@@ -1,4 +1,4 @@
-describe('social and knowledge contract coverage', () => {
+﻿describe('social and knowledge contract coverage', () => {
     it('registers strict contract coverage for community and library APIs', () => {
         require('../../../../../packages/core/src/api');
         require('../../../../../packages/library/src/api/library');
@@ -9,8 +9,7 @@ describe('social and knowledge contract coverage', () => {
         expect(moduleNames).toEqual(
             expect.arrayContaining([
                 'community',
-                'library',
-            ])
+                'library'])
         );
 
         expect(getContractCoverage('community')?.contract).toBeTruthy();

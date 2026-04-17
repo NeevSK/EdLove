@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ArrowLeft, Copy, Plus, X } from 'lucide-react-native';
+import { Icon, ArrowLeft, Copy, Plus, X } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { hapticSuccess } from '@repo/ui';
 import { invitesAPI, type InviteCode } from '../../invites';
@@ -19,7 +19,7 @@ interface InvitesDashboardProps {
 // COMPONENT
 // —————————————————————————————————————————————————————————————————————————————
 
-export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, userId, isPastView, onBack }) => {
+export const InvitesDashboard: React.FC<InvitesDashboardProps> = { { schoolId, userId, isPastView, onBack }) => {
     const [inviteRole, setInviteRole] = useState<'teacher' | 'principal'>('teacher');
     const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
     const [loading, setLoading] = useState(false);
@@ -52,8 +52,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
             hapticSuccess();
         } catch (err) {
             console.error('[InvitesDashboard] revokeInviteCode failed:', err);
-        }
-    };
+        };
 
     const handleGenerateCode = async () => {
         if (!schoolId || !userId) return;
@@ -65,16 +64,14 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
             console.error('[InvitesDashboard] generateInviteCode failed:', err);
         } finally {
             setGenerating(false);
-        }
-    };
+        };
 
     const copyToClipboard = (code: string) => {
         if (typeof navigator !== 'undefined' && navigator.clipboard) {
             navigator.clipboard.writeText(code).catch(err => {
                 console.error('Failed to copy to clipboard:', err);
             });
-        }
-    };
+        };
 
     return (
         <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -96,7 +93,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                     color: 'var(--ink)'
                 }}
             >
-                <ArrowLeft size={14} /> Back to Dashboard
+                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
             </button>
             
             <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800', color: 'var(--ink)' }}>
@@ -147,7 +144,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                     >
                         {generating ? 'Generating...' : (
                             <>
-                                <Plus size={14} color="white" />
+                                <Icon as={Plus} size={14} color="white" />
                                 <span>Generate Code</span>
                             </>
                         )}
@@ -223,7 +220,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                                             transition: 'background 0.2s'
                                         }}
                                     >
-                                        <X size={16} />
+                                        <Icon as={X} size={16} />
                                     </button>
                                 )}
                             </div>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GradebookScreen.web.tsx
  */
 import React from 'react';

@@ -1,4 +1,4 @@
-import React, { useEffect, ReactNode } from 'react';
+﻿import React, { useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useAuth } from '@repo/core';
@@ -6,7 +6,7 @@ import { supabase } from '@repo/core';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { navigationRef } from '../navigation/navigationRef';
 
-export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const DeepLinkProvider: React.FC<{ children: ReactNode }> => { children }) => {
   const { session } = useAuth();
 
   useEffect(() => {
@@ -25,8 +25,7 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (access_token && refresh_token) {
           const { error } = await supabase.auth.setSession({
             access_token,
-            refresh_token,
-          });
+            refresh_token});
           if (error && (error.message?.includes('Refresh Token') || (error as { status?: number }).status === 400)) {
             await supabase.auth.signOut({ scope: 'local' });
           }

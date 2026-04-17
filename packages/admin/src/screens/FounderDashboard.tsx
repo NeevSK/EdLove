@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Dimensions } from 'react-native';
+import { Icon, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
     useStore,
     FounderStackParamList,
-    School,
-} from '@repo/core';
+    School} from '@repo/core';
 import { useFounderEcosystemStats } from '../bridge/founderWorkspace';
 import {
     Box,
@@ -19,12 +18,11 @@ import {
     GlobalHeader,
     SkeletonCard,
     useThemedColors,
-    Theme,
+    
     SandboxBanner,
     FounderGlow,
     hapticLight,
-    useRegisterFAB
-} from '@repo/ui';
+    useRegisterFAB } from '@repo/ui';
 import {
     Globe,
     Zap,
@@ -48,7 +46,7 @@ import { GlobalCreateModal } from '../components';
  */
 export default function FounderDashboard() {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const { isDemoMode } = useStore();
     const user = useStore(state => state.user);
     const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
@@ -57,7 +55,7 @@ export default function FounderDashboard() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    const filteredSchools = (schools || []).filter(s =>
+    const filteredSchools = { schools || []).filter(s =>
         s?.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -70,7 +68,7 @@ export default function FounderDashboard() {
     useRegisterFAB({
         tabType: 'founder',
         onPress: () => setIsCreateModalOpen(true),
-        icon: <Plus size={24} color="#FFF" />,
+        icon: <Icon as={Plus} size={24} color="#FFF" />,
         visible: true
     });
 
@@ -115,21 +113,21 @@ export default function FounderDashboard() {
                             >
                                 <Box sx={{
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.sanctuarySaffron + '11',
+                                    backgroundColor: sanctuarySaffron + '11',
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
-                                    borderColor: Theme.colors.sanctuarySaffron,
+                                    borderColor: sanctuarySaffron,
                                     marginBottom: Theme.spacing.md
                                 }}>
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                         <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                            <SchoolIcon size={24} color={Theme.colors.sanctuarySaffron} />
+                                            <SchoolIcon size={24} color={sanctuarySaffron} />
                                             <VStack>
                                                 <Text sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text>
                                                 <Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text>
                                             </VStack>
                                         </HStack>
-                                        <ChevronRight size={20} color={colors.textTertiary} />
+                                        <Icon as={ChevronRight} size={20} color={colors.textTertiary} />
                                     </HStack>
                                 </Box>
                             </TouchableOpacity>
@@ -152,7 +150,7 @@ export default function FounderDashboard() {
                                 <StatCard
                                     label="Total Souls"
                                     value={stats?.total_users || 0}
-                                    icon={<Users size={20} color={colors.success} />}
+                                    icon={<Icon as={User}s size={20} color={colors.success} />}
                                     color={colors.success}
                                 />
                             </HStack>
@@ -163,14 +161,14 @@ export default function FounderDashboard() {
                                 <StatCard
                                     label="Classrooms"
                                     value={stats?.total_classrooms || 0}
-                                    icon={<LayoutGrid size={20} color={colors.warning} />}
+                                    icon={<Icon as={Layout}Grid size={20} color={colors.warning} />}
                                     color={colors.warning}
                                 />
                                 <StatCard
                                     label="Teachers"
                                     value={stats?.total_teachers || 0}
-                                    icon={<Zap size={20} color={Theme.colors.sanctuarySaffron} />}
-                                    color={Theme.colors.sanctuarySaffron}
+                                    icon={<Zap size={20} color={sanctuarySaffron} />}
+                                    color={sanctuarySaffron}
                                 />
                             </HStack>
                         )}
@@ -184,7 +182,7 @@ export default function FounderDashboard() {
                                     const { setBreathingOpen } = useStore.getState();
                                     setBreathingOpen(true);
                                 }}
-                                color={Theme.colors.lotusDeepPink}
+                                color={lotusDeepPink}
                             />
                             <Box sx={{ flex: 1 }} />
                             <Box sx={{ flex: 1 }} />
@@ -262,7 +260,7 @@ export default function FounderDashboard() {
  * QuickAction Sub-component
  */
 function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, label: string, onPress: () => void, color: string }) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     return (
         <VStack sx={{ flex: 1, gap: Theme.spacing.xs, alignItems: 'center' }}>
             <TouchableOpacity
@@ -297,7 +295,7 @@ function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, l
  * StatCard Sub-component
  */
 function StatCard({ label, value, icon, color }: { label: string, value: number, icon: React.ReactNode, color: string }) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     return (
         <Box sx={{
             flex: 1,
@@ -324,7 +322,7 @@ function StatCard({ label, value, icon, color }: { label: string, value: number,
  * SchoolGalleryItem Sub-component
  */
 function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () => void }) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     return (
         <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
             <Box sx={{
@@ -353,7 +351,7 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                             {school.type} • {school.id.substring(0, 8)}...
                         </Text>
                     </VStack>
-                    <ChevronRight size={20} color={colors.textTertiary} />
+                    <Icon as={ChevronRight} size={20} color={colors.textTertiary} />
                 </HStack>
             </Box>
         </TouchableOpacity>

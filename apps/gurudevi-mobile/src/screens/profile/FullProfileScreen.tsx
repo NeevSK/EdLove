@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FullProfileScreen.tsx
  *
  * Thin wrapper for the detailed Profile View.

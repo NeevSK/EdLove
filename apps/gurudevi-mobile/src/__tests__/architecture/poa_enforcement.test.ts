@@ -1,4 +1,4 @@
-import { classroomsAPI } from '../../../../../packages/core/src/api';
+﻿import { classroomsAPI } from '../../../../../packages/core/src/api';
 import { supabase } from '../../../../../packages/core/src/lib/supabase';
 import { useStore } from '../../../../../packages/core/src/store/useStore';
 import { selfAPI } from '../../../../../packages/self/src/api/self';
@@ -14,8 +14,7 @@ describe('POA enforcement', () => {
     it('throws Forbidden before classroomsAPI.create reaches Supabase without authority', async () => {
         jest.spyOn(useStore, 'getState').mockReturnValue({
             user: null,
-            schoolType: null,
-        } as any);
+            schoolType: null} as any);
 
         const fromSpy = jest.spyOn(supabase, 'from');
 
@@ -23,8 +22,7 @@ describe('POA enforcement', () => {
             classroomsAPI.create({
                 name: 'Forbidden Class',
                 school_id: SCHOOL_ID,
-                teacher_id: TEACHER_ID,
-            } as any)
+                teacher_id: TEACHER_ID} as any)
         ).rejects.toThrow('Forbidden');
 
         expect(fromSpy).not.toHaveBeenCalled();
@@ -33,8 +31,7 @@ describe('POA enforcement', () => {
     it('denies selfAPI.getMoodHistory for guests according to the contract and composer', async () => {
         jest.spyOn(useStore, 'getState').mockReturnValue({
             user: null,
-            schoolType: null,
-        } as any);
+            schoolType: null} as any);
 
         const fromSpy = jest.spyOn(supabase, 'from');
 
@@ -51,17 +48,14 @@ describe('POA enforcement', () => {
                 roles: ['teacher'],
                 authority: 'teacher',
                 school_id: SCHOOL_ID,
-                is_anonymous: false,
-            },
-            schoolType: 'school_workspace',
-        } as any);
+                is_anonymous: false},
+            schoolType: 'school_workspace'} as any);
 
         const query = {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
             order: jest.fn().mockReturnThis(),
-            limit: jest.fn().mockResolvedValue({ data: [], error: null }),
-        };
+            limit: jest.fn().mockResolvedValue({ data: [], error: null })};
 
         const fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query as any);
 

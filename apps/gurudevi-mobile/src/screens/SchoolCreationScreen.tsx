@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SchoolCreationScreen.tsx
  *
  * Thin wrapper for the Admin School Creation UI.

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * usePWAInstallPrompt  Web-only hook
  *
  * Captures the browser's `beforeinstallprompt` event and exposes a stable
@@ -108,6 +108,5 @@ export function usePWAInstallPrompt(): PWAInstallState {
         isDismissed,
         dismiss,
         isIOS,
-        isInstalled,
-    };
+        isInstalled};
 }

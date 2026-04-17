@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-    VStack,
+import { Icon, VStack,
     HStack,
     Box,
     Text,
     Pressable,
-    Theme,
+    
     useThemedColors,
     GlobalHeader,
     Input,
@@ -15,8 +14,7 @@ import {
     hapticLight,
     hapticSuccess,
     ScrollView,
-    SkeletonCard
-} from '@repo/ui';
+    SkeletonCard } from '@repo/ui';
 import {
     Calendar,
     Plus,
@@ -36,7 +34,7 @@ interface AcademicCycleManagerProps {
 
 export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycleManagerProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const [cycles, setCycles] = useState<AcademicCycle[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
@@ -56,8 +54,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             console.error('Failed to fetch cycles:', error);
         } finally {
             setLoading(false);
-        }
-    };
+        };
 
     useEffect(() => {
         fetchCycles();
@@ -89,8 +86,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             Alert.alert('Error', 'Failed to create academic cycle');
         } finally {
             setSaving(false);
-        }
-    };
+        };
 
     const handleSetCurrent = async (cycleId: string) => {
         try {
@@ -99,8 +95,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             fetchCycles();
         } catch (error) {
             Alert.alert('Error', 'Failed to update cycle');
-        }
-    };
+        };
 
     const handleDelete = (cycleId: string) => {
         Alert.alert(
@@ -145,7 +140,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                 onBack={onBack}
                 rightAction={
                     <Pressable onPress={() => setShowAddForm(!showAddForm)}>
-                        <Plus size={24} color={colors.action} />
+                        <Icon as={Plus} size={24} color={colors.action} />
                     </Pressable>
                 }
             />
@@ -194,7 +189,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                 <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
                                     <Pressable onPress={() => setIsCurrent(!isCurrent)}>
                                         <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                            {isCurrent ? <CheckCircle2 size={18} color={colors.success} /> : <Circle size={18} color={colors.textSecondary} />}
+                                            {isCurrent ? <Icon as={Check}Circle2 size={18} color={colors.success} /> : <Circle size={18} color={colors.textSecondary} />}
                                             <Text sx={{ fontSize: 13, color: colors.text }}>Set as Current Cycle</Text>
                                         </HStack>
                                     </Pressable>
@@ -209,7 +204,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         marginTop: Theme.spacing.sm
                                     }}
                                 >
-                                    <ButtonText color={Theme.colors.sacredWhite}>{saving ? 'Saving...' : 'Create Cycle'}</ButtonText>
+                                    <ButtonText color={sacredWhite}>{saving ? 'Saving...' : 'Create Cycle'}</ButtonText>
                                 </Button>
                             </VStack>
                         </Box>
@@ -218,7 +213,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <VStack sx={{ gap: Theme.spacing.md }}>
                         {cycles.length === 0 ? (
                             <Box sx={{ alignItems: 'center', padding: Theme.spacing.xl }}>
-                                <Calendar size={48} color={colors.textSecondary} strokeWidth={1} />
+                                <Icon as={Calendar} size={48} color={colors.textSecondary} strokeWidth={1} />
                                 <Text sx={{ marginTop: Theme.spacing.md, color: colors.textSecondary }}>No cycles defined yet.</Text>
                             </Box>
                         ) : (
@@ -230,8 +225,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         padding: Theme.spacing.md,
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
-                                        borderColor: cycle.is_current ? colors.success : colors.border,
-                                    }}
+                                        borderColor: cycle.is_current ? colors.success : colors.border}}
                                 >
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <VStack sx={{ gap: Theme.spacing.xs }}>
@@ -249,7 +243,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                                 )}
                                             </HStack>
                                             <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                                <Clock size={12} color={colors.textSecondary} />
+                                                <Icon as={Clock} size={12} color={colors.textSecondary} />
                                                 <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
                                                     {cycle.start_date} to {cycle.end_date}
                                                 </Text>
@@ -259,11 +253,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         <HStack sx={{ gap: Theme.spacing.md }}>
                                             {!cycle.is_current && (
                                                 <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}>
-                                                    <CheckCircle2 size={20} color={colors.textSecondary} />
+                                                    <Icon as={Check}Circle2 size={20} color={colors.textSecondary} />
                                                 </TouchableOpacity>
                                             )}
                                             <TouchableOpacity onPress={() => handleDelete(cycle.id)}>
-                                                <Trash2 size={20} color={Theme.colors.emberRed} />
+                                                <Icon as={Trash2} size={20} color={emberRed} />
                                             </TouchableOpacity>
                                         </HStack>
                                     </HStack>

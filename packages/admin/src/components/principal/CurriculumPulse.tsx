@@ -10,18 +10,16 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-    Box,
+import { Icon, Box,
     VStack,
     HStack,
     Text,
     Heading,
-    Theme,
+    
     useThemedColors,
     Spinner,
     Progress,
-    ProgressFilledTrack,
-} from '@repo/ui';
+    ProgressFilledTrack} from '@repo/ui';
 import { BookOpen, Zap, Clock } from 'lucide-react-native';
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +33,7 @@ interface GradeProgress {
 
 export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
     const [progress, setProgress] = useState<GradeProgress[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -61,16 +59,14 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
             setMockData();
         } finally {
             setIsLoading(false);
-        }
-    };
+        };
 
     const setMockData = () => {
         setProgress([
             { grade: 'Grade 6', coverage: 45, is_reform: true, last_updated: new Date().toISOString() },
             { grade: 'Grade 10', coverage: 65, is_reform: false, last_updated: new Date().toISOString() },
             { grade: 'Grade 12', coverage: 30, is_reform: false, last_updated: new Date().toISOString() },
-            { grade: 'Grade 1', coverage: 80, is_reform: true, last_updated: new Date().toISOString() },
-        ]);
+            { grade: 'Grade 1', coverage: 80, is_reform: true, last_updated: new Date().toISOString() }]);
     };
 
     if (isLoading) {
@@ -88,15 +84,14 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                         sx={{
                             paddingHorizontal: Theme.spacing.sm,
                             paddingVertical: 2,
-                            backgroundColor: Theme.colors.amberGlow + '22',
+                            backgroundColor: amberGlow + '22',
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: Theme.colors.amberGlow,
-                        }}
+                            borderColor: amberGlow}}
                     >
                         <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                            <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                            <Text sx={{ fontSize: 10, fontWeight: '700' }} color={Theme.colors.amberGlow}>2026 REFORM</Text>
+                            <Zap size={10} color={amberGlow} fill={amberGlow} />
+                            <Text sx={{ fontSize: 10, fontWeight: '700' }} color={amberGlow}>2026 REFORM</Text>
                         </HStack>
                     </Box>
                 </HStack>
@@ -112,7 +107,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                             <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
                                 <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{item.grade}</Text>
                                 {item.is_reform && (
-                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={Theme.colors.amberGlow}>(Reform)</Text>
+                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={amberGlow}>(Reform)</Text>
                                 )}
                             </HStack>
                             <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>{item.coverage}%</Text>
@@ -120,12 +115,12 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                         <Progress value={item.coverage} sx={{ height: 8, width: '100%' }}>
                             <ProgressFilledTrack
                                 sx={{
-                                    backgroundColor: item.is_reform ? Theme.colors.amberGlow : colors.action
+                                    backgroundColor: item.is_reform ? amberGlow : colors.action
                                 }}
                             />
                         </Progress>
                         <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center', marginTop: 2 }}>
-                            <Clock size={10} color={colors.textTertiary} />
+                            <Icon as={Clock} size={10} color={colors.textTertiary} />
                             <Text sx={{ fontSize: 10 }} color={colors.textTertiary}>
                                 Last update: {new Date(item.last_updated).toLocaleDateString()}
                             </Text>
@@ -140,11 +135,10 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     backgroundColor: colors.tertiary,
                     borderRadius: Theme.corners.comfortable,
                     borderWidth: 1,
-                    borderColor: colors.border,
-                }}
+                    borderColor: colors.border}}
             >
                 <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                    <BookOpen size={16} color={colors.action} />
+                    <Icon as={Book}Open size={16} color={colors.action} />
                     <Text sx={{ fontSize: Theme.typography.fontSize.xs, flex: 1 }} color={colors.textSecondary}>
                         {t('principal.pulse.insight')}
                     </Text>

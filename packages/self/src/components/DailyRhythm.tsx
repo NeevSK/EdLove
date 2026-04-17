@@ -1,3 +1,9 @@
+/**
+ * DAILY RHYTHM COMPONENT
+ * Personalized timetable and routine management.
+ * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -15,7 +21,13 @@ import {
     ModalHeader,
     ModalCloseButton,
     ModalBody,
-    CloseIcon,
+    Icon,
+    useToast,
+    Toast,
+    ToastTitle,
+    PositiveInvitation,
+    ErrorBoundary,
+    SkeletonCard,
     Input,
     InputField,
     Select,
@@ -25,20 +37,14 @@ import {
     SelectPortal,
     SelectBackdrop,
     SelectContent,
-    SelectItem,
-    Icon,
-    useToast,
-    Toast,
-    ToastTitle,
-    PositiveInvitation,
-    ErrorBoundary,
-    SkeletonCard
+    SelectItem
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { Maximize2, Plus, Clock, Trash, ChevronDown, Cloud } from 'lucide-react-native';
+import { Maximize2, Plus, Clock, Trash, ChevronDown, Cloud, X, Book, Coffee, AlertCircle } from 'lucide-react-native';
 import { useTimetable } from '../hooks/useTimetable';
 import { Period } from '../types';
 import { useFeatureAccess } from '@repo/core';
+import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';
 
 const DAYS = [
     { id: 1, label: 'M' },
@@ -74,8 +80,13 @@ function DailyRhythmContent() {
             toast.show({
                 placement: "top",
                 render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid" className="bg-red-600">
-                        <ToastTitle className="text-white">{t('self.missingFields') || 'Please fill required fields'}</ToastTitle>
+                    <Toast nativeID={id} className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl">
+                        <HStack className="gap-2 items-center">
+                            <Icon as={AlertCircle} className="text-emberRed" size={16} />
+                            <ToastTitle className="text-sacredWhite text-sm font-bold">
+                                {t('self.missingFields') || 'Required fields missing'}
+                            </ToastTitle>
+                        </HStack>
                     </Toast>
                 )
             });
@@ -101,8 +112,10 @@ function DailyRhythmContent() {
             toast.show({
                 placement: "top",
                 render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="success" variant="solid" className="bg-green-600">
-                        <ToastTitle className="text-white">{t('self.timetableUpdated') || 'Timetable Updated'}</ToastTitle>
+                    <Toast nativeID={id} className="bg-emeraldGreen/20 border border-emeraldGreen/30 px-4 py-3 rounded-2xl">
+                        <ToastTitle className="text-sacredWhite text-sm font-bold">
+                            {t('self.timetableUpdated') || 'Timetable Resonated'}
+                        </ToastTitle>
                     </Toast>
                 )
             });
@@ -113,158 +126,147 @@ function DailyRhythmContent() {
 
     const isPeriodActive = (start: string, end: string) => {
         if (!start || !end) return false;
-        const startParts = start.split(':');
-        const endParts = end.split(':');
-
-        const startH = Number(startParts[0]) || 0;
-        const startM = Number(startParts[1]) || 0;
-        const endH = Number(endParts[0]) || 0;
-        const endM = Number(endParts[1]) || 0;
-        
-        const nowH = currentTime.getHours();
-        const nowM = currentTime.getMinutes();
-        
-        const nowTotal = nowH * 60 + nowM;
-        const startTotal = startH * 60 + startM;
-        const endTotal = endH * 60 + endM;
-        
-        return nowTotal >= startTotal && nowTotal < endTotal;
+        const now = currentTime.getHours() * 60 + currentTime.getMinutes();
+        const [sH, sM] = start.split(':').map(Number);
+        const [eH, eM] = end.split(':').map(Number);
+        return now >= (sH * 60 + sM) && now < (eH * 60 + eM);
     };
 
     return (
-        <VStack className="gap-md flex-1">
+        <VStack className="gap-6 flex-1">
             {/* Guest Mode Banner */}
             {isGuest && (
-                <Box className="p-md bg-ink rounded-comfortable border-l-4 border-sanctuarySaffron">
-                    <HStack className="gap-sm items-center">
-                        <Cloud size={20} className="text-sanctuarySaffron" />
-                        <Text className="text-sm text-sacredWhite flex-1">
-                            {t('self.guestMode') || 'Guest Mode - Data saved locally'}
+                <Box className="p-4 bg-obsidian rounded-2xl border border-sanctuarySaffron/20 bg-sanctuarySaffron/5">
+                    <HStack className="gap-3 items-center">
+                        <Icon as={Cloud} size={18} className="text-sanctuarySaffron" />
+                        <Text className="text-xs text-sacredWhite/80 font-medium flex-1">
+                            {t('self.guestMode') || 'Transient Session — rhythm data is stored locally.'}
                         </Text>
                     </HStack>
                 </Box>
             )}
 
             {/* Header & Day Picker */}
-            <HStack className="gap-sm justify-between items-center">
-                <HStack className="gap-xs">
+            <HStack className="justify-between items-center bg-white/5 p-1 rounded-full border border-white/5">
+                <HStack className="gap-1 flex-1">
                     {DAYS.map((day) => (
                         <Pressable
                             key={day.id}
                             onPress={() => setActiveDay(day.id)}
-                            className={`w-10 h-10 rounded-full items-center justify-center border ${
+                            className={`flex-1 h-10 rounded-full items-center justify-center transition-all ${
                                 activeDay === day.id 
-                                ? 'bg-sanctuarySaffron border-sanctuarySaffron' 
-                                : 'bg-white/5 border-transparent'
+                                ? 'bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20' 
+                                : 'bg-transparent'
                             }`}
                         >
-                            <Text className={`font-bold ${
-                                activeDay === day.id ? 'text-black' : 'text-mistGray'
+                            <Text className={`text-xs font-black uppercase tracking-widest ${
+                                activeDay === day.id ? 'text-obsidian' : 'text-mistGray/40'
                             }`}>
                                 {day.label}
                             </Text>
                         </Pressable>
                     ))}
                 </HStack>
-                <HStack className="gap-sm">
-                    <Button
+                
+                <HStack className="gap-1 px-1">
+                    <Pressable
                         onPress={() => { 
                             setEditingPeriod({ type: 'subject', period_number: (periods?.length || 0) + 1 });
                             setShowEditor(true);
                         }}
-                        variant="link"
-                        className="p-0"
+                        className="w-10 h-10 items-center justify-center rounded-full bg-sanctuarySaffron/10 border border-sanctuarySaffron/20"
                     >
-                        <Plus size={20} className="text-sanctuarySaffron" />
-                    </Button>
-                    <Button
-                        onPress={() => setShowFullWeek(true)}
-                        variant="link"
-                        className="p-0"
-                    >
-                        <Maximize2 size={20} className="text-sanctuarySaffron" />
-                    </Button>
+                        <Icon as={Plus} size={18} className="text-sanctuarySaffron" />
+                    </Pressable>
                 </HStack>
             </HStack>
 
             {/* List */}
             {loading && (!periods || periods.length === 0) ? (
-                <VStack className="gap-md flex-1">
-                    <SkeletonCard className="h-20" />
-                    <SkeletonCard className="h-20" />
-                    <SkeletonCard className="h-20" />
+                <VStack className="gap-4 flex-1">
+                    <SkeletonCard className="h-24 bg-white/5" />
+                    <SkeletonCard className="h-24 bg-white/5" />
+                    <SkeletonCard className="h-24 bg-white/5" />
                 </VStack>
             ) : (!periods || periods.length === 0) ? (
-                <PositiveInvitation
-                    icon={Clock}
-                    title={t('self.noClasses') || "No classes scheduled"}
-                    description={t('self.addLesson') || "Tap + to add your first lesson."}
-                />
+                <Animated.View entering={FadeInDown} className="flex-1 mt-10">
+                    <PositiveInvitation
+                        icon={Clock}
+                        title={t('self.noClasses') || "Undetermined Flow"}
+                        description={t('self.addLesson') || "Map your daily rhythm to surface moments of focus."}
+                    />
+                </Animated.View>
             ) : (
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <VStack className="gap-md">
-                        {periods.map((period) => {
+                <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+                    <VStack className="gap-4 pb-20">
+                        {periods.map((period, index) => {
                             const active = isPeriodActive(period.start_time || '', period.end_time || '');
                             const endHour = (period.end_time || '00:00').split(':')[0];
                             const passed = !active && currentTime.getHours() > parseInt(endHour || '0', 10);
 
                             return (
-                                <Pressable
-                                    key={period.id}
-                                    onLongPress={() => {
-                                        setEditingPeriod(period);
-                                        setShowEditor(true);
-                                    }}
+                                <Animated.View 
+                                    key={period.id} 
+                                    entering={FadeInRight.delay(index * 100)}
+                                    layout={Layout}
                                 >
-                                    <Box
-                                        className={`p-md rounded-comfortable border transition-all ${
+                                    <Pressable
+                                        onLongPress={() => {
+                                            setEditingPeriod(period);
+                                            setShowEditor(true);
+                                        }}
+                                        className={`p-5 rounded-3xl border transition-all active:scale-[0.98] ${
                                             active 
-                                            ? 'bg-ink border-sanctuarySaffron shadow-lg' 
+                                            ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron shadow-xl shadow-sanctuarySaffron/5' 
                                             : period.type === 'interval' 
-                                                ? 'bg-sageGreen/10 border-sageGreen/20' 
-                                                : 'bg-obsidian border-transparent'
-                                        } ${passed ? 'opacity-60' : 'opacity-100'}`}
+                                                ? 'bg-emeraldGreen/5 border-emeraldGreen/10' 
+                                                : 'bg-white/5 border-white/5'
+                                        } ${passed ? 'opacity-40 grayscale-[0.5]' : 'opacity-100'}`}
                                     >
-                                        <HStack className="gap-md items-center">
-                                            <VStack className="items-center w-14">
-                                                <Text className="text-xs text-mistGray">
+                                        <HStack className="gap-5 items-center">
+                                            <VStack className="items-center w-14 gap-1">
+                                                <Text className="text-[10px] font-black tracking-tighter text-mistGray/40">
                                                     {period.start_time?.slice(0, 5)}
                                                 </Text>
-                                                <Box className="w-[1px] h-2.5 bg-dimGray my-0.5" />
-                                                <Text className="text-xs text-mistGray">
+                                                <Box className={`w-0.5 h-4 rounded-full ${active ? 'bg-sanctuarySaffron' : 'bg-white/10'}`} />
+                                                <Text className="text-[10px] font-black tracking-tighter text-mistGray/80">
                                                     {period.end_time?.slice(0, 5)}
                                                 </Text>
                                             </VStack>
 
-                                            <VStack className="flex-1">
+                                            <VStack className="flex-1 gap-1">
                                                 <HStack className="justify-between items-center">
                                                     <Heading 
-                                                        className={`text-base font-bold ${active ? 'text-sanctuarySaffron' : 'text-sacredWhite'}`}
+                                                        size="xs"
+                                                        className={`font-black tracking-tight ${active ? 'text-sanctuarySaffron' : 'text-sacredWhite'}`}
                                                     >
                                                         {period.subject || period.activity}
                                                     </Heading>
                                                     {active && (
-                                                        <Box className="bg-sanctuarySaffron rounded-full px-2 py-0.5">
-                                                            <Text className="text-[10px] text-black font-bold uppercase">
-                                                                {t('common.now') || 'NOW'}
+                                                        <Box className="bg-sanctuarySaffron px-2 py-0.5 rounded-md">
+                                                            <Text className="text-[8px] text-obsidian font-black uppercase tracking-widest">
+                                                                Active
                                                             </Text>
                                                         </Box>
                                                     )}
                                                 </HStack>
-                                                <HStack className="gap-1 items-center">
-                                                    <Text className="text-xs text-mistGray font-medium">
-                                                        {period.class_name}
+                                                <HStack className="gap-2 items-center">
+                                                    <Icon as={period.type === 'interval' ? Coffee : Book} size={12} className="text-mistGray/30" />
+                                                    <Text className="text-xs text-mistGray/60 font-medium">
+                                                        {period.class_name || 'Fluid Space'}
                                                     </Text>
                                                     {period.type === 'relief' && (
-                                                        <Text className="text-xs text-emberRed italic ml-1">
-                                                            ({t('self.relief') || 'Relief'})
-                                                        </Text>
+                                                        <Box className="bg-emberRed/10 px-1.5 py-0.5 rounded border border-emberRed/20">
+                                                            <Text className="text-[8px] text-emberRed font-bold uppercase">
+                                                                Relief
+                                                            </Text>
+                                                        </Box>
                                                     )}
                                                 </HStack>
                                             </VStack>
                                         </HStack>
-                                    </Box>
-                                </Pressable>
+                                    </Pressable>
+                                </Animated.View>
                             );
                         })}
                     </VStack>
@@ -273,81 +275,104 @@ function DailyRhythmContent() {
 
             {/* Editor Modal */}
             <Modal isOpen={showEditor} onClose={() => setShowEditor(false)}>
-                <ModalBackdrop />
-                <ModalContent className="bg-obsidian border border-white/10 rounded-generous">
-                    <ModalHeader className="border-b border-white/5 pb-2">
-                        <Heading className="text-xl font-bold text-sanctuarySaffron">
-                            {editingPeriod?.id ? (t('self.editPeriod') || 'Edit Period') : (t('self.newPeriod') || 'New Period')}
-                        </Heading>
-                        <ModalCloseButton>
-                            <Icon as={CloseIcon} className="text-mistGray" />
+                <ModalBackdrop className="bg-black/80" />
+                <ModalContent className="bg-shroud border border-white/10 rounded-[40px] p-6">
+                    <ModalHeader className="border-b border-white/5 pb-4 mb-6">
+                        <VStack className="gap-1 flex-1">
+                            <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-[0.3em]">
+                                Timetable Configuration
+                            </Text>
+                            <Heading className="text-2xl font-black text-sacredWhite tracking-tighter">
+                                {editingPeriod?.id ? 'Adjust Rhythm' : 'New Resonance'}
+                            </Heading>
+                        </VStack>
+                        <ModalCloseButton className="w-10 h-10 rounded-full bg-white/5 items-center justify-center">
+                            <Icon as={X} className="text-mistGray" size={20} />
                         </ModalCloseButton>
                     </ModalHeader>
-                    <ModalBody className="pt-4">
-                        <VStack className="gap-lg pb-6">
-                            <Input variant="outline" className="border-white/10 bg-white/5 rounded-tight">
-                                <InputField
-                                    placeholder={t('self.subjectPlaceholder') || 'Subject Name'}
-                                    value={editingPeriod?.subject || ''}
-                                    onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, subject: val }))}
-                                    className="text-sacredWhite placeholder:text-dimGray"
-                                />
-                            </Input>
-                            <Input variant="outline" className="border-white/10 bg-white/5 rounded-tight">
-                                <InputField
-                                    placeholder={t('self.classPlaceholder') || 'Class/Room'}
-                                    value={editingPeriod?.class_name || ''}
-                                    onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, class_name: val }))}
-                                    className="text-sacredWhite placeholder:text-dimGray"
-                                />
-                            </Input>
+                    <ModalBody>
+                        <VStack className="gap-6 pb-6">
+                            <VStack className="gap-2">
+                                <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-widest px-1">Identity</Text>
+                                <Input className="h-14 bg-white/5 border-white/10 rounded-2xl px-4 flex-row items-center">
+                                    <InputField
+                                        placeholder="Subject or Activity"
+                                        value={editingPeriod?.subject || ''}
+                                        onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, subject: val }))}
+                                        className="text-sacredWhite text-sm font-bold flex-1"
+                                        placeholderTextColor="#4A4A4A"
+                                    />
+                                </Input>
+                            </VStack>
 
-                            <HStack className="gap-md">
-                                <Input variant="outline" className="flex-1 border-white/10 bg-white/5 rounded-tight">
+                            <VStack className="gap-2">
+                                <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-widest px-1">Location</Text>
+                                <Input className="h-14 bg-white/5 border-white/10 rounded-2xl px-4 flex-row items-center">
                                     <InputField
-                                        placeholder={t('self.startPlaceholder') || 'Start (HH:MM)'}
-                                        value={editingPeriod?.start_time || ''}
-                                        onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, start_time: val }))}
-                                        className="text-sacredWhite placeholder:text-dimGray"
+                                        placeholder="Physical or Digital Space"
+                                        value={editingPeriod?.class_name || ''}
+                                        onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, class_name: val }))}
+                                        className="text-sacredWhite text-sm font-bold flex-1"
+                                        placeholderTextColor="#4A4A4A"
                                     />
                                 </Input>
-                                <Input variant="outline" className="flex-1 border-white/10 bg-white/5 rounded-tight">
-                                    <InputField
-                                        placeholder={t('self.endPlaceholder') || 'End (HH:MM)'}
-                                        value={editingPeriod?.end_time || ''}
-                                        onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, end_time: val }))}
-                                        className="text-sacredWhite placeholder:text-dimGray"
-                                    />
-                                </Input>
+                            </VStack>
+
+                            <HStack className="gap-4">
+                                <VStack className="flex-1 gap-2">
+                                    <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-widest px-1">Arrival</Text>
+                                    <Input className="h-14 bg-white/5 border-white/10 rounded-2xl px-4 flex-row items-center">
+                                        <InputField
+                                            placeholder="08:30"
+                                            value={editingPeriod?.start_time || ''}
+                                            onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, start_time: val }))}
+                                            className="text-sacredWhite text-sm font-bold flex-1"
+                                            placeholderTextColor="#4A4A4A"
+                                        />
+                                    </Input>
+                                </VStack>
+                                <VStack className="flex-1 gap-2">
+                                    <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-widest px-1">Departure</Text>
+                                    <Input className="h-14 bg-white/5 border-white/10 rounded-2xl px-4 flex-row items-center">
+                                        <InputField
+                                            placeholder="09:20"
+                                            value={editingPeriod?.end_time || ''}
+                                            onChangeText={(val: string) => setEditingPeriod(prev => ({ ...prev, end_time: val }))}
+                                            className="text-sacredWhite text-sm font-bold flex-1"
+                                            placeholderTextColor="#4A4A4A"
+                                        />
+                                    </Input>
+                                </VStack>
                             </HStack>
 
-                            <Select
-                                selectedValue={editingPeriod?.type}
-                                onValueChange={(val: string) => setEditingPeriod(prev => ({ ...prev, type: val as any }))}
-                            >
-                                <SelectTrigger variant="outline" className="border-white/10 bg-white/5 rounded-tight h-12 px-3">
-                                    <SelectInput 
-                                        placeholder={t('self.type') || 'Type'} 
-                                        className="text-sacredWhite" 
-                                    />
-                                    <SelectIcon as={() => <ChevronDown size={16} className="text-mistGray" />} className="ml-2" />
-                                </SelectTrigger>
-                                <SelectPortal>
-                                    <SelectBackdrop />
-                                    <SelectContent className="bg-obsidian border-white/10">
-                                        <SelectItem label={t('self.subject') || 'Subject'} value="subject" className="text-sacredWhite" />
-                                        <SelectItem label={t('self.relief') || 'Relief'} value="relief" className="text-sacredWhite" />
-                                        <SelectItem label={t('self.interval') || 'Break/Interval'} value="interval" className="text-sacredWhite" />
-                                    </SelectContent>
-                                </SelectPortal>
-                            </Select>
+                            <VStack className="gap-2">
+                                <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-widest px-1">Vibration Type</Text>
+                                <Select
+                                    selectedValue={editingPeriod?.type}
+                                    onValueChange={(val: string) => setEditingPeriod(prev => ({ ...prev, type: val as any }))}
+                                >
+                                    <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl px-4 flex-row items-center justify-between">
+                                        <SelectInput 
+                                            placeholder="Select Type" 
+                                            className="text-sacredWhite text-sm font-bold" 
+                                        />
+                                        <SelectIcon as={ChevronDown} className="text-mistGray/40" size={16} />
+                                    </SelectTrigger>
+                                    <SelectPortal>
+                                        <SelectBackdrop />
+                                        <SelectContent className="bg-shroud border-t border-white/10">
+                                            <SelectItem label="Standard Focus" value="subject" />
+                                            <SelectItem label="Relief/Alternative" value="relief" />
+                                            <SelectItem label="Internal Interval" value="interval" />
+                                        </SelectContent>
+                                    </SelectPortal>
+                                </Select>
+                            </VStack>
 
-                            <HStack className="gap-md mt-4">
+                            <HStack className="gap-4 mt-8">
                                 {editingPeriod?.id && (
-                                    <Button
-                                        variant="outline"
-                                        action="negative"
-                                        className="flex-1 border-emberRed rounded-comfortable"
+                                    <Pressable
+                                        className="h-16 flex-1 rounded-2xl border border-emberRed/30 bg-emberRed/5 items-center justify-center flex-row gap-2 active:bg-emberRed/10"
                                         onPress={() => { 
                                             if (editingPeriod.id) {
                                                 deletePeriod(editingPeriod.id);
@@ -355,23 +380,16 @@ function DailyRhythmContent() {
                                             }
                                         }}
                                     >
-                                        <HStack className="gap-2 items-center">
-                                            <Trash size={18} className="text-emberRed" />
-                                            <ButtonText className="text-emberRed font-bold">
-                                                {t('common.delete') || 'Delete'}
-                                            </ButtonText>
-                                        </HStack>
-                                    </Button>
+                                        <Icon as={Trash} className="text-emberRed" size={18} />
+                                        <Text className="text-emberRed text-sm font-black uppercase tracking-widest">Dissolve</Text>
+                                    </Pressable>
                                 )}
-                                <Button
-                                    action="primary"
-                                    className="flex-[2] bg-sanctuarySaffron rounded-comfortable"
+                                <Pressable
+                                    className="h-16 flex-[2] bg-sanctuarySaffron rounded-2xl items-center justify-center shadow-lg shadow-sanctuarySaffron/20 active:scale-[0.98]"
                                     onPress={handleSave}
                                 >
-                                    <ButtonText className="text-black font-bold">
-                                        {t('common.save') || 'Save'}
-                                    </ButtonText>
-                                </Button>
+                                    <Text className="text-obsidian text-sm font-black uppercase tracking-[0.2em]">Resonated</Text>
+                                </Pressable>
                             </HStack>
                         </VStack>
                     </ModalBody>

@@ -10,11 +10,10 @@ interface GuardianNotificationsProps {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
+export const GuardianNotifications: React.FC<GuardianNotificationsProps> = { {
   notifications,
   onNotificationPress,
-  limit = 5,
-}) => {
+  limit = 5}) => {
   const theme = useTheme();
   const isDesktop = screenWidth > 1024;
 
@@ -26,9 +25,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
         {
           backgroundColor: notification.isRead ? 'transparent' : theme.accent.action + '10',
           borderLeftColor: notification.isRead ? 'transparent' : theme.accent.action,
-          borderLeftWidth: notification.isRead ? 0 : 3,
-        },
-      ]}
+          borderLeftWidth: notification.isRead ? 0 : 3}]}
       onPress={() => onNotificationPress(notification)}
       activeOpacity={0.85}
     >
@@ -40,9 +37,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
               color: theme.text.primary,
               fontFamily: 'System',
               fontWeight: notification.isRead ? '400' : '600',
-              fontSize: isDesktop ? 14 : 12,
-            },
-          ]}
+              fontSize: isDesktop ? 14 : 12}]}
         >
           {notification.title}
         </Text>
@@ -52,9 +47,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
             {
               color: theme.text.secondary,
               fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10,
-            },
-          ]}
+              fontSize: isDesktop ? 12 : 10}]}
         >
           {notification.message}
         </Text>
@@ -64,9 +57,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
             {
               color: theme.text.muted,
               fontFamily: 'System',
-              fontSize: isDesktop ? 10 : 8,
-            },
-          ]}
+              fontSize: isDesktop ? 10 : 8}]}
         >
           {new Date(notification.createdAt).toLocaleString()}
         </Text>
@@ -79,25 +70,18 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
 
 const styles = StyleSheet.create({
   notificationsList: {
-    gap: 8,
-  },
+    gap: 8},
   notificationItem: {
     padding: 12,
     borderRadius: 8,
-    marginBottom: 8,
-  },
+    marginBottom: 8},
   notificationContent: {
-    flex: 1,
-  },
+    flex: 1},
   notificationTitle: {
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   notificationMessage: {
     marginBottom: 4,
-    opacity: 0.8,
-  },
+    opacity: 0.8},
   notificationTime: {
     opacity: 0.6,
-    fontSize: 10,
-  },
-});
+    fontSize: 10}});

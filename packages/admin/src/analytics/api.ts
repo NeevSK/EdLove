@@ -1,4 +1,4 @@
-import { multiTenantAnalyticsEngine } from './engine';
+﻿import { multiTenantAnalyticsEngine } from './engine';
 import {
   TenantMetrics,
   TenantComparison,
@@ -37,7 +37,7 @@ export interface MultiTenantAnalyticsAPI {
   benchmarkPerformance(tenantId: string, industry: EducationSector): Promise<BenchmarkInsights>;
 }
 
-export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI = {
+export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI  = {
   // Data aggregation
   async aggregateTenantMetrics(tenantIds: string[], timeRange: DateRange): Promise<TenantMetrics[]> {
     return await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
@@ -106,5 +106,4 @@ export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI = {
     industry: EducationSector
   ): Promise<BenchmarkInsights> {
     return await multiTenantAnalyticsEngine.benchmarkPerformance(tenantId, industry);
-  }
-};
+  };

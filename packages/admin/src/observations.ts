@@ -1,4 +1,4 @@
-import { api } from '@repo/core';
+﻿import { api } from '@repo/core';
 
 export interface PrincipalObservation {
   id: string;
@@ -9,7 +9,7 @@ export interface PrincipalObservation {
   created_at: string;
 }
 
-export const observationsAPI = {
+export const observationsAPI = { 
   async listRecent(principalId: string, limit = 5): Promise<PrincipalObservation[]> {
     return api.principalWorkspace.listRecentObservations(principalId, limit) as Promise<PrincipalObservation[]>;
   },
@@ -37,7 +37,5 @@ export const observationsAPI = {
   }) {
     return api.principalWorkspace.recordObservationFollowUp({
       ...input,
-      status: input.status ?? 'noted',
-    });
-  },
-};
+      status: input.status ?? 'noted'});
+  };

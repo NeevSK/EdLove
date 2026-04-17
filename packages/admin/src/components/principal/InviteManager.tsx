@@ -30,13 +30,12 @@ import {
     ModalHeader,
     ModalCloseButton,
     ModalBody,
-    Heading as ModalHeading,
-} from '@repo/ui';
+    Heading as ModalHeading} from '@repo/ui';
 import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as Clipboard from 'expo-clipboard';
 import { api, InviteCode, handleAPIError, type PrincipalInviteRole as UserRole } from '@repo/core';
-import { Theme } from '@repo/ui';
+import {  } from '@repo/ui';
 import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
 import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 
@@ -70,8 +69,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             setError(apiError.message);
         } finally {
             setIsLoading(false);
-        }
-    };
+        };
 
     const handleGenerateCode = async (role: UserRole) => {
         setIsGenerating(true);
@@ -84,8 +82,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             setError(apiError.message);
         } finally {
             setIsGenerating(false);
-        }
-    };
+        };
 
     const handleCopyCode = async (code: string) => {
         try {
@@ -98,25 +95,22 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             <ToastTitle>{t('principal.invites.copied') || 'Copied!'}</ToastTitle>
                         </Toast>
                     );
-                },
-            });
+                }});
         } catch (err) {
             handleAPIError(err);
-        }
-    };
+        };
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
             case 'teacher':
-                return Theme.colors.sageGreen;
+                return sageGreen;
             case 'student':
-                return Theme.colors.sanctuarySaffron;
+                return sanctuarySaffron;
             case 'principal':
-                return Theme.colors.twilightBlue;
+                return twilightBlue;
             default:
-                return Theme.colors.mistGray;
-        }
-    };
+                return mistGray;
+        };
 
     const getRoleIcon = (role: string) => {
         switch (role) {
@@ -128,15 +122,13 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                 return '👔';
             default:
                 return '👤';
-        }
-    };
+        };
 
     return (
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.ink,
-            }}
+                backgroundColor: '#2A2318'}}
         >
             <ScrollView>
                 <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
@@ -144,11 +136,10 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     <HStack
                         sx={{
                             justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
+                            alignItems: 'center'}}
                     >
                         <Heading
-                            color={Theme.colors.sanctuarySaffron}
+                            color={sanctuarySaffron}
                             sx={{ fontSize: 32 }}
                         >
                             {t('principal.invites.title') || 'Invite Codes'}
@@ -158,18 +149,17 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             variant="outline"
                             size="sm"
                             sx={{
-                                borderColor: Theme.colors.starlightGray,
-                            }}
+                                borderColor: starlightGray}}
                             onPress={onBack}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={sacredWhite}>
                                 {t('common.back') || 'Back'}
                             </ButtonText>
                         </Button>
                     </HStack>
 
                     {/* Description */}
-                    <Text color={Theme.colors.starlightGray}>
+                    <Text color={starlightGray}>
                         {t('principal.invites.description') ||
                             'Generate invite codes for teachers and students to join your school.'}
                     </Text>
@@ -178,14 +168,13 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     <VStack space="md">
                         <Button
                             sx={{
-                                backgroundColor: Theme.colors.twilightBlue,
+                                backgroundColor: twilightBlue,
                                 padding: Theme.spacing.lg,
-                                marginBottom: Theme.spacing.xs,
-                            }}
+                                marginBottom: Theme.spacing.xs}}
                             onPress={() => handleGenerateCode('principal')}
                             disabled={isGenerating}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={sacredWhite}>
                                 {isGenerating
                                     ? t('common.generating') || 'Generating...'
                                     : t('principal.invites.generatePrincipal') ||
@@ -195,14 +184,13 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
 
                         <Button
                             sx={{
-                                backgroundColor: Theme.colors.sageGreen,
-                                padding: Theme.spacing.lg,
-                            }}
+                                backgroundColor: sageGreen,
+                                padding: Theme.spacing.lg}}
                             onPress={() => handleGenerateCode('teacher')}
                             disabled={isGenerating}
                         >
 
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={sacredWhite}>
                                 {isGenerating
                                     ? t('common.generating') || 'Generating...'
                                     : t('principal.invites.generateTeacher') ||
@@ -214,13 +202,12 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             <Button
                                 sx={{
                                     flex: 1,
-                                    backgroundColor: Theme.colors.twilightBlue,
-                                    padding: Theme.spacing.lg,
-                                }}
+                                    backgroundColor: twilightBlue,
+                                    padding: Theme.spacing.lg}}
                                 onPress={() => handleGenerateCode('sectionHead')}
                                 disabled={isGenerating}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                                <ButtonText color={sacredWhite}>
                                     {t('principal.invites.generateSectionHead') || '+ Section Head'}
                                 </ButtonText>
                             </Button>
@@ -228,13 +215,12 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             <Button
                                 sx={{
                                     flex: 1,
-                                    backgroundColor: Theme.colors.twilightBlue,
-                                    padding: Theme.spacing.lg,
-                                }}
+                                    backgroundColor: twilightBlue,
+                                    padding: Theme.spacing.lg}}
                                 onPress={() => handleGenerateCode('gradeHead')}
                                 disabled={isGenerating}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                                <ButtonText color={sacredWhite}>
                                     {t('principal.invites.generateGradeHead') || '+ Grade Head'}
                                 </ButtonText>
                             </Button>
@@ -242,13 +228,12 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
 
                         <Button
                             sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                padding: Theme.spacing.lg,
-                            }}
+                                backgroundColor: sanctuarySaffron,
+                                padding: Theme.spacing.lg}}
                             onPress={() => handleGenerateCode('student')}
                             disabled={isGenerating}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={sacredWhite}>
                                 {isGenerating
                                     ? t('common.generating') || 'Generating...'
                                     : t('principal.invites.generateStudent') ||
@@ -262,10 +247,9 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                         <Box
                             sx={{
                                 padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
+                                alignItems: 'center'}}
                         >
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
+                            <Spinner color={sanctuarySaffron} />
                         </Box>
                     )}
 
@@ -274,11 +258,10 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                         <Box
                             sx={{
                                 padding: Theme.spacing.md,
-                                backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
+                                backgroundColor: emberRed,
+                                borderRadius: Theme.corners.comfortable}}
                         >
-                            <Text color={Theme.colors.sacredWhite}>{error}</Text>
+                            <Text color={sacredWhite}>{error}</Text>
                         </Box>
                     )}
 
@@ -286,12 +269,11 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     {!isLoading && inviteCodes.length > 0 && (
                         <VStack space="md">
                             <Text
-                                color={Theme.colors.starlightGray}
+                                color={starlightGray}
                                 sx={{
                                     fontWeight: '600',
                                     marginTop: Theme.spacing.md,
-                                    fontSize: 18,
-                                }}
+                                    fontSize: 18}}
                             >
                                 {t('principal.invites.activeCodesTitle') || 'Active Invite Codes'}
                             </Text>
@@ -301,28 +283,25 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                     key={invite.code}
                                     sx={{
                                         padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.ink,
+                                        backgroundColor: '#2A2318',
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: getRoleBadgeColor(invite.role),
-                                    }}
+                                        borderLeftColor: getRoleBadgeColor(invite.role)}}
                                 >
                                     <HStack
                                         sx={{
                                             justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                        }}
+                                            alignItems: 'center'}}
                                     >
                                         <VStack space="xs" sx={{ flex: 1 }}>
                                             {/* Code */}
                                             <HStack space="sm" sx={{ alignItems: 'center' }}>
                                                 <Text
-                                                    color={Theme.colors.sacredWhite}
+                                                    color={sacredWhite}
                                                     sx={{
                                                         fontWeight: '700',
                                                         fontSize: 20,
-                                                        fontFamily: 'monospace',
-                                                    }}
+                                                        fontFamily: 'monospace'}}
                                                 >
                                                     {invite.code}
                                                 </Text>
@@ -334,7 +313,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                                         onPress={() => handleCopyCode(invite.code)}
                                                         sx={{}}
                                                     >
-                                                        <Copy size={14} color={Theme.colors.mistGray} />
+                                                        <Copy size={14} color={mistGray} />
                                                     </Button>
                                                     <Button
                                                         size="xs"
@@ -343,7 +322,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                                         onPress={() => setQrCodeData({ code: invite.code, role: invite.role })}
                                                         sx={{}}
                                                     >
-                                                        <QrCode size={14} color={Theme.colors.mistGray} />
+                                                        <QrCode size={14} color={mistGray} />
                                                     </Button>
                                                 </HStack>
                                             </HStack>
@@ -359,11 +338,10 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                                         backgroundColor: getRoleBadgeColor(
                                                             invite.role
                                                         ),
-                                                        borderRadius: Theme.corners.tight,
-                                                    }}
+                                                        borderRadius: Theme.corners.tight}}
                                                 >
                                                     <Text
-                                                        color={Theme.colors.sacredWhite}
+                                                        color={sacredWhite}
                                                         sx={{ fontWeight: '600', fontSize: 12 }}
                                                     >
                                                         {getRoleIcon(invite.role)}{' '}
@@ -373,7 +351,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
 
                                                 {/* Status */}
                                                 <Text
-                                                    color={Theme.colors.mistGray}
+                                                    color={mistGray}
                                                     sx={{ fontSize: 12 }}
                                                 >
                                                     {invite.used
@@ -384,7 +362,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                             </HStack>
 
                                             {/* Created Date */}
-                                            <Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}>
+                                            <Text color={mistGray} sx={{ fontSize: 12 }}>
                                                 {t('principal.invites.createdAt') ||
                                                     'Created:'}{' '}
                                                 {new Date(
@@ -394,7 +372,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                         </VStack>
 
                                         {/* Copy Hint */}
-                                        <Text color={Theme.colors.mistGray} sx={{ fontSize: 12 }}>
+                                        <Text color={mistGray} sx={{ fontSize: 12 }}>
                                             {t('principal.invites.tapToCopy') || 'Tap to copy'}
                                         </Text>
                                     </HStack>
@@ -408,11 +386,10 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                         <Box
                             sx={{
                                 padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
+                                alignItems: 'center'}}
                         >
                             <Text
-                                color={Theme.colors.starlightGray}
+                                color={starlightGray}
                                 textAlign="center"
                                 sx={{ fontSize: 18 }}
                             >
@@ -432,16 +409,15 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
-                        backgroundColor: Theme.colors.ink,
+                        backgroundColor: '#2A2318',
                         borderRadius: Theme.corners.generous,
                         padding: Theme.spacing.xl,
                         alignItems: 'center',
-                        maxWidth: 320,
-                    }}
+                        maxWidth: 320}}
                 >
                     <ModalHeader>
                         <ModalHeading
-                            color={Theme.colors.sanctuarySaffron}
+                            color={sanctuarySaffron}
                             sx={{ textAlign: 'center', fontSize: 18, fontWeight: '600' }}
                         >
                             {qrCodeData
@@ -460,21 +436,21 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                         qrCodeData.role,
                                     )}
                                     size={220}
-                                    color={Theme.colors.ink}
-                                    backgroundColor={Theme.colors.sacredWhite}
+                                    color={'#2A2318'}
+                                    backgroundColor={sacredWhite}
                                     label={qrCodeData.code}
                                     errorCorrectionLevel="H"
                                     borderRadius={12}
                                     padding={16}
                                 />
                                 <Text
-                                    color={Theme.colors.starlightGray}
+                                    color={starlightGray}
                                     sx={{ marginTop: Theme.spacing.md, textAlign: 'center', fontSize: 13 }}
                                 >
                                     Scan to join as {qrCodeData.role}
                                 </Text>
                                 <Text
-                                    color={Theme.colors.mistGray}
+                                    color={mistGray}
                                     sx={{ marginTop: Theme.spacing.xs, textAlign: 'center', fontSize: 12, fontFamily: 'monospace' }}
                                 >
                                     Code: {qrCodeData.code}

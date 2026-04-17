@@ -9,7 +9,7 @@ interface StudentPulseProps {
     onShowAtRisk: () => void;
 }
 
-export const StudentPulse: React.FC<StudentPulseProps> = ({ pulse, atRiskCount, onShowAtRisk }) => {
+export const StudentPulse: React.FC<StudentPulseProps> = { { pulse, atRiskCount, onShowAtRisk }) => {
     const { t } = useTranslation();
 
     return (

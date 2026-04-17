@@ -23,7 +23,7 @@ const { width: screenWidth } = Dimensions.get('window');
  * This screen no longer contains monolithic UI logic. Instead, it expresses 
  * "Intents" which are resolved by the platform ecosystem.
  */
-export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = ({
+export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = { {
   guardianId,
   onStudentPress,
   onNotificationPress,
@@ -176,196 +176,148 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
+    flex: 1},
   header: {
     paddingHorizontal: 20,
     paddingVertical: 20,
-    borderBottomWidth: 1,
-  },
+    borderBottomWidth: 1},
   content: {
-    flex: 1,
-  },
+    flex: 1},
   contentContainer: {
-    padding: 20,
-  },
+    padding: 20},
   contentContainerDesktop: {
-    padding: 32,
-  },
+    padding: 32},
   section: {
-    marginBottom: 0,
-  },
+    marginBottom: 0},
   sectionHeader: {
-    marginBottom: 16,
-  },
+    marginBottom: 16},
   sectionTitle: {
-    marginBottom: 8,
-  },
+    marginBottom: 8},
   
   // Students
   studentsGrid: {
-    gap: 16,
-  },
+    gap: 16},
   studentsGridDesktop: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
+    justifyContent: 'space-between'},
   studentCard: {
     padding: 16,
     borderRadius: 12,
-    marginBottom: 16,
-  },
+    marginBottom: 16},
   studentHeader: {
-    marginBottom: 16,
-  },
+    marginBottom: 16},
   studentName: {
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   studentInfo: {
-    opacity: 0.7,
-  },
+    opacity: 0.7},
   
   // Attendance
   attendanceStats: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+    alignItems: 'center'},
   attendanceItem: {
-    alignItems: 'center',
-  },
+    alignItems: 'center'},
   attendanceNumber: {
-    marginBottom: 2,
-  },
+    marginBottom: 2},
   attendanceLabel: {
     textTransform: 'uppercase',
-    fontSize: 8,
-  },
+    fontSize: 8},
   attendanceBreakdown: {
     flex: 1,
-    marginLeft: 16,
-  },
+    marginLeft: 16},
   attendanceDetail: {
-    textAlign: 'right',
-  },
+    textAlign: 'right'},
   
   // Grades
   gradeItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   gradeSubject: {
-    flex: 1,
-  },
+    flex: 1},
   gradeValue: {
-    fontWeight: '600',
-  },
+    fontWeight: '600'},
   averageGrade: {
     marginTop: 8,
-    fontStyle: 'italic',
-  },
+    fontStyle: 'italic'},
   
   // Assignments
   assignmentItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   assignmentTitle: {
-    flex: 1,
-  },
+    flex: 1},
   assignmentDue: {
-    opacity: 0.7,
-  },
+    opacity: 0.7},
   
   // Notifications
   notificationsList: {
-    gap: 8,
-  },
+    gap: 8},
   notificationItem: {
     padding: 12,
     borderRadius: 8,
-    marginBottom: 8,
-  },
+    marginBottom: 8},
   notificationContent: {
-    flex: 1,
-  },
+    flex: 1},
   notificationTitle: {
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   notificationMessage: {
     marginBottom: 4,
-    opacity: 0.8,
-  },
+    opacity: 0.8},
   notificationTime: {
     opacity: 0.6,
-    fontSize: 10,
-  },
+    fontSize: 10},
   
   // Events
   eventsList: {
-    gap: 8,
-  },
+    gap: 8},
   eventItem: {
     flexDirection: 'row',
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
-    alignItems: 'center',
-  },
+    alignItems: 'center'},
   eventDate: {
     alignItems: 'center',
     marginRight: 12,
-    minWidth: 40,
-  },
+    minWidth: 40},
   eventDateDay: {
-    marginBottom: 2,
-  },
+    marginBottom: 2},
   eventDateMonth: {
-    textTransform: 'uppercase',
-  },
+    textTransform: 'uppercase'},
   eventDetails: {
-    flex: 1,
-  },
+    flex: 1},
   eventTitle: {
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   eventTime: {
-    opacity: 0.7,
-  },
+    opacity: 0.7},
   rsvpBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
-  },
+    borderRadius: 12},
   rsvpText: {
     fontSize: 10,
-    fontWeight: '600',
-  },
+    fontWeight: '600'},
   
   // Desktop Layout
   desktopRow: {
     flexDirection: 'row',
-    gap: 20,
-  },
+    gap: 20},
   desktopColumn: {
-    marginBottom: 24,
-  },
+    marginBottom: 24},
   
   // Loading and Error States
   loadingText: {
     textAlign: 'center',
     marginTop: 60,
-    fontSize: 16,
-  },
+    fontSize: 16},
   errorText: {
     textAlign: 'center',
     marginTop: 60,
     fontSize: 16,
-    fontWeight: '600',
-  },
-});
+    fontWeight: '600'}});

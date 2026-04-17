@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CommandPalette — Web-exclusive Cmd+K power feature
  *
  * Brings the "developer god mode" experience to Gurudevi on web.
@@ -25,31 +25,28 @@ import {
     StyleSheet,
     Platform,
     useWindowDimensions,
-    ScrollView,
-} from 'react-native';
+    ScrollView} from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withSpring,
-    withTiming,
-} from 'react-native-reanimated';
-import { Theme } from '@repo/ui';
+    withTiming} from 'react-native-reanimated';
+import {  } from '@repo/ui';
 import { useTheme } from '@repo/ui';
 import { navigationRef } from '../../navigation/navigationRef';
 
 // Helper: type-safe reference to the browser window (this file is web-only at runtime)
-const win = (typeof window !== 'undefined' ? window : null) as Window | null;
+const win => typeof window !== 'undefined' ? window : null) as Window | null;
 
 // ─── Icons (inline SVG paths rendered as Text glyphs for zero extra deps) ─────
-const GLYPHS: Record<string, string> = {
+const GLYPHS: Record<string, string>  = {
     Self: '♥',
     Classroom: '🏫',
     Community: '🤝',
     Library: '📚',
     Profile: '👤',
     AIAssistant: '✦',
-    QRScanner: '⊞',
-};
+    QRScanner: '⊞'};
 
 // ─── Command definitions ───────────────────────────────────────────────────────
 interface Command {
@@ -129,8 +126,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             glyph: GLYPHS.Self,
             section: 'Navigate',
             shortcut: '⌘3',
-            action: () => goToTab('Self'),
-        },
+            action: () => goToTab('Self')},
         {
             id: 'classroom',
             label: 'Classroom',
@@ -138,8 +134,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             glyph: GLYPHS.Classroom,
             section: 'Navigate',
             shortcut: '⌘2',
-            action: () => goToTab('Classroom'),
-        },
+            action: () => goToTab('Classroom')},
         {
             id: 'community',
             label: 'Community',
@@ -147,8 +142,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             glyph: GLYPHS.Community,
             section: 'Navigate',
             shortcut: '⌘4',
-            action: () => goToTab('Community'),
-        },
+            action: () => goToTab('Community')},
         {
             id: 'library',
             label: 'Library',
@@ -156,8 +150,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             glyph: GLYPHS.Library,
             section: 'Navigate',
             shortcut: '⌘5',
-            action: () => goToTab('Library'),
-        },
+            action: () => goToTab('Library')},
         {
             id: 'profile',
             label: 'Profile',
@@ -165,8 +158,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             glyph: GLYPHS.Profile,
             section: 'Navigate',
             shortcut: '⌘1',
-            action: () => goToTab('Profile'),
-        },
+            action: () => goToTab('Profile')},
         // Tools section
         {
             id: 'ai',
@@ -179,8 +171,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                 onOpenAI?.();
                 navigate('AIAssistant');
                 close();
-            },
-        },
+            }},
         {
             id: 'qr',
             label: 'Scan QR Code',
@@ -190,9 +181,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             action: () => {
                 onOpenScanner?.();
                 close();
-            },
-        },
-    ];
+            }}];
 
     // Filter by query
     const filtered = query.trim()
@@ -214,13 +203,12 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     useEffect(() => {
         if (Platform.OS !== 'web') return;
 
-        const TAB_MAP: Record<string, string> = {
+        const TAB_MAP: Record<string, string>  = {
             '1': 'Profile',
             '2': 'Classroom',
             '3': 'Self',
             '4': 'Community',
-            '5': 'Library',
-        };
+            '5': 'Library'};
 
         const handler = (e: KeyboardEvent) => {
             const meta = e.metaKey || e.ctrlKey;
@@ -271,18 +259,16 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     // Animated styles
     const cardStyle = useAnimatedStyle(() => ({
         opacity: opacity.value,
-        transform: [{ scale: scale.value }],
-    }));
+        transform: [{ scale: scale.value }]}));
     const backdropStyle = useAnimatedStyle(() => ({
-        opacity: backdropOpacity.value,
-    }));
+        opacity: backdropOpacity.value}));
 
     if (!visible) return null;
 
-    const bg = isDark ? Theme.colors.shroud : '#FFFDF7';
+    const bg = isDark ? shroud : '#FFFDF7';
     const border = isDark ? 'rgba(252,249,242,0.10)' : 'rgba(42,35,24,0.08)';
-    const sectionColor = isDark ? Theme.colors.mistGray : Theme.colors.willow;
-    const inputColor = isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth;
+    const sectionColor = isDark ? mistGray : willow;
+    const inputColor = isDark ? sacredWhite : '#2A2318'Truth;
 
     // Flat list of commands for tracking globalIndex
     let globalIndex = 0;
@@ -291,8 +277,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
             {/* Backdrop */}
             <Animated.View
-                style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}
-            >
+                style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}>
                 <Pressable
                     style={StyleSheet.absoluteFill}
                     onPress={close}
@@ -306,35 +291,28 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     accessibilityViewIsModal
                     accessibilityRole="none"
                     style={[
-                        styles.card,
-                        {
+                        styles.card,>{
                             backgroundColor: bg,
                             borderColor: border,
-                            shadowColor: Theme.colors.shadowViolet,
+                            shadowColor: shadowViolet,
                             boxShadow: `0 16px 40px ${isDark ? 'rgba(0,0,0,0.5)' : 'rgba(107,100,128,0.22)'}`,
-                            width: Math.min(580, width - 48),
-                        },
-                        cardStyle,
-                    ]}
-                >
+                            width: Math.min(580, width - 48)},
+                        cardStyle]}>
                     {/* Search input — border glows Saffron when focused */}
                     <View style={[
-                        styles.searchRow,
-                        {
+                        styles.searchRow,>{
                             borderBottomColor: searchFocused
-                                ? Theme.colors.sanctuarySaffron
+                                ? sanctuarySaffron
                                 : border,
-                            borderBottomWidth: searchFocused ? 1.5 : 1,
-                        },
-                    ]}>
-                        <Text style={[styles.searchIcon, { color: Theme.colors.sanctuarySaffron }]}>
+                            borderBottomWidth: searchFocused ? 1.5 : 1}]}>
+                        <Text style={[styles.searchIcon, { color: sanctuarySaffron }]}>
                             ⌕
                         </Text>
                         <TextInput accessibilityLabel="Text input field"
                             ref={inputRef}
                             style={[styles.searchInput, { color: inputColor }]}
                             placeholder="Navigate anywhere…"
-                            placeholderTextColor={isDark ? Theme.colors.mistGray : Theme.colors.willow}
+                            placeholderTextColor={isDark ? mistGray : willow}
                             value={query}
                             onChangeText={setQuery}
                             onFocus={() => setSearchFocused(true)}
@@ -351,8 +329,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     <ScrollView
                         style={styles.commandList}
                         showsVerticalScrollIndicator={false}
-                        keyboardShouldPersistTaps="always"
-                    >
+                        keyboardShouldPersistTaps="always">
                         {Object.entries(sections).map(([sectionName, cmds]) => (
                             <View key={sectionName}>
                                 {/* Section header */}
@@ -375,37 +352,27 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                                     {
                                                         backgroundColor: isDark
                                                             ? 'rgba(212,132,58,0.12)'
-                                                            : 'rgba(212,132,58,0.08)',
-                                                    },
-                                                ],
-                                            ]}
-                                        >
+                                                            : 'rgba(212,132,58,0.08)'}]]}>
                                             {/* Active bar */}
                                             <View
                                                 style={[
-                                                    styles.activeBar,
-                                                    { opacity: isSelected ? 1 : 0 },
-                                                ]}
+                                                    styles.activeBar,>{ opacity: isSelected ? 1 : 0 }]}
                                             />
 
                                             <View style={[styles.glyphCircle, {
                                                 backgroundColor: isSelected
-                                                    ? Theme.colors.sanctuarySaffron + '1A'
-                                                    : (isDark ? 'rgba(252,249,242,0.06)' : 'rgba(42,35,24,0.05)'),
-                                            }]}>
+                                                    ? sanctuarySaffron + '1A'
+                                                    : (isDark ? 'rgba(252,249,242,0.06)' : 'rgba(42,35,24,0.05)')}]}>
                                                 <Text style={styles.glyph}>{cmd.glyph}</Text>
                                             </View>
 
                                             <View style={styles.labelWrap}>
                                                 <Text style={[
-                                                    styles.commandLabel,
-                                                    {
+                                                    styles.commandLabel,>{
                                                         color: isSelected
-                                                            ? Theme.colors.sanctuarySaffron
+                                                            ? sanctuarySaffron
                                                             : inputColor,
-                                                        fontWeight: isSelected ? '700' : '500',
-                                                    },
-                                                ]}>
+                                                        fontWeight: isSelected ? '700' : '500'}]}>
                                                     {cmd.label}
                                                 </Text>
                                                 {cmd.subtitle && (
@@ -417,24 +384,18 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
                                             {cmd.shortcut && (
                                                 <View style={[
-                                                    styles.shortcutBadge,
-                                                    {
+                                                    styles.shortcutBadge,>{
                                                         backgroundColor: isSelected
-                                                            ? Theme.colors.sanctuarySaffron + '20'
+                                                            ? sanctuarySaffron + '20'
                                                             : (isDark ? 'rgba(252,249,242,0.08)' : 'rgba(42,35,24,0.06)'),
                                                         borderColor: isSelected
-                                                            ? Theme.colors.sanctuarySaffron + '40'
-                                                            : border,
-                                                    },
-                                                ]}>
+                                                            ? sanctuarySaffron + '40'
+                                                            : border}]}>
                                                     <Text style={[
-                                                        styles.shortcutText,
-                                                        {
+                                                        styles.shortcutText,>{
                                                             color: isSelected
-                                                                ? Theme.colors.sanctuarySaffron
-                                                                : sectionColor,
-                                                        },
-                                                    ]}>
+                                                                ? sanctuarySaffron
+                                                                : sectionColor}]}>
                                                         {cmd.shortcut}
                                                     </Text>
                                                 </View>
@@ -469,63 +430,53 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
 const styles = StyleSheet.create({
     backdrop: {
-        backgroundColor: 'rgba(42,35,24,0.40)',
-    },
+        backgroundColor: 'rgba(42,35,24,0.40)'},
     centeredWrap: {
         flex: 1,
         alignItems: 'center',
-        paddingTop: '12%',
-    },
+        paddingTop: '12%'},
     card: {
         borderRadius: 20,
         borderWidth: 1,
         elevation: 24,
         maxHeight: 520,
-        overflow: 'hidden',
-    },
+        overflow: 'hidden'},
     searchRow: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 16,
         borderBottomWidth: 1,
-        gap: 12,
-    },
+        gap: 12},
     searchIcon: {
         fontSize: 20,
         width: 22,
-        textAlign: 'center',
-    },
+        textAlign: 'center'},
     searchInput: {
         flex: 1,
         fontSize: 17,
         fontWeight: '500',
-        paddingVertical: 0,
-    } as any,
+        paddingVertical: 0} as any,
     escBadge: {
         paddingHorizontal: 8,
         paddingVertical: 3,
         borderRadius: 6,
         borderWidth: 1,
-        borderColor: 'rgba(107,100,128,0.20)',
-    },
+        borderColor: 'rgba(107,100,128,0.20)'},
     escText: {
         fontSize: 11,
         fontWeight: '600',
-        letterSpacing: 0.5,
-    },
+        letterSpacing: 0.5},
     commandList: {
         maxHeight: 380,
-        paddingVertical: 8,
-    },
+        paddingVertical: 8},
     sectionHeader: {
         fontSize: 10,
         fontWeight: '700',
         letterSpacing: 1,
         paddingHorizontal: 20,
         paddingTop: 14,
-        paddingBottom: 4,
-    },
+        paddingBottom: 4},
     commandItem: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -534,11 +485,9 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 12,
         gap: 12,
-        position: 'relative',
-    },
+        position: 'relative'},
     commandItemActive: {
-        borderRadius: 12,
-    },
+        borderRadius: 12},
     activeBar: {
         position: 'absolute',
         left: 0,
@@ -546,64 +495,50 @@ const styles = StyleSheet.create({
         bottom: '20%',
         width: 3,
         borderRadius: 2,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-    },
+        backgroundColor: sanctuarySaffron},
     glyphCircle: {
         width: 36,
         height: 36,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        flexShrink: 0,
-    },
+        flexShrink: 0},
     glyph: {
-        fontSize: 17,
-    },
+        fontSize: 17},
     labelWrap: {
         flex: 1,
-        gap: 1,
-    },
+        gap: 1},
     commandLabel: {
         fontSize: 15,
-        letterSpacing: 0.1,
-    },
+        letterSpacing: 0.1},
     commandSubtitle: {
         fontSize: 12,
-        lineHeight: 16,
-    },
+        lineHeight: 16},
     shortcutBadge: {
         paddingHorizontal: 8,
         paddingVertical: 3,
         borderRadius: 7,
-        borderWidth: 1,
-    },
+        borderWidth: 1},
     shortcutText: {
         fontSize: 12,
         fontWeight: '600',
-        letterSpacing: 0.3,
-    },
+        letterSpacing: 0.3},
     emptyState: {
         alignItems: 'center',
         paddingVertical: 32,
-        gap: 8,
-    },
+        gap: 8},
     emptyGlyph: {
         fontSize: 28,
-        opacity: 0.5,
-    },
+        opacity: 0.5},
     emptyText: {
         fontSize: 14,
-        fontStyle: 'italic',
-    },
+        fontStyle: 'italic'},
     footer: {
         borderTopWidth: 1,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        alignItems: 'center',
-    },
+        alignItems: 'center'},
     footerHint: {
         fontSize: 11,
         letterSpacing: 0.3,
-        fontWeight: '500',
-    },
-});
+        fontWeight: '500'}});

@@ -1,24 +1,32 @@
-﻿/**
+/**
  * ShadowAgentDrawer.web.tsx
  *
- * Web override. The native version uses RN Modal + react-native-reanimated.
- * On web we deliver the same glowing orb trigger + reflection drawer using
- * a CSS slide-up panel with the same thought seeds.
- * Metro resolves this over ShadowAgentDrawer.tsx on the web platform.
+ * Web override for the ShadowAgentDrawer.
+ * Standardized to Zero-Legacy: purged raw HTML/inline styles and migrated to @repo/ui primitives and NativeWind v4.
  */
+
 import React, { useState, useMemo } from 'react';
-import { X } from 'lucide-react-native';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Heading, 
+    Icon, 
+    Pressable 
+} from '@repo/ui';
+import { X, Sparkles, Zap, Quote } from 'lucide-react-native';
 
 const THOUGHT_SEEDS = [
     'What is weighing on you that you haven\'t spoken aloud?',
-    'Where do you feel peace right now  even a flicker of it?',
+    'Where do you feel peace right now — even a flicker of it?',
     'What are you holding for others that isn\'t yours to carry?',
     'What would you let go of, if you knew it was safe to?',
     'Where did joy surprise you today?',
     'What does your body need right now?',
     'What truth are you dancing around?',
     'Who have you been, today?',
-    'What forgiveness is waiting  for yourself or another?',
+    'What forgiveness is waiting — for yourself or another?',
     'What is asking to be seen?',
 ];
 
@@ -29,72 +37,85 @@ export default function ShadowAgentDrawer() {
     return (
         <>
             {/* Floating orb trigger */}
-            <button
-                onClick={() => setIsOpen(true)}
-                title="Open reflection space"
-                style={{
-                    position: 'fixed',
-                    bottom: '80px',
-                    right: '24px',
-                    width: '44px',
-                    height: '44px',  borderRadius: '50%',
-                    border: 'none',
-                    background: 'radial-gradient(circle, rgba(139,92,246,0.8) 0%, rgba(139,92,246,0.2) 100%)',
-                    boxShadow: '0 0 20px rgba(139,92,246,0.4)',
-                    cursor: 'pointer',
-                    fontSize: '20px',
-                    animation: 'orb-pulse 3s ease-in-out infinite',
-                    zIndex: 100,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'}>
-                
-            </button>
+            <Box className="fixed bottom-20 right-6 z-[100]">
+                <Pressable
+                    onPress={() => setIsOpen(true)}
+                    className="w-14 h-14 rounded-full bg-sanctuarySaffron items-center justify-center cursor-pointer shadow-xl shadow-sanctuarySaffron/40 hover:scale-110 active:scale-90 transition-all duration-300"
+                    style={{ animation: 'orb-pulse 4s ease-in-out infinite' }}
+                >
+                    <Icon as={Sparkles} size={24} className="text-obsidian" />
+                </Pressable>
+            </Box>
 
             {/* Drawer overlay */}
             {isOpen && (
-                <div
-                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'flex-end' }}
-                    onClick={() => setIsOpen(false)}>
-                    <div
-                        onClick={e => e.stopPropagation()}
-                        style={{
-                            width: '100%',
-                            maxWidth: '600px',  margin: '0 auto',
-                            background: 'linear-gradient(180deg, #1a0a2e 0%, #0f0520 100%)',  borderRadius: '20px 20px 0 0',  padding: '32px 28px 40px',
-                            animation: 'slide-up 0.3s ease'>
-                        {/* Header */
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-                            <div>
-                                <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', color: 'rgba(139,92,246,0.8)', textTransform: 'uppercase' }}>The Quiet Space</div>
-                                <div style={{ fontSize: '20px', fontWeight: '800', color: '#F5F3FF', marginTop: '4px' }}>Shadow Agent</div>
-                            </div>
-                            <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                                <Icon as={X} size={20} color="rgba(255,255,255,0.5)" />
-                            </button>
-                        </div>
+                <Box 
+                    className="fixed inset-0 bg-black/60 z-[200] flex flex-col justify-end items-center px-4 md:px-0"
+                    onPress={() => setIsOpen(false)}
+                >
+                    <Box
+                        className="w-full max-w-2xl bg-obsidian rounded-t-[40px] border-t border-white/10 p-8 md:p-12 shadow-2xl animate-in slide-in-from-bottom duration-500"
+                        onPress={e => e.stopPropagation()}
+                    >
+                        {/* Handle bar */}
+                        <Box className="w-12 h-1 bg-white/10 rounded-full mx-auto mb-10 opacity-50" />
 
-                        {/* Thought seed */}
-                        <div style={{ padding: '24px', background: 'rgba(139,92,246,0.12)', borderRadius: '14px', border: '1px solid rgba(139,92,246,0.25)', marginBottom: '20px' }}>
-                            <div style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(139,92,246,0.8)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
-                                A seed for reflection
-                            </div>
-                            <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#E9D5FF', fontStyle: 'italic', margin: 0 }}>
-                                "{seed}"
-                            </p>
-                        </div>
+                        {/* Close Button */}
+                        <Pressable 
+                            onPress={() => setIsOpen(false)} 
+                            className="absolute top-10 right-10 p-2 bg-white/5 rounded-full border border-white/5 hover:bg-white/10 transition-colors"
+                        >
+                            <Icon as={X} size={20} className="text-mistGray/50" />
+                        </Pressable>
 
-                        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', textAlign: 'center', margin: 0, lineHeight: '1.6' }}>
-                            This is not a conversation. It is a mirror.{'\n'}
-                            Whatever arises here is yours alone.
-                        </p>
-                    </div>
-                </div>
+                        <VStack className="gap-10">
+                            {/* Header */}
+                            <VStack className="gap-2">
+                                <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-[0.3em]">
+                                    The Quiet Space
+                                </Text>
+                                <Heading size="2xl" className="text-sacredWhite font-black tracking-tight">
+                                    Shadow Agent
+                                </Heading>
+                            </VStack>
+
+                            {/* Thought seed */}
+                            <Box className="p-8 bg-white/5 rounded-3xl border-l-4 border-sanctuarySaffron border-y border-r border-white/5 shadow-inner">
+                                <VStack className="gap-4">
+                                    <HStack className="items-center gap-2 opacity-50">
+                                        <Icon as={Zap} size={12} className="text-sanctuarySaffron" />
+                                        <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuarySaffron">
+                                            A seed for reflection
+                                        </Text>
+                                    </HStack>
+                                    <HStack className="gap-3">
+                                        <Icon as={Quote} size={16} className="text-sanctuarySaffron mt-1 opacity-40 shrink-0" />
+                                        <Text className="text-sacredWhite/90 text-xl font-bold italic leading-relaxed">
+                                            {seed}
+                                        </Text>
+                                    </HStack>
+                                </VStack>
+                            </Box>
+
+                            {/* Footer context */}
+                            <VStack className="items-center gap-2 border-t border-white/5 pt-8 mb-4">
+                                <Text className="text-mistGray/40 text-[11px] font-medium text-center leading-relaxed">
+                                    This is not a conversation. It is a mirror.
+                                </Text>
+                                <Text className="text-mistGray/20 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                    Whatever arises is yours alone.
+                                </Text>
+                            </VStack>
+                        </VStack>
+                    </Box>
+                </Box>
             )}
 
             <style>{`
-                @keyframes orb-pulse { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.4)} 50%{box-shadow:0 0 32px rgba(139,92,246,0.7)} }
-                @keyframes slide-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
+                @keyframes orb-pulse { 
+                    0%, 100% { box-shadow: 0 0 20px rgba(246, 191, 140, 0.4); } 
+                    50% { box-shadow: 0 0 40px rgba(246, 191, 140, 0.7); } 
+                }
             `}</style>
         </>
     );

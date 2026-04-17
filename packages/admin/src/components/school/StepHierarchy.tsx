@@ -1,14 +1,12 @@
 import React from 'react';
-import {
-    VStack,
+import { Icon, VStack,
     Text,
     HStack,
     Pressable,
     useThemedColors,
-    Theme,
+    
     Box,
-    Heading
-} from '@repo/ui';
+    Heading } from '@repo/ui';
 import { Plus, X, GraduationCap, School } from 'lucide-react-native';
 
 interface StepHierarchyProps {
@@ -31,7 +29,7 @@ export default function StepHierarchy({
     data, 
     onUpdate 
 }: StepHierarchyProps) {
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     const toggleLevel = (levelId: string) => {
         const currentLevels = data.levels || [];
@@ -39,8 +37,7 @@ export default function StepHierarchy({
             onUpdate({ levels: currentLevels.filter(l => l !== levelId) });
         } else {
             onUpdate({ levels: [...currentLevels, levelId] });
-        }
-    };
+        };
 
     const addSection = () => {
         const currentSections = data.sections || [];
@@ -77,14 +74,14 @@ export default function StepHierarchy({
                                 p: 12,
                                 borderRadius: 12,
                                 borderWidth: 1,
-                                borderColor: data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.border,
-                                bg: data.levels.includes(level.id) ? `${Theme.colors.sanctuarySaffron}10` : 'transparent'
+                                borderColor: data.levels.includes(level.id) ? sanctuarySaffron : colors.border,
+                                bg: data.levels.includes(level.id) ? `${sanctuarySaffron}10` : 'transparent'
                             }}
                         >
                             <HStack space="md" sx={{ alignItems: 'center' }}>
                                 <GraduationCap 
                                     size={20} 
-                                    color={data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.textTertiary} 
+                                    color={data.levels.includes(level.id) ? sanctuarySaffron : colors.textTertiary} 
                                 />
                                 <Text 
                                     fontWeight={data.levels.includes(level.id) ? "700" : "500"}
@@ -108,8 +105,8 @@ export default function StepHierarchy({
                         accessibilityHint="Adds a new section to the school's hierarchy"
                     >
                         <HStack space="xs" sx={{ alignItems: 'center' }}>
-                            <Plus size={16} color={Theme.colors.skyBlue} />
-                            <Text size="xs" fontWeight="700" color={Theme.colors.skyBlue}>ADD</Text>
+                            <Icon as={Plus} size={16} color={skyBlue} />
+                            <Text size="xs" fontWeight="700" color={skyBlue}>ADD</Text>
                         </HStack>
                     </Pressable>
                 </HStack>
@@ -130,7 +127,7 @@ export default function StepHierarchy({
                                 sx={{ 
                                     p: 12, 
                                     borderRadius: 12, 
-                                    bg: Theme.colors.silk,
+                                    bg: silk,
                                     alignItems: 'center' 
                                 }}
                             >
@@ -144,7 +141,7 @@ export default function StepHierarchy({
                                     accessibilityLabel={`Remove ${section.name || 'section'}`}
                                     accessibilityHint="Deletes this section from the school"
                                 >
-                                    <X size={16} color={Theme.colors.emberRed} />
+                                    <Icon as={X} size={16} color={emberRed} />
                                 </Pressable>
                             </HStack>
                         ))}

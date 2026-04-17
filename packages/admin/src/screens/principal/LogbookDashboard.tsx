@@ -11,7 +11,7 @@ interface LogbookDashboardProps {
     onBack: () => void;
 }
 
-export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, schoolId, viewDate, isPastView, onBack }) => {
+export const LogbookDashboard: React.FC<LogbookDashboardProps> = { { userId, schoolId, viewDate, isPastView, onBack }) => {
     const [content, setContent] = useState('');
     const [type, setType] = useState('note');
     const [observations, setObservations] = useState<PrincipalObservation[]>([]);
@@ -35,14 +35,12 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                 principalId: userId,
                 schoolId,
                 type,
-                content: content.trim(),
-            });
+                content: content.trim()});
             if (data) setObservations((prev) => [data, ...prev]);
             setContent('');
         } finally {
             setSaving(false);
-        }
-    };
+        };
 
     return (
         <div>
@@ -61,12 +59,11 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                     fontSize: 13, 
                     fontWeight: '600', 
                     marginBottom: 24 
-                }}
-            >
-                <ArrowLeft size={14} /> Back to Dashboard
+                }}>
+                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
             </button>
             
-            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>📓 Institutional Log</h2>
+            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>?? Institutional Log</h2>
             <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: 14 }}>
                 Your daily operational notes and walkthroughs.
             </p>
@@ -76,8 +73,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                     value={type} 
                     onChange={e => setType(e.target.value)} 
                     disabled={isPastView} 
-                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }}
-                >
+                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }}>
                     {['walkthrough', 'note', 'concern', 'commendation'].map(t => (
                         <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
                     ))}
@@ -86,7 +82,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                     value={content} 
                     onChange={e => setContent(e.target.value)} 
                     disabled={isPastView} 
-                    placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note…"} 
+                    placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note�"} 
                     rows={3} 
                     style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14, resize: 'vertical' }} 
                 />
@@ -94,9 +90,8 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                     onClick={handleSaveObservation} 
                     disabled={!content.trim() || saving || isPastView} 
                     className="premium-button" 
-                    style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}
-                >
-                    {saving ? '⏳' : '+ Log Entry'}
+                    style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}>
+                    {saving ? '?' : '+ Log Entry'}
                 </button>
             </div>
 

@@ -1,11 +1,10 @@
-import {
+﻿import {
   supabase,
   staffManagementAPI,
   type StaffLeaveDTO,
   type StaffPresenceSummary,
   type StudentAttendancePulse,
-  type TeacherCarouselItem,
-} from '@repo/core';
+  type TeacherCarouselItem} from '@repo/core';
 
 export type { StaffLeaveDTO, StaffPresenceSummary, StudentAttendancePulse, TeacherCarouselItem };
 
@@ -37,7 +36,7 @@ async function getSubmissionRate(schoolId: string, classroomId?: string): Promis
   const { data: assignments, error: assignmentsError } = await assignmentsQuery;
   if (assignmentsError) throw assignmentsError;
 
-  const assignmentIds = (assignments ?? []).map((a) => a.id);
+  const assignmentIds = { assignments ?? []).map((a) => a.id);
   if (assignmentIds.length === 0) return null;
 
   const { data: submissions, error: submissionsError } = await supabase
@@ -64,7 +63,7 @@ async function getPendingEnrollments(schoolId: string, classroomId?: string): Pr
   return count ?? 0;
 }
 
-export const staffOperationsAPI = {
+export const staffOperationsAPI = { 
   ...staffManagementAPI,
   async getStudentPrincipalPulse(
     schoolId: string,
@@ -75,13 +74,10 @@ export const staffOperationsAPI = {
     const [attendancePulse, submissionRate, pendingEnrollments] = await Promise.all([
       staffManagementAPI.getStudentAttendancePulse(schoolId, classroomId, date, options),
       getSubmissionRate(schoolId, classroomId),
-      getPendingEnrollments(schoolId, classroomId),
-    ]);
+      getPendingEnrollments(schoolId, classroomId)]);
 
     return {
       ...attendancePulse,
       submissionRate,
-      pendingEnrollments,
-    };
-  },
-};
+      pendingEnrollments};
+  };

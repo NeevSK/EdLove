@@ -8,10 +8,9 @@ import {
   ScrollView,
   SkeletonCard,
   Text,
-  Theme,
+  
   VStack,
-  useThemedColors,
-} from '@repo/ui';
+  useThemedColors} from '@repo/ui';
 import type { PrincipalZoneId } from '../principal/workspace';
 
 function ZoneButton({
@@ -20,8 +19,7 @@ function ZoneButton({
   detail,
   count,
   isActive,
-  onPress,
-}: {
+  onPress}: {
   id: PrincipalZoneId;
   label: string;
   detail: string;
@@ -32,23 +30,17 @@ function ZoneButton({
   return (
     <TouchableOpacity onPress={() => onPress(id)} activeOpacity={0.85} style={{ flex: 1 }}>
       <Box
-        className={`p-sm rounded-xl border min-h-[74px] ${
-          isActive ? 'border-gurudeviBlue bg-gurudeviBlue/10' : 'border-phase-interactive/10 bg-phase-canvas'
-        }`}
+        className={`p-sm rounded-xl border min-h-[74px] ${ isActive ? 'border-gurudeviBlue bg-gurudeviBlue/10' : 'border-phase-interactive/10 bg-phase-canvas' }`}
       >
         <HStack className="justify-between items-center">
           <Text className="text-[13px] font-bold text-phaseText-primary">
             {label}
           </Text>
           <Box
-            className={`px-2 py-0.5 rounded-full ${
-              isActive ? 'bg-gurudeviBlue/20' : 'bg-phase-interactive/5'
-            }`}
+            className={`px-2 py-0.5 rounded-full ${ isActive ? 'bg-gurudeviBlue/20' : 'bg-phase-interactive/5' }`}
           >
             <Text
-              className={`text-[10px] font-extrabold ${
-                isActive ? 'text-gurudeviBlue' : 'text-phaseText-secondary'
-              }`}
+              className={`text-[10px] font-extrabold ${ isActive ? 'text-gurudeviBlue' : 'text-phaseText-secondary' }`}
             >
               {count}
             </Text>
@@ -83,9 +75,8 @@ export function PrincipalNativeDashboardShell({
   zoneCounts,
   isLoading,
   error,
-  children,
-}: PrincipalNativeDashboardShellProps) {
-  const colors = useThemedColors();
+  children}: PrincipalNativeDashboardShellProps) {
+  const colors = useTheme().scene;
 
   return (
     <>

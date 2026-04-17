@@ -1,7 +1,6 @@
 import React from 'react';
-import { VStack, Box, SanctuaryInput, SanctuaryButton } from '@repo/ui';
-import { useForm } from '@repo/core';
-import type { FormManager } from '@repo/core';
+import { useForm } from '@repo/core/hooks/useForm';
+import type { FormManager } from '@repo/core/forms/form-manager';
 
 
 interface NativeFormProps<T extends Record<string, any>> {
@@ -19,45 +18,80 @@ export default function NativeForm<T extends Record<string, any>>({
   const state = useForm(manager);
   const config = manager.getConfig();
 
+  const getInputType = (fieldType?: string) => {
+    switch (fieldType) {
+      case 'email':
+        return 'email';
+      case 'number':
+        return 'number';
+      case 'password':
+        return 'password';
+      default:
+        return 'text';
+    }
+  };
+
   return (
-    <VStack space="md" width="100%">
+    <div className="flex w-full flex-col gap-6">
       {(Object.keys(config.fields) as (keyof T)[]).map((fieldName) => {
         const field = config.fields[fieldName];
+        const value = state.values[fieldName];
+        const error = state.errors[fieldName];
+        const isTextarea = field.type === 'textarea';
+
         return (
-          <Box key={fieldName as string}>
-            <SanctuaryInput
-              label={field.label}
-              placeholder={field.placeholder}
-              value={(state.values[fieldName] as string) || ''}
-              onChangeText={(val) => manager.setFieldValue(fieldName, val as any)}
-              error={state.errors[fieldName]}
-              isInvalid={!!state.errors[fieldName]}
-              type={field.type === 'password' ? 'password' : 'text'}
-              keyboardType={
-                field.type === 'email' ? 'email-address' : 
-                field.type === 'number' ? 'numeric' : 'default'
-              }
-              multiline={field.type === 'textarea'}
-              numberOfLines={field.type === 'textarea' ? 4 : 1}
-            />
-          </Box>
+          <label key={fieldName as string} className="flex w-full flex-col gap-2">
+            {field.label && (
+              <span className="text-sm font-medium tracking-wide text-slate-800">
+                {field.label}
+              </span>
+            )}
+
+            {isTextarea ? (
+              <textarea
+                className={`min-h-32 rounded-2xl border bg-white px-4 py-3 text-base text-slate-900 outline-none transition ${
+                  error ? 'border-rose-500' : 'border-slate-200 focus:border-teal-600'
+                }`}
+                placeholder={field.placeholder}
+                value={typeof value === 'string' ? value : ''}
+                onChange={(event) => manager.setFieldValue(fieldName, event.target.value as any)}
+                rows={4}
+              />
+            ) : (
+              <input
+                className={`min-h-12 rounded-2xl border bg-white px-4 py-3 text-base text-slate-900 outline-none transition ${
+                  error ? 'border-rose-500' : 'border-slate-200 focus:border-teal-600'
+                }`}
+                type={getInputType(field.type)}
+                placeholder={field.placeholder}
+                value={typeof value === 'string' || typeof value === 'number' ? String(value) : ''}
+                onChange={(event) => manager.setFieldValue(fieldName, event.target.value as any)}
+              />
+            )}
+
+            {error && (
+              <span className="text-sm text-rose-600">
+                {String(error)}
+              </span>
+            )}
+          </label>
         );
       })}
 
-      <SanctuaryButton
-        onPress={() => manager.submit()}
-        isLoading={state.isSubmitting}
-        isDisabled={state.isSubmitting}
-        fullWidth
+      <button
+        type="button"
+        onClick={() => manager.submit()}
+        disabled={state.isSubmitting}
+        className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-teal-700 px-6 py-3 text-base font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitLabel}
-      </SanctuaryButton>
+        {state.isSubmitting ? 'Submitting…' : submitLabel}
+      </button>
 
       {state.submitError && (
-        <Box sx={{ marginTop: '$2' }}>
-          {/* You could add a specialized error alert component here */}
-        </Box>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {String(state.submitError)}
+        </div>
       )}
-    </VStack>
+    </div>
   );
 }

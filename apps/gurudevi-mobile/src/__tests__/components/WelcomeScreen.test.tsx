@@ -1,4 +1,4 @@
-// WelcomeScreen Tests \u2014 grounded in actual component behaviour
+﻿// WelcomeScreen Tests \u2014 grounded in actual component behaviour
 //
 // Component facts (from reading WelcomeScreen.tsx):
 //   - Renders a hardcoded "Gurudevi" Heading (no welcome.title translation key)
@@ -14,8 +14,7 @@ const mockSignInAnonymously = jest.fn();
 jest.mock('@repo/core', () => ({
     authAPI: { signInAnonymously: () => mockSignInAnonymously() },
     handleAPIError: jest.fn(),
-    supabase: { auth: { getUser: jest.fn() } },
-}));
+    supabase: { auth: { getUser: jest.fn() } }}));
 
 // AuthScreen is rendered inline when Login is pressed \u2014 provide a stub
 jest.mock('../../screens/AuthScreen', () => {
@@ -24,8 +23,7 @@ jest.mock('../../screens/AuthScreen', () => {
 });
 
 jest.mock('../../utils/LanguageUtils', () => ({
-    LanguageUtils: { setLanguage: jest.fn().mockResolvedValue(undefined) },
-}));
+    LanguageUtils: { setLanguage: jest.fn().mockResolvedValue(undefined) }}));
 
 describe('WelcomeScreen', () => {
     beforeEach(() => { jest.clearAllMocks(); });

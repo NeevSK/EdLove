@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Theme, useTheme } from '@repo/ui';
+import {  useTheme } from '@repo/ui';
 import { type StudentOverview } from '../../guardian';
 
 interface GuardianStudentsGridProps {
@@ -10,12 +10,12 @@ interface GuardianStudentsGridProps {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({ students, onStudentPress }) => {
+export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = { { students, onStudentPress }) => {
   const theme = useTheme();
   const isDesktop = screenWidth > 1024;
 
   const getAttendanceColor = (percentage: number) => {
-    if (percentage >= 95) return Theme.colors.sageGreen;
+    if (percentage >= 95) return sageGreen;
     if (percentage >= 85) return theme.accent.action;
     return theme.accent.danger;
   };
@@ -30,9 +30,7 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({ stud
             {
               backgroundColor: theme.glass.surface.bg,
               borderColor: theme.glass.surface.border,
-              borderWidth: 1,
-            },
-          ]}
+              borderWidth: 1}]}
           onPress={() => onStudentPress(student)}
           activeOpacity={0.85}
         >
@@ -54,43 +52,34 @@ export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({ stud
 
 const styles = StyleSheet.create({
   studentsGrid: {
-    gap: 16,
-  },
+    gap: 16},
   studentsGridDesktop: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
+    justifyContent: 'space-between'},
   studentCard: {
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
-    width: screenWidth > 1024 ? '48%' : '100%',
-  },
+    width: screenWidth > 1024 ? '48%' : '100%'},
   studentName: {
     fontFamily: 'System',
     fontWeight: '600',
     fontSize: screenWidth > 1024 ? 18 : 16,
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   studentInfo: {
     fontFamily: 'System',
     fontSize: screenWidth > 1024 ? 14 : 12,
-    marginBottom: 12,
-  },
+    marginBottom: 12},
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+    alignItems: 'center'},
   metric: {
     fontFamily: 'System',
     fontSize: 12,
-    opacity: 0.8,
-  },
+    opacity: 0.8},
   metricValue: {
     fontFamily: 'System',
     fontWeight: '700',
-    fontSize: 14,
-  },
-});
+    fontSize: 14}});

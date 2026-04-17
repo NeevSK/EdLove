@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { 
@@ -8,7 +8,7 @@ import {
   ExternalLinkProvider, 
   ToastProvider, 
   EnvironmentProvider,
-  Theme,
+  
   Center,
   Spinner
 } from '@repo/ui';
@@ -63,9 +63,7 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
                     <AnalyticsProvider
                       apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                       options={{
-                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                      }}
-                    >
+                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}}>
                       <View style={{ flex: 1 }}>{children}</View>
                       <SyncManager />
                     </AnalyticsProvider>

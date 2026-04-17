@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { sectionsAPI, type SchoolSectionRow } from '../../sections';
+import { Icon, sectionsAPI, type SchoolSectionRow } from '../../sections';
 import { SkeletonCard } from '@repo/ui';
 import { ArrowLeft, Plus } from 'lucide-react-native';
 
@@ -9,7 +9,7 @@ interface HierarchyDashboardProps {
     onBack: () => void;
 }
 
-export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId, isPastView, onBack }) => {
+export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = { { schoolId, isPastView, onBack }) => {
     const [sections, setSections] = useState<SchoolSectionRow[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -24,8 +24,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
             setSections(data ?? []);
         } finally {
             setLoading(false);
-        }
-    };
+        };
 
     useEffect(() => {
         loadSections();
@@ -45,8 +44,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
             setNewSectionGrade('');
         } finally {
             setSaving(false);
-        }
-    };
+        };
 
     return (
         <div>
@@ -67,7 +65,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                     marginBottom: 24 
                 }}
             >
-                <ArrowLeft size={14} /> Back to Dashboard
+                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
             </button>
             
             <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>🏛️ System Hierarchy</h2>
@@ -100,7 +98,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                         className="premium-button" 
                         style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: 6 }}
                     >
-                        {saving ? '⏳' : <><Plus size={14} /> Add</>}
+                        {saving ? '⏳' : <><Icon as={Plus} size={14} /> Add</>}
                     </button>
                 </div>
             </div>

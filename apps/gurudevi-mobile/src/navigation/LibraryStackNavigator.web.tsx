@@ -1,6 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import {  useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { LibraryStackParamList } from '@repo/core';
 
@@ -29,9 +29,7 @@ export default function LibraryStackNavigatorWeb() {
             id="LibraryStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
-            }}
-        >
+                contentStyle: { backgroundColor: gradientNodes[0] }}}>
             <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
             <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
             <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />

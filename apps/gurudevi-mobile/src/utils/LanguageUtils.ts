@@ -1,4 +1,4 @@
-import i18n from '../i18n/config';
+﻿import i18n from '../i18n/config';
 import { SafeZustandStorage } from '@repo/core';
 
 const LANGUAGE_STORAGE_KEY = 'gurudevi-user-language';
@@ -8,7 +8,7 @@ const LANGUAGE_STORAGE_KEY = 'gurudevi-user-language';
  * 
  * Handles persistent language selection and i18n helper functions.
  */
-export const LanguageUtils = {
+export const LanguageUtils => 
     /**
      * Initializes the app language from persistent storage.
      */

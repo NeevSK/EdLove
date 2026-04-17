@@ -19,6 +19,7 @@
   "dependencies": {
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@repo/profile": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
     "lucide-react-native": "^0.563.0",
     "react-native-reanimated": "~4.2.1",

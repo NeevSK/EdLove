@@ -116,33 +116,26 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             styles.documentCardGrid,
             { 
               backgroundColor: theme.glass.surface.bg,
-              borderColor: theme.glass.surface.border,
+              borderColor: theme.glass.surface.border
             }
           ]}
-          onPress={() => onDocumentPress(document)}
-        >
+          onPress={() => onDocumentPress(document)}>
           <View style={styles.cardHeader}>
             <Text 
               style={[
-                styles.documentTitleGrid,
-                { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
+                styles.documentTitleGrid, { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
               ]}
-              numberOfLines={3}
-            >
+              numberOfLines={3}>
               {document.title}
             </Text>
             <View 
               style={[
-                styles.statusBadge,
-                { backgroundColor: getStatusColor(document.status) }
-              ]}
-            >
+                styles.statusBadge, { backgroundColor: getStatusColor(document.status) }
+              ]}>
               <Text 
                 style={[
-                  styles.statusText,
-                  { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
-                ]}
-              >
+                  styles.statusText, { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
+                ]}>
                 {document.status.toUpperCase()}
               </Text>
             </View>
@@ -150,18 +143,14 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           
           <Text 
             style={[
-              styles.documentMeta,
-              { color: theme.text.secondary, fontFamily: 'System' }
-            ]}
-          >
+              styles.documentMeta, { color: theme.text.secondary, fontFamily: 'System' }
+            ]}>
             Version {document.version}
           </Text>
           <Text 
             style={[
-              styles.documentMeta,
-              { color: theme.text.secondary, fontFamily: 'System' }
-            ]}
-          >
+              styles.documentMeta, { color: theme.text.secondary, fontFamily: 'System' }
+            ]}>
             Updated {formatDate(document.updatedAt)}
           </Text>
           {document.status === 'review' && document.authorId !== user.userId && (
@@ -186,30 +175,23 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
             marginBottom: index === filteredDocuments.length - 1 ? 0 : 12
           }
         ]}
-        onPress={() => onDocumentPress(document)}
-      >
+        onPress={() => onDocumentPress(document)}>
         <View style={styles.documentHeader}>
           <Text 
             style={[
-              styles.documentTitle, 
-              { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
+              styles.documentTitle, { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
             ]}
-            numberOfLines={2}
-          >
+            numberOfLines={2}>
             {document.title}
           </Text>
           <View 
             style={[
-              styles.statusBadge,
-              { backgroundColor: getStatusColor(document.status) }
-            ]}
-          >
+              styles.statusBadge, { backgroundColor: getStatusColor(document.status) }
+            ]}>
             <Text 
               style={[
-                styles.statusText,
-                { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
-              ]}
-            >
+                styles.statusText, { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
+              ]}>
               {document.status.toUpperCase()}
             </Text>
           </View>
@@ -217,10 +199,8 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         
         <Text 
           style={[
-            styles.documentMeta,
-            { color: theme.text.secondary, fontFamily: 'System' }
-          ]}
-        >
+            styles.documentMeta, { color: theme.text.secondary, fontFamily: 'System' }
+          ]}>
           Version {document.version} • Updated {formatDate(document.updatedAt)}
         </Text>
         {document.status === 'review' && document.authorId !== user.userId && (
@@ -244,23 +224,19 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       <TouchableOpacity
         key={status}
         style={[
-          styles.filterChip,
-          {
+          styles.filterChip, {
             backgroundColor: isActive ? theme.accent.action : theme.glass.surface.bg,
             borderColor: isActive ? theme.accent.action : theme.glass.surface.border
           }
         ]}
-        onPress={() => setSelectedStatus(status)}
-      >
+        onPress={() => setSelectedStatus(status)}>
         <Text 
           style={[
-            styles.filterText,
-            { 
+            styles.filterText, { 
               color: isActive ? theme.text.inverse : theme.text.primary,
               fontFamily: 'System', fontWeight: '500'
             }
-          ]}
-        >
+          ]}>
           {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
         </Text>
@@ -294,8 +270,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         <View style={styles.headerActions}>
           <TouchableOpacity
             style={[styles.createButton, { backgroundColor: theme.accent.action }]}
-            onPress={onCreateNew}
-          >
+            onPress={onCreateNew}>
             <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
               + New Document
             </Text>
@@ -319,8 +294,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            style={styles.sortSelectWeb as any}
-          >
+            style={styles.sortSelectWeb as any}>
             <option value="updatedAt">Last Updated</option>
             <option value="title">Title</option>
             <option value="status">Status</option>
@@ -333,14 +307,11 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   styles.viewButton,
                   viewMode === 'list' && { backgroundColor: theme.accent.action }
                 ]}
-                onPress={() => setViewMode('list')}
-              >
+                onPress={() => setViewMode('list')}>
                 <Text 
                   style={[
-                    styles.viewButtonText,
-                    { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
-                  ]}
-                >
+                    styles.viewButtonText, { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
+                  ]}>
                   List
                 </Text>
               </TouchableOpacity>
@@ -349,14 +320,11 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
                   styles.viewButton,
                   viewMode === 'grid' && { backgroundColor: theme.accent.action }
                 ]}
-                onPress={() => setViewMode('grid')}
-              >
+                onPress={() => setViewMode('grid')}>
                 <Text 
                   style={[
-                    styles.viewButtonText,
-                    { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
-                  ]}
-                >
+                    styles.viewButtonText, { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
+                  ]}>
                   Grid
                 </Text>
               </TouchableOpacity>
@@ -370,8 +338,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
-      >
+        contentContainerStyle={styles.filterContent}>
         {statusFilters.map(renderStatusFilter)}
       </ScrollView>
 
@@ -382,8 +349,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           styles.documentsContent,
           viewMode === 'grid' && styles.documentsGrid
         ]}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         {filteredDocuments.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
@@ -408,42 +374,34 @@ export default DocumentListScreenWeb;
 // Web-enhanced responsive styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
+    flex: 1},
   headerWeb: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     paddingHorizontal: 32,
     paddingVertical: 24,
-    borderBottomWidth: 1,
-  },
+    borderBottomWidth: 1},
   headerLeft: {
-    flex: 1,
-  },
+    flex: 1},
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-  },
+    gap: 16},
   title: {
     fontSize: 32,
     fontWeight: '700',
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   subtitle: {
     fontSize: 16,
-    opacity: 0.7,
-  },
+    opacity: 0.7},
   createButton: {
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
-  },
+    borderRadius: 8},
   createButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-  },
+    fontWeight: '600'},
   webControls: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -453,20 +411,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 32,
     marginTop: 16,
     borderRadius: 12,
-    borderWidth: 1,
-  },
+    borderWidth: 1},
   searchSection: {
     flex: 1,
-    marginRight: 16,
-  },
+    marginRight: 16},
   searchInput: {
     height: 40,
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
     fontSize: 16,
-    fontFamily: 'System',
-  },
+    fontFamily: 'System'},
   searchInputWeb: {
     height: 40,
     paddingHorizontal: 12,
@@ -477,21 +432,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5EDD6',
     borderColor: '#E8E2CF',
     color: '#2A2318',
-    width: '100%',
-  },
+    width: '100%'},
   controlGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-  },
+    gap: 12},
   sortSelect: {
     height: 40,
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
     fontSize: 14,
-    fontFamily: 'System',
-  },
+    fontFamily: 'System'},
   sortSelectWeb: {
     height: 40,
     paddingHorizontal: 12,
@@ -501,128 +453,102 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
     backgroundColor: '#F5EDD6',
     borderColor: '#E8E2CF',
-    color: '#2A2318',
-  },
+    color: '#2A2318'},
   viewToggle: {
     flexDirection: 'row',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E8E2CF',
-  },
+    borderColor: '#E8E2CF'},
   viewButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 6,
-  },
+    borderRadius: 6},
   viewButtonText: {
     fontSize: 14,
-    fontWeight: '500',
-  },
+    fontWeight: '500'},
   filterContainer: {
-    maxHeight: 60,
-  },
+    maxHeight: 60},
   filterContent: {
     paddingHorizontal: 32,
     paddingVertical: 12,
-    gap: 8,
-  },
+    gap: 8},
   filterChip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    marginRight: 8,
-  },
+    marginRight: 8},
   filterText: {
-    fontSize: 14,
-  },
+    fontSize: 14},
   documentsContainer: {
-    flex: 1,
-  },
+    flex: 1},
   documentsContent: {
-    padding: 32,
-  },
+    padding: 32},
   documentsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
+    justifyContent: 'space-between'},
   documentItem: {
     padding: 16,
     borderRadius: 12,
-    borderWidth: 1,
-  },
+    borderWidth: 1},
   documentCardGrid: {
     width: '48%',
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    marginBottom: 16,
-  },
+    marginBottom: 16},
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
-  },
+    marginBottom: 12},
   documentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
-  },
+    marginBottom: 8},
   documentTitle: {
     fontSize: 16,
     fontWeight: '600',
     flex: 1,
-    marginRight: 12,
-  },
+    marginRight: 12},
   documentTitleGrid: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
     lineHeight: 22,
     flex: 1,
-    marginRight: 8,
-  },
+    marginRight: 8},
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
-  },
+    borderRadius: 12},
   statusText: {
     fontSize: 10,
-    fontWeight: '600',
-  },
+    fontWeight: '600'},
   documentMeta: {
     fontSize: 14,
-    marginBottom: 4,
-  },
+    marginBottom: 4},
   reviewBadge: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    marginTop: 8,
-  },
+    marginTop: 8},
   reviewText: {
     fontSize: 12,
-    fontWeight: '500',
-  },
+    fontWeight: '500'},
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 60,
-  },
+    paddingVertical: 60},
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
-    lineHeight: 24,
-  },
+    lineHeight: 24},
   loadingText: {
     fontSize: 16,
     textAlign: 'center',
-    marginTop: 60,
-  },
-});
+    marginTop: 60}});

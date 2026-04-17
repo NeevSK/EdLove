@@ -1,4 +1,4 @@
-describe('educational contract coverage', () => {
+﻿describe('educational contract coverage', () => {
     it('registers strict contract coverage for the educational APIs', () => {
         require('../../../../../packages/core/src/api');
         const { getContractCoverage, listContractCoverage } = require('../../../../../packages/core/src/api/contractCoverage');
@@ -14,8 +14,7 @@ describe('educational contract coverage', () => {
                 'assignments',
                 'classroomStudents',
                 'lessonMaterials',
-                'grading',
-            ])
+                'grading'])
         );
 
         expect(getContractCoverage('lessons')?.contract).toBeTruthy();

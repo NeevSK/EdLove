@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NoSchoolView.web.tsx
  */
 import React from 'react';

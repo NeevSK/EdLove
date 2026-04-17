@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AnnouncementsScreen.tsx
  *
  * Thin wrapper for the Community Announcements UI.
