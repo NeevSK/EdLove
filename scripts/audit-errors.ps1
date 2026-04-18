@@ -170,8 +170,8 @@ if (Test-Path -Path $logFile) {
 
     # Determine optimal report location (Order vs convenience)
     $summaryFile = "audit-$targetName-summary.txt"
-    $reportsDir = Join-Path $ROOT_DIR "reports"
-    $summaryPath = if (Test-Path $reportsDir) { Join-Path $reportsDir $summaryFile } else { Join-Path $ROOT_DIR $summaryFile }
+    $reportsDir = Join-Path $rootDir "reports"
+    $summaryPath = if (Test-Path $reportsDir) { Join-Path $reportsDir $summaryFile } else { Join-Path $rootDir $summaryFile }
 
     $report | Out-File -FilePath $summaryPath -Encoding utf8 -Force
     Write-Host "`n>>> Full Surgical Analysis Complete." -ForegroundColor Cyan

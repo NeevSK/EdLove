@@ -82,7 +82,8 @@ class PolymathPlatformServer {
                 description: "The package name (filter) to check (e.g., '@repo/ui'). If omitted, checks all packages."
               }
             }
-          },
+          }
+        },
         {
           name: "create_checkpoint",
           description: "Stages changes and creates a git commit with a categorized ledger, bypassing pre-commit hooks (--no-verify).",
@@ -232,6 +233,11 @@ class PolymathPlatformServer {
     console.error(`Checking types for: ${cleanTarget || "all packages"}...`);
     
     if (cleanTarget) {
+      // 2. ROOT CLEANUP (Enforcing Order)
+      // Delete any "Agent Slip-up" reports in the root to ensure we don't serve stale data.
+      const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.txt`);
+      if (fs.existsSync(rootSummary)) fs.unlinkSync(rootSummary);
+
       const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${cleanTarget}" -LocalOnly`;
       
       try {
@@ -277,9 +283,9 @@ class PolymathPlatformServer {
    */
   private findSurgicalReport(filename: string, packageShortName: string): string {
     const candidates = [
-      path.join(ROOT_DIR, filename),                     // Root (Agent slip-up)
-      path.join(ROOT_DIR, "reports", filename),          // Global reports (Ordered)
-      path.join(ROOT_DIR, "packages", packageShortName, filename), // Package root
+      path.join(ROOT_DIR, "reports", filename),          // 1. Global reports (ORDERED - PRIMARY)
+      path.join(ROOT_DIR, "packages", packageShortName, filename), // 2. Package root
+      path.join(ROOT_DIR, filename),                     // 3. Root (LURKING/STALE - FALLBACK)
       path.join(ROOT_DIR, "packages", packageShortName, "reports", filename), // Package reports
       path.join(ROOT_DIR, "apps", packageShortName, filename),     // App root
       path.join(ROOT_DIR, "apps", packageShortName, "reports", filename), // App reports
