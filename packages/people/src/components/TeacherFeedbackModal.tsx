@@ -119,7 +119,6 @@ export default function TeacherFeedbackModal({
             defaultValue={category}
           >
             <SelectTrigger
-              variant="outline"
               className="border-border bg-silk"
             >
               <SelectInput placeholder="Select category" className="text-textPrimary" />

@@ -137,7 +137,7 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
 
             {showToggle && (
                 <GlassCard style={styles.toggleBar}>
-                    <HStack space="md" sx={{ justifyContent: "center" }}>
+                    <HStack className="justify-center gap-3">
                         <LensButton 
                             active={perspective === 'astro'} 
                             icon={Network} 

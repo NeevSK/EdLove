@@ -6,10 +6,7 @@ import {
     Button,
     ButtonText,
     Box,
-    useToast,
-    Toast,
-    ToastTitle,
-    ToastDescription,
+    useSanctuaryToast,
     ScreenWrapper
 } from '@repo/ui';
 import { supabase, identityAPI } from '@repo/core';
@@ -27,7 +24,7 @@ interface InvitationWelcomeScreenProps {
 
 export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScreenProps) {
     const navigation = useNavigation<any>();
-    const toast = useToast();
+    const { showToast } = useSanctuaryToast();
     const { t } = useTranslation();
     const role = route?.params?.role || 'User';
     const schoolName = route?.params?.schoolName || 'the Sanctuary';
@@ -49,18 +46,9 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
 
                 if (error) {
                     console.error('Database update error:', error);
-                    toast.show({
-                        placement: 'top',
-                        render: ({ id }: any) => (
-                            <Toast nativeID={id} action="error" variant="solid">
-                                <VStack className="gap-1">
-                                    <ToastTitle>{t('invitationWelcome.joinFailed') || 'Join Failed'}</ToastTitle>
-                                    <ToastDescription>
-                                        {t('invitationWelcome.joinFailedDesc') || 'Unable to update your profile. Please try again.'}
-                                    </ToastDescription>
-                                </VStack>
-                            </Toast>
-                        ),
+                    showToast({
+                        message: t('invitationWelcome.joinFailedDesc') || 'Unable to update your profile. Please try again.',
+                        type: 'error'
                     });
                     return;
                 }
@@ -69,59 +57,47 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
             navigation.navigate('Main');
         } catch (error) {
             console.error('Error joining sanctuary:', error);
-            toast.show({
-                placement: 'top',
-                render: ({ id }: any) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <VStack className="gap-1">
-                            <ToastTitle>{t('invitationWelcome.errorTitle') || 'Error'}</ToastTitle>
-                            <ToastDescription>
-                                {t('invitationWelcome.errorDesc') || 'Something went wrong. Please contact support.'}
-                            </ToastDescription>
-                        </VStack>
-                    </Toast>
-                ),
+            showToast({
+                message: t('invitationWelcome.errorDesc') || 'Something went wrong. Please contact support.',
+                type: 'error'
             });
         }
     };
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} className="bg-phase-canvas">
             <Box 
-                className="flex-1 bg-background justify-center p-8"
+                className="flex-1 justify-center p-8"
             >
-                <VStack className="gap-6 items-center">
+                <VStack className="gap-8 items-center">
                     <Text 
-                        className="text-primary-500 text-xl font-bold"
+                        className="text-phase-interactive text-xl font-bold uppercase tracking-wider"
                     >
                         {t('invitationWelcome.invited') || "You've been invited!"}
                     </Text>
                     <Heading 
-                        className="text-[32px] text-foreground text-center"
+                        className="text-4xl text-ink text-center font-bold"
                     >
                         {t('invitationWelcome.welcomeTo', { schoolName })}
                     </Heading>
                     
                     <Box 
-                        className="bg-surface-low p-4 rounded-comfortable w-full border border-outline-variant"
+                        className="bg-phase-surface p-6 rounded-2xl w-full border border-border mt-4"
                     >
-                        <Text className="text-muted-foreground text-center">
-                            {t('invitationWelcome.role') || 'Role'}: {' '}
-                            <Text className="text-foreground font-bold">
+                        <Text className="text-ink/60 text-center text-lg">
+                            {t('invitationWelcome.role') || 'Your Role'}: {' '}
+                            <Text className="text-ink font-bold">
                                 {role.charAt(0).toUpperCase() + role.slice(1)}
                             </Text>
                         </Text>
                     </Box>
 
                     <Button
-                        size="xl"
-                        variant="solid"
-                        action="primary"
-                        className="bg-primary-500 w-full rounded-comfortable"
+                        className="bg-phase-interactive w-full h-14 rounded-2xl mt-4 active:opacity-90 shadow-lg"
                         onPress={handleJoin}
                     >
-                        <ButtonText className="text-primary-foreground font-bold">
-                            {t('invitationWelcome.joinButton') || 'Join Sanctuary'}
+                        <ButtonText className="text-inverted text-lg font-bold">
+                            {t('invitationWelcome.joinButton') || 'Accept Invitation'}
                         </ButtonText>
                     </Button>
                 </VStack>

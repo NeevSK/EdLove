@@ -4,8 +4,13 @@ import {
     WebScreenHeader,
     useTheme,
     Text,
+    Box,
+    VStack,
+    HStack,
     openExternalURL,
     showExternalLinkOptions,
+    SanctuaryButton,
+    ActivityIndicator
 } from '@repo/ui';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
 import { useTranslation } from 'react-i18next';
@@ -13,16 +18,25 @@ import type { LibraryResource } from '../types';
 import { useCollection } from '../hooks/useLibrary';
 import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 import { useStore } from '@repo/core';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Library, RefreshCw } from 'lucide-react-native';
 
-function StackFallback() {
+function LoadingState() {
     return (
-        <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}>
-            <Text style={{ color: 'var(--ink-ghost)' }}>Loading collection...</Text>
-        </div>
+        <Box className="flex-1 items-center justify-center p-20 bg-phase-surface">
+            <VStack className="items-center gap-4">
+                <ActivityIndicator size="large" />
+                <Text className="text-phaseText-tertiary animate-pulse font-medium">Restoring collection...</Text>
+            </VStack>
+        </Box>
     );
 }
 
+/**
+ * CollectionDetailScreenWeb  Web-optimized view for library collections.
+ * 
+ * Sanctuary V3: Migrated to className utilities and standardized @repo/ui primitives.
+ * Uses responsive grid for resource cards.
+ */
 export default function CollectionDetailScreenWeb() {
     const route = useRoute<any>();
     const navigation = useNavigation<any>();
@@ -67,84 +81,93 @@ export default function CollectionDetailScreenWeb() {
         );
     }, []);
 
-    if (!id) return <StackFallback />;
-
     const getYoutubeThumbnail = (url?: string) => {
         if (!url) return undefined;
         const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
         return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : undefined;
     };
 
-    if (isLoading) return <StackFallback />;
+    if (isLoading || !id) return <LoadingState />;
 
     if (error || !collection) {
         return (
-            <div className="sanctuary-screen">
-                <div className="sanctuary-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px' }}>
-                    <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.3)', padding: '40px', borderRadius: '32px', border: '1px solid var(--border)', maxWidth: '500px' }}>
-                        <div style={{ fontSize: '48px', marginBottom: '24px' }}>Library</div>
-                        <Text style={{ fontSize: 20, fontWeight: '700', color: 'var(--ink)', marginBottom: 12 }}>
+            <Box className="flex-1 bg-phase-surface items-center justify-center p-10">
+                <VStack className="max-w-md w-full p-10 rounded-[32px] bg-white/5 border border-white/10 items-center gap-6">
+                    <Box className="w-16 h-16 rounded-2xl bg-phase-accent/20 items-center justify-center">
+                        <Library size={32} color={theme.accent.action} />
+                    </Box>
+                    <VStack className="items-center gap-2">
+                        <Text className="text-xl font-bold text-phaseText-primary text-center">
                             {error ? t('library.errorLoading') : t('library.emptyTitle')}
                         </Text>
-                        <Text style={{ color: 'var(--ink-ghost)', marginBottom: 32, lineHeight: '24px' }}>
+                        <Text className="text-md text-phaseText-secondary text-center leading-6">
                             {error ? String(error) : t('library.emptyDesc')}
                         </Text>
-                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                            <button className="secondary-button" onClick={() => navigation.goBack()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <ArrowLeft size={16} /> {t('library.goBack')}
-                            </button>
-                            <button className="premium-button" onClick={() => refetch()}>
-                                {t('library.retry') || 'Retry'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    </VStack>
+                    <HStack className="gap-3 w-full">
+                        <SanctuaryButton 
+                            variant="outline" 
+                            onPress={() => navigation.goBack()} 
+                            leftIcon={ArrowLeft}
+                            className="flex-1"
+                        >
+                            {t('library.goBack')}
+                        </SanctuaryButton>
+                        <SanctuaryButton 
+                            onPress={() => refetch()} 
+                            leftIcon={RefreshCw}
+                            className="flex-1"
+                        >
+                            {t('library.retry') || 'Retry'}
+                        </SanctuaryButton>
+                    </HStack>
+                </VStack>
+            </Box>
         );
     }
 
     return (
-        <div className="sanctuary-screen">
-            <div className="sanctuary-container">
+        <Box className="flex-1 bg-phase-surface">
+            <VStack className="max-w-screen-xl mx-auto w-full px-6 py-8">
                 <WebScreenHeader
                     title={collection.name}
                     note={collection.is_virtual ? t('library.dynamicCollection') : t('library.curatedCollection')}
                     actions={(
-                        <button className="secondary-button" onClick={() => navigation.goBack()} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <ArrowLeft size={16} />
-                            <span>{t('library.backToLibrary')}</span>
-                        </button>
+                        <SanctuaryButton 
+                            variant="ghost" 
+                            onPress={() => navigation.goBack()} 
+                            leftIcon={ArrowLeft}
+                            size="sm"
+                        >
+                            {t('library.backToLibrary')}
+                        </SanctuaryButton>
                     )}
                 />
 
-                <div style={{ marginBottom: 40, background: 'rgba(255,255,255,0.3)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                    <Text style={{ fontSize: 18, color: theme.text.primary, lineHeight: '28px', marginBottom: 12, fontWeight: '500' }}>
+                <Box className="mt-8 mb-10 p-8 rounded-3xl bg-white/5 border border-white/5">
+                    <Text className="text-lg text-phaseText-primary leading-8 mb-6 font-medium">
                         {collection.description || t('library.noDescription')}
                     </Text>
-                    <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                        <div style={{ padding: '6px 12px', borderRadius: '100px', background: 'var(--action-soft)', color: 'var(--action)', fontSize: '12px', fontWeight: '800' }}>
-                            {t('library.resourcesCount', { count: collection.resources.length })}
-                        </div>
+                    <HStack className="items-center gap-6">
+                        <Box className="px-4 py-1.5 rounded-full bg-phase-accent/10 border border-phase-accent/20">
+                            <Text className="text-xs font-black text-phase-accent uppercase tracking-wider">
+                                {t('library.resourcesCount', { count: collection.resources.length })}
+                            </Text>
+                        </Box>
                         {collection.creator_name && (
-                            <div style={{ fontSize: '13px', color: 'var(--ink-ghost)' }}>
-                                {t('library.curatedBy')} <span style={{ fontWeight: '700', color: 'var(--ink)' }}>{collection.creator_name}</span>
-                            </div>
+                            <HStack className="gap-1.5 items-center">
+                                <Text className="text-sm text-phaseText-tertiary">{t('library.curatedBy')}</Text>
+                                <Text className="text-sm font-bold text-phaseText-secondary">{collection.creator_name}</Text>
+                            </HStack>
                         )}
-                        <div style={{ width: '4px', height: '4px', borderRadius: '2px', background: 'var(--border)' }} />
-                        <div style={{ fontSize: '13px', color: 'var(--ink-ghost)' }}>
+                        <Box className="w-1 h-1 rounded-full bg-white/20" />
+                        <Text className="text-sm text-phaseText-tertiary">
                             {collection.is_virtual ? t('library.dynamic') : t('library.collection')}
-                        </div>
-                    </div>
-                </div>
+                        </Text>
+                    </HStack>
+                </Box>
 
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                        gap: '24px',
-                        paddingBottom: '80px',
-                    }}
-                >
+                <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
                     {collection.resources.map((res: LibraryResource) => (
                         <LibraryThumbnailCard
                             key={res.id}
@@ -159,12 +182,12 @@ export default function CollectionDetailScreenWeb() {
                         />
                     ))}
                     {collection.resources.length === 0 && (
-                        <div style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center' }}>
-                            <Text style={{ color: theme.text.muted }}>{t('library.emptyCollection')}</Text>
-                        </div>
+                        <Box className="col-span-full py-20 items-center">
+                            <Text className="text-phaseText-muted italic">{t('library.emptyCollection')}</Text>
+                        </Box>
                     )}
-                </div>
-            </div>
-        </div>
+                </Box>
+            </VStack>
+        </Box>
     );
 }

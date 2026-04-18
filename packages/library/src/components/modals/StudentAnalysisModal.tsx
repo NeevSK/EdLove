@@ -267,7 +267,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             {/* Dimensions Sliders */}
                             <GlassCard style={styles.slidersCard}>
                                 <View style={styles.sectionHeader}>
-                                    <HStack sx={{ gap: 8, alignItems: 'center', flex: 1 }}>
+                                    <HStack className="gap-2 items-center flex-1">
                                         <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
                                         <Text style={styles.sectionTitle}>Nurturing Dimensions</Text>
                                     </HStack>
@@ -281,7 +281,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                     </TouchableOpacity>
                                 </View>
 
-                                <VStack sx={{ gap: 12 }}>
+                                <VStack className="gap-3">
                                     {[
                                         { label: 'Cognitive', value: analysis.cognitive_flow, key: 'cognitive_flow' },
                                         { label: 'Emotional', value: analysis.emotional_resonance, key: 'emotional_resonance' },
@@ -289,8 +289,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         { label: 'Creative', value: analysis.creative_spark, key: 'creative_spark' },
                                         { label: 'Practical', value: analysis.practical_mastery, key: 'practical_mastery' },
                                     ].map(stat => (
-                                        <VStack key={stat.key} sx={{ gap: 4 }}>
-                                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <VStack key={stat.key} className="gap-1">
+                                            <HStack className="justify-between items-center">
                                                 <Text style={styles.statLabel}>{stat.label}</Text>
                                                 <Text style={styles.statValue}>{stat.value || 0}%</Text>
                                             </HStack>
@@ -301,12 +301,12 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                 onChange={(val: number) => {
                                                     setAnalysis(prev => ({ ...prev, [stat.key]: val }));
                                                 }}
-                                                sx={{ height: 30 }}
+                                                className="h-[30px]"
                                             >
-                                                <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                                    <SliderFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} />
+                                                <SliderTrack className="bg-white/10">
+                                                    <SliderFilledTrack className="bg-phase-accent" />
                                                 </SliderTrack>
-                                                <SliderThumb sx={{ backgroundColor: 'white', width: 18, height: 18 }} />
+                                                <SliderThumb className="bg-white w-[18px] h-[18px]" />
                                             </Slider>
                                         </VStack>
                                     ))}
@@ -354,7 +354,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             {saving ? (
                                 <ActivityIndicator color="white" size="small" />
                             ) : (
-                                <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                <HStack className="gap-2 items-center">
                                     <Save size={18} color="white" />
                                     <Text style={styles.saveText}>Save Analysis</Text>
                                 </HStack>
