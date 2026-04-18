@@ -16,28 +16,28 @@ interface CommandCenterProps {
     onNavigate: (view: PrincipalWorkspaceView) => void;
 }
 
-export const CommandCenter: React.FC<CommandCenterProps> = { { onNavigate }) => {
+export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
     const { t } = useTranslation();
 
     const actions = [
         { 
             icon: Users, 
             label: t('principal.ia.actions.hierarchy') || t('principal.actions.hierarchy') || 'School Structure', 
-            color: lotusDeepPink || '#9b59b6', 
+            color: '#9b59b6', 
             featureId: 'hierarchy', 
             view: 'hierarchy' as PrincipalWorkspaceView 
         },
         { 
             icon: FileText, 
             label: t('principal.ia.actions.invites') || t('principal.actions.invites') || 'Role Invites', 
-            color: mossGreen || '#27ae60', 
+            color: '#27ae60', 
             featureId: 'invites', 
             view: 'invites' as PrincipalWorkspaceView 
         },
         { 
             icon: CalendarCheck, 
             label: t('principal.ia.actions.timetable') || 'Timetable Planning', 
-            color: skyBlue || '#3498db', 
+            color: '#3498db', 
             featureId: 'timetable', 
             isAgentic: true, 
             view: 'main' as PrincipalWorkspaceView 
@@ -45,24 +45,18 @@ export const CommandCenter: React.FC<CommandCenterProps> = { { onNavigate }) => 
         { 
             icon: NotebookPen, 
             label: t('principal.ia.actions.logbook') || t('principal.actions.notes') || 'Leadership Logbook', 
-            color: sanctuarySaffron || '#f1c40f', 
+            color: '#f1c40f', 
             featureId: 'log', 
             view: 'log' as PrincipalWorkspaceView 
         }];
 
     return (
-        <VStack sx={{ padding: Theme.spacing.md, gap: Theme.spacing.md }}>
-            <Heading sx={{ 
-                fontSize: 14, 
-                fontWeight: '800', 
-                textTransform: 'uppercase', 
-                color: willow || '#7f8c8d', 
-                letterSpacing: 1 
-            }}>
-                {t('principal.commandCenter') || 'Command Center'} \uD83C\uDFDB\uFE0F
+        <VStack className="gap-4 p-4">
+            <Heading className="text-[14px] font-black uppercase tracking-widest text-ink/40">
+                {t('principal.commandCenter') || 'Command Center'} 🏛️
             </Heading>
             
-            <HStack sx={{ flexWrap: 'wrap', gap: Theme.spacing.md }}>
+            <HStack className="flex-wrap gap-4">
                 {actions.map((action, i) => {
                     const scopeMeta = getPrincipalFeatureScopeMeta(action.featureId);
                     
@@ -74,70 +68,36 @@ export const CommandCenter: React.FC<CommandCenterProps> = { { onNavigate }) => 
                             disabled={action.isAgentic}
                             accessibilityRole="button"
                             accessibilityLabel={action.label}
-                            accessibilityHint={t('common.accessibility.navigate_to', { label: action.label }) || `Navigate to ${action.label}`}
+                            className="bg-silk rounded-3xl border border-border items-center p-6 gap-3 shadow-sm"
                             style={{
-                                width: '47%', // Approximate for 2 columns
-                                marginBottom: Theme.spacing.sm
+                                width: '47%', // Fixed width for 2 columns layout on mobile
+                                opacity: action.isAgentic ? 0.6 : 1
                             }}
                         >
-                            <Box sx={{
-                                padding: Theme.spacing.lg,
-                                borderRadius: Theme.corners.generous,
-                                backgroundColor: silk || '#f9f9f9',
-                                borderWidth: 1,
-                                borderColor: '#E8E2CF' || '#eeeeee',
-                                alignItems: 'center',
-                                gap: Theme.spacing.sm,
-                                opacity: action.isAgentic ? 0.6 : 1,
-                                ...Theme.shadows.sm
-                            }}>
-                                <Box sx={{ 
-                                    backgroundColor: (action.color as string) + '22', 
-                                    padding: Theme.spacing.md, 
-                                    borderRadius: Theme.corners.comfortable 
-                                }}>
-                                    <action.icon size={24} color={action.color} />
-                                </Box>
-                                
-                                <Text sx={{ 
-                                    fontSize: 13, 
-                                    fontWeight: '700', 
-                                    color: '#2A2318' || '#2c3e50',
-                                    textAlign: 'center'
-                                }}>
-                                    {action.label}
-                                </Text>
-
-                                {scopeMeta && (
-                                    <Box sx={{
-                                        backgroundColor: '#FCF9F2' || '#ffffff',
-                                        paddingVertical: 2,
-                                        paddingHorizontal: 8,
-                                        borderRadius: 999,
-                                        marginTop: 4
-                                    }}>
-                                        <Text sx={{
-                                            fontSize: 10,
-                                            fontWeight: '800', 
-                                            textTransform: 'uppercase', 
-                                            letterSpacing: 0.4, 
-                                            color: willow || '#7f8c8d'}}>
-                                            {t(scopeMeta.scopeBadgeLabelKey)}
-                                        </Text>
-                                    </Box>
-                                )}
-
-                                {action.isAgentic && (
-                                    <Text sx={{ 
-                                        fontSize: 10, 
-                                        color: willow || '#7f8c8d', 
-                                        textTransform: 'uppercase',
-                                        fontWeight: '600'
-                                    }}>
-                                        {t('common.comingSoon') || 'Coming Soon'}
-                                    </Text>
-                                )}
+                            <Box 
+                                className="p-4 rounded-2xl"
+                                style={{ backgroundColor: `${action.color}22` }}
+                            >
+                                <action.icon size={24} color={action.color} />
                             </Box>
+                            
+                            <Text className="text-[13px] font-bold text-ink text-center">
+                                {action.label}
+                            </Text>
+
+                            {scopeMeta && (
+                                <Box className="bg-white/50 px-2 py-0.5 rounded-full mt-1 border border-border/50">
+                                    <Text className="text-[10px] font-black uppercase tracking-wider text-ink/40">
+                                        {t(scopeMeta.scopeBadgeLabelKey)}
+                                    </Text>
+                                </Box>
+                            )}
+
+                            {action.isAgentic && (
+                                <Text className="text-[10px] text-ink/40 uppercase font-black tracking-widest">
+                                    {t('common.comingSoon') || 'Coming Soon'}
+                                </Text>
+                            )}
                         </TouchableOpacity>
                     );
                 })}

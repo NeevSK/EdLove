@@ -4,7 +4,7 @@ import {
     Text,
     HStack,
     Pressable,
-    useThemedColors,
+    useTheme,
     FormControl,
     FormControlLabel,
     FormControlLabelText,
@@ -28,44 +28,42 @@ interface StepDemographicsProps {
 }
 
 export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
-    const theme = useThemedColors();
+    const theme = useTheme();
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     return (
-        <VStack style={{ gap: theme.spacing.lg }}>
+        <VStack className="gap-6">
             <FormControl>
-                <FormControlLabel style={{ marginBottom: theme.spacing.xs }}>
-                    <FormControlLabelText style={{ color: theme.text.secondary, fontSize: 14 }}>
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-sm text-phaseText-secondary">
                         {t('schoolSetup.studentBodyType')}
                     </FormControlLabelText>
                 </FormControlLabel>
-                <HStack style={{ gap: theme.spacing.sm, flexWrap: 'wrap' }}>
-                    {STUDENT_TYPES.map((type) => (
-                        <Pressable
-                            key={type.id}
-                            accessibilityRole="button"
-                            onPress={() => onUpdate({ studentType: type.id as any })}
-                            style={{
-                                flex: 1,
-                                minWidth: '30%',
-                                padding: theme.spacing.md,
-                                borderRadius: theme.corners.md,
-                                borderWidth: 2,
-                                borderColor: data.studentType === type.id ? theme.status.warning : theme.scene.border,
-                                backgroundColor: data.studentType === type.id ? theme.status.warning + '10' : theme.scene.backgroundPrimary,
-                                alignItems: 'center'
-                            }}>
-                            <Text
-                                style={{
-                                    color: data.studentType === type.id ? theme.status.warning : theme.text.primary,
-                                    fontWeight: data.studentType === type.id ? '700' : '400',
-                                    fontSize: 14
-                                }}>
-                                {(type[lang] ?? type.en).split(' ')[0]}
-                            </Text>
-                        </Pressable>
-                    ))}
+                <HStack className="gap-3 flex-wrap">
+                    {STUDENT_TYPES.map((type) => {
+                        constisSelected = data.studentType === type.id;
+                        return (
+                            <Pressable
+                                key={type.id}
+                                accessibilityRole="button"
+                                onPress={() => onUpdate({ studentType: type.id as any })}
+                                className={`flex-1 min-w-[30%] p-4 rounded-xl border-2 items-center ${
+                                    isSelected 
+                                        ? 'border-phase-accent bg-phase-accent/10' 
+                                        : 'border-phase-border bg-phase-surface'
+                                }`}
+                            >
+                                <Text
+                                    className={`text-sm ${
+                                        isSelected ? 'text-phase-accent font-bold' : 'text-phaseText-primary'
+                                    }`}
+                                >
+                                    {(type[lang] ?? type.en).split(' ')[0]}
+                                </Text>
+                            </Pressable>
+                        );
+                    })}
                 </HStack>
             </FormControl>
 
@@ -79,35 +77,36 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
             />
 
             <FormControl>
-                <FormControlLabel style={{ marginBottom: theme.spacing.xs }}>
-                    <FormControlLabelText style={{ color: theme.text.secondary, fontSize: 14 }}>
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-sm text-phaseText-secondary">
                         {t('schoolSetup.religiousContext')}
                     </FormControlLabelText>
                 </FormControlLabel>
-                <VStack style={{ gap: theme.spacing.xs }}>
-                    <HStack style={{ gap: theme.spacing.xs, flexWrap: 'wrap' }}>
-                        {RELIGIOUS_AFFILIATIONS.map((rel) => (
-                            <Pressable
-                                key={rel.id}
-                                accessibilityRole="button"
-                                onPress={() => onUpdate({ religiousAffiliation: rel.id })}
-                                style={{
-                                    paddingHorizontal: theme.spacing.md,
-                                    paddingVertical: theme.spacing.xs,
-                                    borderRadius: theme.corners.full,
-                                    borderWidth: 1,
-                                    borderColor: data.religiousAffiliation === rel.id ? theme.status.warning : theme.scene.border,
-                                    backgroundColor: data.religiousAffiliation === rel.id ? theme.status.warning : 'transparent'
-                                }}>
-                                <Text
-                                    style={{
-                                        color: data.religiousAffiliation === rel.id ? '#FFFFFF' : theme.text.secondary,
-                                        fontSize: 12
-                                    }}>
-                                    {rel[lang] ?? rel.en}
-                                </Text>
-                            </Pressable>
-                        ))}
+                <VStack className="gap-2">
+                    <HStack className="gap-2 flex-wrap">
+                        {RELIGIOUS_AFFILIATIONS.map((rel) => {
+                            const isSelected = data.religiousAffiliation === rel.id;
+                            return (
+                                <Pressable
+                                    key={rel.id}
+                                    accessibilityRole="button"
+                                    onPress={() => onUpdate({ religiousAffiliation: rel.id })}
+                                    className={`px-4 py-1.5 rounded-full border ${
+                                        isSelected 
+                                            ? 'border-phase-accent bg-phase-accent' 
+                                            : 'border-phase-border bg-transparent'
+                                    }`}
+                                >
+                                    <Text
+                                        className={`text-[12px] ${
+                                            isSelected ? 'text-white' : 'text-phaseText-secondary'
+                                        }`}
+                                    >
+                                        {rel[lang] ?? rel.en}
+                                    </Text>
+                                </Pressable>
+                            );
+                        })}
                     </HStack>
                 </VStack>
             </FormControl>

@@ -1,4 +1,4 @@
-﻿import { api } from '@repo/core';
+import { api } from '@repo/core';
 
 export interface PrincipalObservation {
   id: string;
@@ -37,5 +37,7 @@ export const observationsAPI = {
   }) {
     return api.principalWorkspace.recordObservationFollowUp({
       ...input,
-      status: input.status ?? 'noted'});
-  };
+      status: input.status ?? 'noted'
+    });
+  }
+};

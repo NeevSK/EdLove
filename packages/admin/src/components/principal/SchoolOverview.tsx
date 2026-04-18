@@ -1,5 +1,5 @@
 import React from 'react';
-import { VStack, HStack, Text, Box, useThemedColors } from '@repo/ui';
+import { VStack, HStack, Text, Box, useTheme } from '@repo/ui';
 import { Building2, MapPin } from 'lucide-react-native';
 import { type School } from '@repo/core';
 
@@ -8,21 +8,21 @@ interface SchoolOverviewProps {
 }
 
 export default function SchoolOverview({ school }: SchoolOverviewProps) {
-    const colors = useTheme().scene;
+    const { theme } = useTheme();
     
     if (!school) return null;
 
     return (
-        <VStack space="md" p="$4">
-            <HStack space="md" alignItems="center">
-                <Box sx={{ p: '$2', borderRadius: '$md', backgroundColor: 'var(--sanctuary-blue-soft)' }}>
-                    <Building2 size={24} color="var(--sanctuary-blue)" />
+        <VStack className="gap-md p-4">
+            <HStack className="gap-md items-center">
+                <Box className="p-2 rounded-md bg-phase-interactive/10">
+                    <Building2 size={24} color={theme.accent.action} />
                 </Box>
                 <VStack>
-                    <Text bold size="lg" color={colors.text}>{school.name}</Text>
-                    <HStack space="xs" alignItems="center">
-                        <MapPin size={12} color={colors.textSecondary} />
-                        <Text size="xs" color={colors.textSecondary}>{school.address || 'No address provided'}</Text>
+                    <Text className="font-bold text-lg text-phaseText-primary">{school.name}</Text>
+                    <HStack className="gap-xs items-center">
+                        <MapPin size={12} color={theme.text.secondary} />
+                        <Text className="text-xs text-phaseText-secondary">{school.address || 'No address provided'}</Text>
                     </HStack>
                 </VStack>
             </HStack>

@@ -1,6 +1,23 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Icon, 
+    Button,
+    ButtonText,
+    Textarea,
+    TextareaInput,
+    ScrollView,
+    SkeletonCard,
+    hapticSuccess,
+    LotusDropdown
+} from '@repo/ui';
+import { ArrowLeft, Plus, StickyNote, AlertTriangle, Medal, Footprints } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
+import { TouchableOpacity } from 'react-native';
 import { observationsAPI, type PrincipalObservation } from '../../observations';
 
 interface LogbookDashboardProps {
@@ -11,20 +28,28 @@ interface LogbookDashboardProps {
     onBack: () => void;
 }
 
-export const LogbookDashboard: React.FC<LogbookDashboardProps> = { { userId, schoolId, viewDate, isPastView, onBack }) => {
+export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, schoolId, viewDate, isPastView, onBack }) => {
     const [content, setContent] = useState('');
     const [type, setType] = useState('note');
     const [observations, setObservations] = useState<PrincipalObservation[]>([]);
     const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const loadObservations = useCallback(async () => {
         if (!userId) return;
-        const data = await observationsAPI.listByDate(userId, viewDate, 10);
-        setObservations(data);
+        setLoading(true);
+        try {
+            const data = await observationsAPI.listByDate(userId, viewDate, 10);
+            setObservations(data || []);
+        } catch (err) {
+            console.error('Failed to load observations:', err);
+        } finally {
+            setLoading(false);
+        }
     }, [userId, viewDate]);
 
     useEffect(() => {
-        void loadObservations();
+        loadObservations();
     }, [loadObservations]);
 
     const handleSaveObservation = async () => {
@@ -35,82 +60,131 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = { { userId, sch
                 principalId: userId,
                 schoolId,
                 type,
-                content: content.trim()});
+                content: content.trim()
+            });
             if (data) setObservations((prev) => [data, ...prev]);
             setContent('');
+            hapticSuccess();
+        } catch (err) {
+            console.error('Failed to save observation:', err);
         } finally {
             setSaving(false);
-        };
+        }
+    };
+
+    const typeOptions = [
+        { label: 'General Note', value: 'note' },
+        { label: 'Walkthrough', value: 'walkthrough' },
+        { label: 'Concern', value: 'concern' },
+        { label: 'Commendation', value: 'commendation' }
+    ];
+
+    const getTypeIcon = (t: string) => {
+        switch (t) {
+            case 'walkthrough': return <Footprints size={14} />;
+            case 'concern': return <AlertTriangle size={14} />;
+            case 'commendation': return <Medal size={14} />;
+            default: return <StickyNote size={14} />;
+        }
+    };
+
+    const getTypeColor = (t: string) => {
+        switch (t) {
+            case 'concern': return 'border-l-red-500 bg-red-500/10 text-red-600';
+            case 'commendation': return 'border-l-green-500 bg-green-500/10 text-green-600';
+            case 'walkthrough': return 'border-l-blue-500 bg-blue-500/10 text-blue-600';
+            default: return 'border-l-primary bg-primary/10 text-primary';
+        }
+    };
 
     return (
-        <div>
-            <button 
-                onClick={onBack} 
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 8, 
-                    padding: '8px 14px', 
-                    borderRadius: 10, 
-                    border: '1px solid var(--border)', 
-                    background: 'var(--glass-surface)', 
-                    cursor: 'pointer', 
-                    fontFamily: 'var(--font-body)', 
-                    fontSize: 13, 
-                    fontWeight: '600', 
-                    marginBottom: 24 
-                }}>
-                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
-            </button>
-            
-            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>?? Institutional Log</h2>
-            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: 14 }}>
-                Your daily operational notes and walkthroughs.
-            </p>
-            
-            <div className="sanctuary-card" style={{ padding: 24, marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12, opacity: isPastView ? 0.6 : 1 }}>
-                <select 
-                    value={type} 
-                    onChange={e => setType(e.target.value)} 
-                    disabled={isPastView} 
-                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }}>
-                    {['walkthrough', 'note', 'concern', 'commendation'].map(t => (
-                        <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
-                    ))}
-                </select>
-                <textarea 
-                    value={content} 
-                    onChange={e => setContent(e.target.value)} 
-                    disabled={isPastView} 
-                    placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note…"} 
-                    rows={3} 
-                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14, resize: 'vertical' }} 
-                />
-                <button 
-                    onClick={handleSaveObservation} 
-                    disabled={!content.trim() || saving || isPastView} 
-                    className="premium-button" 
-                    style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}>
-                    {saving ? '?' : '+ Log Entry'}
-                </button>
-            </div>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <VStack className="gap-6 p-4">
+                <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
+                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
+                        <Icon as={ArrowLeft} size="sm" className="text-ink" />
+                        <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
+                    </HStack>
+                </TouchableOpacity>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {observations.map(o => (
-                    <div key={o.id} className="sanctuary-card" style={{ padding: '18px 20px', borderLeft: `3px solid ${o.type === 'concern' ? 'var(--ember)' : o.type === 'commendation' ? 'var(--moss)' : 'var(--sanctuary-saffron)'}` }}>
-                        <div style={{ fontSize: 11, fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', marginBottom: 6 }}>
-                            {o.type}
-                        </div>
-                        <p style={{ margin: '0 0 6px', fontSize: 14, lineHeight: 1.6 }}>
-                            {o.content}
-                        </p>
-                        <div style={{ fontSize: 11, color: 'var(--ink-ghost)' }}>
-                            {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+                <VStack className="gap-1">
+                    <Heading className="text-2xl font-black text-ink">Institutional Log</Heading>
+                    <Text className="text-sm text-ink/60">
+                        Your daily operational notes and walkthroughs.
+                    </Text>
+                </VStack>
+
+                <Box className={`bg-white p-5 rounded-3xl border border-border gap-4 ${isPastView ? 'opacity-60' : ''}`}>
+                    <Heading className="text-xs font-black uppercase tracking-widest text-ink/40">New Entry</Heading>
+                    
+                    <LotusDropdown
+                        label="Entry Type"
+                        options={typeOptions}
+                        value={type}
+                        onValueChange={setType}
+                        disabled={isPastView}
+                    />
+
+                    <Textarea className="h-32 rounded-2xl">
+                        <TextareaInput 
+                            value={content} 
+                            onChangeText={setContent} 
+                            disabled={isPastView} 
+                            placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note..."} 
+                        />
+                    </Textarea>
+
+                    <Button 
+                        onPress={handleSaveObservation} 
+                        disabled={!content.trim() || saving || isPastView} 
+                        className="bg-primary rounded-2xl h-12 self-start px-6 shadow-sm active:scale-95"
+                    >
+                        {saving ? (
+                            <ButtonText>Logging...</ButtonText>
+                        ) : (
+                            <>
+                                <ButtonIcon as={Plus} className="mr-2" />
+                                <ButtonText>Log Entry</ButtonText>
+                            </>
+                        )}
+                    </Button>
+                </Box>
+
+                <VStack className="gap-3">
+                    {loading ? (
+                        <SkeletonCard height={100} />
+                    ) : observations.length === 0 ? (
+                        <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
+                            <Text className="text-ink/40 italic font-bold">No entries for this date.</Text>
+                        </Box>
+                    ) : (
+                        observations.map(o => (
+                            <Box 
+                                key={o.id} 
+                                className={`bg-white p-5 rounded-3xl border border-border border-l-4 ${getTypeColor(o.type).split(' ')[0]}`}
+                            >
+                                <HStack className="items-center gap-2 mb-2">
+                                    <Box className={`px-2 py-0.5 rounded-md ${getTypeColor(o.type).split(' ').slice(1).join(' ')}`}>
+                                        <HStack className="items-center gap-1.5">
+                                            {getTypeIcon(o.type)}
+                                            <Text className="text-[10px] font-black uppercase">
+                                                {o.type}
+                                            </Text>
+                                        </HStack>
+                                    </Box>
+                                    <Text className="text-[10px] text-ink/40 font-bold uppercase tracking-widest">
+                                        {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
+                                    </Text>
+                                </HStack>
+                                <Text className="text-sm leading-relaxed text-ink/80">
+                                    {o.content}
+                                </Text>
+                            </Box>
+                        ))
+                    )}
+                </VStack>
+            </VStack>
+        </ScrollView>
     );
 };
 

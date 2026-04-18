@@ -15,7 +15,7 @@ export default function GuardianEventsScreen() {
     <GuardianRoomShell eyebrow="Calendar, bridge"
       title="Family, event room"
       description="A, calmer look, ahead for the dates, that shape, home planning, school, participation, and, family presence."
-      stats={[>{ label: 'Events', value: events.length },
+      stats={[{ label: 'Events', value: events.length },
         { label: 'RSVP', value: events.filter((event) => event.requiresRsvp).length }]}
       onBack={() => navigation.goBack()}>
       <ScrollView className="flex-1">

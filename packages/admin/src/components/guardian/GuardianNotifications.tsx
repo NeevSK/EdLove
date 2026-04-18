@@ -1,6 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '@repo/ui';
+import { Box, VStack, Text, Pressable } from '@repo/ui';
 
 interface GuardianNotificationsProps {
   notifications: any[];
@@ -8,80 +7,44 @@ interface GuardianNotificationsProps {
   limit?: number;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
-
-export const GuardianNotifications: React.FC<GuardianNotificationsProps> = { {
+export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
   notifications,
   onNotificationPress,
-  limit = 5}) => {
-  const theme = useTheme();
-  const isDesktop = screenWidth > 1024;
-
+  limit = 5,
+}) => {
   const renderNotificationItem = (notification: any) => (
-    <TouchableOpacity
+    <Pressable
       key={notification.id}
-      style={[
-        styles.notificationItem,
-        {
-          backgroundColor: notification.isRead ? 'transparent' : theme.accent.action + '10',
-          borderLeftColor: notification.isRead ? 'transparent' : theme.accent.action,
-          borderLeftWidth: notification.isRead ? 0 : 3}]}
       onPress={() => onNotificationPress(notification)}
-      activeOpacity={0.85}
+      className="active:opacity-85"
     >
-      <View style={styles.notificationContent}>
-        <Text
-          style={[
-            styles.notificationTitle,
-            {
-              color: theme.text.primary,
-              fontFamily: 'System',
-              fontWeight: notification.isRead ? '400' : '600',
-              fontSize: isDesktop ? 14 : 12}]}
-        >
-          {notification.title}
-        </Text>
-        <Text
-          style={[
-            styles.notificationMessage,
-            {
-              color: theme.text.secondary,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10}]}
-        >
-          {notification.message}
-        </Text>
-        <Text
-          style={[
-            styles.notificationTime,
-            {
-              color: theme.text.muted,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 10 : 8}]}
-        >
-          {new Date(notification.createdAt).toLocaleString()}
-        </Text>
-      </View>
-    </TouchableOpacity>
+      <Box 
+        className={`p-3 rounded-lg mb-2 border border-border ${
+          notification.isRead ? 'bg-transparent' : 'bg-primary/5 border-l-4 border-l-primary'
+        }`}
+      >
+        <VStack className="flex-1">
+          <Text 
+            className={`text-primary mb-1 text-sm ${
+              notification.isRead ? 'font-normal' : 'font-semibold'
+            }`}
+          >
+            {notification.title}
+          </Text>
+          <Text className="text-secondary text-xs opacity-80 mb-1">
+            {notification.message}
+          </Text>
+          <Text className="text-secondary/60 text-[10px]">
+            {new Date(notification.createdAt).toLocaleString()}
+          </Text>
+        </VStack>
+      </Box>
+    </Pressable>
   );
 
-  return <View style={styles.notificationsList}>{notifications.slice(0, limit).map(renderNotificationItem)}</View>;
+  return (
+    <VStack className="gap-2">
+      {notifications.slice(0, limit).map(renderNotificationItem)}
+    </VStack>
+  );
 };
-
-const styles = StyleSheet.create({
-  notificationsList: {
-    gap: 8},
-  notificationItem: {
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8},
-  notificationContent: {
-    flex: 1},
-  notificationTitle: {
-    marginBottom: 4},
-  notificationMessage: {
-    marginBottom: 4,
-    opacity: 0.8},
-  notificationTime: {
-    opacity: 0.6,
-    fontSize: 10}});

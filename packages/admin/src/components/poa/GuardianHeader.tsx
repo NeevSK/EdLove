@@ -1,45 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@repo/ui';
+import { Box, Text } from '@repo/ui';
 
 interface GuardianHeaderProps {
   studentCount: number;
-  isDesktop?: boolean;
 }
 
-export const GuardianHeader: React.FC<GuardianHeaderProps> = { { studentCount, isDesktop }) => {
-  const theme = useTheme();
+export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount }) => {
   return (
-    <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
-      <Text
-        style={[
-          styles.title,
-          {
-            color: theme.text.primary,
-            fontWeight: '700',
-            fontSize: isDesktop ? 32 : 24}]}
-      >
+    <Box className="px-5 py-5 border-b border-border bg-white/50">
+      <Text className="text-primary font-bold text-2xl md:text-3xl mb-1">
         Guardian Dashboard
       </Text>
-      <Text
-        style={[
-          styles.subtitle,
-          {
-            color: theme.text.secondary,
-            fontSize: isDesktop ? 16 : 14}]}
-      >
+      <Text className="text-secondary text-sm md:text-base opacity-70">
         {studentCount} {studentCount === 1 ? 'Student' : 'Students'}
       </Text>
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    borderBottomWidth: 1},
-  title: {
-    marginBottom: 4},
-  subtitle: {
-    opacity: 0.7}});

@@ -1,12 +1,25 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Icon, ArrowLeft, Copy, Plus, X } from 'lucide-react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Icon, 
+    Button,
+    ScrollView,
+    Spinner,
+    useToast,
+    Toast,
+    ToastTitle,
+    Pressable
+} from '@repo/ui';
+import { ArrowLeft, Copy, Plus, X, ShieldAlert, Award, QrCode } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-import { hapticSuccess } from '@repo/ui';
+import { TouchableOpacity, Platform } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { invitesAPI, type InviteCode } from '../../invites';
-
-// —————————————————————————————————————————————————————————————————————————————
-// TYPES
-// —————————————————————————————————————————————————————————————————————————————
+import { handleAPIError } from '@repo/core';
 
 interface InvitesDashboardProps {
     schoolId: string;
@@ -15,15 +28,12 @@ interface InvitesDashboardProps {
     onBack: () => void;
 }
 
-// —————————————————————————————————————————————————————————————————————————————
-// COMPONENT
-// —————————————————————————————————————————————————————————————————————————————
-
-export const InvitesDashboard: React.FC<InvitesDashboardProps> = { { schoolId, userId, isPastView, onBack }) => {
+export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, userId, isPastView, onBack }) => {
     const [inviteRole, setInviteRole] = useState<'teacher' | 'principal'>('teacher');
     const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
+    const toast = useToast();
 
     const loadInviteCodes = useCallback(async () => {
         if (!schoolId) return;
@@ -32,14 +42,14 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = { { schoolId, u
             const codes = await invitesAPI.getInviteCodesBySchool(schoolId);
             setInviteCodes(codes ?? []);
         } catch (error) {
-            console.error('Failed to load invite codes:', error);
+            handleAPIError(error);
         } finally {
             setLoading(false);
         }
     }, [schoolId]);
 
     useEffect(() => {
-        void loadInviteCodes();
+        loadInviteCodes();
     }, [loadInviteCodes]);
 
     const handleRevoke = async (code: string) => {
@@ -49,10 +59,18 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = { { schoolId, u
             setInviteCodes((current) => 
                 current.map(inv => inv.code === code ? { ...inv, is_active: false } : inv)
             );
-            hapticSuccess();
+            toast.show({
+                placement: 'top',
+                render: ({ id }) => (
+                    <Toast nativeID={id} action="success" variant="solid" className="bg-ink rounded-xl">
+                        <ToastTitle className="text-white">Revoked access key</ToastTitle>
+                    </Toast>
+                )
+            });
         } catch (err) {
-            console.error('[InvitesDashboard] revokeInviteCode failed:', err);
-        };
+            handleAPIError(err);
+        }
+    };
 
     const handleGenerateCode = async () => {
         if (!schoolId || !userId) return;
@@ -60,175 +78,171 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = { { schoolId, u
         try {
             const newCode = await invitesAPI.generateInviteCode(schoolId, inviteRole, userId);
             setInviteCodes((current) => [newCode, ...current]);
+            toast.show({
+                placement: 'top',
+                render: ({ id }) => (
+                    <Toast nativeID={id} action="success" variant="solid" className="bg-primary rounded-xl">
+                        <ToastTitle className="text-white">New key generated</ToastTitle>
+                    </Toast>
+                )
+            });
         } catch (err) {
-            console.error('[InvitesDashboard] generateInviteCode failed:', err);
+            handleAPIError(err);
         } finally {
             setGenerating(false);
-        };
+        }
+    };
 
-    const copyToClipboard = (code: string) => {
-        if (typeof navigator !== 'undefined' && navigator.clipboard) {
-            navigator.clipboard.writeText(code).catch(err => {
-                console.error('Failed to copy to clipboard:', err);
+    const copyToClipboard = async (code: string) => {
+        try {
+            await Clipboard.setStringAsync(code);
+            toast.show({
+                placement: 'top',
+                render: ({ id }) => (
+                    <Toast nativeID={id} action="success" variant="solid" className="bg-green-600 rounded-xl">
+                        <ToastTitle className="text-white">Copied to clipboard</ToastTitle>
+                    </Toast>
+                )
             });
-        };
+        } catch (err) {
+            handleAPIError(err);
+        }
+    };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <button 
-                onClick={onBack} 
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px', 
-                    padding: '8px 14px', 
-                    borderRadius: '10px', 
-                    border: '1px solid var(--border)', 
-                    background: 'var(--glass-surface)', 
-                    cursor: 'pointer', 
-                    fontFamily: 'var(--font-body)', 
-                    fontSize: '13px', 
-                    fontWeight: '600', 
-                    marginBottom: '24px',
-                    color: 'var(--ink)'
-                }}
-            >
-                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
-            </button>
-            
-            <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800', color: 'var(--ink)' }}>
-                Governance Invites
-            </h2>
-            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>
-                Generate invite codes to onboard principals and teachers.
-            </p>
+        <VStack className="flex-1 bg-silk">
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <VStack className="gap-8 p-6 pb-20">
+                    {/* Header Group */}
+                    <VStack className="gap-4">
+                        <Pressable onPress={onBack} className="active:opacity-70">
+                            <HStack className="items-center gap-2 bg-phase-surface px-4 py-2 rounded-xl border border-border self-start shadow-sm">
+                                <Icon as={ArrowLeft} size="sm" className="text-ink" />
+                                <Text className="text-sm font-black text-ink">Back</Text>
+                            </HStack>
+                        </Pressable>
+                        
+                        <VStack className="gap-1">
+                            <Heading className="text-3xl font-black text-ink uppercase tracking-wider">
+                                Governance
+                            </Heading>
+                            <Text className="text-sm font-bold text-ink/40 leading-relaxed">
+                                Establish authority anchors and onboard faculty.
+                            </Text>
+                        </VStack>
+                    </VStack>
 
-            <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', opacity: isPastView ? 0.6 : 1, backgroundColor: 'var(--glass-surface)', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <select
-                        value={inviteRole}
-                        onChange={e => setInviteRole(e.target.value as 'teacher' | 'principal')}
-                        disabled={isPastView}
-                        style={{ 
-                            padding: '10px 14px', 
-                            borderRadius: '10px', 
-                            border: '1px solid var(--border)', 
-                            background: 'var(--background-alt)', 
-                            color: 'var(--ink)', 
-                            fontFamily: 'var(--font-body)', 
-                            fontSize: '14px',
-                            minWidth: '120px'
-                        }}
-                    >
-                        <option value="teacher">Teacher</option>
-                        <option value="principal">Principal</option>
-                    </select>
-
-                    <button
-                        onClick={handleGenerateCode}
-                        disabled={generating || isPastView}
-                        className="premium-button"
-                        style={{ 
-                            background: 'var(--lotus)', 
-                            color: 'white',
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '8px',
-                            border: 'none',
-                            padding: '10px 20px',
-                            borderRadius: '10px',
-                            cursor: (generating || isPastView) ? 'not-allowed' : 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '600'
-                        }}
-                    >
-                        {generating ? 'Generating...' : (
-                            <>
-                                <Icon as={Plus} size={14} color="white" />
-                                <span>Generate Code</span>
-                            </>
-                        )}
-                    </button>
-                </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {loading ? (
-                    <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic', padding: '20px' }}>
-                        Loading invite codes...
-                    </p>
-                ) : inviteCodes.length === 0 ? (
-                    <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic', padding: '20px' }}>
-                        No active codes. Generate one above.
-                    </p>
-                ) : (
-                    inviteCodes.map((invite) => (
-                        <div 
-                            key={invite.code} 
-                            className="sanctuary-card" 
-                            style={{ 
-                                padding: '18px 24px', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center',
-                                backgroundColor: 'var(--glass-surface)',
-                                borderRadius: '12px',
-                                border: '1px solid var(--border)'
-                            }}
-                        >
-                            <div>
-                                <code style={{ 
-                                    fontSize: '20px', 
-                                    fontWeight: '800', 
-                                    letterSpacing: '3px', 
-                                    color: 'var(--lotus)',
-                                    fontFamily: 'monospace'
-                                }}>
-                                    {invite.code}
-                                </code>
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>
-                                    Role: {invite.authority.replace('_', ' ') || 'Guest'} • {invite.is_active === false ? 'Revoked' : invite.used ? 'Used' : 'Active'} • {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                    onClick={() => copyToClipboard(invite.code)}
-                                    title="Copy code"
-                                    style={{ 
-                                        background: 'rgba(255,255,255,0.05)', 
-                                        border: '1px solid var(--border)', 
-                                        borderRadius: '8px',
-                                        padding: '8px',
-                                        cursor: 'pointer', 
-                                        color: 'var(--ink-ghost)',
-                                        transition: 'background 0.2s'
-                                    }}
-                                >
-                                    <Copy size={16} />
-                                </button>
-                                {!invite.used && invite.is_active !== false && (
-                                    <button
-                                        onClick={() => handleRevoke(invite.code)}
-                                        title="Revoke code"
-                                        style={{ 
-                                            background: 'rgba(255,0,0,0.05)', 
-                                            border: '1px solid rgba(255,0,0,0.2)', 
-                                            borderRadius: '8px',
-                                            padding: '8px',
-                                            cursor: 'pointer', 
-                                            color: '#ef4444',
-                                            transition: 'background 0.2s'
-                                        }}
+                    {/* Generator Console */}
+                    {!isPastView && (
+                        <Box className="bg-phase-surface p-6 rounded-[32px] border border-border gap-6 shadow-sm">
+                            <VStack className="gap-4">
+                                <HStack className="justify-between items-center">
+                                    <Heading className="text-xs font-black uppercase tracking-[0.2em] text-ink/30">Select Anchor Role</Heading>
+                                    <Box className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                </HStack>
+ 
+                                <HStack className="gap-2">
+                                    <Pressable 
+                                        onPress={() => setInviteRole('teacher')}
+                                        className={`flex-1 h-12 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'teacher' ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
                                     >
-                                        <Icon as={X} size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))
-                )}
-            </div>
-        </div>
+                                        <Text className={`font-black uppercase tracking-widest text-[10px] ${inviteRole === 'teacher' ? 'text-white' : 'text-ink/40'}`}>Teacher</Text>
+                                    </Pressable>
+                                    <Pressable 
+                                        onPress={() => setInviteRole('principal')}
+                                        className={`flex-1 h-12 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'principal' ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
+                                    >
+                                        <Text className={`font-black uppercase tracking-widest text-[10px] ${inviteRole === 'principal' ? 'text-white' : 'text-ink/40'}`}>Principal</Text>
+                                    </Pressable>
+                                </HStack>
+                            </VStack>
+ 
+                            <Button 
+                                onPress={handleGenerateCode}
+                                isDisabled={generating}
+                                className="bg-ink h-14 rounded-2xl items-center justify-center shadow-lg active:scale-95"
+                            >
+                                <HStack className="items-center gap-2">
+                                    {generating ? (
+                                        <Spinner color="white" size="small" />
+                                    ) : (
+                                        <>
+                                            <Icon as={Plus} className="text-white" size="sm" />
+                                            <Text className="text-white font-black uppercase tracking-[0.1em]">Generate Access Key</Text>
+                                        </>
+                                    )}
+                                </HStack>
+                            </Button>
+                        </Box>
+                    )}
+
+                    {/* active keys list */}
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-center px-1">
+                            <Heading className="text-lg font-black text-ink uppercase tracking-widest">Active Keys</Heading>
+                            {loading && <Spinner color="amber" />}
+                        </HStack>
+
+                        {inviteCodes.length === 0 && !loading ? (
+                            <Box className="p-12 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
+                                <ShieldAlert size={48} className="text-ink/10 mb-3" />
+                                <Text className="text-center font-bold text-ink/30 italic">No keys initialized</Text>
+                            </Box>
+                        ) : (
+                            <VStack className="gap-3">
+                                {inviteCodes.map((invite) => (
+                                    <Box 
+                                        key={invite.code} 
+                                        className="bg-white p-5 rounded-3xl border border-border flex-row items-center shadow-sm"
+                                    >
+                                        <VStack className="flex-1 gap-2">
+                                            <HStack className="items-baseline gap-2">
+                                                <Text className="text-2xl font-black text-primary italic tracking-widest font-mono">
+                                                    {invite.code}
+                                                </Text>
+                                                <Box className={`px-2 py-0.5 rounded-lg ${invite.role === 'principal' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
+                                                    <Text className={`text-[10px] font-black uppercase ${invite.role === 'principal' ? 'text-amber-600' : 'text-blue-600'}`}>
+                                                        {invite.role}
+                                                    </Text>
+                                                </Box>
+                                            </HStack>
+                                            
+                                            <HStack className="gap-3">
+                                                <Text className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">
+                                                    {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
+                                                </Text>
+                                                <Box className={`w-1.5 h-1.5 rounded-full mt-1 ${invite.used ? 'bg-ink/30' : 'bg-green-500'}`} />
+                                                <Text className={`text-[10px] font-black uppercase tracking-widest ${invite.used ? 'text-ink/30' : 'text-green-600'}`}>
+                                                    {invite.used ? 'Redeemed' : 'Vivid'}
+                                                </Text>
+                                            </HStack>
+                                        </VStack>
+
+                                        <HStack className="gap-2">
+                                            <Pressable 
+                                                onPress={() => copyToClipboard(invite.code)}
+                                                className="w-11 h-11 rounded-2xl bg-phase-surface items-center justify-center border border-border transition-transform active:scale-95"
+                                            >
+                                                <Icon as={Copy} className="text-ink/60" size="sm" />
+                                            </Pressable>
+                                            
+                                            {!invite.used && invite.is_active !== false && (
+                                                <Pressable 
+                                                    onPress={() => handleRevoke(invite.code)}
+                                                    className="w-11 h-11 rounded-2xl bg-red-500/10 items-center justify-center border border-red-500/20 transition-transform active:scale-95"
+                                                >
+                                                    <Icon as={X} size="sm" className="text-red-500" />
+                                                </Pressable>
+                                            )}
+                                        </HStack>
+                                    </Box>
+                                ))}
+                            </VStack>
+                        )}
+                    </VStack>
+                </VStack>
+            </ScrollView>
+        </VStack>
     );
 };
 

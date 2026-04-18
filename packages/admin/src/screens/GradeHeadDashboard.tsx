@@ -1,20 +1,24 @@
 import React from 'react';
-import { Icon, View, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView, ActivityIndicator } from 'react-native';
 import {
     Box,
     Text,
     HStack,
     VStack,
-    
     SanctuaryButton,
     useRegisterFAB,
-    ScreenWrapper } from '@repo/ui';
+    ScreenWrapper,
+    useTheme,
+    Pressable,
+    Icon
+} from '@repo/ui';
 import { useStore } from '@repo/core';
 import { useAIAgent } from '@repo/ai';
 import { BookOpen, Users, AlertCircle } from 'lucide-react-native';
 
 export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { activeGaps, refreshStatus } = useAIAgent();
+    const theme = useTheme();
     const userRole = useStore((state: any) => state.userRole);
 
     // Register FAB globally
@@ -25,54 +29,44 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
     });
 
     return (
-        <ScreenWrapper backgroundColor={'#2A2318'}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <VStack gap="$4">
+        <ScreenWrapper>
+            <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
+                <VStack className="gap-4">
                     {/* Header */}
-                    <Box sx={{ paddingVertical: '$xl' as any }}>
-                        <Text sx={{
-                            fontSize: '$2xl' as any,
-                            fontWeight: '700',
-                            color: sacredWhite
-                        }}>
+                    <Box className="py-xl">
+                        <Text className="text-2xl font-bold text-phaseText-primary">
                             Grade Coordination
                         </Text>
-                        <Text sx={{ color: starlightGray }}>
+                        <Text className="text-phaseText-secondary">
                             Overview of grade status and teacher coordination.
                         </Text>
                     </Box>
 
                     {/* Proactive Agent Notifications */}
                     {activeGaps.length > 0 && (
-                        <VStack gap="$3">
-                            <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: sanctuarySaffron }}>
+                        <VStack className="gap-3">
+                            <Text className="font-semibold text-sm text-phase-accent uppercase">
                                 AI SUGGESTIONS
                             </Text>
                             {activeGaps.map((gap: any) => (
                                 <Box
                                     key={gap.id}
-                                    sx={{
-                                        padding: '$md' as any,
-                                        borderRadius: '$lg' as any,
-                                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
-                                        borderWidth: 1,
-                                        borderColor: sanctuarySaffron
-                                    }}
+                                    className="p-md rounded-lg bg-orange-500/10 border border-phase-accent"
                                 >
-                                    <HStack gap="$3" alignItems="center">
-                                        <AlertCircle color={sanctuarySaffron} size={20} />
-                                        <VStack sx={{ flex: 1 }}>
-                                            <Text sx={{ fontWeight: '700', color: sacredWhite }}>{gap.title}</Text>
-                                            <Text sx={{ fontSize: '$sm' as any, color: starlightGray }}>{gap.description}</Text>
+                                    <HStack className="gap-3 items-center">
+                                        <Icon as={AlertCircle} className="text-phase-accent" size="lg" />
+                                        <VStack className="flex-1">
+                                            <Text className="font-bold text-phaseText-primary">{gap.title}</Text>
+                                            <Text className="text-sm text-phaseText-secondary">{gap.description}</Text>
                                         </VStack>
                                     </HStack>
-                                    <Box sx={{ marginTop: '$3' as any }}>
+                                    <Box className="mt-3">
                                         <SanctuaryButton
                                             onPress={() => console.log('Executing relief:', gap.suggestedAction)}
                                             size="sm"
                                             variant="solid"
                                         >
-                                            Assign Relief Teacher
+                                            <Text className="text-white font-bold">Assign Relief Teacher</Text>
                                         </SanctuaryButton>
                                     </Box>
                                 </Box>
@@ -81,32 +75,32 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                     )}
 
                     {/* Operational Overview */}
-                    <HStack gap="$3">
-                        <Box sx={styles.statBox}>
-                            <Text sx={{ fontSize: '$xs' as any, color: starlightGray }}>CLASSES</Text>
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: sacredWhite }}>5</Text>
+                    <HStack className="gap-3">
+                        <Box className="flex-1 p-md rounded-xl bg-phase-surface border border-phase-border">
+                            <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">CLASSES</Text>
+                            <Text className="font-bold text-xl text-phaseText-primary mt-1">5</Text>
                         </Box>
-                        <Box sx={styles.statBox}>
-                            <Text sx={{ fontSize: '$xs' as any, color: starlightGray }}>STUDENTS</Text>
-                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: sacredWhite }}>210</Text>
+                        <Box className="flex-1 p-md rounded-xl bg-phase-surface border border-phase-border">
+                            <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">STUDENTS</Text>
+                            <Text className="font-bold text-xl text-phaseText-primary mt-1">210</Text>
                         </Box>
                     </HStack>
 
                     {/* Quick Coordination */}
-                    <VStack gap="$2">
-                        <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: starlightGray }}>
+                    <VStack className="gap-2">
+                        <Text className="font-semibold text-sm text-phaseText-secondary uppercase">
                             GRADE MANAGEMENT
                         </Text>
                         <SanctuaryButton onPress={() => { }} variant="outline">
-                            <HStack gap="$2" alignItems="center">
-                                <Icon as={Book}Open size={18} color={sacredWhite} />
-                                <Text sx={{ color: sacredWhite }}>Curriculum Alignment Pulse</Text>
+                            <HStack className="gap-2 items-center">
+                                <Icon as={BookOpen} size="md" className="text-phaseText-primary" />
+                                <Text className="text-phaseText-primary">Curriculum Alignment Pulse</Text>
                             </HStack>
                         </SanctuaryButton>
                         <SanctuaryButton onPress={() => { }} variant="outline">
-                            <HStack gap="$2" alignItems="center">
-                                <Icon as={User}s size={18} color={sacredWhite} />
-                                <Text sx={{ color: sacredWhite }}>Student Wellbeing Reports</Text>
+                            <HStack className="gap-2 items-center">
+                                <Icon as={Users} size="md" className="text-phaseText-primary" />
+                                <Text className="text-phaseText-primary">Student Wellbeing Reports</Text>
                             </HStack>
                         </SanctuaryButton>
                     </VStack>
@@ -116,15 +110,3 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
     );
 }
 
-const styles = StyleSheet.create({
-    scrollContent: {
-        padding: Theme.spacing.lg,
-        paddingBottom: 100},
-    statBox: {
-        flex: 1,
-        padding: Theme.spacing.md,
-        borderRadius: Theme.corners.comfortable,
-        backgroundColor: shroud,
-        borderWidth: 1,
-        borderColor: '#E8E2CF'}
-});

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '@repo/ui';
+import { Box, HStack, VStack, Text, Pressable } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 interface GuardianEventsProps {
   events: any[];
@@ -8,111 +8,53 @@ interface GuardianEventsProps {
   limit?: number;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
+export const GuardianEvents: React.FC<GuardianEventsProps> = ({ events, onEventPress, limit = 5 }) => {
+  const { t } = useTranslation();
 
-export const GuardianEvents: React.FC<GuardianEventsProps> = { { events, onEventPress, limit = 5 }) => {
-  const theme = useTheme();
-  const isDesktop = screenWidth > 1024;
+  const renderEventItem = (event: any) => {
+    const eventDate = new Date(event.date);
+    const day = eventDate.getDate();
+    const month = eventDate.toLocaleDateString('en', { month: 'short' });
 
-  const renderEventItem = (event: any) => (
-    <TouchableOpacity
-      key={event.id}
-      style={[
-        styles.eventItem,
-        {
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          borderWidth: 1}]}
-      onPress={() => onEventPress(event)}
-      activeOpacity={0.85}
-    >
-      <View style={styles.eventDate}>
-        <Text
-          style={[
-            styles.eventDateDay,
-            {
-              color: theme.accent.action,
-              fontFamily: 'System',
-              fontWeight: '700',
-              fontSize: isDesktop ? 18 : 14}]}
-        >
-          {new Date(event.date).getDate()}
-        </Text>
-        <Text
-          style={[
-            styles.eventDateMonth,
-            {
-              color: theme.text.secondary,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 10 : 8}]}
-        >
-          {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
-        </Text>
-      </View>
+    return (
+      <Pressable
+        key={event.id}
+        onPress={() => onEventPress(event)}
+        className="active:opacity-85"
+      >
+        <Box className="flex-row p-3 rounded-lg mb-2 items-center bg-white/60 border border-border">
+          <VStack className="items-center mr-3 min-w-[40px]">
+            <Text className="text-primary font-bold text-lg leading-tight">
+              {day}
+            </Text>
+            <Text className="text-secondary text-[10px] uppercase leading-tight font-medium">
+              {month}
+            </Text>
+          </VStack>
 
-      <View style={styles.eventDetails}>
-        <Text
-          style={[
-            styles.eventTitle,
-            {
-              color: theme.text.primary,
-              fontFamily: 'System',
-              fontWeight: '600',
-              fontSize: isDesktop ? 14 : 12}]}
-        >
-          {event.title}
-        </Text>
-        <Text
-          style={[
-            styles.eventTime,
-            {
-              color: theme.text.secondary,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10}]}
-        >
-          {event.time}
-          {event.location ? ` · ${event.location}` : ''}
-        </Text>
-      </View>
+          <VStack className="flex-1">
+            <Text className="text-primary font-semibold text-sm mb-1">
+              {event.title}
+            </Text>
+            <Text className="text-secondary text-xs opacity-70">
+              {event.time}
+              {event.location ? ` · ${event.location}` : ''}
+            </Text>
+          </VStack>
 
-      {event.requiresRsvp ? (
-        <View style={[styles.rsvpBadge, { backgroundColor: theme.accent.action + '20' }]}>
-          <Text style={[styles.rsvpText, { color: theme.accent.action }]}>RSVP</Text>
-        </View>
-      ) : null}
-    </TouchableOpacity>
+          {event.requiresRsvp && (
+            <Box className="px-2 py-1 rounded-xl bg-primary/10">
+              <Text className="text-primary text-[10px] font-bold">RSVP</Text>
+            </Box>
+          )}
+        </Box>
+      </Pressable>
+    );
+  };
+
+  return (
+    <VStack className="gap-2">
+      {events.slice(0, limit).map(renderEventItem)}
+    </VStack>
   );
-
-  return <View style={styles.eventsList}>{events.slice(0, limit).map(renderEventItem)}</View>;
 };
-
-const styles = StyleSheet.create({
-  eventsList: {
-    gap: 8},
-  eventItem: {
-    flexDirection: 'row',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-    alignItems: 'center'},
-  eventDate: {
-    alignItems: 'center',
-    marginRight: 12,
-    minWidth: 40},
-  eventDateDay: {
-    marginBottom: 2},
-  eventDateMonth: {
-    textTransform: 'uppercase'},
-  eventDetails: {
-    flex: 1},
-  eventTitle: {
-    marginBottom: 4},
-  eventTime: {
-    opacity: 0.7},
-  rsvpBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12},
-  rsvpText: {
-    fontSize: 10,
-    fontWeight: '600'}});

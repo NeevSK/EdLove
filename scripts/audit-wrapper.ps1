@@ -39,17 +39,32 @@ $duration = $endTime - $startTime
 $errors = 0
 $warnings = 0
 if (Test-Path $Log) {
-    $content = Get-Content $Log
-    $errors = ($content | Select-String -Pattern "error TS|Error:|(line \d+, col \d+): error|❌|Found \d+ errors\." -AllMatches).Matches.Count
-    $warnings = ($content | Select-String -Pattern "warning TS|Warning:|⚠️|Found \d+ warnings\." -AllMatches).Matches.Count
+    # Ensure we use UTF-8 when reading the log
+    $content = Get-Content -Path $Log -Encoding utf8
+    
+    # Filter out the "Found X errors." summary line to avoid double-counting
+    $errorLines = $content | Where-Object { $_ -match "error TS|Error:|(line \d+, col \d+): error|❌" -and $_ -notmatch "Found \d+ errors" }
+    $errors = ($errorLines | Measure-Object).Count
+    
+    $warningLines = $content | Where-Object { $_ -match "warning TS|Warning:|⚠️" -and $_ -notmatch "Found \d+ warnings" }
+    $warnings = ($warningLines | Measure-Object).Count
 }
 
 # Summary Report
 Write-Host "`n----------------------------------------" -ForegroundColor Gray
 Write-Host "AUDIT SUMMARY" -ForegroundColor Yellow
 Write-Host "Duration: $($duration.Minutes)m $($duration.Seconds)s"
-Write-Host "Status:   $(if($exitCode -eq 0){'SUCCESS'}else{'FAILED'})" -ForegroundColor $(if($exitCode -eq 0){'Green'}else{'Red'})
-Write-Host "Errors:   $errors" -ForegroundColor $(if($errors -gt 0){'Red'}else{'White'})
+Write-Host "Status:   $(if($exitCode -eq 0 -and $errors -eq 0){'SUCCESS'}else{'FAILED'})" -ForegroundColor $(if($exitCode -eq 0 -and $errors -eq 0){'Green'}else{'Red'})
+
+if ($errors -gt 0) {
+    Write-Host "Errors:   $errors" -ForegroundColor Red
+    Write-Host "Top Errors:" -ForegroundColor Gray
+    $errorLines | Select-Object -First 5 | ForEach-Object { Write-Host "  $($_.Trim())" -ForegroundColor White }
+    if ($errors -gt 5) { Write-Host "  ... and $($errors - 5) more" -ForegroundColor Gray }
+} else {
+    Write-Host "Errors:   0" -ForegroundColor White
+}
+
 Write-Host "Warnings: $warnings" -ForegroundColor $(if($warnings -gt 0){'Yellow'}else{'White'})
 Write-Host "Finished: $endTime"
 Write-Host "Log File: $Log"

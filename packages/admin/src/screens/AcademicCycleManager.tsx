@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Icon, VStack,
+import { 
+    Icon, 
+    VStack,
     HStack,
     Box,
     Text,
     Pressable,
-    
-    useThemedColors,
     GlobalHeader,
     Input,
     InputField,
@@ -14,7 +14,8 @@ import { Icon, VStack,
     hapticLight,
     hapticSuccess,
     ScrollView,
-    SkeletonCard } from '@repo/ui';
+    SkeletonCard 
+} from '@repo/ui';
 import {
     Calendar,
     Plus,
@@ -23,9 +24,9 @@ import {
     Circle,
     Clock
 } from 'lucide-react-native';
-import { api, AcademicCycle } from '@repo/core';
+import { api, type AcademicCycle } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 
 interface AcademicCycleManagerProps {
     schoolId: string;
@@ -34,7 +35,6 @@ interface AcademicCycleManagerProps {
 
 export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycleManagerProps) {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
     const [cycles, setCycles] = useState<AcademicCycle[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
@@ -54,7 +54,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             console.error('Failed to fetch cycles:', error);
         } finally {
             setLoading(false);
-        };
+        }
+    };
 
     useEffect(() => {
         fetchCycles();
@@ -86,7 +87,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             Alert.alert('Error', 'Failed to create academic cycle');
         } finally {
             setSaving(false);
-        };
+        }
+    };
 
     const handleSetCurrent = async (cycleId: string) => {
         try {
@@ -95,7 +97,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             fetchCycles();
         } catch (error) {
             Alert.alert('Error', 'Failed to update cycle');
-        };
+        }
+    };
 
     const handleDelete = (cycleId: string) => {
         Alert.alert(
@@ -122,9 +125,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            <Box className="flex-1 bg-silk">
                 <GlobalHeader title="Academic Cycles" onBack={onBack} />
-                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.md }}>
+                <VStack className="p-6 gap-4">
                     <SkeletonCard height={100} />
                     <SkeletonCard height={100} />
                     <SkeletonCard height={100} />
@@ -134,63 +137,72 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box className="flex-1 bg-silk">
             <GlobalHeader
                 title={t('principal.cycles.title') || 'Academic Cycles'}
                 onBack={onBack}
                 rightAction={
                     <Pressable onPress={() => setShowAddForm(!showAddForm)}>
-                        <Icon as={Plus} size={24} color={colors.action} />
+                        <Icon as={Plus} size={24} className="text-primary" />
                     </Pressable>
                 }
             />
 
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
-                <VStack sx={{ gap: Theme.spacing.xl }}>
+            <ScrollView contentContainerStyle={{ padding: 24 }}>
+                <VStack className="gap-8">
                     <Box>
-                        <Text color={colors.textSecondary} sx={{ fontSize: 13, marginBottom: Theme.spacing.xs }}>
+                        <Text className="text-ink/60 text-[13px] mb-1">
                             {t('principal.cycles.description') || 'Define your terms and semesters to synchronize syllabus progress and attendance reports.'}
                         </Text>
                     </Box>
 
                     {showAddForm && (
-                        <Box sx={{
-                            backgroundColor: colors.surface,
-                            padding: Theme.spacing.lg,
-                            borderRadius: Theme.corners.comfortable,
-                            borderWidth: 1,
-                            borderColor: colors.border
-                        }}>
-                            <VStack sx={{ gap: Theme.spacing.md }}>
-                                <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>New Cycle</Text>
+                        <Box className="bg-white p-6 rounded-[24px] border border-border shadow-sm">
+                            <VStack className="gap-4">
+                                <Text className="text-sm font-black text-ink uppercase tracking-widest">New Cycle</Text>
 
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ fontSize: 12, color: colors.textSecondary }}>Name (e.g. Term 1 2026)</Text>
-                                    <Input variant="underlined">
-                                        <InputField value={name} onChangeText={setName} placeholder="Cycle Name" sx={{ color: colors.text }} />
+                                <VStack className="gap-1">
+                                    <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">Name (e.g. Term 1 2026)</Text>
+                                    <Input variant="underlined" className="border-border">
+                                        <InputField 
+                                            value={name} 
+                                            onChangeText={setName} 
+                                            placeholder="Cycle Name" 
+                                            className="text-ink font-bold"
+                                        />
                                     </Input>
                                 </VStack>
 
-                                <HStack sx={{ gap: Theme.spacing.md }}>
-                                    <VStack sx={{ flex: 1, gap: Theme.spacing.xs }}>
-                                        <Text sx={{ fontSize: 12, color: colors.textSecondary }}>Start Date</Text>
-                                        <Input variant="underlined">
-                                            <InputField value={startDate} onChangeText={setStartDate} placeholder="YYYY-MM-DD" sx={{ color: colors.text }} />
+                                <HStack className="gap-4">
+                                    <VStack className="flex-1 gap-1">
+                                        <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">Start Date</Text>
+                                        <Input variant="underlined" className="border-border">
+                                            <InputField 
+                                                value={startDate} 
+                                                onChangeText={setStartDate} 
+                                                placeholder="YYYY-MM-DD" 
+                                                className="text-ink font-bold"
+                                            />
                                         </Input>
                                     </VStack>
-                                    <VStack sx={{ flex: 1, gap: Theme.spacing.xs }}>
-                                        <Text sx={{ fontSize: 12, color: colors.textSecondary }}>End Date</Text>
-                                        <Input variant="underlined">
-                                            <InputField value={endDate} onChangeText={setEndDate} placeholder="YYYY-MM-DD" sx={{ color: colors.text }} />
+                                    <VStack className="flex-1 gap-1">
+                                        <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">End Date</Text>
+                                        <Input variant="underlined" className="border-border">
+                                            <InputField 
+                                                value={endDate} 
+                                                onChangeText={setEndDate} 
+                                                placeholder="YYYY-MM-DD" 
+                                                className="text-ink font-bold"
+                                            />
                                         </Input>
                                     </VStack>
                                 </HStack>
 
-                                <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
+                                <HStack className="gap-3 items-center">
                                     <Pressable onPress={() => setIsCurrent(!isCurrent)}>
-                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                            {isCurrent ? <Icon as={Check}Circle2 size={18} color={colors.success} /> : <Circle size={18} color={colors.textSecondary} />}
-                                            <Text sx={{ fontSize: 13, color: colors.text }}>Set as Current Cycle</Text>
+                                        <HStack className="gap-2 items-center">
+                                            {isCurrent ? <Icon as={CheckCircle2} size={18} className="text-green-500" /> : <Icon as={Circle} size={18} className="text-ink/40" />}
+                                            <Text className="text-[13px] font-bold text-ink">Set as Current Cycle</Text>
                                         </HStack>
                                     </Pressable>
                                 </HStack>
@@ -198,66 +210,52 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                 <Button
                                     onPress={handleCreate}
                                     disabled={saving}
-                                    sx={{
-                                        backgroundColor: colors.action,
-                                        borderRadius: Theme.corners.medium,
-                                        marginTop: Theme.spacing.sm
-                                    }}
+                                    className="bg-primary rounded-full h-12 shadow-sm mt-2"
                                 >
-                                    <ButtonText color={sacredWhite}>{saving ? 'Saving...' : 'Create Cycle'}</ButtonText>
+                                    <ButtonText className="text-white font-black uppercase tracking-widest">{saving ? 'Saving...' : 'Create Cycle'}</ButtonText>
                                 </Button>
                             </VStack>
                         </Box>
                     )}
 
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-4">
                         {cycles.length === 0 ? (
-                            <Box sx={{ alignItems: 'center', padding: Theme.spacing.xl }}>
-                                <Icon as={Calendar} size={48} color={colors.textSecondary} strokeWidth={1} />
-                                <Text sx={{ marginTop: Theme.spacing.md, color: colors.textSecondary }}>No cycles defined yet.</Text>
+                            <Box className="items-center p-12">
+                                <Icon as={Calendar} size={48} className="text-ink/20" strokeWidth={1} />
+                                <Text className="mt-4 text-ink/40 font-bold">No cycles defined yet.</Text>
                             </Box>
                         ) : (
                             cycles.map((cycle) => (
                                 <Box
                                     key={cycle.id}
-                                    sx={{
-                                        backgroundColor: colors.surface,
-                                        padding: Theme.spacing.md,
-                                        borderRadius: Theme.corners.comfortable,
-                                        borderWidth: 1,
-                                        borderColor: cycle.is_current ? colors.success : colors.border}}
+                                    className={`bg-white p-5 rounded-[24px] border border-border shadow-sm ${cycle.is_current ? 'border-green-500/30' : ''}`}
                                 >
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                                <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{cycle.name}</Text>
+                                    <HStack className="justify-between items-start">
+                                        <VStack className="gap-1 flex-1">
+                                            <HStack className="gap-2 items-center">
+                                                <Text className="text-lg font-black text-ink">{cycle.name}</Text>
                                                 {cycle.is_current && (
-                                                    <Box sx={{
-                                                        backgroundColor: colors.success + '22',
-                                                        paddingHorizontal: 8,
-                                                        paddingVertical: 2,
-                                                        borderRadius: 10
-                                                    }}>
-                                                        <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.success }}>CURRENT</Text>
+                                                    <Box className="bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                                                        <Text className="text-[10px] font-black text-green-600 uppercase">CURRENT</Text>
                                                     </Box>
                                                 )}
                                             </HStack>
-                                            <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                                <Icon as={Clock} size={12} color={colors.textSecondary} />
-                                                <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                                            <HStack className="gap-2 items-center">
+                                                <Icon as={Clock} size={12} className="text-ink/40" />
+                                                <Text className="text-xs font-bold text-ink/40">
                                                     {cycle.start_date} to {cycle.end_date}
                                                 </Text>
                                             </HStack>
                                         </VStack>
 
-                                        <HStack sx={{ gap: Theme.spacing.md }}>
+                                        <HStack className="gap-4">
                                             {!cycle.is_current && (
                                                 <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}>
-                                                    <Icon as={Check}Circle2 size={20} color={colors.textSecondary} />
+                                                    <Icon as={CheckCircle2} size={20} className="text-ink/20" />
                                                 </TouchableOpacity>
                                             )}
                                             <TouchableOpacity onPress={() => handleDelete(cycle.id)}>
-                                                <Icon as={Trash2} size={20} color={emberRed} />
+                                                <Icon as={Trash2} size={20} className="text-red-500" />
                                             </TouchableOpacity>
                                         </HStack>
                                     </HStack>
@@ -270,5 +268,3 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         </Box>
     );
 }
-
-const styles = StyleSheet.create({});

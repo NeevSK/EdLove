@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Icon, TouchableOpacity, Dimensions } from 'react-native';
+import { TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
     useStore,
     FounderStackParamList,
-    School} from '@repo/core';
+    School
+} from '@repo/core';
 import { useFounderEcosystemStats } from '../bridge/founderWorkspace';
 import {
     Box,
@@ -16,46 +17,32 @@ import {
     ScrollView,
     ScreenWrapper,
     GlobalHeader,
-    SkeletonCard,
-    useThemedColors,
-    
-    SandboxBanner,
-    FounderGlow,
-    hapticLight,
-    useRegisterFAB } from '@repo/ui';
+    Icon,
+    useRegisterFAB
+} from '@repo/ui';
 import {
-    Globe,
-    Zap,
     Users,
     School as SchoolIcon,
     ChevronRight,
-    Search,
     LayoutGrid,
-    TrendingUp,
     HeartPulse,
     Plus,
-    Wind
+    Wind,
+    Zap
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { GlobalCreateModal } from '../components';
 
-/**
- * FounderDashboard Component
- * 
- * High-level platform overview for Founders/Admins.
- */
 export default function FounderDashboard() {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
-    const { isDemoMode } = useStore();
-    const user = useStore(state => state.user);
+    const { isDemoMode, user, setBreathingOpen } = useStore();
     const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
     const { stats, schools, isLoading, refreshData } = useFounderEcosystemStats();
     const [searchQuery, setSearchQuery] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    const filteredSchools = { schools || []).filter(s =>
+    const filteredSchools = (schools || []).filter(s =>
         s?.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -68,152 +55,134 @@ export default function FounderDashboard() {
     useRegisterFAB({
         tabType: 'founder',
         onPress: () => setIsCreateModalOpen(true),
-        icon: <Icon as={Plus} size={24} color="#FFF" />,
+        icon: <Plus size={24} color="#FFF" />,
         visible: true
     });
 
     return (
         <ScreenWrapper>
-            {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('founder.platformDashboard') || 'Platform Dashboard'}
                 subtitle={t('founder.ecosystemTitle') || 'The Gurudevi Ecology'}
             />
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}>
-                    {/* 1. Ecosystem Pulse (Aggregate Stats) */}
-                    <VStack space="md">
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Heading sx={{ fontSize: 18, fontWeight: '700' }} color={colors.text}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+                <VStack className="p-5 gap-8">
+                    {/* 1. Ecosystem Pulse */}
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-center">
+                            <Heading className="text-xl font-bold text-ink">
                                 Ecosystem Pulse
                             </Heading>
-                            <FounderGlow active={true} intensity="subtle">
-                                <HStack sx={{ gap: 4, alignItems: 'center', backgroundColor: colors.secondary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
-                                    <HeartPulse size={16} color={colors.success} />
-                                    <Text sx={{ fontSize: 12, fontWeight: '800' }} color={colors.success}>
-                                        Health: {stats?.ecosystem_health || 0}%
-                                    </Text>
-                                </HStack>
-                            </FounderGlow>
+                            <Box className="flex-row items-center gap-2 bg-phase-warning/10 px-3 py-1.5 rounded-full">
+                                <HeartPulse size={16} className="text-primary" />
+                                <Text className="text-xs font-black text-primary">
+                                    Health: {stats?.ecosystem_health || 0}%
+                                </Text>
+                            </Box>
                         </HStack>
 
                         {/* Quick Access to Main School */}
                         {schools.find(s => s.id === user?.school_id) && (
                             <TouchableOpacity
+                                activeOpacity={0.7}
                                 onPress={() => {
-                                    const schoolId = user?.school_id || schools.find(s => s.id === user?.school_id)?.id;
+                                    const schoolId = user?.school_id;
                                     if (schoolId) {
                                         navigation.navigate('FounderSchoolDashboard', {
                                             schoolId: schoolId,
                                             userId: user?.id || 'founder-id'
                                         });
                                     }
-                                }}
-                            >
-                                <Box sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: sanctuarySaffron + '11',
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                    borderColor: sanctuarySaffron,
-                                    marginBottom: Theme.spacing.md
                                 }}>
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                            <SchoolIcon size={24} color={sanctuarySaffron} />
-                                            <VStack>
-                                                <Text sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text>
-                                                <Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text>
+                                <Box className="p-4 bg-primary/5 rounded-3xl border border-primary/20">
+                                    <HStack className="justify-between items-center">
+                                        <HStack className="gap-4 items-center flex-1">
+                                            <Box className="w-12 h-12 bg-primary/10 rounded-2xl items-center justify-center">
+                                                <SchoolIcon size={24} className="text-primary" />
+                                            </Box>
+                                            <VStack className="flex-1">
+                                                <Text className="font-bold text-ink">Manage My Institution</Text>
+                                                <Text className="text-xs text-ink/60">Full principal oversight for your school</Text>
                                             </VStack>
                                         </HStack>
-                                        <Icon as={ChevronRight} size={20} color={colors.textTertiary} />
+                                        <Icon as={ChevronRight} size={20} className="text-ink/30" />
                                     </HStack>
                                 </Box>
                             </TouchableOpacity>
                         )}
 
-
                         {isLoading ? (
-                            <HStack space="md">
-                                <SkeletonCard height={80} style={{ flex: 1 }} />
-                                <SkeletonCard height={80} style={{ flex: 1 }} />
+                            <HStack className="gap-4">
+                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse" />
+                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse" />
                             </HStack>
                         ) : (
-                            <HStack space="md">
-                                <StatCard
-                                    label="Total Schools"
-                                    value={stats?.total_schools || 0}
-                                    icon={<SchoolIcon size={20} color={colors.action} />}
-                                    color={colors.action}
-                                />
-                                <StatCard
-                                    label="Total Souls"
-                                    value={stats?.total_users || 0}
-                                    icon={<Icon as={User}s size={20} color={colors.success} />}
-                                    color={colors.success}
-                                />
-                            </HStack>
-                        )}
-
-                        {!isLoading && (
-                            <HStack space="md">
-                                <StatCard
-                                    label="Classrooms"
-                                    value={stats?.total_classrooms || 0}
-                                    icon={<Icon as={Layout}Grid size={20} color={colors.warning} />}
-                                    color={colors.warning}
-                                />
-                                <StatCard
-                                    label="Teachers"
-                                    value={stats?.total_teachers || 0}
-                                    icon={<Zap size={20} color={sanctuarySaffron} />}
-                                    color={sanctuarySaffron}
-                                />
-                            </HStack>
+                            <VStack className="gap-4">
+                                <HStack className="gap-4">
+                                    <StatCard
+                                        label="Total Schools"
+                                        value={stats?.total_schools || 0}
+                                        icon={<SchoolIcon size={20} />}
+                                        variant="primary"
+                                    />
+                                    <StatCard
+                                        label="Total Souls"
+                                        value={stats?.total_users || 0}
+                                        icon={<Users size={20} />}
+                                        variant="success"
+                                    />
+                                </HStack>
+                                <HStack className="gap-4">
+                                    <StatCard
+                                        label="Classrooms"
+                                        value={stats?.total_classrooms || 0}
+                                        icon={<LayoutGrid size={20} />}
+                                        variant="warning"
+                                    />
+                                    <StatCard
+                                        label="Teachers"
+                                        value={stats?.total_teachers || 0}
+                                        icon={<Zap size={20} />}
+                                        variant="accent"
+                                    />
+                                </HStack>
+                            </VStack>
                         )}
 
                         {/* Quick Actions */}
-                        <HStack space="md" sx={{ marginTop: Theme.spacing.sm }}>
+                        <HStack className="gap-4 mt-2">
                             <QuickAction
                                 icon={Wind}
                                 label={t('founder.breathing') || 'Breathing Reset'}
-                                onPress={() => {
-                                    const { setBreathingOpen } = useStore.getState();
-                                    setBreathingOpen(true);
-                                }}
-                                color={lotusDeepPink}
+                                onPress={() => setBreathingOpen(true)}
+                                color="#D4843A"
                             />
-                            <Box sx={{ flex: 1 }} />
-                            <Box sx={{ flex: 1 }} />
+                            <Box className="flex-1" />
+                            <Box className="flex-1" />
                         </HStack>
                     </VStack>
 
                     {/* 2. School Gallery */}
-                    <VStack space="md">
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Heading sx={{ fontSize: 18, fontWeight: '700' }} color={colors.text}>
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-center">
+                            <Heading className="text-xl font-bold text-ink">
                                 Institutions
                             </Heading>
-                            <Box sx={{
-                                paddingHorizontal: 8,
-                                paddingVertical: 2,
-                                borderRadius: 12,
-                                backgroundColor: colors.secondary
-                            }}>
-                                <Text sx={{ fontSize: 12 }} color={colors.textSecondary}>
+                            <Box className="px-3 py-1 bg-ink/5 rounded-full">
+                                <Text className="text-xs text-ink/60 font-bold">
                                     {filteredSchools.length} Registered
                                 </Text>
                             </Box>
                         </HStack>
 
                         {isLoading ? (
-                            <VStack space="md">
-                                <SkeletonCard height={100} />
-                                <SkeletonCard height={100} />
+                            <VStack className="gap-4">
+                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse" />
+                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse" />
                             </VStack>
                         ) : (
-                            <VStack space="md">
+                            <VStack className="gap-3">
                                 {filteredSchools.map((school) => (
                                     <SchoolGalleryItem
                                         key={school.id}
@@ -228,16 +197,8 @@ export default function FounderDashboard() {
                                 ))}
 
                                 {filteredSchools.length === 0 && (
-                                    <Box sx={{
-                                        padding: Theme.spacing.xl,
-                                        alignItems: 'center',
-                                        backgroundColor: colors.secondary,
-                                        borderRadius: Theme.corners.comfortable,
-                                        borderWidth: 1,
-                                        borderColor: colors.border,
-                                        borderStyle: 'dashed'
-                                    }}>
-                                        <Text color={colors.textTertiary}>No institutions found</Text>
+                                    <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
+                                        <Text className="text-ink/40 font-bold">No institutions found</Text>
                                     </Box>
                                 )}
                             </VStack>
@@ -256,103 +217,61 @@ export default function FounderDashboard() {
     );
 }
 
-/**
- * QuickAction Sub-component
- */
 function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, label: string, onPress: () => void, color: string }) {
-    const colors = useTheme().scene;
     return (
-        <VStack sx={{ flex: 1, gap: Theme.spacing.xs, alignItems: 'center' }}>
+        <VStack className="flex-1 gap-2 items-center">
             <TouchableOpacity
-                onPress={() => {
-                    hapticLight();
-                    onPress();
-                }}
-            >
-                <Box
-                    sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: Theme.corners.comfortable,
-                        backgroundColor: colors.secondary,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        borderColor: colors.border
-                    }}
-                >
-                    <LucideIcon color={color} size={28} />
-                </Box>
+                activeOpacity={0.7}
+                onPress={onPress}
+                className="w-16 h-16 rounded-[20px] bg-white border border-border items-center justify-center shadow-sm active:scale-95">
+                <LucideIcon color={color} size={28} />
             </TouchableOpacity>
-            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 11, fontWeight: '700' }}>
+            <Text className="text-center text-[11px] font-bold text-ink">
                 {label}
             </Text>
         </VStack>
     );
 }
 
-/**
- * StatCard Sub-component
- */
-function StatCard({ label, value, icon, color }: { label: string, value: number, icon: React.ReactNode, color: string }) {
-    const colors = useTheme().scene;
+function StatCard({ label, value, icon, variant }: { label: string, value: number, icon: React.ReactNode, variant: 'primary' | 'success' | 'warning' | 'accent' }) {
+    const variantClasses = {
+        primary: 'border-primary/30 text-primary bg-primary/5',
+        success: 'border-green-500/30 text-green-600 bg-green-500/5',
+        warning: 'border-amber-500/30 text-amber-600 bg-amber-500/5',
+        accent: 'border-orange-500/30 text-orange-600 bg-orange-500/5'
+    };
+
     return (
-        <Box sx={{
-            flex: 1,
-            padding: Theme.spacing.lg,
-            backgroundColor: colors.secondary,
-            borderRadius: Theme.corners.comfortable,
-            borderLeftWidth: 4,
-            borderLeftColor: color
-        }}>
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <Box className={`flex-1 p-5 rounded-3xl border ${variantClasses[variant]}`}>
+            <Box className="mb-2 opacity-60">
                 {icon}
-            </HStack>
-            <Text sx={{ fontSize: 24, fontWeight: '800' }} color={colors.text}>
+            </Box>
+            <Text className="text-2xl font-black text-ink">
                 {value.toLocaleString()}
             </Text>
-            <Text sx={{ fontSize: 11, fontWeight: '600' }} color={colors.textTertiary}>
-                {label.toUpperCase()}
+            <Text className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40 mt-1">
+                {label}
             </Text>
         </Box>
     );
 }
 
-/**
- * SchoolGalleryItem Sub-component
- */
 function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () => void }) {
-    const colors = useTheme().scene;
     return (
         <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-            <Box sx={{
-                padding: Theme.spacing.md,
-                backgroundColor: colors.secondary,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: colors.border
-            }}>
-                <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                    <Box sx={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 12,
-                        backgroundColor: colors.action + '22',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}>
-                        <SchoolIcon size={24} color={colors.action} />
-                    </Box>
-                    <VStack sx={{ flex: 1 }}>
-                        <Text sx={{ fontWeight: '700', fontSize: 16 }} color={colors.text}>
-                            {school.name}
-                        </Text>
-                        <Text sx={{ fontSize: 12 }} color={colors.textSecondary}>
-                            {school.type} • {school.id.substring(0, 8)}...
-                        </Text>
-                    </VStack>
-                    <Icon as={ChevronRight} size={20} color={colors.textTertiary} />
-                </HStack>
+            <Box className="p-4 bg-white rounded-3xl border border-border flex-row items-center gap-4 active:bg-ink/5">
+                <Box className="w-12 h-12 rounded-2xl bg-primary/10 items-center justify-center">
+                    <SchoolIcon size={24} className="text-primary" />
+                </Box>
+                <VStack className="flex-1">
+                    <Text className="font-bold text-base text-ink">
+                        {school.name}
+                    </Text>
+                    <Text className="text-xs text-ink/60">
+                        {school.type} • {school.id.substring(0, 8)}...
+                    </Text>
+                </VStack>
+                <Icon as={ChevronRight} size={20} className="text-ink/30" />
             </Box>
         </TouchableOpacity>
     );

@@ -1,15 +1,5 @@
-/**
- * FounderSchoolView Component
- * 
- * Platform Vision and Executive Oversight for Founders
- * Features:
- * - Ecology Health (Cross-department trends)
- * - Visionary Metrics (Growth, Impact)
- * - Executive Announcements
- */
-
 import React, { useState } from 'react';
-import { Icon, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import {
     Box,
@@ -18,14 +8,17 @@ import {
     VStack,
     HStack,
     ScrollView,
-    
+    Icon,
     GlobalHeader,
     useThemedColors,
+    useTheme,
     ScreenWrapper,
     SandboxBanner,
     SkeletonCard,
     PositiveInvitation,
-    hapticLight } from '@repo/ui';
+    hapticLight,
+    Theme
+} from '@repo/ui';
 import { useStore, useFeatureAccess, type FounderStackParamList } from '@repo/core';
 import { Compass, Zap, Globe, Heart, Plus } from 'lucide-react-native';
 import { CreateSchoolModal } from '../components';
@@ -41,7 +34,8 @@ interface FounderSchoolDashboardProps {
 
 export default function FounderSchoolDashboard({ schoolId, userId }: FounderSchoolDashboardProps) {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
+    const colors = useThemedColors();
+    const theme = useTheme();
     const { isGuest } = useFeatureAccess();
     const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
@@ -59,25 +53,20 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
             />
             
             <ScrollView>
-                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
+                <VStack className="p-6 gap-6">
                     {/* Main Content */}
                     {stats && !isLoading && (
-                        <VStack sx={{ gap: Theme.spacing.lg }}>
+                        <VStack className="gap-6">
                             {(stats as any).is_sample && (
-                                <Box sx={{
-                                    backgroundColor: (amberGlow || '#ffc107') + '22',
-                                    padding: Theme.spacing.md,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                    borderColor: amberGlow || '#ffc107',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: Theme.spacing.sm,
-                                    marginBottom: Theme.spacing.sm
-                                }}>
-                                    <Zap size={16} color={amberGlow || '#ffc107'} fill={amberGlow || '#ffc107'} />
-                                    <Text sx={{ fontSize: 13, color: amberGlow || '#ffc107', fontWeight: '700' }}>
+                                <Box 
+                                    className="p-4 rounded-xl border items-center justify-center flex-row gap-2 mb-2"
+                                    style={{
+                                        backgroundColor: (theme.accent.reward || '#ffc107') + '22',
+                                        borderColor: theme.accent.reward || '#ffc107',
+                                    }}
+                                >
+                                    <Icon as={Zap} size="sm" color={theme.accent.reward} fill={theme.accent.reward} />
+                                    <Text className="text-xs font-bold" style={{ color: theme.accent.reward }}>
                                         {t('demoMode.visionaryEcology') || "VISIONARY ECOLOGY: Previewing platform potential"}
                                     </Text>
                                 </Box>
@@ -85,50 +74,52 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
 
                             {/* Visionary Summary */}
                             <Box
-                                sx={{
-                                    padding: Theme.spacing.xl,
-                                    backgroundColor: colors?.action || '#2196f3',
-                                    borderRadius: Theme.corners.generous,
+                                className="p-8 rounded-3xl"
+                                style={{
+                                    backgroundColor: colors.action,
                                     ...Theme.shadows.lg
                                 }}
                             >
-                                <VStack sx={{ gap: Theme.spacing.sm }}>
-                                    <HStack sx={{ alignItems: "center", gap: Theme.spacing.sm }}>
-                                        <Icon as={Compass} color={white || '#fff'} size={24} />
-                                        <Text sx={{ color: white || '#fff', fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
+                                <VStack className="gap-2">
+                                    <HStack className="items-center gap-2">
+                                        <Icon as={Compass} color={theme.text.inverse} size="lg" />
+                                        <Text 
+                                            className="font-bold text-lg"
+                                            style={{ color: theme.text.inverse }}
+                                        >
                                             {t('founder.ecologyStatus', { status: 'Balanced' })}
                                         </Text>
                                     </HStack>
-                                    <Text sx={{ color: "rgba(255,255,255,0.85)", fontSize: Theme.typography.fontSize.sm }}>
+                                    <Text className="text-sm opacity-90" style={{ color: theme.text.inverse }}>
                                         {t('founder.visionManifesting', { count: stats?.total_sections || 0 })}
                                     </Text>
                                 </VStack>
                             </Box>
 
                             {/* Platform Metrics */}
-                            <VStack sx={{ gap: Theme.spacing.md }}>
-                                <Heading sx={{ color: colors?.text || '#fff', fontSize: Theme.typography.fontSize.md }}>
+                            <VStack className="gap-4">
+                                <Heading className="text-base" style={{ color: theme.text.primary }}>
                                     {t('founder.executiveOversight')}
                                 </Heading>
-                                <HStack sx={{ gap: Theme.spacing.md }}>
-                                    <Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors?.secondary || '#111', borderRadius: Theme.corners.comfortable }}>
-                                        <HStack sx={{ justifyContent: "space-between", alignItems: "center" }}>
-                                            <Icon as={Globe} color={colors?.action || '#2196f3'} size={20} />
-                                            {isDemoMode && <Zap size={12} color={sanctuarySaffron || '#ff9800'} fill={sanctuarySaffron || '#ff9800'} />}
+                                <HStack className="gap-4">
+                                    <Box className="flex-1 p-4 rounded-xl" style={{ backgroundColor: colors.secondary }}>
+                                        <HStack className="justify-between items-center">
+                                            <Icon as={Globe} color={colors.action} size="md" />
+                                            {isDemoMode && <Icon as={Zap} size="xs" color={theme.accent.reward} fill={theme.accent.reward} />}
                                         </HStack>
-                                        <Text sx={{ color: colors?.text || '#fff', fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>
+                                        <Text className="font-bold text-2xl mt-2" style={{ color: theme.text.primary }}>
                                             {stats?.total_students || 0}
                                         </Text>
-                                        <Text sx={{ color: colors?.textSecondary || '#aaa', fontSize: Theme.typography.fontSize.xs }}>
+                                        <Text className="text-xs" style={{ color: theme.text.secondary }}>
                                             {t('founder.totalSouls')}
                                         </Text>
                                     </Box>
-                                    <Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors?.secondary || '#111', borderRadius: Theme.corners.comfortable }}>
-                                        <Zap color={colors?.warning || '#ff9800'} size={20} />
-                                        <Text sx={{ color: colors?.text || '#fff', fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>
+                                    <Box className="flex-1 p-4 rounded-xl" style={{ backgroundColor: colors.secondary }}>
+                                        <Icon as={Zap} color={colors.warning} size="md" />
+                                        <Text className="font-bold text-2xl mt-2" style={{ color: theme.text.primary }}>
                                             {stats?.total_teachers || 0}
                                         </Text>
-                                        <Text sx={{ color: colors?.textSecondary || '#aaa', fontSize: Theme.typography.fontSize.xs }}>
+                                        <Text className="text-xs" style={{ color: theme.text.secondary }}>
                                             {t('founder.guidingSpirits')}
                                         </Text>
                                     </Box>
@@ -136,21 +127,27 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                             </VStack>
 
                             {/* Ecology Health */}
-                            <VStack sx={{ gap: Theme.spacing.md }}>
-                                <Heading sx={{ color: colors?.textSecondary || '#aaa', fontSize: Theme.typography.fontSize.sm }}>
+                            <VStack className="gap-4">
+                                <Heading className="text-sm" style={{ color: theme.text.secondary }}>
                                     {t('founder.visionaryInsights')}
                                 </Heading>
-                                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors?.secondary || '#111', borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors?.border || 'rgba(255,255,255,0.1)' }}>
-                                    <HStack sx={{ justifyContent: "space-between", alignItems: "center" }}>
-                                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                                            <Text sx={{ color: colors?.text || '#fff', fontWeight: '700' }}>
+                                <Box 
+                                    className="p-4 rounded-xl border"
+                                    style={{ 
+                                        backgroundColor: colors.secondary,
+                                        borderColor: colors.border
+                                    }}
+                                >
+                                    <HStack className="justify-between items-center">
+                                        <VStack className="gap-1">
+                                            <Text className="font-bold" style={{ color: theme.text.primary }}>
                                                 {t('founder.wellnessIndex')}
                                             </Text>
-                                            <Text sx={{ color: colors?.success || '#4caf50', fontSize: Theme.typography.fontSize.xs }}>
+                                            <Text className="text-xs" style={{ color: colors.success }}>
                                                 {t('founder.wellnessIncrease', { percent: 12 })}
                                             </Text>
                                         </VStack>
-                                        <Heart color={colors?.error || '#f44336'} size={24} fill={colors?.error || '#f44336'} />
+                                        <Heart color={colors.error} size={24} fill={colors.error} />
                                     </HStack>
                                 </Box>
                             </VStack>
@@ -165,35 +162,28 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                     });
                                 }}
                             >
-                                <Box sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: colors?.secondary || '#111',
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                    borderColor: colors?.action || '#2196f3',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    gap: Theme.spacing.md
-                                }}>
-                                    <Box sx={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 20,
-                                        backgroundColor: (colors?.action || '#2196f3') + '11',
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                    }}>
-                                        <Zap color={colors?.action || '#2196f3'} size={20} />
+                                <Box 
+                                    className="p-4 rounded-xl border flex-row items-center gap-4"
+                                    style={{
+                                        backgroundColor: colors.secondary,
+                                        borderColor: colors.action
+                                    }}
+                                >
+                                    <Box 
+                                        className="w-10 h-10 rounded-full justify-center items-center"
+                                        style={{ backgroundColor: colors.action + '11' }}
+                                    >
+                                        <Icon as={Zap} color={colors.action} size="md" />
                                     </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Text sx={{ color: colors?.text || '#fff', fontWeight: '700' }}>
+                                    <VStack className="flex-1">
+                                        <Text className="font-bold" style={{ color: theme.text.primary }}>
                                             {t('founder.principalsOffice') || "Principal's Office"}
                                         </Text>
-                                        <Text sx={{ color: colors?.textSecondary || '#aaa', fontSize: 12 }}>
+                                        <Text className="text-xs" style={{ color: theme.text.secondary }}>
                                             {t('founder.manageOperations') || "Manage staff, students, and operations"}
                                         </Text>
                                     </VStack>
-                                    <Icon as={Compass} color={colors?.textSecondary || '#aaa'} size={20} />
+                                    <Icon as={Compass} color={theme.text.secondary} size="md" />
                                 </Box>
                             </TouchableOpacity>
 
@@ -209,13 +199,13 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                     )}
 
                     {isLoading && (
-                        <VStack sx={{ gap: Theme.spacing.md }}>
+                        <VStack className="gap-4">
                             <SkeletonCard height={120} />
-                            <HStack sx={{ gap: Theme.spacing.md }}>
-                                <Box sx={{ flex: 1 }}>
+                            <HStack className="gap-4">
+                                <Box className="flex-1">
                                     <SkeletonCard height={100} />
                                 </Box>
-                                <Box sx={{ flex: 1 }}>
+                                <Box className="flex-1">
                                     <SkeletonCard height={100} />
                                 </Box>
                             </HStack>
@@ -227,21 +217,13 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
 
             <TouchableOpacity
                 onPress={() => setIsCreateModalOpen(true)}
+                className="absolute bottom-5 right-5 w-14 h-14 rounded-full justify-center items-center z-10"
                 style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    width: 56,
-                    height: 56,
-                    borderRadius: 28,
-                    backgroundColor: sanctuarySaffron || '#ff9800',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    backgroundColor: Theme.colors.sanctuarySaffron,
                     ...Theme.shadows.md,
-                    zIndex: 10
                 }}
             >
-                <Icon as={Plus} size={24} color="white" />
+                <Icon as={Plus} size="lg" color="white" />
             </TouchableOpacity>
 
             <CreateSchoolModal
@@ -254,3 +236,4 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
         </ScreenWrapper>
     );
 }
+

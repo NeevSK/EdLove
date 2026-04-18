@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PrincipalObservationsSection
  *
  * Compact observation notes widget:
@@ -7,227 +7,199 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, TextInput } from 'react-native';
-import { Box, HStack, VStack, Text, useThemedColors } from '@repo/ui';
+import { TextInput } from 'react-native';
+import {
+    Box,
+    HStack,
+    VStack,
+    Text,
+    useTheme,
+    Pressable,
+    Icon,
+    Theme
+} from '@repo/ui';
+import { Plus } from 'lucide-react-native';
 import { supabase } from '@repo/core';
 
 interface Observation {
-  id: string;
-  type: string;
-  content: string;
-  created_at: string;
+    id: string;
+    type: string;
+    content: string;
+    created_at: string;
 }
 
 interface PrincipalObservationsSectionProps {
-  schoolId: string;
-  principalId: string;
+    schoolId: string;
+    principalId: string;
 }
 
 const OBS_TYPE_OPTIONS = ['walkthrough', 'note', 'concern', 'praise'];
 
 export default function PrincipalObservationsSection({
-  schoolId,
-  principalId
+    schoolId,
+    principalId
 }: PrincipalObservationsSectionProps) {
-  const theme = useThemedColors();
-  const [loading, setLoading] = useState(true);
-  const [observations, setObservations] = useState<Observation[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
+    const theme = useTheme();
+    const [loading, setLoading] = useState(true);
+    const [observations, setObservations] = useState<Observation[]>([]);
+    const [showForm, setShowForm] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-  // Form state
-  const [content, setContent] = useState('');
-  const [obsType, setObsType] = useState('note');
+    // Form state
+    const [content, setContent] = useState('');
+    const [obsType, setObsType] = useState('note');
 
-  const obsBadgeColor = (type: string): string => {
-    switch (type) {
-      case 'walkthrough': return theme.status.info;
-      case 'concern': return theme.status.error;
-      case 'praise': return theme.status.success;
-      case 'note': return theme.status.warning;
-      default: return theme.text.tertiary;
+    const obsBadgeColor = (type: string): string => {
+        switch (type) {
+            case 'walkthrough': return theme.accent.action;
+            case 'concern': return theme.accent.danger;
+            case 'praise': return theme.accent.sageGreen;
+            case 'note': return theme.accent.action;
+            default: return theme.text.muted;
+        }
+    };
+
+    async function fetchObservations() {
+        try {
+            const { data } = await supabase
+                .from('principal_observations')
+                .select('*')
+                .eq('principal_id', principalId)
+                .order('created_at', { ascending: false })
+                .limit(5);
+            setObservations((data ?? []) as Observation[]);
+        } catch (err) {
+            console.error('PrincipalObservations: fetch error', err);
+        } finally {
+            setLoading(false);
+        }
     }
-  };
 
-  async function fetchObservations() {
-    try {
-      const { data } = await supabase
-        .from('principal_observations')
-        .select('*')
-        .eq('principal_id', principalId)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      setObservations((data ?? []) as Observation[]);
-    } catch (err) {
-      console.error('PrincipalObservations: fetch error', err);
-    } finally {
-      setLoading(false);
+    useEffect(() => {
+        setLoading(true);
+        fetchObservations();
+    }, [principalId]);
+
+    async function handleSave() {
+        if (!content.trim()) return;
+        setSaving(true);
+        try {
+            const { error } = await supabase.from('principal_observations').insert({
+                school_id: schoolId,
+                principal_id: principalId,
+                type: obsType,
+                content: content.trim()
+            });
+            if (!error) {
+                setContent('');
+                setObsType('note');
+                setShowForm(false);
+                await fetchObservations();
+            }
+        } catch (err) {
+            console.error('PrincipalObservations: save error', err);
+        } finally {
+            setSaving(false);
+        }
     }
-  }
 
-  useEffect(() => {
-    setLoading(true);
-    fetchObservations();
-  }, [principalId]);
+    return (
+        <Box className="bg-phase-surface rounded-2xl border border-phase-border p-md">
+            <HStack className="justify-between items-center mb-4">
+                <Text className="text-base font-bold text-phaseText-primary">
+                    Observation Notes
+                </Text>
+                <Pressable
+                    onPress={() => setShowForm(!showForm)}
+                    className="bg-phase-accent rounded-lg px-2.5 py-1 flex-row items-center gap-1"
+                >
+                    <Icon as={Plus} size="xs" className="text-white" />
+                    <Text className="text-xs font-bold text-white">New</Text>
+                </Pressable>
+            </HStack>
 
-  async function handleSave() {
-    if (!content.trim()) return;
-    setSaving(true);
-    try {
-      const { error } = await supabase.from('principal_observations').insert({
-        school_id: schoolId,
-        principal_id: principalId,
-        type: obsType,
-        content: content.trim()
-      });
-      if (!error) {
-        setContent('');
-        setObsType('note');
-        setShowForm(false);
-        await fetchObservations();
-      }
-    } catch (err) {
-      console.error('PrincipalObservations: save error', err);
-    } finally {
-      setSaving(false);
-    }
-  }
+            {loading && (
+                <VStack className="gap-2">
+                    <Box className="h-10 bg-phase-surface border border-phase-border rounded-xl opacity-50" />
+                    <Box className="h-10 bg-phase-surface border border-phase-border rounded-xl opacity-30" />
+                </VStack>
+            )}
 
-  const inputStyle = {
-    borderWidth: 1,
-    borderColor: theme.scene.border,
-    borderRadius: theme.corners.md,
-    padding: theme.spacing.sm,
-    color: theme.text.primary,
-    backgroundColor: theme.scene.backgroundBody,
-    fontSize: 14,
-    marginBottom: theme.spacing.sm,
-    minHeight: 72,
-    textAlignVertical: 'top' as const
-  };
+            {!loading && observations.length === 0 && (
+                <Text className="text-sm text-phaseText-secondary text-center py-md">
+                    No observations yet. Start your first classroom walkthrough note.
+                </Text>
+            )}
 
-  return (
-    <Box
-      style={{
-        backgroundColor: theme.scene.backgroundPrimary,
-        borderRadius: theme.corners.md,
-        borderWidth: 1,
-        borderColor: theme.scene.border,
-        padding: theme.spacing.md
-      }}>
-      <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.sm }}>
-        <Text style={{ fontSize: 15, fontWeight: '700', color: theme.text.primary }}>
-          Observation Notes
-        </Text>
-        <TouchableOpacity onPress={() => setShowForm(!showForm)} activeOpacity={0.8}>
-          <Box
-            style={{
-              backgroundColor: theme.status.warning,
-              borderRadius: theme.corners.md,
-              paddingHorizontal: 10,
-              paddingVertical: 4
-            }}>
-            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>+ New</Text>
-          </Box>
-        </TouchableOpacity>
-      </HStack>
-
-      {loading && (
-        <VStack style={{ gap: theme.spacing.sm }}>
-          <Box style={{ height: 40, backgroundColor: theme.scene.backgroundBody, borderRadius: theme.corners.md, opacity: 0.5 }} />
-          <Box style={{ height: 40, backgroundColor: theme.scene.backgroundBody, borderRadius: theme.corners.md, opacity: 0.3 }} />
-        </VStack>
-      )}
-
-      {!loading && observations.length === 0 && (
-        <Text style={{ fontSize: 13, color: theme.text.secondary, textAlign: 'center', paddingVertical: theme.spacing.md }}>
-          No observations yet. Start your first classroom walkthrough note.
-        </Text>
-      )}
-
-      {!loading && observations.map((obs) => (
-        <VStack
-          key={obs.id}
-          style={{ 
-            paddingVertical: theme.spacing.xs, 
-            borderBottomWidth: 1, 
-            borderBottomColor: theme.scene.border, 
-            gap: 4 
-          }}>
-          <HStack style={{ alignItems: 'center', gap: theme.spacing.sm }}>
-            <Box
-              style={{
-                backgroundColor: obsBadgeColor(obs.type),
-                borderRadius: 8,
-                paddingHorizontal: 7,
-                paddingVertical: 2
-              }}>
-              <Text style={{ fontSize: 10, fontWeight: '700', color: '#FFFFFF', textTransform: 'capitalize' }}>
-                {obs.type}
-              </Text>
-            </Box>
-            <Text style={{ fontSize: 11, color: theme.text.secondary, marginLeft: 'auto' }}>
-              {obs.created_at.split('T')[0]}
-            </Text>
-          </HStack>
-          <Text style={{ fontSize: 13, color: theme.text.primary }} numberOfLines={2}>
-            {obs.content}
-          </Text>
-        </VStack>
-      ))}
-
-      {showForm && (
-        <VStack style={{ marginTop: theme.spacing.md }}>
-          <TextInput
-            placeholder="Write your observation..."
-            placeholderTextColor={theme.text.tertiary}
-            value={content}
-            onChangeText={setContent}
-            multiline
-            numberOfLines={3}
-            style={inputStyle}
-          />
-
-          <HStack style={{ gap: theme.spacing.xs, marginBottom: theme.spacing.sm, flexWrap: 'wrap' }}>
-            {OBS_TYPE_OPTIONS.map((t) => (
-              <TouchableOpacity key={t} onPress={() => setObsType(t)} activeOpacity={0.8}>
-                <Box
-                  style={{
-                    borderRadius: 14,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                    backgroundColor: obsType === t ? obsBadgeColor(t) : theme.scene.border
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: '600',
-                      color: obsType === t ? '#FFFFFF' : theme.text.secondary,
-                      textTransform: 'capitalize'
-                    }}>
-                    {t}
-                  </Text>
-                </Box>
-              </TouchableOpacity>
+            {!loading && observations.map((obs) => (
+                <VStack
+                    key={obs.id}
+                    className="py-2 border-b border-phase-border gap-1"
+                >
+                    <HStack className="items-center justify-between">
+                        <Box
+                            className="rounded-lg px-2 py-0.5"
+                            style={{ backgroundColor: obsBadgeColor(obs.type) }}
+                        >
+                            <Text className="text-[10px] font-bold text-white uppercase">
+                                {obs.type}
+                            </Text>
+                        </Box>
+                        <Text className="text-[11px] text-phaseText-secondary">
+                            {obs.created_at.split('T')[0]}
+                        </Text>
+                    </HStack>
+                    <Text className="text-[13px] text-phaseText-primary" numberOfLines={2}>
+                        {obs.content}
+                    </Text>
+                </VStack>
             ))}
-          </HStack>
 
-          <TouchableOpacity onPress={handleSave} activeOpacity={0.8} disabled={saving}>
-            <Box
-              style={{
-                backgroundColor: theme.status.warning,
-                borderRadius: theme.corners.md,
-                padding: theme.spacing.sm,
-                alignItems: 'center',
-                opacity: saving ? 0.6 : 1
-              }}>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>
-                {saving ? 'Saving...' : 'Save'}
-              </Text>
-            </Box>
-          </TouchableOpacity>
-        </VStack>
-      )}
-    </Box>
-  );
+            {showForm && (
+                <VStack className="mt-4 gap-3">
+                    <TextInput
+                        placeholder="Write your observation..."
+                        placeholderTextColor={theme.text.muted}
+                        value={content}
+                        onChangeText={setContent}
+                        multiline
+                        numberOfLines={3}
+                        className="border border-phase-border rounded-xl px-3 py-2 text-sm text-phaseText-primary bg-phase-surface min-h-[72px]"
+                        style={{ textAlignVertical: 'top' }}
+                    />
+
+                    <HStack className="gap-2 flex-wrap">
+                        {OBS_TYPE_OPTIONS.map((t) => (
+                            <Pressable key={t} onPress={() => setObsType(t)}>
+                                <Box
+                                    className="rounded-full px-3 py-1 border"
+                                    style={{
+                                        backgroundColor: obsType === t ? obsBadgeColor(t) : 'transparent',
+                                        borderColor: obsType === t ? obsBadgeColor(t) : theme.scene.border
+                                    }}
+                                >
+                                    <Text
+                                        className="text-xs font-semibold capitalize"
+                                        style={{ color: obsType === t ? '#FFFFFF' : theme.text.secondary }}
+                                    >
+                                        {t}
+                                    </Text>
+                                </Box>
+                            </Pressable>
+                        ))}
+                    </HStack>
+
+                    <Pressable
+                        onPress={handleSave}
+                        disabled={saving}
+                        className={`bg-phase-accent rounded-xl p-3 items-center ${saving ? 'opacity-60' : ''}`}
+                    >
+                        <Text className="text-sm font-bold text-white">
+                            {saving ? 'Saving...' : 'Save Observation'}
+                        </Text>
+                    </Pressable>
+                </VStack>
+            )}
+        </Box>
+    );
 }

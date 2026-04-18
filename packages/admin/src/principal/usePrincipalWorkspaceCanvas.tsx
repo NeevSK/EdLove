@@ -49,8 +49,7 @@ export type PrincipalWorkspaceSurfaceId =
 
 export type PrincipalWorkspaceSurface = WorkspaceSurfaceDefinition<
   PrincipalWorkspaceSurfaceId,
-  PrincipalCapabilityId
-> & {
+  PrincipalCapabilityId> & {
   title: string;
   subtitle?: string;
   summary?: string;
@@ -119,7 +118,7 @@ function WorkspaceSwitcherSurface({
 
 function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
   const currentIndex = WORKSPACE_CANVAS_ZONES.indexOf(zone);
-  const nextIndex = { currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
+  const nextIndex = (currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
   return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
 }
 
@@ -198,7 +197,7 @@ function ProfileSurface({
           <Pressable key={action.label} onPress={action.onPress} className="active:opacity-80">
             <Box className="bg-silk rounded-2xl border border-starlightGray/20 p-4">
               <HStack className="items-center gap-3">
-                <action.icon, size={18} color="#4A90E2" />
+                <action.icon size={18} color="#4A90E2" />
                 <VStack className="flex-1 gap-0.5">
                   <Text className="text-[13px] font-bold text-phaseText-primary">{action.label}</Text>
                   <Text className="text-[11px] text-phaseText-secondary">{action.hint}</Text>
@@ -223,7 +222,7 @@ function CommonsSurface({
       <Pressable onPress={onOpenCommons} className="active:opacity-80">
         <Box className="p-4 rounded-2xl border border-starlightGray/20 bg-silk">
           <HStack className="items-center gap-3">
-            <Icon as={Share}2 size={18} color="#4A90E2" />
+            <Share2 size={18} color="#4A90E2" />
             <VStack className="flex-1 gap-0.5">
               <Text className="text-[13px] font-bold text-phaseText-primary">Community, commons</Text>
               <Text className="text-[11px] text-phaseText-secondary">Step, into the, mission and, culture layer, of the, school.</Text>
@@ -572,10 +571,10 @@ export function usePrincipalWorkspaceLayout(
 
           return {
             ...surface,
-            ...resolved} as PrincipalWorkspaceSurface & ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId PrincipalCapabilityId>;
+            ...resolved} as PrincipalWorkspaceSurface & ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>;
         })
         .filter(Boolean) as Array<
-        PrincipalWorkspaceSurface & ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId PrincipalCapabilityId>>,
+        PrincipalWorkspaceSurface & ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>>,
     [surfaces, resolvedSurfaceMap],
   );
 
@@ -585,7 +584,7 @@ export function usePrincipalWorkspaceLayout(
 }
 
 type PrincipalResolvedSurface = PrincipalWorkspaceSurface &
-  ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId PrincipalCapabilityId>;
+  ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>;
 
 export function PrincipalWorkspaceCanvas({
   layout,

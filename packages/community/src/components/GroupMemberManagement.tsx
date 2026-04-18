@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { VStack, HStack, Text, Button, Theme, useThemedColors, ScreenWrapper, LoadingOverlay, hapticLight, Box, Pressable, useLotusToast } from '@repo/ui';
+import { 
+    VStack, 
+    HStack, 
+    Text, 
+    Button, 
+    ScreenWrapper, 
+    LoadingOverlay, 
+    hapticLight, 
+    Box, 
+    Pressable, 
+    useSanctuaryToast,
+    useTheme
+} from '@repo/ui';
 import { UserCheck, UserX, Shield, Settings, Info } from 'lucide-react-native';
 import { usePermissions } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
@@ -15,8 +27,8 @@ interface GroupMemberManagementProps {
 
 export default function GroupMemberManagement({ groupId }: GroupMemberManagementProps) {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-    const colors = useThemedColors();
-    const { showToast } = useLotusToast();
+    const { theme } = useTheme();
+    const { showToast } = useSanctuaryToast();
     const [group, setGroup] = useState<CommunityGroup | null>(null);
     const [pendingMembers, setPendingMembers] = useState<any[]>([]);
     const [activeMembers, setActiveMembers] = useState<any[]>([]);
@@ -109,63 +121,51 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
 
     return (
         <ScreenWrapper>
-            <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.xl }}>
+            <VStack className="p-lg gap-xl">
                 {/* Header & Settings */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <VStack className="gap-md">
+                    <HStack className="justify-between items-center">
                         <VStack>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xl, fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                            <Text className="text-xl font-bold text-phaseText-primary">
                                 {group.name}
                             </Text>
-                            <Text sx={{ color: colors?.textSecondary || Theme.colors.mistGray }}>
+                            <Text className="text-phaseText-secondary">
                                 Member Management
                             </Text>
                         </VStack>
                         <Pressable 
                             onPress={() => setIsEditModalOpen(true)}
-                            sx={{ 
-                                padding: Theme.spacing.sm, 
-                                borderRadius: Theme.corners.comfortable, 
-                                backgroundColor: colors?.tertiary || Theme.colors.ink 
-                            }}
+                            className="p-sm rounded-comfortable bg-phase-interactive"
                         >
-                            <Settings size={20} color={colors?.textPrimary || Theme.colors.sacredWhite} />
+                            <Settings size={20} color={theme.text.primary} />
                         </Pressable>
                     </HStack>
 
-                    <Box 
-                        sx={{ 
-                            padding: Theme.spacing.md, 
-                            borderRadius: Theme.corners.comfortable, 
-                            backgroundColor: (colors?.tertiary || Theme.colors.ink) + '40', 
-                            borderWidth: 1, 
-                            borderColor: colors?.border || 'rgba(255,255,255,0.1)' 
-                        }}
-                    >
-                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                            <Info size={16} color={Theme.colors.sanctuarySaffron} />
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors?.textSecondary || Theme.colors.mistGray }}>
-                                Current Policy: <Text sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>{policy?.toUpperCase()}</Text>
+                    <Box className="p-md rounded-comfortable bg-phase-interactive/40 border border-phase-interactive/20">
+                        <HStack className="gap-sm items-center">
+                            <Info size={16} color={theme.accent.action} />
+                            <Text className="text-xs text-phaseText-secondary">
+                                Current Policy: <Text className="font-bold text-phase-accent">{policy?.toUpperCase()}</Text>
                             </Text>
                         </HStack>
                     </Box>
 
-                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                    <HStack className="gap-sm">
                         <Button
                             variant={policy === 'open' ? 'solid' : 'outline'}
                             onPress={() => handlePolicyChange('open')}
-                            sx={{ flex: 1, height: 40 }}
+                            className="flex-1 h-10"
                         >
-                            <Text sx={{ color: policy === 'open' ? Theme.colors.obsidian : Theme.colors.sacredWhite, fontSize: 12, fontWeight: '700' }}>
+                            <Text className={`text-xs font-bold ${policy === 'open' ? 'text-phaseText-inverse' : 'text-phaseText-primary'}`}>
                                 NO VERIFICATION
                             </Text>
                         </Button>
                         <Button
                             variant={policy === 'restricted' ? 'solid' : 'outline'}
                             onPress={() => handlePolicyChange('restricted')}
-                            sx={{ flex: 1, height: 40 }}
+                            className="flex-1 h-10"
                         >
-                            <Text sx={{ color: policy === 'restricted' ? Theme.colors.obsidian : Theme.colors.sacredWhite, fontSize: 12, fontWeight: '700' }}>
+                            <Text className={`text-xs font-bold ${policy === 'restricted' ? 'text-phaseText-inverse' : 'text-phaseText-primary'}`}>
                                 NEED VERIFICATION
                             </Text>
                         </Button>
@@ -173,9 +173,9 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 </VStack>
 
                 {/* Pending Requests */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                <VStack className="gap-md">
+                    <HStack className="justify-between items-center">
+                        <Text className="font-bold text-phaseText-primary">
                             Pending Requests ({pendingMembers.length})
                         </Text>
                         {pendingMembers.length > 0 && (
@@ -186,7 +186,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         .catch(() => { /* non-fatal */ });
                                 }}
                             >
-                                <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>
+                                <Text className="text-phase-accent font-semibold">
                                     Approve All
                                 </Text>
                             </Pressable>
@@ -194,61 +194,55 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     </HStack>
 
                     {pendingMembers.length === 0 ? (
-                        <Text sx={{ textAlign: 'center', color: colors?.textSecondary || Theme.colors.mistGray, py: 20 }}>
+                        <Text className="text-center text-phaseText-secondary py-5">
                             No pending requests at the moment.
                         </Text>
                     ) : (
                         pendingMembers.map((request: any) => (
                             <Box
                                 key={request.user_id}
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors?.tertiary || Theme.colors.ink,
-                                    borderWidth: 1,
-                                    borderColor: colors?.border || 'rgba(255,255,255,0.1)'
-                                }}
+                                className="p-md rounded-comfortable bg-phase-surface border border-phase-interactive/20"
                             >
-                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <VStack sx={{ gap: 2, flex: 1 }}>
-                                        <Text sx={{ fontWeight: '600', color: Theme.colors.sacredWhite }}>
+                                <HStack className="justify-between items-center">
+                                    <VStack className="gap-0.5 flex-1">
+                                        <Text className="font-semibold text-phaseText-primary">
                                             {request.user?.full_name}
                                         </Text>
-                                        <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                            <Shield size={12} color={colors?.textSecondary || Theme.colors.mistGray} />
-                                            <Text sx={{ fontSize: 12, color: colors?.textSecondary || Theme.colors.mistGray }}>
+                                        <HStack className="gap-xs items-center">
+                                            <Shield size={12} color={theme.text.secondary} />
+                                            <Text className="text-xs text-phaseText-secondary">
                                                 {request.user?.authority?.toUpperCase() || 'USER'}
                                             </Text>
                                         </HStack>
-                                        <HStack space="md" sx={{ alignItems: 'center', marginTop: 4 }}>
+                                        <HStack className="gap-md items-center mt-1">
                                             {request.user?.index_number && (
-                                                <Box sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)', paddingHorizontal: 8, paddingVertical: 2 }}>
-                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>
+                                                <Box className="bg-amber-500/10 rounded-tight border border-amber-500/30 px-2 py-0.5">
+                                                    <Text className="text-[10px] text-amber-500 font-bold">
                                                         INDEX: {request.user.index_number}
                                                     </Text>
                                                 </Box>
                                             )}
                                             {request.user?.nic_number && (
-                                                <Box sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)', paddingHorizontal: 8, paddingVertical: 2 }}>
-                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>
+                                                <Box className="bg-amber-500/10 rounded-tight border border-amber-500/30 px-2 py-0.5">
+                                                    <Text className="text-[10px] text-amber-500 font-bold">
                                                         NIC: {request.user.nic_number}
                                                     </Text>
                                                 </Box>
                                             )}
                                         </HStack>
                                     </VStack>
-                                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                                    <HStack className="gap-sm">
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'rejected')}
-                                            sx={{ padding: 10, borderRadius: 50, backgroundColor: (colors?.error || Theme.colors.emberRed) + '20' }}
+                                            className="p-2.5 rounded-full bg-red-500/20"
                                         >
-                                            <UserX size={20} color={colors?.error || Theme.colors.emberRed} />
+                                            <UserX size={20} color={theme.accent.danger} />
                                         </Pressable>
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'active')}
-                                            sx={{ padding: 10, borderRadius: 50, backgroundColor: (colors?.success || Theme.colors.sageGreen) + '20' }}
+                                            className="p-2.5 rounded-full bg-green-500/20"
                                         >
-                                            <UserCheck size={20} color={colors?.success || Theme.colors.sageGreen} />
+                                            <UserCheck size={20} color={theme.accent.sageGreen} />
                                         </Pressable>
                                     </HStack>
                                 </HStack>
@@ -258,8 +252,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 </VStack>
 
                 {/* Active Members & Capacity Management */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                <VStack className="gap-md">
+                    <Text className="font-bold text-phaseText-primary">
                         Active Members ({activeMembers.length})
                     </Text>
                     {activeMembers.map((member) => {
@@ -277,41 +271,28 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                 })}
                             >
                                 <Box
-                                    sx={{
-                                        padding: Theme.spacing.md,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors?.tertiary || Theme.colors.ink,
-                                        borderWidth: 1,
-                                        borderColor: isOwner ? Theme.colors.sanctuarySaffron : (colors?.border || 'rgba(255,255,255,0.1)')
-                                    }}
+                                    className={`p-md rounded-comfortable bg-phase-surface border ${
+                                        isOwner ? 'border-phase-accent' : 'border-phase-interactive/20'
+                                    }`}
                                 >
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center', flex: 1 }}>
-                                            <Box 
-                                                sx={{ 
-                                                    width: 40, 
-                                                    height: 40, 
-                                                    borderRadius: 20, 
-                                                    backgroundColor: colors?.secondary || Theme.colors.obsidian, 
-                                                    alignItems: 'center', 
-                                                    justifyContent: 'center' 
-                                                }}
-                                            >
-                                                <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                                    <HStack className="justify-between items-center">
+                                        <HStack className="gap-md items-center flex-1">
+                                            <Box className="w-10 h-10 rounded-full bg-phase-interactive items-center justify-center">
+                                                <Text className="font-bold text-phaseText-primary">
                                                     {member.user?.full_name?.charAt(0) || '?'}
                                                 </Text>
                                             </Box>
-                                            <VStack sx={{ gap: 2 }}>
-                                                <Text sx={{ fontWeight: '600', color: Theme.colors.sacredWhite }}>
+                                            <VStack className="gap-0.5">
+                                                <Text className="font-semibold text-phaseText-primary">
                                                     {member.user?.full_name} {isMe ? '(You)' : ''}
                                                 </Text>
-                                                <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                                    <Shield size={12} color={isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? (colors?.textPrimary || Theme.colors.sacredWhite) : (colors?.textSecondary || Theme.colors.mistGray))} />
-                                                    <Text sx={{
-                                                        fontSize: 12,
-                                                        fontWeight: (isOwner || isAdmin) ? '700' : '400',
-                                                        color: isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? (colors?.textPrimary || Theme.colors.sacredWhite) : (colors?.textSecondary || Theme.colors.mistGray))
-                                                    }}>
+                                                <HStack className="gap-xs items-center">
+                                                    <Shield size={12} color={isOwner ? theme.accent.action : (isAdmin ? theme.text.primary : theme.text.secondary)} />
+                                                    <Text className={`text-xs ${
+                                                        (isOwner || isAdmin) ? 'font-bold' : 'font-normal'
+                                                    } ${
+                                                        isOwner ? 'text-phase-accent' : (isAdmin ? 'text-phaseText-primary' : 'text-phaseText-secondary')
+                                                    }`}>
                                                         {member.capacity.toUpperCase()}
                                                     </Text>
                                                 </HStack>
@@ -319,13 +300,13 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         </HStack>
 
                                         {canManage && !isOwner && !isMe && (
-                                            <HStack sx={{ gap: Theme.spacing.sm }}>
+                                            <HStack className="gap-sm">
                                                 <Button
                                                     variant="outline"
                                                     onPress={() => handleCapacityChange(member.user_id, isAdmin ? 'member' : 'admin')}
-                                                    sx={{ height: 32, paddingHorizontal: 12 }}
+                                                    className="h-8 px-3"
                                                 >
-                                                    <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 10, fontWeight: '700' }}>
+                                                    <Text className="text-phaseText-primary text-[10px] font-bold">
                                                         {isAdmin ? "DEMOTE" : "PROMOTE"}
                                                     </Text>
                                                 </Button>

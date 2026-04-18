@@ -7,184 +7,161 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import {  } from '@repo/ui';
-import { staffManagementAPI, StaffLeaveDTO } from '@repo/core';
+import {
+    Box,
+    HStack,
+    VStack,
+    Text,
+    useTheme,
+    Pressable,
+    Icon,
+    Theme,
+    hapticLight
+} from '@repo/ui';
+import { Check, X, AlertCircle } from 'lucide-react-native';
+import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
 
 interface LeaveApprovalSectionProps {
-  schoolId: string;
-  principalId: string;
-}
-
-const LEAVE_TYPE_COLORS: Record<string, string>  = {
-  sick: emberRed ?? '#f44336',
-  casual: gurudeviBlue ?? '#2196f3',
-  annual: sageGreen ?? '#4caf50',
-  maternity: sanctuarySaffron ?? '#ff9800',
-  paternity: sanctuarySaffron ?? '#ff9800',
-  other: '#9e9e9e'};
-
-function leaveTypeColor(type: string): string {
-  return LEAVE_TYPE_COLORS[type.toLowerCase()] ?? '#9e9e9e';
-}
-
-function shortId(id: string): string {
-  return id.substring(0, 8);
+    schoolId: string;
+    principalId: string;
 }
 
 export default function LeaveApprovalSection({
-  schoolId,
-  principalId}: LeaveApprovalSectionProps) {
-  const colors = useTheme().scene;
-  const [loading, setLoading] = useState(true);
-  const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
-  const [processingId, setProcessingId] = useState<string | null>(null);
+    schoolId,
+    principalId
+}: LeaveApprovalSectionProps) {
+    const theme = useTheme();
+    const [loading, setLoading] = useState(true);
+    const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
+    const [processingId, setProcessingId] = useState<string | null>(null);
 
-  async function fetchLeaves() {
-    const data = await staffManagementAPI.getPendingLeaves(schoolId);
-    setLeaves(data);
-    setLoading(false);
-  }
+    const getLeaveTypeColor = (type: string): string => {
+        const t = type.toLowerCase();
+        if (t.includes('sick')) return theme.accent.danger;
+        if (t.includes('annual')) return theme.accent.sageGreen;
+        if (t.includes('casual')) return theme.accent.action;
+        return theme.accent.templeGold;
+    };
 
-  useEffect(() => {
-    setLoading(true);
-    fetchLeaves();
-  }, [schoolId]);
+    async function fetchLeaves() {
+        try {
+            const data = await staffManagementAPI.getPendingLeaves(schoolId);
+            setLeaves(data);
+        } catch (err) {
+            console.error('LeaveApprovalSection: fetch error', err);
+        } finally {
+            setLoading(false);
+        }
+    }
 
-  async function handleDecision(leaveId: string, approve: boolean) {
-    setProcessingId(leaveId);
-    await staffManagementAPI.approveLeave(leaveId, principalId, approve);
-    setProcessingId(null);
-    await fetchLeaves();
-  }
+    useEffect(() => {
+        setLoading(true);
+        fetchLeaves();
+    }, [schoolId]);
 
-  return (
-    <Box
-      sx={{
-        backgroundColor: colors.primary,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        borderColor: colors.border,
-        padding: Theme.spacing.md}}
-    >
-      {/* Header */}
-      <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}>
-        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
-          Leave Requests
-        </Text>
-        {leaves.length > 0 && (
-          <Box
-            sx={{
-              backgroundColor: amberGlow ?? '#ffc107',
-              borderRadius: 10,
-              paddingHorizontal: 8,
-              paddingVertical: 2}}
-          >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
-              {leaves.length}
-            </Text>
-          </Box>
-        )}
-      </HStack>
+    async function handleDecision(leaveId: string, approve: boolean) {
+        hapticLight();
+        setProcessingId(leaveId);
+        try {
+            await staffManagementAPI.approveLeave(leaveId, principalId, approve);
+            await fetchLeaves();
+        } catch (err) {
+            console.error('LeaveApprovalSection: decision error', err);
+        } finally {
+            setProcessingId(null);
+        }
+    }
 
-      {/* Loading */}
-      {loading && <SkeletonCard height={70} />}
-
-      {/* Empty state */}
-      {!loading && leaves.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
-          No pending leave requests
-        </Text>
-      )}
-
-      {/* Leave rows */}
-      {!loading && leaves.map((leave) => {
-        const isProcessing = processingId === leave.id;
-        return (
-          <VStack
-            key={leave.id}
-            sx={{
-              paddingVertical: Theme.spacing.sm,
-              borderBottomWidth: 1,
-              borderBottomColor: colors.border,
-              gap: 6}}
-          >
-            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
-              {/* Leave type badge */}
-              <Box
-                sx={{
-                  backgroundColor: leaveTypeColor(leave.leave_type),
-                  borderRadius: 8,
-                  paddingHorizontal: 7,
-                  paddingVertical: 2}}
-              >
-                <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>
-                  {leave.leave_type}
-                </Text>
-              </Box>
-              {/* Staff identifier */}
-              <Text sx={{ flex: 1, fontSize: 13, color: colors.text, fontWeight: '600' }}>
-                {shortId(leave.user_id)}…
-              </Text>
-              {/* Date range */}
-              <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-                {formatShortDate(leave.start_date)} – {formatShortDate(leave.end_date)}
-              </Text>
+    return (
+        <Box className="bg-phase-surface rounded-2xl border border-phase-border p-md">
+            <HStack className="justify-between items-center mb-4">
+                <HStack className="items-center gap-2">
+                    <Text className="text-base font-bold text-phaseText-primary">
+                        Leave Requests
+                    </Text>
+                    {leaves.length > 0 && (
+                        <Box className="bg-phase-accent rounded-full px-2 py-0.5">
+                            <Text className="text-[10px] font-bold text-white">
+                                {leaves.length}
+                            </Text>
+                        </Box>
+                    )}
+                </HStack>
             </HStack>
 
-            {/* Reason */}
-            {leave.reason ? (
-              <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}>
-                {leave.reason}
-              </Text>
-            ) : null}
+            {loading && (
+                <VStack className="gap-2">
+                    <Box className="h-20 bg-phase-surface border border-phase-border rounded-xl opacity-50" />
+                </VStack>
+            )}
 
-            {/* Action buttons */}
-            <HStack sx={{ gap: Theme.spacing.sm }}>
-              <TouchableOpacity
-                onPress={() => handleDecision(leave.id, true)}
-                activeOpacity={0.8}
-                disabled={isProcessing}
-                style={{ flex: 1 }}
-              >
-                <Box
-                  sx={{
-                    backgroundColor: sageGreen ?? '#4caf50',
-                    borderRadius: Theme.corners.medium ?? 8,
-                    padding: Theme.spacing.xs,
-                    alignItems: 'center',
-                    opacity: isProcessing ? 0.5 : 1}}
-                >
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text>
-                </Box>
-              </TouchableOpacity>
+            {!loading && leaves.length === 0 && (
+                <VStack className="items-center py-md gap-2">
+                    <Icon as={Check} size="md" className="text-phase-accent opacity-20" />
+                    <Text className="text-sm text-phaseText-secondary text-center">
+                        All clear! No pending leave requests.
+                    </Text>
+                </VStack>
+            )}
 
-              <TouchableOpacity
-                onPress={() => handleDecision(leave.id, false)}
-                activeOpacity={0.8}
-                disabled={isProcessing}
-                style={{ flex: 1 }}
-              >
-                <Box
-                  sx={{
-                    backgroundColor: colors.border,
-                    borderRadius: Theme.corners.medium ?? 8,
-                    padding: Theme.spacing.xs,
-                    alignItems: 'center',
-                    opacity: isProcessing ? 0.5 : 1,
-                    borderWidth: 1,
-                    borderColor: emberRed ?? '#f44336'}}
-                >
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: emberRed ?? '#f44336' }}>
-                    Reject
-                  </Text>
-                </Box>
-              </TouchableOpacity>
-            </HStack>
-          </VStack>
-        );
-      })}
-    </Box>
-  );
+            {!loading && leaves.map((leave) => {
+                const isProcessing = processingId === leave.id;
+                return (
+                    <VStack
+                        key={leave.id}
+                        className="py-3 border-b border-phase-border last:border-b-0 gap-3"
+                    >
+                        <HStack className="justify-between items-start">
+                            <VStack className="gap-1 flex-1">
+                                <HStack className="items-center gap-2">
+                                    <Box
+                                        className="rounded-lg px-2 py-0.5"
+                                        style={{ backgroundColor: getLeaveTypeColor(leave.leave_type) }}
+                                    >
+                                        <Text className="text-[10px] font-bold text-white uppercase">
+                                            {leave.leave_type}
+                                        </Text>
+                                    </Box>
+                                    <Text className="text-sm font-bold text-phaseText-primary">
+                                        Staff ID: {leave.user_id.substring(0, 8)}
+                                    </Text>
+                                </HStack>
+                                <Text className="text-xs text-phaseText-secondary">
+                                    {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
+                                </Text>
+                            </VStack>
+                        </HStack>
+
+                        {leave.reason && (
+                            <Box className="bg-phase-surface-tertiary p-2 rounded-lg border border-phase-border">
+                                <Text className="text-xs text-phaseText-primary italic">
+                                    "{leave.reason}"
+                                </Text>
+                            </Box>
+                        )}
+
+                        <HStack className="gap-2">
+                            <Pressable
+                                onPress={() => handleDecision(leave.id, true)}
+                                disabled={isProcessing}
+                                className={`flex-1 flex-row items-center justify-center gap-2 bg-phase-accent rounded-xl py-2 ${isProcessing ? 'opacity-50' : ''}`}
+                            >
+                                <Icon as={Check} size="xs" className="text-white" />
+                                <Text className="text-xs font-bold text-white">Approve</Text>
+                            </Pressable>
+
+                            <Pressable
+                                onPress={() => handleDecision(leave.id, false)}
+                                disabled={isProcessing}
+                                className={`flex-1 flex-row items-center justify-center gap-2 border border-phase-danger rounded-xl py-2 ${isProcessing ? 'opacity-50' : ''}`}
+                            >
+                                <Icon as={X} size="xs" className="text-phase-danger" />
+                                <Text className="text-xs font-bold text-phase-danger">Reject</Text>
+                            </Pressable>
+                        </HStack>
+                    </VStack>
+                );
+            })}
+        </Box>
+    );
 }

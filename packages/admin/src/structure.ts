@@ -1,4 +1,4 @@
-﻿import { supabase, type SchoolGrade, type Section } from '@repo/core';
+import { supabase, type SchoolGrade, type Section } from '@repo/core';
 
 export interface StructureOverview {
   sections: Section[];
@@ -60,5 +60,7 @@ export const structureAPI = {
 
     return {
       sections,
-      grades: gradeGroups.flat()};
-  };
+      grades: gradeGroups.flat()
+    };
+  }
+};

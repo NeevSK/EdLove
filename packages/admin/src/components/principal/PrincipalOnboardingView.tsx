@@ -55,8 +55,8 @@ export default function PrincipalOnboardingView({
                     {highlights.map((item) => (
                         <HStack key={item.title}
                             className="gap-4 items-start p-4 rounded-2xl bg-vellum/50 border border-starlightGray/30">
-                            <Box className="w-10 h-10 rounded-xl bg-templeGold/20 items-center justify-center">
-                                <item.icon, size={18} color="#2A2318" />
+                            <Box className="w-10 h-10 rounded-xl bg-amber-500/10 items-center justify-center">
+                                <item.icon size={18} className="text-amber-600" />
                             </Box>
                             <VStack className="flex-1 gap-1">
                                 <Text size="sm" className="font-bold text-phaseText-primary">

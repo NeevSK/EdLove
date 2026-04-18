@@ -1,4 +1,4 @@
-﻿import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
+import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
 
 export type { StaffLeaveDTO };
 
@@ -35,4 +35,5 @@ export const approvalsAPI = {
 
   async rejectLeave(leaveId: string, principalId: string): Promise<boolean> {
     return staffManagementAPI.approveLeave(leaveId, principalId, false);
-  };
+  }
+};

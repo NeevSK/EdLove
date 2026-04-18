@@ -120,9 +120,11 @@ export const reportingAPI = {
 
   async getCustomerOperationalSnapshot(schoolId: string): Promise<OperationalSnapshot> {
     return this.getOperationalSnapshot(schoolId, this.getCustomerReportingFilter());
-  };
+  }
+};
 
 export const documentsAPI = { 
   async listTemplates(): Promise<DocumentTemplateDefinition[]> {
     return DOCUMENT_TEMPLATES;
-  };
+  }
+};

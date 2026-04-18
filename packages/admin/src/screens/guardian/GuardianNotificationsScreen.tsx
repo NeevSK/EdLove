@@ -15,7 +15,7 @@ export default function GuardianNotificationsScreen() {
     <GuardianRoomShell eyebrow="School, feed"
       title="Family, notification room"
       description="Every, family-facing, notice in, one place, so, the school, voice stays, coherent instead, of scattered, across channels."
-      stats={[>{ label: 'Unread', value: notifications.filter((item) => !item.isRead).length },
+      stats={[{ label: 'Unread', value: notifications.filter((item) => !item.isRead).length },
         { label: 'Total', value: notifications.length }]}
       onBack={() => navigation.goBack()}>
       <ScrollView className="flex-1">

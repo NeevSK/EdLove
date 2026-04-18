@@ -1,4 +1,4 @@
-﻿import { principalNotesAPI, type PrincipalNote } from '@repo/core';
+import { principalNotesAPI, type PrincipalNote } from '@repo/core';
 
 export type { PrincipalNote };
 
@@ -26,5 +26,6 @@ export const notesAPI = {
 
   async remove(id: string): Promise<void> {
     return principalNotesAPI.delete(id);
-  };
+  }
+};
 

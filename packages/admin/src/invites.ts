@@ -1,4 +1,4 @@
-﻿import { api, type PrincipalInviteRole } from '@repo/core';
+import { api, type PrincipalInviteRole } from '@repo/core';
 
 export type InviteCode = Awaited<ReturnType<typeof api.principalWorkspace.listInviteCodes>>[number];
 
@@ -21,4 +21,5 @@ export const invitesAPI = {
       principalId: userId,
       inviteCode,
       eventType: 'revoke'});
-  };
+  }
+};

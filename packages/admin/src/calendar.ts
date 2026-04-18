@@ -1,4 +1,4 @@
-﻿import { staffManagementAPI, type CalendarEvent } from '@repo/core';
+import { staffManagementAPI, type CalendarEvent } from '@repo/core';
 
 export type { CalendarEvent };
 
@@ -19,4 +19,5 @@ export const adminCalendarAPI = {
     },
   ): Promise<boolean> {
     return staffManagementAPI.createCalendarEvent(schoolId, principalId, event);
-  };
+  }
+};

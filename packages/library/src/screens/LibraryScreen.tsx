@@ -21,21 +21,20 @@ import {
     VStack,
     HStack,
     Text,
-    useThemedColors,
+    useTheme,
     SkeletonCard,
-    PositiveInvitation,
-    Theme,
-    GlobalHeader,
-    ScreenWrapper,
-    SmartShelf,
     useBottomTabPadding,
     useRegisterFAB,
     FadeInDown,
     HorizontalChipRow,
-    openExternalURL,
-    showExternalLinkOptions,
     TemporalNavigator,
     CollectionCard,
+    GlobalHeader,
+    FeatureGuard,
+    useTracking,
+    useLotusToast,
+    SmartShelf,
+    ScreenWrapper,
 } from '@repo/ui';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
 import { useNavigation } from '@react-navigation/native';
@@ -71,107 +70,76 @@ const LIBRARY_UI_CATEGORIES = [
 ];
 
 function MapInvitation({ onPress }: { onPress: () => void }) {
-    const colors = useThemedColors();
+    const theme = useTheme();
 
     return (
         <Animated.View entering={FadeInDown.delay(200).springify()}>
-            <Pressable onPress={onPress}>
-                <Box sx={{
-                    margin: Theme.spacing.md,
-                    borderRadius: 24,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                }}>
-                    <LinearGradient
-                        colors={[`${Theme.colors.gurudeviViolet}16`, `${Theme.colors.gurudeviBlue}0D`]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={StyleSheet.absoluteFill}
-                    />
-                    <HStack sx={{ p: 20, gap: 16, alignItems: 'center' }}>
-                        <Box sx={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: 30,
-                            backgroundColor: colors.overlay,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <MapIcon size={32} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
-                        <VStack sx={{ flex: 1, gap: 4 }}>
-                            <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.textSecondary, letterSpacing: 1, textTransform: 'uppercase' }}>
-                                Knowledge map
-                            </Text>
-                            <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.textPrimary }}>
-                                Enter the Cosmos
-                            </Text>
-                            <Text sx={{ fontSize: 13, color: colors.textSecondary, lineHeight: 18 }}>
-                                Shift from shelves into constellation-style discovery when you want relationships, not just a list.
-                            </Text>
-                        </VStack>
-                        <Box sx={{
-                            padding: 10,
-                            backgroundColor: Theme.colors.sacredWhite,
-                            borderRadius: 12
-                        }}>
-                            <Play size={16} color={Theme.colors.gurudeviViolet} fill={Theme.colors.gurudeviViolet} />
-                        </Box>
-                    </HStack>
-                </Box>
+            <Pressable 
+                onPress={onPress}
+                className="m-md rounded-[24px] overflow-hidden bg-phase-surface border border-phase-border"
+            >
+                <LinearGradient
+                    colors={[`${theme.accent.action}16`, `${theme.accent.secondary}0D`]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={StyleSheet.absoluteFill}
+                />
+                <HStack className="p-5 gap-4 items-center">
+                    <Box className="w-[60px] h-[60px] rounded-[30px] bg-white/10 justify-center items-center">
+                        <MapIcon size={32} color={theme.accent.action} />
+                    </Box>
+                    <VStack className="flex-1 gap-1">
+                        <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
+                            Knowledge map
+                        </Text>
+                        <Text className="text-lg font-extrabold text-phaseText-primary">
+                            Enter the Cosmos
+                        </Text>
+                        <Text className="text-[13px] text-phaseText-secondary leading-5">
+                            Shift from shelves into constellation-style discovery when you want relationships, not just a list.
+                        </Text>
+                    </VStack>
+                    <Box className="p-2.5 bg-phase-accent rounded-xl">
+                        <Play size={16} color="white" fill="white" />
+                    </Box>
+                </HStack>
             </Pressable>
         </Animated.View>
     );
 }
 
 function CuratorInvitation({ onPress }: { onPress: () => void }) {
-    const colors = useThemedColors();
+    const theme = useTheme();
 
     return (
         <Animated.View entering={FadeInDown.delay(300).springify()}>
-            <Pressable onPress={onPress}>
-                <Box sx={{
-                    margin: Theme.spacing.md,
-                    marginTop: 0,
-                    borderRadius: 24,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.sanctuarySaffron + '33',
-                }}>
-                    <LinearGradient
-                        colors={[`${Theme.colors.sanctuarySaffron}14`, 'rgba(255,255,255,0.2)']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={StyleSheet.absoluteFill}
-                    />
-                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}>
-                        <Box sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 24,
-                            backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <FileText size={24} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
-                        <VStack sx={{ flex: 1, gap: 2 }}>
-                            <Text sx={{ fontSize: 10, fontWeight: '800', color: colors.textSecondary, letterSpacing: 1, textTransform: 'uppercase' }}>
-                                Curator pathway
-                            </Text>
-                            <Text sx={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>
-                                Curator Dashboard
-                            </Text>
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                                Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
-                            </Text>
-                        </VStack>
-                        <Plus size={16} color={colors.textSecondary} />
-                    </HStack>
-                </Box>
+            <Pressable 
+                onPress={onPress}
+                className="m-md mt-0 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-accent/20"
+            >
+                <LinearGradient
+                    colors={[`${theme.accent.action}14`, 'rgba(255,255,255,0.2)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={StyleSheet.absoluteFill}
+                />
+                <HStack className="p-4 gap-4 items-center">
+                    <Box className="w-12 h-12 rounded-full bg-phase-accent/10 justify-center items-center">
+                        <FileText size={24} color={theme.accent.action} />
+                    </Box>
+                    <VStack className="flex-1 gap-0.5">
+                        <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
+                            Curator pathway
+                        </Text>
+                        <Text className="text-base font-extrabold text-phaseText-primary">
+                            Curator Dashboard
+                        </Text>
+                        <Text className="text-[12px] text-phaseText-secondary">
+                            Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
+                        </Text>
+                    </VStack>
+                    <Plus size={16} className="text-phaseText-secondary" />
+                </HStack>
             </Pressable>
         </Animated.View>
     );
@@ -207,7 +175,7 @@ export default function LibraryScreen() {
         return () => clearTimeout(handler);
     }, [searchQuery]);
 
-    const colors = useThemedColors();
+    const theme = useTheme();
     const bottomPadding = useBottomTabPadding();
     const { discoverFeature } = useTracking();
 
@@ -465,55 +433,55 @@ export default function LibraryScreen() {
                     placeholder: t('library.searchPlaceholder')
                 }}
                 rightAction={
-                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                    <HStack className="gap-2 items-center">
                         {isSyncing && (
                             <Animated.View entering={FadeInDown}>
-                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                                <Box className="w-2 h-2 rounded-full bg-phase-accent" />
                             </Animated.View>
                         )}
                         <TouchableOpacity 
                             onPress={() => navigation.navigate('LibraryMap' as any)}
                             style={styles.mapToggleButton}
                         >
-                            <MapIcon size={20} color={colors.textPrimary} />
+                            <MapIcon size={20} className="text-phaseText-primary" />
                         </TouchableOpacity>
                     </HStack>
                 }
             />
-            <Box sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm }}>
+            <Box className="px-md pb-sm">
                 <TemporalNavigator />
             </Box>
 
             {libraryError ? (
-                <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, alignItems: 'center', gap: 12 }}>
-                    <Text sx={{ color: colors.error, textAlign: 'center' }}>
+                <VStack className="p-md mt-lg items-center gap-3">
+                    <Text className="text-phase-danger text-center">
                         {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}
                     </Text>
                     <TouchableOpacity onPress={() => fetchResources()}>
-                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>Retry</Text>
+                        <Text className="text-phase-accent font-bold">Retry</Text>
                     </TouchableOpacity>
                 </VStack>
             ) : (loading || isFetchingPublic) && !refreshing ? (
-                <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, gap: 16 }}>
+                <VStack className="p-md mt-lg gap-4">
                     <SkeletonCard height={200} />
                     <SkeletonCard height={160} />
                     <SkeletonCard height={160} />
                 </VStack>
             ) : (
-                <Box sx={{ flex: 1 }}>
+                <Box className="flex-1">
                     {!isSearchMode && (
-                        <HStack sx={{ px: Theme.spacing.md, py: 12, gap: 12 }}>
+                        <HStack className="px-md py-3 gap-3">
                             <TouchableOpacity 
                                 onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
-                                style={[styles.actionBtn, { borderColor: Theme.colors.sanctuarySaffron + '88' }]}
+                                style={[styles.actionBtn, { borderColor: `${theme.accent.action}88` }]}
                             >
-                                <Library size={14} color={Theme.colors.sanctuarySaffron} />
-                                <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }}>+ Collection</Text>
+                                <Library size={14} color={theme.accent.action} />
+                                <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
                             </TouchableOpacity>
                         </HStack>
                     )}
 
-                    <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
+                    <Box className="flex-1 bg-phase-surface">
                         <Animated.View entering={FadeInDown.delay(100).springify()}>
                             <HorizontalChipRow
                                 chips={chipData}
@@ -558,11 +526,11 @@ export default function LibraryScreen() {
 
                         {viewMode === 'shelf' && !isSearchMode ? (
                             <ScrollView 
-                                style={{ flex: 1 }}
+                                className="flex-1"
                                 showsVerticalScrollIndicator={false}
-                                contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
+                                contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}
                                 refreshControl={
-                                    <ActivityIndicator animating={refreshing} color={Theme.colors.sanctuarySaffron} />
+                                    <ActivityIndicator animating={refreshing} color={theme.accent.action} />
                                 }
                             >
                                 <SanctuaryPulse
@@ -577,9 +545,9 @@ export default function LibraryScreen() {
                                 <FeatureGuard action="manage" subject="LibraryCuratorDashboard">
                                     <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} />
                                 </FeatureGuard>
-                                <Box sx={{ paddingTop: Theme.spacing.md }}>
+                                <Box className="pt-md">
                                     {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
-                                        <SmartShelf title="\u25B6 Continue Learning">
+                                        <SmartShelf title="▶ Continue Learning">
                                             {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
                                                 <LibraryThumbnailCard
                                                     key={res.id}
@@ -592,7 +560,7 @@ export default function LibraryScreen() {
                                         </SmartShelf>
                                     )}
                                     {bookmarkedResources.length > 0 && (
-                                        <SmartShelf title="\uD83D\uDD16 My Bookmarks">
+                                        <SmartShelf title="🔖 My Bookmarks">
                                             {bookmarkedResources.map((res: any) => (
                                                 <LibraryThumbnailCard
                                                     key={`bookmark-${res.id}`}
@@ -610,8 +578,8 @@ export default function LibraryScreen() {
                                         </SmartShelf>
                                     )}
                                     {collections.length > 0 && (
-                                        <Box sx={{ marginBottom: Theme.spacing.lg }}>
-                                            <SmartShelf title={rawUserCollections.length > 0 ? "\uD83D\uDCDA Your Collections" : "\uD83C\uDF1F Discover Collections"}>
+                                        <Box className="mb-lg">
+                                            <SmartShelf title={rawUserCollections.length > 0 ? "📚 Your Collections" : "🌟 Discover Collections"}>
                                                 {collections.map((col: any) => (
                                                     <CollectionCard
                                                         key={col.id}
@@ -634,8 +602,8 @@ export default function LibraryScreen() {
                                         const items = resources.filter((r: LibraryResource) => (shelf.types as readonly string[]).includes(r.type));
                                         return renderShelf(shelf.label, items);
                                     })}
-                                    {trending.length > 0 && renderShelf('\u2B50 Trending', trending)}
-                                    {newArrivals.length > 0 && renderShelf('\u2728 New Arrivals', newArrivals)}
+                                    {trending.length > 0 && renderShelf('⭐ Trending', trending)}
+                                    {newArrivals.length > 0 && renderShelf('✨ New Arrivals', newArrivals)}
                                 </Box>
                             </ScrollView>
                         ) : (
@@ -646,8 +614,8 @@ export default function LibraryScreen() {
                                 onPullToDesk={(res) => console.log('Pull', res.id)}
                                 viewMode={viewMode === 'grid' ? 'grid' : 'list'}
                                 ListHeaderComponent={
-                                    <Box sx={{ p: Theme.spacing.md }}>
-                                        <Text sx={{ fontSize: 13, color: colors.textSecondary }}>
+                                    <Box className="p-md">
+                                        <Text className="text-[13px] text-phaseText-secondary">
                                             {searchQuery ? `Found ${resources.length} resources for "${searchQuery}"` : `Showing curated findings`}
                                         </Text>
                                     </Box>
@@ -709,33 +677,29 @@ function SanctuaryPulse({
     collectionCount: number;
     bookmarkCount: number;
 }) {
-    const colors = useThemedColors();
+    const theme = useTheme();
 
     const items = [
-        { label: 'Resources', value: resourceCount, accent: Theme.colors.sanctuarySaffron + '18' },
-        { label: 'Collections', value: collectionCount, accent: Theme.colors.gurudeviBlue + '16' },
-        { label: 'Bookmarks', value: bookmarkCount, accent: Theme.colors.sageGreen + '16' },
+        { label: 'Resources', value: resourceCount, accent: `${theme.accent.action}18` },
+        { label: 'Collections', value: collectionCount, accent: `${theme.accent.secondary}16` },
+        { label: 'Bookmarks', value: bookmarkCount, accent: `${theme.accent.sageGreen}16` },
     ];
 
     return (
-        <HStack sx={{ px: Theme.spacing.md, pt: Theme.spacing.sm, gap: 10 }}>
+        <HStack className="px-md pt-sm gap-2.5">
             {items.map((item) => (
                 <Box
                     key={item.label}
-                    sx={{
-                        flex: 1,
-                        borderRadius: 18,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        backgroundColor: colors.secondary,
-                        overflow: 'hidden',
-                    }}
+                    className="flex-1 rounded-[18px] border border-phase-border bg-phase-surface overflow-hidden"
                 >
-                    <Box sx={{ px: 14, py: 14, backgroundColor: item.accent }}>
-                        <Text sx={{ fontSize: 10, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', color: colors.textSecondary }}>
+                    <Box 
+                        className="px-3.5 py-3.5"
+                        style={{ backgroundColor: item.accent }}
+                    >
+                        <Text className="text-[10px] font-extrabold tracking-widest uppercase text-phaseText-secondary">
                             {item.label}
                         </Text>
-                        <Text sx={{ fontSize: 24, fontWeight: '800', color: colors.textPrimary, mt: 4 }}>
+                        <Text className="text-2xl font-extrabold text-phaseText-primary mt-1">
                             {item.value}
                         </Text>
                     </Box>
@@ -746,17 +710,17 @@ function SanctuaryPulse({
 }
 
 function HeroBanner({ resource, onPress }: HeroBannerProps) {
-    const colors = useThemedColors();
+    const theme = useTheme();
     return (
         <Pressable onPress={onPress}>
-            <Box sx={{ height: HERO_HEIGHT + 20, overflow: 'hidden', backgroundColor: colors.secondary, mb: Theme.spacing.md, mx: Theme.spacing.md, borderRadius: 24, borderWidth: 1, borderColor: colors.border }}>
+            <Box className="h-[240px] overflow-hidden bg-phase-surface/50 mb-md mx-md rounded-3xl border border-phase-border">
                 {resource.media?.url ? (
                     <ImageBackground source={{ uri: resource.media.url as string }} style={{ flex: 1 }} resizeMode="cover">
-                        <HeroOverlay resource={resource} colors={colors} />
+                        <HeroOverlay resource={resource} theme={theme} />
                     </ImageBackground>
                 ) : (
-                    <LinearGradient colors={[Theme.colors.sanctuarySaffron + '18', Theme.colors.gurudeviBlue + '16']} style={{ flex: 1 }}>
-                        <HeroOverlay resource={resource} colors={colors} />
+                    <LinearGradient colors={[`${theme.accent.action}18`, `${theme.accent.secondary}16`]} style={{ flex: 1 }}>
+                        <HeroOverlay resource={resource} theme={theme} />
                     </LinearGradient>
                 )}
             </Box>
@@ -764,33 +728,46 @@ function HeroBanner({ resource, onPress }: HeroBannerProps) {
     );
 }
 
-function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: any }) {
+function HeroOverlay({ resource, theme }: { resource: LibraryResource; theme: any }) {
     return (
         <LinearGradient
             colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)', 'rgba(252,249,242,0.94)']}
-            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}
+            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: 24 }}
         >
-            <Box sx={{ backgroundColor: 'rgba(252,249,242,0.9)', borderRadius: 20, padding: Theme.spacing.lg, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)' }}>
-            <Box sx={{ alignSelf: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron + '18', px: 8, py: 3, borderRadius: 999, mb: 8 }}>
-                <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sanctuarySaffron, letterSpacing: 1 }}>\u2727 FEATURED</Text>
-            </Box>
-            <Text sx={{ fontSize: 22, fontWeight: '800', lineHeight: 28, mb: 6, color: colors.textPrimary }}>{resource.title}</Text>
-            {resource.description && (
-                <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={3}>
-                    {resource.description}
-                </Text>
-            )}
-            <HStack sx={{ alignItems: 'center', gap: 10 }}>
-                <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Theme.colors.sanctuarySaffron, px: 14, py: 8, borderRadius: 12 }}>
-                    <Play size={14} color={Theme.colors.sacredWhite} fill={Theme.colors.sacredWhite} />
-                    <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 13 }}>Open</Text>
-                </Box>
-                {resource.creator_name ? (
-                    <Text sx={{ fontSize: 12, color: colors.textSecondary, fontWeight: '600' }}>
-                        Curated by {resource.creator_name}
+            <Box className="bg-[#FCF9F2]/90 rounded-[20px] p-5 border border-white/50">
+                <Box 
+                    className="self-start px-2 py-1 rounded-full mb-2"
+                    style={{ backgroundColor: `${theme.accent.action}18` }}
+                >
+                    <Text 
+                        className="text-[10px] font-extrabold tracking-widest"
+                        style={{ color: theme.accent.action }}
+                    >
+                        ✧ FEATURED
                     </Text>
-                ) : null}
-            </HStack>
+                </Box>
+                <Text className="text-[22px] font-extrabold leading-7 mb-1.5 text-phaseText-primary">
+                    {resource.title}
+                </Text>
+                {resource.description && (
+                    <Text className="text-[13px] leading-[18px] mb-3 text-phaseText-secondary" numberOfLines={3}>
+                        {resource.description}
+                    </Text>
+                )}
+                <HStack className="items-center gap-2.5">
+                    <Box 
+                        className="flex-row items-center gap-1.5 px-3.5 py-2 rounded-xl"
+                        style={{ backgroundColor: theme.accent.action }}
+                    >
+                        <Play size={14} color="white" fill="white" />
+                        <Text className="text-white font-bold text-[13px]">Open</Text>
+                    </Box>
+                    {resource.creator_name ? (
+                        <Text className="text-[12px] text-phaseText-secondary font-semibold">
+                            Curated by {resource.creator_name}
+                        </Text>
+                    ) : null}
+                </HStack>
             </Box>
         </LinearGradient>
     );

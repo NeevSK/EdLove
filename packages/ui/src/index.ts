@@ -38,3 +38,15 @@ export type {
     WorkspaceLayout, 
     WorkspaceZoneId 
 } from '@repo/core';
+
+// Re-exports for common animations (compatibility)
+export { 
+    FadeInDown, 
+    FadeInUp, 
+    FadeOutDown, 
+    FadeOutUp,
+    SlideInDown,
+    SlideInUp,
+} from 'react-native-reanimated';
+
+export { useSanctuaryToast, useSanctuaryToast as useLotusToast } from './providers/ToastProvider';

@@ -1,11 +1,23 @@
 import React from 'react';
-import { Icon, useTranslation } from 'react-i18next';
-import { Building2, LayoutGrid, NotebookPen, Share2 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Building2, LayoutGrid, NotebookPen, Share2, Clock, Plus, Info, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react-native';
 import type { PublishedSchoolGradingCompletion } from '@repo/core';
 import {
   getPrincipalCapabilitiesByZone,
   type PrincipalWorkspaceView} from '../../principal/workspace';
-import { WebScreenHeader } from '@repo/ui';
+import { 
+    WebScreenHeader, 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Pressable, 
+    Icon,
+    Button,
+    ButtonText,
+    ButtonIcon
+} from '@repo/ui';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 
 export interface DashboardContentProps {
@@ -56,39 +68,20 @@ function ZoneShell({
   children: React.ReactNode;
 }) {
   return (
-    <section
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        minWidth: 0,
-        background: 'rgba(250, 247, 237, 0.55)',
-        border: '1px solid var(--border)',
-        borderRadius: '24px',
-        padding: '20px'}}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
-        <div style={{ minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: 'var(--ink)' }}>{title}</h2>
-          <p style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: '1.6', color: 'var(--ink-ghost)' }}>{subtitle}</p>
-        </div>
-        <div
-          style={{
-            flexShrink: 0,
-            padding: '4px 10px',
-            borderRadius: '999px',
-            background: 'var(--background)',
-            color: 'var(--ink-ghost)',
-            fontSize: '11px',
-            fontWeight: '800',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em'}}
-        >
-          {count} modules
-        </div>
-      </div>
+    <Box className="flex-col gap-5 min-w-0 bg-silk/50 border border-border rounded-[24px] p-5">
+      <HStack className="justify-between items-start gap-3">
+        <VStack className="flex-1 min-w-0">
+          <Heading className="text-xl font-black text-ink">{title}</Heading>
+          <Text className="text-[13px] leading-relaxed text-ink/60 mt-1">{subtitle}</Text>
+        </VStack>
+        <Box className="bg-white px-2.5 py-1 rounded-full border border-border/50">
+          <Text className="text-[11px] font-black uppercase tracking-widest text-ink/40">
+            {count} modules
+          </Text>
+        </Box>
+      </HStack>
       {children}
-    </section>
+    </Box>
   );
 }
 
@@ -114,20 +107,11 @@ export function DashboardContent({
     if (!scopeMeta) return null;
 
     return (
-      <span
-        title={t(scopeMeta.scopeHelpTextKey)}
-        style={{
-          fontSize: '10px',
-          fontWeight: 800,
-          textTransform: 'uppercase',
-          padding: '3px 8px',
-          borderRadius: '999px',
-          background: 'var(--background-alt)',
-          color: 'var(--ink-ghost)',
-          letterSpacing: '0.4px'}}
-      >
-        {t(scopeMeta.scopeBadgeLabelKey)}
-      </span>
+      <Box className="bg-silk px-2 py-0.5 rounded-full ml-2 border border-border/50">
+        <Text className="text-[10px] font-black uppercase tracking-widest text-ink/40">
+          {t(scopeMeta.scopeBadgeLabelKey)}
+        </Text>
+      </Box>
     );
   };
 
@@ -136,40 +120,38 @@ export function DashboardContent({
   const outlookCount = getPrincipalCapabilitiesByZone('outlook').filter((capability) => capability.status !== 'hidden').length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}>
+    <VStack className="gap-6 pb-16">
       <WebScreenHeader
-        title={<>Principal <span style={{ color: 'var(--lotus)' }}>Workspace</span>.</>}
+        title={<>Principal <Text className="text-primary font-black">Workspace</Text>.</>}
         note={`Balanced cockpit for ${school?.name || 'your school'}: operate today, govern the institution, and prepare the next layers.`}
         timeText={school?.name || 'Sri Lankan School Leadership'}
         actions={(
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button
-              className="secondary-button"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-              onClick={onNavigateToProfile}
+          <HStack className="gap-3 flex-wrap">
+            <Button
+              variant="outline"
+              action="secondary"
+              onPress={onNavigateToProfile}
+              className="rounded-2xl border-border"
             >
-              <Building2 size={18} /> {t('principal.ia.actions.profileCta') || 'Institution Profile'}
+              <ButtonIcon as={Building2} />
+              <ButtonText>{t('principal.ia.actions.profileCta') || 'Institution Profile'}</ButtonText>
               {renderScopeBadge('school_profile')}
-            </button>
-            <button
-              className="secondary-button"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--water)', borderColor: 'var(--water)' }}
-              onClick={onOpenCommons}
+            </Button>
+            <Button
+              variant="outline"
+              action="secondary"
+              onPress={onOpenCommons}
+              className="rounded-2xl border-water"
             >
-              <Icon as={Share}2 size={18} /> {t('principal.ia.actions.commonsCta') || 'Open Community Commons'}
+              <ButtonIcon as={Share2} className="text-water" />
+              <ButtonText className="text-water">{t('principal.ia.actions.commonsCta') || 'Open Community Commons'}</ButtonText>
               {renderScopeBadge('open_commons')}
-            </button>
-          </div>
+            </Button>
+          </HStack>
         )}
       />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '24px',
-          alignItems: 'start'}}
-      >
+      <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
         <ZoneShell
           title="Today"
           subtitle="Situational awareness, urgent operations, and the few things that cannot wait."
@@ -183,43 +165,50 @@ export function DashboardContent({
           subtitle="The official work of shaping the school, its structure, and its institutional memory."
           count={institutionCount}
         >
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap: '12px'}}
-          >
-            <button
-              className="secondary-button"
-              onClick={() => onNavigate('hierarchy')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Icon as={Layout}Grid size={16} /> Shape structure
-              </span>
-              {renderScopeBadge('hierarchy')}
-            </button>
-            <button
-              className="secondary-button"
-              onClick={() => onNavigate('invites')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Building2 size={16} /> Role invites
-              </span>
-              {renderScopeBadge('invites')}
-            </button>
-            <button
-              className="secondary-button"
-              onClick={() => onNavigate('notes')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <NotebookPen size={16} /> Open logbook
-              </span>
-              {renderScopeBadge('log')}
-            </button>
-          </div>
+          <VStack className="gap-3">
+            <HStack className="gap-3">
+                <Button
+                    variant="outline"
+                    action="secondary"
+                    className="flex-1 rounded-2xl justify-between border-border"
+                    onPress={() => onNavigate('hierarchy')}
+                >
+                    <HStack className="items-center gap-2">
+                        <ButtonIcon as={LayoutGrid} />
+                        <ButtonText>Shape structure</ButtonText>
+                    </HStack>
+                    {renderScopeBadge('hierarchy')}
+                </Button>
+            </HStack>
+            <HStack className="gap-3">
+                <Button
+                    variant="outline"
+                    action="secondary"
+                    className="flex-1 rounded-2xl justify-between border-border"
+                    onPress={() => onNavigate('invites')}
+                >
+                    <HStack className="items-center gap-2">
+                        <ButtonIcon as={Building2} />
+                        <ButtonText>Role invites</ButtonText>
+                    </HStack>
+                    {renderScopeBadge('invites')}
+                </Button>
+            </HStack>
+            <HStack className="gap-3">
+                <Button
+                    variant="outline"
+                    action="secondary"
+                    className="flex-1 rounded-2xl justify-between border-border"
+                    onPress={() => onNavigate('notes')}
+                >
+                    <HStack className="items-center gap-2">
+                        <ButtonIcon as={NotebookPen} />
+                        <ButtonText>Open logbook</ButtonText>
+                    </HStack>
+                    {renderScopeBadge('log')}
+                </Button>
+            </HStack>
+          </VStack>
           {renderInstitutionZone?.({ schoolId, principalId })}
         </ZoneShell>
 
@@ -229,22 +218,15 @@ export function DashboardContent({
           count={outlookCount}
         >
           {publishedGradingCompletion && (
-            <div
-              style={{
-                padding: '12px 14px',
-                borderRadius: '16px',
-                border: '1px solid var(--border)',
-                background: 'rgba(250,247,237,0.72)',
-                color: 'var(--ink-ghost)',
-                fontSize: '12px',
-                lineHeight: '1.6'}}
-            >
-              Published grading is live in {publishedGradingCompletion.classroomsWithPublishedGrades} of {publishedGradingCompletion.totalClassrooms} classrooms.
-            </div>
+            <Box className="p-3.5 rounded-2xl border border-border bg-silk/70">
+              <Text className="text-xs leading-relaxed text-ink/60">
+                Published grading is live in {publishedGradingCompletion.classroomsWithPublishedGrades} of {publishedGradingCompletion.totalClassrooms} classrooms.
+              </Text>
+            </Box>
           )}
           {renderOutlookZone?.({ schoolId, principalId })}
         </ZoneShell>
-      </div>
-    </div>
+      </Box>
+    </VStack>
   );
 }

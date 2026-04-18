@@ -28,7 +28,7 @@ interface InstitutionalArcCardProps {
  * 2. [+] Action — CRUD (Add/Update)
  * 3. [⌛] History — Temporal Navigator
  */
-export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = { {
+export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
     featureId,
     title,
     children,
@@ -44,70 +44,34 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = { {
     const scopeHelpText = scopeMeta ? t(scopeMeta.scopeHelpTextKey) : '';
 
     return (
-        <Box 
-            style={{ 
-                backgroundColor: 'var(--card-bg)', 
-                borderRadius: 24, 
-                padding: 20,
-                borderWidth: 1,
-                borderColor: 'var(--border-subtle)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.05,
-                shadowRadius: 12,
-                elevation: 2,
-                height: '100%'
-            }}
-        >
+        <Box className="bg-white rounded-[24px] p-5 border border-border shadow-sm h-full gap-4">
             {/* Header Section */}
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <HStack className="justify-between items-center">
+                <HStack className="items-center gap-3 flex-1">
                     {FeatureIcon && (
-                        <div style={{ 
-                            width: 36, 
-                            height: 36, 
-                            borderRadius: 10, 
-                            backgroundColor: 'var(--sanctuary-blue-soft)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <FeatureIcon size={20} color="var(--sanctuary-blue)" />
-                        </div>
+                        <Box className="w-9 h-9 rounded-xl bg-primary/10 items-center justify-center">
+                            <FeatureIcon size={20} className="text-primary" />
+                        </Box>
                     )}
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: 'var(--ink)' }}>
+                    <Text className="text-base font-bold text-ink flex-1" numberOfLines={1}>
                         {title}
                     </Text>
                     {scopeMeta && (
-                        <span
-                            title={scopeHelpText}
-                            style={{
-                                fontSize: 10,
-                                fontWeight: '800',
-                                textTransform: 'uppercase',
-                                padding: '4px 8px',
-                                borderRadius: 999,
-                                backgroundColor: 'var(--background-alt)',
-                                color: 'var(--ink-ghost)',
-                                letterSpacing: 0.4}}
-                        >
-                            {scopeBadgeLabel}
-                        </span>
+                        <Box className="px-2 py-0.5 rounded-full bg-silk border border-border/50">
+                            <Text className="text-[10px] font-black uppercase text-ink/40 tracking-wider">
+                                {scopeBadgeLabel}
+                            </Text>
+                        </Box>
                     )}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                </HStack>
+                <HStack className="items-center gap-2">
                     {/* Info Icon (ⓘ) */}
                     <Pressable 
                         onPress={() => setIsInfoOpen(true)}
                         accessibilityRole="button"
-                        accessibilityLabel={`Open information for ${title}`}
-                        accessibilityHint={`Shows details and guidance for ${title}`}
-                        style={{ padding: 4 }}
+                        className="p-1 active:scale-90 transition-transform"
                     >
-                        <InfoIcon size="sm" color="var(--ink-ghost)" />
+                        <InfoIcon size="sm" className="text-ink/40" />
                     </Pressable>
 
                     {/* Add Icon (+) */}
@@ -115,18 +79,9 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = { {
                         <Pressable 
                             onPress={onAdd}
                             accessibilityRole="button"
-                            accessibilityLabel={`Add item for ${title}`}
-                            accessibilityHint={`Opens the add flow for ${title}`}
-                            style={{ 
-                                padding: 4, 
-                                borderRadius: 999,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: 'var(--lotus-soft)'
-                            }}
+                            className="p-1.5 rounded-full bg-primary/10 items-center justify-center active:scale-90 transition-transform"
                         >
-                            <Icon as={Plus} size={16} color="var(--lotus)" />
+                            <Icon as={Plus} size="sm" className="text-primary" />
                         </Pressable>
                     )}
 
@@ -135,24 +90,16 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = { {
                         <Pressable 
                             onPress={onHistory}
                             accessibilityRole="button"
-                            accessibilityLabel={`Open history for ${title}`}
-                            accessibilityHint={`Shows recent changes and history for ${title}`}
-                            style={{ 
-                                padding: 4, 
-                                borderRadius: 999,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
+                            className="p-1 active:scale-90 transition-transform"
                         >
-                            <Icon as={Clock} size={16} color="var(--ink-ghost)" />
+                            <Icon as={Clock} size="sm" className="text-ink/40" />
                         </Pressable>
                     )}
-                </div>
-            </div>
+                </HStack>
+            </HStack>
 
             {/* Content Section */}
-            <Box style={{ flex: 1 }}>
+            <Box className="flex-1">
                 {children}
             </Box>
 
@@ -160,34 +107,33 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = { {
             <SanctuaryModal
                 isOpen={isInfoOpen}
                 onClose={() => setIsInfoOpen(false)}
-                title={featureInfo?.title || title}
-            >
-                <Box style={{ gap: 16, padding: 16 }}>
-                    <Text style={{ fontSize: 16, lineHeight: 24, color: 'var(--ink)' }}>
+                title={featureInfo?.title || title}>
+                <VStack className="gap-4 p-4">
+                    <Text className="text-base leading-6 text-ink">
                         {featureInfo?.description}
                     </Text>
                     {scopeMeta && (
-                        <Box style={{ backgroundColor: 'var(--background-alt)', padding: 12, borderRadius: 12 }}>
-                            <Text style={{ fontSize: 12, fontWeight: '700', marginBottom: 6, color: 'var(--ink-ghost)' }}>
+                        <VStack className="bg-silk p-3 rounded-2xl gap-1">
+                            <Text className="text-xs font-black text-ink/40 uppercase">
                                 {scopeBadgeLabel}
                             </Text>
-                            <Text style={{ fontSize: 13, color: 'var(--ink-subtle)' }}>
+                            <Text className="text-[13px] text-ink/60">
                                 {scopeHelpText}
                             </Text>
-                        </Box>
+                        </VStack>
                     )}
                     
                     {featureInfo?.howToUse && (
-                        <Box style={{ backgroundColor: 'var(--surface-subtle)', padding: 12, borderRadius: 12 }}>
-                            <Text style={{ fontSize: 14, fontWeight: '700', marginBottom: 8 }}>
+                        <VStack className="bg-primary/5 p-3 rounded-2xl gap-1 border border-primary/10">
+                            <Text className="text-sm font-black text-primary">
                                 How to use:
                             </Text>
-                            <Text style={{ fontSize: 14, color: 'var(--ink-subtle)' }}>
+                            <Text className="text-sm text-ink/60">
                                 {featureInfo.howToUse}
                             </Text>
-                        </Box>
+                        </VStack>
                     )}
-                </Box>
+                </VStack>
             </SanctuaryModal>
         </Box>
     );

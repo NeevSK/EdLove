@@ -1,4 +1,4 @@
-﻿export type { 
+export type { 
   DocumentWorkflow, 
   DocumentVersion, 
   DocumentComment, 
@@ -156,4 +156,5 @@ export const documentWorkflowAPI: DocumentWorkflowAPI  = {
     
     if (error) throw error;
     return data || [];
-  };
+  }
+};

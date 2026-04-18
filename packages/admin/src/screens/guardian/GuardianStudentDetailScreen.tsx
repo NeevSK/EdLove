@@ -9,7 +9,7 @@ import { GuardianRoomShell } from './GuardianRoomShell';
 
 export default function GuardianStudentDetailScreen() {
   const navigation = useNavigation();
-  const route = useRoute<RouteProp<GuardianStackParamList 'GuardianStudentDetail'>>();
+  const route = useRoute<RouteProp<GuardianStackParamList, 'GuardianStudentDetail'>>();
   const user = useStore((state) => state.user);
   const { dashboard } = useGuardianWorkspaceData(user?.id || '');
 
@@ -19,12 +19,14 @@ export default function GuardianStudentDetailScreen() {
   );
 
   return (
-    <GuardianRoomShell eyebrow="Learner, detail"
-      title={route.params.studentName || student?.name || 'Linked, learner'}
-      description="A, guardian-facing, learner room, with the, essentials: attendance, rhythm, recent, grade signal, and, upcoming study, commitments."
-      stats={[>{ label: 'Attendance', value: student ? `${Math.round(student.attendance.percentage)}%` : '--' },
+    <GuardianRoomShell eyebrow="Learner detail"
+      title={route.params.studentName || student?.name || 'Linked learner'}
+      description="A guardian-facing learner room with the essentials: attendance, rhythm, recent grade signal, and upcoming study commitments."
+      stats={[
+        { label: 'Attendance', value: student ? `${Math.round(student.attendance.percentage)}%` : '--' },
         { label: 'Average', value: student ? `${Math.round(student.grades.average || 0)}%` : '--' },
-        { label: 'Assignments', value: student?.upcomingAssignments.length || 0 }]}
+        { label: 'Assignments', value: student?.upcomingAssignments.length || 0 }
+      ]}
       onBack={() => navigation.goBack()}>
       <ScrollView className="flex-1">
         <VStack className="gap-4 pb-8">

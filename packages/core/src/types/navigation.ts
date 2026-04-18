@@ -81,3 +81,16 @@ export type LibraryStackParamList = {
     /** Collection detail view */
     CollectionDetail: { id: string; title: string };
 };
+
+export type GuardianStackParamList = {
+    GuardianDashboard: undefined;
+    GuardianStudents: undefined;
+    GuardianStudentDetail: { studentId: string; studentName?: string };
+    GuardianNotifications: undefined;
+    GuardianEvents: undefined;
+    GuardianCommunicationBridge: undefined;
+    PrincipalDashboard: { schoolId: string; userId: string; forceDemo?: boolean };
+    FounderDashboard: undefined;
+    FounderSchoolDashboard: { schoolId: string; userId: string };
+    SchoolCreation: undefined;
+};

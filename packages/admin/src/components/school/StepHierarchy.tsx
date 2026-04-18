@@ -1,12 +1,13 @@
 import React from 'react';
-import { Icon, VStack,
+import { 
+    Icon, 
+    VStack,
     Text,
     HStack,
     Pressable,
-    useThemedColors,
-    
     Box,
-    Heading } from '@repo/ui';
+    Heading 
+} from '@repo/ui';
 import { Plus, X, GraduationCap, School } from 'lucide-react-native';
 
 interface StepHierarchyProps {
@@ -29,7 +30,6 @@ export default function StepHierarchy({
     data, 
     onUpdate 
 }: StepHierarchyProps) {
-    const colors = useTheme().scene;
 
     const toggleLevel = (levelId: string) => {
         const currentLevels = data.levels || [];
@@ -37,7 +37,8 @@ export default function StepHierarchy({
             onUpdate({ levels: currentLevels.filter(l => l !== levelId) });
         } else {
             onUpdate({ levels: [...currentLevels, levelId] });
-        };
+        }
+    };
 
     const addSection = () => {
         const currentSections = data.sections || [];
@@ -53,97 +54,93 @@ export default function StepHierarchy({
         });
     };
 
-
-
     return (
-        <VStack space="xl">
-            <VStack space="sm">
-                <Heading size="sm">Academic Levels</Heading>
-                <Text size="sm" color={colors.textSecondary}>
-                    Select the levels offered at this school.
-                </Text>
-                <VStack space="xs" sx={{ mt: 2 }}>
-                    {AVAILABLE_LEVELS.map(level => (
-                        <Pressable 
-                            key={level.id}
-                            onPress={() => toggleLevel(level.id)}
-                            accessibilityRole="button"
-                            accessibilityLabel={`Toggle ${level.label}`}
-                            accessibilityHint="Selects or deselects this academic level for the school"
-                            sx={{
-                                p: 12,
-                                borderRadius: 12,
-                                borderWidth: 1,
-                                borderColor: data.levels.includes(level.id) ? sanctuarySaffron : colors.border,
-                                bg: data.levels.includes(level.id) ? `${sanctuarySaffron}10` : 'transparent'
-                            }}
-                        >
-                            <HStack space="md" sx={{ alignItems: 'center' }}>
-                                <GraduationCap 
-                                    size={20} 
-                                    color={data.levels.includes(level.id) ? sanctuarySaffron : colors.textTertiary} 
-                                />
-                                <Text 
-                                    fontWeight={data.levels.includes(level.id) ? "700" : "500"}
-                                    color={data.levels.includes(level.id) ? colors.text : colors.textSecondary}
+        <VStack className="gap-8">
+            <VStack className="gap-4">
+                <VStack className="gap-1">
+                    <Heading className="text-lg font-black text-ink uppercase tracking-wider">Academic Levels</Heading>
+                    <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                        Define school educational tiers
+                    </Text>
+                </VStack>
+                <VStack className="gap-2">
+                    {AVAILABLE_LEVELS.map(level => {
+                        const isActive = data.levels.includes(level.id);
+                        return (
+                            <Pressable 
+                                key={level.id}
+                                onPress={() => toggleLevel(level.id)}
+                            >
+                                <Box 
+                                    className={`p-4 rounded-2xl border-2 transition-all ${
+                                        isActive ? 'bg-primary/5 border-primary/20' : 'bg-silk border-border'
+                                    }`}
                                 >
-                                    {level.label}
-                                </Text>
-                            </HStack>
-                        </Pressable>
-                    ))}
+                                    <HStack className="gap-4 items-center">
+                                        <Box className={`p-2 rounded-xl ${isActive ? 'bg-primary/10' : 'bg-white'}`}>
+                                            <GraduationCap 
+                                                size={18} 
+                                                className={isActive ? 'text-primary' : 'text-ink/20'} 
+                                            />
+                                        </Box>
+                                        <Text 
+                                            className={`text-sm tracking-tight ${isActive ? 'font-black text-ink' : 'font-bold text-ink/60'}`}
+                                        >
+                                            {level.label}
+                                        </Text>
+                                    </HStack>
+                                </Box>
+                            </Pressable>
+                        );
+                    })}
                 </VStack>
             </VStack>
 
-            <VStack space="sm">
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Heading size="sm">Administrative Sections</Heading>
+            <VStack className="gap-4">
+                <HStack className="justify-between items-center">
+                    <VStack className="gap-1">
+                        <Heading className="text-lg font-black text-ink uppercase tracking-wider">Administrative Sections</Heading>
+                        <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                            Societies, Prefects, Council
+                        </Text>
+                    </VStack>
                     <Pressable 
                         onPress={addSection}
-                        accessibilityRole="button"
-                        accessibilityLabel="Add administrative section"
-                        accessibilityHint="Adds a new section to the school's hierarchy"
+                        className="bg-ink px-4 py-2 rounded-xl"
                     >
-                        <HStack space="xs" sx={{ alignItems: 'center' }}>
-                            <Icon as={Plus} size={16} color={skyBlue} />
-                            <Text size="xs" fontWeight="700" color={skyBlue}>ADD</Text>
+                        <HStack className="items-center gap-2">
+                            <Icon as={Plus} className="text-white" size="xs" />
+                            <Text className="text-[10px] font-black text-white uppercase tracking-widest">ADD</Text>
                         </HStack>
                     </Pressable>
                 </HStack>
-                <Text size="sm" color={colors.textSecondary}>
-                    E.g., &quot;Middle School&quot;, &quot;Prefects Guild&quot;, &quot;Sports Council&quot;.
-                </Text>
                 
                 {data.sections.length === 0 ? (
-                    <Box sx={{ p: 16, borderRadius: 12, borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border, alignItems: 'center' }}>
-                        <Text size="xs" color={colors.textTertiary}>No sections added yet.</Text>
+                    <Box className="p-8 items-center justify-center bg-silk rounded-[32px] border-2 border-dashed border-border">
+                        <Text className="text-xs font-bold text-ink/20 uppercase tracking-widest">No divisions established</Text>
                     </Box>
                 ) : (
-                    <VStack space="sm" sx={{ mt: 2 }}>
+                    <VStack className="gap-3">
                         {data.sections.map((section, idx) => (
-                            <HStack 
+                            <Box 
                                 key={idx} 
-                                space="sm" 
-                                sx={{ 
-                                    p: 12, 
-                                    borderRadius: 12, 
-                                    bg: silk,
-                                    alignItems: 'center' 
-                                }}
+                                className="p-4 rounded-2xl bg-white border border-border"
                             >
-                                <School size={16} color={colors.textTertiary} />
-                                <VStack sx={{ flex: 1 }}>
-                                    <Text size="sm" fontWeight="600">{section.name || 'Unnamed Section'}</Text>
-                                </VStack>
-                                <Pressable 
-                                    onPress={() => removeSection(idx)}
-                                    accessibilityRole="button"
-                                    accessibilityLabel={`Remove ${section.name || 'section'}`}
-                                    accessibilityHint="Deletes this section from the school"
-                                >
-                                    <Icon as={X} size={16} color={emberRed} />
-                                </Pressable>
-                            </HStack>
+                                <HStack className="gap-4 items-center">
+                                    <Box className="p-2 bg-silk rounded-xl border border-border">
+                                        <School size={16} className="text-ink/40" />
+                                    </Box>
+                                    <VStack className="flex-1">
+                                        <Text className="text-sm font-bold text-ink">{section.name || 'Unnamed Division'}</Text>
+                                    </VStack>
+                                    <Pressable 
+                                        onPress={() => removeSection(idx)}
+                                        className="p-2 hover:bg-red-50 rounded-lg"
+                                    >
+                                        <Icon as={X} className="text-red-500" size="sm" />
+                                    </Pressable>
+                                </HStack>
+                            </Box>
                         ))}
                     </VStack>
                 )}
@@ -151,3 +148,4 @@ export default function StepHierarchy({
         </VStack>
     );
 }
+

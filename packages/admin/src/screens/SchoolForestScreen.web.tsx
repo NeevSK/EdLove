@@ -8,10 +8,10 @@
  * forest weather narrative.
  */
 import React, { useEffect, useState } from 'react';
-import { Icon, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { usePermissions, schoolForestAPI } from '@repo/core';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
+import { SkeletonCard, Icon } from '@repo/ui';
 import { ArrowLeft, RefreshCw } from 'lucide-react-native';
 
 const WEATHER_EMOJI: Record<string, string>  = {
@@ -20,21 +20,24 @@ const WEATHER_EMOJI: Record<string, string>  = {
     resting: '\uD83C\uDF19',
     steady: '\u26C5',
     quiet: '\uD83C\uDF2B\uFE0F',
-    changing: '\uD83C\uDF24'};
+    changing: '\uD83C\uDF24'
+};
 
 const HEALTH_EMOJI: Record<TeacherTree['tree_health'], string> = { 
     seedling: '\uD83C\uDF31',
     growing: '\uD83C\uDF3F',
     flourishing: '\uD83C\uDF33',
     flowering: '\uD83C\uDF38',
-    ancient: '\uD83E\uDEB5'};
+    ancient: '\uD83E\uDEB5'
+};
 
 const HEALTH_COLOR: Record<TeacherTree['tree_health'], string> = { 
     seedling: 'var(--amber-glow)',
     growing: 'var(--water)',
     flourishing: 'var(--moss)',
     flowering: 'var(--lotus)',
-    ancient: 'var(--sanctuary-saffron)'};
+    ancient: 'var(--sanctuary-saffron)'
+};
 
 function lastSignalLabel(days: number): string {
     if (days === 0) return '\u2705 Active today';
@@ -64,9 +67,10 @@ export default function SchoolForestScreen() {
         } finally {
             setLoading(false);
             setRefreshing(false);
-        };
+        }
+    };
 
-    useEffect(() => { void load(); }, [schoolId]);
+    useEffect(() => { load(); }, [schoolId]);
 
     return (
         <div className="sub-view-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
@@ -246,3 +250,4 @@ export default function SchoolForestScreen() {
         </div>
     );
 }
+

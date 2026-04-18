@@ -1,39 +1,30 @@
 import React, { useState } from 'react';
-import { Icon, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, Pressable } from 'react-native';
 import { 
     Text, 
-    GlassCard, 
     VStack, 
     HStack, 
-    useThemedColors, 
     Box, 
-    Button, 
-    ButtonText } from '@repo/ui';
+    Icon,
+    Heading
+} from '@repo/ui';
 import { useStaffPresence } from '../../hooks/useStaffPresence';
 import {
     Clock,
     Calendar,
     CheckCircle2,
     LogIn,
-    LogOut} from 'lucide-react-native';
+    LogOut
+} from 'lucide-react-native';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-
-// —————————————————————————————————————————————————————————————————————————————
-// TYPES
-// —————————————————————————————————————————————————————————————————————————————
 
 interface StaffPresencePulseProps {
     userId: string;
     schoolId: string;
 }
 
-// —————————————————————————————————————————————————————————————————————————————
-// COMPONENT
-// —————————————————————————————————————————————————————————————————————————————
-
-export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = { { userId, schoolId }) => {
-    const colors = useTheme().scene;
+export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, schoolId }) => {
     const { t, i18n } = useTranslation();
     const { attendance, isCheckedIn, checkIn, checkOut, loading } = useStaffPresence(userId, schoolId);
     const [actionLoading, setActionLoading] = useState(false);
@@ -50,7 +41,8 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = { { userId,
             console.error('Attendance toggle failed:', err);
         } finally {
             setActionLoading(false);
-        };
+        }
+    };
 
     if (loading) return null;
 
@@ -60,19 +52,19 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = { { userId,
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={[styles.title, { color: colors.text, fontSize: 18, fontWeight: '700' }]}>
+        <Box className="my-4 px-1">
+            <Text className="mb-3 text-lg font-bold text-ink">
                 {t('staffPresence.title')}
             </Text>
             
-            <GlassCard style={styles.mainCard}>
-                <VStack space="lg">
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <VStack>
-                            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
+            <Box className="p-5 rounded-3xl bg-white/70 border border-border shadow-sm">
+                <VStack className="gap-5">
+                    <HStack className="justify-between items-center">
+                        <VStack className="gap-0.5">
+                            <Text className="text-sm font-bold text-ink">
                                 {t('staffPresence.attendanceStatus')}
                             </Text>
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                            <Text className="text-xs text-ink/60">
                                 {new Intl.DateTimeFormat(i18n.language, { 
                                     weekday: 'long', 
                                     year: 'numeric', 
@@ -81,138 +73,75 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = { { userId,
                                 }).format(new Date())}
                             </Text>
                         </VStack>
-                        <View style={[
-                            styles.statusBadge,
-                            { backgroundColor: isCheckedIn ? `${colors.success}20` : `${colors.error}20` }
-                        ]}>
-                            <View style={[
-                                styles.statusDot,
-                                { backgroundColor: isCheckedIn ? colors.success : colors.error }
-                            ]} />
-                            <Text sx={{ fontSize: 12, fontWeight: '700', color: isCheckedIn ? colors.success : colors.error }}>
+                        <Box className={`flex-row items-center px-3 py-1.5 rounded-full ${isCheckedIn ? 'bg-phase-warning/10' : 'bg-phase-error/10'}`}>
+                            <Box className={`w-1.5 h-1.5 rounded-full mr-2 ${isCheckedIn ? 'bg-primary' : 'bg-phase-error'}`} />
+                            <Text className={`text-xs font-bold ${isCheckedIn ? 'text-primary' : 'text-phase-error'}`}>
                                 {isCheckedIn ? t('staffPresence.checkedIn') : t('staffPresence.checkedOut')}
                             </Text>
-                        </View>
+                        </Box>
                     </HStack>
 
-                    <HStack space="md">
-                        <VStack style={styles.statBox}>
-                            <Icon as={Clock} size={18} color={colors.primary} />
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}>
+                    <HStack className="gap-3">
+                        <VStack className="flex-1 bg-ink/5 p-3 rounded-2xl items-center gap-1">
+                            <Icon as={Clock} size={18} className="text-primary" />
+                            <Text className="text-[10px] text-ink/50 uppercase font-bold tracking-wider">
                                 {t('staffPresence.checkedInAt')}
                             </Text>
-                            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
+                            <Text className="text-sm font-bold text-ink">
                                 {todayAttendance ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_in)) : '--:--'}
                             </Text>
                         </VStack>
-                        <VStack style={styles.statBox}>
-                            <LogOut size={18} color={colors.secondary} />
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}>
+                        <VStack className="flex-1 bg-ink/5 p-3 rounded-2xl items-center gap-1">
+                            <Icon as={LogOut} size={18} className="text-secondary" />
+                            <Text className="text-[10px] text-ink/50 uppercase font-bold tracking-wider">
                                 {t('staffPresence.checkedOutAt')}
                             </Text>
-                            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
+                            <Text className="text-sm font-bold text-ink">
                                 {todayAttendance?.check_out ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_out)) : '--:--'}
                             </Text>
                         </VStack>
                     </HStack>
 
-                    <Button
-                        size="lg"
+                    <Pressable
                         onPress={handleToggleAttendance}
-                        isDisabled={actionLoading}
-                        style={{
-                            backgroundColor: isCheckedIn ? colors.error : colors.success,
-                            borderRadius: 12,
-                            height: 48
-                        }}
-                    >
-                        <HStack space="xs" sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                            {isCheckedIn ? <LogOut size={20} color="white" /> : <LogIn size={20} color="white" />}
-                            <ButtonText sx={{ color: 'white', fontWeight: '700' }}>
-                                {isCheckedIn ? t('staffPresence.checkOutButton') : t('staffPresence.checkInButton')}
-                            </ButtonText>
-                        </HStack>
-                    </Button>
+                        disabled={actionLoading}
+                        className={`h-12 rounded-2xl flex-row items-center justify-center gap-2 active:opacity-80 ${
+                            isCheckedIn ? 'bg-phase-error' : 'bg-primary'
+                        }`}>
+                        {actionLoading ? (
+                            <ActivityIndicator size="small" color="white" />
+                        ) : (
+                            <>
+                                <Icon as={isCheckedIn ? LogOut : LogIn} size={20} className="text-white" />
+                                <Text className="text-white font-bold">
+                                    {isCheckedIn ? t('staffPresence.checkOutButton') : t('staffPresence.checkInButton')}
+                                </Text>
+                            </>
+                        )}
+                    </Pressable>
                 </VStack>
-            </GlassCard>
+            </Box>
 
-            <HStack space="md" sx={{ marginTop: 16 }}>
-                <TouchableOpacity 
-                    style={styles.secondaryAction} 
-                    activeOpacity={0.7}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('staffPresence.requestLeave')}
-                    accessibilityHint="Opens a form to request time off"
-                >
-                    <Box sx={{ 
-                        backgroundColor: 'rgba(255,255,255,0.05)', 
-                        padding: 16, 
-                        borderRadius: 16, 
-                        borderWidth: 1, 
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        alignItems: 'center' 
-                    }}>
-                        <Icon as={Calendar} size={20} color={colors.primary} />
-                        <Text sx={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
+            <HStack className="gap-3 mt-4">
+                <Pressable className="flex-1 active:opacity-70">
+                    <Box className="bg-white/50 p-4 rounded-2xl border border-border items-center gap-2">
+                        <Icon as={Calendar} size={20} className="text-primary" />
+                        <Text className="text-xs font-bold text-ink">
                             {t('staffPresence.requestLeave')}
                         </Text>
                     </Box>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.secondaryAction} 
-                    activeOpacity={0.7}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('staffPresence.viewHistory')}
-                    accessibilityHint="Opens your historical attendance records"
-                >
-                    <Box sx={{ 
-                        backgroundColor: 'rgba(255,255,255,0.05)', 
-                        padding: 16, 
-                        borderRadius: 16, 
-                        borderWidth: 1, 
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        alignItems: 'center' 
-                    }}>
-                        <Icon as={Check}Circle2 size={20} color={colors.success} />
-                        <Text sx={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
+                </Pressable>
+                <Pressable className="flex-1 active:opacity-70">
+                    <Box className="bg-white/50 p-4 rounded-2xl border border-border items-center gap-2">
+                        <Icon as={CheckCircle2} size={20} className="text-primary" />
+                        <Text className="text-xs font-bold text-ink">
                             {t('staffPresence.viewHistory')}
                         </Text>
                     </Box>
-                </TouchableOpacity>
+                </Pressable>
             </HStack>
-        </View>
+        </Box>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        marginVertical: 16,
-        paddingHorizontal: 4},
-    title: {
-        marginBottom: 12,
-        letterSpacing: 0.5},
-    mainCard: {
-        padding: 20,
-        borderRadius: 20},
-    statusBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20},
-    statusDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        marginRight: 8},
-    statBox: {
-        flex: 1,
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        padding: 12,
-        borderRadius: 16,
-        alignItems: 'center'},
-    secondaryAction: {
-        flex: 1}
-});
 
 export default StaffPresencePulse;

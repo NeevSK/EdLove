@@ -1,11 +1,12 @@
-﻿import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ActivityIndicator } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
-    useThemedColors
+    Heading,
+    Icon as UIIcon,
 } from '@repo/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { api } from '@repo/core';
@@ -35,15 +36,16 @@ const ICON_MAP: Record<string, any> = {
 
 export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashboardProps) {
     const { t } = useTranslation();
-    const theme = useThemedColors();
     const [needs, setNeeds] = useState<ResourceNeed[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const PRIORITY_COLORS: Record<string, string> = {
-        low: theme.text.tertiary,
-        medium: theme.status.warning,
-        high: theme.status.warning,
-        urgent: theme.status.error
+    const getPriorityColorClasses = (priority: string) => {
+        switch (priority) {
+            case 'urgent': return 'text-red-600 border-red-600 bg-red-500/10';
+            case 'high': return 'text-amber-600 border-amber-600 bg-amber-500/10';
+            case 'medium': return 'text-blue-600 border-blue-600 bg-blue-500/10';
+            default: return 'text-ink/40 border-border bg-ink/5';
+        }
     };
 
     useEffect(() => {
@@ -66,37 +68,19 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
 
     if (isLoading) {
         return (
-            <Box style={{ padding: theme.spacing.xl, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator color={theme.status.info} />
+            <Box className="p-12 items-center justify-center">
+                <ActivityIndicator color="#6366f1" />
             </Box>
         );
     }
 
     if (needs.length === 0) {
         return (
-            <Box
-                style={{
-                    padding: theme.spacing.xl,
-                    backgroundColor: theme.scene.backgroundSecondary,
-                    borderRadius: theme.corners.md,
-                    alignItems: 'center'
-                }}>
-                <Text
-                    style={{ 
-                        fontWeight: '600', 
-                        fontSize: 18, 
-                        color: theme.status.success,
-                        textAlign: 'center'
-                    }}>
+            <Box className="p-8 bg-silk rounded-3xl items-center border border-border">
+                <Heading className="text-xl font-black text-green-600 text-center">
                     {t('principal.resources.emptyState') || 'Sanctuary is Well-Equipped'}
-                </Text>
-                <Text
-                    style={{ 
-                        marginTop: theme.spacing.sm, 
-                        fontSize: 14, 
-                        color: theme.text.secondary,
-                        textAlign: 'center'
-                    }}>
+                </Heading>
+                <Text className="mt-2 text-sm text-ink/40 font-bold text-center">
                     {t('principal.resources.emptyStateDesc') || 'No resource requests or damaged items reported.'}
                 </Text>
             </Box>
@@ -104,64 +88,43 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     }
 
     return (
-        <VStack style={{ gap: theme.spacing.lg }}>
-            <VStack style={{ gap: theme.spacing.xs }}>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: theme.text.primary }}>
+        <VStack className="gap-6">
+            <VStack className="gap-1">
+                <Heading className="text-2xl font-black text-ink">
                     {t('principal.resources.title') || 'Resource Vistas'}
-                </Text>
-                <Text style={{ fontSize: 14, color: theme.text.secondary }}>
+                </Heading>
+                <Text className="text-sm font-bold text-ink/40">
                     {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}
                 </Text>
             </VStack>
 
-            <VStack style={{ gap: theme.spacing.md }}>
+            <VStack className="gap-4">
                 {needs.map((need) => {
                     const Icon = ICON_MAP[need.icon] || ICON_MAP.other;
-                    const priorityColor = PRIORITY_COLORS[need.priority] || theme.text.tertiary;
+                    const priorityClasses = getPriorityColorClasses(need.priority);
+                    const colorParts = priorityClasses.split(' ');
+                    const textColorClass = colorParts[0];
+                    const borderColorClass = colorParts[1];
+                    const bgColorClass = colorParts[2];
 
                     return (
                         <Box
                             key={need.id}
-                            style={{
-                                padding: theme.spacing.lg,
-                                backgroundColor: theme.scene.backgroundSecondary,
-                                borderRadius: theme.corners.md,
-                                borderLeftWidth: 4,
-                                borderLeftColor: priorityColor
-                            }}>
-                            <HStack style={{ alignItems: "center", gap: theme.spacing.md }}>
-                                <Box
-                                    style={{
-                                        width: 48,
-                                        height: 48,
-                                        borderRadius: 24,
-                                        backgroundColor: theme.scene.backgroundTertiary,
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                    <Icon color={priorityColor} size={24} />
+                            className={`p-5 bg-white rounded-3xl border-l-4 border-y border-r border-border ${borderColorClass.replace('border-', 'border-l-')}`}>
+                            <HStack className="items-center gap-4">
+                                <Box className={`w-12 h-12 rounded-2xl items-center justify-center ${bgColorClass}`}>
+                                    <UIIcon as={Icon} className={textColorClass} size="md" />
                                 </Box>
 
-                                <VStack style={{ flex: 1, gap: 2 }}>
-                                    <Text
-                                        style={{ 
-                                            fontWeight: '600', 
-                                            fontSize: 18, 
-                                            color: theme.text.primary 
-                                        }}>
-                                        {t('principal.resources.needUnit', { count: need.requested_by_count }) || ${need.requested_by_count} requests}
+                                <VStack className="flex-1 gap-0.5">
+                                    <Text className="text-lg font-black text-ink">
+                                        {t('principal.resources.needUnit', { count: need.requested_by_count }) || `${need.requested_by_count} requests`}
                                     </Text>
-                                    <Text style={{ fontSize: 15, color: theme.text.secondary }}>
+                                    <Text className="text-sm text-ink/60 font-bold">
                                         {need.description}
                                     </Text>
                                     {need.priority === 'urgent' && (
-                                        <Text
-                                            style={{ 
-                                                fontWeight: '600', 
-                                                fontSize: 12, 
-                                                color: theme.status.error,
-                                                marginTop: 4
-                                            }}>
+                                        <Text className="text-[10px] font-black uppercase tracking-widest text-red-600 mt-1">
                                             {t('principal.resources.urgent') || 'Urgent Priority'}
                                         </Text>
                                     )}
@@ -172,23 +135,12 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                 })}
             </VStack>
 
-            <Box
-                style={{
-                    padding: theme.spacing.md,
-                    backgroundColor: theme.scene.backgroundTertiary,
-                    borderRadius: theme.corners.md,
-                    marginTop: theme.spacing.md
-                }}>
-                <Text
-                    style={{ 
-                        fontStyle: 'italic', 
-                        fontSize: 12, 
-                        color: theme.text.tertiary,
-                        textAlign: 'center' 
-                    }}>
+            <Box className="p-4 bg-silk rounded-2xl mt-4 border border-border">
+                <Text className="italic text-xs text-ink/40 font-bold text-center">
                     {t('principal.resources.philosophy') || 'Infrastructure is the scaffolding of possibility.'}
                 </Text>
             </Box>
         </VStack>
     );
 }
+

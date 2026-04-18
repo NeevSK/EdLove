@@ -13,8 +13,6 @@ import {
     FormControlLabelText,
     Spinner,
     SanctuaryModal,
-    useThemedColors,
-    
     Actionsheet,
     ActionsheetBackdrop,
     ActionsheetContent,
@@ -22,18 +20,20 @@ import {
     ActionsheetDragIndicator,
     ActionsheetItem,
     ActionsheetItemText,
-    Icon,
-    Textarea
+    Icon as UIIcon,
+    Textarea,
+    TextareaInput,
+    Heading,
+    useTheme
 } from '@repo/ui';
-import { School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
+import { handleAPIError, growthSignalsAPI, identityAPI, type School } from '@repo/core';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
-import { communityAPI } from '@repo/community/api/community';
+import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
 import {
     School as SchoolIcon,
     LayoutGrid,
     Users,
-    Plus,
     ChevronDown,
     Activity,
     Globe
@@ -48,12 +48,6 @@ interface GlobalCreateModalProps {
 
 type CreateType = 'school' | 'classroom' | 'group';
 
-/**
- * GlobalCreateModal.web
- * 
- * Optimized web version of the Global Creation Modal.
- * Uses wider layout and web-native interactions where appropriate.
- */
 export default function GlobalCreateModal({
     isOpen,
     onClose,
@@ -61,7 +55,6 @@ export default function GlobalCreateModal({
     availableSchools
 }: GlobalCreateModalProps) {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
 
     const [type, setType] = useState<CreateType>('school');
     const [name, setName] = useState('');
@@ -104,16 +97,14 @@ export default function GlobalCreateModal({
             const userId = await identityAPI.getMyInternalId();
             if (!userId) throw new Error('Not authenticated');
 
-            let result;
+            let result: any;
             if (type === 'school') {
-                // 1. Create the school
                 result = await createFounderSchool({
                     name: name.trim(),
                     type: schoolType,
                     created_by: userId
                 });
 
-                // 2. Create the Primary Sanctuary Group for this school
                 if (result) {
                     await communityAPI.createGroupWithOwner({
                         name: `${name.trim()} Sanctuary`,
@@ -124,7 +115,6 @@ export default function GlobalCreateModal({
                     }, userId);
                 }
             } else if (type === 'classroom') {
-                // 1. Create the classroom
                 result = await createFounderClassroom({
                     school_id: selectedSchoolId,
                     name: name.trim(),
@@ -132,7 +122,6 @@ export default function GlobalCreateModal({
                     created_by: userId
                 });
 
-                // 2. Create the Class Sanctuary Group
                 if (result) {
                     await communityAPI.createGroupWithOwner({
                         name: `${name.trim()} Sanctuary`,
@@ -144,7 +133,6 @@ export default function GlobalCreateModal({
                     }, userId);
                 }
             } else if (type === 'group') {
-                // Use standard community logic to ensure owner assignment
                 result = await communityAPI.createGroupWithOwner({
                     name: name.trim(),
                     description: description.trim(),
@@ -154,20 +142,21 @@ export default function GlobalCreateModal({
                 }, userId);
             }
 
-            // Growth signals fire-and-forget
             if (type === 'classroom' && result) {
                 void growthSignalsAPI.emitSignal(userId, 'classroom_created', {
                     classroom_id: result.id,
-                    school_id: selectedSchoolId}).catch(() => { });
+                    school_id: selectedSchoolId
+                }).catch(() => { });
             }
             onSuccess(type, result);
             handleClose();
         } catch (err: any) {
             const apiError = handleAPIError(err, true);
-            setError(apiError.message);
+            setError(apiError.message || 'Action failed');
         } finally {
             setIsSubmitting(false);
-        };
+        }
+    };
 
     const selectedSchool = availableSchools.find(s => s.id === selectedSchoolId);
 
@@ -177,126 +166,94 @@ export default function GlobalCreateModal({
                 isOpen={isOpen}
                 onClose={handleClose}
                 title="Ecosystem Creation"
-                size="lg" // Use size for web layout
                 footer={
-                    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+                    <HStack className="gap-3 w-full">
                         <Button
                             variant="outline"
-                            action="secondary"
                             onPress={handleClose}
-                            sx={{
-                                flex: 1,
-                                borderColor: colors.border,
-                                _hover: { backgroundColor: colors.tertiary }
-                            }}
+                            className="flex-1 rounded-2xl h-12"
                             isDisabled={isSubmitting}
                         >
-                            <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
+                            <ButtonText className="text-ink/60 font-bold">Cancel</ButtonText>
                         </Button>
                         <Button
-                            action="primary"
                             onPress={handleSubmit}
-                            sx={{
-                                flex: 2, // Larger primary button
-                                backgroundColor: sanctuarySaffron,
-                                _hover: { opacity: 0.9 }
-                            }}
+                            className="flex-2 h-12 rounded-2xl bg-phase-accent shadow-sm"
                             isDisabled={isSubmitting || !name.trim()}
                         >
                             {isSubmitting ? (
-                                <Spinner color={sacredWhite} size="small" />
+                                <Spinner color="white" size="small" />
                             ) : (
-                                <ButtonText color={sacredWhite}>Initialize Entity</ButtonText>
+                                <ButtonText className="text-white font-bold">Initialize Entity</ButtonText>
                             )}
                         </Button>
                     </HStack>
                 }
             >
-                <VStack sx={{ gap: Theme.spacing.xl }}>
-                    {/* Entity Type Selector - Web Grid Style */}
-                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                <VStack className="gap-8 p-6">
+                    <HStack className="gap-3">
                         <TypeButton
                             active={type === 'school'}
                             onPress={() => setType('school')}
                             label="New Institution"
-                            icon={<SchoolIcon size={18} />}
+                            icon={SchoolIcon}
                         />
                         <TypeButton
                             active={type === 'classroom'}
                             onPress={() => setType('classroom')}
                             label="New Classroom"
-                            icon={<Icon as={Layout}Grid size={18} />}
+                            icon={LayoutGrid}
                         />
                         <TypeButton
                             active={type === 'group'}
                             onPress={() => setType('group')}
                             label="New Sanctuary"
-                            icon={<Icon as={User}s size={18} />}
+                            icon={Users}
                         />
                     </HStack>
 
                     {error && (
-                        <Box sx={{
-                            padding: 12,
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderRadius: 8,
-                            borderWidth: 1,
-                            borderColor: '#ef4444'
-                        }}>
-                            <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                <Icon as={Activity} size={14} color="#ef4444" />
-                                <Text sx={{ color: '#ef4444', fontSize: 13, fontWeight: '600' }}>{error}</Text>
+                        <Box className="p-4 bg-red-50 rounded-xl border border-red-200">
+                            <HStack className="gap-2 items-center">
+                                <UIIcon as={Activity} size="sm" className="text-red-500" />
+                                <Text className="text-red-600 text-[13px] font-bold">{error}</Text>
                             </HStack>
                         </Box>
                     )}
 
-                    <VStack sx={{ gap: Theme.spacing.lg }}>
-                        {/* Target School Picker for non-school entities */}
+                    <VStack className="gap-6">
                         {type !== 'school' && (
                             <FormControl isRequired>
                                 <FormControlLabel>
-                                    <FormControlLabelText color={colors.textSecondary}>Associated Institution</FormControlLabelText>
+                                    <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">Associated Institution</FormControlLabelText>
                                 </FormControlLabel>
                                 <Button
                                     variant="outline"
                                     onPress={() => setShowSchoolPicker(true)}
-                                    sx={{
-                                        justifyContent: 'space-between',
-                                        borderColor: colors.border,
-                                        backgroundColor: colors.tertiary,
-                                        height: 52,
-                                        borderRadius: 12,
-                                        _hover: { borderColor: sanctuarySaffron }
-                                    }}
+                                    className="justify-between border-border bg-silk h-14 rounded-2xl px-4"
                                 >
-                                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                        <Icon as={Globe} size={16} color={colors.textTertiary} />
-                                        <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}>
+                                    <HStack className="gap-2 items-center">
+                                        <UIIcon as={Globe} size="sm" className="text-ink/40" />
+                                        <ButtonText className={`font-bold ${selectedSchoolId ? 'text-ink' : 'text-ink/40'}`}>
                                             {selectedSchool ? selectedSchool.name : "Select Target Institution..."}
                                         </ButtonText>
                                     </HStack>
-                                    <Icon as={ChevronDown} size="sm" color={colors.textSecondary} />
+                                    <UIIcon as={ChevronDown} size="sm" className="text-ink/40" />
                                 </Button>
                             </FormControl>
                         )}
 
                         <FormControl isRequired>
                             <FormControlLabel>
-                                <FormControlLabelText color={colors.textSecondary}>
+                                <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
                                     {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Classroom Display Name' : 'Community Name'}
                                 </FormControlLabelText>
                             </FormControlLabel>
-                            <Input sx={{
-                                height: 52,
-                                backgroundColor: colors.tertiary,
-                                borderColor: colors.border,
-                                borderRadius: 12,
-                                _focus: { borderColor: sanctuarySaffron }
-                            }}>
+                            <Input className="h-14 bg-silk border-border rounded-2xl px-2">
                                 <InputField
                                     value={name}
                                     onChangeText={setName}
-                                    color={colors.text}
+                                    className="text-ink font-bold"
                                     placeholder={type === 'school' ? "e.g., Royal Gurudevi Academy" : "Enter name..."}
                                 />
                             </Input>
@@ -305,25 +262,18 @@ export default function GlobalCreateModal({
                         {type === 'school' && (
                             <FormControl>
                                 <FormControlLabel>
-                                    <FormControlLabelText color={colors.textSecondary}>Institutional Category</FormControlLabelText>
+                                    <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">Institutional Category</FormControlLabelText>
                                 </FormControlLabel>
-                                <HStack sx={{ gap: 12 }}>
+                                <HStack className="gap-3">
                                     {(['primary', 'secondary', 'mixed'] as const).map(t => (
                                         <Button
                                             key={t}
                                             variant={schoolType === t ? 'solid' : 'outline'}
                                             onPress={() => setSchoolType(t)}
-                                            sx={{
-                                                flex: 1,
-                                                height: 44,
-                                                borderRadius: 22,
-                                                backgroundColor: schoolType === t ? sanctuarySaffron : 'transparent',
-                                                borderColor: schoolType === t ? sanctuarySaffron : colors.border,
-                                                _hover: { opacity: 0.9 }
-                                            }}
+                                            className={`flex-1 h-11 rounded-full shadow-sm ${schoolType === t ? 'bg-phase-accent' : 'bg-transparent border-border'}`}
                                         >
-                                            <ButtonText color={schoolType === t ? '#fff' : colors.textSecondary} sx={{ fontSize: 13 }}>
-                                                {t.charAt(0).toUpperCase() + t.slice(1)}
+                                            <ButtonText className={`text-xs font-black uppercase tracking-widest ${schoolType === t ? 'text-white' : 'text-ink/40'}`}>
+                                                {t}
                                             </ButtonText>
                                         </Button>
                                     ))}
@@ -334,22 +284,14 @@ export default function GlobalCreateModal({
                         {type === 'group' && (
                             <FormControl>
                                 <FormControlLabel>
-                                    <FormControlLabelText color={colors.textSecondary}>Intent & Purpose</FormControlLabelText>
+                                    <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">Intent & Purpose</FormControlLabelText>
                                 </FormControlLabel>
-                                <Textarea
-                                    sx={{
-                                        minHeight: 120,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                        borderRadius: 16,
-                                        padding: 12
-                                    }}
-                                >
-                                    <InputField
+                                <Textarea className="min-h-[120px] bg-silk border-border rounded-[24px]">
+                                    <TextareaInput
                                         value={description}
                                         onChangeText={setDescription}
+                                        className="text-ink font-bold"
                                         placeholder="Describe the heart and intent of this sanctuary space..."
-                                        multiline
                                     />
                                 </Textarea>
                             </FormControl>
@@ -358,19 +300,14 @@ export default function GlobalCreateModal({
                 </VStack>
             </SanctuaryModal>
 
-            {/* School Picker Sheet - Responsive Actionsheet */}
             <Actionsheet isOpen={showSchoolPicker} onClose={() => setShowSchoolPicker(false)}>
                 <ActionsheetBackdrop />
-                <ActionsheetContent sx={{
-                    backgroundColor: colors.secondary,
-                    maxWidth: 500, // Keep it centered/compact on web
-                    alignSelf: 'center'
-                }}>
+                <ActionsheetContent className="bg-white max-w-[500px] self-center">
                     <ActionsheetDragIndicatorWrapper>
                         <ActionsheetDragIndicator />
                     </ActionsheetDragIndicatorWrapper>
-                    <VStack sx={{ padding: 24, gap: 12 }}>
-                        <Text sx={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Select Institution</Text>
+                    <VStack className="p-8 gap-4 w-full">
+                        <Heading className="text-xl font-black text-ink mb-2">Select Institution</Heading>
                         {availableSchools.map(school => (
                             <ActionsheetItem
                                 key={school.id}
@@ -378,15 +315,11 @@ export default function GlobalCreateModal({
                                     setSelectedSchoolId(school.id);
                                     setShowSchoolPicker(false);
                                 }}
-                                sx={{
-                                    borderRadius: 12,
-                                    marginVertical: 4,
-                                    _hover: { backgroundColor: colors.tertiary }
-                                }}
+                                className="rounded-2xl active:bg-silk px-4"
                             >
-                                <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                    <SchoolIcon size={18} color={sanctuarySaffron} />
-                                    <ActionsheetItemText color={colors.text}>{school.name}</ActionsheetItemText>
+                                <HStack className="gap-3 items-center">
+                                    <UIIcon as={SchoolIcon} size="sm" className="text-primary" />
+                                    <ActionsheetItemText className="text-ink font-bold">{school.name}</ActionsheetItemText>
                                 </HStack>
                             </ActionsheetItem>
                         ))}
@@ -401,32 +334,23 @@ function TypeButton({
   active,
   onPress,
   label,
-  icon}: {
+  icon: Icon
+}: {
   active: boolean;
   onPress: () => void;
   label: string;
-  icon: React.ReactElement;
+  icon: any;
 }) {
-    const colors = useTheme().scene;
     return (
         <Button
             variant={active ? 'solid' : 'outline'}
             onPress={onPress}
-            sx={{
-                flex: 1,
-                flexDirection: 'column',
-                height: 80,
-                gap: 8,
-                borderRadius: 16,
-                backgroundColor: active ? sanctuarySaffron : 'transparent',
-                borderColor: active ? sanctuarySaffron : colors.border,
-                _hover: { backgroundColor: active ? sanctuarySaffron : colors.tertiary }
-            }}
+            className={`flex-1 flex-col h-24 gap-2 rounded-[24px] shadow-sm ${active ? 'bg-phase-accent' : 'bg-transparent border-border'}`}
         >
-            <Box sx={{ marginBottom: 4 }}>
-                {React.cloneElement(icon as React.ReactElement<{ color?: string }>, { color: active ? '#fff' : colors.textSecondary })}
+            <Box className="mb-1">
+                <UIIcon as={Icon} className={active ? 'text-white' : 'text-ink/40'} size="md" />
             </Box>
-            <ButtonText color={active ? '#fff' : colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}>
+            <ButtonText className={`text-[10px] font-black uppercase tracking-widest text-center ${active ? 'text-white' : 'text-ink/40'}`}>
                 {label}
             </ButtonText>
         </Button>

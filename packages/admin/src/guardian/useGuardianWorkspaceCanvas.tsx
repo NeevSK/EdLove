@@ -38,8 +38,7 @@ export type GuardianWorkspaceSurfaceId =
 
 export type GuardianWorkspaceSurface = WorkspaceSurfaceDefinition<
   GuardianWorkspaceSurfaceId,
-  GuardianCapabilityId
-> & {
+  GuardianCapabilityId> & {
   title: string;
   subtitle?: string;
   summary?: string;
@@ -62,7 +61,7 @@ type GuardianWorkspaceCanvasArgs = {
 };
 
 type GuardianResolvedSurface = GuardianWorkspaceSurface &
-  ResolvedWorkspaceSurface<GuardianWorkspaceSurfaceId GuardianCapabilityId>;
+  ResolvedWorkspaceSurface<GuardianWorkspaceSurfaceId, GuardianCapabilityId>;
 
 function formatDateLabel(value: string) {
   const date = new Date(value);
@@ -84,7 +83,7 @@ function formatDateTimeLabel(value: string) {
 
 function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
   const currentIndex = WORKSPACE_CANVAS_ZONES.indexOf(zone);
-  const nextIndex = { currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
+  const nextIndex = (currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
   return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
 }
 
@@ -568,11 +567,11 @@ export function useGuardianWorkspaceCanvasSurfaces({
             <VStack className="gap-3">
               <HStack className="items-center gap-3">
                 <Box className="rounded-2xl bg-phase-warning/10 p-3">
-                  <Icon as={Shield}Check size={18} color="#2A2318" />
+                  <Icon as={ShieldCheck} size={18} color="#2A2318" />
                 </Box>
                 <VStack className="flex-1 gap-1">
                   <Text className="text-[14px] font-bold text-phaseText-primary">
-                    Family-safe, visibility
+                    Family-safe Visibility
                   </Text>
                   <Text className="text-[12px] text-phaseText-secondary">
                     This, workspace is, centered on, linked children, family-facing, notices, and, school rhythm.

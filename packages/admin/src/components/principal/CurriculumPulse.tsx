@@ -1,25 +1,15 @@
-/**
- * CURRICULUM PULSE
- * A visual tracker for syllabus coverage across grades, 
- * specifically highlighting the 2026 Sri Lankan syllabus reform.
- * 
- * Philosophy:
- * - Transparency in learning progress.
- * - Early identification of bottlenecks in syllabus adoption.
- * - Empathetic support for teachers transitioning to new reforms.
- */
-
 import React, { useState, useEffect } from 'react';
-import { Icon, Box,
+import { 
+    Icon, 
+    Box,
     VStack,
     HStack,
     Text,
     Heading,
-    
-    useThemedColors,
     Spinner,
     Progress,
-    ProgressFilledTrack} from '@repo/ui';
+    ProgressFilledTrack
+} from '@repo/ui';
 import { BookOpen, Zap, Clock } from 'lucide-react-native';
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -33,13 +23,17 @@ interface GradeProgress {
 
 export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
     const [progress, setProgress] = useState<GradeProgress[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetchCurriculumProgress();
-    }, [schoolId]);
+    const setMockData = () => {
+        setProgress([
+            { grade: 'Grade 6', coverage: 45, is_reform: true, last_updated: new Date().toISOString() },
+            { grade: 'Grade 10', coverage: 65, is_reform: false, last_updated: new Date().toISOString() },
+            { grade: 'Grade 12', coverage: 30, is_reform: false, last_updated: new Date().toISOString() },
+            { grade: 'Grade 1', coverage: 80, is_reform: true, last_updated: new Date().toISOString() }
+        ]);
+    };
 
     const fetchCurriculumProgress = async () => {
         try {
@@ -59,91 +53,76 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
             setMockData();
         } finally {
             setIsLoading(false);
-        };
-
-    const setMockData = () => {
-        setProgress([
-            { grade: 'Grade 6', coverage: 45, is_reform: true, last_updated: new Date().toISOString() },
-            { grade: 'Grade 10', coverage: 65, is_reform: false, last_updated: new Date().toISOString() },
-            { grade: 'Grade 12', coverage: 30, is_reform: false, last_updated: new Date().toISOString() },
-            { grade: 'Grade 1', coverage: 80, is_reform: true, last_updated: new Date().toISOString() }]);
+        }
     };
 
+    useEffect(() => {
+        fetchCurriculumProgress();
+    }, [schoolId]);
+
     if (isLoading) {
-        return <Spinner color={colors.action} />;
+        return (
+            <Box className="p-10 items-center justify-center">
+                <Spinner color="#ffbf00" />
+            </Box>
+        );
     }
 
     return (
-        <VStack sx={{ gap: Theme.spacing.lg }}>
-            <VStack sx={{ gap: Theme.spacing.xs }}>
-                <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                    <Heading sx={{ fontSize: Theme.typography.fontSize.md }} color={colors.text}>
-                        {t('principal.pulse.title')}
+        <VStack className="gap-6">
+            <VStack className="gap-1">
+                <HStack className="gap-2 items-center">
+                    <Heading className="text-sm font-black text-ink uppercase tracking-wider">
+                        {t('principal.pulse.title', 'Curriculum Pulse')}
                     </Heading>
-                    <Box
-                        sx={{
-                            paddingHorizontal: Theme.spacing.sm,
-                            paddingVertical: 2,
-                            backgroundColor: amberGlow + '22',
-                            borderRadius: Theme.corners.comfortable,
-                            borderWidth: 1,
-                            borderColor: amberGlow}}
-                    >
-                        <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                            <Zap size={10} color={amberGlow} fill={amberGlow} />
-                            <Text sx={{ fontSize: 10, fontWeight: '700' }} color={amberGlow}>2026 REFORM</Text>
+                    <Box className="px-2 py-0.5 bg-amber-500/10 rounded-full border border-amber-500/20">
+                        <HStack className="gap-1 items-center">
+                            <Icon as={Zap} size={10} className="text-amber-600" />
+                            <Text className="text-[10px] font-black text-amber-600 uppercase">2026 REFORM</Text>
                         </HStack>
                     </Box>
                 </HStack>
-                <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
-                    {t('principal.pulse.subtitle')}
+                <Text className="text-xs font-bold text-ink/40">
+                    {t('principal.pulse.subtitle', 'Live tracking of syllabus coverage across grades.')}
                 </Text>
             </VStack>
 
-            <VStack sx={{ gap: Theme.spacing.md }}>
+            <VStack className="gap-5">
                 {progress.map((item) => (
-                    <VStack key={item.grade} sx={{ gap: Theme.spacing.xs }}>
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{item.grade}</Text>
+                    <VStack key={item.grade} className="gap-2">
+                        <HStack className="justify-between items-center">
+                            <HStack className="gap-2 items-center">
+                                <Text className="text-sm font-black text-ink">{item.grade}</Text>
                                 {item.is_reform && (
-                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={amberGlow}>(Reform)</Text>
+                                    <Text className="text-[10px] font-black text-amber-600 uppercase tracking-tighter">(Reform)</Text>
                                 )}
                             </HStack>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>{item.coverage}%</Text>
+                            <Text className="text-xs font-black text-ink/60">{item.coverage}%</Text>
                         </HStack>
-                        <Progress value={item.coverage} sx={{ height: 8, width: '100%' }}>
+                        <Progress value={item.coverage} className="h-2 w-full bg-ink/5 rounded-full overflow-hidden">
                             <ProgressFilledTrack
-                                sx={{
-                                    backgroundColor: item.is_reform ? amberGlow : colors.action
-                                }}
+                                className={`h-full ${item.is_reform ? 'bg-amber-500' : 'bg-primary'}`}
                             />
                         </Progress>
-                        <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center', marginTop: 2 }}>
-                            <Icon as={Clock} size={10} color={colors.textTertiary} />
-                            <Text sx={{ fontSize: 10 }} color={colors.textTertiary}>
-                                Last update: {new Date(item.last_updated).toLocaleDateString()}
+                        <HStack className="gap-1.5 items-center">
+                            <Icon as={Clock} size={10} className="text-ink/30" />
+                            <Text className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">
+                                Sync: {new Date(item.last_updated).toLocaleDateString()}
                             </Text>
                         </HStack>
                     </VStack>
                 ))}
             </VStack>
 
-            <Box
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: colors.tertiary,
-                    borderRadius: Theme.corners.comfortable,
-                    borderWidth: 1,
-                    borderColor: colors.border}}
-            >
-                <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                    <Icon as={Book}Open size={16} color={colors.action} />
-                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, flex: 1 }} color={colors.textSecondary}>
-                        {t('principal.pulse.insight')}
+            <Box className="p-4 bg-silk rounded-2xl border border-border">
+                <HStack className="gap-3 items-center">
+                    <Icon as={BookOpen} size={14} className="text-primary" />
+                    <Text className="text-xs font-bold text-ink/60 flex-1 leading-relaxed">
+                        {t('principal.pulse.insight', 'Syllabus reform implementation is pacing 15% faster than previous cycles.')}
                     </Text>
                 </HStack>
             </Box>
         </VStack>
     );
 }
+

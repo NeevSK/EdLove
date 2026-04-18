@@ -1,4 +1,4 @@
-﻿import { supabase } from '@repo/core';
+import { supabase } from '@repo/core';
 
 export const governanceAPI = { 
   async getCommunityHQGroupId(schoolId: string): Promise<string | null> {
@@ -10,5 +10,6 @@ export const governanceAPI = {
 
     if (error) throw error;
     return data?.[0]?.id ?? null;
-  };
+  }
+};
 

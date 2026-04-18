@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Icon, api } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
-import { ArrowLeft, Plus } from 'lucide-react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Icon, 
+    Button,
+    ButtonText,
+    ButtonIcon,
+    Input,
+    InputField,
+    FormControl,
+    FormControlLabel,
+    FormControlLabelText,
+    ScrollView,
+    SkeletonCard
+} from '@repo/ui';
+import { api } from '@repo/core';
+import { ArrowLeft, Plus, Calendar } from 'lucide-react-native';
+import { TouchableOpacity } from 'react-native';
 
 interface CyclesDashboardProps {
     schoolId: string;
@@ -9,7 +27,7 @@ interface CyclesDashboardProps {
     onBack: () => void;
 }
 
-export const CyclesDashboard: React.FC<CyclesDashboardProps> = { { schoolId, isPastView, onBack }) => {
+export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPastView, onBack }) => {
     const [academicCycles, setAcademicCycles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [newName, setNewName] = useState('');
@@ -21,12 +39,14 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = { { schoolId, isP
         if (!schoolId) return;
         setLoading(true);
         try {
-            setAcademicCycles(await api.academicCycles.getAll(schoolId));
+            const data = await api.academicCycles.getAll(schoolId);
+            setAcademicCycles(data || []);
         } catch (err) {
             console.error('Failed to load academic cycles:', err);
         } finally {
             setLoading(false);
-        };
+        }
+    };
 
     useEffect(() => {
         loadAcademicCycles();
@@ -51,97 +71,132 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = { { schoolId, isP
             console.error('Failed to create academic cycle:', err);
         } finally {
             setSaving(false);
-        };
+        }
+    };
 
     return (
-        <div>
-            <button 
-                onClick={onBack} 
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 8, 
-                    padding: '8px 14px', 
-                    borderRadius: 10, 
-                    border: '1px solid var(--border)', 
-                    background: 'var(--glass-surface)', 
-                    cursor: 'pointer', 
-                    fontFamily: 'var(--font-body)', 
-                    fontSize: 13, 
-                    fontWeight: '600', 
-                    marginBottom: 24 
-                }}>
-                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
-            </button>
-            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>?? Academic Cycles</h2>
-            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: 14 }}>
-                Define terms, semesters and academic periods.
-            </p>
-            
-            <div className="sanctuary-card" style={{ padding: 24, marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12, opacity: isPastView ? 0.6 : 1 }}>
-                <h4 style={{ margin: 0, fontSize: 13, fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>New Cycle</h4>
-                <input 
-                    value={newName} 
-                    onChange={e => setNewName(e.target.value)} 
-                    disabled={isPastView} 
-                    placeholder="e.g. First Term 2026" 
-                    style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }} 
-                />
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1 }}>
-                        <label style={{ fontSize: 11, fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Start Date</label>
-                        <input 
-                            type="date" 
-                            value={newStart} 
-                            onChange={e => setNewStart(e.target.value)} 
-                            disabled={isPastView} 
-                            style={{ width: '100%', marginTop: 6, padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14, boxSizing: 'border-box' }} 
-                        />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                        <label style={{ fontSize: 11, fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>End Date</label>
-                        <input 
-                            type="date" 
-                            value={newEnd} 
-                            onChange={e => setNewEnd(e.target.value)} 
-                            disabled={isPastView} 
-                            style={{ width: '100%', marginTop: 6, padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14, boxSizing: 'border-box' }} 
-                        />
-                    </div>
-                </div>
-                <button 
-                    onClick={handleCreateCycle} 
-                    disabled={!newName.trim() || !newStart || saving || isPastView} 
-                    className="premium-button" 
-                    style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {saving ? '?' : <><Icon as={Plus} size={14} /> Create</>}
-                </button>
-            </div>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <VStack className="gap-6 p-4">
+                <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
+                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
+                        <Icon as={ArrowLeft} size="sm" className="text-ink" />
+                        <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
+                    </HStack>
+                </TouchableOpacity>
 
-            {loading ? <SkeletonCard /> : academicCycles.length === 0 ? (
-                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
-                    No academic cycles yet. Create the first one above.
-                </p>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {academicCycles.map(c => (
-                        <div key={c.id} className="sanctuary-card" style={{ padding: '18px 24px', borderLeft: `3px solid ${c.status === 'active' ? 'var(--moss)' : c.status === 'upcoming' ? 'var(--water)' : 'var(--border)'}` }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <div style={{ fontWeight: '800', fontSize: 16 }}>{c.name}</div>
-                                    <div style={{ fontSize: 12, color: 'var(--ink-ghost)', marginTop: 4 }}>
-                                        {c.start_date} ? {c.end_date ?? 'ongoing'}
-                                    </div>
-                                </div>
-                                <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: '700', background: c.status === 'active' ? 'rgba(34,197,94,0.1)' : 'rgba(59,130,246,0.1)', color: c.status === 'active' ? 'var(--moss)' : 'var(--water)' }}>
-                                    {c.status}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                <VStack className="gap-1">
+                    <Heading className="text-2xl font-black text-ink">Academic Cycles</Heading>
+                    <Text className="text-sm text-ink/60">
+                        Define terms, semesters and academic periods.
+                    </Text>
+                </VStack>
+                
+                <Box className={`bg-white p-5 rounded-3xl border border-border gap-4 ${isPastView ? 'opacity-60' : ''}`}>
+                    <Heading className="text-xs font-black uppercase tracking-widest text-ink/40">New Cycle</Heading>
+                    
+                    <FormControl className="w-full">
+                        <Input className="h-12 rounded-2xl">
+                            <InputField 
+                                value={newName} 
+                                onChangeText={setNewName}
+                                disabled={isPastView} 
+                                placeholder="e.g. First Term 2026" 
+                            />
+                        </Input>
+                    </FormControl>
+
+                    <HStack className="gap-4">
+                        <FormControl className="flex-1">
+                            <FormControlLabel>
+                                <FormControlLabelText className="text-[10px] font-bold uppercase text-ink/40">Start Date</FormControlLabelText>
+                            </FormControlLabel>
+                            <Input className="h-12 rounded-2xl">
+                                <InputField 
+                                    value={newStart} 
+                                    onChangeText={setNewStart}
+                                    disabled={isPastView} 
+                                    placeholder="YYYY-MM-DD"
+                                />
+                            </Input>
+                        </FormControl>
+
+                        <FormControl className="flex-1">
+                            <FormControlLabel>
+                                <FormControlLabelText className="text-[10px] font-bold uppercase text-ink/40">End Date</FormControlLabelText>
+                            </FormControlLabel>
+                            <Input className="h-12 rounded-2xl">
+                                <InputField 
+                                    value={newEnd} 
+                                    onChangeText={setNewEnd}
+                                    disabled={isPastView} 
+                                    placeholder="YYYY-MM-DD"
+                                />
+                            </Input>
+                        </FormControl>
+                    </HStack>
+
+                    <Button 
+                        size="lg"
+                        onPress={handleCreateCycle} 
+                        disabled={!newName.trim() || !newStart || saving || isPastView} 
+                        className="bg-primary rounded-2xl self-start h-12 px-6"
+                    >
+                        {saving ? (
+                            <ButtonText>Saving...</ButtonText>
+                        ) : (
+                            <>
+                                <ButtonIcon as={Plus} className="mr-2" />
+                                <ButtonText>Create Cycle</ButtonText>
+                            </>
+                        )}
+                    </Button>
+                </Box>
+
+                {loading ? (
+                    <VStack className="gap-4">
+                        <SkeletonCard height={80} />
+                        <SkeletonCard height={80} />
+                    </VStack>
+                ) : academicCycles.length === 0 ? (
+                    <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
+                        <Text className="text-ink/40 italic font-bold">No academic cycles yet.</Text>
+                    </Box>
+                ) : (
+                    <VStack className="gap-3">
+                        {academicCycles.map(c => (
+                            <Box 
+                                key={c.id} 
+                                className={`bg-white p-5 rounded-3xl border border-border border-l-4 ${
+                                    c.status === 'active' ? 'border-l-green-500' : 
+                                    c.status === 'upcoming' ? 'border-l-blue-500' : 'border-l-ink/20'
+                                }`}
+                            >
+                                <HStack className="justify-between items-center">
+                                    <VStack className="gap-1">
+                                        <Text className="font-extrabold text-lg text-ink">{c.name}</Text>
+                                        <HStack className="items-center gap-1.5">
+                                            <Calendar size={12} className="text-ink/40" />
+                                            <Text className="text-xs text-ink/60">
+                                                {c.start_date} — {c.end_date ?? 'ongoing'}
+                                            </Text>
+                                        </HStack>
+                                    </VStack>
+                                    <Box className={`px-3 py-1 rounded-full ${
+                                        c.status === 'active' ? 'bg-green-500/10' : 'bg-blue-500/10'
+                                    }`}>
+                                        <Text className={`text-[10px] font-black uppercase ${
+                                            c.status === 'active' ? 'text-green-600' : 'text-blue-600'
+                                        }`}>
+                                            {c.status}
+                                        </Text>
+                                    </Box>
+                                </HStack>
+                            </Box>
+                        ))}
+                    </VStack>
+                )}
+            </VStack>
+        </ScrollView>
     );
 };
 

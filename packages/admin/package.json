@@ -30,15 +30,16 @@
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
+    "@repo/ai": "workspace:*",
+    "@repo/analytics": "workspace:*",
     "@repo/community": "workspace:*",
     "@repo/core": "workspace:*",
-    "@repo/people": "workspace:*",
-    "@repo/scanner-kit": "workspace:*",
-    "@repo/ui": "workspace:*",
-    "@repo/analytics": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/library": "workspace:*",
-    "@repo/ai": "workspace:*",
+    "@repo/people": "workspace:*",
+    "@repo/profile": "workspace:*",
+    "@repo/scanner-kit": "workspace:*",
+    "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
     "date-fns": "^4.1.0",
     "expo-clipboard": "~55.0.9",
@@ -47,11 +48,12 @@
     "react-native-reanimated": "~4.2.1"
   },
   "devDependencies": {
+    "@jest/globals": "^30.3.0",
+    "@repo/eslint-config": "workspace:*",
     "@types/react": "19.2.14",
     "@types/react-native": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
-    "typescript": "~5.9.2",
-    "eslint": "^9.38.0"
+    "eslint": "^9.38.0",
+    "typescript": "~5.9.2"
   },
   "peerDependencies": {
     "react": "*",

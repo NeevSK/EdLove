@@ -52,7 +52,6 @@ export default function PrincipalDashboard({
   forceDemo,
   onRefresh}: PrincipalDashboardProps) {
   const { t } = useTranslation();
-  const colors = useTheme().scene;
   const navigation = useNavigation<any>();
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
@@ -159,38 +158,37 @@ export default function PrincipalDashboard({
 
       <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}>
         <ModalBackdrop />
-        <ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous }}>
-          <ModalHeader>
-            <Heading color={colors.text} sx={{ fontSize: 18 }}>
+        <ModalContent className="bg-phase-surface rounded-[40px] max-w-[340px]">
+          <ModalHeader className="mb-4">
+            <Heading className="text-lg font-black text-ink uppercase tracking-widest">
               School QR Code
             </Heading>
           </ModalHeader>
-          <ModalBody sx={{ alignItems: 'center', paddingVertical: 20 }}>
-            <Box sx={{ padding: 16, backgroundColor: sacredWhite, borderRadius: 16 }}>
+          <ModalBody className="items-center gap-6 py-5">
+            <Box className="p-6 bg-white rounded-3xl border border-border">
               <QRCodeGenerator
                 value={QRBuilder.school(schoolId, '', school?.handle ?? undefined)}
                 size={220}
               />
             </Box>
-            <Text color={colors.textSecondary} sx={{ marginTop: 20, textAlign: 'center' }}>
-              Scan to join the <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{school?.name}</Text> sanctuary.
+            <Text className="text-ink/60 text-center leading-relaxed font-bold">
+              Scan to join the <Text className="text-ink font-black">{school?.name}</Text> sanctuary.
             </Text>
             {school?.handle ? (
-              <Text color={colors.textTertiary} sx={{ marginTop: 8, fontSize: 12 }}>
+              <Text className="text-ink/30 mt-2 text-xs font-bold uppercase tracking-widest">
                 @{school.handle}
               </Text>
             ) : null}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter className="mt-4">
             <Button
-              action="primary"
               onPress={() => {
                 hapticLight();
                 setIsQrModalOpen(false);
               }}
-              sx={{ width: '100%', backgroundColor: sanctuarySaffron }}
+              className="w-full bg-phase-interactive h-14 rounded-2xl"
             >
-              <ButtonText color={sacredWhite}>Close</ButtonText>
+              <ButtonText className="text-inverted font-black uppercase tracking-widest">Close</ButtonText>
             </Button>
           </ModalFooter>
         </ModalContent>

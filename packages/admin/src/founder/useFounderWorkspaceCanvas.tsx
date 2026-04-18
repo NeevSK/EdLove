@@ -39,8 +39,7 @@ export type FounderWorkspaceSurfaceId =
 
 export type FounderWorkspaceSurface = WorkspaceSurfaceDefinition<
   FounderWorkspaceSurfaceId,
-  FounderCapabilityId
-> & {
+  FounderCapabilityId> & {
   title: string;
   subtitle?: string;
   summary?: string;
@@ -82,7 +81,7 @@ type FounderEcosystemStats = {
 
 function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
   const currentIndex = WORKSPACE_CANVAS_ZONES.indexOf(zone);
-  const nextIndex = { currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
+  const nextIndex = (currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
   return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
 }
 
@@ -429,7 +428,8 @@ function createFounderSurface(
     temporalLabel: config.temporalLabel,
     temporalTone: config.temporalTone,
     metadata: config.metadata,
-    content: config.content};
+    content: config.content
+  };
 }
 
 export function useFounderWorkspaceCanvasSurfaces({
@@ -628,12 +628,12 @@ export function useFounderWorkspaceLayout(
           if (!resolved) return null;
 
           return {
-            ...surface,
-            ...resolved} as FounderWorkspaceSurface &
-            ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId FounderCapabilityId>;
+            ...resolved
+          } as FounderWorkspaceSurface &
+            ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId, FounderCapabilityId>;
         })
         .filter(Boolean) as Array<
-        FounderWorkspaceSurface & ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId FounderCapabilityId>>,
+        FounderWorkspaceSurface & ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId, FounderCapabilityId>>,
     [resolvedSurfaceMap, surfaces],
   );
 
@@ -643,7 +643,7 @@ export function useFounderWorkspaceLayout(
 }
 
 type FounderResolvedSurface = FounderWorkspaceSurface &
-  ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId FounderCapabilityId>;
+  ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId, FounderCapabilityId>;
 
 export function FounderWorkspaceCanvas({
   layout,

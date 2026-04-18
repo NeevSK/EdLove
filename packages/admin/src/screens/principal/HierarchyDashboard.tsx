@@ -1,7 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Icon, sectionsAPI, type SchoolSectionRow } from '../../sections';
-import { SkeletonCard } from '@repo/ui';
-import { ArrowLeft, Plus } from 'lucide-react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Icon, 
+    Button,
+    ButtonText,
+    ButtonIcon,
+    Input,
+    InputField,
+    FormControl,
+    ScrollView,
+    SkeletonCard,
+    hapticSuccess
+} from '@repo/ui';
+import { sectionsAPI, type SchoolSectionRow } from '../../sections';
+import { ArrowLeft, Plus, Castle } from 'lucide-react-native';
+import { TouchableOpacity } from 'react-native';
 
 interface HierarchyDashboardProps {
     schoolId: string;
@@ -9,7 +26,7 @@ interface HierarchyDashboardProps {
     onBack: () => void;
 }
 
-export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = { { schoolId, isPastView, onBack }) => {
+export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId, isPastView, onBack }) => {
     const [sections, setSections] = useState<SchoolSectionRow[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -24,7 +41,8 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = { { schoolI
             setSections(data ?? []);
         } finally {
             setLoading(false);
-        };
+        }
+    };
 
     useEffect(() => {
         loadSections();
@@ -42,82 +60,105 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = { { schoolI
             setSections(prev => [...prev, data]);
             setNewSectionName(''); 
             setNewSectionGrade('');
+            hapticSuccess();
+        } catch (err) {
+            console.error('Failed to create section:', err);
         } finally {
             setSaving(false);
-        };
+        }
+    };
 
     return (
-        <div>
-            <button 
-                onClick={onBack} 
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 8, 
-                    padding: '8px 14px', 
-                    borderRadius: 10, 
-                    border: '1px solid var(--border)', 
-                    background: 'var(--glass-surface)', 
-                    cursor: 'pointer', 
-                    fontFamily: 'var(--font-body)', 
-                    fontSize: 13, 
-                    fontWeight: '600', 
-                    marginBottom: 24 
-                }}
-            >
-                <Icon as={ArrowLeft} size={14} /> Back to Dashboard
-            </button>
-            
-            <h2 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: '800' }}>🏛️ System Hierarchy</h2>
-            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: 14 }}>
-                Grades, sections and class structure for your school.
-            </p>
-            
-            <div className="sanctuary-card" style={{ padding: 24, marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14, opacity: isPastView ? 0.6 : 1 }}>
-                <h4 style={{ margin: 0, fontSize: 13, fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
-                    Add Section
-                </h4>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                    <input 
-                        value={newSectionGrade} 
-                        onChange={e => setNewSectionGrade(e.target.value)} 
-                        disabled={isPastView} 
-                        placeholder="Grade (e.g. Grade 8)" 
-                        style={{ flex: 1, minWidth: 140, padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }} 
-                    />
-                    <input 
-                        value={newSectionName} 
-                        onChange={e => setNewSectionName(e.target.value)} 
-                        disabled={isPastView} 
-                        placeholder="Section name (e.g. 8A)" 
-                        style={{ flex: 1, minWidth: 140, padding: '10px 14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: 14 }} 
-                    />
-                    <button 
-                        onClick={handleCreateSection} 
-                        disabled={!newSectionName.trim() || saving || isPastView} 
-                        className="premium-button" 
-                        style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: 6 }}
-                    >
-                        {saving ? '⏳' : <><Icon as={Plus} size={14} /> Add</>}
-                    </button>
-                </div>
-            </div>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <VStack className="gap-6 p-4">
+                <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
+                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
+                        <Icon as={ArrowLeft} size="sm" className="text-ink" />
+                        <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
+                    </HStack>
+                </TouchableOpacity>
 
-            {loading ? <SkeletonCard /> : sections.length === 0 ? (
-                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
-                    No sections yet — add one above.
-                </p>
-            ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                    {sections.map(s => (
-                        <div key={s.id} className="sanctuary-card" style={{ padding: '18px 20px', borderLeft: '3px solid var(--lotus)' }}>
-                            <div style={{ fontWeight: '800', fontSize: 16 }}>{s.name}</div>
-                            {s.grade && <div style={{ fontSize: 12, color: 'var(--ink-ghost)', marginTop: 4 }}>{s.grade}</div>}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                <VStack className="gap-1">
+                    <Heading className="text-2xl font-black text-ink">System Hierarchy</Heading>
+                    <Text className="text-sm text-ink/60">
+                        Grades, sections and class structure for your school.
+                    </Text>
+                </VStack>
+                
+                <Box className={`bg-white p-5 rounded-3xl border border-border gap-4 ${isPastView ? 'opacity-60' : ''}`}>
+                    <Heading className="text-xs font-black uppercase tracking-widest text-ink/40">Add Section</Heading>
+                    
+                    <HStack className="gap-3 flex-wrap">
+                        <FormControl className="flex-1 min-w-[140px]">
+                            <Input className="h-12 rounded-2xl">
+                                <InputField 
+                                    value={newSectionGrade} 
+                                    onChangeText={setNewSectionGrade}
+                                    disabled={isPastView} 
+                                    placeholder="Grade (e.g. 8)" 
+                                />
+                            </Input>
+                        </FormControl>
+
+                        <FormControl className="flex-1 min-w-[140px]">
+                            <Input className="h-12 rounded-2xl">
+                                <InputField 
+                                    value={newSectionName} 
+                                    onChangeText={setNewSectionName}
+                                    disabled={isPastView} 
+                                    placeholder="Name (e.g. 8A)" 
+                                />
+                            </Input>
+                        </FormControl>
+
+                        <Button 
+                            onPress={handleCreateSection} 
+                            disabled={!newSectionName.trim() || saving || isPastView} 
+                            className="bg-primary rounded-2xl h-12 shadow-sm active:scale-95 px-5"
+                        >
+                            {saving ? (
+                                <ButtonText>...</ButtonText>
+                            ) : (
+                                <>
+                                    <ButtonIcon as={Plus} className="mr-2" />
+                                    <ButtonText>Add</ButtonText>
+                                </>
+                            )}
+                        </Button>
+                    </HStack>
+                </Box>
+
+                {loading ? (
+                    <VStack className="gap-3">
+                        <SkeletonCard height={80} />
+                        <SkeletonCard height={80} />
+                    </VStack>
+                ) : sections.length === 0 ? (
+                    <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
+                        <Text className="text-ink/40 italic font-bold">No sections yet.</Text>
+                    </Box>
+                ) : (
+                    <HStack className="flex-wrap gap-3">
+                        {sections.map(s => (
+                            <Box 
+                                key={s.id} 
+                                className="bg-white p-5 rounded-3xl border border-border border-l-4 border-l-primary min-w-[160px] flex-1"
+                            >
+                                <VStack className="gap-1">
+                                    <Text className="font-extrabold text-lg text-ink">{s.name}</Text>
+                                    {s.grade && (
+                                        <HStack className="items-center gap-1.5">
+                                            <Castle size={12} className="text-ink/40" />
+                                            <Text className="text-xs text-ink/60 font-medium">Grade {s.grade}</Text>
+                                        </HStack>
+                                    )}
+                                </VStack>
+                            </Box>
+                        ))}
+                    </HStack>
+                )}
+            </VStack>
+        </ScrollView>
     );
 };
 

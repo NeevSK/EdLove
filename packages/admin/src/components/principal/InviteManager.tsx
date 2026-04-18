@@ -1,15 +1,3 @@
-/**
- * INVITE MANAGER COMPONENT
- * 
- * Manage invite codes for staff and students to join the school.
- * Features:
- * - Generate Teacher Code button
- * - Generate Student Code button
- * - List of active codes with copy functionality
- * 
- * Mission 04: Principal's Office
- */
-
 import React, { useState, useEffect } from 'react';
 import {
     VStack,
@@ -30,13 +18,14 @@ import {
     ModalHeader,
     ModalCloseButton,
     ModalBody,
-    Heading as ModalHeading} from '@repo/ui';
-import { TouchableOpacity, Alert } from 'react-native';
+    Heading as ModalHeading,
+    Icon,
+    Pressable
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import * as Clipboard from 'expo-clipboard';
 import { api, InviteCode, handleAPIError, type PrincipalInviteRole as UserRole } from '@repo/core';
-import {  } from '@repo/ui';
-import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
+import { Copy, Users, Shield, QrCode, ArrowLeft, ChevronRight, Plus } from 'lucide-react-native';
 import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 
 interface InviteManagerProps {
@@ -54,10 +43,6 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
     const toast = useToast();
     const [qrCodeData, setQrCodeData] = useState<{ code: string, role: string } | null>(null);
 
-    useEffect(() => {
-        loadInviteCodes();
-    }, [schoolId]);
-
     const loadInviteCodes = async () => {
         setIsLoading(true);
         setError(null);
@@ -69,7 +54,12 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             setError(apiError.message);
         } finally {
             setIsLoading(false);
-        };
+        }
+    };
+
+    useEffect(() => {
+        loadInviteCodes();
+    }, [schoolId]);
 
     const handleGenerateCode = async (role: UserRole) => {
         setIsGenerating(true);
@@ -82,384 +72,258 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             setError(apiError.message);
         } finally {
             setIsGenerating(false);
-        };
+        }
+    };
 
     const handleCopyCode = async (code: string) => {
         try {
             await Clipboard.setStringAsync(code);
             toast.show({
                 placement: 'top',
-                render: ({ id }: { id: string }) => {
-                    return (
-                        <Toast nativeID={id} action="success" variant="solid" sx={{}}>
-                            <ToastTitle>{t('principal.invites.copied') || 'Copied!'}</ToastTitle>
-                        </Toast>
-                    );
-                }});
+                render: ({ id }: { id: string }) => (
+                    <Toast nativeID={id} action="success" variant="solid" className="bg-green-600 rounded-xl px-6">
+                        <ToastTitle className="text-white font-bold">{t('principal.invites.copied') || 'Copied to Clipboard'}</ToastTitle>
+                    </Toast>
+                )
+            });
         } catch (err) {
             handleAPIError(err);
-        };
+        }
+    };
 
-    const getRoleBadgeColor = (role: string) => {
+    const getRoleConfig = (role: string) => {
         switch (role) {
             case 'teacher':
-                return sageGreen;
+                return { color: 'text-blue-600', bg: 'bg-blue-500/10', icon: '👨‍🏫' };
             case 'student':
-                return sanctuarySaffron;
+                return { color: 'text-amber-600', bg: 'bg-amber-500/10', icon: '👨‍🎓' };
             case 'principal':
-                return twilightBlue;
+                return { color: 'text-purple-600', bg: 'bg-purple-500/10', icon: '👔' };
+            case 'sectionHead':
+                return { color: 'text-indigo-600', bg: 'bg-indigo-500/10', icon: '🏢' };
+            case 'gradeHead':
+                return { color: 'text-cyan-600', bg: 'bg-cyan-500/10', icon: '📏' };
             default:
-                return mistGray;
-        };
-
-    const getRoleIcon = (role: string) => {
-        switch (role) {
-            case 'teacher':
-                return '👨‍🏫';
-            case 'student':
-                return '👨‍🎓';
-            case 'principal':
-                return '👔';
-            default:
-                return '👤';
-        };
+                return { color: 'text-ink/60', bg: 'bg-ink/5', icon: '👤' };
+        }
+    };
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: '#2A2318'}}
-        >
-            <ScrollView>
-                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+        <VStack className="flex-1 bg-silk">
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <VStack className="gap-8 p-6 pb-20">
                     {/* Header */}
-                    <HStack
-                        sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center'}}
-                    >
-                        <Heading
-                            color={sanctuarySaffron}
-                            sx={{ fontSize: 32 }}
-                        >
-                            {t('principal.invites.title') || 'Invite Codes'}
-                        </Heading>
+                    <VStack className="gap-4">
+                        <Pressable onPress={onBack}>
+                            <HStack className="items-center gap-2 bg-white px-4 py-2 rounded-xl border border-border self-start shadow-sm active:opacity-70">
+                                <Icon as={ArrowLeft} size="sm" className="text-ink" />
+                                <Text className="text-sm font-black text-ink">Back</Text>
+                            </HStack>
+                        </Pressable>
+                        
+                        <VStack className="gap-1">
+                            <Heading className="text-3xl font-black text-ink uppercase tracking-wider">
+                                {t('principal.invites.title', 'Invite Codes')}
+                            </Heading>
+                            <Text className="text-sm font-bold text-ink/40 leading-relaxed max-w-[80%]">
+                                {t('principal.invites.description', 'Generate and manage secure access keys for your faculty and students.')}
+                            </Text>
+                        </VStack>
+                    </VStack>
 
+                    {/* Generate Actions */}
+                    <VStack className="gap-3">
                         <Button
-                            variant="outline"
-                            size="sm"
-                            sx={{
-                                borderColor: starlightGray}}
-                            onPress={onBack}
-                        >
-                            <ButtonText color={sacredWhite}>
-                                {t('common.back') || 'Back'}
-                            </ButtonText>
-                        </Button>
-                    </HStack>
-
-                    {/* Description */}
-                    <Text color={starlightGray}>
-                        {t('principal.invites.description') ||
-                            'Generate invite codes for teachers and students to join your school.'}
-                    </Text>
-
-                    {/* Generate Buttons */}
-                    <VStack space="md">
-                        <Button
-                            sx={{
-                                backgroundColor: twilightBlue,
-                                padding: Theme.spacing.lg,
-                                marginBottom: Theme.spacing.xs}}
                             onPress={() => handleGenerateCode('principal')}
-                            disabled={isGenerating}
+                            isDisabled={isGenerating}
+                            className="bg-indigo-600 h-16 rounded-2xl flex-row items-center px-6 shadow-sm active:scale-95"
                         >
-                            <ButtonText color={sacredWhite}>
-                                {isGenerating
-                                    ? t('common.generating') || 'Generating...'
-                                    : t('principal.invites.generatePrincipal') ||
-                                    '👔 Generate Principal Code'}
-                            </ButtonText>
+                            <HStack className="flex-1 items-center justify-between">
+                                <HStack className="items-center gap-3">
+                                    <Box className="w-10 h-10 rounded-xl bg-white/20 items-center justify-center">
+                                        <Icon as={Shield} className="text-white" size="sm" />
+                                    </Box>
+                                    <ButtonText className="text-white font-black uppercase tracking-widest text-sm">
+                                        {isGenerating ? 'Engaging...' : 'Acknowledge Principal'}
+                                    </ButtonText>
+                                </HStack>
+                                <Icon as={Plus} className="text-white" />
+                            </HStack>
                         </Button>
 
-                        <Button
-                            sx={{
-                                backgroundColor: sageGreen,
-                                padding: Theme.spacing.lg}}
-                            onPress={() => handleGenerateCode('teacher')}
-                            disabled={isGenerating}
-                        >
-
-                            <ButtonText color={sacredWhite}>
-                                {isGenerating
-                                    ? t('common.generating') || 'Generating...'
-                                    : t('principal.invites.generateTeacher') ||
-                                    '👨‍🏫 Generate Teacher Code'}
-                            </ButtonText>
-                        </Button>
-
-                        <HStack space="md">
+                        <HStack className="gap-3">
                             <Button
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: twilightBlue,
-                                    padding: Theme.spacing.lg}}
-                                onPress={() => handleGenerateCode('sectionHead')}
-                                disabled={isGenerating}
+                                onPress={() => handleGenerateCode('teacher')}
+                                isDisabled={isGenerating}
+                                className="flex-1 bg-blue-600 h-16 rounded-2xl items-center justify-center shadow-sm active:scale-95"
                             >
-                                <ButtonText color={sacredWhite}>
-                                    {t('principal.invites.generateSectionHead') || '+ Section Head'}
+                                <ButtonText className="text-white font-black uppercase tracking-widest text-xs">
+                                    Add Teacher
                                 </ButtonText>
                             </Button>
-
                             <Button
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: twilightBlue,
-                                    padding: Theme.spacing.lg}}
-                                onPress={() => handleGenerateCode('gradeHead')}
-                                disabled={isGenerating}
+                                onPress={() => handleGenerateCode('student')}
+                                isDisabled={isGenerating}
+                                className="flex-1 bg-amber-500 h-16 rounded-2xl items-center justify-center shadow-sm active:scale-95"
                             >
-                                <ButtonText color={sacredWhite}>
-                                    {t('principal.invites.generateGradeHead') || '+ Grade Head'}
+                                <ButtonText className="text-white font-black uppercase tracking-widest text-xs">
+                                    Add Student
                                 </ButtonText>
                             </Button>
                         </HStack>
 
-                        <Button
-                            sx={{
-                                backgroundColor: sanctuarySaffron,
-                                padding: Theme.spacing.lg}}
-                            onPress={() => handleGenerateCode('student')}
-                            disabled={isGenerating}
-                        >
-                            <ButtonText color={sacredWhite}>
-                                {isGenerating
-                                    ? t('common.generating') || 'Generating...'
-                                    : t('principal.invites.generateStudent') ||
-                                    '👨‍🎓 Generate Student Code'}
-                            </ButtonText>
-                        </Button>
+                        <HStack className="gap-3">
+                            <Button
+                                onPress={() => handleGenerateCode('sectionHead')}
+                                isDisabled={isGenerating}
+                                className="flex-1 bg-zinc-800 h-14 rounded-2xl items-center justify-center active:scale-95"
+                            >
+                                <ButtonText className="text-white font-bold uppercase tracking-widest text-[10px]">
+                                    + Section Head
+                                </ButtonText>
+                            </Button>
+                            <Button
+                                onPress={() => handleGenerateCode('gradeHead')}
+                                isDisabled={isGenerating}
+                                className="flex-1 bg-zinc-800 h-14 rounded-2xl items-center justify-center active:scale-95"
+                            >
+                                <ButtonText className="text-white font-bold uppercase tracking-widest text-[10px]">
+                                    + Grade Head
+                                </ButtonText>
+                            </Button>
+                        </HStack>
                     </VStack>
 
-                    {/* Loading State */}
-                    {isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center'}}
-                        >
-                            <Spinner color={sanctuarySaffron} />
-                        </Box>
-                    )}
-
-                    {/* Error State */}
+                    {/* Error Handle */}
                     {error && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: emberRed,
-                                borderRadius: Theme.corners.comfortable}}
-                        >
-                            <Text color={sacredWhite}>{error}</Text>
+                        <Box className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
+                            <Text className="text-red-600 font-bold text-sm text-center">{error}</Text>
                         </Box>
                     )}
 
-                    {/* Active Codes List */}
-                    {!isLoading && inviteCodes.length > 0 && (
-                        <VStack space="md">
-                            <Text
-                                color={starlightGray}
-                                sx={{
-                                    fontWeight: '600',
-                                    marginTop: Theme.spacing.md,
-                                    fontSize: 18}}
-                            >
-                                {t('principal.invites.activeCodesTitle') || 'Active Invite Codes'}
-                            </Text>
+                    {/* Active Codes */}
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-center px-1">
+                            <Heading className="text-lg font-black text-ink uppercase tracking-widest">
+                                {t('principal.invites.activeCodesTitle', 'Active Keys')}
+                            </Heading>
+                            {isLoading && <Spinner color="#ffbf00" />}
+                        </HStack>
 
-                            {inviteCodes.map((invite) => (
-                                <Box
-                                    key={invite.code}
-                                    sx={{
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: '#2A2318',
-                                        borderRadius: Theme.corners.comfortable,
-                                        borderLeftWidth: 4,
-                                        borderLeftColor: getRoleBadgeColor(invite.role)}}
-                                >
-                                    <HStack
-                                        sx={{
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'}}
-                                    >
-                                        <VStack space="xs" sx={{ flex: 1 }}>
-                                            {/* Code */}
-                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                <Text
-                                                    color={sacredWhite}
-                                                    sx={{
-                                                        fontWeight: '700',
-                                                        fontSize: 20,
-                                                        fontFamily: 'monospace'}}
-                                                >
-                                                    {invite.code}
-                                                </Text>
-                                                <HStack space="xs">
-                                                    <Button
-                                                        size="xs"
-                                                        variant="link"
-                                                        action="secondary"
-                                                        onPress={() => handleCopyCode(invite.code)}
-                                                        sx={{}}
-                                                    >
-                                                        <Copy size={14} color={mistGray} />
-                                                    </Button>
-                                                    <Button
-                                                        size="xs"
-                                                        variant="link"
-                                                        action="secondary"
-                                                        onPress={() => setQrCodeData({ code: invite.code, role: invite.role })}
-                                                        sx={{}}
-                                                    >
-                                                        <QrCode size={14} color={mistGray} />
-                                                    </Button>
-                                                </HStack>
-                                            </HStack>
-
-
-
-                                            {/* Role Badge */}
-                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                <Box
-                                                    sx={{
-                                                        paddingHorizontal: Theme.spacing.sm,
-                                                        paddingVertical: Theme.spacing.xs,
-                                                        backgroundColor: getRoleBadgeColor(
-                                                            invite.role
-                                                        ),
-                                                        borderRadius: Theme.corners.tight}}
-                                                >
-                                                    <Text
-                                                        color={sacredWhite}
-                                                        sx={{ fontWeight: '600', fontSize: 12 }}
-                                                    >
-                                                        {getRoleIcon(invite.role)}{' '}
-                                                        {invite.role.toUpperCase()}
+                        {inviteCodes.length === 0 && !isLoading ? (
+                            <Box className="p-12 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
+                                <Icon as={Users} size="xl" className="text-ink/10 mb-3" />
+                                <Text className="text-center font-bold text-ink/30 italic">
+                                    No active keys found.
+                                </Text>
+                            </Box>
+                        ) : (
+                            <VStack className="gap-3">
+                                {inviteCodes.map((invite) => {
+                                    const config = getRoleConfig(invite.role);
+                                    return (
+                                        <Box
+                                            key={invite.code}
+                                            className="bg-white p-5 rounded-3xl border border-border flex-row items-center shadow-sm"
+                                        >
+                                            <VStack className="flex-1 gap-2">
+                                                <HStack className="items-baseline gap-2">
+                                                    <Text className="text-2xl font-black text-primary italic tracking-widest font-mono">
+                                                        {invite.code}
                                                     </Text>
-                                                </Box>
+                                                    <Box className={`px-2 py-0.5 rounded-lg ${config.bg}`}>
+                                                        <Text className={`text-[10px] font-black uppercase ${config.color}`}>
+                                                            {config.icon} {invite.role}
+                                                        </Text>
+                                                    </Box>
+                                                </HStack>
+                                                
+                                                <HStack className="gap-3">
+                                                    <Text className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">
+                                                        Issued: {new Date(invite.created_at).toLocaleDateString()}
+                                                    </Text>
+                                                    <Box className={`w-1.5 h-1.5 rounded-full mt-1 ${invite.used ? 'bg-ink/30' : 'bg-green-500'}`} />
+                                                    <Text className={`text-[10px] font-black uppercase tracking-widest ${invite.used ? 'text-ink/30' : 'text-green-600'}`}>
+                                                        {invite.used ? 'Redeemed' : 'Ready'}
+                                                    </Text>
+                                                </HStack>
+                                            </VStack>
 
-                                                {/* Status */}
-                                                <Text
-                                                    color={mistGray}
-                                                    sx={{ fontSize: 12 }}
+                                            <HStack className="gap-2">
+                                                <Pressable
+                                                    onPress={() => handleCopyCode(invite.code)}
+                                                    className="w-11 h-11 rounded-2xl bg-silk items-center justify-center border border-border active:opacity-60"
                                                 >
-                                                    {invite.used
-                                                        ? t('principal.invites.used') || 'Used'
-                                                        : t('principal.invites.active') ||
-                                                        'Active'}
-                                                </Text>
+                                                    <Icon as={Copy} size="sm" className="text-ink/60" />
+                                                </Pressable>
+                                                <Pressable
+                                                    onPress={() => setQrCodeData({ code: invite.code, role: invite.role })}
+                                                    className="w-11 h-11 rounded-2xl bg-primary items-center justify-center shadow-md shadow-primary/20 active:opacity-80"
+                                                >
+                                                    <Icon as={QrCode} size="sm" className="text-white" />
+                                                </Pressable>
                                             </HStack>
-
-                                            {/* Created Date */}
-                                            <Text color={mistGray} sx={{ fontSize: 12 }}>
-                                                {t('principal.invites.createdAt') ||
-                                                    'Created:'}{' '}
-                                                {new Date(
-                                                    invite.created_at
-                                                ).toLocaleDateString()}
-                                            </Text>
-                                        </VStack>
-
-                                        {/* Copy Hint */}
-                                        <Text color={mistGray} sx={{ fontSize: 12 }}>
-                                            {t('principal.invites.tapToCopy') || 'Tap to copy'}
-                                        </Text>
-                                    </HStack>
-                                </Box>
-                            ))}
-                        </VStack>
-                    )}
-
-                    {/* Empty State */}
-                    {!isLoading && inviteCodes.length === 0 && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center'}}
-                        >
-                            <Text
-                                color={starlightGray}
-                                textAlign="center"
-                                sx={{ fontSize: 18 }}
-                            >
-                                {t('principal.invites.noCodes') ||
-                                    'No active invite codes. Generate your first code to get started!'}
-                            </Text>
-                        </Box>
-                    )}
+                                        </Box>
+                                    );
+                                })}
+                            </VStack>
+                        )}
+                    </VStack>
                 </VStack>
             </ScrollView>
 
-            {/* QR Code Modal — shows invite QR when principal taps the QR icon */}
+            {/* QR Modal */}
             <Modal
                 isOpen={qrCodeData !== null}
                 onClose={() => setQrCodeData(null)}
             >
                 <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: '#2A2318',
-                        borderRadius: Theme.corners.generous,
-                        padding: Theme.spacing.xl,
-                        alignItems: 'center',
-                        maxWidth: 320}}
-                >
-                    <ModalHeader>
-                        <ModalHeading
-                            color={sanctuarySaffron}
-                            sx={{ textAlign: 'center', fontSize: 18, fontWeight: '600' }}
-                        >
-                            {qrCodeData
-                                ? `${getRoleIcon(qrCodeData.role)} ${qrCodeData.role.toUpperCase()} INVITE`
-                                : 'Invite QR'}
-                        </ModalHeading>
+                <ModalContent className="bg-white rounded-[40px] p-8 items-center max-w-[340px]">
+                    <ModalHeader className="mb-6 border-b-0">
+                        <VStack className="items-center gap-1">
+                            <ModalHeading className="text-xl font-black text-ink uppercase tracking-widest text-center">
+                                Access Key
+                            </ModalHeading>
+                            {qrCodeData && (
+                                <Text className="text-xs font-bold text-ink/40 uppercase">
+                                    {qrCodeData.role} • IDENTITY VERIFIED
+                                </Text>
+                            )}
+                        </VStack>
                         <ModalCloseButton onPress={() => setQrCodeData(null)} />
                     </ModalHeader>
-                    <ModalBody sx={{ alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
+                    <ModalBody className="items-center gap-6">
                         {qrCodeData && (
-                            <>
-                                <QRCodeGenerator
-                                    value={QRBuilder.invite(
-                                        qrCodeData.code,
-                                        schoolId,
-                                        qrCodeData.role,
-                                    )}
-                                    size={220}
-                                    color={'#2A2318'}
-                                    backgroundColor={sacredWhite}
-                                    label={qrCodeData.code}
-                                    errorCorrectionLevel="H"
-                                    borderRadius={12}
-                                    padding={16}
-                                />
-                                <Text
-                                    color={starlightGray}
-                                    sx={{ marginTop: Theme.spacing.md, textAlign: 'center', fontSize: 13 }}
-                                >
-                                    Scan to join as {qrCodeData.role}
-                                </Text>
-                                <Text
-                                    color={mistGray}
-                                    sx={{ marginTop: Theme.spacing.xs, textAlign: 'center', fontSize: 12, fontFamily: 'monospace' }}
-                                >
-                                    Code: {qrCodeData.code}
-                                </Text>
-                            </>
+                            <VStack className="items-center gap-6">
+                                <Box className="p-6 bg-silk rounded-[32px] border border-border">
+                                    <QRCodeGenerator
+                                        value={QRBuilder.invite(
+                                            qrCodeData.code,
+                                            schoolId,
+                                            qrCodeData.role,
+                                        )}
+                                        size={220}
+                                        color="#111827"
+                                        backgroundColor="#FAFAFA"
+                                        label={qrCodeData.code}
+                                        errorCorrectionLevel="H"
+                                        borderRadius={16}
+                                        padding={20}
+                                    />
+                                </Box>
+                                <VStack className="items-center gap-1">
+                                    <Text className="text-2xl font-mono font-black text-primary tracking-widest italic">
+                                        {qrCodeData.code}
+                                    </Text>
+                                    <Text className="text-[10px] font-black text-ink/40 uppercase tracking-widest">
+                                        Scan to establish authority
+                                    </Text>
+                                </VStack>
+                            </VStack>
                         )}
                     </ModalBody>
                 </ModalContent>
             </Modal>
-        </Box >
+        </VStack>
     );
 }

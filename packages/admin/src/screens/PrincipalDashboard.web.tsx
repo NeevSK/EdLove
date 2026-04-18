@@ -94,6 +94,14 @@ interface LogbookDashboardProps {
   onBack: () => void;
 }
 
+interface LogbookDashboardProps {
+  userId: string;
+  schoolId: string;
+  viewDate: string;
+  isPastView: boolean;
+  onBack: () => void;
+}
+
 interface CyclesDashboardProps {
   schoolId: string;
   isPastView: boolean;
@@ -134,7 +142,8 @@ export default function PrincipalDashboardWeb({
   CyclesDashboardComponent = CyclesDashboard,
   PrincipalOnboardingViewComponent,
   CreateSchoolModalComponent,
-  CreateClassroomModalComponent}: PrincipalDashboardWebProps) {
+  CreateClassroomModalComponent
+}: PrincipalDashboardWebProps) {
   const user = useAuthStore(state => state.user) as User | null;
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
@@ -159,28 +168,30 @@ export default function PrincipalDashboardWeb({
   const [showCreateClassroom, setShowCreateClassroom] = useState(false);
   const [isCreateSchoolOpen, setIsCreateSchoolOpen] = useState(false);
 
-  // Granular Domain Hooks (Hunch #2)
   const staff = useStaffResonance(principalSchoolId);
   const curriculum = useCurriculumPulse(principalSchoolId);
   const operations = useOperationalAwareness(principalSchoolId, effectiveUserId);
   const topology = useMappingTopologyQuery(principalSchoolId);
 
-  // Institutional oversight should read from canonical official routes.
   const studentPulseQuery = useQuery({
     queryKey: ['student-attendance-pulse', principalSchoolId, viewDate],
     queryFn: () => staffOperationsAPI.getStudentPrincipalPulse(principalSchoolId, undefined, viewDate, {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
-        reason: 'principal_dashboard_attendance_pulse'}),
-    enabled: !!principalSchoolId});
+        reason: 'principal_dashboard_attendance_pulse'
+    }),
+    enabled: !!principalSchoolId
+  });
 
   const publishedGradingCompletionQuery = useQuery({
     queryKey: ['principal-published-grading-completion', principalSchoolId, viewDate],
     queryFn: () => api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
-        reason: 'principal_dashboard_published_grading_completion'}),
-    enabled: !!principalSchoolId});
+        reason: 'principal_dashboard_published_grading_completion'
+    }),
+    enabled: !!principalSchoolId
+  });
 
   const presence = staff.presence.data || null;
   const teachers = staff.teachers.data || [];
@@ -213,7 +224,8 @@ export default function PrincipalDashboardWeb({
     }
     if (canManageSchoolScope) {
       setActiveView(nextView);
-    };
+    }
+  };
 
   useEffect(() => {
     if (!canManageSchoolScope && activeView !== 'main') {
@@ -297,3 +309,4 @@ export default function PrincipalDashboardWeb({
     </div>
   );
 }
+

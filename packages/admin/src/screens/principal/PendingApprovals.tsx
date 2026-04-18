@@ -3,6 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { ClipboardList } from 'lucide-react-native';
 import { LEAVE_STATUS_COLORS } from '../../principal/workspace';
 import type { StaffLeave as StaffLeaveDTO } from '@repo/core';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Button,
+    ButtonText,
+    Icon
+} from '@repo/ui';
 
 interface PendingApprovalsProps {
     leaves: StaffLeaveDTO[];
@@ -11,7 +21,7 @@ interface PendingApprovalsProps {
     onReject: (id: string) => void;
 }
 
-export const PendingApprovals: React.FC<PendingApprovalsProps> = { { 
+export const PendingApprovals: React.FC<PendingApprovalsProps> = ({ 
     leaves, 
     processingId, 
     onApprove, 
@@ -27,108 +37,71 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = { {
     };
 
     return (
-        <div 
-            className="sanctuary-card" 
-            style={{ 
-                padding: '24px', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '20px',
-                backgroundColor: 'var(--background)',
-                borderRadius: '16px',
-                border: '1px solid var(--border)'
-            }}
-        >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ background: 'rgba(245,158,11,0.1)', color: 'var(--amber-glow)', padding: '10px', borderRadius: '12px' }}>
-                    <ClipboardList size={20} />
-                </div>
-                <div>
-                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>
+        <Box className="bg-silk p-6 rounded-3xl border border-border gap-5">
+            <HStack className="items-center gap-3">
+                <Box className="bg-amber-500/10 p-3 rounded-xl">
+                    <Icon as={ClipboardList} size="md" className="text-amber-600" />
+                </Box>
+                <VStack>
+                    <Heading className="text-lg font-black text-ink">
                         {t('approvals.pendingTitle') || 'Pending Approvals'}
-                    </h3>
-                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-ghost)' }}>
+                    </Heading>
+                    <Text className="text-[13px] text-ink/40 font-bold">
                         {t('approvals.pendingSubtitle') || 'Staff leave and resource requests'}
-                    </p>
-                </div>
-            </div>
+                    </Text>
+                </VStack>
+            </HStack>
 
             {leaves.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '12px' }}>
-                    <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px' }}>
+                <Box className="p-8 items-center justify-center border border-dashed border-border rounded-2xl bg-white/50">
+                    <Text className="text-sm font-bold text-ink/40">
                         {t('approvals.noPending') || 'No pending requests at this time.'}
-                    </p>
-                </div>
+                    </Text>
+                </Box>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <VStack className="gap-3">
                     {leaves.map((leave) => (
-                        <div 
+                        <HStack 
                             key={leave.id} 
-                            style={{ 
-                                padding: '16px', 
-                                borderRadius: '12px', 
-                                background: 'var(--background-alt)', 
-                                border: '1px solid var(--border)', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center' 
-                            }}
+                            className="p-4 rounded-2xl bg-white border border-border justify-between items-center shadow-sm"
                         >
-                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                <div 
+                            <HStack className="items-center gap-3">
+                                <Box 
+                                    className="w-2.5 h-2.5 rounded-full"
                                     style={{ 
-                                        width: '8px', 
-                                        height: '8px', 
-                                        borderRadius: '4px', 
-                                        background: (LEAVE_STATUS_COLORS as any)[leave.status] || 'var(--ink-ghost)' 
+                                        backgroundColor: (LEAVE_STATUS_COLORS as any)[leave.status] || '#cbd5e1' 
                                     }} 
                                 />
-                                <div>
-                                    <div style={{ fontSize: '14px', fontWeight: '800' }}>{leave.user_id}</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                <VStack>
+                                    <Text className="text-sm font-bold text-ink">{leave.user_id}</Text>
+                                    <Text className="text-[11px] text-ink/40 font-black uppercase tracking-wider">
                                         {formatLeaveLabel(leave)} · {leave.start_date} to {leave.end_date}
-                                    </div>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                    onClick={() => onReject(leave.id)}
-                                    disabled={processingId === leave.id}
-                                    style={{ 
-                                        padding: '6px 10px', 
-                                        borderRadius: '8px', 
-                                        border: '1px solid var(--ember)', 
-                                        background: 'none', 
-                                        color: 'var(--ember)', 
-                                        cursor: 'pointer', 
-                                        fontSize: '12px', 
-                                        fontWeight: '700' 
-                                    }}
+                                    </Text>
+                                </VStack>
+                            </HStack>
+                            <HStack className="gap-2">
+                                <Button
+                                    onPress={() => onReject(leave.id)}
+                                    isDisabled={processingId === leave.id}
+                                    className="px-3 h-9 rounded-xl border border-red-500/20 bg-transparent active:bg-red-500/5 group"
                                 >
-                                    {t('common.reject') || 'Reject'}
-                                </button>
-                                <button
-                                    onClick={() => onApprove(leave.id)}
-                                    disabled={processingId === leave.id}
-                                    style={{ 
-                                        padding: '6px 12px', 
-                                        borderRadius: '8px', 
-                                        border: 'none', 
-                                        background: 'var(--moss)', 
-                                        color: 'white', 
-                                        cursor: 'pointer', 
-                                        fontSize: '12px', 
-                                        fontWeight: '700' 
-                                    }}
+                                    <ButtonText className="text-red-500 text-xs font-bold group-active:text-red-600">{t('common.reject') || 'Reject'}</ButtonText>
+                                </Button>
+                                <Button
+                                    onPress={() => onApprove(leave.id)}
+                                    isDisabled={processingId === leave.id}
+                                    className="px-4 h-9 rounded-xl bg-phase-interactive shadow-sm active:opacity-90"
                                 >
-                                    {processingId === leave.id ? '...' : (t('common.approve') || 'Approve')}
-                                </button>
-                            </div>
-                        </div>
+                                    <ButtonText className="text-inverted text-xs font-bold">
+                                        {processingId === leave.id ? '...' : (t('common.approve') || 'Approve')}
+                                    </ButtonText>
+                                </Button>
+                            </HStack>
+                        </HStack>
                     ))}
-                </div>
+                </VStack>
             )}
-        </div>
+        </Box>
     );
 };
 

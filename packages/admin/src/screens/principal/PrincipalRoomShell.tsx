@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react-native';
+import { Box, VStack, HStack, Text, Pressable, Icon } from '@repo/ui';
 
 type PrincipalRoomCadence = 'daily' | 'setup' | 'periodic' | 'horizon';
 
@@ -33,141 +34,98 @@ interface PrincipalRoomEmptyStateProps {
 
 const cadenceCopy: Record<PrincipalRoomCadence, { label: string; description: string }> = { 
   daily: {
-    label: 'Daily, Room',
-    description: 'Used as part, of, routine, leadership, and, immediate, institutional, stewardship.'},
+    label: 'Daily Room',
+    description: 'Used as part of routine leadership and immediate institutional stewardship.'
+  },
   setup: {
-    label: 'Setup, Room',
-    description: 'Opened, when, shaping, school, structure, then, revisited, only, when, the, institution, changes.'},
+    label: 'Setup Room',
+    description: 'Opened when shaping school structure, then revisited only when the institution changes.'
+  },
   periodic: {
-    label: 'Periodic, Room',
-    description: 'Used, at, moments, of, onboarding, review, or, governance, rhythm, rather, than, all, day, long.'},
+    label: 'Periodic Room',
+    description: 'Used at moments of onboarding, review, or governance rhythm, rather than all day long.'
+  },
   horizon: {
-    label: 'Horizon, Room',
-    description: 'Reserved for longer-range, institutional, planning, and, future, operating, layers.'};
-
-const toneStyles = {
-  default: {
-    background: 'rgba(255,255,255,0.58)',
-    border: '1px solid var(--border)'},
-  accent: {
-    background: 'linear-gradient(180deg, rgba(245,237,214,0.9) 0%, rgba(255,255,255,0.74) 100%)',
-    border: '1px solid, rgba(125,212,192,0.26)'},
-  muted: {
-    background: 'rgba(250,247,237,0.68)',
-    border: '1px dashed var(--border)'}} as const;
+    label: 'Horizon Room',
+    description: 'Reserved for longer-range institutional planning and future operating layers.'
+  }
+};
 
 export function PrincipalRoomShell({
   eyebrow,
   title,
   description,
   cadence,
-  accent = 'var(--lotus)',
+  accent = 'text-primary',
   isPastView = false,
   onBack,
   stats = [],
-  children}: PrincipalRoomShellProps) {
+  children
+}: PrincipalRoomShellProps) {
   const cadenceMeta = cadenceCopy[cadence];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <button onClick={onBack}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          width: 'fit-content',
-          padding: '8px 14px',
-          borderRadius: '999px',
-          border: '1px solid var(--border)',
-          background: 'rgba(255,255,255,0.72)',
-          cursor: 'pointer',
-          fontFamily: 'var(--font-body)',
-          fontSize: '13px',
-          fontWeight: '700',
-          color: 'var(--ink)'}}>
+    <VStack className="gap-6">
+      <Pressable 
+        onPress={onBack}
+        className="flex-row items-center gap-2 self-start px-4 py-2 rounded-full border border-border bg-white/70 active:opacity-70"
+      >
         <Icon as={ArrowLeft} size={14} />
-        Back, to Principal, Workspace
-      </button>
+        <Text className="text-[13px] font-bold text-ink">Back to Principal Workspace</Text>
+      </Pressable>
 
-      <section style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '18px',
-          padding: '28px',
-          borderRadius: '32px',
-          background: 'linear-gradient(180deg, rgba(250,247,237,0.94) 0%, rgba(245,237,214,0.86) 100%)',
-          border: '1px solid, rgba(125,212,192,0.22)',
-          boxShadow: '0 18px 40px, rgba(107, 100, 128, 0.08)'}}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '18px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-          <div style={{ minWidth: 0, maxWidth: '760px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: accent }}>
+      <Box className="p-7 rounded-[32px] bg-gradient-to-b from-silk/90 to-phase-warning/10 border border-primary/20 shadow-lg">
+        <HStack className="justify-between items-start gap-4 flex-wrap">
+          <VStack className="flex-1 min-w-0 max-w-[760px]">
+            <Text className={`text-[11px] font-extrabold uppercase tracking-widest ${accent}`}>
               {eyebrow}
-            </div>
-            <h1 style={{ margin: '10px 0 0', fontSize: '34px', lineHeight: '1.05', fontWeight: 900, color: 'var(--ink)' }}>
+            </Text>
+            <Text className="mt-2 text-3xl font-black text-ink leading-tight">
               {title}
-            </h1>
-            <p style={{ margin: '12px 0 0', fontSize: '14px', lineHeight: '1.75', color: 'var(--ink-ghost)' }}>
+            </Text>
+            <Text className="mt-3 text-sm leading-relaxed text-ink/60">
               {description}
-            </p>
-          </div>
+            </Text>
+          </VStack>
 
-          <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              minWidth: '240px',
-              padding: '14px 16px',
-              borderRadius: '20px',
-              background: 'rgba(255,255,255,0.64)',
-              border: '1px solid var(--border)'}}>
-            <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: accent }}>
+          <VStack className="min-w-[240px] p-4 rounded-2xl bg-white/60 border border-border gap-2">
+            <Text className={`text-[10px] font-extrabold uppercase tracking-widest ${accent}`}>
               {cadenceMeta.label}
-            </div>
-            <div style={{ fontSize: '12px', lineHeight: '1.6', color: 'var(--ink-ghost)' }}>{cadenceMeta.description}</div>
-            <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                width: 'fit-content',
-                padding: '5px 10px',
-                borderRadius: '999px',
-                background: isPastView ? 'rgba(148, 163, 184, 0.14)' : 'rgba(125,212,192,0.14)',
-                color: isPastView ? 'var(--ink-ghost)' : accent,
-                fontSize: '10px',
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'}}>
-              {isPastView ? 'Past, snapshot' : 'Live, workspace'}
-            </div>
-          </div>
-        </div>
+            </Text>
+            <Text className="text-xs leading-normal text-ink/60">
+              {cadenceMeta.description}
+            </Text>
+            <Box className={`self-start px-3 py-1 rounded-full ${isPastView ? 'bg-slate-500/10' : 'bg-primary/10'}`}>
+              <Text className={`text-[10px] font-extrabold uppercase tracking-wider ${isPastView ? 'text-ink/60' : accent}`}>
+                {isPastView ? 'Past Snapshot' : 'Live Workspace'}
+              </Text>
+            </Box>
+          </VStack>
+        </HStack>
 
-        {stats.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-            {stats.map((stat) => {
-              const color =
-                stat.tone === 'accent' ? accent : stat.tone === 'muted' ? 'var(--ink-ghost)' : 'var(--ink)';
-
-              return (
-                <div key={stat.label}
-                  style={{
-                    padding: '16px',
-                    borderRadius: '18px',
-                    background: 'rgba(255,255,255,0.54)',
-                    border: '1px solid var(--border)'}}>
-                  <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ink-ghost)' }}>
-                    {stat.label}
-                  </div>
-                  <div style={{ marginTop: '8px', fontSize: '28px', fontWeight: 900, color }}>{stat.value}</div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
-      </section>
+        {stats.length > 0 && (
+          <Box className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            {stats.map((stat) => (
+              <Box 
+                key={stat.label}
+                className="p-4 rounded-2xl bg-white/50 border border-border"
+              >
+                <Text className="text-[10px] font-extrabold uppercase tracking-widest text-ink/60">
+                  {stat.label}
+                </Text>
+                <Text className={`mt-2 text-2xl font-black ${
+                  stat.tone === 'accent' ? accent : stat.tone === 'muted' ? 'text-ink/60' : 'text-ink'
+                }`}>
+                  {stat.value}
+                </Text>
+              </Box>
+            ))}
+          </Box>
+        )}
+      </Box>
 
       {children}
-    </div>
+    </VStack>
   );
 }
 
@@ -175,38 +133,32 @@ export function PrincipalRoomPanel({
   title,
   description,
   children,
-  tone = 'default'}: PrincipalRoomPanelProps) {
+  tone = 'default'
+}: PrincipalRoomPanelProps) {
+  const toneClasses = {
+    default: 'bg-white/60 border-border',
+    accent: 'bg-primary/5 border-primary/20',
+    muted: 'bg-slate-50 border-dashed border-border'
+  };
+
   return (
-    <section style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        padding: '22px',
-        borderRadius: '24px',
-        ...toneStyles[tone]}}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <h2 className="m-[0px]" style={{ fontSize: '18px', fontWeight: 800, color: 'var(--ink)' }}>{title}</h2>
-        {description ? (
-          <p className="m-[0px]" style={{ fontSize: '13px', lineHeight: '1.65', color: 'var(--ink-ghost)' }}>{description}</p>
-        ) : null}
-      </div>
+    <Box className={`p-6 rounded-3xl border flex-col gap-4 ${toneClasses[tone]}`}>
+      <VStack className="gap-1">
+        <Text className="text-lg font-extrabold text-ink">{title}</Text>
+        {description && (
+          <Text className="text-[13px] leading-relaxed text-ink/60">{description}</Text>
+        )}
+      </VStack>
       {children}
-    </section>
+    </Box>
   );
 }
 
 export function PrincipalRoomEmptyState({ title, description }: PrincipalRoomEmptyStateProps) {
   return (
-    <div style={{
-        padding: '28px',
-        borderRadius: '24px',
-        border: '1px dashed var(--border)',
-        background: 'rgba(250,247,237,0.58)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px'}}>
-      <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--ink)' }}>{title}</div>
-      <p className="m-[0px]" style={{ fontSize: '13px', lineHeight: '1.65', color: 'var(--ink-ghost)' }}>{description}</p>
-    </div>
+    <VStack className="p-7 rounded-3xl border border-dashed border-border bg-phase-warning/5 gap-2">
+      <Text className="text-base font-extrabold text-ink">{title}</Text>
+      <Text className="text-[13px] leading-relaxed text-ink/60">{description}</Text>
+    </VStack>
   );
 }

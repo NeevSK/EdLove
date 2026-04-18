@@ -1,9 +1,10 @@
 import React from 'react';
-import { Icon, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { 
     useThemedColors, 
-    SkeletonCard } from '@repo/ui';
+    SkeletonCard,
+    Icon } from '@repo/ui';
 import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
 import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
 import { EditableItem } from '@repo/profile/components/EditableItem';
@@ -21,7 +22,6 @@ import {
 export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
     const navigation = useNavigation();
-    const colors = useTheme().scene;
     const { school, stats, loading, updateField, isEditable } = useSchoolProfile(schoolId);
 
     if (loading) return <div style={{ padding: '40px' }}><SkeletonCard /></div>;
@@ -92,7 +92,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                             <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}>
-                                <Icon as={User}s size={24} color="var(--water)" />
+                                <Icon as={Users} size="lg" className="text-water" />
                             </div>
                             <div>
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_students || 0}</div>
@@ -101,7 +101,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                         </div>
                         <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
                             <div style={{ padding: '12px', background: 'var(--moss-soft)', borderRadius: '12px' }}>
-                                <Icon as={Book}Open size={24} color="var(--moss)" />
+                                <Icon as={BookOpen} size="lg" className="text-moss" />
                             </div>
                             <div>
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_teachers || 0}</div>

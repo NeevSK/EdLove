@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { TouchableOpacity, TextInput, Alert } from 'react-native';
+import { TouchableOpacity, TextInput } from 'react-native';
 import { api, useTemporalStore, type PrincipalGovernanceEventZod } from '@repo/core';
-import { Box, HStack, Text, VStack, useThemedColors } from '@repo/ui';
+import { Box, HStack, Text, VStack, useTheme, Theme } from '@repo/ui';
 
 interface PrincipalGovernanceTimelineProps {
   schoolId: string;
@@ -37,7 +37,7 @@ export default function PrincipalGovernanceTimeline({
   principalId,
   limit = 6
 }: PrincipalGovernanceTimelineProps) {
-  const theme = useThemedColors();
+  const theme = useTheme();
   const { viewDate } = useTemporalStore();
   const [events, setEvents] = useState<PrincipalGovernanceEventZod[]>([]);
   const [snapshot, setSnapshot] = useState<PrincipalGovernanceEventZod[]>([]);
@@ -128,8 +128,12 @@ export default function PrincipalGovernanceTimeline({
     }
   };
 
+  const infoColor = Theme.colors.gurudeviBlue;
+  const errorColor = Theme.colors.error;
+  const warningColor = Theme.colors.warning;
+
   return (
-    <VStack style={{ gap: theme.spacing.sm }}>
+    <VStack style={{ gap: Theme.spacing.sm }}>
       <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text.primary }}>
         Governance timeline
       </Text>
@@ -140,12 +144,12 @@ export default function PrincipalGovernanceTimeline({
       {!isLoading && !error && observationSnapshot.length > 0 && (
         <Box
           style={{
-            borderRadius: theme.corners.md,
-            padding: theme.spacing.md,
-            backgroundColor: theme.scene.backgroundBody,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            backgroundColor: theme.scene.canvas.bg,
             borderWidth: 1,
-            borderColor: theme.scene.border,
-            gap: theme.spacing.sm
+            borderColor: theme.scene.canvas.border,
+            gap: Theme.spacing.sm
           }}>
           <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
             Active governance snapshot
@@ -157,18 +161,18 @@ export default function PrincipalGovernanceTimeline({
             <Box
               key={`snapshot-${event.id}`}
               style={{
-                borderRadius: theme.corners.md,
-                padding: theme.spacing.sm,
-                backgroundColor: theme.scene.backgroundPrimary,
+                borderRadius: Theme.corners.comfortable,
+                padding: Theme.spacing.sm,
+                backgroundColor: theme.scene.surface.bg,
                 borderWidth: 1,
-                borderColor: theme.scene.border,
-                gap: theme.spacing.xs
+                borderColor: theme.scene.surface.border,
+                gap: Theme.spacing.xs
               }}>
-              <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.sm }}>
+              <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}>
                 <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.primary }}>
                   Observation {event.entity_id}
                 </Text>
-                <Text style={{ fontSize: 11, color: theme.status.info, fontWeight: '700' }}>
+                <Text style={{ fontSize: 11, color: infoColor, fontWeight: '700' }}>
                   {EVENT_LABELS[event.event_type] || event.event_type}
                 </Text>
               </HStack>
@@ -179,15 +183,15 @@ export default function PrincipalGovernanceTimeline({
                 <Box
                   style={{
                     alignSelf: 'flex-start',
-                    marginTop: theme.spacing.xs,
-                    paddingHorizontal: theme.spacing.md,
-                    paddingVertical: theme.spacing.xs,
-                    borderRadius: theme.corners.full,
-                    backgroundColor: `${theme.status.info}18`,
+                    marginTop: Theme.spacing.xs,
+                    paddingHorizontal: Theme.spacing.md,
+                    paddingVertical: Theme.spacing.xs,
+                    borderRadius: Theme.corners.full,
+                    backgroundColor: `${infoColor}18`,
                     borderWidth: 1,
-                    borderColor: theme.scene.border
+                    borderColor: theme.scene.surface.border
                   }}>
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: theme.status.info }}>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: infoColor }}>
                     Add follow-up
                   </Text>
                 </Box>
@@ -200,11 +204,11 @@ export default function PrincipalGovernanceTimeline({
       {isLoading && (
         <Box
           style={{
-            borderRadius: theme.corners.md,
-            padding: theme.spacing.md,
-            backgroundColor: theme.scene.backgroundBody,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            backgroundColor: theme.scene.canvas.bg,
             borderWidth: 1,
-            borderColor: theme.scene.border
+            borderColor: theme.scene.canvas.border
           }}>
           <Text style={{ color: theme.text.secondary }}>Loading governance history...</Text>
         </Box>
@@ -213,11 +217,11 @@ export default function PrincipalGovernanceTimeline({
       {!isLoading && error && (
         <Box
           style={{
-            borderRadius: theme.corners.md,
-            padding: theme.spacing.md,
-            backgroundColor: theme.status.error + '10',
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            backgroundColor: errorColor + '10',
             borderWidth: 1,
-            borderColor: theme.status.error
+            borderColor: errorColor
           }}>
           <Text style={{ color: theme.text.primary }}>{error}</Text>
         </Box>
@@ -226,11 +230,11 @@ export default function PrincipalGovernanceTimeline({
       {!isLoading && !error && events.length === 0 && (
         <Box
           style={{
-            borderRadius: theme.corners.md,
-            padding: theme.spacing.md,
-            backgroundColor: theme.scene.backgroundBody,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            backgroundColor: theme.scene.canvas.bg,
             borderWidth: 1,
-            borderColor: theme.scene.border
+            borderColor: theme.scene.canvas.border
           }}>
           <Text style={{ color: theme.text.secondary }}>
             No official governance events are recorded for this view yet.
@@ -242,18 +246,18 @@ export default function PrincipalGovernanceTimeline({
         <Box
           key={event.id}
           style={{
-            borderRadius: theme.corners.md,
-            padding: theme.spacing.md,
-            backgroundColor: theme.scene.backgroundBody,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            backgroundColor: theme.scene.canvas.bg,
             borderWidth: 1,
-            borderColor: theme.scene.border
+            borderColor: theme.scene.canvas.border
           }}>
-          <VStack style={{ gap: theme.spacing.xs }}>
-            <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.sm }}>
+          <VStack style={{ gap: Theme.spacing.xs }}>
+            <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}>
               <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
                 {ENTITY_LABELS[event.entity_type] || event.entity_type} {EVENT_LABELS[event.event_type] || event.event_type}
               </Text>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: theme.status.info }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: infoColor }}>
                 {event.entity_type === 'school_invite' ? 'Invite' : 'Official'}
               </Text>
             </HStack>
@@ -274,12 +278,12 @@ export default function PrincipalGovernanceTimeline({
       {followUpTarget && (
         <Box
           style={{
-            borderRadius: theme.corners.md,
-            padding: theme.spacing.md,
-            backgroundColor: theme.scene.backgroundPrimary,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            backgroundColor: theme.scene.surface.bg,
             borderWidth: 1,
-            borderColor: theme.scene.border,
-            gap: theme.spacing.sm
+            borderColor: theme.scene.surface.border,
+            gap: Theme.spacing.sm
           }}>
           <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
             Follow up on observation {followUpTarget}
@@ -293,25 +297,25 @@ export default function PrincipalGovernanceTimeline({
             style={{
               minHeight: 88,
               borderWidth: 1,
-              borderColor: theme.scene.border,
-              borderRadius: theme.corners.md,
-              padding: theme.spacing.sm,
+              borderColor: theme.scene.surface.border,
+              borderRadius: Theme.corners.comfortable,
+              padding: Theme.spacing.sm,
               color: theme.text.primary,
-              backgroundColor: theme.scene.backgroundBody,
+              backgroundColor: theme.scene.canvas.bg,
               textAlignVertical: 'top'
             }}
           />
-          <HStack style={{ gap: theme.spacing.xs, flexWrap: 'wrap' }}>
+          <HStack style={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}>
             {(['noted', 'escalated', 'resolved'] as const).map((status) => (
               <TouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}>
                 <Box
                   style={{
-                    paddingHorizontal: theme.spacing.md,
-                    paddingVertical: theme.spacing.xs,
-                    borderRadius: theme.corners.full,
-                    backgroundColor: followUpStatus === status ? theme.status.info : theme.scene.backgroundBody,
+                    paddingHorizontal: Theme.spacing.md,
+                    paddingVertical: Theme.spacing.xs,
+                    borderRadius: Theme.corners.full,
+                    backgroundColor: followUpStatus === status ? infoColor : theme.scene.canvas.bg,
                     borderWidth: 1,
-                    borderColor: theme.scene.border
+                    borderColor: theme.scene.surface.border
                   }}>
                   <Text style={{ fontSize: 11, fontWeight: '700', color: followUpStatus === status ? '#FFFFFF' : theme.text.secondary }}>
                     {status}
@@ -320,7 +324,7 @@ export default function PrincipalGovernanceTimeline({
               </TouchableOpacity>
             ))}
           </HStack>
-          <HStack style={{ gap: theme.spacing.sm }}>
+          <HStack style={{ gap: Theme.spacing.sm }}>
             <TouchableOpacity
               onPress={() => {
                 setFollowUpTarget(null);
@@ -330,12 +334,12 @@ export default function PrincipalGovernanceTimeline({
               activeOpacity={0.85}>
               <Box
                 style={{
-                  paddingHorizontal: theme.spacing.md,
-                  paddingVertical: theme.spacing.sm,
-                  borderRadius: theme.corners.full,
-                  backgroundColor: theme.scene.backgroundBody,
+                  paddingHorizontal: Theme.spacing.md,
+                  paddingVertical: Theme.spacing.sm,
+                  borderRadius: Theme.corners.full,
+                  backgroundColor: theme.scene.canvas.bg,
                   borderWidth: 1,
-                  borderColor: theme.scene.border
+                  borderColor: theme.scene.surface.border
                 }}>
                 <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.secondary }}>Cancel</Text>
               </Box>
@@ -343,10 +347,10 @@ export default function PrincipalGovernanceTimeline({
             <TouchableOpacity onPress={handleSaveFollowUp} activeOpacity={0.85} disabled={savingFollowUp}>
               <Box
                 style={{
-                  paddingHorizontal: theme.spacing.md,
-                  paddingVertical: theme.spacing.sm,
-                  borderRadius: theme.corners.full,
-                  backgroundColor: theme.status.warning,
+                  paddingHorizontal: Theme.spacing.md,
+                  paddingVertical: Theme.spacing.sm,
+                  borderRadius: Theme.corners.full,
+                  backgroundColor: warningColor,
                   opacity: savingFollowUp ? 0.65 : 1
                 }}>
                 <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>

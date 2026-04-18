@@ -5,16 +5,18 @@ import {
   resolveWorkspaceSwitcherTargets,
   usePermissions,
   useStore,
-  type WorkspaceSwitcherTarget} from '@repo/core';
+  type WorkspaceSwitcherTarget
+} from '@repo/core';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Box, ScreenWrapper, Text } from '@repo/ui';
+import { Box, ScreenWrapper, Text, useTheme } from '@repo/ui';
 import {
   GuardianWorkspaceCanvas,
   type GuardianWorkspaceSurfaceId,
   type GuardianWorkspaceSurface,
   useGuardianWorkspaceCanvasSurfaces,
   useGuardianWorkspaceData,
-  useGuardianWorkspaceLayout} from '../guardian';
+  useGuardianWorkspaceLayout
+} from '../guardian';
 import { GuardianDashboardScreen } from './GuardianDashboardScreen';
 
 type GuardianResolvedSurface = GuardianWorkspaceSurface & {
@@ -29,6 +31,7 @@ export default function GuardianDashboard() {
   const { can, flags } = usePermissions();
   const user = useStore((state) => state.user);
   const { dashboard, isLoading, error } = useGuardianWorkspaceData(user?.id || '');
+  const theme = useTheme();
 
   const workspaceTargets = React.useMemo(
     () =>
@@ -40,7 +43,8 @@ export default function GuardianDashboard() {
         canManageTeacherDashboard: can('manage', 'TeacherDashboard'),
         canManageStudentDashboard: can('manage', 'StudentDashboard'),
         hasPrimaryInstitution: Boolean(user?.school_id),
-        hasMountedGuardianWorkspace: true}),
+        hasMountedGuardianWorkspace: true
+      }),
     [can, user?.school_id],
   );
 
@@ -56,7 +60,8 @@ export default function GuardianDashboard() {
       if (target.id === 'principal' && user?.school_id) {
         navigation.navigate('PrincipalDashboard', {
           schoolId: user.school_id,
-          userId: user.id});
+          userId: user.id
+        });
         return;
       }
 
@@ -76,7 +81,8 @@ export default function GuardianDashboard() {
       if (studentId) {
         navigation.navigate('GuardianStudentDetail', {
           studentId,
-          studentName});
+          studentName
+        });
         return;
       }
 
@@ -96,7 +102,8 @@ export default function GuardianDashboard() {
       students: [],
       notifications: [],
       upcomingEvents: [],
-      recentActivity: []},
+      recentActivity: []
+    },
     workspaceTargets,
     onSelectWorkspaceTarget: handleWorkspaceTarget,
     onOpenStudent: (student) => {
@@ -111,7 +118,8 @@ export default function GuardianDashboard() {
       navigation.navigate('GuardianEvents');
     },
     onOpenCommunity: () => navigation.navigate('GuardianCommunicationBridge'),
-    onOpenLibrary: handleOpenLibrary});
+    onOpenLibrary: handleOpenLibrary
+  });
 
   const workspace = useGuardianWorkspaceLayout(user?.id, surfaces);
 
@@ -149,7 +157,7 @@ export default function GuardianDashboard() {
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-phaseText-secondary">
-            Guardian, workspace, needs, an, authenticated, guardian, context, before, it, can, open.
+            Guardian workspace needs an authenticated guardian context before it can open.
           </Text>
         </Box>
       </ScreenWrapper>
@@ -158,7 +166,8 @@ export default function GuardianDashboard() {
 
   if (!flags.isGuardianWorkspaceEnabled) {
     return (
-      <GuardianDashboardScreen guardianId={user.id}
+      <GuardianDashboardScreen 
+        guardianId={user.id}
         onStudentPress={(student) => handleOpenStudent(student.studentId, student.name)}
         onNotificationPress={(_notification) => navigation.navigate('GuardianNotifications')}
         onEventPress={(_event) => navigation.navigate('GuardianEvents')}
@@ -171,7 +180,7 @@ export default function GuardianDashboard() {
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-phaseText-secondary">
-            Loading, the, guardian, workspace, bridge...
+            Loading the guardian workspace bridge...
           </Text>
         </Box>
       </ScreenWrapper>
@@ -183,7 +192,7 @@ export default function GuardianDashboard() {
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-phaseText-primary">
-            {error || 'Guardian, workspace, could, not, be, loaded, right, now.'}
+            {error || 'Guardian workspace could not be loaded right now.'}
           </Text>
         </Box>
       </ScreenWrapper>
@@ -195,7 +204,7 @@ export default function GuardianDashboard() {
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-phaseText-secondary">
-            Preparing, your, guardian, workspace, canvas...
+            Preparing your guardian workspace canvas...
           </Text>
         </Box>
       </ScreenWrapper>
@@ -204,8 +213,9 @@ export default function GuardianDashboard() {
 
   return (
     <ScreenWrapper scroll={false} noTopInset>
-      <Box className="flex-1 bg-silk px-4 py-4">
-        <GuardianWorkspaceCanvas layout={workspace.layout}
+      <Box className="flex-1 bg-silk px-4 py-4" style={{ backgroundColor: theme.scene.canvas.bg }}>
+        <GuardianWorkspaceCanvas 
+          layout={workspace.layout}
           surfaces={workspace.surfaces}
           schoolName={user.organization_name || null}
           onOpenSurface={handleOpenSurface}

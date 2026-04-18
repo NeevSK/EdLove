@@ -1,4 +1,4 @@
-﻿import { multiTenantAnalyticsEngine } from './engine';
+import { multiTenantAnalyticsEngine } from './engine';
 import {
   TenantMetrics,
   TenantComparison,
@@ -106,4 +106,5 @@ export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI  = {
     industry: EducationSector
   ): Promise<BenchmarkInsights> {
     return await multiTenantAnalyticsEngine.benchmarkPerformance(tenantId, industry);
-  };
+  }
+};

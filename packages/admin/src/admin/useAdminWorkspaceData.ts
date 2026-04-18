@@ -64,7 +64,8 @@ export function useAdminWorkspaceData() {
           isLoading: false,
           error: error instanceof Error ? error.message : 'Failed to load admin workspace data',
         }));
-      };
+      }
+    };
 
     void load();
 

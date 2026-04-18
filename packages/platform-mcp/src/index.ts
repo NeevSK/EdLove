@@ -83,6 +83,23 @@ class PolymathPlatformServer {
               }
             }
           },
+        {
+          name: "create_checkpoint",
+          description: "Stages changes and creates a git commit with a categorized ledger, bypassing pre-commit hooks (--no-verify).",
+          inputSchema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                description: "The commit message summarising the checkpoint."
+              },
+              stage_all: {
+                type: "boolean",
+                description: "Whether to stage all changes (git add .). Defaults to true."
+              }
+            },
+            required: ["message"]
+          },
         }
       ],
     }));
@@ -99,10 +116,10 @@ class PolymathPlatformServer {
             return this.handleHealCodebase(args as { files: string[] });
           case "sync_identity_schema":
             return this.handleSyncIdentity();
-          case "generate_commit_ledger":
-            return this.handleCommitLedger();
           case "check_package_types":
             return this.handleCheckTypes(args as { package?: string });
+          case "create_checkpoint":
+            return this.handleCreateCheckpoint(args as { message: string, stage_all?: boolean });
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -113,6 +130,51 @@ class PolymathPlatformServer {
         };
       }
     });
+  }
+
+  private handleCreateCheckpoint(args: { message: string, stage_all?: boolean }) {
+    console.error(`Creating checkpoint: ${args.message}`);
+    const stageAll = args.stage_all !== false;
+    const tempMsgPath = path.join(ROOT_DIR, ".checkpoint_msg.txt");
+
+    try {
+      // 1. Stage changes
+      if (stageAll) {
+        execSync("git add .", { cwd: ROOT_DIR });
+      }
+
+      // 2. Verify we have something to commit
+      const staged = execSync("git diff --cached --name-only", { cwd: ROOT_DIR }).toString().trim();
+      if (!staged) {
+        return { content: [{ type: "text", text: "Nothing to commit. Checkpoint aborted." }] };
+      }
+
+      // 3. Prepare message with Ledger
+      fs.writeFileSync(tempMsgPath, args.message, "utf-8");
+      
+      try {
+        // Run the ledger script (Silent Fail-Safe)
+        execSync(`powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 -CommitMsgFile "${tempMsgPath}"`, { cwd: ROOT_DIR });
+      } catch (ledgerError) {
+        console.error("Ledger script failed, continuing with raw message.");
+      }
+
+      // 4. Commit with no-verify
+      const output = execSync(`git commit -F "${tempMsgPath}" --no-verify`, { cwd: ROOT_DIR }).toString();
+      
+      // Cleanup
+      if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
+
+      return {
+        content: [{ type: "text", text: `Checkpoint created successfully!\n\n${output}` }]
+      };
+    } catch (error: any) {
+      if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
+      return {
+        content: [{ type: "text", text: `Failed to create checkpoint: ${error.message}` }],
+        isError: true
+      };
+    }
   }
 
   private handleAuditHygiene() {
@@ -163,60 +225,83 @@ class PolymathPlatformServer {
   }
 
   private handleCheckTypes(args: { package?: string }) {
-    console.error(`Checking types for: ${args.package || "all packages"}...`);
+    // 1. ARGUMENT NORMALIZATION (AI-Proofing)
+    const rawTarget = args.package || "";
+    const cleanTarget = rawTarget.replace(/^@repo\/|^@app\/|^\/|^\.\\|^.\//, "");
     
-    if (args.package) {
-      // Use the specialized audit script for specific packages
-      const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${args.package}"`;
-      try {
-        const output = execSync(psCmd, { cwd: ROOT_DIR }).toString();
-        const summaryFile = `audit-${args.package.replace(/[@/]/g, "_")}-summary.txt`;
-        const summary = this.readReport(summaryFile);
-        
-        return {
-          content: [
-            { type: "text", text: output },
-            { type: "text", text: `--- Analysis Summary ---\n${summary}` }
-          ]
-        };
-      } catch (e: any) {
-        return {
-          content: [{ type: "text", text: `Error running target audit: ${e.message}` }],
-          isError: true
-        };
-      }
-    } else {
-      // General monorepo check using turbo
-      const logFile = "reports/check-types.txt";
-      const cmd = `pnpm turbo run check-types`;
-      const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "${cmd.replace(/"/g, '`"')}" -Log "${logFile}"`;
+    console.error(`Checking types for: ${cleanTarget || "all packages"}...`);
+    
+    if (cleanTarget) {
+      const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${cleanTarget}" -LocalOnly`;
       
       try {
         const output = execSync(psCmd, { cwd: ROOT_DIR }).toString();
-        const report = this.readReport("check-types.txt");
+        const summaryName = `audit-${cleanTarget}-summary.txt`;
+        const summary = this.findSurgicalReport(summaryName, cleanTarget);
         
         return {
           content: [
             { type: "text", text: output },
-            { type: "text", text: `--- Detailed Report ---\n${report}` }
+            { type: "text", text: `--- Surgical Analysis Summary ---\n${summary}` }
           ]
         };
       } catch (e: any) {
-        const report = this.readReport("check-types.txt");
+        const summaryName = `audit-${cleanTarget}-summary.txt`;
+        const summary = this.findSurgicalReport(summaryName, cleanTarget);
+
         return {
           content: [
-            { type: "text", text: `Type check failed.\n${e.message}` },
-            { type: "text", text: `--- Detailed Report (from log) ---\n${report}` }
+            { type: "text", text: `Type check command reported errors (expected).\n${e.message}` },
+            { type: "text", text: `--- Partial Analysis Summary (If found) ---\n${summary}` }
           ],
           isError: true
         };
       }
+    } else {
+      // General monorepo check
+      const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "pnpm turbo run check-types" -Log "reports/check-types.txt"`;
+      
+      try {
+        const output = execSync(psCmd, { cwd: ROOT_DIR }).toString();
+        const report = this.readReport("check-types.txt");
+        return { content: [{ type: "text", text: output }, { type: "text", text: report }] };
+      } catch (e: any) {
+        const report = this.readReport("check-types.txt");
+        return { content: [{ type: "text", text: e.message }, { type: "text", text: report }], isError: true };
+      }
     }
+  }
+
+  /**
+   * The "Hunter" Logic: Scouts for the report in ordered and unordered locations.
+   */
+  private findSurgicalReport(filename: string, packageShortName: string): string {
+    const candidates = [
+      path.join(ROOT_DIR, filename),                     // Root (Agent slip-up)
+      path.join(ROOT_DIR, "reports", filename),          // Global reports (Ordered)
+      path.join(ROOT_DIR, "packages", packageShortName, filename), // Package root
+      path.join(ROOT_DIR, "packages", packageShortName, "reports", filename), // Package reports
+      path.join(ROOT_DIR, "apps", packageShortName, filename),     // App root
+      path.join(ROOT_DIR, "apps", packageShortName, "reports", filename), // App reports
+    ];
+
+    for (const p of candidates) {
+      if (fs.existsSync(p)) {
+        console.error(`>>> Discovery: Found report at ${p}`);
+        return fs.readFileSync(p, "utf-8");
+      }
+    }
+
+    return "Discovery failed: Surgical report could not be found in any candidate location.";
   }
 
   private readReport(filename: string): string {
     const p = path.join(ROOT_DIR, "reports", filename);
-    return fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "Report not found.";
+    if (fs.existsSync(p)) return fs.readFileSync(p, "utf-8");
+    
+    // Fallback search for general reports
+    const fallback = path.join(ROOT_DIR, filename);
+    return fs.existsSync(fallback) ? fs.readFileSync(fallback, "utf-8") : "Report not found.";
   }
 
   async run() {

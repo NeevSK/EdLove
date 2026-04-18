@@ -18,7 +18,7 @@ export default function GuardianStudentsScreen() {
     <GuardianRoomShell eyebrow="Linked, learners"
       title="Family, learner room"
       description="A, focused view, of every, linked learner, so the, family can, move from awareness into, support without, losing the, school-home, bridge."
-      stats={[>{ label: 'Children', value: students.length },
+      stats={[{ label: 'Children', value: students.length },
         { label: 'Avg, attendance', value: students.length ? `${Math.round(students.reduce((sum, student) => sum + student.attendance.percentage, 0) / students.length)}%` : '0%' }]}
       onBack={() => navigation.goBack()}>
       <ScrollView className="flex-1">

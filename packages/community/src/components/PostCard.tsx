@@ -1,6 +1,20 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator, Animated, View } from 'react-native';
-import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage, openExternalURL } from '@repo/ui';
+import { StyleSheet, Image, Platform, Share, ActivityIndicator, Animated, View } from 'react-native';
+import { 
+    Box, 
+    HStack, 
+    VStack, 
+    Text, 
+    Avatar, 
+    AvatarFallbackText, 
+    AvatarImage, 
+    openExternalURL,
+    SanctuaryCard, 
+    Theme, 
+    useTheme, 
+    LivingGlow,
+    Pressable
+} from '@repo/ui';
 import { 
     MoreHorizontal, 
     Heart, 
@@ -22,7 +36,6 @@ import {
     ShieldAlert, 
     UserX 
 } from 'lucide-react-native';
-import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
@@ -37,13 +50,13 @@ import type { PostType, FeedbackStatus, PollData, Urgency } from '../types/Commu
 
 const MEDIA_HEIGHT = 260;
 
-const TYPE_BADGE: Record<string, { label: string; color: string; bg: string; border: string; text: string }> = {
-    announcement: { label: 'Announcement', color: '#F6BF8C', bg: 'rgba(246,191,140,0.1)', border: '#F6BF8C', text: '#F6BF8C' },
-    question: { label: 'Question', color: '#6366F1', bg: 'rgba(99,102,241,0.1)', border: '#6366F1', text: '#6366F1' },
-    resource: { label: 'Resource', color: '#10B981', bg: 'rgba(16,185,129,0.1)', border: '#10B981', text: '#10B981' },
-    feedback: { label: 'Feedback', color: '#F43F5E', bg: 'rgba(244,63,94,0.1)', border: '#F43F5E', text: '#F43F5E' },
-    discussion: { label: 'Discussion', color: '#94A3B8', bg: 'rgba(148,163,184,0.1)', border: '#94A3B8', text: '#94A3B8' },
-    poll: { label: 'Poll', color: '#A855F7', bg: 'rgba(168,85,247,0.1)', border: '#A855F7', text: '#A855F7' },
+const TYPE_BADGE: Record<string, { label: string; textClass: string; bgClass: string; borderClass: string }> = {
+    announcement: { label: 'Announcement', textClass: 'text-sanctuarySaffron', bgClass: 'bg-sanctuarySaffron/10', borderClass: 'border-sanctuarySaffron' },
+    question: { label: 'Question', textClass: 'text-indigo-500', bgClass: 'bg-indigo-500/10', borderClass: 'border-indigo-500' },
+    resource: { label: 'Resource', textClass: 'text-emerald-500', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500' },
+    feedback: { label: 'Feedback', textClass: 'text-rose-500', bgClass: 'bg-rose-500/10', borderClass: 'border-rose-500' },
+    discussion: { label: 'Discussion', textClass: 'text-slate-400', bgClass: 'bg-slate-400/10', borderClass: 'border-slate-400' },
+    poll: { label: 'Poll', textClass: 'text-purple-500', bgClass: 'bg-purple-500/10', borderClass: 'border-purple-500' },
 };
 
 // —————————————————————————————————————————————————————————————————————————————
@@ -99,52 +112,40 @@ export const PostCard = React.memo(function PostCard({
         feedback_response,
     } = post;
     
-    const colors = useThemedColors();
+    const theme = useTheme();
     const isAnnouncement = post_type === 'announcement';
     const isQuestion = post_type === 'question';
     const isResource = post_type === 'resource';
     const isFeedback = post_type === 'feedback';
-    const totalReactions = Object.values(reactions).reduce((a, b) => (a as number) + (b as number), 0);
+    const totalReactions = Object.values(reactions).reduce((a, b) => (Number(a) || 0) + (Number(b) || 0), 0);
 
     const renderMediaContent = () => {
         if (!media_url) return null;
 
         if (media_type === 'image') {
             return (
-                <Box sx={{ marginTop: Theme.spacing.sm }}>
+                <Box className="mt-sm">
                     <Box
-                        sx={{
-                            height: MEDIA_HEIGHT,
-                            borderRadius: Theme.corners.comfortable,
-                            overflow: 'hidden',
-                            borderWidth: 1,
-                            borderColor: colors.overlay,
-                            backgroundColor: colors.secondary,
-                        }}
+                        className="rounded-comfortable overflow-hidden border border-white/5 bg-phase-surface relative"
+                        style={{ height: MEDIA_HEIGHT }}
                     >
                         <Image
                             source={{ uri: media_url }}
                             style={StyleSheet.absoluteFill}
                             resizeMode="cover"
                         />
-                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.2)' }} />
+                        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.2)' }]} />
                     </Box>
                 </Box>
             );
         }
-
-        const mediaIcon = media_type === 'video'
-            ? <Video size={16} color={colors.action} />
-            : media_type === 'audio'
-                ? <Music size={16} color={colors.action} />
-                : <FileText size={16} color={colors.action} />;
 
         const mediaLabel = media_type === 'video' ? 'Video'
             : media_type === 'audio' ? 'Audio'
             : 'Attachment';
 
         return (
-            <TouchableOpacity
+            <Pressable
                 onPress={() => {
                     if (!media_url) return;
                     openExternalURL(media_url, {
@@ -154,36 +155,38 @@ export const PostCard = React.memo(function PostCard({
                         trustLevel: 'external',
                     }).catch(() => {});
                 }}
-                style={[styles.attachmentChip, { borderColor: colors.action, marginTop: 8 }]}
+                className="flex-row items-center px-3 py-2 rounded-comfortable border border-phase-interactive mt-2 self-start active:opacity-70"
                 accessibilityLabel={`Open ${mediaLabel}`}
             >
-                {mediaIcon}
-                <Text sx={{ color: colors.action, fontSize: 13, marginLeft: 6 }}>{mediaLabel}</Text>
-                <Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} />
-            </TouchableOpacity>
+                {media_type === 'video' ? <Video size={16} color={theme.accent.action} />
+                    : media_type === 'audio' ? <Music size={16} color={theme.accent.action} />
+                    : <FileText size={16} color={theme.accent.action} />}
+                <Text className="text-phase-accent text-sm ml-2">{mediaLabel}</Text>
+                <Link2 size={12} color={theme.accent.action} className="ml-1" />
+            </Pressable>
         );
     };
 
     const renderTypeMetadata = () => {
         if (isQuestion) {
-            const urgencyConfig: Record<Urgency, { label: string; color: string; bg: string }> = {
-                high:   { label: 'Urgent',  color: '#DC2626', bg: 'rgba(220,38,38,0.1)' },
-                medium: { label: 'Medium',  color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
-                low:    { label: 'Low',     color: colors.textTertiary, bg: colors.overlay },
+            const urgencyConfig: Record<Urgency, { label: string; textClass: string; bgClass: string }> = {
+                high:   { label: 'Urgent',  textClass: 'text-red-600', bgClass: 'bg-red-600/10' },
+                medium: { label: 'Medium',  textClass: 'text-amber-600', bgClass: 'bg-amber-600/10' },
+                low:    { label: 'Low',     textClass: 'text-phaseText-secondary', bgClass: 'bg-phase-interactive' },
             };
             const urg = urgencyConfig[urgency ?? 'low'];
             return (
-                <HStack space="sm" sx={{ alignItems: 'center', marginBottom: 8 }}>
+                <HStack className="items-center mb-2 gap-2">
                     {urgency && urgency !== 'low' && (
-                        <Box sx={{ backgroundColor: urg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <AlertTriangle size={11} color={urg.color} />
-                            <Text sx={{ fontSize: 11, fontWeight: '700', color: urg.color }}>{urg.label}</Text>
+                        <Box className={`${urg.bgClass} px-2 py-0.5 rounded-tight flex-row items-center gap-1`}>
+                            <AlertTriangle size={11} color={urgency === 'high' ? '#DC2626' : '#D97706'} />
+                            <Text className={`text-[11px] font-bold ${urg.textClass}`}>{urg.label}</Text>
                         </Box>
                     )}
                     {has_accepted_answer && (
-                        <Box sx={{ backgroundColor: 'rgba(22,163,74,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <Box className="bg-emerald-600/10 px-2 py-0.5 rounded-tight flex-row items-center gap-1">
                             <CheckCircle2 size={11} color="#16A34A" />
-                            <Text sx={{ fontSize: 11, fontWeight: '700', color: '#16A34A' }}>Answered</Text>
+                            <Text className="text-[11px] font-bold text-emerald-600">Answered</Text>
                         </Box>
                     )}
                 </HStack>
@@ -192,32 +195,32 @@ export const PostCard = React.memo(function PostCard({
 
         if (isResource) {
             return (
-                <Box sx={{ marginBottom: 8 }}>
-                    <Box sx={{ backgroundColor: 'rgba(99,102,241,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Box className="mb-2">
+                    <Box className="bg-indigo-500/10 px-2 py-0.5 rounded-tight self-start flex-row items-center gap-1">
                         <BookOpen size={11} color="#6366F1" />
-                        <Text sx={{ fontSize: 11, fontWeight: '700', color: '#6366F1' }}>Resource</Text>
+                        <Text className="text-[11px] font-bold text-indigo-500">Resource</Text>
                     </Box>
                 </Box>
             );
         }
 
         if (isFeedback) {
-            const statusConfig: Record<FeedbackStatus, { label: string; color: string; bg: string }> = {
-                pending:      { label: 'Pending',      color: colors.textTertiary,    bg: colors.overlay },
-                under_review: { label: 'Under Review', color: '#D97706',              bg: 'rgba(217,119,6,0.1)' },
-                approved:     { label: 'Approved',     color: '#16A34A',              bg: 'rgba(22,163,74,0.1)' },
-                implemented:  { label: 'Implemented',  color: Theme.colors.sanctuarySaffron, bg: 'rgba(246,191,140,0.15)' },
-                declined:     { label: 'Declined',     color: '#DC2626',              bg: 'rgba(220,38,38,0.1)' },
+            const statusConfig: Record<FeedbackStatus, { label: string; textClass: string; bgClass: string }> = {
+                pending:      { label: 'Pending',      textClass: 'text-phaseText-secondary',    bgClass: 'bg-phase-interactive' },
+                under_review: { label: 'Under Review', textClass: 'text-amber-600',              bgClass: 'bg-amber-600/10' },
+                approved:     { label: 'Approved',     textClass: 'text-emerald-600',              bgClass: 'bg-emerald-600/10' },
+                implemented:  { label: 'Implemented',  textClass: 'text-sanctuarySaffron', bgClass: 'bg-sanctuarySaffron/15' },
+                declined:     { label: 'Declined',     textClass: 'text-red-600',              bgClass: 'bg-red-600/10' },
             };
             const cfg = statusConfig[feedback_status ?? 'pending'];
             return (
-                <VStack space="xs" sx={{ marginBottom: 8 }}>
-                    <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}>
-                        <Text sx={{ fontSize: 11, fontWeight: '700', color: cfg.color }}>{cfg.label}</Text>
+                <VStack className="mb-2 gap-1.5">
+                    <Box className={`${cfg.bgClass} px-2 py-0.5 rounded-tight self-start`}>
+                        <Text className={`text-[11px] font-bold ${cfg.textClass}`}>{cfg.label}</Text>
                     </Box>
                     {!!feedback_response && (
-                        <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: Theme.colors.sanctuarySaffron }}>
-                            <Text sx={{ color: colors.textSecondary, fontSize: 12, fontStyle: 'italic' }}>{feedback_response}</Text>
+                        <Box className="bg-phase-surface/50 p-sm rounded-comfortable border-l-[3px] border-sanctuarySaffron">
+                            <Text className="text-phaseText-secondary text-xs italic">{feedback_response}</Text>
                         </Box>
                     )}
                 </VStack>
@@ -228,14 +231,14 @@ export const PostCard = React.memo(function PostCard({
     };
 
     const [liked, setLiked] = React.useState(false);
-    const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
+    const [localLikeCount, setLocalLikeCount] = React.useState(Number(reactions['❤️']) || 0);
     const [hasResonated, setHasResonated] = React.useState(false);
     const [isResonating, setIsResonating] = React.useState(false);
     const [menuOpen, setMenuOpen] = React.useState(false);
     const { blockUser } = useSocialShield();
 
     React.useEffect(() => {
-        setLocalLikeCount(reactions['❤️'] || 0);
+        setLocalLikeCount(Number(reactions['❤️']) || 0);
         setLiked(false);
     }, [id, reactions['❤️']]);
 
@@ -326,81 +329,65 @@ export const PostCard = React.memo(function PostCard({
 
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
-            <VStack space="md">
+            <VStack className="gap-4">
                 {/* Header */}
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <HStack space="md" sx={{ alignItems: 'center' }}>
-                        <TouchableOpacity
+                <HStack className="justify-between items-center">
+                    <HStack className="items-center gap-3">
+                        <Pressable
                             onPress={!is_anonymous ? onAuthorPress : undefined}
                             disabled={is_anonymous || !onAuthorPress}
                             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         >
-                            <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
-                                <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
+                            <Avatar size="sm" className={is_anonymous ? 'bg-phase-surface' : 'bg-phase-accent'}>
+                                <AvatarFallbackText>{is_anonymous ? '?' : (author_name?.[0] || 'U')}</AvatarFallbackText>
                                 {!is_anonymous && author_avatar && (
-                                    <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
+                                    <AvatarImage source={{ uri: author_avatar }} />
                                 )}
                             </Avatar>
-                        </TouchableOpacity>
+                        </Pressable>
                         <VStack>
-                            <Text sx={{ color: colors.text, fontWeight: '700', fontSize: 13 }}>
+                            <Text className="text-phaseText-primary font-bold text-[13px]">
                                 {is_anonymous ? 'Anonymous' : author_name}
                             </Text>
-                            <Text sx={{ color: colors.textSecondary, fontSize: 11 }}>
+                            <Text className="text-phaseText-secondary text-[11px]">
                                 {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
                             </Text>
                         </VStack>
                     </HStack>
 
                     <Box>
-                        <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)} style={{ padding: 4 }}>
-                            <MoreHorizontal color={colors.textTertiary} size={20} />
-                        </TouchableOpacity>
+                        <Pressable onPress={() => setMenuOpen(!menuOpen)} className="p-1">
+                            <MoreHorizontal color={theme.text.secondary} size={20} />
+                        </Pressable>
 
                         {menuOpen && (
-                            <Box sx={{
-                                position: 'absolute',
-                                top: 25,
-                                right: 0,
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                minWidth: 160,
-                                zIndex: 10,
-                                overflow: 'hidden',
-                                elevation: 4,
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 3.84,
-                            }}>
+                            <Box className="absolute top-[25px] right-0 bg-phase-surface rounded-comfortable border border-phase-surface min-w-[160px] z-10 overflow-hidden shadow-xl" style={{ elevation: 4 }}>
                                 <VStack>
                                     {author_id === currentUserId && (
-                                        <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
-                                            <HStack space="md" sx={{ alignItems: 'center' }}>
-                                                <XIcon size={16} color={colors.error} />
-                                                <Text sx={{ fontSize: 13, color: colors.error }}>Delete Post</Text>
+                                        <Pressable className="p-4 border-b border-white/5 active:bg-white/5" onPress={handleDelete}>
+                                            <HStack className="items-center gap-3">
+                                                <XIcon size={16} color={Theme.colors.error} />
+                                                <Text className="text-[13px] text-phase-danger">Delete Post</Text>
                                             </HStack>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     )}
 
                                     {author_id !== currentUserId && (
-                                        <TouchableOpacity style={styles.menuItem} onPress={() => { onReport?.(); setMenuOpen(false); }}>
-                                            <HStack space="md" sx={{ alignItems: 'center' }}>
-                                                <ShieldAlert size={16} color={colors.text} />
-                                                <Text sx={{ fontSize: 13, color: colors.text }}>Report Post</Text>
+                                        <Pressable className="p-4 border-b border-white/5 active:bg-white/5" onPress={() => { onReport?.(); setMenuOpen(false); }}>
+                                            <HStack className="items-center gap-3">
+                                                <ShieldAlert size={16} color={theme.text.primary} />
+                                                <Text className="text-[13px] text-phaseText-primary">Report Post</Text>
                                             </HStack>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     )}
 
                                     {!is_anonymous && author_id !== currentUserId && (
-                                        <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={handleBlock}>
-                                            <HStack space="md" sx={{ alignItems: 'center' }}>
+                                        <Pressable className="p-4 active:bg-white/5" onPress={handleBlock}>
+                                            <HStack className="items-center gap-3">
                                                 <UserX size={16} color={Theme.colors.sanctuarySaffron} />
-                                                <Text sx={{ fontSize: 13, color: Theme.colors.sanctuarySaffron }}>Block User</Text>
+                                                <Text className="text-[13px] text-sanctuarySaffron">Block User</Text>
                                             </HStack>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     )}
                                 </VStack>
                             </Box>
@@ -414,7 +401,7 @@ export const PostCard = React.memo(function PostCard({
                 {/* Post Content */}
                 <Text 
                     numberOfLines={onPress ? 4 : undefined}
-                    sx={{ color: colors.text, fontSize: 15, lineHeight: 22 }}
+                    className="text-phaseText-primary text-[15px] leading-[22px]"
                 >
                     {content}
                 </Text>
@@ -433,53 +420,50 @@ export const PostCard = React.memo(function PostCard({
                 )}
 
                 {/* Footer Actions */}
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
-                    <HStack space="lg">
-                        <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
+                <HStack className="justify-between items-center mt-1">
+                    <HStack className="gap-6 items-center">
+                        <Pressable onPress={handleLike} className="flex-row items-center py-1">
                             <Heart
                                 size={20}
-                                color={liked ? colors.error : colors.textTertiary}
-                                fill={liked ? colors.error : 'none'}
+                                color={liked ? '#EF4444' : theme.text.secondary}
+                                fill={liked ? '#EF4444' : 'none'}
                             />
                             {localLikeCount > 0 && (
-                                <Text sx={{ color: liked ? colors.error : colors.textTertiary, fontSize: 12, marginLeft: 4 }}>
+                                <Text className={`text-xs ml-1 ${liked ? 'text-red-500' : 'text-phaseText-secondary'}`}>
                                     {localLikeCount}
                                 </Text>
                             )}
-                        </TouchableOpacity>
+                        </Pressable>
 
-                        <TouchableOpacity onPress={handleResonate} style={styles.actionButton} disabled={isResonating}>
+                        <Pressable onPress={handleResonate} className="flex-row items-center py-1" disabled={isResonating}>
                             <LivingGlow active={hasResonated}>
                                 <Sparkles
                                     size={20}
-                                    color={hasResonated ? colors.action : colors.textTertiary}
+                                    color={hasResonated ? theme.accent.action : theme.text.secondary}
                                 />
                             </LivingGlow>
-                        </TouchableOpacity>
+                        </Pressable>
 
-                        <TouchableOpacity onPress={onComment} style={styles.actionButton}>
-                            <MessageCircle size={20} color={colors.textTertiary} />
-                            <Text sx={{ color: colors.textTertiary, fontSize: 12, marginLeft: 4 }}>
+                        <Pressable onPress={onComment} className="flex-row items-center py-1">
+                            <MessageCircle size={20} color={theme.text.secondary} />
+                            <Text className="text-phaseText-secondary text-xs ml-1">
                                 {comment_count}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
 
-                        <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post">
-                            <Share2 size={18} color={colors.textTertiary} />
-                        </TouchableOpacity>
+                        <Pressable onPress={handleShare} className="flex-row items-center py-1" accessibilityLabel="Share post">
+                            <Share2 size={18} color={theme.text.secondary} />
+                        </Pressable>
                     </HStack>
 
-                    <HStack sx={{ alignItems: 'center' }}>
+                    <HStack className="items-center">
                         <LivingGlow active={isAnnouncement}>
-                            <Box sx={{
-                                backgroundColor: TYPE_BADGE[post_type]?.bg ?? colors.overlay,
-                                borderWidth: 1,
-                                borderColor: TYPE_BADGE[post_type]?.border ?? colors.action,
-                                paddingHorizontal: 8,
-                                paddingVertical: 2,
-                                borderRadius: Theme.corners.tight,
-                            }}>
-                                <Text sx={{ color: TYPE_BADGE[post_type]?.text ?? colors.action, fontSize: 10, fontWeight: '700' }}>
+                            <Box className={`
+                                ${TYPE_BADGE[post_type]?.bgClass ?? 'bg-phase-interactive'} 
+                                ${TYPE_BADGE[post_type]?.borderClass ?? 'border-phase-interactive'} 
+                                border px-2 py-0.5 rounded-tight
+                            `}>
+                                <Text className={`${TYPE_BADGE[post_type]?.textClass ?? 'text-phase-accent'} text-[10px] font-bold`}>
                                     {TYPE_BADGE[post_type]?.label ?? 'Post'}
                                 </Text>
                             </Box>
@@ -513,7 +497,7 @@ function PollWidget({
         ends_at,
     } = pollData;
 
-    const colors = useThemedColors();
+    const theme = useTheme();
     const [counts, setCounts] = React.useState<Record<string, number>>({});
     const [userVotes, setUserVotes] = React.useState<Set<string>>(new Set());
     const [totalVotes, setTotalVotes] = React.useState(0);
@@ -614,35 +598,35 @@ function PollWidget({
     };
 
     if (isLoading) {
-        return <ActivityIndicator size="small" color={colors.action} style={{ marginTop: 12 }} />;
+        return <ActivityIndicator size="small" color={theme.accent.action} className="mt-3" />;
     }
 
     return (
-        <VStack space="sm" sx={{ marginTop: Theme.spacing.sm }}>
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <HStack space="xs" sx={{ alignItems: 'center' }}>
+        <VStack className="gap-2 mt-sm">
+            <HStack className="justify-between items-center">
+                <HStack className="items-center gap-1.5">
                     {pollAnon && (
-                        <Box sx={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <Lock size={11} color={colors.textTertiary} />
-                            <Text sx={{ color: colors.textTertiary, fontSize: 10 }}>Anonymous</Text>
+                        <Box className="bg-phase-interactive px-2 py-0.5 rounded-tight flex-row items-center gap-1">
+                            <Lock size={11} color={theme.text.secondary} />
+                            <Text className="text-phaseText-secondary text-[10px]">Anonymous</Text>
                         </Box>
                     )}
                     {allow_multiple && (
-                        <Box sx={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}>
-                            <Text sx={{ color: colors.textTertiary, fontSize: 10 }}>Multi-select</Text>
+                        <Box className="bg-phase-interactive px-2 py-0.5 rounded-tight">
+                            <Text className="text-phaseText-secondary text-[10px]">Multi-select</Text>
                         </Box>
                     )}
                 </HStack>
 
                 {isExpired ? (
-                    <HStack space="xs" sx={{ alignItems: 'center' }}>
-                        <Clock size={12} color={colors.textTertiary} />
-                        <Text sx={{ color: colors.textTertiary, fontSize: 11 }}>Poll ended</Text>
+                    <HStack className="items-center gap-1">
+                        <Clock size={12} color={theme.text.secondary} />
+                        <Text className="text-phaseText-secondary text-[11px]">Poll ended</Text>
                     </HStack>
                 ) : timeLeft ? (
-                    <HStack space="xs" sx={{ alignItems: 'center' }}>
-                        <Clock size={12} color={colors.action} />
-                        <Text sx={{ color: colors.action, fontSize: 11 }}>{timeLeft}</Text>
+                    <HStack className="items-center gap-1">
+                        <Clock size={12} color={theme.accent.action} />
+                        <Text className="text-phase-accent text-[11px]">{timeLeft}</Text>
                     </HStack>
                 ) : null}
             </HStack>
@@ -654,19 +638,16 @@ function PollWidget({
                 const canTap = !isExpired && !!currentUserId && !isVoting && !isRemoving;
 
                 return (
-                    <TouchableOpacity
+                    <Pressable
                         key={opt.id}
                         onPress={() => handleVote(opt.id)}
                         disabled={!canTap}
-                        activeOpacity={0.7}
-                        style={[
-                            styles.pollOption,
-                            { 
-                                borderColor: isWinner ? Theme.colors.sanctuarySaffron : isSelected ? colors.action : colors.overlay,
-                                backgroundColor: colors.secondary,
-                                borderWidth: isSelected ? 2 : 1
-                            }
-                        ]}
+                        className={`
+                            h-12 rounded-comfortable overflow-hidden relative justify-center border
+                            ${isWinner ? 'border-sanctuarySaffron' : isSelected ? 'border-phase-accent' : 'border-phase-interactive'}
+                            ${isSelected ? 'border-2' : 'border-1'}
+                            bg-phase-surface
+                        `}
                     >
                         {showResults && (
                             <Animated.View
@@ -677,45 +658,44 @@ function PollWidget({
                                             inputRange: [0, 100],
                                             outputRange: ['0%', '100%'],
                                         }),
-                                        backgroundColor: isWinner ? `${Theme.colors.sanctuarySaffron}20` : isSelected ? `${colors.action}15` : `${colors.overlay}40`
+                                        backgroundColor: isWinner ? `${Theme.colors.sanctuarySaffron}20` : isSelected ? `${theme.accent.action}15` : `${theme.scene.interactive.bg}40`
                                     }
                                 ]}
                             />
                         )}
-                        <HStack sx={{ justifyContent: 'space-between', paddingHorizontal: 12, zIndex: 1, alignItems: 'center', width: '100%' }}>
-                            <HStack space="sm" sx={{ alignItems: 'center', flex: 1 }}>
+                        <HStack className="justify-between px-3 z-1 items-center w-full">
+                            <HStack className="items-center gap-2 flex-1">
                                 {!isExpired && currentUserId && (
-                                    <Box sx={{
-                                        width: 18, height: 18, borderRadius: allow_multiple ? 4 : 9,
-                                        borderWidth: 2, borderColor: isSelected ? colors.action : colors.textTertiary,
-                                        alignItems: 'center', justifyContent: 'center',
-                                        backgroundColor: isSelected ? colors.action : 'transparent'
-                                    }}>
+                                    <Box className={`
+                                        w-[18px] h-[18px] items-center justify-center border-2
+                                        ${allow_multiple ? 'rounded-[4px]' : 'rounded-full'}
+                                        ${isSelected ? 'bg-phase-accent border-phase-accent' : 'border-phase-interactive'}
+                                    `}>
                                         {isSelected && <Check size={12} color="white" />}
                                     </Box>
                                 )}
-                                <Text sx={{ color: colors.text, fontSize: 14, fontWeight: isSelected ? '700' : '400' }}>
+                                <Text className={`text-phaseText-primary text-sm ${isSelected ? 'font-bold' : 'font-normal'}`}>
                                     {opt.text}
                                 </Text>
                             </HStack>
                             {showResults && (
-                                <Text sx={{ color: isSelected ? colors.action : colors.textSecondary, fontSize: 12, fontWeight: '700' }}>
+                                <Text className={`text-xs font-bold ${isSelected ? 'text-phase-accent' : 'text-phaseText-secondary'}`}>
                                     {totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0}%
                                 </Text>
                             )}
                         </HStack>
-                    </TouchableOpacity>
+                    </Pressable>
                 );
             })}
             
-            <HStack sx={{ justifyContent: 'space-between', marginTop: 4 }}>
-                <Text sx={{ color: colors.textTertiary, fontSize: 11 }}>
+            <HStack className="justify-between mt-1">
+                <Text className="text-phaseText-secondary text-[11px]">
                     {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
                 </Text>
                 {hasVoted && !isExpired && (
-                    <TouchableOpacity onPress={fetchVotes}>
-                        <Text sx={{ color: colors.action, fontSize: 11, fontWeight: '600' }}>Change vote</Text>
-                    </TouchableOpacity>
+                    <Pressable onPress={fetchVotes}>
+                        <Text className="text-phase-accent text-[11px] font-semibold">Change vote</Text>
+                    </Pressable>
                 )}
             </HStack>
         </VStack>
@@ -723,33 +703,6 @@ function PollWidget({
 }
 
 const styles = StyleSheet.create({
-    attachmentChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        alignSelf: 'flex-start',
-    },
-    menuItem: {
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
-    },
-    actionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 4,
-    },
-    pollOption: {
-        height: 48,
-        borderRadius: Theme.corners.comfortable,
-        overflow: 'hidden',
-        justifyContent: 'center',
-        position: 'relative',
-    },
     pollProgress: {
         position: 'absolute',
         left: 0,

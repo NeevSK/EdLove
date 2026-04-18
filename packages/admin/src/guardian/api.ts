@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   GuardianIdentity, 
   StudentGuardianRelationship, 
   GuardianPermissionConfig,
@@ -79,4 +79,5 @@ export const guardianAPI: GuardianAPI  = {
 
   async updateNotificationSettings(guardianId: string, settings: any): Promise<void> {
     await api.guardian.updateNotificationSettings(guardianId, settings);
-  };
+  }
+};

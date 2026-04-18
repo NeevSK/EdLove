@@ -90,7 +90,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
 
     return (
         <Box className="w-[140px] h-[140px] items-center justify-center">
-            <Canvas className="flex-1 w-full h-full">
+            <Canvas style={{ flex: 1, width: '100%', height: '100%' }}>
                 {gridRadii.map((r, i) => (
                     <Circle
                         key={`grid-${i}`}

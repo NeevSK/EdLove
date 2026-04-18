@@ -1,12 +1,15 @@
 import React from 'react';
-import { Icon, VStack,
+import {
+    Icon,
+    VStack,
     HStack,
     Box,
     Text,
     Pressable,
-    
-    useThemedColors,
-    hapticLight } from '@repo/ui';
+    useTheme,
+    hapticLight,
+    Theme
+} from '@repo/ui';
 import {
     LayoutGrid,
     UserPlus,
@@ -22,7 +25,7 @@ interface ManagementStationProps {
 
 export default function ManagementStation({ onAction }: ManagementStationProps) {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
+    const theme = useTheme();
 
     const ActionItem = ({ icon: LucideIcon, label, description, target }: any) => (
         <Pressable
@@ -30,56 +33,40 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
                 hapticLight();
                 onAction(target);
             }}
-            sx={{
-                flex: 1,
-                backgroundColor: colors.secondary,
-                padding: Theme.spacing.md,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: colors.border}}
+            className="flex-1 bg-phase-surface p-md rounded-2xl border border-phase-border"
         >
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <HStack space="md" alignItems="center">
-                    <Box sx={{
-                        padding: Theme.spacing.sm,
-                        borderRadius: Theme.corners.medium,
-                        backgroundColor: colors.action + '11'
-                    }}>
-                        <LucideIcon size={20} color={colors.action} />
+            <HStack className="justify-between items-center">
+                <HStack className="gap-3 items-center">
+                    <Box
+                        className="p-2 rounded-xl"
+                        style={{ backgroundColor: `${theme.accent.action}11` }}
+                    >
+                        <LucideIcon size={20} color={theme.accent.action} />
                     </Box>
-                    <VStack>
-                        <Text color={colors.text} sx={{ fontSize: 13, fontWeight: '700' }}>
+                    <VStack className="gap-0.5">
+                        <Text className="text-[13px] font-bold text-phaseText-primary">
                             {label}
                         </Text>
-                        <Text color={colors.textSecondary} sx={{ fontSize: 10 }}>
+                        <Text className="text-[10px] text-phaseText-secondary">
                             {description}
                         </Text>
                     </VStack>
                 </HStack>
-                <Icon as={ArrowRight} size={14} color={colors.textTertiary} />
+                <Icon as={ArrowRight} size="xs" className="text-phaseText-muted" />
             </HStack>
         </Pressable>
     );
 
     return (
-        <Box
-            sx={{
-                padding: Theme.spacing.lg,
-                backgroundColor: twilightBlue + '08',
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: twilightBlue + '22',
-                borderStyle: 'dashed'
-            }}
-        >
-            <VStack space="md">
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text color={twilightBlue} sx={{ fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.5 }}>
-                        {t('principal.management.station') || 'Principal\'s Management Station'} 👔
+        <Box className="p-lg bg-phase-interactive rounded-3xl border border-phase-border border-dashed">
+            <VStack className="gap-4">
+                <HStack className="justify-between items-center">
+                    <Text className="text-[11px] font-extrabold text-phase-accent uppercase tracking-[1.5px]">
+                        {t('principal.management.station') || "Principal's Management Station"} 👔
                     </Text>
                 </HStack>
 
-                <VStack space="sm">
+                <VStack className="gap-2.5">
                     <ActionItem
                         icon={LayoutGrid}
                         label={t('principal.management.hierarchy') || 'System Hierarchy'}

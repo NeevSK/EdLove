@@ -6,8 +6,6 @@ import {
     Input,
     InputField,
     Button,
-    ButtonText,
-    ButtonIcon,
     Text,
     Heading,
     Pressable,
@@ -15,12 +13,11 @@ import {
     useToast,
     Toast,
     ToastTitle,
-    Theme,
     ScreenWrapper,
     hapticLight,
     hapticSuccess,
     hapticError,
-    useThemedColors
+    Icon
 } from '@repo/ui';
 import { ArrowRight, HelpCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +33,6 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
     const toast = useToast();
-    const colors = useThemedColors();
 
     async function handleValidateCode() {
         if (!code.trim()) {
@@ -98,31 +94,25 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
 
     return (
         <ScreenWrapper scroll={true}>
-            <Box sx={{ flex: 1, backgroundColor: Theme.colors.obsidian, padding: Theme.spacing.xl, justifyContent: 'center', minHeight: '100%' }}>
-                <VStack space="xl" sx={{ maxWidth: 400, width: '100%', alignSelf: 'center' }}>
+            <Box className="flex-1 bg-slate-950 p-8 justify-center min-h-screen">
+                <VStack className="gap-8 max-w-[400px] w-full self-center">
                     {/* Header */}
-                    <VStack space="sm" sx={{ marginBottom: 24 }}>
-                        <Heading sx={{ fontSize: 32, color: Theme.colors.sanctuarySaffron, textAlign: 'center' }}>
+                    <VStack className="gap-2 mb-6">
+                        <Heading className="text-3xl text-amber-500 text-center font-bold">
                             {t('invite.enterCode') || 'Enter Invite Code'}
                         </Heading>
-                        <Text sx={{ color: Theme.colors.starlightGray, fontSize: 16, textAlign: 'center' }}>
+                        <Text className="text-slate-400 text-lg text-center font-medium">
                             {t('invite.codeDesc') || 'Join your school with an invite code'}
                         </Text>
                     </VStack>
-
+ 
                     {/* Code Input */}
-                    <VStack space="xs">
-                        <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14 }}>
+                    <VStack className="gap-2">
+                        <Text className="text-white text-sm font-semibold mb-1">
                             {t('invite.inviteCode') || 'Invite Code'}
                         </Text>
                         <Input
-                            variant="outline"
-                            size="lg"
-                            sx={{
-                                borderColor: Theme.colors.mistGray,
-                                borderRadius: Theme.corners.comfortable,
-                                backgroundColor: Theme.colors.ink,
-                            }}
+                            className="h-14 bg-slate-900 border-slate-700 rounded-xl"
                         >
                             <InputField
                                 placeholder="GURU-ABC123-TEACH"
@@ -130,72 +120,61 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                                 onChangeText={handleCodeChange}
                                 autoCapitalize="characters"
                                 maxLength={20}
-                                sx={{ color: Theme.colors.sacredWhite }}
-                                placeholderTextColor={Theme.colors.dimGray}
+                                className="text-white"
+                                placeholderTextColor="#475569" // slate-500
                                 onSubmitEditing={handleValidateCode}
                             />
                         </Input>
-                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                        <Text className="text-slate-500 text-xs font-medium">
                             {t('invite.codeFormat') || 'Format: GURU-XXXXXX-TEACH'}
                         </Text>
                     </VStack>
-
+ 
                     {/* Validate Button */}
                     <Button
-                        size="lg"
                         onPress={handleValidateCode}
                         isDisabled={loading || code.length < 5}
-                        sx={{
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            borderRadius: Theme.corners.comfortable,
-                            height: 56,
-                        }}
+                        className="h-14 bg-amber-500 rounded-xl items-center justify-center"
                     >
                         {loading ? (
                             <Spinner color="white" />
                         ) : (
-                            <HStack space="xs" sx={{ alignItems: 'center' }}>
-                                <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}>
+                            <HStack className="gap-2 items-center">
+                                <Text className="text-slate-950 font-bold text-lg">
                                     {t('invite.validate') || 'Validate Code'}
-                                </ButtonText>
-                                <ButtonIcon as={ArrowRight} sx={{ color: Theme.colors.obsidian }} />
+                                </Text>
+                                <Icon as={ArrowRight} className="text-slate-950" size="sm" />
                             </HStack>
                         )}
                     </Button>
-
+ 
                     {/* Info Box */}
                     <Box
-                        sx={{
-                            padding: Theme.spacing.lg,
-                            backgroundColor: Theme.colors.shroud,
-                            borderRadius: Theme.corners.comfortable,
-                            borderWidth: 1,
-                            borderColor: Theme.colors.mistGray,
-                            marginTop: Theme.spacing.md,
-                        }}
+                        className="p-6 bg-slate-900/50 border border-slate-700 rounded-xl mt-4"
                     >
-                        <HStack space="md" sx={{ alignItems: 'flex-start' }}>
-                            <HelpCircle color={Theme.colors.sanctuarySaffron} size={20} />
-                            <VStack space="xs" sx={{ flex: 1 }}>
-                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 14, fontWeight: '700' }}>
+                        <HStack className="gap-4 items-start">
+                            <Icon as={HelpCircle} className="text-amber-500" size="sm" />
+                            <VStack className="gap-1 flex-1">
+                                <Text className="text-white text-sm font-bold">
                                     {t('invite.whereToFind') || 'Where to find your code?'}
                                 </Text>
-                                <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                                <Text className="text-slate-500 text-xs font-medium leading-relaxed">
                                     {t('invite.whereDesc') || 'Ask your principal or administrator for an invite code'}
                                 </Text>
                             </VStack>
                         </HStack>
                     </Box>
-
+ 
                     {/* Skip / Create School */}
-                    <VStack sx={{ marginTop: 16 }}>
+                    <VStack className="mt-4">
                         <Pressable 
                             onPress={() => {
                                 hapticLight();
                                 onSkip();
                             }}
+                            className="active:opacity-70"
                         >
-                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 14, textAlign: 'center', fontWeight: '700' }}>
+                            <Text className="text-amber-500 text-sm text-center font-bold">
                                 {t('invite.createSchool') || "I'm a Principal - Create my school →"}
                             </Text>
                         </Pressable>
@@ -203,5 +182,6 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                 </VStack>
             </Box>
         </ScreenWrapper>
+
     );
 }

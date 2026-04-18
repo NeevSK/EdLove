@@ -1,4 +1,4 @@
-﻿import { supabase } from '@repo/core';
+import { supabase } from '@repo/core';
 
 export interface SchoolSectionRow {
   id: string;
@@ -36,5 +36,6 @@ export const sectionsAPI = {
 
     if (error) throw error;
     return data as SchoolSectionRow;
-  };
+  }
+};
 

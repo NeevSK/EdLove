@@ -11,39 +11,51 @@ if (-not $stagedFilesData) {
 # Convert to array of strings
 $stagedFiles = $stagedFilesData -split "`n"
 
-# 2. Define our "Sectors" (Architecture Layers)
-$sectors = @{
-    "Mobile App"     = "apps/gurudevi-mobile"
-    "Shared UI"      = "packages/ui"
-    "Core Logic"     = "packages/core"
-    "Platform/API"   = "packages/api"
-    "Engineering"    = "packages/eslint-config|packages/typescript-config|scripts|config|commitlint|\.size-limit|\.husky"
-}
+# 2. Dynamic Sector Discovery (Sovereign Architecture)
+$apps = Get-ChildItem -Path "apps/*" -Directory | Select-Object -ExpandProperty Name
+$packages = Get-ChildItem -Path "packages/*" -Directory | Select-Object -ExpandProperty Name
 
 $categorized = New-Object 'System.Collections.Generic.Dictionary[string, System.Collections.Generic.List[string]]'
 $otherFiles = New-Object 'System.Collections.Generic.List[string]'
 
-# 3. Categorize files
+# 3. Categorize changes by Monorepo Layer
 foreach ($line in $stagedFiles) {
     if ([string]::IsNullOrWhiteSpace($line)) { continue }
     
     $parts = $line -split "`t"
-    if ($parts.Count -lt 2) { continue }
+    if ($parts.Count -lt 2) { $path = $line.Trim(); $status = "M" } # Fallback for simple diffs
+    else { $status = $parts[0].Trim(); $path = $parts[1].Trim() }
     
-    $status = $parts[0].Trim()
-    $path = $parts[1].Trim()
     $found = $false
 
-    foreach ($name in $sectors.Keys) {
-        $pattern = $sectors[$name]
-        if ($path -match $pattern) {
-            if (-not $categorized.ContainsKey($name)) { 
-                $categorized[$name] = New-Object 'System.Collections.Generic.List[string]'
-            }
-            $categorized[$name].Add("  $status $path")
-            $found = $true
-            break
+    # Layer: Apps
+    foreach ($app in $apps) {
+        if ($path -match "apps/$app") {
+            $key = "[APP] $app"
+            if (-not $categorized.ContainsKey($key)) { $categorized[$key] = New-Object 'System.Collections.Generic.List[string]' }
+            $categorized[$key].Add("  $status $path")
+            $found = $true; break
         }
+    }
+    if ($found) { continue }
+
+    # Layer: Packages
+    foreach ($pkg in $packages) {
+        if ($path -match "packages/$pkg") {
+            $key = "[PKG] $pkg"
+            if (-not $categorized.ContainsKey($key)) { $categorized[$key] = New-Object 'System.Collections.Generic.List[string]' }
+            $categorized[$key].Add("  $status $path")
+            $found = $true; break
+        }
+    }
+    if ($found) { continue }
+
+    # Layer: Engineering / Tooling
+    if ($path -match "scripts/|config/|\.husky/|\.size-limit|package\.json|pnpm-lock\.yaml|tsconfig\.json") {
+        $key = "[TOOL] Engineering & Tooling"
+        if (-not $categorized.ContainsKey($key)) { $categorized[$key] = New-Object 'System.Collections.Generic.List[string]' }
+        $categorized[$key].Add("  $status $path")
+        $found = $true
     }
 
     if (-not $found) {
@@ -51,34 +63,21 @@ foreach ($line in $stagedFiles) {
     }
 }
 
-# 4. Build the Ledger
+# 4. Build the Ledger (The Record of Truth)
 $ledger = "`n`n[STAGED CHANGES SUMMARY]`n"
 
-# Add Categorized Sectors
-$sortedKeys = $categorized.Keys | Sort-Object
-foreach ($name in $sortedKeys) {
-    $icon = "PACKAGE"
-    if ($name -eq "Mobile App") { $icon = "MOBILE" }
-    elseif ($name -eq "Shared UI") { $icon = "UI" }
-    elseif ($name -eq "Core Logic") { $icon = "CORE" }
-    elseif ($name -eq "Engineering") { $icon = "TOOL" }
-    elseif ($name -eq "Platform/API") { $icon = "API" }
-    
-    $ledger += "[$icon] $name`n"
-    foreach ($fileLine in $categorized[$name]) {
-        $ledger += "$fileLine`n"
-    }
+foreach ($key in ($categorized.Keys | Sort-Object)) {
+    $ledger += "$key`n"
+    foreach ($fileLine in $categorized[$key]) { $ledger += "$fileLine`n" }
+    $ledger += "`n"
 }
 
-# Add Miscellaneous
 if ($otherFiles.Count -gt 0) {
     $ledger += "[MISC] Miscellaneous Files`n"
-    foreach ($fileLine in $otherFiles) {
-        $ledger += "$fileLine`n"
-    }
+    foreach ($fileLine in $otherFiles) { $ledger += "$fileLine`n" }
 }
 
-# 5. Append to commit message if not already there
+# 5. Append to commit message
 if (Test-Path $CommitMsgFile) {
     $currentMsg = Get-Content $CommitMsgFile -Raw
     if ($currentMsg -notmatch "\[STAGED CHANGES SUMMARY\]") {

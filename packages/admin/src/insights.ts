@@ -1,4 +1,4 @@
-﻿import { supabase, getTemporalRange } from '@repo/core';
+import { supabase, getTemporalRange } from '@repo/core';
 
 export interface GradeProgress {
   grade: string;
@@ -68,4 +68,5 @@ export const insightsAPI = {
 
     if (error) throw error;
     return respondedAt;
-  };
+  }
+};

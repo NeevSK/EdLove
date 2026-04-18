@@ -1,233 +1,185 @@
 import React, { useEffect, useState } from 'react';
-import { Icon, TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors,  } from '@repo/ui';
+import { ActivityIndicator } from 'react-native';
+import {
+    Box,
+    HStack,
+    VStack,
+    Text,
+    SkeletonCard,
+    useTheme,
+    Icon,
+    Pressable,
+    Theme
+} from '@repo/ui';
 import { ChevronRight, TrendingUp } from 'lucide-react-native';
 import { staffOperationsAPI, type StudentPrincipalPulse } from '../../staff';
 
 interface StudentPulseSectionProps {
-  schoolId: string;
-  classroomId?: string;
-  onViewAtRisk?: () => void;
-  onViewEnrollments?: () => void;
-  onViewFullReport?: () => void;
-}
-
-function attendanceColor(rate: number): string {
-  if (rate >= 90) return sageGreen ?? '#4caf50';
-  if (rate >= 75) return amberGlow ?? '#ffc107';
-  return emberRed ?? '#f44336';
+    schoolId: string;
+    classroomId?: string;
+    onViewAtRisk?: () => void;
+    onViewEnrollments?: () => void;
+    onViewFullReport?: () => void;
 }
 
 export default function StudentPulseSection({
-  schoolId,
-  classroomId,
-  onViewAtRisk,
-  onViewEnrollments,
-  onViewFullReport}: StudentPulseSectionProps) {
-  const colors = useTheme().scene;
-  const [loading, setLoading] = useState(true);
-  const [pulse, setPulse] = useState<StudentPrincipalPulse | null>(null);
+    schoolId,
+    classroomId,
+    onViewAtRisk,
+    onViewEnrollments,
+    onViewFullReport
+}: StudentPulseSectionProps) {
+    const theme = useTheme();
+    const [loading, setLoading] = useState(true);
+    const [pulse, setPulse] = useState<StudentPrincipalPulse | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      setLoading(true);
-      try {
-        const pulseData = await staffOperationsAPI.getStudentPrincipalPulse(schoolId, classroomId);
-        if (!mounted) return;
-        setPulse(pulseData);
-      } catch (error) {
-        console.error('Error fetching student pulse:', error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
+    const attendanceColor = (rate: number): string => {
+        if (rate >= 90) return theme.accent.sageGreen;
+        if (rate >= 75) return theme.accent.action; // Amber equivalent in V3
+        return theme.accent.danger;
     };
-  }, [schoolId, classroomId]);
 
-  if (loading) {
+    useEffect(() => {
+        let mounted = true;
+        async function load() {
+            setLoading(true);
+            try {
+                const pulseData = await staffOperationsAPI.getStudentPrincipalPulse(schoolId, classroomId);
+                if (!mounted) return;
+                setPulse(pulseData);
+            } catch (error) {
+                console.error('Error fetching student pulse:', error);
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        }
+        load();
+        return () => {
+            mounted = false;
+        };
+    }, [schoolId, classroomId]);
+
+    if (loading) {
+        return (
+            <VStack className="gap-2">
+                <SkeletonCard height={80} />
+                <SkeletonCard height={56} />
+            </VStack>
+        );
+    }
+
+    const delta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
+    const deltaLabel = delta > 0 ? `+${delta}% vs yesterday` : delta < 0 ? `${delta}% vs yesterday` : 'same as yesterday';
+    const deltaColor = delta >= 0 ? theme.accent.sageGreen : theme.accent.danger;
+
     return (
-      <VStack sx={{ gap: Theme.spacing.sm }}>
-        <SkeletonCard height={80} />
-        <SkeletonCard height={56} />
-      </VStack>
-    );
-  }
-
-  const delta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
-  const deltaLabel = delta > 0 ? `+${delta}% vs yesterday` : delta < 0 ? `${delta}% vs yesterday` : 'same as yesterday';
-  const deltaColor = delta >= 0 ? colors?.success || '#4caf50' : colors?.error || '#f44336';
-
-  return (
-    <VStack sx={{ gap: Theme.spacing.sm }}>
-      {/* Attendance and Submissions Row */}
-      <HStack sx={{ gap: Theme.spacing.sm }}>
-        <Box
-          sx={{
-            flex: 1,
-            backgroundColor: colors?.primary || '#2A2318',
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)'}}
-        >
-          <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
-            Attendance Today
-          </Text>
-          <Text
-            sx={{
-              fontSize: 28,
-              fontWeight: '700',
-              color: pulse ? attendanceColor(pulse.todayRate) : (colors?.text || '#fff')}}
-          >
-            {pulse ? `${pulse.todayRate}%` : '-'}
-          </Text>
-          <Text sx={{ fontSize: 11, color: deltaColor }}>
-            {pulse ? deltaLabel : ''}
-          </Text>
-        </Box>
-
-        <Box
-          sx={{
-            flex: 1,
-            backgroundColor: colors?.primary || '#2A2318',
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            borderWidth: 1,
-            borderColor: colors?.border || 'rgba(255,255,255,0.1)'}}
-        >
-          <Text sx={{ fontSize: 12, color: colors?.textSecondary || '#aaa', marginBottom: 2 }}>
-            Submissions This Week
-          </Text>
-          <Text sx={{ fontSize: 28, fontWeight: '700', color: colors?.text || '#fff' }}>
-            {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined ? `${pulse.submissionRate}%` : '-'}
-          </Text>
-          <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa' }}>
-            of assignments
-          </Text>
-        </Box>
-      </HStack>
-
-      {/* At-Risk and Pending Enrollments Row */}
-      <HStack sx={{ gap: Theme.spacing.sm }}>
-        <TouchableOpacity 
-          onPress={onViewAtRisk} 
-          activeOpacity={0.8} 
-          style={{ flex: 1 }}
-          disabled={!onViewAtRisk}
-          accessibilityRole="button"
-          accessibilityLabel="View At-risk Students"
-          accessibilityHint="Navigates to the list of students with attendance or academic concerns"
-        >
-          <Box
-            sx={{
-              flex: 1,
-              backgroundColor: colors?.primary || '#2A2318',
-              borderRadius: Theme.corners.comfortable,
-              padding: Theme.spacing.md,
-              borderWidth: 1,
-              borderColor: (pulse?.atRiskCount ?? 0) > 0 ? (colors?.error || '#f44336') : (colors?.border || 'rgba(255,255,255,0.1)')}}
-          >
-            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-              <Box
-                sx={{
-                  backgroundColor: colors?.error || '#f44336',
-                  borderRadius: 10,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2}}
-              >
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
-                  {pulse?.atRiskCount ?? 0}
-                </Text>
-              </Box>
-              <Text sx={{ fontSize: 12, color: colors?.text || '#fff', flex: 1 }}>
-                At-risk students
-              </Text>
-              <Icon as={ChevronRight} size={16} color={colors?.textTertiary || '#666'} />
-            </HStack>
-            {onViewAtRisk && (
-              <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa', marginTop: 2 }}>
-                Tap to review
-              </Text>
-            )}
-          </Box>
-        </TouchableOpacity>
-
-        {!classroomId && (
-          <TouchableOpacity 
-            onPress={onViewEnrollments} 
-            activeOpacity={0.8} 
-            style={{ flex: 1 }}
-            disabled={!onViewEnrollments}
-            accessibilityRole="button"
-            accessibilityLabel="View Pending Enrollments"
-            accessibilityHint="Opens the new student enrollment approval queue"
-          >
-            <Box
-              sx={{
-                flex: 1,
-                backgroundColor: colors?.primary || '#2A2318',
-                borderRadius: Theme.corners.comfortable,
-                padding: Theme.spacing.md,
-                borderWidth: 1,
-                borderColor: (pulse?.pendingEnrollments ?? 0) > 0 ? (colors?.warning || '#ff9800') : (colors?.border || 'rgba(255,255,255,0.1)')}}
-            >
-              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-                <Box
-                  sx={{
-                    backgroundColor: colors?.warning || '#ff9800',
-                    borderRadius: 10,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2}}
-                >
-                  <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
-                    {pulse?.pendingEnrollments ?? 0}
-                  </Text>
+        <VStack className="gap-2">
+            {/* Attendance and Submissions Row */}
+            <HStack className="gap-2">
+                <Box className="flex-1 bg-phase-surface rounded-xl p-md border border-phase-border">
+                    <Text className="text-[11px] text-phaseText-secondary mb-1 uppercase">
+                        Attendance Today
+                    </Text>
+                    <Text
+                        className="text-2xl font-bold"
+                        style={{ color: pulse ? attendanceColor(pulse.todayRate) : theme.text.primary }}
+                    >
+                        {pulse ? `${pulse.todayRate}%` : '-'}
+                    </Text>
+                    <Text className="text-[10px]" style={{ color: deltaColor }}>
+                        {pulse ? deltaLabel : ''}
+                    </Text>
                 </Box>
-                <Text sx={{ fontSize: 12, color: colors?.text || '#fff', flex: 1 }}>
-                  Pending enrollments
-                </Text>
-                <Icon as={ChevronRight} size={16} color={colors?.textTertiary || '#666'} />
-              </HStack>
-              {onViewEnrollments && (
-                <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa', marginTop: 2 }}>
-                  Tap to review
-                </Text>
-              )}
-            </Box>
-          </TouchableOpacity>
-        )}
-      </HStack>
 
-      {/* Footer Full Analytics */}
-      {onViewFullReport && (
-        <TouchableOpacity 
-          onPress={onViewFullReport} 
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel="View Full Analytics"
-          accessibilityHint="Opens the detailed institutional analytics dashboard"
-        >
-          <HStack
-            sx={{
-              marginTop: Theme.spacing.sm,
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 4,
-              paddingVertical: 8,
-              borderTopWidth: 1,
-              borderTopColor: colors?.border || 'rgba(255,255,255,0.1)'}}
-          >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: colors?.action || '#2196f3' }}>
-              VIEW FULL ANALYTICS
-            </Text>
-            <TrendingUp size={14} color={colors?.action || '#2196f3'} />
-          </HStack>
-        </TouchableOpacity>
-      )}
-    </VStack>
-  );
+                <Box className="flex-1 bg-phase-surface rounded-xl p-md border border-phase-border">
+                    <Text className="text-[11px] text-phaseText-secondary mb-1 uppercase">
+                        Submissions This Week
+                    </Text>
+                    <Text className="text-2xl font-bold text-phaseText-primary">
+                        {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined ? `${pulse.submissionRate}%` : '-'}
+                    </Text>
+                    <Text className="text-[10px] text-phaseText-secondary">
+                        of assignments
+                    </Text>
+                </Box>
+            </HStack>
+
+            {/* At-Risk and Pending Enrollments Row */}
+            <HStack className="gap-2">
+                <Pressable
+                    onPress={onViewAtRisk}
+                    className="flex-1"
+                    disabled={!onViewAtRisk}
+                >
+                    <Box
+                        className={`flex-1 p-md rounded-xl border ${
+                            (pulse?.atRiskCount ?? 0) > 0 ? 'border-phase-danger' : 'border-phase-border'
+                        } bg-phase-surface`}
+                    >
+                        <HStack className="items-center gap-1.5">
+                            <Box className="bg-phase-danger rounded-lg px-2 py-0.5">
+                                <Text className="text-xs font-bold text-white">
+                                    {pulse?.atRiskCount ?? 0}
+                                </Text>
+                            </Box>
+                            <Text className="text-[12px] text-phaseText-primary flex-1">
+                                At-risk students
+                            </Text>
+                            <Icon as={ChevronRight} size="sm" className="text-phaseText-muted" />
+                        </HStack>
+                        {onViewAtRisk && (
+                            <Text className="text-[10px] text-phaseText-secondary mt-1">
+                                Tap to review
+                            </Text>
+                        )}
+                    </Box>
+                </Pressable>
+
+                {!classroomId && (
+                    <Pressable
+                        onPress={onViewEnrollments}
+                        className="flex-1"
+                        disabled={!onViewEnrollments}
+                    >
+                        <Box
+                            className={`flex-1 p-md rounded-xl border ${
+                                (pulse?.pendingEnrollments ?? 0) > 0 ? 'border-phase-accent' : 'border-phase-border'
+                            } bg-phase-surface`}
+                        >
+                            <HStack className="items-center gap-1.5">
+                                <Box className="bg-phase-accent rounded-lg px-2 py-0.5">
+                                    <Text className="text-xs font-bold text-white">
+                                        {pulse?.pendingEnrollments ?? 0}
+                                    </Text>
+                                </Box>
+                                <Text className="text-[12px] text-phaseText-primary flex-1">
+                                    Pending enrollments
+                                </Text>
+                                <Icon as={ChevronRight} size="sm" className="text-phaseText-muted" />
+                            </HStack>
+                            {onViewEnrollments && (
+                                <Text className="text-[10px] text-phaseText-secondary mt-1">
+                                    Tap to review
+                                </Text>
+                            )}
+                        </Box>
+                    </Pressable>
+                )}
+            </HStack>
+
+            {/* Footer Full Analytics */}
+            {onViewFullReport && (
+                <Pressable
+                    onPress={onViewFullReport}
+                    className="mt-2 py-2 border-t border-phase-border items-center justify-center flex-row gap-1"
+                >
+                    <Text className="text-xs font-bold text-phase-accent">
+                        VIEW FULL ANALYTICS
+                    </Text>
+                    <Icon as={TrendingUp} size="xs" className="text-phase-accent" />
+                </Pressable>
+            )}
+        </VStack>
+    );
 }
+

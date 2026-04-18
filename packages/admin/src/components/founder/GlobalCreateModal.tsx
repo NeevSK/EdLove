@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Icon, Actionsheet,
+import { 
+  Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
   ActionsheetDragIndicator,
@@ -18,13 +19,16 @@ import { Icon, Actionsheet,
   SanctuaryModal,
   Spinner,
   Text,
-  
   VStack,
-  useThemedColors} from '@repo/ui';
-import { Icon, School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
+  Heading,
+  Icon as UIIcon,
+  Textarea,
+  TextareaInput
+} from '@repo/ui';
+import { handleAPIError, growthSignalsAPI, identityAPI, type School } from '@repo/core';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 import { communityAPI } from '@repo/community';
-import { hapticLight, hapticSuccess, Textarea, useTranslation } from '@repo/ui';
+import { hapticLight, hapticSuccess, useTranslation } from '@repo/ui';
 import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from 'lucide-react-native';
 
 interface GlobalCreateModalProps {
@@ -40,9 +44,9 @@ export default function GlobalCreateModal({
   isOpen,
   onClose,
   onSuccess,
-  availableSchools}: GlobalCreateModalProps) {
+  availableSchools
+}: GlobalCreateModalProps) {
   const { t } = useTranslation();
-  const colors = useTheme().scene;
 
   const [type, setType] = useState<CreateType>('school');
   const [name, setName] = useState('');
@@ -91,7 +95,8 @@ export default function GlobalCreateModal({
         result = await createFounderSchool({
           name: name.trim(),
           type: schoolType,
-          created_by: userId});
+          created_by: userId
+        });
 
         if (result) {
           await communityAPI.createGroupWithOwner(
@@ -100,7 +105,8 @@ export default function GlobalCreateModal({
               description: `The primary sanctuary for ${name.trim()} members to share and resonate.`,
               group_type: 'school',
               join_policy: 'open',
-              school_id: result.id},
+              school_id: result.id
+            },
             userId,
           );
         }
@@ -109,7 +115,8 @@ export default function GlobalCreateModal({
           name: name.trim(),
           school_id: selectedSchoolId,
           grade_number: 1, // Defaulting to 1 for global creator
-          created_by: userId});
+          created_by: userId
+        });
 
         if (result) {
           await communityAPI.createGroupWithOwner(
@@ -119,7 +126,8 @@ export default function GlobalCreateModal({
               group_type: 'class',
               join_policy: 'restricted',
               school_id: selectedSchoolId,
-              classroom_id: result.id},
+              classroom_id: result.id
+            },
             userId,
           );
         }
@@ -130,7 +138,8 @@ export default function GlobalCreateModal({
             description: description.trim(),
             school_id: selectedSchoolId,
             group_type: 'general',
-            join_policy: 'open'},
+            join_policy: 'open'
+          },
           userId,
         );
       }
@@ -139,17 +148,19 @@ export default function GlobalCreateModal({
       if (type === 'classroom' && result) {
         growthSignalsAPI.emitSilent(userId, 'classroom_created', {
           classroom_id: result.id,
-          school_id: selectedSchoolId});
+          school_id: selectedSchoolId
+        });
       }
 
       onSuccess(type, result);
       handleClose();
     } catch (err: any) {
       const apiError = handleAPIError(err, true);
-      setError(apiError.message);
+      setError(apiError.message || 'Action failed');
     } finally {
       setIsSubmitting(false);
-    };
+    }
+  };
 
   const selectedSchool = availableSchools.find((s) => s.id === selectedSchoolId);
 
@@ -160,96 +171,83 @@ export default function GlobalCreateModal({
         onClose={handleClose}
         title="Ecosystem Creation"
         footer={
-          <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+          <HStack className="gap-3 w-full">
             <Button
               variant="outline"
-              action="secondary"
               onPress={handleClose}
-              sx={{ flex: 1, borderColor: colors.border }}
+              className="flex-1 rounded-2xl h-12"
               isDisabled={isSubmitting}
             >
-              <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
+              <ButtonText className="text-ink/60 font-bold">Cancel</ButtonText>
             </Button>
             <Button
-              action="primary"
               onPress={handleSubmit}
-              sx={{ flex: 1, backgroundColor: sanctuarySaffron }}
+              className="flex-1 rounded-2xl h-12 bg-phase-accent shadow-sm"
               isDisabled={isSubmitting || !name.trim()}
             >
               {isSubmitting ? (
-                <Spinner color={sacredWhite} size="small" />
+                <Spinner color="white" size="small" />
               ) : (
-                <ButtonText color={sacredWhite}>Initialize</ButtonText>
+                <ButtonText className="text-white font-bold">Initialize</ButtonText>
               )}
             </Button>
           </HStack>
         }
       >
-        <VStack sx={{ gap: Theme.spacing.xl }}>
-          <HStack sx={{ gap: Theme.spacing.sm }}>
+        <VStack className="gap-6 p-4">
+          <HStack className="gap-2">
             <TypeButton
               active={type === 'school'}
               onPress={() => setType('school')}
               label="School"
-              icon={<SchoolIcon size={16} />}
+              icon={SchoolIcon}
             />
             <TypeButton
               active={type === 'classroom'}
               onPress={() => setType('classroom')}
               label="Class"
-              icon={<Icon as={Layout}Grid size={16} />}
+              icon={LayoutGrid}
             />
             <TypeButton
               active={type === 'group'}
               onPress={() => setType('group')}
               label="Group"
-              icon={<Icon as={User}s size={16} />}
+              icon={Users}
             />
           </HStack>
 
           {error ? (
-            <Box
-              sx={{
-                padding: 12,
-                backgroundColor: '#fee2e2',
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: '#ef4444'}}
-            >
-              <Text sx={{ color: '#b91c1c', fontSize: 13 }}>{error}</Text>
+            <Box className="p-3 bg-red-50 rounded-xl border border-red-200">
+              <Text className="text-red-600 text-[13px] font-bold">{error}</Text>
             </Box>
           ) : null}
 
-          <VStack sx={{ gap: Theme.spacing.md }}>
+          <VStack className="gap-4">
             {type !== 'school' ? (
               <FormControl isRequired>
                 <FormControlLabel>
-                  <FormControlLabelText color={colors.textSecondary}>Target Institution</FormControlLabelText>
+                  <FormControlLabelText className="text- ink/40 font-bold text-xs uppercase tracking-wider">Target Institution</FormControlLabelText>
                 </FormControlLabel>
                 <Button
                   variant="outline"
                   onPress={() => setShowSchoolPicker(true)}
-                  sx={{
-                    justifyContent: 'space-between',
-                    borderColor: colors.border,
-                    backgroundColor: colors.tertiary,
-                    height: 48}}
+                  className="justify-between border-border bg-silk h-12 rounded-xl px-4"
                 >
-                  <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}>
+                  <ButtonText className={`font-bold ${selectedSchoolId ? 'text-ink' : 'text-ink/40'}`}>
                     {selectedSchool ? selectedSchool.name : 'Select School...'}
                   </ButtonText>
-                  <ChevronDown size={18} color={colors.textSecondary} />
+                  <UIIcon as={ChevronDown} size="sm" className="text-ink/40" />
                 </Button>
               </FormControl>
             ) : null}
 
             <FormControl isRequired>
               <FormControlLabel>
-                <FormControlLabelText color={colors.textSecondary}>
+                <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
                   {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Class Name/ID' : 'Group Name'}
                 </FormControlLabelText>
               </FormControlLabel>
-              <Input sx={{ backgroundColor: colors.tertiary, borderColor: colors.border }}>
+              <Input className="bg-silk border-border h-12 rounded-xl px-2">
                 <InputField
                   value={name}
                   onChangeText={setName}
@@ -260,7 +258,7 @@ export default function GlobalCreateModal({
                         ? t('founder.create.className', { defaultValue: 'e.g. Grade 8A' })
                         : t('founder.create.groupName', { defaultValue: 'e.g. Parent Council' })
                   }
-                  color={colors.text}
+                  className="text-ink font-bold"
                 />
               </Input>
             </FormControl>
@@ -268,17 +266,16 @@ export default function GlobalCreateModal({
             {type === 'group' ? (
               <FormControl>
                 <FormControlLabel>
-                  <FormControlLabelText color={colors.textSecondary}>Purpose / Description</FormControlLabelText>
+                  <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">Purpose / Description</FormControlLabelText>
                 </FormControlLabel>
-                <Textarea
-                  value={description}
-                  onChangeText={setDescription}
-                  placeholder="Briefly describe this community space..."
-                  minHeight={80}
-                  borderColor={colors.border}
-                  bg={colors.tertiary}
-                  color={colors.text}
-                />
+                <Textarea className="border-border bg-silk rounded-xl">
+                  <TextareaInput
+                    value={description}
+                    onChangeText={setDescription}
+                    placeholder="Briefly describe this community space..."
+                    className="text-ink font-bold"
+                  />
+                </Textarea>
               </FormControl>
             ) : null}
           </VStack>
@@ -287,11 +284,11 @@ export default function GlobalCreateModal({
 
       <Actionsheet isOpen={showSchoolPicker} onClose={() => setShowSchoolPicker(false)}>
         <ActionsheetBackdrop />
-        <ActionsheetContent sx={{ backgroundColor: colors.secondary }}>
+        <ActionsheetContent className="bg-white">
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
-          <VStack sx={{ padding: 16, gap: 8 }}>
+          <VStack className="p-4 gap-2 w-full">
             {availableSchools.map((school) => (
               <ActionsheetItem
                 key={school.id}
@@ -299,8 +296,9 @@ export default function GlobalCreateModal({
                   setSelectedSchoolId(school.id);
                   setShowSchoolPicker(false);
                 }}
+                className="rounded-xl active:bg-silk"
               >
-                <ActionsheetItemText color={colors.text}>{school.name}</ActionsheetItemText>
+                <ActionsheetItemText className="text-ink font-bold">{school.name}</ActionsheetItemText>
               </ActionsheetItem>
             ))}
           </VStack>
@@ -314,26 +312,21 @@ function TypeButton({
   active,
   onPress,
   label,
-  icon}: {
+  icon: Icon
+}: {
   active: boolean;
   onPress: () => void;
   label: string;
-  icon: React.ReactElement;
+  icon: any;
 }) {
-  const colors = useTheme().scene;
   return (
     <Button
       variant={active ? 'solid' : 'outline'}
       onPress={onPress}
-      sx={{
-        flex: 1,
-        gap: 4,
-        backgroundColor: active ? sanctuarySaffron : 'transparent',
-        borderColor: active ? sanctuarySaffron : colors.border}}
-      size="sm"
+      className={`flex-1 gap-2 h-11 rounded-xl shadow-sm ${active ? 'bg-primary' : 'bg-transparent border-border'}`}
     >
-      {React.cloneElement(icon as React.ReactElement<{ color?: string }>, { color: active ? '#fff' : colors.textSecondary })}
-      <ButtonText color={active ? '#fff' : colors.textSecondary}>{label}</ButtonText>
+      <UIIcon as={Icon} className={active ? 'text-white' : 'text-ink/40'} size="sm" />
+      <ButtonText className={`font-black text-xs uppercase tracking-widest ${active ? 'text-white' : 'text-ink/40'}`}>{label}</ButtonText>
     </Button>
   );
 }

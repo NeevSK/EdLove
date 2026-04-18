@@ -1,17 +1,3 @@
-/**
- * HIERARCHY BUILDER COMPONENT
- * 
- * Tree view for building school hierarchy:
- * School → Section (Primary/Secondary) → Grade (1-13)
- * 
- * Features:
- * - Add Section button
- * - Add Grade button (for each section)
- * - Tree visualization
- * 
- * Mission 04: Principal's Office
- */
-
 import React, { useState, useEffect } from 'react';
 import {
     VStack,
@@ -30,12 +16,13 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-    Spinner} from '@repo/ui';
-import { TouchableOpacity } from 'react-native';
+    Spinner,
+    Icon,
+    Pressable
+} from '@repo/ui';
+import { ArrowLeft, Plus, GraduationCap, School as SchoolIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { api, Section, SchoolGrade } from '@repo/core';
-import {  } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+import { api, type Section, type SchoolGrade } from '@repo/core';
 
 interface HierarchyBuilderProps {
     schoolId: string;
@@ -44,7 +31,6 @@ interface HierarchyBuilderProps {
 
 export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderProps) {
     const { t } = useTranslation();
-    const colors = useTheme().scene;
     const [sections, setSections] = useState<Section[]>([]);
     const [gradesBySection, setGradesBySection] = useState<{ [sectionId: string]: SchoolGrade[] }>({});
     const [isLoading, setIsLoading] = useState(true);
@@ -66,8 +52,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
             const sectionsData = await api.school.getSections(schoolId);
             setSections(sectionsData);
 
-            // Load grades for each section
-            const gradesMap: { [sectionId: string]: SchoolGrade[] } = { };
+            const gradesMap: { [sectionId: string]: SchoolGrade[] } = {};
             for (const section of sectionsData) {
                 const grades = await api.school.getGrades(section.id);
                 gradesMap[section.id] = grades;
@@ -78,7 +63,8 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
             setError(err.message || t('errors.fetchFailed'));
         } finally {
             setIsLoading(false);
-        };
+        }
+    };
 
     const handleAddSection = async () => {
         if (!newSectionName.trim()) {
@@ -94,7 +80,8 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         } catch (err: any) {
             console.error('Failed to create section:', err);
             setError(err.message || t('errors.somethingWentWrong'));
-        };
+        }
+    };
 
     const handleAddGrade = async () => {
         if (!selectedSectionId) return;
@@ -114,70 +101,50 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         } catch (err: any) {
             console.error('Failed to create grade:', err);
             setError(err.message || t('errors.somethingWentWrong'));
-        };
+        }
+    };
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: 'transparent'}}
-        >
-            <ScrollView>
-                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+        <Box className="flex-1 bg-silk">
+            <ScrollView contentContainerStyle={{ padding: 24 }}>
+                <VStack className="gap-8">
                     {/* Header */}
-                    <HStack
-                        sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center'}}
-                    >
-                        <Heading color={colors.action} sx={{ fontSize: 32 }}>
-                            {t('principal.hierarchy.title')}
-                        </Heading>
-
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            sx={{
-                                borderColor: colors.border}}
-                            onPress={onBack}
-                        >
-                            <ButtonText color={colors.text}>
-                                {t('common.back')}
-                            </ButtonText>
-                        </Button>
+                    <HStack className="justify-between items-center">
+                        <VStack className="gap-1 flex-1">
+                            <Pressable onPress={onBack} className="mb-2">
+                                <HStack className="items-center gap-2 bg-white/50 self-start px-3 py-1.5 rounded-full border border-border active:opacity-60">
+                                    <Icon as={ArrowLeft} size="xs" className="text-ink" />
+                                    <Text className="text-xs font-bold text-ink">Back</Text>
+                                </HStack>
+                            </Pressable>
+                            <Heading className="text-3xl font-black text-ink">
+                                {t('principal.hierarchy.title') || 'Institution Hierarchy'}
+                            </Heading>
+                        </VStack>
                     </HStack>
 
                     {/* Add Section Button */}
                     <Button
-                        sx={{
-                            backgroundColor: colors.action}}
+                        className="bg-primary rounded-[24px] h-14 shadow-sm"
                         onPress={() => setShowAddSection(true)}
                     >
-                        <ButtonText color={sacredWhite}>
-                            {t('principal.hierarchy.addSection')}
+                        <Icon as={Plus} className="text-white mr-2" />
+                        <ButtonText className="text-white font-black uppercase tracking-widest">
+                            {t('principal.hierarchy.addSection') || 'Add Section'}
                         </ButtonText>
                     </Button>
 
                     {/* Loading State */}
                     {isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center'}}
-                        >
-                            <Spinner color={colors.action} />
+                        <Box className="p-12 items-center">
+                            <Spinner color="#3b82f6" />
                         </Box>
                     )}
 
                     {/* Error State */}
                     {error && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: colors.error,
-                                borderRadius: Theme.corners.comfortable}}
-                        >
-                            <Text color={colors.text}>{error}</Text>
+                        <Box className="p-4 bg-red-50 border border-red-200 rounded-[20px]">
+                            <Text className="text-red-600 font-bold text-sm">{error}</Text>
                         </Box>
                     )}
 
@@ -185,62 +152,47 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     {!isLoading && sections.map((section) => (
                         <Box
                             key={section.id}
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
-                                borderLeftWidth: 4,
-                                borderLeftColor: colors.action}}
+                            className="p-5 bg-white rounded-[24px] border border-border shadow-sm border-l-4 border-l-primary"
                         >
                             {/* Section Header */}
-                            <HStack
-                                sx={{
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    marginBottom: Theme.spacing.md}}
-                            >
-                                <Text
-                                    color={colors.text}
-                                    sx={{ fontWeight: '700', fontSize: 18 }}
-                                >
-                                    📚 {section.name}
-                                </Text>
+                            <HStack className="justify-between items-center mb-4">
+                                <HStack className="gap-2 items-center">
+                                    <Icon as={SchoolIcon} size="sm" className="text-primary" />
+                                    <Text className="text-lg font-black text-ink">{section.name}</Text>
+                                </HStack>
 
                                 <Button
-                                    variant="link"
+                                    variant="outline"
                                     size="sm"
+                                    className="rounded-full border-primary h-8 px-4"
                                     onPress={() => {
                                         setSelectedSectionId(section.id);
                                         setShowAddGrade(true);
                                     }}
                                 >
-                                    <ButtonText color={colors.action}>
-                                        {t('principal.hierarchy.addGrade')}
+                                    <ButtonText className="text-primary font-black text-[10px] uppercase tracking-widest">
+                                        {t('principal.hierarchy.addGrade') || '+ GRADE'}
                                     </ButtonText>
                                 </Button>
                             </HStack>
 
                             {/* Grades List */}
-                            <VStack space="sm" sx={{ paddingLeft: Theme.spacing.lg }}>
+                            <VStack className="gap-2 pl-4">
                                 {gradesBySection[section.id]?.length ? (
                                     gradesBySection[section.id]?.map((grade) => (
                                         <HStack
                                             key={grade.id}
-                                            space="sm"
-                                            sx={{
-                                                padding: Theme.spacing.sm,
-                                                backgroundColor: colors.tertiary,
-                                                borderRadius: Theme.corners.tight}}
+                                            className="gap-3 p-3 bg-silk rounded-2xl items-center"
                                         >
-                                            <Text color={colors.textTertiary}>└─</Text>
-                                            <Text color={colors.text}>
-                                                {t('principal.hierarchy.grade')} {grade.number}
+                                            <Icon as={GraduationCap} size="xs" className="text-ink/20" />
+                                            <Text className="text-sm font-bold text-ink">
+                                                {t('principal.hierarchy.grade') || 'Grade'} {grade.number}
                                             </Text>
                                         </HStack>
                                     ))
                                 ) : (
-                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
-                                        {t('principal.hierarchy.noGrades')}
+                                    <Text className="text-xs font-bold text-ink/40 italic py-2">
+                                        {t('principal.hierarchy.noGrades') || 'No grades defined.'}
                                     </Text>
                                 )}
                             </VStack>
@@ -249,17 +201,10 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
 
                     {/* Empty State */}
                     {!isLoading && sections.length === 0 && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center'}}
-                        >
-                            <Text
-                                color={colors.textSecondary}
-                                textAlign="center"
-                                sx={{ fontSize: 18 }}
-                            >
-                                {t('principal.hierarchy.noSections')}
+                        <Box className="p-12 items-center">
+                            <Icon as={SchoolIcon} size="xl" className="text-ink/10 mb-4" />
+                            <Text className="text-ink/40 font-bold text-center">
+                                {t('principal.hierarchy.noSections') || 'No institutional sections found. Start by adding one.'}
                             </Text>
                         </Box>
                     )}
@@ -275,55 +220,46 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 }}
             >
                 <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: colors.secondary}}
-                >
-                    <ModalHeader>
-                        <Heading color={colors.action} sx={{ fontSize: 24 }}>
-                            {t('principal.hierarchy.addSectionTitle')}
+                <ModalContent className="bg-white rounded-[32px] p-2">
+                    <ModalHeader className="p-6">
+                        <Heading className="text-xl font-black text-ink uppercase tracking-wider">
+                            {t('principal.hierarchy.addSectionTitle') || 'Create Section'}
                         </Heading>
                     </ModalHeader>
-                    <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <Text color={colors.textSecondary}>
-                                {t('principal.hierarchy.sectionNameLabel')}
+                    <ModalBody className="px-6 pb-6">
+                        <VStack className="gap-4">
+                            <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                                {t('principal.hierarchy.sectionNameLabel') || 'Section Name'}
                             </Text>
-                            <Input
-                                sx={{
-                                    backgroundColor: colors.tertiary}}
-                            >
+                            <Input className="h-14 bg-silk border-border rounded-2xl px-2">
                                 <InputField
-                                    placeholder={t('principal.hierarchy.sectionNamePlaceholder')}
+                                    placeholder={t('principal.hierarchy.sectionNamePlaceholder') || "e.g., Primary Section"}
                                     value={newSectionName}
                                     onChangeText={setNewSectionName}
-                                    sx={{
-                                        color: colors.text}}
+                                    className="text-ink font-bold"
                                 />
                             </Input>
                         </VStack>
                     </ModalBody>
-                    <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+                    <ModalFooter className="p-6 pt-0">
+                        <HStack className="gap-3 w-full">
                             <Button
                                 variant="outline"
-                                sx={{ flex: 1, borderColor: colors.border }}
+                                className="flex-1 rounded-2xl h-12 border-border"
                                 onPress={() => {
                                     setShowAddSection(false);
                                     setNewSectionName('');
                                 }}
                             >
-                                <ButtonText color={colors.text}>
+                                <ButtonText className="text-ink font-bold">
                                     {t('common.cancel')}
                                 </ButtonText>
                             </Button>
                             <Button
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: colors.action}}
+                                className="flex-1 bg-primary rounded-2xl h-12 shadow-sm"
                                 onPress={handleAddSection}
                             >
-                                <ButtonText color={sacredWhite}>
+                                <ButtonText className="text-white font-black uppercase tracking-widest">
                                     {t('common.add') || 'Add'}
                                 </ButtonText>
                             </Button>
@@ -342,57 +278,48 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 }}
             >
                 <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: colors.secondary}}
-                >
-                    <ModalHeader>
-                        <Heading color={colors.action} sx={{ fontSize: 24 }}>
-                            {t('principal.hierarchy.addGradeTitle')}
+                <ModalContent className="bg-white rounded-[32px] p-2">
+                    <ModalHeader className="p-6">
+                        <Heading className="text-xl font-black text-ink uppercase tracking-wider">
+                            {t('principal.hierarchy.addGradeTitle') || 'Initialize Grade'}
                         </Heading>
                     </ModalHeader>
-                    <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <Text color={colors.textSecondary}>
-                                {t('principal.hierarchy.gradeNumberLabel')}
+                    <ModalBody className="px-6 pb-6">
+                        <VStack className="gap-4">
+                            <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                                {t('principal.hierarchy.gradeNumberLabel') || 'Grade Level (1-13)'}
                             </Text>
-                            <Input
-                                sx={{
-                                    backgroundColor: colors.tertiary}}
-                            >
+                            <Input className="h-14 bg-silk border-border rounded-2xl px-2">
                                 <InputField
-                                    placeholder={t('principal.hierarchy.gradeNumberPlaceholder')}
+                                    placeholder={t('principal.hierarchy.gradeNumberPlaceholder') || "e.g., 5"}
                                     value={newGradeNumber}
                                     onChangeText={setNewGradeNumber}
                                     keyboardType="numeric"
-                                    sx={{
-                                        color: colors.text}}
+                                    className="text-ink font-bold"
                                 />
                             </Input>
                         </VStack>
                     </ModalBody>
-                    <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+                    <ModalFooter className="p-6 pt-0">
+                        <HStack className="gap-3 w-full">
                             <Button
                                 variant="outline"
-                                sx={{ flex: 1, borderColor: colors.border }}
+                                className="flex-1 rounded-2xl h-12 border-border"
                                 onPress={() => {
                                     setShowAddGrade(false);
                                     setNewGradeNumber('');
                                     setSelectedSectionId(null);
                                 }}
                             >
-                                <ButtonText color={colors.text}>
+                                <ButtonText className="text-ink font-bold">
                                     {t('common.cancel')}
                                 </ButtonText>
                             </Button>
                             <Button
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: colors.action}}
+                                className="flex-1 bg-primary rounded-2xl h-12 shadow-sm"
                                 onPress={handleAddGrade}
                             >
-                                <ButtonText color={sacredWhite}>
+                                <ButtonText className="text-white font-black uppercase tracking-widest">
                                     {t('common.add') || 'Add'}
                                 </ButtonText>
                             </Button>

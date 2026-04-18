@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -8,8 +8,8 @@ import {
     Heading,
     Button,
     ButtonText,
-    Theme,
-    useTheme,
+    Icon,
+    Pressable,
 } from '@repo/ui';
 import { X, AlertTriangle, ShieldOff, UserX, ShieldCheck, LifeBuoy } from 'lucide-react-native';
 import { useSocialShield, type ReportTarget } from '../hooks/useSocialShield';
@@ -59,7 +59,6 @@ export default function SocialShieldModal({
     targetUserId,
     targetUserName = 'this user'
 }: SocialShieldModalProps) {
-    const { glass, text, accent, isDark } = useTheme();
     const { submitReport, blockUser } = useSocialShield();
     const [reason, setReason] = useState<string>('');
     const [target, setTarget] = useState<ReportTarget>('platform');
@@ -99,140 +98,104 @@ export default function SocialShieldModal({
             transparent={true}
             onRequestClose={onClose}
         >
-            <Box sx={{
-                flex: 1,
-                justifyContent: 'flex-end',
-                backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
-            }}>
+            <Box className="flex-1 justify-end bg-black/40">
                 <Box
-                    sx={{
-                        backgroundColor: glass.modal.bg,
-                        borderTopLeftRadius: Theme.corners.generous,
-                        borderTopRightRadius: Theme.corners.generous,
-                        borderTopWidth: 1,
-                        borderColor: glass.modal.border,
-                        padding: Theme.spacing.lg,
-                        paddingBottom: 40,
-                        shadowColor: Theme.colors.shadowViolet,
-                        shadowOffset: { width: 0, height: -4 },
-                        shadowOpacity: 0.12,
-                        shadowRadius: 16,
-                        elevation: 8,
-                    }}
+                    className="bg-phase-surface border-t border-border rounded-t-[40px] p-6 pb-12 shadow-2xl"
                 >
-                    <VStack space="xl">
-                        <HStack justifyContent="space-between" alignItems="center">
-                            <VStack space="xs">
-                                <Heading color={text.primary} size="lg">
+                    <VStack className="gap-6">
+                        <HStack className="justify-between items-center">
+                            <VStack className="gap-1 flex-1">
+                                <Heading className="text-ink text-2xl font-black">
                                     {step === 'reason' ? 'Shielding the Sanctuary' : 'Who should guide this?'}
                                 </Heading>
-                                <Text color={text.secondary} size="sm">
+                                <Text className="text-ink/60 text-sm">
                                     {step === 'reason' 
                                         ? `Help us understand the concern with ${targetUserName}.` 
                                         : 'Choose the appropriate guardian for this report.'}
                                 </Text>
                             </VStack>
-                            <TouchableOpacity onPress={onClose}>
-                                <X color={text.muted} size={24} />
-                            </TouchableOpacity>
+                            <Pressable onPress={onClose} className="p-2">
+                                <Icon as={X} size="xl" className="text-ink/40" />
+                            </Pressable>
                         </HStack>
 
                         {step === 'reason' ? (
-                            <VStack space="md">
+                            <VStack className="gap-3">
                                 {REPORT_REASONS.map((item) => {
-                                    const ItemIcon = item.icon;
                                     const isSelected = reason === item.value;
                                     return (
-                                        <TouchableOpacity
+                                        <Pressable
                                             key={item.value}
                                             onPress={() => setReason(item.value)}
-                                            style={[
-                                                styles.optionItem,
-                                                {
-                                                    borderColor: isSelected ? accent.action : glass.interact.border,
-                                                    backgroundColor: isSelected ? `${accent.action}18` : glass.interact.bg,
-                                                }
-                                            ]}
+                                            className={`p-4 rounded-xl border-2 flex-row items-center gap-4 ${isSelected ? 'border-phase-interactive bg-phase-interactive/5' : 'border-border bg-phase-surface'}`}
                                         >
-                                            <HStack space="md" alignItems="center">
-                                                <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}>
-                                                    <ItemIcon size={20} color={isSelected ? accent.action : text.muted} />
-                                                </Box>
-                                                <Text sx={{ color: isSelected ? text.primary : text.secondary, fontWeight: isSelected ? '700' : '400' }}>
-                                                    {item.label}
-                                                </Text>
-                                            </HStack>
-                                        </TouchableOpacity>
+                                            <Box className="p-2 rounded-full bg-phase-surface border border-border">
+                                                <Icon as={item.icon} size="md" className={isSelected ? 'text-phase-interactive' : 'text-ink/40'} />
+                                            </Box>
+                                            <Text className={`text-base ${isSelected ? 'text-ink font-bold' : 'text-ink/60'}`}>
+                                                {item.label}
+                                            </Text>
+                                        </Pressable>
                                     );
                                 })}
                                 
-                                <HStack space="md" alignItems="center" mt="$2">
-                                    <TouchableOpacity
+                                <HStack className="items-center gap-3 mt-2">
+                                    <Pressable
                                         onPress={() => setShouldBlock(!shouldBlock)}
-                                        style={[styles.checkbox, { borderColor: shouldBlock ? accent.action : text.muted }]}
+                                        className={`w-6 h-6 rounded-md border-2 items-center justify-center ${shouldBlock ? 'border-phase-interactive bg-phase-interactive' : 'border-border'}`}
                                     >
-                                        {shouldBlock && <Box sx={{ width: 12, height: 12, borderRadius: 2, backgroundColor: accent.action }} />}
-                                    </TouchableOpacity>
-                                    <Text size="sm" color={text.secondary}>Also block this user from interacting with me</Text>
+                                        {shouldBlock && <Box className="w-2.5 h-2.5 rounded-sm bg-inverted" />}
+                                    </Pressable>
+                                    <Text className="text-ink/60 text-sm flex-1">Also block this user from interacting with me</Text>
                                 </HStack>
-
+ 
                                 <Button
                                     onPress={handleNext}
                                     isDisabled={!reason}
-                                    sx={{ backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50, mt: '$2' }}
+                                    className="bg-phase-interactive h-14 rounded-2xl mt-4"
                                 >
-                                    <ButtonText color={text.inverse} sx={{ fontWeight: '700' }}>Next: Choose Guardian</ButtonText>
+                                    <ButtonText className="text-inverted font-bold text-lg">Next: Choose Guardian</ButtonText>
                                 </Button>
                             </VStack>
                         ) : (
-                            <VStack space="md">
+                            <VStack className="gap-3">
                                 {TARGET_OPTIONS.map((item) => {
-                                    const ItemIcon = item.icon;
                                     const isSelected = target === item.value;
                                     return (
-                                        <TouchableOpacity
+                                        <Pressable
                                             key={item.value}
                                             onPress={() => setTarget(item.value)}
-                                            style={[
-                                                styles.optionItem,
-                                                {
-                                                    borderColor: isSelected ? accent.action : glass.interact.border,
-                                                    backgroundColor: isSelected ? `${accent.action}18` : glass.interact.bg,
-                                                }
-                                            ]}
+                                            className={`p-4 rounded-xl border-2 flex-row items-center gap-4 ${isSelected ? 'border-phase-interactive bg-phase-interactive/5' : 'border-border bg-phase-surface'}`}
                                         >
-                                            <HStack space="md" alignItems="center">
-                                                <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: glass.surface.bg }}>
-                                                    <ItemIcon size={20} color={isSelected ? accent.action : text.muted} />
-                                                </Box>
-                                                <VStack style={{ flex: 1 }}>
-                                                    <Text sx={{ color: isSelected ? text.primary : text.secondary, fontWeight: '700' }}>
-                                                        {item.label}
-                                                    </Text>
-                                                    <Text size="xs" color={text.muted}>{item.description}</Text>
-                                                </VStack>
-                                            </HStack>
-                                        </TouchableOpacity>
+                                            <Box className="p-2 rounded-full bg-phase-surface border border-border">
+                                                <Icon as={item.icon} size="md" className={isSelected ? 'text-phase-interactive' : 'text-ink/40'} />
+                                            </Box>
+                                            <VStack className="flex-1">
+                                                <Text className={`text-base ${isSelected ? 'text-ink font-bold' : 'text-ink/60'}`}>
+                                                    {item.label}
+                                                </Text>
+                                                <Text className="text-xs text-ink/40">{item.description}</Text>
+                                            </VStack>
+                                        </Pressable>
                                     );
                                 })}
-
-                                <HStack space="md" mt="$4">
+ 
+                                <HStack className="gap-3 mt-4">
                                     <Button
                                         onPress={() => setStep('reason')}
-                                        variant="outline"
-                                        sx={{ flex: 1, borderRadius: Theme.corners.comfortable, height: 50 }}
+                                        className="flex-1 h-14 rounded-2xl border border-border bg-transparent active:bg-ink/5"
                                     >
-                                        <ButtonText color={text.primary}>Back</ButtonText>
+                                        <ButtonText className="text-ink font-bold">Back</ButtonText>
                                     </Button>
                                     <Button
                                         onPress={handleSubmit}
-                                        sx={{ flex: 2, backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50 }}
+                                        className="flex-[1.5] h-14 rounded-2xl bg-phase-interactive shadow-sm active:opacity-90"
                                     >
-                                        <ButtonText color={text.inverse} sx={{ fontWeight: '700' }}>Submit Report</ButtonText>
+                                        <ButtonText className="text-inverted font-bold text-lg">Submit Report</ButtonText>
                                     </Button>
                                 </HStack>
                                 
-                                <Text size="xs" color={text.muted} textAlign="center" sx={{ mt: '$2' }}>
+                                <Text className="text-xs text-ink/40 text-center mt-2">
                                     Need to manage your blocks later? Visit Privacy Settings.
                                 </Text>
                             </VStack>
@@ -244,18 +207,3 @@ export default function SocialShieldModal({
     );
 }
 
-const styles = StyleSheet.create({
-    optionItem: {
-        padding: 16,
-        borderRadius: 12,
-        borderWidth: 1,
-    },
-    checkbox: {
-        width: 22,
-        height: 22,
-        borderRadius: 4,
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
-});
