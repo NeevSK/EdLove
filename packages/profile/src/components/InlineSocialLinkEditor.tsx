@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { TextInput, Platform } from 'react-native';
 import { 
     X, 
     Check, 
@@ -15,10 +15,9 @@ import {
     HStack, 
     VStack, 
     Text, 
-    useThemedColors, 
-    Theme,
     SanctuaryCard,
-    hapticLight
+    hapticLight,
+    Pressable,
 } from '@repo/ui';
 import type { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
 
@@ -43,8 +42,11 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; emoji: string; label: st
     { value: 'private', icon: Lock, emoji: '🔒', label: 'Private' },
 ];
 
+/**
+ * INLINE SOCIAL LINK EDITOR
+ * Sanctuary V3 standard for editing social links in-place.
+ */
 export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew }: InlineSocialLinkEditorProps) {
-    const colors = useThemedColors();
     const [platform, setPlatform] = useState<SocialPlatform>(link?.platform || 'whatsapp');
     const [url, setUrl] = useState(link?.url || '');
     const [privacy, setPrivacy] = useState<PrivacyLevel>(link?.privacy_level || 'public');
@@ -68,145 +70,83 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
     };
 
     return (
-        <SanctuaryCard variant="glass" style={styles.container}>
-            <VStack space="md" sx={{ padding: Theme.spacing.md }}>
+        <SanctuaryCard variant="glass" className="mb-3 border border-[#F6BF8C]">
+            <VStack space="md" className="p-4">
                 {/* Platform Selection */}
-                <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                <HStack space="sm" className="flex-wrap">
                     {PLATFORMS.map((p) => (
-                        <TouchableOpacity
+                        <Pressable
                             key={p.value}
                             onPress={() => setPlatform(p.value)}
-                            style={[
-                                styles.platformChip,
-                                {
-                                    borderColor: platform === p.value ? p.color : colors.border,
-                                    backgroundColor: platform === p.value ? `${p.color}20` : 'transparent',
-                                }
-                            ]}
+                            className={`w-9 h-9 rounded-full border-[1.5px] items-center justify-center ${
+                                platform === p.value ? '' : 'border-phase-surface'
+                            }`}
+                            style={{ 
+                                borderColor: platform === p.value ? p.color : undefined,
+                                backgroundColor: platform === p.value ? `${p.color}22` : 'transparent'
+                            }}
                         >
-                            <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} />
-                        </TouchableOpacity>
+                            <p.icon size={16} color={platform === p.value ? p.color : '#9DA1A3'} />
+                        </Pressable>
                     ))}
                 </HStack>
 
                 {/* URL Input */}
-                <HStack space="sm" alignItems="center">
+                <HStack space="sm" className="items-center">
                     <TextInput
                         value={url}
                         onChangeText={setUrl}
                         placeholder={platform === 'whatsapp' ? 'Phone number' : 'Username or link'}
-                        placeholderTextColor={colors.textTertiary}
-                        style={[
-                            styles.input,
-                            { 
-                                color: colors.textPrimary, 
-                                borderColor: colors.border,
-                                backgroundColor: colors.secondary 
-                            }
-                        ]}
+                        placeholderTextColor="#9DA1A3"
+                        className="flex-1 h-11 px-3 rounded-lg border border-phase-surface bg-phase-canvas text-phase-text-primary text-sm"
+                        style={Platform.OS === 'web' ? (({ outline: 'none' } as any)) : {}}
                     />
                     
                     {/* Privacy Selection */}
-                    <HStack space="xs" style={[styles.privacyContainer, { backgroundColor: colors.border }]}>
+                    <HStack space="xs" className="rounded-lg p-[2px] bg-phase-surface">
                         {PRIVACY_LEVELS.map((pl) => (
-                            <TouchableOpacity
+                            <Pressable
                                 key={pl.value}
                                 onPress={() => setPrivacy(pl.value)}
-                                style={[
-                                    styles.privacyBtn,
-                                    {
-                                        backgroundColor: privacy === pl.value ? colors.action + '30' : 'transparent',
-                                        borderColor: privacy === pl.value ? colors.action : 'transparent',
-                                    }
-                                ]}
+                                className={`w-8 h-8 rounded-md items-center justify-center border ${
+                                    privacy === pl.value 
+                                        ? 'bg-phase-interactive/20 border-phase-interactive' 
+                                        : 'border-transparent'
+                                }`}
                             >
-                                <Text style={{ fontSize: 16 }}>{pl.emoji}</Text>
-                            </TouchableOpacity>
+                                <Text className="text-base">{pl.emoji}</Text>
+                            </Pressable>
                         ))}
                     </HStack>
                 </HStack>
 
                 {/* Actions */}
-                <HStack space="md" justifyContent="flex-end" alignItems="center">
+                <HStack space="md" className="justify-end items-center">
                     {!isNew && onDelete && link?.id && (
-                        <TouchableOpacity 
+                        <Pressable 
                             onPress={() => onDelete(link.id!)} 
-                            style={styles.actionBtn}
+                            className="p-2"
                             disabled={isSaving}
                         >
                             <Trash2 size={18} color="#FF6B6B" />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
-                    <TouchableOpacity onPress={onCancel} style={styles.actionBtn} disabled={isSaving}>
-                        <X size={20} color={colors.textTertiary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity 
+                    <Pressable onPress={onCancel} className="p-2" disabled={isSaving}>
+                        <X size={20} color="#9DA1A3" />
+                    </Pressable>
+                    <Pressable 
                         onPress={handleSave} 
-                        style={[styles.saveBtn, { backgroundColor: colors.action }]}
+                        className="w-10 h-10 rounded-full items-center justify-center bg-phase-interactive shadow-sm"
                         disabled={isSaving || !url.trim()}
                     >
                         {isSaving ? (
-                            <Text color="white" bold>...</Text>
+                            <Text className="text-white font-bold">...</Text>
                         ) : (
                             <Check size={20} color="white" />
                         )}
-                    </TouchableOpacity>
+                    </Pressable>
                 </HStack>
             </VStack>
         </SanctuaryCard>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        borderWidth: 1,
-        borderColor: '#F6BF8C',
-        marginBottom: 12,
-    },
-    platformChip: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    input: {
-        flex: 1,
-        height: 44,
-        paddingHorizontal: 12,
-        borderRadius: 10,
-        borderWidth: 1,
-        fontSize: 14,
-        ...Platform.select({
-            web: { outlineStyle: 'none' } as any
-        })
-    },
-    privacyContainer: {
-        borderRadius: 8,
-        padding: 2,
-    },
-    privacyBtn: {
-        width: 32,
-        height: 32,
-        borderRadius: 6,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-    },
-    actionBtn: {
-        padding: 8,
-    },
-    saveBtn: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    }
-});

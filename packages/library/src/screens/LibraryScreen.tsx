@@ -4,19 +4,17 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-    ScrollView,
+    ScrollView as RNScrollView,
     ActivityIndicator,
     View,
     Text as RNText,
     ImageBackground,
     StyleSheet,
-    Pressable,
     TouchableOpacity,
     Platform,
     Share,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
     Box,
     VStack,
     HStack,
@@ -35,6 +33,9 @@ import {
     useLotusToast,
     SmartShelf,
     ScreenWrapper,
+    Pressable,
+    RefreshControl,
+    ScrollView,
 } from '@repo/ui';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/src/utils/linking';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
@@ -79,7 +80,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                 onPress={onPress}
                 className="m-md rounded-[24px] overflow-hidden bg-phase-surface border border-phase-border">
                 <LinearGradient
-                    colors={[`${theme.accent.action}16`, `${theme.accent.secondary}0D`]}
+                    colors={[`${theme.accent.action}16`, `${theme.accent.reward}0D`]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
@@ -137,7 +138,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                             Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
                         </Text>
                     </VStack>
-                    <Plus size={16} className="text-phaseText-secondary" />
+                    <Plus size={16} color={theme.text.secondary} />
                 </HStack>
             </Pressable>
         </Animated.View>
@@ -394,7 +395,7 @@ export default function LibraryScreen() {
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
         return (
-            <Box sx={{ marginBottom: Theme.spacing.lg }}>
+            <Box className="mb-lg">
                 <SmartShelf key={label} title={label} onSeeAll={onSeeAll}>
                     {items.map(res => (
                         <LibraryThumbnailCard
@@ -441,7 +442,7 @@ export default function LibraryScreen() {
                         <TouchableOpacity 
                             onPress={() => navigation.navigate('LibraryMap' as any)}
                             style={styles.mapToggleButton}>
-                            <MapIcon size={20} className="text-phaseText-primary" />
+                            <MapIcon size={20} color={theme.text.primary} />
                         </TouchableOpacity>
                     </HStack>
                 }
@@ -489,8 +490,8 @@ export default function LibraryScreen() {
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(160).springify()}>
-                            <HStack sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm, justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Box sx={{ flex: 1 }}>
+                        <HStack className="px-md pb-sm justify-between items-center">
+                                <Box className="flex-1">
                                     <HorizontalChipRow
                                         chips={sortChips}
                                         selectedValue={selectedSort}
@@ -683,7 +684,7 @@ function SanctuaryPulse({
                     key={item.label}
                     className="flex-1 rounded-[18px] border border-phase-border bg-phase-surface overflow-hidden">
                     <Box 
-                        className="px-3.5 py-3.5"
+                        className="px-5 py-4"
                         style={{ backgroundColor: item.accent }}>
                         <Text className="text-[10px] font-extrabold tracking-widest uppercase text-phaseText-secondary">
                             {item.label}
@@ -708,7 +709,7 @@ function HeroBanner({ resource, onPress }: HeroBannerProps) {
                         <HeroOverlay resource={resource} theme={theme} />
                     </ImageBackground>
                 ) : (
-                    <LinearGradient colors={[`${theme.accent.action}18`, `${theme.accent.secondary}16`]} style={{ flex: 1 }}>
+                    <LinearGradient colors={[`${theme.accent.action}18`, `${theme.accent.reward}16`]} style={{ flex: 1 }}>
                         <HeroOverlay resource={resource} theme={theme} />
                     </LinearGradient>
                 )}

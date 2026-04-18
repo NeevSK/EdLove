@@ -17,7 +17,8 @@ import {
     Input,
     InputField,
     Button,
-    ButtonText
+    ButtonText,
+    useTheme
 } from '@repo/ui';
 import { MessageSquare, Heart, AlertTriangle, CheckCircle2, ChevronRight, Send } from 'lucide-react-native';
 import { supabase, useStore } from '@repo/core';
@@ -45,6 +46,7 @@ const CATEGORY_ICONS = {
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
     const { user } = useStore();
+    const theme = useTheme();
     const [feedback, setFeedback] = useState<FeedbackEcho[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -114,7 +116,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
         }
     };
 
-    if (isLoading) return <Spinner color="#ffbf00" />;
+    if (isLoading) return <Spinner color={theme.accent.templeGold} />;
 
     return (
         <VStack className="gap-6">
@@ -146,7 +148,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                 className={`p-6 rounded-[32px] border-2 transition-all ${
                                     item.is_read ? 'bg-white border-border' : 'bg-primary/5 border-primary/20'
                                 }`}
-                                style={{ borderLeftWidth: 8, borderLeftColor: item.priority === 'high' ? '#DC2626' : '#2563EB' }}
+                                style={{ borderLeftWidth: 8, borderLeftColor: item.priority === 'high' ? theme.accent.danger : theme.scene.primary.main }}
                             >
                                 <HStack className="gap-5 items-start">
                                     <Box className="p-3 bg-silk rounded-2xl border border-border">
@@ -201,16 +203,18 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                                 </Input>
                                                 <HStack className="gap-3 justify-end">
                                                     <Button 
-                                                        variant="outline" 
+                                                        variant="outline"
+                                                        action="primary"
                                                         onPress={() => { setReplyingTo(null); setReplyText(''); }}
                                                         className="h-10 rounded-xl px-4"
                                                     >
-                                                        <ButtonText className="text-[10px] font-black uppercase text-ink">Dismiss</ButtonText>
+                                                        Dismiss
                                                     </Button>
                                                     <Button 
-                                                        isDisabled={!replyText.trim() || savingReply} 
+                                                        isDisabled={!replyText.trim() || savingReply}
+                                                        action="primary"
                                                         onPress={() => handleSendReply(item.id)}
-                                                        className="h-10 rounded-xl px-6 bg-ink"
+                                                        className="h-10 rounded-xl px-6 bg-ink border-none"
                                                     >
                                                         <HStack className="items-center gap-2">
                                                             {savingReply ? (

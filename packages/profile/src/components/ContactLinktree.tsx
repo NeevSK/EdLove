@@ -13,16 +13,15 @@ import {
     HStack,
     Box,
     Text,
-    Theme,
     SanctuaryCard,
     SanctuaryButton,
-    useThemedColors,
     LivingGlow,
     FadeInDown,
     openExternalURL,
     showExternalLinkOptions,
     hapticLight,
     hapticHeavy,
+    Pressable,
 } from '@repo/ui';
 import {
     Phone,
@@ -72,38 +71,37 @@ const PROVIDER_CONFIG: Record<string, {
 }> = {
     whatsapp: {
         icon: MessagesSquare,
-        color: Theme.colors.whatsapp,
+        color: '#25D366', // Brand color
         label: 'WhatsApp',
         getUri: (value) => `whatsapp://send?phone=${value.replace(/\D/g, '')}`
     },
     linkedin: {
         icon: Linkedin,
-        color: Theme.colors.linkedin,
+        color: '#0077B5', // Brand color
         label: 'LinkedIn',
         getUri: (value) => value.startsWith('http') ? value : `https://www.linkedin.com/in/${value}`
     },
     instagram: {
         icon: Instagram,
-        color: Theme.colors.instagram,
+        color: '#E4405F', // Brand color
         label: 'Instagram',
         getUri: (value) => value.startsWith('http') ? value : `https://instagram.com/${value}`
     },
     portfolio: {
         icon: Globe,
-        color: Theme.colors.portfolio,
+        color: '#4A90E2', // Legacy portfolio color
         label: 'Portfolio',
         getUri: (value) => value.startsWith('http') ? value : `https://${value}`
     },
     email: {
         icon: Mail,
-        color: Theme.colors.emberOrange,
+        color: '#F44336', // Semantic error/danger for alert
         label: 'Email',
         getUri: (value) => `mailto:${value}`
     }
 };
 
 export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, editable, inline }: ContactLinktreeProps) {
-    const colors = useThemedColors();
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -222,32 +220,23 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
     };
 
     return (
-        <VStack space="lg" sx={{ width: '100%' }}>
+        <VStack space="lg" className="w-full">
             {/* Header / Intro */}
-            <VStack space="xs" alignItems="center" sx={{ marginBottom: Theme.spacing.md }}>
-                <LivingGlow size={64} glowColor={Theme.colors.sanctuarySaffron}>
+            <VStack space="xs" className="items-center mb-6">
+                <LivingGlow size={64} glowColor="#F6BF8C">
                     <Box
-                        sx={{
-                            width: 64,
-                            height: 64,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: colors.primary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderWidth: 2,
-                            borderColor: Theme.colors.sanctuarySaffron
-                        }}
+                        className="w-16 h-16 rounded-full bg-phase-primary items-center justify-center border-2 border-[#F6BF8C]"
                     >
-                        <Text size="xl" bold color={colors.textPrimary}>
+                        <Text className="text-xl font-bold text-phase-text-primary">
                             {userName.charAt(0)}
                         </Text>
                     </Box>
                 </LivingGlow>
-                <Text size="xl" bold color={colors.textPrimary} sx={{ marginTop: Theme.spacing.sm }}>
+                <Text className="text-xl font-bold text-phase-text-primary mt-2">
                     {userName}
                 </Text>
                 {bio && (
-                    <Text size="sm" color={colors.textSecondary} textAlign="center" sx={{ paddingHorizontal: Theme.spacing.xl }}>
+                    <Text className="text-sm text-phase-text-secondary text-center px-12">
                         {bio}
                     </Text>
                 )}
@@ -316,43 +305,37 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                 onPress={() => isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)}
                                 onLongPress={() => !isEditing && handleLinkOptions(link.platform, link.url)}
                             >
-                                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md }}>
+                                <HStack space="md" className="items-center p-4">
                                     <Box
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: `${config.color}20`,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
+                                        className="w-10 h-10 rounded-xl items-center justify-center"
+                                        style={{ backgroundColor: `${config.color}20` }}
                                     >
                                         <Icon color={config.color} size={20} />
                                     </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <HStack space="xs" alignItems="center">
-                                            <Text size="md" bold color={colors.textPrimary}>
+                                    <VStack className="flex-1">
+                                        <HStack space="xs" className="items-center">
+                                            <Text className="text-base font-bold text-phase-text-primary">
                                                 {config.label}
                                             </Text>
                                             {isOwnProfile && PrivacyEmoji && (
-                                                <Text style={{ fontSize: 13, marginLeft: 4 }}>{PrivacyEmoji}</Text>
+                                                <Text className="text-[13px] ml-1">{PrivacyEmoji}</Text>
                                             )}
                                         </HStack>
-                                        <Text size="xs" color={colors.textTertiary} numberOfLines={1}>
+                                        <Text className="text-xs text-phase-text-tertiary" numberOfLines={1}>
                                             {link.url}
                                         </Text>
                                     </VStack>
                                     {isEditing ? (
                                         <HStack space="sm">
-                                            <TouchableOpacity onPress={() => handleEditLink(link)} style={{ padding: 4 }}>
-                                                <Edit2 size={18} color={colors.action} />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => handleDeleteLink(link.id)} style={{ padding: 4 }}>
-                                                <Trash2 size={18} color={colors.error} />
-                                            </TouchableOpacity>
+                                            <Pressable onPress={() => handleEditLink(link)} className="p-1">
+                                                <Edit2 size={18} color="#4A90E2" />
+                                            </Pressable>
+                                            <Pressable onPress={() => handleDeleteLink(link.id)} className="p-1">
+                                                <Trash2 size={18} color="#FF6B6B" />
+                                            </Pressable>
                                         </HStack>
                                     ) : (
-                                        <ExternalLink size={18} color={colors.textTertiary} />
+                                        <ExternalLink size={18} color="#9DA1A3" />
                                     )}
                                 </HStack>
                             </SanctuaryCard>
@@ -380,11 +363,11 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             <SanctuaryCard
                                 variant="glass"
                                 onPress={handleAddLink}
-                                style={{ borderStyle: 'dashed' }}
+                                className="border-dashed"
                             >
-                                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md, justifyContent: 'center' }}>
-                                    <Plus size={20} color={colors.action} />
-                                    <Text bold color={colors.action}>Add Social Link</Text>
+                                <HStack space="md" className="items-center p-4 justify-center">
+                                    <Plus size={20} color="#4A90E2" />
+                                    <Text className="font-bold text-phase-interactive">Add Social Link</Text>
                                 </HStack>
                             </SanctuaryCard>
                         </Animated.View>
@@ -402,8 +385,8 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
             )}
 
             {displayLinks.length === 0 && (
-                <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}>
-                    <Text color={colors.textTertiary} italic>
+                <Box className="py-8 items-center">
+                    <Text className="text-phase-text-tertiary italic">
                         {isOwnProfile ? t('community.profile.noContactsYet') || "No public contacts shared yet." : t('community.profile.noPublicContacts') || "No public contacts shared yet."}
                     </Text>
                 </Box>

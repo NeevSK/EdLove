@@ -10,7 +10,6 @@ import {
     Toast,
     ToastTitle,
     ToastDescription,
-    Theme,
     ScreenWrapper
 } from '@repo/ui';
 import { supabase, identityAPI } from '@repo/core';
@@ -54,7 +53,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                         placement: 'top',
                         render: ({ id }: any) => (
                             <Toast nativeID={id} action="error" variant="solid">
-                                <VStack space="xs">
+                                <VStack className="gap-1">
                                     <ToastTitle>{t('invitationWelcome.joinFailed') || 'Join Failed'}</ToastTitle>
                                     <ToastDescription>
                                         {t('invitationWelcome.joinFailedDesc') || 'Unable to update your profile. Please try again.'}
@@ -74,10 +73,10 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                 placement: 'top',
                 render: ({ id }: any) => (
                     <Toast nativeID={id} action="error" variant="solid">
-                        <VStack space="xs">
+                        <VStack className="gap-1">
                             <ToastTitle>{t('invitationWelcome.errorTitle') || 'Error'}</ToastTitle>
                             <ToastDescription>
-                                {t('invitationWelcome.errorDesc') || 'Something went HDR. Please contact support.'}
+                                {t('invitationWelcome.errorDesc') || 'Something went wrong. Please contact support.'}
                             </ToastDescription>
                         </VStack>
                     </Toast>
@@ -89,61 +88,39 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
     return (
         <ScreenWrapper scroll={false}>
             <Box 
-                sx={{ 
-                    flex: 1, 
-                    backgroundColor: Theme.colors.obsidian, 
-                    justifyContent: 'center', 
-                    padding: Theme.spacing.xl 
-                }}
+                className="flex-1 bg-background justify-center p-8"
             >
-                <VStack sx={{ gap: 24, alignItems: 'center' }}>
+                <VStack className="gap-6 items-center">
                     <Text 
-                        sx={{ 
-                            color: Theme.colors.sanctuarySaffron, 
-                            fontSize: 20, 
-                            fontWeight: '700' 
-                        }}
+                        className="text-primary-500 text-xl font-bold"
                     >
                         {t('invitationWelcome.invited') || "You've been invited!"}
                     </Text>
                     <Heading 
-                        sx={{ 
-                            fontSize: 32, 
-                            color: Theme.colors.sacredWhite as any, 
-                            textAlign: 'center' 
-                        }}
+                        className="text-[32px] text-foreground text-center"
                     >
                         {t('invitationWelcome.welcomeTo', { schoolName })}
                     </Heading>
                     
                     <Box 
-                        sx={{ 
-                            backgroundColor: Theme.colors.ink, 
-                            padding: Theme.spacing.md, 
-                            borderRadius: Theme.corners.comfortable,
-                            width: '100%'
-                        }}
+                        className="bg-surface-low p-4 rounded-comfortable w-full border border-outline-variant"
                     >
-                        <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center' }}>
+                        <Text className="text-muted-foreground text-center">
                             {t('invitationWelcome.role') || 'Role'}: {' '}
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700' }}>
+                            <Text className="text-foreground font-bold">
                                 {role.charAt(0).toUpperCase() + role.slice(1)}
                             </Text>
                         </Text>
                     </Box>
 
                     <Button
-                        size="lg"
+                        size="xl"
                         variant="solid"
                         action="primary"
-                        sx={{ 
-                            backgroundColor: Theme.colors.sanctuarySaffron as any, 
-                            width: '100%', 
-                            borderRadius: Theme.corners.comfortable 
-                        }}
+                        className="bg-primary-500 w-full rounded-comfortable"
                         onPress={handleJoin}
                     >
-                        <ButtonText sx={{ color: Theme.colors.obsidian, fontWeight: '700' }}>
+                        <ButtonText className="text-primary-foreground font-bold">
                             {t('invitationWelcome.joinButton') || 'Join Sanctuary'}
                         </ButtonText>
                     </Button>

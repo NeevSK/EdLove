@@ -25,7 +25,6 @@ import {
     Spinner,
     Switch,
     SkeletonCard,
-    Theme,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { communityAPI as community } from '../api/community';
@@ -121,26 +120,23 @@ export default function AnnouncementsScreen({
     const regularAnnouncements = announcements.filter((a) => !a.is_pinned);
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.obsidian }}>
+        <Box className="flex-1 bg-background">
             <ScrollView>
-                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+                <VStack space="lg" className="p-4">
                     {/* Header */}
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Heading size="2xl" color={Theme.colors.sanctuarySaffron}>
-                            {t('announcements.title') || '\uD83D\uDCE2 Announcements'}
+                    <HStack className="justify-between items-center">
+                        <Heading size="2xl" className="text-primary-500">
+                            {t('announcements.title') || '📢 Announcements'}
                         </Heading>
                     </HStack>
 
                     {/* Create Button (Privileged Roles Only) */}
                     {can('create', 'Announcement') && (
                         <Button
-                            sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                padding: Theme.spacing.lg,
-                            }}
+                            className="bg-primary-500 p-4"
                             onPress={() => setShowCreateModal(true)}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText className="text-white">
                                 {t('announcements.create') || '+ Create Announcement'}
                             </ButtonText>
                         </Button>
@@ -158,13 +154,9 @@ export default function AnnouncementsScreen({
                     {/* Error State */}
                     {error && !isLoading && (
                         <Box
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
+                            className="p-4 bg-error-500 rounded-comfortable"
                         >
-                            <Text color={Theme.colors.sacredWhite}>{error}</Text>
+                            <Text className="text-white">{error}</Text>
                         </Box>
                     )}
 
@@ -172,35 +164,27 @@ export default function AnnouncementsScreen({
                     {!isLoading && pinnedAnnouncements.length > 0 && (
                         <VStack space="md">
                             <Text
-                                color={Theme.colors.starlightGray}
-                                size="sm"
-                                sx={{ fontWeight: '600' }}
+                                className="text-muted-foreground text-sm font-semibold"
                             >
-                                {t('announcements.pinned') || '\uD83D\uDCCC PINNED'}
+                                {t('announcements.pinned') || '📌 PINNED'}
                             </Text>
                             {pinnedAnnouncements.map((announcement) => (
                                 <Box
                                     key={announcement.id}
-                                    sx={{
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.shadowViolet,
-                                        borderRadius: Theme.corners.comfortable,
-                                        borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.templeGold,
-                                    }}
+                                    className="p-4 bg-surface-low rounded-comfortable border-l-4 border-l-primary-500"
                                 >
                                     <VStack space="sm">
-                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                <Text color={Theme.colors.sacredWhite}>
+                                        <HStack className="justify-between items-center">
+                                            <HStack space="sm" className="items-center">
+                                                <Text className="text-foreground font-bold">
                                                     {announcement.author_name || 'Unknown'}
                                                 </Text>
                                             </HStack>
-                                            <Text color={Theme.colors.mistGray} size="xs">
+                                            <Text className="text-muted-foreground text-[10px]">
                                                 {formatDate(announcement.created_at)}
                                             </Text>
                                         </HStack>
-                                        <Text color={Theme.colors.sacredWhite} size="md">
+                                        <Text className="text-foreground text-base">
                                             {announcement.content}
                                         </Text>
                                     </VStack>
@@ -214,9 +198,7 @@ export default function AnnouncementsScreen({
                         <VStack space="md">
                             {pinnedAnnouncements.length > 0 && (
                                 <Text
-                                    color={Theme.colors.starlightGray}
-                                    size="sm"
-                                    sx={{ fontWeight: '600', marginTop: Theme.spacing.md }}
+                                    className="text-muted-foreground text-sm font-semibold mt-4"
                                 >
                                     {t('announcements.recent') || 'RECENT'}
                                 </Text>
@@ -225,24 +207,20 @@ export default function AnnouncementsScreen({
                             {regularAnnouncements.map((announcement) => (
                                 <Box
                                     key={announcement.id}
-                                    sx={{
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.ink,
-                                        borderRadius: Theme.corners.comfortable,
-                                    }}
+                                    className="p-4 bg-surface-lowest rounded-comfortable border border-outline-variant"
                                 >
                                     <VStack space="sm">
-                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                <Text color={Theme.colors.sacredWhite}>
+                                        <HStack className="justify-between items-center">
+                                            <HStack space="sm" className="items-center">
+                                                <Text className="text-foreground font-bold">
                                                     {announcement.author_name || 'Unknown'}
                                                 </Text>
                                             </HStack>
-                                            <Text color={Theme.colors.mistGray} size="xs">
+                                            <Text className="text-muted-foreground text-[10px]">
                                                 {formatDate(announcement.created_at)}
                                             </Text>
                                         </HStack>
-                                        <Text color={Theme.colors.starlightGray} size="md">
+                                        <Text className="text-muted-foreground text-sm">
                                             {announcement.content}
                                         </Text>
                                     </VStack>
@@ -253,11 +231,9 @@ export default function AnnouncementsScreen({
 
                     {/* Empty State */}
                     {!isLoading && announcements.length === 0 && (
-                        <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
+                        <Box className="p-10 items-center">
                             <Text
-                                size="lg"
-                                color={Theme.colors.starlightGray}
-                                textAlign="center"
+                                className="text-lg text-muted-foreground text-center"
                             >
                                 {t('announcements.noAnnouncements') ||
                                     'No announcements yet. Check back soon!'}
@@ -277,19 +253,16 @@ export default function AnnouncementsScreen({
                 }}
             >
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: Theme.colors.ink }}>
+                <ModalContent className="bg-background">
                     <ModalHeader>
-                        <Heading size="lg" color={Theme.colors.sanctuarySaffron}>
+                        <Heading size="lg" className="text-primary-500">
                             {t('announcements.createTitle') || 'Create Announcement'}
                         </Heading>
                     </ModalHeader>
                     <ModalBody>
                         <VStack space="md">
                             <Textarea
-                                sx={{
-                                    backgroundColor: Theme.colors.obsidian,
-                                    minHeight: 150,
-                                }}
+                                className="bg-surface-lowest min-h-[150px] border border-outline-variant"
                             >
                                 <TextareaInput
                                     placeholder={
@@ -298,14 +271,12 @@ export default function AnnouncementsScreen({
                                     }
                                     value={newAnnouncementContent}
                                     onChangeText={setNewAnnouncementContent}
-                                    sx={{
-                                        color: Theme.colors.sacredWhite,
-                                    }}
+                                    className="text-foreground"
                                 />
                             </Textarea>
                             {/* Pin Toggle */}
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text color={Theme.colors.starlightGray}>
+                            <HStack className="justify-between items-center">
+                                <Text className="text-muted-foreground">
                                     {t('announcements.pinAnnouncement') || 'Pin to top'}
                                 </Text>
                                 <Switch value={isPinned} onValueChange={setIsPinned} />
@@ -313,10 +284,10 @@ export default function AnnouncementsScreen({
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <HStack space="md" sx={{ width: '100%' }}>
+                        <HStack space="md" className="w-full">
                             <Button
                                 variant="outline"
-                                sx={{ flex: 1, borderColor: Theme.colors.mistGray }}
+                                className="flex-1 border-outline-variant"
                                 onPress={() => {
                                     setShowCreateModal(false);
                                     setNewAnnouncementContent('');
@@ -324,22 +295,19 @@ export default function AnnouncementsScreen({
                                 }}
                                 disabled={isCreating}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>
+                                <ButtonText className="text-foreground">
                                     {t('common.cancel') || 'Cancel'}
                                 </ButtonText>
                             </Button>
                             <Button
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
+                                className="flex-1 bg-primary-500"
                                 onPress={handleCreateAnnouncement}
                                 disabled={isCreating}
                             >
                                 {isCreating ? (
-                                    <Spinner color={Theme.colors.sacredWhite} size="small" />
+                                    <Spinner className="text-white" size="small" />
                                 ) : (
-                                    <ButtonText color={Theme.colors.sacredWhite}>
+                                    <ButtonText className="text-white">
                                         {t('announcements.post') || 'Post'}
                                     </ButtonText>
                                 )}
