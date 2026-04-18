@@ -2,21 +2,22 @@ import React from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, Theme } from '@repo/ui';
 import { BookOpen, FileText, Link as LinkIcon, Film, Bookmark } from 'lucide-react-native';
-import { LibraryResource } from '@repo/library';
 
+// Import correctly from the source if possible, or define type locally if it's just a ref
+// Assuming LibraryResource might be needed for types
 export interface PinnedResourcesShelfProps {
-    resources: LibraryResource[];
-    onResourcePress?: (resource: LibraryResource) => void;
+    resources: any[]; // Decoupling from @repo/library for this heal to avoid circular/dependency issues
+    onResourcePress?: (resource: any) => void;
 }
 
 function getResourceIcon(type: string): React.ReactElement {
     switch (type) {
-        case 'video': return <Film size={18} color={Theme.colors.skyBlue} />;
-        case 'pdf': return <FileText size={18} color={Theme.colors.emberRed} />;
-        case 'doc': return <FileText size={18} color={Theme.colors.gurudeviBlue} />;
-        case 'link': return <LinkIcon size={18} color={Theme.colors.sageGreen} />;
-        case 'lesson': return <BookOpen size={18} color={Theme.colors.sanctuarySaffron} />;
-        default: return <Bookmark size={18} color={Theme.colors.mistGray} />;
+        case 'video': return <Film size={18} className="text-secondary-400" />;
+        case 'pdf': return <FileText size={18} className="text-error-500" />;
+        case 'doc': return <FileText size={18} className="text-info-500" />;
+        case 'link': return <LinkIcon size={18} className="text-success-500" />;
+        case 'lesson': return <BookOpen size={18} className="text-primary-500" />;
+        default: return <Bookmark size={18} className="text-muted-foreground" />;
     }
 }
 
@@ -27,8 +28,8 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
     if (!resources || resources.length === 0) return null;
 
     return (
-        <Box mb="$3">
-            <Text size="xs" bold color={Theme.colors.mistGray} px="$1" mb="$2" style={{ letterSpacing: 1 }}>
+        <Box className="mb-3">
+            <Text className="text-[10px] font-extrabold text-muted-foreground px-1 mb-2 tracking-widest uppercase">
                 PINNED RESOURCES
             </Text>
             <ScrollView
@@ -45,39 +46,23 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                             onPress={() => onResourcePress?.(resource)}
                             activeOpacity={0.75}
                         >
-                            <Box
-                                sx={{
-                                    width: 140,
-                                    backgroundColor: Theme.colors.shroud,
-                                    borderRadius: Theme.corners.comfortable,
-                                    padding: Theme.spacing.sm,
-                                    borderWidth: 1,
-                                    borderColor: Theme.colors.glass.dark.border,
-                                }}
-                            >
+                            <Box className="w-[140px] bg-surface-lowest rounded-comfortable p-3 border border-outline-variant">
                                 <VStack space="xs">
-                                    <HStack space="xs" alignItems="center">
+                                    <HStack space="xs" className="items-center">
                                         {getResourceIcon(resource.type)}
-                                        <Text
-                                            size="xs"
-                                            color={Theme.colors.mistGray}
-                                            style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
-                                        >
+                                        <Text className="text-[10px] text-muted-foreground uppercase tracking-wider">
                                             {resource.type}
                                         </Text>
                                     </HStack>
                                     <Text
-                                        size="sm"
-                                        bold
-                                        color={Theme.colors.sacredWhite}
                                         numberOfLines={2}
+                                        className="text-sm font-bold text-foreground"
                                     >
                                         {resource.title}
                                     </Text>
                                     <Text
-                                        size="xs"
-                                        color={Theme.colors.dimGray}
                                         numberOfLines={1}
+                                        className="text-[11px] text-muted-foreground"
                                     >
                                         {resource.subjects?.[0] || ''}
                                     </Text>

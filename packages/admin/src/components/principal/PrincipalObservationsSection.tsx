@@ -20,6 +20,9 @@ import {
 } from '@repo/ui';
 import { Plus } from 'lucide-react-native';
 import { supabase } from '@repo/core';
+import { styled } from 'nativewind';
+
+const StyledTextInput = styled(TextInput);
 
 interface Observation {
     id: string;
@@ -157,7 +160,7 @@ export default function PrincipalObservationsSection({
 
             {showForm && (
                 <VStack className="mt-4 gap-3">
-                    <TextInput
+                    <StyledTextInput
                         placeholder="Write your observation..."
                         placeholderTextColor={theme.text.muted}
                         value={content}
@@ -175,7 +178,7 @@ export default function PrincipalObservationsSection({
                                     className="rounded-full px-3 py-1 border"
                                     style={{
                                         backgroundColor: obsType === t ? obsBadgeColor(t) : 'transparent',
-                                        borderColor: obsType === t ? obsBadgeColor(t) : theme.scene.border
+                                        borderColor: obsType === t ? obsBadgeColor(t) : theme.scene.border.base
                                     }}
                                 >
                                     <Text

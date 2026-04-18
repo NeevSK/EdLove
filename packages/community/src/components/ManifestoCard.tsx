@@ -5,10 +5,9 @@ import {
     HStack,
     Text,
     Heading,
-    useThemedColors,
-    Theme,
     LivingGlow,
     SanctuaryCard,
+    Theme
 } from '@repo/ui';
 import { Heart, Target, Star, ShieldCheck } from 'lucide-react-native';
 import { SanctuaryManifesto } from '../types';
@@ -29,13 +28,11 @@ export default function ManifestoCard({
     onEndorse,
     onPress,
 }: ManifestoCardProps) {
-    const colors = useThemedColors();
-
-    const vibeConfig = {
-        visionary: { icon: Star, color: colors.action },
-        supportive: { icon: Heart, color: colors.primary },
-        academic: { icon: Target, color: colors.secondary },
-        wellbeing: { icon: ShieldCheck, color: colors.success },
+    const vibeConfig: Record<string, { icon: any; textColor: string }> = {
+        visionary: { icon: Star, textColor: 'text-primary-500' },
+        supportive: { icon: Heart, textColor: 'text-error-500' },
+        academic: { icon: Target, textColor: 'text-secondary-500' },
+        wellbeing: { icon: ShieldCheck, textColor: 'text-success-500' },
     };
 
     const config = vibeConfig[vibe] || vibeConfig.visionary;
@@ -44,78 +41,54 @@ export default function ManifestoCard({
     return (
         <SanctuaryCard onPress={onPress} elevated={has_endorsed}>
             <VStack space="md">
-                <HStack justifyContent="space-between" alignItems="center">
-                    <HStack space="xs" alignItems="center">
-                        <Box
-                            p="$1"
-                            sx={{
-                                backgroundColor: colors.overlay,
-                                borderRadius: Theme.corners.tight,
-                            }}
-                        >
-                            <VibeIcon size={16} color={config.color} />
+                <HStack className="justify-between items-center">
+                    <HStack space="xs" className="items-center">
+                        <Box className="p-1 bg-surface-lowest border border-outline-variant rounded-sm">
+                            <VibeIcon size={16} className={config.textColor} />
                         </Box>
-                        <Text
-                            size="xs"
-                            color={config.color}
-                            bold
-                            sx={{ textTransform: 'uppercase' }}
-                        >
+                        <Text className={`text-[10px] font-extrabold uppercase ${config.textColor}`}>
                             {vibe} Manifesto
                         </Text>
                     </HStack>
 
-                    <HStack space="xs" alignItems="center">
+                    <HStack space="xs" className="items-center">
                         <Heart
                             size={16}
-                            color={has_endorsed ? colors.error : colors.textTertiary}
-                            fill={has_endorsed ? colors.error : 'none'}
+                            fill={has_endorsed ? 'currentColor' : 'none'}
+                            className={has_endorsed ? 'text-error-500' : 'text-muted-foreground'}
                         />
-                        <Text size="xs" color={colors.textTertiary} bold>
+                        <Text className="text-[12px] font-bold text-muted-foreground">
                             {endorsement_count}
                         </Text>
                     </HStack>
                 </HStack>
 
                 <VStack space="xs">
-                    <Heading size="md" color={colors.text}>
+                    <Heading size="md" className="text-foreground">
                         {title}
                     </Heading>
                     <Text
-                        size="sm"
                         numberOfLines={onPress ? 3 : undefined}
-                        color={colors.textSecondary}
-                        sx={{ lineHeight: 22 }}
+                        className="text-sm leading-relaxed text-muted-foreground"
                     >
                         {content}
                     </Text>
                 </VStack>
 
                 <Animated.View layout={LinearTransition}>
-                    <HStack justifyContent="space-between" alignItems="center" mt="$1">
-                        <Box
-                            sx={{
-                                backgroundColor: has_endorsed ? colors.action : 'transparent',
-                                paddingVertical: 6,
-                                paddingHorizontal: 12,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: has_endorsed ? 0 : 1,
-                                borderColor: colors.border,
-                            }}
+                    <HStack className="justify-between items-center mt-1">
+                        <TouchableOpacity
+                            onPress={() => onEndorse?.(id)}
+                            className={`py-1.5 px-3 rounded-comfortable border ${has_endorsed ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-variant'}`}
                         >
-                            <Text
-                                size="xs"
-                                bold
-                                color={has_endorsed ? Theme.colors.white : colors.textTertiary}
-                                onPress={() => onEndorse?.(id)}
-                            >
+                            <Text className={`text-[11px] font-bold ${has_endorsed ? 'text-white' : 'text-muted-foreground'}`}>
                                 {has_endorsed ? 'Identified with Mission' : 'Endorse Mission'}
                             </Text>
-                        </Box>
+                        </TouchableOpacity>
 
                         {has_endorsed && (
                             <LivingGlow duration={3000}>
-                                <Star size={18} color={colors.action} />
+                                <Star size={18} className="text-primary-500" />
                             </LivingGlow>
                         )}
                     </HStack>

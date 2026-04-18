@@ -180,7 +180,7 @@ export default function InstitutionalCalendarSection({
                                         className="rounded-full px-3 py-1 border"
                                         style={{
                                             backgroundColor: selectedType === t ? typeBadgeColor(t) : 'transparent',
-                                            borderColor: selectedType === t ? typeBadgeColor(t) : theme.scene.border
+                                            borderColor: selectedType === t ? typeBadgeColor(t) : theme.scene.border.base
                                         }}
                                     >
                                         <Text

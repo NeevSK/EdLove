@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
-    useThemedColors,
-    Theme,
 } from '@repo/ui';
 import { MoreVertical, BellOff, Bell, UserX, ShieldAlert } from 'lucide-react-native';
 import { useSocialShield } from '../hooks/useSocialShield';
@@ -26,7 +24,6 @@ export default function HeaderMoreMenu({
     targetUserId,
     targetUserName
 }: HeaderMoreMenuProps) {
-    const colors = useThemedColors();
     const { toggleMute, blockUser } = useSocialShield();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
@@ -70,50 +67,34 @@ export default function HeaderMoreMenu({
     return (
         <Box>
             <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <MoreVertical size={24} color={colors.text} />
+                <MoreVertical size={24} className="text-foreground" />
             </TouchableOpacity>
 
             {isMenuOpen && (
                 <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 35,
-                        right: 0,
-                        backgroundColor: colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 8,
-                        elevation: 5,
-                        minWidth: 180,
-                        zIndex: 1000,
-                        overflow: 'hidden',
-                    }}
+                    className="absolute top-8 right-0 bg-surface-lowest rounded-comfortable border border-outline-variant shadow-lg min-w-[180px] z-[1000] overflow-hidden"
                 >
                     <VStack>
-                        <TouchableOpacity style={styles.menuItem} onPress={handleToggleMute}>
-                            <HStack space="md" alignItems="center">
-                                {isMuted ? <Bell size={18} color={colors.text} /> : <BellOff size={18} color={colors.text} />}
-                                <Text size="sm" color={colors.text}>{isMuted ? 'Unmute' : 'Mute'} Sanctuary</Text>
+                        <TouchableOpacity className="p-3 border-b border-outline-variant/50" onPress={handleToggleMute}>
+                            <HStack space="md" className="items-center">
+                                {isMuted ? <Bell size={18} className="text-foreground" /> : <BellOff size={18} className="text-foreground" />}
+                                <Text className="text-sm text-foreground">{isMuted ? 'Unmute' : 'Mute'} Sanctuary</Text>
                             </HStack>
                         </TouchableOpacity>
 
                         {targetUserId && (
-                            <TouchableOpacity style={styles.menuItem} onPress={handleBlock}>
-                                <HStack space="md" alignItems="center">
-                                    <UserX size={18} color={Theme.colors.sanctuarySaffron} />
-                                    <Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text>
+                            <TouchableOpacity className="p-3 border-b border-outline-variant/50" onPress={handleBlock}>
+                                <HStack space="md" className="items-center">
+                                    <UserX size={18} className="text-primary-500" />
+                                    <Text className="text-sm text-primary-500">Block User</Text>
                                 </HStack>
                             </TouchableOpacity>
                         )}
 
-                        <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
-                            <HStack space="md" alignItems="center">
-                                <ShieldAlert size={18} color={colors.text} />
-                                <Text size="sm" color={colors.text}>Report</Text>
+                        <TouchableOpacity className="p-3" onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
+                            <HStack space="md" className="items-center">
+                                <ShieldAlert size={18} className="text-foreground" />
+                                <Text className="text-sm text-foreground">Report</Text>
                             </HStack>
                         </TouchableOpacity>
                     </VStack>
@@ -130,11 +111,3 @@ export default function HeaderMoreMenu({
         </Box>
     );
 }
-
-const styles = StyleSheet.create({
-    menuItem: {
-        padding: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(0,0,0,0.05)',
-    }
-});

@@ -39,7 +39,7 @@ export default function MorningSituationalBrief({
     const [pendingLeaves, setPendingLeaves] = useState(0);
 
     const getPresenceColor = (present: number, total: number): string => {
-        if (total === 0) return theme.text.muted;
+        if (total === 0) return theme.scene.text.muted;
         const pct = present / total;
         if (pct >= 0.9) return theme.accent.sageGreen;
         if (pct >= 0.7) return theme.accent.action;

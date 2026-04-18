@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView, Platform } from 'react-native';
 import {
     Box,
     GlobalHeader,
@@ -11,11 +11,9 @@ import {
     SanctuaryFlashList,
     ScreenWrapper,
     Text,
-    Theme,
     VStack,
     useBottomTabPadding,
     useRegisterFAB,
-    useThemedColors,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -54,7 +52,6 @@ type Navigation = NativeStackNavigationProp<CommunityStackParamList>;
 
 export default function CommunityScreen() {
     const navigation = useNavigation<Navigation>();
-    const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     const { discoverFeature } = useTracking();
     const { can } = usePermissions();
@@ -76,6 +73,12 @@ export default function CommunityScreen() {
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [showCreateGroup, setShowCreateGroup] = useState(false);
+    
+    // Comment State
+    const [commentPostId, setCommentPostId] = useState<string | null>(null);
+    const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>(undefined);
+    const [commentPostType, setCommentPostType] = useState<string | undefined>(undefined);
+
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
     const [reportTargetUserId, setReportTargetUserId] = useState<string | undefined>(undefined);
     const [reportTargetUserName, setReportTargetUserName] = useState<string | undefined>(undefined);
@@ -102,7 +105,7 @@ export default function CommunityScreen() {
         [conversations, groups, manifestos, posts]
     );
     const filters = useMemo(() => getCommunityFilterOptions(groups), [groups]);
-    const workspaceSlots = useMemo(() => mapCommunitySurfaceSlots('ios', userId), [userId]);
+    const workspaceSlots = useMemo(() => mapCommunitySurfaceSlots(Platform.OS as any, userId), [userId]);
     const modeChips = useMemo(
         () =>
             getCommunityModeOptions(canReadAnnouncements).map((mode) => ({
@@ -195,7 +198,7 @@ export default function CommunityScreen() {
         description: string,
         actionLabel = 'Create account'
     ) => (
-        <Box sx={{ px: '$4', py: '$8' }}>
+        <Box className="px-4 py-8">
             <PositiveInvitation
                 title={title}
                 description={description}
@@ -208,32 +211,21 @@ export default function CommunityScreen() {
     );
 
     const renderHero = () => (
-        <Box
-            sx={{
-                mx: '$4',
-                mt: '$3',
-                px: '$5',
-                py: '$5',
-                borderRadius: 28,
-                backgroundColor: '#F7F0E5',
-                borderWidth: 1,
-                borderColor: colors.border,
-            }}
-        >
+        <Box className="mx-4 mt-3 px-5 py-5 rounded-[28px] bg-[#F7F0E5] border border-outline-variant">
             <VStack space="md">
                 <VStack space="xs">
-                    <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700', textTransform: 'uppercase' }}>
+                    <Text className="text-muted-foreground text-[12px] font-bold uppercase tracking-wider">
                         {workspaceSlots.hearth ? 'Community workspace' : 'Community'}
                     </Text>
-                    <Heading size="2xl" sx={{ color: colors.textPrimary }}>
+                    <Heading size="2xl" className="text-foreground">
                         The Heart
                     </Heading>
-                    <Text sx={{ color: colors.textSecondary, lineHeight: 22 }}>
+                    <Text className="text-muted-foreground leading-relaxed">
                         Shared pulse, groups, and conversation. Presence leads before activity so the sanctuary feels alive before it feels busy.
                     </Text>
                 </VStack>
 
-                <HStack sx={{ gap: '$2', flexWrap: 'wrap', alignItems: 'center' }}>
+                <HStack className="gap-2 flex-wrap items-center">
                     <HeroPill label={`${pulse.circlesActive} circles`} />
                     <HeroPill label={`${pulse.newPostsToday} new posts`} />
                     <HeroPill label={`${pulse.messagesOpen} conversations`} />
@@ -251,27 +243,17 @@ export default function CommunityScreen() {
     );
 
     const renderHearthCard = () => (
-        <Box
-            sx={{
-                mx: '$4',
-                mt: '$4',
-                borderRadius: 24,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor: '#FBF5EA',
-                overflow: 'hidden',
-            }}
-        >
-            <VStack space="md" sx={{ px: '$4', pt: '$4', pb: '$2' }}>
+        <Box className="mx-4 mt-4 rounded-3xl border border-outline-variant bg-[#FBF5EA] overflow-hidden">
+            <VStack space="md" className="px-4 pt-4 pb-2">
                 <VStack space="xs">
-                    <Heading size="md" sx={{ color: colors.textPrimary }}>
+                    <Heading size="md" className="text-foreground">
                         Community hearth
                     </Heading>
-                    <Text sx={{ color: colors.textSecondary, lineHeight: 20 }}>
+                    <Text className="text-muted-foreground leading-snug">
                         Presence, welcome, and manifesto energy stay first so the community feels alive before it feels busy.
                     </Text>
                 </VStack>
-                <HStack sx={{ justifyContent: 'space-between', gap: '$3', flexWrap: 'wrap' }}>
+                <HStack className="justify-between gap-3 flex-wrap">
                     <PulseCard label="Members seen" value={String(pulse.membersSeen || 0)} />
                     <PulseCard label="Active manifestos" value={String(pulse.manifestosActive)} />
                     <PulseCard label="Joined circles" value={String(sanctuaryGroups.length)} />
@@ -282,31 +264,20 @@ export default function CommunityScreen() {
     );
 
     const renderComposeCard = () => (
-        <Box
-            sx={{
-                mx: '$4',
-                mt: '$4',
-                px: '$4',
-                py: '$4',
-                borderRadius: 22,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor: '#F9F2E4',
-            }}
-        >
+        <Box className="mx-4 mt-4 px-4 py-4 rounded-[22px] border border-outline-variant bg-[#F9F2E4]">
             <VStack space="md">
                 <VStack space="xs">
                     <Heading size="sm">Compose into the circle</Heading>
-                    <Text sx={{ color: colors.textSecondary, lineHeight: 20 }}>
+                    <Text className="text-muted-foreground leading-snug">
                         Posting feels like contribution, not just a button.
                     </Text>
                 </VStack>
-                <HStack sx={{ gap: '$2', flexWrap: 'wrap' }}>
+                <HStack className="gap-2 flex-wrap">
                     <SanctuaryButton action="primary" size="sm" onPress={() => (canCreatePost ? setShowCreatePost(true) : openGuestUpgrade())}>
-                        <Text sx={{ color: 'white', fontWeight: '700' }}>New Post</Text>
+                        <Text className="text-white font-bold">New Post</Text>
                     </SanctuaryButton>
                     <SanctuaryButton action="secondary" size="sm" onPress={() => (canCreateGroup ? setShowCreateGroup(true) : openGuestUpgrade())}>
-                        <Text sx={{ color: colors.textPrimary, fontWeight: '700' }}>New Group</Text>
+                        <Text className="text-foreground font-bold">New Group</Text>
                     </SanctuaryButton>
                     {sanctuaryGroups[0] ? (
                         <SanctuaryButton
@@ -319,7 +290,7 @@ export default function CommunityScreen() {
                                 })
                             }
                         >
-                            <Text sx={{ color: colors.textPrimary, fontWeight: '700' }}>Open Circle</Text>
+                            <Text className="text-foreground font-bold">Open Circle</Text>
                         </SanctuaryButton>
                     ) : null}
                 </HStack>
@@ -328,7 +299,7 @@ export default function CommunityScreen() {
     );
 
     const renderFilterRow = () => (
-        <Box sx={{ mt: '$4', px: '$4' }}>
+        <Box className="mt-4 px-4">
             <HorizontalChipRow
                 chips={filters}
                 selectedValue={selectedFilter}
@@ -355,7 +326,7 @@ export default function CommunityScreen() {
                 keyExtractor={(item) => item.id}
                 estimatedItemSize={260}
                 renderItem={({ item }) => (
-                    <Box sx={{ px: '$4', pb: '$4' }}>
+                    <Box className="px-4 pb-4">
                         <PostCard
                             post={item}
                             currentUserId={user?.id}
@@ -404,7 +375,7 @@ export default function CommunityScreen() {
                 }
                 ListEmptyComponent={
                     !loading ? (
-                        <Box sx={{ px: '$4', pt: '$8' }}>
+                        <Box className="px-4 pt-8">
                             <PositiveInvitation
                                 title="Seed the first note"
                                 description="The feed opens when circles begin speaking. Start a post or join a circle to let the sanctuary resonate."
@@ -429,10 +400,10 @@ export default function CommunityScreen() {
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={
                     isFetchingNextPosts ? (
-                        <ActivityIndicator style={{ marginVertical: Theme.spacing.lg }} color={Theme.colors.sanctuarySaffron} />
+                        <ActivityIndicator style={{ marginVertical: 16 }} color="#E67E22" />
                     ) : null
                 }
-                contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing['2xl'] }}
+                contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}
             />
         );
     };
@@ -446,10 +417,10 @@ export default function CommunityScreen() {
         }
 
         return (
-            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing['2xl'] }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}>
                 {renderHero()}
                 {renderHearthCard()}
-                <Box sx={{ px: '$4', pt: '$4' }}>
+                <Box className="px-4 pt-4">
                     <SectionCard
                         title="My sanctuary"
                         description="Joined circles stay close, while discoverable circles remain one step away."
@@ -482,13 +453,13 @@ export default function CommunityScreen() {
         }
 
         return (
-            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing['2xl'] }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}>
                 {renderHero()}
-                <Box sx={{ px: '$4', pt: '$4' }}>
+                <Box className="px-4 pt-4">
                     <SectionCard title="Direct conversations" description="Messages stay close to the hearth without overtaking the workspace.">
                         {loadingMessages ? (
-                            <Box sx={{ py: '$8', alignItems: 'center' }}>
-                                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+                            <Box className="py-8 items-center">
+                                <ActivityIndicator color="#E67E22" />
                             </Box>
                         ) : (
                             <DirectMessagesListScreen />
@@ -508,9 +479,9 @@ export default function CommunityScreen() {
         }
 
         return (
-            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing['2xl'] }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}>
                 {renderHero()}
-                <Box sx={{ px: '$4', pt: '$4' }}>
+                <Box className="px-4 pt-4">
                     <SectionCard title="School guidance" description="Announcements remain reachable without crowding the feed.">
                         <AnnouncementsScreen schoolId={schoolId} userId={user.id} userAuthority={userAuthority} />
                     </SectionCard>
@@ -521,7 +492,7 @@ export default function CommunityScreen() {
 
     return (
         <ScreenWrapper scroll={false} noTopInset>
-            <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
+            <Box className="flex-1 bg-secondary-50">
                 <GlobalHeader title="Community" />
 
                 {activeMode === 'feed' && renderFeed()}
@@ -570,33 +541,17 @@ export default function CommunityScreen() {
 
 function HeroPill({ label }: { label: string }) {
     return (
-        <Box
-            sx={{
-                px: '$3',
-                py: '$2',
-                borderRadius: Theme.corners.full,
-                backgroundColor: 'rgba(255,255,255,0.55)',
-            }}
-        >
-            <Text sx={{ fontSize: 12, fontWeight: '700' }}>{label}</Text>
+        <Box className="px-3 py-2 rounded-full bg-white/55">
+            <Text className="text-[12px] font-bold">{label}</Text>
         </Box>
     );
 }
 
 function PulseCard({ label, value }: { label: string; value: string }) {
     return (
-        <Box
-            sx={{
-                flex: 1,
-                minWidth: 92,
-                px: '$3',
-                py: '$3',
-                borderRadius: 18,
-                backgroundColor: 'rgba(255,255,255,0.62)',
-            }}
-        >
-            <Text sx={{ fontSize: 11, color: Theme.colors.textTertiary, textTransform: 'uppercase' }}>{label}</Text>
-            <Text sx={{ mt: '$1', fontSize: 22, fontWeight: '700' }}>{value}</Text>
+        <Box className="flex-1 min-w-[92px] px-3 py-3 rounded-[18px] bg-white/60">
+            <Text className="text-[11px] text-muted-foreground uppercase">{label}</Text>
+            <Text className="mt-1 text-[22px] font-bold text-foreground">{value}</Text>
         </Box>
     );
 }
@@ -611,18 +566,10 @@ function SectionCard({
     children: React.ReactNode;
 }) {
     return (
-        <Box
-            sx={{
-                borderRadius: 24,
-                borderWidth: 1,
-                borderColor: Theme.colors.border,
-                backgroundColor: '#FCF8F1',
-                overflow: 'hidden',
-            }}
-        >
-            <VStack space="xs" sx={{ px: '$4', pt: '$4', pb: '$2' }}>
+        <Box className="rounded-3xl border border-outline-variant bg-[#FCF8F1] overflow-hidden">
+            <VStack space="xs" className="px-4 pt-4 pb-2">
                 <Heading size="sm">{title}</Heading>
-                <Text sx={{ color: Theme.colors.textTertiary, lineHeight: 20 }}>{description}</Text>
+                <Text className="text-muted-foreground leading-snug">{description}</Text>
             </VStack>
             {children}
         </Box>

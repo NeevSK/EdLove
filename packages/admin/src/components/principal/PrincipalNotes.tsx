@@ -16,18 +16,18 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
-import {
-    VStack,
-    HStack,
-    Box,
     Text,
     useTheme,
     PositiveInvitation,
     GlobalHeader,
     ScreenWrapper,
-    useToast,
-    Pressable
+    useSanctuaryToast,
+    Pressable,
+    HStack,
+    VStack,
+    Box
 } from '@repo/ui';
+import { styled } from 'nativewind';
 import {
     NotebookPen,
     CheckSquare,
@@ -49,6 +49,9 @@ interface PrincipalNotesProps {
     schoolId: string;
     onBack: () => void;
 }
+
+const StyledKeyboardAvoidingView = styled(KeyboardAvoidingView);
+const StyledTextInput = styled(TextInput);
 
 type NoteGroup = { label: string; data: PrincipalNote[] };
 
@@ -98,7 +101,7 @@ function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
 
 export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps) {
     const theme = useTheme();
-    const { showToast } = useToast();
+    const { showToast } = useSanctuaryToast();
     const [notes, setNotes] = useState<PrincipalNote[]>([]);
     const [loading, setLoading] = useState(true);
     const [composing, setComposing] = useState(false);
@@ -291,7 +294,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 onBack={onBack}
             />
 
-            <KeyboardAvoidingView
+            <StyledKeyboardAvoidingView
                 className="flex-1"
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={100}>
@@ -319,43 +322,45 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             showsVerticalScrollIndicator={false}
                         />
                     )}
+                </VStack>
+            </StyledKeyboardAvoidingView>
 
-                    {composing ? (
-                        <Box
-                            className="bg-phase-surface border-t border-phase-border p-md">
-                            <View style={styles.typeRow}>
-                                {(Object.entries(NOTE_TYPE_META) as [PrincipalNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][]).map(([type, meta]) => {
-                                    const isActive = draftType === type;
-                                    const IconNode = meta.icon;
-                                    return (
-                                        <Pressable
-                                            key={type}
-                                            onPress={() => setDraftType(type)}
-                                            style={{
-                                                backgroundColor: isActive ? meta.color : theme.scene.canvas.bg,
-                                                borderColor: isActive ? meta.color : theme.scene.surface.border
-                                            }}
-                                            className="flex-row items-center px-[10px] py-[6px] rounded-[20px] border">
-                                            <IconNode size={12} color={isActive ? '#FFFFFF' : theme.text.secondary} />
-                                            <Text
-                                                className={`text-[11px] ml-1 ${isActive ? 'font-bold text-white' : 'font-normal text-phaseText-secondary'}`}>
-                                                {meta.label}
-                                            </Text>
-                                        </Pressable>
-                                    );
-                                })}
-                            </View>
+            {composing ? (
+                <Box
+                    className="bg-phase-surface border-t border-phase-border p-md">
+                    <HStack className="flex-wrap gap-2 mb-4">
+                        {(Object.entries(NOTE_TYPE_META) as [PrincipalNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][]).map(([type, meta]) => {
+                            const isActive = draftType === type;
+                            const IconNode = meta.icon;
+                            return (
+                                <Pressable
+                                    key={type}
+                                    onPress={() => setDraftType(type)}
+                                    style={{
+                                        backgroundColor: isActive ? meta.color : theme.scene.canvas.bg,
+                                        borderColor: isActive ? meta.color : theme.scene.surface.border
+                                    }}
+                                    className="flex-row items-center px-[10px] py-[6px] rounded-[20px] border">
+                                    <IconNode size={12} color={isActive ? '#FFFFFF' : theme.text.secondary} />
+                                    <Text
+                                        className={`text-[11px] ml-1 ${isActive ? 'font-bold text-white' : 'font-normal text-phaseText-secondary'}`}>
+                                        {meta.label}
+                                    </Text>
+                                </Pressable>
+                            );
+                        })}
+                    </HStack>
 
-                            <TextInput
-                                value={draft}
-                                onChangeText={setDraft}
-                                placeholder={NOTE_TYPE_META[draftType].placeholder}
-                                placeholderTextColor={theme.text.muted}
-                                multiline
-                                autoFocus
-                                className="min-h-[120px] border rounded-xl p-3 text-base text-phaseText-primary bg-phase-surface border-phase-border"
-                                style={{ textAlignVertical: 'top' }}
-                            />
+                    <StyledTextInput
+                        value={draft}
+                        onChangeText={setDraft}
+                        placeholder={NOTE_TYPE_META[draftType].placeholder}
+                        placeholderTextColor={theme.text.muted}
+                        multiline
+                        autoFocus
+                        className="min-h-[120px] border rounded-xl p-3 text-base text-phaseText-primary bg-phase-surface border-phase-border"
+                        style={{ textAlignVertical: 'top' }}
+                    />
 
                             <HStack className="justify-end gap-2 mt-sm">
                                 <Pressable

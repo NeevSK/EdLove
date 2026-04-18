@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import {
   SanctuaryModal,
-  useThemedColors,
   hapticSuccess,
   VStack,
   Box,
   Heading,
   Text,
-  Theme,
   Icon,
-  SanctuaryButton
+  SanctuaryButton,
+  Theme
 } from "@repo/ui";
-import { CheckCircle, QrCode } from "lucide-react-native";
+import { CheckCircle } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { QRBuilder, QRCodeGenerator } from "@repo/scanner-kit";
@@ -36,14 +35,12 @@ export default function CreateGroupModal({
   initialData,
 }: CreateGroupModalProps) {
   useTranslation();
-  const colors = useThemedColors();
   const navigation = useNavigation<any>();
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
 
   const groupDefinition: EntityDefinition = {
     type: 'group',
     id: initialData?.id,
-    // Form config will eventually come from the protocol
   };
 
   const handleSuccess = (group: any) => {
@@ -61,20 +58,20 @@ export default function CreateGroupModal({
         onClose={onClose}
         title="Community Founded!"
       >
-        <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
-          <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}>
-            <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={64} />
+        <VStack className="gap-8 items-center py-6">
+          <Box className="bg-[#F6BF8C]/10 p-6 rounded-[60px]">
+            <Icon as={CheckCircle} className="text-primary-500" size={64} />
           </Box>
-          <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-            <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}>
+          <VStack className="gap-2 items-center">
+            <Heading size="xl" className="text-center text-foreground">
               Group Ready!
             </Heading>
-            <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
+            <Text className="text-center text-muted-foreground">
               Your community is ready to welcome its members.
             </Text>
           </VStack>
 
-          <Box sx={{ padding: 20, backgroundColor: 'white', borderRadius: 12 }}>
+          <Box className="p-5 bg-white rounded-xl">
             <QRCodeGenerator
               value={groupQRValue}
               size={180}
@@ -88,7 +85,7 @@ export default function CreateGroupModal({
               navigation.navigate("GroupDetails", { groupId: createdGroupId });
             }}
           >
-            <Text color="white" bold>Enter Group Space</Text>
+            <Text className="text-white font-bold">Enter Group Space</Text>
           </SanctuaryButton>
         </VStack>
       </SanctuaryModal>

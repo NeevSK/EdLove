@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Platform,
-} from 'react-native';
+import { Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { UserAvatar } from '@repo/ui';
+import { 
+  UserAvatar, 
+  Box, 
+  Pressable, 
+  Spinner 
+} from '@repo/ui';
 import { Camera } from 'lucide-react-native';
 import { useProfileNavigation } from '../navigation';
 
@@ -99,10 +101,6 @@ export function AvatarDisplay({
 
   const displayUri = localCachePath || avatarUrl || null;
   const borderRadius = size / 2;
-  const containerStyle = [
-    { width: size, height: size, borderRadius, overflow: 'hidden' as const },
-    style,
-  ];
 
   const content = (
     <UserAvatar
@@ -113,36 +111,38 @@ export function AvatarDisplay({
     />
   );
 
+  const containerClassName = `overflow-hidden w-[${size}px] h-[${size}px] rounded-full`;
+
   if (!editable) {
     if (peekable) {
       return (
-        <TouchableOpacity style={containerStyle} onPress={handlePeek} activeOpacity={0.7}>
+        <Pressable 
+          className={containerClassName} 
+          onPress={handlePeek}
+        >
           {content}
-        </TouchableOpacity>
+        </Pressable>
       );
     }
-    return <View style={containerStyle}>{content}</View>;
+    return <Box className={containerClassName}>{content}</Box>;
   }
 
   return (
-    <TouchableOpacity style={containerStyle} onPress={handlePickAndUpload} activeOpacity={0.8}>
+    <Pressable 
+      className={containerClassName} 
+      onPress={handlePickAndUpload}
+    >
       {content}
-      <View style={[styles.editOverlay, { borderRadius }]}>
+      <Box 
+        className="absolute inset-0 bg-black/35 items-center justify-center rounded-full"
+      >
         {uploading ? (
-          <ActivityIndicator color="white" size="small" />
+          <Spinner className="text-white" size="small" />
         ) : (
           <Camera size={size * 0.22} color="white" />
         )}
-      </View>
-    </TouchableOpacity>
+      </Box>
+    </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  editOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

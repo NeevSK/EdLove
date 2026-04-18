@@ -1,13 +1,10 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
     Heading,
-    Theme,
-    useThemedColors
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Trophy, Compass, Clock, Zap, Users, BookOpen, QrCode } from 'lucide-react-native';
@@ -25,7 +22,6 @@ interface AchievementGalleryProps {
 }
 
 export default function AchievementGallery({ unlockedBadges = [] }: AchievementGalleryProps) {
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     const achievements: Achievement[] = [
@@ -74,37 +70,26 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     ];
 
     const AchievementItem = ({ achievement }: { achievement: Achievement }) => {
-        const Icon = achievement.icon;
+        const IconComponent = achievement.icon;
         return (
             <VStack
-                alignItems="center"
-                space="xs"
-                style={[
-                    styles.itemContainer,
-                    !achievement.unlocked && { opacity: 0.4 }
-                ]}
+                className={`items-center w-[28%] mb-xs ${!achievement.unlocked ? 'opacity-40' : ''}`}
             >
                 <Box
-                    style={{
-                        padding: Theme.spacing.md,
-                        backgroundColor: achievement.unlocked
-                            ? `${colors.action}15`
-                            : `${colors.textTertiary}10`,
-                        borderRadius: Theme.corners.full,
-                        borderWidth: achievement.unlocked ? 1 : 0,
-                        borderColor: `${colors.action}40`,
-                    }}
+                    className={`p-md rounded-full border ${
+                        achievement.unlocked
+                            ? 'bg-phase-interactive/15 border-phase-interactive/40'
+                            : 'bg-phaseText-primary/10 border-transparent'
+                    }`}
                 >
-                    <Icon
+                    <IconComponent
                         size={24}
-                        color={achievement.unlocked ? colors.action : colors.textTertiary}
+                        className={achievement.unlocked ? 'text-phase-interactive' : 'text-phaseText-secondary'}
                     />
                 </Box>
                 <Text
                     size="xs"
-                    bold={achievement.unlocked}
-                    textAlign="center"
-                    color={achievement.unlocked ? colors.text : colors.textTertiary}
+                    className={`text-center mt-xs ${achievement.unlocked ? 'font-bold text-phaseText-primary' : 'text-phaseText-secondary'}`}
                     numberOfLines={1}
                 >
                     {achievement.title}
@@ -114,24 +99,17 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
+        <VStack className="mt-lg px-md">
             <Box
-                sx={{
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.xl,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                }}
+                className="bg-phase-canvas rounded-generous p-xl border border-phase-surface shadow-sm"
             >
                 <Heading
-                    color={colors.textSecondary as any}
                     size="sm"
-                    sx={{ mt: Theme.spacing.sm, mb: Theme.spacing.md }}
+                    className="text-phaseText-secondary mt-sm mb-md"
                 >
                     {t('achievements.title', 'Achievements')}
                 </Heading>
-                <HStack style={styles.galleryGrid}>
+                <HStack className="flex-row flex-wrap justify-start gap-md">
                     {achievements.map((item) => (
                         <AchievementItem key={item.id} achievement={item} />
                     ))}
@@ -141,16 +119,3 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     );
 }
 
-const styles = StyleSheet.create({
-    galleryGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-start',
-        gap: Theme.spacing.md,
-    },
-    itemContainer: {
-        width: '28%',
-        alignItems: 'center',
-        marginBottom: Theme.spacing.xs,
-    }
-});
