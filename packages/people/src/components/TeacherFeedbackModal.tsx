@@ -4,8 +4,6 @@ import {
   VStack,
   HStack,
   Text,
-  Theme,
-  useTheme,
   Button,
   ButtonText,
   SanctuaryModal,
@@ -20,6 +18,7 @@ import {
   SelectContent,
   SelectItem,
   Spinner,
+  Icon
 } from '@repo/ui';
 import { ChevronDown, MessageSquare, Heart, AlertTriangle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +45,6 @@ export default function TeacherFeedbackModal({
   teacherId,
 }: TeacherFeedbackModalProps) {
   const { t } = useTranslation();
-  const { text, accent, glass } = useTheme();
   const [category, setCategory] = useState<string>('support');
   const [content, setContent] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
@@ -74,29 +72,27 @@ export default function TeacherFeedbackModal({
   };
 
   const footer = (
-    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+    <HStack className="gap-4 w-full">
       <Button 
         variant="outline" 
         onPress={onClose} 
-        sx={{ flex: 1, borderColor: glass.interact.border }}
+        className="flex-1 border-border"
       >
-        <ButtonText sx={{ color: text.secondary }}>
+        <ButtonText className="text-bark">
           {t('common.cancel')}
         </ButtonText>
       </Button>
       <Button
         onPress={handleSubmit}
         isDisabled={isSubmitting || !content.trim()}
-        sx={{ 
-          flex: 2, 
-          backgroundColor: accent.action, 
-          borderRadius: Theme.corners.comfortable 
-        }}
+        className={`flex-[2] rounded-2xl ${
+          priority === 'high' ? 'bg-error' : 'bg-primary'
+        }`}
       >
         {isSubmitting ? (
-          <Spinner color={text.inverse} />
+          <Spinner className="text-white" />
         ) : (
-          <ButtonText sx={{ color: text.inverse }}>
+          <ButtonText className="text-white">
             {t('common.send')}
           </ButtonText>
         )}
@@ -112,10 +108,10 @@ export default function TeacherFeedbackModal({
       subtitle={t('teacher.feedback.subtitle')}
       footer={footer}
     >
-      <VStack sx={{ gap: Theme.spacing.md }}>
+      <VStack className="gap-4">
         {/* Category selection */}
-        <VStack sx={{ gap: Theme.spacing.xs }}>
-          <Text sx={{ color: text.primary, fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
+        <VStack className="gap-1">
+          <Text className="text-textPrimary text-sm font-bold">
             {t('teacher.feedback.category')}
           </Text>
           <Select 
@@ -124,16 +120,16 @@ export default function TeacherFeedbackModal({
           >
             <SelectTrigger
               variant="outline"
-              sx={{ borderColor: glass.interact.border, backgroundColor: glass.interact.bg }}
+              className="border-border bg-silk"
             >
-              <SelectInput placeholder="Select category" sx={{ color: text.primary }} />
-              <SelectIcon sx={{ marginRight: Theme.spacing.md }}>
-                <ChevronDown size={20} color={text.secondary} />
+              <SelectInput placeholder="Select category" className="text-textPrimary" />
+              <SelectIcon className="mr-4">
+                <Icon as={ChevronDown} size="sm" className="text-bark" />
               </SelectIcon>
             </SelectTrigger>
             <SelectPortal>
               <SelectBackdrop />
-              <SelectContent sx={{ backgroundColor: glass.interact.bg }}>
+              <SelectContent className="bg-silk">
                 {CATEGORIES.map((cat) => (
                   <SelectItem key={cat.value} label={cat.label} value={cat.value} />
                 ))}
@@ -143,25 +139,24 @@ export default function TeacherFeedbackModal({
         </VStack>
 
         {/* Priority selection */}
-        <VStack sx={{ gap: Theme.spacing.xs }}>
-          <Text sx={{ color: text.primary, fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
+        <VStack className="gap-1">
+          <Text className="text-textPrimary text-sm font-bold">
             {t('teacher.feedback.priority')}
           </Text>
-          <HStack sx={{ gap: Theme.spacing.sm }}>
+          <HStack className="gap-2">
             {(['low', 'medium', 'high'] as const).map((p) => (
               <Button
                 key={p}
-                size="xs"
+                size="sm"
                 variant={priority === p ? 'solid' : 'outline'}
-                sx={{
-                  flex: 1,
-                  backgroundColor: priority === p ? (p === 'high' ? accent.danger : accent.action) : 'transparent',
-                  borderColor: p === 'high' ? accent.danger : glass.interact.border,
-                  borderRadius: Theme.corners.comfortable,
-                }}
+                className={`flex-1 rounded-2xl ${
+                  priority === p 
+                    ? (p === 'high' ? 'bg-error' : 'bg-primary') 
+                    : 'bg-transparent border-border'
+                }`}
                 onPress={() => setPriority(p)}
               >
-                <ButtonText sx={{ color: priority === p ? text.inverse : text.secondary }}>
+                <ButtonText className={priority === p ? 'text-white' : 'text-bark'}>
                   {p.toUpperCase()}
                 </ButtonText>
               </Button>
@@ -170,35 +165,27 @@ export default function TeacherFeedbackModal({
         </VStack>
 
         {/* Feedback content */}
-        <VStack sx={{ gap: Theme.spacing.xs }}>
-          <Text sx={{ color: text.primary, fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}>
+        <VStack className="gap-1">
+          <Text className="text-textPrimary text-sm font-bold">
             {t('teacher.feedback.content')}
           </Text>
           <Textarea
-            sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border, minHeight: 120 }}
+            className="bg-silk border-border min-h-[120px]"
           >
             <TextareaInput
               placeholder={t('teacher.feedback.placeholder')}
               value={content}
               onChangeText={setContent}
-              sx={{ color: text.primary }}
+              className="text-textPrimary"
             />
           </Textarea>
         </VStack>
 
         {/* Info note */}
         <Box
-          sx={{
-            padding: Theme.spacing.sm,
-            backgroundColor: glass.interact.bg,
-            borderRadius: Theme.corners.comfortable,
-            borderLeftWidth: 4,
-            borderLeftColor: accent.reward,
-            borderColor: glass.interact.border,
-            borderWidth: 1,
-          }}
+          className="p-2 bg-silk rounded-2xl border-l-4 border-primary border border-border"
         >
-          <Text sx={{ color: text.secondary, fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}>
+          <Text className="text-bark text-[10px] italic">
             {t('teacher.feedback.note')}
           </Text>
         </Box>

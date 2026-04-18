@@ -13,7 +13,8 @@ export type QRAction =
   | 'join_group'
   | 'claim_invite'
   | 'user_invite'
-  | 'thuthimal_gift';
+  | 'thuthimal_gift'
+  | 'share_resource';
 
 /** Unified discriminated union for all QR payloads in the Gurudevi ecosystem */
 export type QRPayload =
@@ -22,7 +23,8 @@ export type QRPayload =
   | JoinGroupPayload
   | ClaimInvitePayload
   | UserInvitePayload
-  | ThuthimalGiftPayload;
+  | ThuthimalGiftPayload
+  | ShareResourcePayload;
 
 /** Scanning joins the school AND its auto-created community group */
 export interface JoinSchoolPayload {

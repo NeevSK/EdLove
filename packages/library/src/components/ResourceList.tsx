@@ -259,7 +259,6 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                         <Box className="flex-1">
                             <SanctuaryButton
                                 onPress={onOpenFull}
-                                action="primary"
                                 leftIcon={Play}
                                 isDisabled={resource.link_status === 'broken'}
                             >
@@ -271,7 +270,6 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                             <SanctuaryButton
                                 onPress={onOpenAnotherWay}
                                 variant="outline"
-                                action="secondary"
                                 leftIcon={ArrowLeftRight}
                             >
                                 {''}
@@ -282,7 +280,6 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                             <SanctuaryButton
                                 onPress={() => onReportBroken(resource.id)}
                                 variant="outline"
-                                action="negative"
                                 leftIcon={AlertTriangle}
                             >
                                 {''}
@@ -292,7 +289,6 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                         <SanctuaryButton
                             onPress={onClose}
                             variant="outline"
-                            action="secondary"
                             leftIcon={X}
                         >
                             {''}

@@ -52,7 +52,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
 
     const footer = (
         <HStack className="gap-4">
-            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary">
+            <SanctuaryButton onPress={onClose} variant="ghost">
                 {t('library.addResource.dismiss')}
             </SanctuaryButton>
             <SanctuaryButton
@@ -118,7 +118,6 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                                 onPress={() => setType(cat.id as LibResourceType)}
                                 variant={type === cat.id ? 'solid' : 'outline'}
                                 size="xs"
-                                action="secondary"
                             >
                                 {t(`library.types.${cat.id}` as any)}
                             </SanctuaryButton>

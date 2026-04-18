@@ -41,6 +41,7 @@ interface EditProfileModalProps {
 /**
  * EDIT PROFILE MODAL
  * Sanctuary V3 standard for managing user identity and settings.
+ * Features premium glassmorphism and standardized Sanctuary primitives.
  */
 export default function EditProfileModal({ visible, onClose, onSave, currentProfile }: EditProfileModalProps) {
     const { t } = useTranslation();
@@ -138,55 +139,60 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
             onRequestClose={onClose}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <Box className="flex-1 justify-end bg-[#6B6480]/60">
+                <Box className="flex-1 justify-end bg-black/40">
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                         className="w-full h-full justify-end"
                     >
-                        <Box className="bg-phase-canvas rounded-t-generous p-6 border-t border-l border-r border-phase-surface shadow-2xl">
-                            <HStack className="justify-between items-center mb-6">
-                                <Heading className="text-phase-text-primary text-lg">
-                                    {t('profile.settings') || 'Edit Profile'}
-                                </Heading>
+                        <Box className="bg-phase-canvas rounded-t-[48px] p-8 border-t border-l border-r border-phase-surface shadow-[0_-20px_50px_rgba(0,0,0,0.3)]">
+                            <HStack className="justify-between items-center mb-8">
+                                <VStack>
+                                    <Heading className="text-phase-text-primary text-2xl font-bold tracking-tight">
+                                        {t('profile.settings') || 'Edit Profile'}
+                                    </Heading>
+                                    <Text className="text-phase-text-tertiary text-xs uppercase tracking-widest font-bold mt-1">IDENTITY HUB</Text>
+                                </VStack>
                                 <Pressable
                                     onPress={onClose}
-                                    className="p-1"
+                                    className="w-10 h-10 rounded-full bg-phase-surface items-center justify-center active:scale-95 transition-all"
                                 >
-                                    <X color="#9DA1A3" size={24} />
+                                    <X color="#9DA1A3" size={24} strokeWidth={2.5} />
                                 </Pressable>
                             </HStack>
 
-                            <ScrollView showsVerticalScrollIndicator={false} className="max-h-[80%]">
+                            <ScrollView showsVerticalScrollIndicator={false} className="max-h-[75%]" contentContainerStyle={{ paddingBottom: 40 }}>
                                 <VStack space="xl">
-                                    <Center>
+                                    <Center className="mb-4">
                                         <Box className="relative">
-                                            <Image
-                                                source={{ uri: avatarUrl || 'https://via.placeholder.com/150' }}
-                                                alt="Profile"
-                                                className="w-[100px] h-[100px] rounded-full border-2 border-phase-interactive"
-                                            />
+                                            <Box className="p-1 rounded-full border-2 border-phase-interactive border-dashed bg-phase-interactive/5">
+                                                <Image
+                                                    source={{ uri: avatarUrl || 'https://via.placeholder.com/150' }}
+                                                    alt="Profile"
+                                                    className="w-[120px] h-[120px] rounded-full"
+                                                />
+                                            </Box>
                                             <Pressable
                                                 onPress={handlePickImage}
-                                                className="absolute bottom-0 right-0 bg-phase-canvas p-2 rounded-full border border-phase-interactive shadow-sm"
+                                                className="absolute bottom-1 right-1 bg-phase-interactive p-3 rounded-2xl border-2 border-phase-canvas shadow-lg active:scale-90 transition-all"
                                             >
-                                                <Camera size={16} color="#4A90E2" />
+                                                <Camera size={18} color="white" />
                                             </Pressable>
                                         </Box>
-                                        <Text className="text-phase-text-tertiary text-xs mt-2 text-center">
-                                            {t('profile.tapToChange') || 'Tap to change photo'}
+                                        <Text className="text-phase-text-tertiary text-xs font-bold mt-4 tracking-widest uppercase">
+                                            {t('profile.tapToChange') || 'Change Avatar'}
                                         </Text>
                                     </Center>
 
-                                    <VStack space="xs">
-                                        <Text className="text-phase-text-secondary text-sm">
-                                            {t('profile.fullName') || 'Full Name'}
+                                    <VStack space="sm">
+                                        <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                                            {t('profile.fullName') || 'FULL NAME'}
                                         </Text>
                                         <Input
-                                            className="h-14 rounded-comfortable bg-phase-surface border-phase-surface"
+                                            className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
                                             isDisabled={loading}
                                         >
                                             <InputField
-                                                className="text-phase-text-primary"
+                                                className="text-phase-text-primary font-bold"
                                                 value={fullName}
                                                 onChangeText={setFullName}
                                                 placeholder={t('auth.fullName') || 'Full Name'}
@@ -195,16 +201,16 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         </Input>
                                     </VStack>
 
-                                    <VStack space="xs">
-                                        <Text className="text-phase-text-secondary text-sm">
-                                            {t('profile.phone') || 'Phone Number'}
+                                    <VStack space="sm">
+                                        <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                                            {t('profile.phone') || 'PHONE NUMBER'}
                                         </Text>
                                         <Input
-                                            className="h-14 rounded-comfortable bg-phase-surface border-phase-surface"
+                                            className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
                                             isDisabled={loading}
                                         >
                                             <InputField
-                                                className="text-phase-text-primary"
+                                                className="text-phase-text-primary font-bold"
                                                 value={phone}
                                                 onChangeText={setPhone}
                                                 placeholder="+94 XX XXX XXXX"
@@ -214,20 +220,20 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         </Input>
                                     </VStack>
 
-                                    <VStack space="xs">
-                                        <Text className="text-phase-text-secondary text-sm">
-                                            {t('profile.bio') || 'Bio'}
+                                    <VStack space="sm">
+                                        <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                                            {t('profile.bio') || 'BIO'}
                                         </Text>
                                         <Input
-                                            className="h-28 rounded-comfortable bg-phase-surface border-phase-surface"
+                                            className="h-32 rounded-[32px] bg-phase-surface/30 border-phase-surface/50 p-2"
                                             isDisabled={loading}
                                         >
                                             <InputField
-                                                className="text-phase-text-primary p-3"
+                                                className="text-phase-text-primary p-4 font-medium"
                                                 style={{ textAlignVertical: 'top' }}
                                                 value={bio}
                                                 onChangeText={setBio}
-                                                placeholder={t('profile.bioPlaceholder') || 'Tell us about yourself...'}
+                                                placeholder={t('profile.bioPlaceholder') || 'Share your sanctuary journey...'}
                                                 placeholderTextColor="#9DA1A3"
                                                 multiline
                                                 numberOfLines={4}
@@ -236,16 +242,16 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     </VStack>
 
                                     {ability.can('update', 'TeacherProfile') && (
-                                        <VStack space="xs">
-                                            <Text className="text-phase-text-secondary text-sm">
-                                                {t('profile.nicNumber') || 'NIC Number'}
+                                        <VStack space="sm">
+                                            <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                                                {t('profile.nicNumber') || 'NIC NUMBER'}
                                             </Text>
                                             <Input
-                                                className="h-14 rounded-comfortable bg-phase-surface border-phase-surface"
+                                                className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
                                                 isDisabled={loading}
                                             >
                                                 <InputField
-                                                    className="text-phase-text-primary"
+                                                    className="text-phase-text-primary font-bold"
                                                     value={nicNumber}
                                                     onChangeText={setNicNumber}
                                                     placeholder="e.g. 19XXXXXXXXXX"
@@ -256,16 +262,16 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     )}
 
                                     {ability.can('update', 'StudentProfile') && (
-                                        <VStack space="xs">
-                                            <Text className="text-phase-text-secondary text-sm">
-                                                {t('profile.indexNumber') || 'Index Number'}
+                                        <VStack space="sm">
+                                            <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                                                {t('profile.indexNumber') || 'INDEX NUMBER'}
                                             </Text>
                                             <Input
-                                                className="h-14 rounded-comfortable bg-phase-surface border-phase-surface"
+                                                className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
                                                 isDisabled={loading}
                                             >
                                                 <InputField
-                                                    className="text-phase-text-primary"
+                                                    className="text-phase-text-primary font-bold"
                                                     value={indexNumber}
                                                     onChangeText={setIndexNumber}
                                                     placeholder="e.g. STU-XXXXX"
@@ -277,34 +283,36 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                     {ability.can('manage', 'all') && (
                                         <Box>
-                                            <Text className="text-phase-text-secondary text-sm mb-1">
-                                                {t('profile.role') || 'Role'} (Developer Access)
+                                            <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1 mb-2">
+                                                {t('profile.role') || 'Sovereign Role'}
                                             </Text>
                                             <Select
                                                 selectedValue={selectedRole || 'student'}
                                                 onValueChange={(value: string | null) => setSelectedRole(value as Role)}
                                             >
                                                 <SelectTrigger
-                                                    className="h-14 rounded-comfortable bg-phase-surface border-phase-surface px-4"
+                                                    className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-6"
                                                 >
                                                     <SelectInput
                                                         placeholder="Select role"
-                                                        className="text-phase-text-primary"
+                                                        className="text-phase-text-primary font-bold"
                                                     />
                                                     <SelectIcon className="mr-3" as={ChevronDown} />
                                                 </SelectTrigger>
                                                 <SelectPortal>
                                                     <SelectBackdrop />
-                                                    <SelectContent>
+                                                    <SelectContent className="bg-phase-canvas border-t border-phase-surface rounded-t-[40px] p-6 pb-12">
                                                         <SelectDragIndicatorWrapper>
-                                                            <SelectDragIndicator />
+                                                            <SelectDragIndicator className="bg-phase-surface w-12 h-1.5" />
                                                         </SelectDragIndicatorWrapper>
-                                                        <SelectItem label={t('role.student') || 'Student'} value="student" />
-                                                        <SelectItem label={t('role.teacher') || 'Teacher'} value="teacher" />
-                                                        <SelectItem label={t('role.section_head') || 'Section Head'} value="sectionHead" />
-                                                        <SelectItem label={t('role.grade_head') || 'Grade Head'} value="gradeHead" />
-                                                        <SelectItem label={t('role.principal') || 'Principal'} value="principal" />
-                                                        <SelectItem label={t('role.developer') || 'Developer'} value="developer" />
+                                                        <Box className="mt-8">
+                                                            <SelectItem label={t('role.student') || 'Student'} value="student" />
+                                                            <SelectItem label={t('role.teacher') || 'Teacher'} value="teacher" />
+                                                            <SelectItem label={t('role.section_head') || 'Section Head'} value="sectionHead" />
+                                                            <SelectItem label={t('role.grade_head') || 'Grade Head'} value="gradeHead" />
+                                                            <SelectItem label={t('role.principal') || 'Principal'} value="principal" />
+                                                            <SelectItem label={t('role.developer') || 'Developer'} value="developer" />
+                                                        </Box>
                                                     </SelectContent>
                                                 </SelectPortal>
                                             </Select>
@@ -313,14 +321,16 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                     <Button
                                         size="xl"
-                                        className="mt-6 bg-phase-interactive rounded-comfortable h-14"
+                                        className="mt-8 bg-phase-interactive rounded-3xl h-16 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all"
                                         isDisabled={loading}
                                         onPress={handleSave}
                                     >
-                                        <ButtonText className="text-white font-bold">
-                                            {loading ? t('common.processing') || 'Processing...' : t('common.save') || 'Save Changes'}
-                                        </ButtonText>
-                                        {!loading && <Save size={20} color="white" className="ml-2" />}
+                                        <HStack space="sm" className="items-center">
+                                            <ButtonText className="text-white font-bold text-lg">
+                                                {loading ? t('common.processing') || 'Processing...' : t('common.save') || 'Save Changes'}
+                                            </ButtonText>
+                                            {!loading && <Save size={22} color="white" strokeWidth={2.5} />}
+                                        </HStack>
                                     </Button>
                                 </VStack>
                             </ScrollView>

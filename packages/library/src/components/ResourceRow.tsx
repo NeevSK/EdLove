@@ -177,7 +177,6 @@ export function ResourceRow({
                                 onPress={onFlashPlay}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={Play}
                             >
                                 {''}
@@ -188,7 +187,6 @@ export function ResourceRow({
                                 onPress={onPullToDesk}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={Bookmark}
                             >
                                 {''}
@@ -199,7 +197,6 @@ export function ResourceRow({
                                 onPress={onOpenAnotherWay}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={ArrowLeftRight}
                             >
                                 {''}
@@ -210,7 +207,6 @@ export function ResourceRow({
                                 onPress={onDelete}
                                 variant="ghost"
                                 size="xs"
-                                action="negative"
                                 leftIcon={Trash2}
                             >
                                 {''}
@@ -222,7 +218,6 @@ export function ResourceRow({
                                 onPress={onAISparkle}
                                 variant="ghost"
                                 size="xs"
-                                action="primary"
                                 leftIcon={Sparkles}
                             >
                                 {''}
@@ -234,7 +229,6 @@ export function ResourceRow({
                                 onPress={onGenerateQuiz}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={ClipboardCheck}
                             >
                                 {''}
@@ -246,7 +240,6 @@ export function ResourceRow({
                                 onPress={onGenerateGraphic}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={Brain}
                             >
                                 {''}

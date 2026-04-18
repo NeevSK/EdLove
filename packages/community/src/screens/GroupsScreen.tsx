@@ -1,13 +1,27 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { FlatList, ActivityIndicator, TextInput, Platform } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, SkeletonCard, PositiveInvitation, FadeInDown, SanctuaryButton, SanctuaryFlashList, Heading, Icon } from '@repo/ui';
+import { Platform } from 'react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Pressable, 
+    SkeletonCard, 
+    FadeInDown, 
+    SanctuaryButton, 
+    SanctuaryFlashList, 
+    Heading, 
+    Icon,
+    InputField,
+    Spinner
+} from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { useTranslation } from 'react-i18next';
 // @ts-ignore - Temporary until we decide on demo logic location
 import { isDemo } from '@repo/core';
-import { Compass, Shield, Users, Plus } from 'lucide-react-native';
+import { Compass, Shield, Users, Plus, X } from 'lucide-react-native';
 import { Group } from '../types';
 
 type GroupsSubTab = 'sanctuary' | 'galaxy';
@@ -39,8 +53,6 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         isPublicOnly: activeSubTab === 'galaxy' && !searchQuery
     });
 
-    const isGuest = !userId;
-
     const activeGroups = useMemo(() => 
         activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups,
     [activeSubTab, sanctuaryGroups, galaxyGroups]);
@@ -57,26 +69,20 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         <Animated.View entering={FadeInDown.delay(100).springify()}>
             <Box className="px-4 mb-3">
                 <HStack
-                    className="items-center gap-3 bg-phase-surface border border-border h-12 px-4 rounded-xl shadow-sm"
+                    className="items-center bg-phase-surface border border-border h-12 px-3 rounded-xl shadow-sm"
                 >
-                    <Icon as={Compass} size="sm" className="text-ink/40" />
-                    <TextInput
-                        style={{
-                            flex: 1,
-                            fontSize: 15,
-                            color: '#0f172a', // text-ink
-                            height: '100%',
-                            paddingHorizontal: 0,
-                            ...(Platform.OS === 'web' ? { outline: 'none' } : {})
-                        }}
+                    <Icon as={Compass} size="sm" className="text-ink/40 mr-2" />
+                    <InputField
+                        className="flex-1 text-sm text-ink h-full py-0"
                         placeholder={activeSubTab === 'sanctuary' ? "Search your groups..." : "Discover groups in the galaxy..."}
-                        placeholderTextColor="#94a3b8" // ink/40
+                        placeholderTextColor="#94a3b8"
                         value={searchQuery}
                         onChangeText={handleSearchChange}
+                        autoCapitalize="none"
                     />
                     {searchQuery ? (
                         <Pressable onPress={handleClearSearch} className="p-1">
-                            <Text className="text-ink/40 text-xl font-bold">\u00D7</Text>
+                            <Icon as={X} size="xs" className="text-ink/60" />
                         </Pressable>
                     ) : null}
                 </HStack>
@@ -134,7 +140,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     const getEmptyComponent = () => {
         if (loading) {
             return (
-                <VStack space="md" py="$4" px="$4">
+                <VStack className="gap-4 py-4 px-4">
                     <SkeletonCard height={72} />
                     <SkeletonCard height={72} />
                     <SkeletonCard height={72} />
@@ -216,7 +222,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     }, [hasNextGroups, isFetchingNextGroups, fetchNextGroups]);
 
     return (
-        <Box className="flex-1">
+        <Box className="flex-1 bg-phase-canvas">
             {renderSubTabs()}
             {renderSearchBar()}
             {renderGalaxyActions()}
@@ -228,7 +234,9 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 onEndReached={handleEndReached}
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={isFetchingNextGroups ? (
-                    <ActivityIndicator size="small" color="#6366f1" style={{ padding: 20 }} />
+                    <Box className="py-8 items-center">
+                        <Spinner />
+                    </Box>
                 ) : null}
                 ListEmptyComponent={ListEmptyComponent}
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}

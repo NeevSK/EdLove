@@ -39,21 +39,25 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel={accessibilityLabel || label}
-            className="bg-phase-canvas/50 rounded-2xl p-4 border border-phase-surface min-h-[52px] justify-center"
+            className="bg-phase-canvas border border-phase-surface rounded-3xl p-5 mb-2 active:scale-[0.98] transition-all shadow-sm"
         >
             <HStack className="justify-between items-center">
                 <HStack space="md" className="items-center">
-                    <Box className="p-2 bg-phase-interactive/10 rounded-full">
-                        <Icon size={18} color={iconColor || '#4A90E2'} />
+                    <Box className="w-10 h-10 bg-phase-interactive/10 rounded-2xl items-center justify-center border border-phase-interactive/10">
+                        <Icon size={18} color={iconColor || '#4A90E2'} strokeWidth={2.5} />
                     </Box>
-                    <Text className="text-phase-text-primary text-sm font-bold">
+                    <Text className="text-phase-text-primary text-base font-bold tracking-tight">
                         {label}
                     </Text>
                 </HStack>
 
-                <HStack space="xs" className="items-center">
+                <HStack space="sm" className="items-center">
                     {rightElement}
-                    {showChevron && <ChevronRight size={16} color="#9DA1A3" />}
+                    {showChevron && (
+                        <Box className="p-1 rounded-full bg-phase-surface/30">
+                            <ChevronRight size={16} color="#9DA1A3" strokeWidth={3} />
+                        </Box>
+                    )}
                 </HStack>
             </HStack>
         </Pressable>

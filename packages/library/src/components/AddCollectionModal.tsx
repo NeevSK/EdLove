@@ -47,9 +47,9 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
             onClose={onClose}
             title={t('library.addCollection') || 'Add New Collection'}
         >
-            <VStack space="lg" sx={{ p: 20 }}>
-                <VStack space="xs">
-                    <Text size="sm" fontWeight="600">{t('library.collectionName') || 'Name'}</Text>
+            <VStack className="gap-4 p-5">
+                <VStack className="gap-1">
+                    <Text className="text-sm font-semibold">{t('library.collectionName') || 'Name'}</Text>
                     <Input>
                         <InputField 
                             value={name}
@@ -59,9 +59,9 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
                     </Input>
                 </VStack>
 
-                <VStack space="xs">
-                    <Text size="sm" fontWeight="600">{t('library.collectionDescription') || 'Description'}</Text>
-                    <Input>
+                <VStack className="gap-1">
+                    <Text className="text-sm font-semibold">{t('library.collectionDescription') || 'Description'}</Text>
+                    <Input className="min-h-[80px]">
                         <InputField 
                             value={description}
                             onChangeText={setDescription}
@@ -72,7 +72,7 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
                     </Input>
                 </VStack>
 
-                <HStack space="md" sx={{ mt: 10, justifyContent: 'flex-end' }}>
+                <HStack className="gap-3 mt-2.5 justify-end">
                     <SanctuaryButton 
                         variant="outline" 
                         onPress={onClose}
