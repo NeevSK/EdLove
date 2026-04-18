@@ -11,6 +11,7 @@ export interface CanvasSurfaceCardProps<
     TCapabilityKey extends string = string,
 > {
     surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>;
+    title?: string;
     subtitle?: string;
     summary?: string;
     snapshot?: string;
@@ -38,6 +39,7 @@ export function CanvasSurfaceCard<
     TCapabilityKey extends string = string,
 >({
     surface,
+    title,
     subtitle,
     summary,
     snapshot,
@@ -71,9 +73,9 @@ export function CanvasSurfaceCard<
                     <Text style={cardStyles.kicker}>
                         {surface.zone.toUpperCase()}  {String.fromCharCode(8226)}  {ownerLabel.toUpperCase()}
                     </Text>
-                    <Text style={cardStyles.title}>{String(surface.surfaceId)}</Text>
+                    <Text style={cardStyles.title}>{title ?? surface.title}</Text>
                     <Text style={cardStyles.subtitle}>
-                        {subtitle ?? String(surface.capabilityKey)}
+                        {subtitle ?? surface.subtitle}
                     </Text>
                 </View>
                 <View style={cardStyles.badges}>

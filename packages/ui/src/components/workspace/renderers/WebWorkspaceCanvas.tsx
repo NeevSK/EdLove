@@ -47,6 +47,7 @@ export function WebWorkspaceCanvas<
                             key={group.zone}
                             group={group}
                             renderSurfaceContent={props.renderSurfaceContent}
+                            getSurfaceTitle={props.getSurfaceTitle}
                             getSurfaceSubtitle={props.getSurfaceSubtitle}
                             getSurfaceSummary={props.getSurfaceSummary}
                             getSurfaceSnapshot={props.getSurfaceSnapshot}

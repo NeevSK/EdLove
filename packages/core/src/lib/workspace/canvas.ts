@@ -149,10 +149,14 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string,
     };
 }
 
-export function resolveWorkspaceSurfaceLayout<TSurfaceId extends string, TCapabilityKey extends string>(
-    surfaces: WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>[],
+export function resolveWorkspaceSurfaceLayout<
+    TSurfaceId extends string,
+    TCapabilityKey extends string,
+    TDefinition extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> = WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>
+>(
+    surfaces: TDefinition[],
     layout: WorkspaceLayout<TSurfaceId>
-): ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>[] {
+): (TDefinition & ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>)[] {
     const normalized = normalizeWorkspaceLayout(layout, surfaces);
     const ranked = new Map(normalized.order.map((surfaceId, index) => [surfaceId, index]));
     const hidden = new Set(normalized.hidden);
@@ -161,6 +165,7 @@ export function resolveWorkspaceSurfaceLayout<TSurfaceId extends string, TCapabi
     return [...surfaces]
         .map((surface) => ({
             ...surface,
+            title: surface.title ?? surface.surfaceId,
             hidden: hidden.has(surface.surfaceId),
             pinned: pinned.has(surface.surfaceId),
             zone: normalized.zoneBySurface[surface.surfaceId] ?? surface.defaultZone,

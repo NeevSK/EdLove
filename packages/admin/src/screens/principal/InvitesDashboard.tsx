@@ -9,7 +9,7 @@ import {
     Button,
     ScrollView,
     Spinner,
-    useToast,
+    useSanctuaryToast as useToast,
     Toast,
     ToastTitle,
     Pressable
@@ -59,13 +59,9 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
             setInviteCodes((current) => 
                 current.map(inv => inv.code === code ? { ...inv, is_active: false } : inv)
             );
-            toast.show({
-                placement: 'top',
-                render: ({ id }) => (
-                    <Toast nativeID={id} action="success" variant="solid" className="bg-ink rounded-xl">
-                        <ToastTitle className="text-white">Revoked access key</ToastTitle>
-                    </Toast>
-                )
+            toast.showToast({
+                message: 'Revoked access key',
+                type: 'success'
             });
         } catch (err) {
             handleAPIError(err);
@@ -78,13 +74,9 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
         try {
             const newCode = await invitesAPI.generateInviteCode(schoolId, inviteRole, userId);
             setInviteCodes((current) => [newCode, ...current]);
-            toast.show({
-                placement: 'top',
-                render: ({ id }) => (
-                    <Toast nativeID={id} action="success" variant="solid" className="bg-primary rounded-xl">
-                        <ToastTitle className="text-white">New key generated</ToastTitle>
-                    </Toast>
-                )
+            toast.showToast({
+                message: 'New key generated',
+                type: 'success'
             });
         } catch (err) {
             handleAPIError(err);
@@ -96,13 +88,9 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
     const copyToClipboard = async (code: string) => {
         try {
             await Clipboard.setStringAsync(code);
-            toast.show({
-                placement: 'top',
-                render: ({ id }) => (
-                    <Toast nativeID={id} action="success" variant="solid" className="bg-green-600 rounded-xl">
-                        <ToastTitle className="text-white">Copied to clipboard</ToastTitle>
-                    </Toast>
-                )
+            toast.showToast({
+                message: 'Copied to clipboard',
+                type: 'success'
             });
         } catch (err) {
             handleAPIError(err);
@@ -185,7 +173,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
 
                         {inviteCodes.length === 0 && !loading ? (
                             <Box className="p-12 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
-                                <ShieldAlert size={48} className="text-ink/10 mb-3" />
+                                <Icon as={ShieldAlert} size="xl" className="text-ink/10 mb-3" />
                                 <Text className="text-center font-bold text-ink/30 italic">No keys initialized</Text>
                             </Box>
                         ) : (

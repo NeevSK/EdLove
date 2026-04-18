@@ -12,6 +12,7 @@ interface ScreenWrapperProps {
     refreshControl?: React.ReactElement<import('react-native').RefreshControlProps>;
     style?: any;
     hasBottomTab?: boolean;
+    noTopInset?: boolean;
 }
 
 export function useBottomTabPadding() {

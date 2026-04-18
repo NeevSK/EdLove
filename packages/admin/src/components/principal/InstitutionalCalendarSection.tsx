@@ -7,7 +7,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TextInput, ScrollView as RNScrollView } from 'react-native';
 import {
     Box,
     HStack,
@@ -16,7 +15,10 @@ import {
     useTheme,
     Pressable,
     Icon,
-    Theme
+    Theme,
+    Input,
+    InputField,
+    ScrollView
 } from '@repo/ui';
 import { Plus } from 'lucide-react-native';
 import { staffManagementAPI, type CalendarEvent } from '@repo/core';
@@ -160,15 +162,17 @@ export default function InstitutionalCalendarSection({
 
             {showForm && (
                 <VStack className="mt-4 gap-3">
-                    <TextInput
-                        placeholder="Event title"
-                        placeholderTextColor={theme.text.muted}
-                        value={title}
-                        onChangeText={setTitle}
-                        className="border border-phase-border rounded-xl px-3 py-2 text-sm text-phaseText-primary bg-phase-surface"
-                    />
+                    <Input className="border border-phase-border rounded-xl bg-phase-surface h-10">
+                        <InputField
+                            placeholder="Event title"
+                            placeholderTextColor={theme.text.muted}
+                            value={title}
+                            onChangeText={setTitle}
+                            className="text-sm text-phaseText-primary"
+                        />
+                    </Input>
 
-                    <RNScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
                         <HStack className="gap-2">
                             {TYPE_OPTIONS.map((t) => (
                                 <Pressable key={t} onPress={() => setSelectedType(t)}>
@@ -189,22 +193,26 @@ export default function InstitutionalCalendarSection({
                                 </Pressable>
                             ))}
                         </HStack>
-                    </RNScrollView>
+                    </ScrollView>
 
-                    <TextInput
-                        placeholder="Start date (YYYY-MM-DD)"
-                        placeholderTextColor={theme.text.muted}
-                        value={startDate}
-                        onChangeText={setStartDate}
-                        className="border border-phase-border rounded-xl px-3 py-2 text-sm text-phaseText-primary bg-phase-surface"
-                    />
-                    <TextInput
-                        placeholder="End date (YYYY-MM-DD, optional)"
-                        placeholderTextColor={theme.text.muted}
-                        value={endDate}
-                        onChangeText={setEndDate}
-                        className="border border-phase-border rounded-xl px-3 py-2 text-sm text-phaseText-primary bg-phase-surface"
-                    />
+                    <Input className="border border-phase-border rounded-xl bg-phase-surface h-10">
+                        <InputField
+                            placeholder="Start date (YYYY-MM-DD)"
+                            placeholderTextColor={theme.text.muted}
+                            value={startDate}
+                            onChangeText={setStartDate}
+                            className="text-sm text-phaseText-primary"
+                        />
+                    </Input>
+                    <Input className="border border-phase-border rounded-xl bg-phase-surface h-10">
+                        <InputField
+                            placeholder="End date (YYYY-MM-DD, optional)"
+                            placeholderTextColor={theme.text.muted}
+                            value={endDate}
+                            onChangeText={setEndDate}
+                            className="text-sm text-phaseText-primary"
+                        />
+                    </Input>
 
                     <Pressable
                         onPress={handleSave}

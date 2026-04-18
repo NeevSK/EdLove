@@ -29,6 +29,8 @@ export * from '../components/ui/textarea';
 export * from '../components/ui/progress';
 export * from '../components/ui/slider';
 export * from '../components/ui/avatar';
+export * from '../components/ui/radio';
+
 
 // Navigation
 export * from '../components/ui/link';
@@ -41,6 +43,11 @@ export * from '../components/ui/modal';
 export * from '../components/ui/toast';
 export * from '../components/ui/actionsheet';
 export * from '../components/ui/spinner';
+export * from '../components/ui/fab';
+export * from '../components/ui/image';
+export * from '../components/ui/image-background';
+export * from '../components/ui/linear-gradient';
+
 
 // Hooks
 export { useSanctuaryToast as useToast } from '../providers/ToastProvider';

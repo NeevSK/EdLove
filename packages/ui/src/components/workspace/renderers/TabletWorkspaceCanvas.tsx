@@ -45,6 +45,7 @@ export function TabletWorkspaceCanvas<
                             compact={true}
                             style={styles.gridItem}
                             renderSurfaceContent={props.renderSurfaceContent}
+                            getSurfaceTitle={props.getSurfaceTitle}
                             getSurfaceSubtitle={props.getSurfaceSubtitle}
                             getSurfaceSummary={props.getSurfaceSummary}
                             getSurfaceSnapshot={props.getSurfaceSnapshot}

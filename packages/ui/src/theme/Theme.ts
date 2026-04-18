@@ -511,6 +511,12 @@ export interface SceneLayerToken {
     border: string;
 }
 
+export interface SemanticColorToken {
+    main: string;
+    muted: string;
+    lowOpacity: string;
+}
+
 export interface SceneTokens {
     world: SceneLayerToken;
     chrome: SceneLayerToken;
@@ -518,6 +524,24 @@ export interface SceneTokens {
     surface: SceneLayerToken;
     elevated: SceneLayerToken;
     interactive: SceneLayerToken;
+    // Semantic Layer
+    primary: SemanticColorToken;
+    secondary: SemanticColorToken;
+    warning: SemanticColorToken;
+    success: SemanticColorToken;
+    danger: SemanticColorToken;
+    info: SemanticColorToken;
+    border: {
+        base: string;
+        subtle: string;
+        strong: string;
+    };
+    text: {
+        primary: string;
+        secondary: string;
+        muted: string;
+        inverse: string;
+    };
 }
 
 export interface SceneTextTokens {
@@ -535,6 +559,12 @@ export interface ResolvedThemeTokens extends Omit<PhaseTokens, 'text'> {
     profile: ThemeProfile;
     scene: SceneTokens;
     text: TextTokens & SceneTextTokens;
+    // Structural Metadata (Theme constants)
+    spacing: typeof spacing;
+    typography: typeof typography;
+    corners: typeof corners;
+    shadows: typeof shadows;
+    zIndex: typeof zIndex;
 }
 
 function resolveSceneText(bg: string, base: string, fallback: string): string {
@@ -550,6 +580,8 @@ function resolveSceneText(bg: string, base: string, fallback: string): string {
 }
 
 function createSceneTokens(tokens: PhaseTokens): SceneTokens {
+    const isDark = tokens.text.primary === colors.sacredWhite;
+
     return {
         world: { bg: tokens.gradientNodes[0], border: 'transparent' },
         chrome: { bg: tokens.glass.surface.bg, border: tokens.glass.surface.border },
@@ -557,6 +589,49 @@ function createSceneTokens(tokens: PhaseTokens): SceneTokens {
         surface: { bg: tokens.glass.surface.bg, border: tokens.glass.surface.border },
         elevated: { bg: tokens.glass.modal.bg, border: tokens.glass.modal.border },
         interactive: { bg: tokens.glass.interact.bg, border: tokens.glass.interact.border },
+
+        // Semantic Mapping
+        primary: {
+            main: tokens.accent.action,
+            muted: isDark ? colors.shroud : colors.linen,
+            lowOpacity: tokens.accent.action + '1A', // 10%
+        },
+        secondary: {
+            main: colors.sageGreen,
+            muted: colors.mossGreen,
+            lowOpacity: colors.sageGreen + '1A',
+        },
+        warning: {
+            main: colors.warning,
+            muted: colors.amberGlow,
+            lowOpacity: colors.warning + '1A',
+        },
+        success: {
+            main: tokens.accent.sageGreen,
+            muted: colors.mossGreen,
+            lowOpacity: tokens.accent.sageGreen + '1A',
+        },
+        danger: {
+            main: tokens.accent.danger,
+            muted: colors.emberOrange,
+            lowOpacity: tokens.accent.danger + '1A',
+        },
+        info: {
+            main: colors.skyBlue,
+            muted: colors.gurudeviBlue,
+            lowOpacity: colors.skyBlue + '1A',
+        },
+        border: {
+            base: isDark ? colors.borderDark : colors.border,
+            subtle: tokens.glass.surface.border,
+            strong: isDark ? colors.obsidian : colors.bark,
+        },
+        text: {
+            primary: tokens.text.primary,
+            secondary: tokens.text.secondary,
+            muted: tokens.text.muted,
+            inverse: tokens.text.onAccent || colors.sacredWhite,
+        }
     };
 }
 
@@ -585,6 +660,11 @@ function enrichThemeTokens(
             ...sceneText,
             inverse: sceneText.onAccent,
         },
+        spacing,
+        typography,
+        corners,
+        shadows,
+        zIndex,
     };
 }
 

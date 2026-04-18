@@ -48,7 +48,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
         <VStack space="lg">
             <FormControl>
                 <FormControlLabel style={{ marginBottom: 8 }}>
-                    <FormControlLabelText style={{ color: colors?.textSecondary || '#aaa', fontSize: 14 }}>
+                    <FormControlLabelText style={{ color: colors.text.secondary, fontSize: 14 }}>
                         {t('schoolSetup.province')}
                     </FormControlLabelText>
                 </FormControlLabel>
@@ -56,15 +56,14 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     selectedValue={data.provinceId}
                     onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}>
                     <SelectTrigger 
-                        variant="outline" 
                         style={{ 
                             height: 48, 
                             borderRadius: 12, 
-                            backgroundColor: colors?.secondary || '#2A2318' 
+                            backgroundColor: colors.secondary.main
                         }}>
                         <SelectInput 
                             placeholder={t('schoolSetup.selectProvince')} 
-                            style={{ color: colors?.text || '#fff', flex: 1 }} 
+                            style={{ color: colors.text.primary, flex: 1 }} 
                         />
                         <SelectIcon style={{ marginRight: 12 }}>
                             <ChevronDown size={20} color={sanctuarySaffron} />
@@ -90,7 +89,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
 
             <FormControl isDisabled={!data.provinceId}>
                 <FormControlLabel style={{ marginBottom: 8 }}>
-                    <FormControlLabelText style={{ color: colors?.textSecondary || '#aaa', fontSize: 14 }}>
+                    <FormControlLabelText style={{ color: colors.text.secondary, fontSize: 14 }}>
                         {t('schoolSetup.district')}
                     </FormControlLabelText>
                 </FormControlLabel>
@@ -98,15 +97,14 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     selectedValue={data.districtId}
                     onValueChange={(value: string) => onUpdate({ districtId: value })}>
                     <SelectTrigger 
-                        variant="outline" 
                         style={{ 
                             height: 48, 
                             borderRadius: 12, 
-                            backgroundColor: colors?.secondary || '#2A2318' 
+                            backgroundColor: colors.secondary.main 
                         }}>
                         <SelectInput 
                             placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} 
-                            style={{ color: colors?.text || '#fff', flex: 1 }} 
+                            style={{ color: colors.text.primary, flex: 1 }} 
                         />
                         <SelectIcon style={{ marginRight: 12 }}>
                             <ChevronDown size={20} color={sanctuarySaffron} />

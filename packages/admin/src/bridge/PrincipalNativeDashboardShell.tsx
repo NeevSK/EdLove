@@ -10,7 +10,7 @@ import {
   Text,
   
   VStack,
-  useThemedColors} from '@repo/ui';
+  useTheme} from '@repo/ui';
 import type { PrincipalZoneId } from '../principal/workspace';
 
 function ZoneButton({
@@ -76,7 +76,8 @@ export function PrincipalNativeDashboardShell({
   isLoading,
   error,
   children}: PrincipalNativeDashboardShellProps) {
-  const colors = useTheme().scene;
+  const theme = useTheme();
+  // We use NativeWind for styling, so 'colors' might be unused here but safe to keep if needed later.
 
   return (
     <>

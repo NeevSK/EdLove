@@ -14,18 +14,15 @@
 import React from 'react';
 import {
     Modal,
-    View,
     FlatList,
     TextInput,
-    TouchableOpacity,
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
     Alert,
-    StyleSheet,
 } from 'react-native';
-import { Theme, useTheme, getInitialsFromName, formatTimestamp } from '@repo/ui';
-import { Text, Box, HStack, VStack } from '@repo/ui';
+import { useTheme, getInitialsFromName, formatTimestamp } from '@repo/ui';
+import { Text, Box, HStack, VStack, Pressable, View } from '@repo/ui';
 import { ChevronDown, Send, ThumbsUp, Trash2, Shield, Lock, EyeOff } from 'lucide-react-native';
 import { useComments } from '../hooks/useComments';
 import type { Comment } from '../types/Community';
@@ -75,71 +72,80 @@ function CommentRow({
     };
 
     return (
-        <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.reward as string }]}>
+        <View 
+            className={`flex-row mb-4 pl-1 ${comment.is_official_answer ? 'border-l-4 border-l-phase-reward' : ''}`}
+        >
             {/* Avatar */}
-            <View style={[styles.avatar, { backgroundColor: (comment.is_anonymous ? glass.interact.bg : accent.muted) as string }]}>
+            <View 
+                className="w-8 h-8 rounded-full items-center justify-center mr-2.5 mt-0.5 shrink-0"
+                style={{ backgroundColor: (comment.is_anonymous ? glass.interact.bg : accent.muted) as string }}
+            >
                 {comment.is_anonymous ? (
                     <EyeOff size={14} color={text.muted as string} />
                 ) : (
-                    <Text sx={{ fontSize: 11, fontWeight: '700', color: accent.action }}>{initials}</Text>
+                    <Text className="text-[11px] font-bold text-phase-interactive">{initials}</Text>
                 )}
             </View>
 
-            <View style={styles.commentBody}>
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <HStack sx={{ gap: 4, alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 12, fontWeight: '700', color: text.primary }}>
+            <View className="flex-1">
+                <HStack className="justify-between items-center">
+                    <HStack space="xs" className="items-center">
+                        <Text className="text-xs font-bold text-phaseText-primary">
                             {comment.author_name}
                         </Text>
                         {comment.is_official_answer && (
-                            <View style={[styles.officialBadge, { backgroundColor: accent.reward as string }]}>
+                            <View className="flex-row items-center px-1.5 py-0.5 rounded-tight bg-phase-reward">
                                 <Shield size={9} color="#fff" />
-                                <Text sx={{ fontSize: 9, color: '#fff', fontWeight: '700', marginLeft: 2 }}>Official</Text>
+                                <Text className="text-[9px] text-white font-bold ml-0.5">Official</Text>
                             </View>
                         )}
                     </HStack>
-                    <Text sx={{ fontSize: 10, color: text.muted }}>
+                    <Text className="text-[10px] text-mistGray">
                         {formatTimestamp(comment.created_at)}
                     </Text>
                 </HStack>
 
-                <Text sx={{ fontSize: 14, color: text.secondary, marginTop: 3, lineHeight: 20 }}>
+                <Text className="text-sm text-phaseText-secondary mt-1 leading-5">
                     {comment.content}
                 </Text>
 
-                <HStack sx={{ gap: 16, alignItems: 'center', marginTop: 6 }}>
+                <HStack space="lg" className="items-center mt-1.5">
                     {/* Upvote */}
-                    <TouchableOpacity onPress={() => onUpvote(comment.id)} style={styles.actionBtn}>
+                    <Pressable onPress={() => onUpvote(comment.id)} className="flex-row items-center">
                         <ThumbsUp
                             size={13}
-                            color={comment.has_upvoted ? accent.action as string : text.muted as string}
-                            fill={comment.has_upvoted ? accent.action as string : 'transparent'}
+                            color={comment.has_upvoted ? (accent.action as string) : (text.muted as string)}
+                            fill={comment.has_upvoted ? (accent.action as string) : 'transparent'}
                         />
                         {comment.upvotes > 0 && (
-                            <Text sx={{ fontSize: 11, color: comment.has_upvoted ? accent.action : text.muted, marginLeft: 3 }}>
+                            <Text 
+                                className={`text-[11px] ml-1 ${comment.has_upvoted ? 'text-phase-interactive' : 'text-mistGray'}`}
+                            >
                                 {comment.upvotes}
                             </Text>
                         )}
-                    </TouchableOpacity>
+                    </Pressable>
 
                     {/* Mark official (post author, question type) */}
                     {isPostAuthor && postType === 'question' && !comment.is_anonymous && (
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => onMarkOfficial(comment.id, !comment.is_official_answer)}
-                            style={styles.actionBtn}
+                            className="flex-row items-center"
                         >
-                            <Shield size={13} color={comment.is_official_answer ? accent.reward as string : text.muted as string} />
-                            <Text sx={{ fontSize: 11, color: comment.is_official_answer ? accent.reward : text.muted, marginLeft: 3 }}>
+                            <Shield size={13} color={comment.is_official_answer ? (accent.reward as string) : (text.muted as string)} />
+                            <Text 
+                                className={`text-[11px] ml-1 ${comment.is_official_answer ? 'text-phase-reward' : 'text-mistGray'}`}
+                            >
                                 {comment.is_official_answer ? 'Unmark' : 'Mark answer'}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
 
                     {/* Delete own */}
                     {isOwn && (
-                        <TouchableOpacity onPress={confirmDelete} style={styles.actionBtn}>
+                        <Pressable onPress={confirmDelete} className="flex-row items-center">
                             <Trash2 size={13} color={text.muted as string} />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 </HStack>
             </View>
@@ -195,9 +201,13 @@ export function CommentSheet({
     const sheetContent = (
         <KeyboardAvoidingView
             style={[
-                styles.sheet,
                 {
-                    backgroundColor: (glass?.modal?.bg ?? glass?.surface?.bg ?? Theme.colors.vellum) as string,
+                    borderTopLeftRadius: 16,
+                    borderTopRightRadius: 16,
+                    borderTopWidth: 1,
+                    minHeight: 320,
+                    maxHeight: '80%',
+                    backgroundColor: (glass?.modal?.bg ?? glass?.surface?.bg ?? '#F5EDD6') as string,
                     borderTopColor: (glass?.interact?.border ?? 'rgba(42,35,24,0.08)') as string,
                 },
             ]}
@@ -205,26 +215,26 @@ export function CommentSheet({
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
         >
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity 
+            <View className="flex-row items-center px-4 py-3">
+                <Pressable 
                     onPress={onClose} 
-                    style={styles.dragHandle} 
+                    className="w-[34px] items-start"
                     hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 >
                     <ChevronDown size={22} color={text.secondary as string} />
-                </TouchableOpacity>
-                <Text sx={{ fontSize: 15, fontWeight: '700', color: text.primary, flex: 1, textAlign: 'center' }}>
+                </Pressable>
+                <Text className="text-[15px] font-bold text-phaseText-primary flex-1 text-center">
                     {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}
                 </Text>
-                <View style={{ width: 34 }} />
+                <View className="w-[34px]" />
             </View>
 
             {/* Comment list */}
             {isLoading ? (
                 <ActivityIndicator color={accent.action as string} style={{ marginVertical: 40 }} />
             ) : comments.length === 0 ? (
-                <View style={styles.empty}>
-                    <Text sx={{ fontSize: 14, color: text.muted, textAlign: 'center' }}>
+                <View className="flex-1 items-center justify-center py-10 px-6">
+                    <Text className="text-sm text-mistGray text-center">
                         Be the first to share a thought
                     </Text>
                 </View>
@@ -233,7 +243,7 @@ export function CommentSheet({
                     ref={flatListRef}
                     data={comments}
                     keyExtractor={item => item.id}
-                    contentContainerStyle={styles.listContent}
+                    contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <CommentRow
@@ -250,28 +260,33 @@ export function CommentSheet({
             )}
 
             {/* Composer */}
-            <View style={[styles.composer, { borderTopColor: (glass.interact.border || 'rgba(0,0,0,0.1)') as string }]}>
+            <View 
+                className="flex-row items-end p-3 gap-2 border-t"
+                style={{ borderTopColor: (glass.interact.border || 'rgba(0,0,0,0.1)') as string }}
+            >
                 {/* Anonymous toggle */}
-                <TouchableOpacity
+                <Pressable
                     onPress={() => setIsAnonymous(v => !v)}
-                    style={[
-                        styles.anonBtn, 
-                        { borderColor: (isAnonymous ? accent.action : glass.interact.border) as string }
-                    ]}
+                    className="w-9 h-9 rounded-full border-1.5 items-center justify-center shrink-0"
+                    style={{ borderColor: (isAnonymous ? accent.action : glass.interact.border) as string }}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                     <Lock size={14} color={(isAnonymous ? accent.action : text.muted) as string} />
-                </TouchableOpacity>
+                </Pressable>
 
                 <TextInput
-                    style={[
-                        styles.input,
-                        {
-                            backgroundColor: (glass.interact.bg || 'rgba(0,0,0,0.05)') as string,
-                            borderColor: (glass.interact.border || 'rgba(0,0,0,0.1)') as string,
-                            color: text.primary as string,
-                        },
-                    ]}
+                    style={{
+                        flex: 1,
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                        fontSize: 14,
+                        maxHeight: 120,
+                        backgroundColor: (glass.interact.bg || 'rgba(0,0,0,0.05)') as string,
+                        borderColor: (glass.interact.border || 'rgba(0,0,0,0.1)') as string,
+                        color: text.primary as string,
+                    }}
                     placeholder={isAnonymous ? 'Reply anonymously...' : 'Add a comment...'}
                     placeholderTextColor={text.muted as string}
                     value={draft}
@@ -282,20 +297,18 @@ export function CommentSheet({
                     blurOnSubmit={false}
                 />
 
-                <TouchableOpacity
+                <Pressable
                     onPress={handleSend}
                     disabled={!draft.trim() || isCreatingComment}
-                    style={[
-                        styles.sendBtn,
-                        { backgroundColor: (!draft.trim() ? glass.interact.bg : accent.action) as string },
-                    ]}
+                    className="w-9 h-9 rounded-full items-center justify-center shrink-0"
+                    style={{ backgroundColor: (!draft.trim() ? glass.interact.bg : accent.action) as string }}
                 >
                     {isCreatingComment ? (
                         <ActivityIndicator size="small" color="#fff" />
                     ) : (
-                        <Send size={16} color={!draft.trim() ? text.muted as string : '#fff'} />
+                        <Send size={16} color={!draft.trim() ? (text.muted as string) : '#fff'} />
                     )}
-                </TouchableOpacity>
+                </Pressable>
             </View>
         </KeyboardAvoidingView>
     );
@@ -312,8 +325,8 @@ export function CommentSheet({
                     right: 0,
                     maxHeight: '70vh',
                     zIndex: 1000,
-                    borderTopLeftRadius: Theme.corners.comfortable,
-                    borderTopRightRadius: Theme.corners.comfortable,
+                    borderTopLeftRadius: 16, // Theme.corners.comfortable
+                    borderTopRightRadius: 16,
                     boxShadow: '0 -4px 32px rgba(107,100,128,0.18)',
                     overflow: 'hidden',
                 } as any}
@@ -331,111 +344,12 @@ export function CommentSheet({
             transparent
             onRequestClose={onClose}
         >
-            <TouchableOpacity
-                activeOpacity={1}
+            <Pressable
+                className="flex-1 bg-[rgba(17,12,36,0.55)]"
                 onPress={onClose}
-                style={styles.backdrop}
-            />
-            {sheetContent}
+            >
+                {sheetContent}
+            </Pressable>
         </Modal>
     );
 }
-
-// 
-const styles = StyleSheet.create({
-    backdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(17,12,36,0.55)',
-    },
-    sheet: {
-        borderTopLeftRadius: Theme.corners.comfortable,
-        borderTopRightRadius: Theme.corners.comfortable,
-        borderTopWidth: 1,
-        maxHeight: '80%',
-        minHeight: 320,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-    },
-    dragHandle: {
-        width: 34,
-        alignItems: 'flex-start',
-    },
-    listContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 8,
-    },
-    empty: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 40,
-        paddingHorizontal: 24,
-    },
-    commentRow: {
-        flexDirection: 'row',
-        marginBottom: 16,
-        paddingLeft: 4,
-    },
-    avatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 10,
-        marginTop: 2,
-        flexShrink: 0,
-    },
-    commentBody: {
-        flex: 1,
-    },
-    officialBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-        paddingVertical: 2,
-        borderRadius: 8,
-    },
-    actionBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    composer: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        padding: 12,
-        gap: 8,
-        borderTopWidth: 1,
-    },
-    anonBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-    input: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: Theme.corners.comfortable,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        fontSize: 14,
-        maxHeight: 120,
-        lineHeight: 20,
-    },
-    sendBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-});

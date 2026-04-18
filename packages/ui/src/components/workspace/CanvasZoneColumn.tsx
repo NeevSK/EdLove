@@ -14,6 +14,7 @@ export interface CanvasZoneColumnProps<
     title?: string;
     description?: string;
     renderSurfaceContent?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => React.ReactNode;
+    getSurfaceTitle?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string;
     getSurfaceSubtitle?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string | undefined;
     getSurfaceSummary?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string | undefined;
     getSurfaceSnapshot?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string | undefined;
@@ -86,6 +87,7 @@ export function CanvasZoneColumn<
                         <CanvasSurfaceCard
                             key={surface.surfaceId}
                             surface={surface}
+                            title={getSurfaceTitle?.(surface)}
                             subtitle={getSurfaceSubtitle?.(surface)}
                             summary={getSurfaceSummary?.(surface)}
                             snapshot={getSurfaceSnapshot?.(surface)}

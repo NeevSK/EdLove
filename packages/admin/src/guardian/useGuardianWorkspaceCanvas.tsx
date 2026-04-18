@@ -606,10 +606,11 @@ export function useGuardianWorkspaceLayout(
   userId: string | null | undefined,
   surfaces: GuardianWorkspaceSurface[],
 ) {
-  const workspace = useWorkspaceLayoutSync({
+  const workspace = useWorkspaceLayoutSync<GuardianWorkspaceSurfaceId, GuardianCapabilityId, GuardianWorkspaceSurface>({
     workspaceId: 'guardian-workspace',
     userId,
-    surfaces});
+    surfaces
+  });
 
   const resolvedSurfaceMap = useMemo(
     () => new Map(workspace.surfaces.map((surface) => [surface.surfaceId, surface] as const)),
@@ -644,15 +645,7 @@ export function GuardianWorkspaceCanvas({
   onTogglePinned,
   onMoveToNextZone,
   onOpenSurface}: {
-  layout: {
-    order: GuardianWorkspaceSurfaceId[];
-    hidden: GuardianWorkspaceSurfaceId[];
-    pinned: GuardianWorkspaceSurfaceId[];
-    zoneBySurface: Partial<Record<GuardianWorkspaceSurfaceId, WorkspaceZoneId>>;
-    workspaceId: string;
-    userId: string;
-    updatedAt: string;
-  } | null;
+  layout: ReturnType<typeof useGuardianWorkspaceLayout>['layout'];
   surfaces: GuardianResolvedSurface[];
   schoolName?: string | null;
   onToggleHidden: (id: GuardianWorkspaceSurfaceId, hidden: boolean) => void;

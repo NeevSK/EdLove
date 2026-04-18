@@ -3,9 +3,11 @@ import {
     Pressable, 
     Box, 
     Text, 
-    InfoIcon,
+    HStack,
+    VStack,
+    Icon,
     SanctuaryModal} from '@repo/ui';
-import { Plus, Clock } from 'lucide-react-native';
+import { Plus, Clock, Info } from 'lucide-react-native';
 import { PRINCIPAL_FEATURE_REGISTRY } from './PrincipalFeatureRegistry';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 import { useTranslation } from 'react-i18next';
@@ -50,7 +52,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                 <HStack className="items-center gap-3 flex-1">
                     {FeatureIcon && (
                         <Box className="w-9 h-9 rounded-xl bg-primary/10 items-center justify-center">
-                            <FeatureIcon size={20} className="text-primary" />
+                            <Icon as={FeatureIcon} size={20} className="text-primary" />
                         </Box>
                     )}
                     <Text className="text-base font-bold text-ink flex-1" numberOfLines={1}>
@@ -71,7 +73,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                         accessibilityRole="button"
                         className="p-1 active:scale-90 transition-transform"
                     >
-                        <InfoIcon size="sm" className="text-ink/40" />
+                        <Icon as={Info} size="sm" className="text-ink/40" />
                     </Pressable>
 
                     {/* Add Icon (+) */}

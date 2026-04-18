@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { VStack, HStack, Card,  } from '@repo/ui';
+import { VStack, HStack, Card, Theme, colors } from '@repo/ui';
 import { useStudentPerformance, useClassPerformance, usePredictions, PerformanceDashboard, GPAInsights } from '@repo/analytics';
 
 interface EnhancedAnalyticsDashboardProps {
@@ -61,15 +61,15 @@ export default function EnhancedAnalyticsDashboard({
               <Text style={styles.sectionTitle}>{'\uD83D\uDCC8'} Class Performance</Text>
               
               <HStack style={styles.metricsRow}>
-                <VStack flex={1} alignItems="center">
+                <VStack style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={styles.metricValue}>{classPerformance.averageGPA.toFixed(2)}</Text>
                   <Text style={styles.metricLabel}>Average GPA</Text>
                 </VStack>
-                <VStack flex={1} alignItems="center">
+                <VStack style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={styles.metricValue}>{classPerformance.totalStudents}</Text>
                   <Text style={styles.metricLabel}>Total Students</Text>
                 </VStack>
-                <VStack flex={1} alignItems="center">
+                <VStack style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={styles.metricValue}>{classPerformance.topPerformers.length}</Text>
                   <Text style={styles.metricLabel}>Top Performers</Text>
                 </VStack>
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'},
   atRiskText: {
     fontSize: 14,
-    color: error,
+    color: colors.error,
     marginBottom: Theme.spacing.xs},
   moreText: {
     fontSize: 14,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'},
   noRiskText: {
     fontSize: 14,
-    color: success,
+    color: colors.success,
     fontWeight: '600'},
   insightText: {
     fontSize: 14,
@@ -189,5 +189,5 @@ const styles = StyleSheet.create({
     lineHeight: 20},
   actionText: {
     fontSize: 16,
-    color: gurudeviBlue,
+    color: colors.gurudeviBlue,
     marginBottom: Theme.spacing.xs}});

@@ -43,6 +43,7 @@ export type Subjects =
   | 'SectionHeadDashboard'
   | 'AssistantPrincipalDashboard'
   | 'AdminDashboard'
+  | 'GuardianDashboard'
   | 'ClassroomList' 
   | 'Classroom' 
   | 'School' 

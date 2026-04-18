@@ -50,6 +50,7 @@ import { z } from 'zod';
 export { z };
 export * from './lib/inviteCodes';
 export * from './lib/workspace/canvas';
+export * from './lib/workspace/workspaceSwitcher';
 export * from './lib/workspace/useWorkspaceLayoutSync';
 export * from './utils/validators';
 export * from './forms/form-manager';

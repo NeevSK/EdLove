@@ -45,6 +45,7 @@ export function MobileWorkspaceCanvas<
                             compact={true}
                             style={styles.stackItem}
                             renderSurfaceContent={props.renderSurfaceContent}
+                            getSurfaceTitle={props.getSurfaceTitle}
                             getSurfaceSubtitle={props.getSurfaceSubtitle}
                             getSurfaceSummary={props.getSurfaceSummary}
                             getSurfaceSnapshot={props.getSurfaceSnapshot}

@@ -10,7 +10,7 @@ export default function AdminAuditLog() {
         <Text className="text-lg font-bold text-phaseText-primary">Audit log</Text>
         <Text className="text-center text-sm text-phaseText-secondary">
           {data.recentUsers.length > 0
-            ? `Most recent operator context: ${data.recentUsers[0].full_name ?? data.recentUsers[0].id}`
+            ? `Most recent operator context: ${data.recentUsers[0]?.full_name ?? data.recentUsers[0]?.id}`
             : 'This room will show operator history, approvals, and accountability traces.'}
         </Text>
       </VStack>

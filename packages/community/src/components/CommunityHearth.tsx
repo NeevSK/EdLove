@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-    View, 
-    StyleSheet, 
     FlatList, 
     useWindowDimensions, 
-    Platform, 
-    Pressable 
+    Platform
 } from 'react-native';
 import { 
-    Theme, 
-    useThemedColors, 
     Text, 
     HStack, 
     VStack, 
     Box,
     GlassCard,
-    Heading
+    Heading,
+    Pressable,
+    View
 } from '@repo/ui';
-import { Star, Sparkles, Megaphone, Users, Heart } from 'lucide-react-native';
+import { Sparkles, Megaphone, Users, Heart } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { SanctuaryManifesto, CommunityPost as Post } from '../types/Community';
@@ -37,12 +34,10 @@ export default function CommunityHearth({
     manifestos = [],
     spotlightPost,
     userVibe = 'active',
-    userId,
     onEndorseManifesto,
     onPressSpotlight,
 }: CommunityHearthProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const { width: windowWidth } = useWindowDimensions();
     const flatListRef = useRef<FlatList>(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -52,7 +47,7 @@ export default function CommunityHearth({
         ? Math.min(windowWidth - 120, 700)
         : windowWidth * 0.85;
 
-    const SNAP_INTERVAL = CARD_WIDTH + Theme.spacing.md;
+    const SNAP_INTERVAL = CARD_WIDTH + 9; // Theme.spacing.md is 9px
 
     useEffect(() => {
         if (!manifestos || !manifestos.length) return;
@@ -65,37 +60,37 @@ export default function CommunityHearth({
     }, [activeIndex, manifestos?.length]);
 
     const renderManifesto = ({ item }: { item: SanctuaryManifesto }) => (
-        <GlassCard style={[styles.card, { width: CARD_WIDTH }]}>
+        <GlassCard 
+            className="p-6 rounded-generous min-h-[180px]" 
+            style={{ width: CARD_WIDTH }}
+        >
             <VStack space="md">
-                <HStack space="sm" alignItems="center">
-                    <Sparkles size={18} color={Theme.colors.sanctuarySaffron} />
-                    <Text fontWeight="700" color={Theme.colors.sanctuarySaffron}>
+                <HStack space="sm" className="items-center">
+                    <Sparkles size={18} color="#F6BF8C" />
+                    <Text className="font-bold text-sanctuarySaffron">
                         {t('community.manifestoTopic') || 'Community Manifesto'}
                     </Text>
                 </HStack>
                 
-                <Heading size="sm" sx={{ mt: 4 }}>{item.title}</Heading>
-                <Text size="sm" color={colors.textSecondary} numberOfLines={3}>
+                <Heading size="sm" className="mt-1">{item.title}</Heading>
+                <Text size="sm" className="text-willow" numberOfLines={3}>
                     {item.content}
                 </Text>
 
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', mt: 12 }}>
-                    <HStack space="xs" sx={{ alignItems: 'center' }}>
-                        <Users size={14} color={colors.textTertiary} />
-                        <Text size="xs" color={colors.textTertiary}>
+                <HStack className="justify-between items-center mt-3">
+                    <HStack space="xs" className="items-center">
+                        <Users size={14} color="#968E80" />
+                        <Text className="text-xs text-mistGray">
                             {item.endorsement_count || 0} {t('community.endorsers') || 'Endorsers'}
                         </Text>
                     </HStack>
                     
                     <Pressable 
                         onPress={() => onEndorseManifesto?.(item.id)}
-                        style={({ pressed }) => [
-                            styles.endorseBtn,
-                            pressed && { opacity: 0.7 }
-                        ]}
+                        className="flex-row items-center bg-sanctuarySaffron px-4 py-2 rounded-full active:opacity-70"
                     >
                         <Heart size={16} color="white" fill="white" />
-                        <Text size="xs" fontWeight="700" color="white" sx={{ ml: 6 }}>
+                        <Text className="text-xs font-bold text-white ml-1.5">
                             {t('community.endorse') || 'Endorse'}
                         </Text>
                     </Pressable>
@@ -105,17 +100,17 @@ export default function CommunityHearth({
     );
 
     return (
-        <View style={styles.container}>
+        <View className="py-5">
             <VStack space="lg">
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', px: 20 }}>
+                <HStack className="justify-between items-center px-5">
                     <VStack>
                         <Heading size="lg">{t('community.hearthTitle') || 'The Hearth'}</Heading>
-                        <Text size="xs" color={colors.textSecondary}>
+                        <Text className="text-xs text-willow">
                             {t('community.hearthSubtitle') || 'Where the community pulse beats strongest'}
                         </Text>
                     </VStack>
-                    <Box sx={{ bg: `${Theme.colors.sageGreen}20`, px: 12, py: 4, borderRadius: 20 }}>
-                        <Text size="xs" fontWeight="700" color={Theme.colors.sageGreen}>
+                    <Box className="bg-sageGreen/20 px-3 py-1 rounded-full">
+                        <Text className="text-xs font-bold text-sageGreen">
                             {userVibe.toUpperCase()}
                         </Text>
                     </Box>
@@ -130,7 +125,7 @@ export default function CommunityHearth({
                     showsHorizontalScrollIndicator={false}
                     snapToInterval={SNAP_INTERVAL}
                     decelerationRate="fast"
-                    contentContainerStyle={styles.listContent}
+                    contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
                     onMomentumScrollEnd={(e) => {
                         const index = Math.round(e.nativeEvent.contentOffset.x / SNAP_INTERVAL);
                         setActiveIndex(index);
@@ -138,16 +133,16 @@ export default function CommunityHearth({
                 />
 
                 {spotlightPost && (
-                    <Box sx={{ px: 20, mt: 8 }}>
+                    <Box className="px-5 mt-2">
                         <Pressable onPress={() => onPressSpotlight?.(spotlightPost.id)}>
-                            <GlassCard style={styles.spotlightCard}>
-                                <HStack space="md" sx={{ alignItems: 'center' }}>
-                                    <Megaphone size={24} color={Theme.colors.skyBlue} />
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Text size="xs" fontWeight="700" color={Theme.colors.skyBlue}>
+                            <GlassCard className="p-4 rounded-comfortable border-l-4 border-l-skyBlue">
+                                <HStack space="md" className="items-center">
+                                    <Megaphone size={24} color="#87CEEB" />
+                                    <VStack className="flex-1">
+                                        <Text className="text-xs font-bold text-skyBlue">
                                             {t('community.spotlight') || 'SPOTLIGHT'}
                                         </Text>
-                                        <Text size="sm" fontWeight="600" numberOfLines={2}>
+                                        <Text size="sm" className="font-semibold" numberOfLines={2}>
                                             {spotlightPost.content}
                                         </Text>
                                     </VStack>
@@ -160,32 +155,3 @@ export default function CommunityHearth({
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        paddingVertical: 20,
-    },
-    listContent: {
-        paddingHorizontal: 20,
-        gap: 16, // Use numeric gap or Theme.spacing.md
-    },
-    card: {
-        padding: 24,
-        borderRadius: 24,
-        minHeight: 180,
-    },
-    endorseBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    spotlightCard: {
-        padding: 16,
-        borderRadius: 20,
-        borderLeftWidth: 4,
-        borderLeftColor: Theme.colors.skyBlue,
-    }
-});

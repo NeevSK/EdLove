@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, StatusBar } from 'react-native';
+import { StyleSheet, Platform, KeyboardAvoidingView, StatusBar } from 'react-native';
+import { View, ScrollView } from '../gluestack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 
@@ -12,6 +13,7 @@ interface ScreenWrapperProps {
     backgroundColor?: string;
     refreshControl?: React.ReactElement<import('react-native').RefreshControlProps>;
     style?: any;
+    className?: string;
     hasBottomTab?: boolean;
     noTopInset?: boolean;
 }
@@ -32,6 +34,7 @@ export default function ScreenWrapper({
     backgroundColor,
     refreshControl,
     style,
+    className,
     hasBottomTab = false,
     noTopInset = false
 }: ScreenWrapperProps) {
@@ -56,7 +59,10 @@ export default function ScreenWrapper({
                 backgroundColor={resolvedBackground}
             />
 
-            <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}>
+            <View 
+                style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}
+                className={className}
+            >
                 {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}

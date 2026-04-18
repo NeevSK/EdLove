@@ -39,15 +39,67 @@ export const MyCard = () => (
 );
 ```
 
-## The Primitives
+## The Primitives (Exhaustive List)
 
+Our UI library provides a hardened set of primitives built on NativeWind v4. Always prefer these over raw `react-native` components.
+
+### 1. Layout & Foundation
 | Component | Usage |
 | :--- | :--- |
-| `Box` | Standard container (replacement for `View`). |
-| `VStack` / `HStack` | Layout containers with simplified flex properties. |
-| `Text` | **Mandatory** wrapper for all text nodes. |
-| `Center` | Utility to center children perfectly. |
-| `Button` | High-level interactive component. |
+| `Box` | Fundamental container (replacement for `View`). Supports all Tailwind layout classes. |
+| `HStack` | Horizontal flex container with simplified alignment. |
+| `VStack` | Vertical flex container with simplified alignment. |
+| `Center` | Utility to center children perfectly on both axes. |
+| `View` | Raw bridge to `react-native` View (use `Box` for standard styling). |
+| `AnimatedView` | Reanimated-integrated View for high-performance animations. |
+| `ScrollView` | Standard scrollable container. |
+| `FlatList` | Optimized list for large datasets. |
+| `RefreshControl` | Standard pull-to-refresh indicator for ScrollViews/FlatLists. |
+| `Divider` | Semantic and visual separator between elements. |
+
+### 2. Typography & Icons
+| Component | Usage |
+| :--- | :--- |
+| `Text` | **Mandatory** wrapper for all text nodes. Handles theme scale and platform normalization. |
+| `Icon` | Generic wrapper for SVG/Lucide icons. Use the `as` prop to pass the icon component. |
+
+### 3. Forms & Interaction
+| Component | Usage |
+| :--- | :--- |
+| `Button` | Multi-variant interactive component (Primary, Secondary, Outline, Ghost). |
+| `Input` | Text input primitive with focus states and theme integration. |
+| `FormControl` | Orchestrates label, helper text, and error messages for form fields. |
+| `Checkbox` | Standard multiple-choice selection. |
+| `Radio` | Single selection from multiple options. |
+| `Switch` | Platform-native binary toggle. |
+| `Select` | Dropdown picker for single selection from a list. |
+| `Textarea` | Multi-line text input for longer content. |
+| `Slider` | Value selection along a continuous or discrete range. |
+| `Pressable` | Transparent interactive primitive for building custom hit areas. |
+
+### 4. Feedback & Information
+| Component | Usage |
+| :--- | :--- |
+| `Toast` | Imperative feedback system (use `useToast` hook to trigger). |
+| `Spinner` | Standard activity indicator with theme colors. |
+| `Progress` | Visual representation of task completion. |
+| `Avatar` | User identity display (supports images, initials, and fallback icons). |
+
+### 5. Overlays & Layers
+| Component | Usage |
+| :--- | :--- |
+| `Modal` | Full-screen or centered overlay for critical tasks. |
+| `Actionsheet` | Slide-up context menu for action selection. |
+| `Portal` | Escapes the current layout hierarchy to render at the root level. |
+| `Overlay` | Backdrop layer for modals and sheets. |
+
+### 6. Media & Effects
+| Component | Usage |
+| :--- | :--- |
+| `Image` | Optimized image loading with failure handling. |
+| `ImageBackground` | Container for layering content over an image. |
+| `LinearGradient` | Native-speed color gradients. |
+| `Fab` | Floating Action Button for primary screen actions. |
 
 ## Important Considerations
 

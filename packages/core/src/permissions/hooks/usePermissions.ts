@@ -4,6 +4,7 @@ import { Actions, Subjects, SubjectType } from '../abilities/base';
 import { UserContext, UserContextSchema, TenantKind } from '../schemas/user.schema';
 import { Role } from '../schemas/role.schema';
 import { useStore, TotalState } from '../../store/useStore';
+import { useFeatureStore } from '../../store/useFeatureStore';
 
 /**
  * usePermissions: The ONLY interface components ever touch for POA.
@@ -14,6 +15,7 @@ export const usePermissions = () => {
     user: state.user,
     schoolType: state.schoolType
   }));
+  const flags = useFeatureStore((state) => state.flags);
 
   // 1. Build context from store (Supabase auth + app state)
   const context: UserContext = useMemo(() => {
@@ -53,6 +55,7 @@ export const usePermissions = () => {
   return {
     ability,
     context,
+    flags,
     /**
      * can: Check if action on subject is allowed.
      * usage: can('read', 'School')

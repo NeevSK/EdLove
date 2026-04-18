@@ -9,9 +9,7 @@ import {
     SanctuaryButton,
     ScreenWrapper,
     useRegisterFAB,
-    useThemedColors,
-    useTheme,
-    Theme
+    useTheme
 } from '@repo/ui';
 import { useStore } from '@repo/core';
 import { useAIAgent } from '@repo/ai';
@@ -20,8 +18,8 @@ import { Calendar, Users, AlertCircle, CalendarCheck } from 'lucide-react-native
 export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
     const userRole = useStore((state: any) => state.userRole);
-    const colors = useThemedColors();
     const theme = useTheme();
+    const { scene } = theme;
 
     // Register FAB globally
     useRegisterFAB({
@@ -31,7 +29,7 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
     });
 
     return (
-        <ScreenWrapper backgroundColor={colors.primary}>
+        <ScreenWrapper backgroundColor={scene.primary.main} noTopInset>
             <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
                 <VStack className="gap-4">
                     {/* Header */}
@@ -47,7 +45,7 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                     {/* Proactive Agent Notifications */}
                     {activeGaps.length > 0 && (
                         <VStack className="gap-3">
-                            <Text className="font-semibold text-sm" style={{ color: colors.warning }}>
+                            <Text className="font-semibold text-sm text-phase-warning">
                                 AI SUGGESTIONS
                             </Text>
                             {activeGaps.map((gap: any) => (
@@ -55,12 +53,12 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                                     key={gap.id}
                                     className="p-4 rounded-lg border"
                                     style={{
-                                        backgroundColor: colors.warning + '11',
-                                        borderColor: colors.warning
+                                        backgroundColor: scene.warning.lowOpacity || scene.warning.main + '11',
+                                        borderColor: scene.warning.main
                                     }}
                                 >
                                     <HStack className="gap-3 items-center">
-                                        <Icon as={AlertCircle} color={colors.warning} size="md" />
+                                        <Icon as={AlertCircle} className="text-phase-warning" size="md" />
                                         <VStack className="flex-1">
                                             <Text className="font-bold" style={{ color: theme.text.primary }}>{gap.title}</Text>
                                             <Text className="text-sm" style={{ color: theme.text.secondary }}>{gap.description}</Text>
@@ -84,28 +82,28 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                     <Box 
                         className="p-6 rounded-3xl border mt-4"
                         style={{
-                            backgroundColor: colors.action + '0D', // 0.05 opacity approx
-                            borderColor: colors.action + '33'    // 0.2 opacity approx
+                            backgroundColor: scene.primary.lowOpacity || scene.primary.main + '0D',
+                            borderColor: scene.primary.main + '33'
                         }}
                     >
                         <HStack className="justify-between items-center mb-2">
                             <HStack className="gap-2 items-center">
-                                <Icon as={CalendarCheck} size="md" color={colors.action} />
-                                <Text className="font-bold" style={{ color: theme.text.primary }}>Timetable Review</Text>
+                                <Icon as={CalendarCheck} size="md" className="text-phase-interactive" />
+                                <Text className="font-bold text-phase-text-primary">Timetable Review</Text>
                             </HStack>
                             <Box 
                                 className="px-2 py-0.5 rounded-full"
-                                style={{ backgroundColor: colors.action + '33' }}
+                                style={{ backgroundColor: scene.primary.main + '33' }}
                             >
-                                <Text className="text-[10px] font-bold" style={{ color: colors.action }}>AGENTIC</Text>
+                                <Text className="text-[10px] font-bold" style={{ color: scene.primary.main }}>AGENTIC</Text>
                             </Box>
                         </HStack>
 
                         {lastTimetableDraft ? (
                             <VStack className="gap-2">
                                 <HStack className="gap-2 items-center">
-                                    <AlertCircle size={16} color={colors.warning} />
-                                    <Text className="text-[13px]" style={{ color: theme.text.primary }}>
+                                    <Icon as={AlertCircle} size={16} className="text-phase-warning" />
+                                    <Text className="text-[13px] text-phase-text-primary">
                                         Draft generated for your section.
                                     </Text>
                                 </HStack>
@@ -139,8 +137,8 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                         <Box 
                             className="flex-1 p-4 rounded-xl border"
                             style={{ 
-                                backgroundColor: colors.secondary,
-                                borderColor: colors.border
+                                backgroundColor: scene.elevated.bg,
+                                borderColor: scene.border.base
                             }}
                         >
                             <Text className="text-[10px]" style={{ color: theme.text.secondary }}>CLASSES</Text>
@@ -149,12 +147,12 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                         <Box 
                             className="flex-1 p-4 rounded-xl border"
                             style={{ 
-                                backgroundColor: colors.secondary,
-                                borderColor: colors.border
+                                backgroundColor: scene.elevated.bg,
+                                borderColor: scene.border.base
                             }}
                         >
-                            <Text className="text-[10px]" style={{ color: theme.text.secondary }}>TEACHERS</Text>
-                            <Text className="font-bold text-xl" style={{ color: theme.text.primary }}>8</Text>
+                            <Text className="text-[10px]" style={{ color: scene.text.secondary }}>TEACHERS</Text>
+                            <Text className="font-bold text-xl" style={{ color: scene.text.primary }}>8</Text>
                         </Box>
                     </HStack>
 

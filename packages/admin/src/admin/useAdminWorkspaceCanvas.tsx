@@ -31,7 +31,6 @@ export type AdminWorkspaceSurfaceId =
   | 'audit_trail';
 
 export type AdminWorkspaceSurface = WorkspaceSurfaceDefinition<AdminWorkspaceSurfaceId, AdminCapabilityId> & {
-  title: string;
   subtitle?: string;
   summary?: string;
   snapshot?: string;
@@ -333,13 +332,6 @@ export function AdminWorkspaceCanvas({
       subtitle="Global platform operations, guarded interventions, and live tenant stewardship."
       emptyMessage="No admin surfaces are available yet."
       renderSurfaceContent={(surface) => <Box className="flex-1">{(surface as AdminResolvedSurface).content}</Box>}
-      getSurfaceTitle={(surface) => (surface as AdminResolvedSurface).title}
-      getSurfaceSubtitle={(surface) => (surface as AdminResolvedSurface).subtitle}
-      getSurfaceSummary={(surface) => (surface as AdminResolvedSurface).summary}
-      getSurfaceSnapshot={(surface) => (surface as AdminResolvedSurface).snapshot}
-      getSurfaceTemporalLabel={(surface) => (surface as AdminResolvedSurface).temporalLabel}
-      getSurfaceTemporalTone={(surface) => (surface as AdminResolvedSurface).temporalTone}
-      getSurfaceMetadata={(surface) => (surface as AdminResolvedSurface).metadata}
       onSurfacePress={(surface) => onOpenSurface(surface as AdminResolvedSurface)}
       renderSurfaceActions={(surface) => {
         const typedSurface = surface as AdminResolvedSurface;

@@ -37,6 +37,7 @@ export interface WorkspaceSurfaceDefinition<TSurfaceId extends string = string, 
     ownerPackage: WorkspaceOwnerPackage;
     defaultZone: WorkspaceZoneId;
     defaultOrder: number;
+    title?: string;
     hiddenByDefault?: boolean;
     mobileSupport?: boolean;
     webSupport?: boolean;
@@ -61,6 +62,7 @@ export interface WorkspaceRendererConfig {
 
 export interface ResolvedWorkspaceSurface<TSurfaceId extends string = string, TCapabilityKey extends string = string>
     extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> {
+    title: string;
     pinned: boolean;
     hidden: boolean;
     zone: WorkspaceZoneId;

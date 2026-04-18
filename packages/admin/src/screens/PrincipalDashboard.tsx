@@ -3,25 +3,22 @@ import { useNavigation } from '@react-navigation/native';
 import {
   useFeatureAccess,
   usePermissions,
-  useStore} from '@repo/core';
+  useStore,
+  TotalState} from '@repo/core';
 import {
   Box,
   Button,
   ButtonText,
-  Heading,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   ScreenWrapper,
   Text,
-  
+  HStack,
+  VStack,
+  Icon,
+  SanctuaryModal,
   hapticLight,
   QRBuilder,
   QRCodeGenerator,
-  useThemedColors,
+  useTheme,
   useRegisterFAB} from '@repo/ui';
 import {
   Building2,
@@ -55,8 +52,8 @@ export default function PrincipalDashboard({
   const navigation = useNavigation<any>();
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
-  const isDemoMode = useStore((state: any) => state.isDemoMode);
-  const setBreathingOpen = useStore((state: any) => state.setBreathingOpen);
+  const isDemoMode = useStore((state: TotalState) => state.isDemoMode);
+  const setBreathingOpen = useStore((state: TotalState) => state.setBreathingOpen);
   const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
 
   const isDemoExperience = isDemoMode || forceDemo === true;
@@ -156,43 +153,38 @@ export default function PrincipalDashboard({
         }}
       />
 
-      <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}>
-        <ModalBackdrop />
-        <ModalContent className="bg-phase-surface rounded-[40px] max-w-[340px]">
-          <ModalHeader className="mb-4">
-            <Heading className="text-lg font-black text-ink uppercase tracking-widest">
-              School QR Code
-            </Heading>
-          </ModalHeader>
-          <ModalBody className="items-center gap-6 py-5">
-            <Box className="p-6 bg-white rounded-3xl border border-border">
-              <QRCodeGenerator
-                value={QRBuilder.school(schoolId, '', school?.handle ?? undefined)}
-                size={220}
-              />
-            </Box>
-            <Text className="text-ink/60 text-center leading-relaxed font-bold">
-              Scan to join the <Text className="text-ink font-black">{school?.name}</Text> sanctuary.
+      <SanctuaryModal
+        isOpen={isQrModalOpen}
+        onClose={() => setIsQrModalOpen(false)}
+        title="School QR Code"
+      >
+        <VStack className="items-center gap-6 py-5">
+          <Box className="p-6 bg-white rounded-3xl border border-border">
+            <QRCodeGenerator
+              value={QRBuilder.school(schoolId, '', school?.handle ?? undefined)}
+              size={220}
+            />
+          </Box>
+          <Text className="text-ink/60 text-center leading-relaxed font-bold">
+            Scan to join the <Text className="text-ink font-black">{school?.name}</Text> sanctuary.
+          </Text>
+          {school?.handle ? (
+            <Text className="text-ink/30 mt-2 text-xs font-bold uppercase tracking-widest">
+              @{school.handle}
             </Text>
-            {school?.handle ? (
-              <Text className="text-ink/30 mt-2 text-xs font-bold uppercase tracking-widest">
-                @{school.handle}
-              </Text>
-            ) : null}
-          </ModalBody>
-          <ModalFooter className="mt-4">
-            <Button
-              onPress={() => {
-                hapticLight();
-                setIsQrModalOpen(false);
-              }}
-              className="w-full bg-phase-interactive h-14 rounded-2xl"
-            >
-              <ButtonText className="text-inverted font-black uppercase tracking-widest">Close</ButtonText>
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          ) : null}
+          
+          <Button
+            onPress={() => {
+              hapticLight();
+              setIsQrModalOpen(false);
+            }}
+            className="w-full bg-phase-interactive h-14 rounded-2xl mt-4"
+          >
+            <ButtonText className="text-inverted font-black uppercase tracking-widest">Close</ButtonText>
+          </Button>
+        </VStack>
+      </SanctuaryModal>
     </>
   );
 }

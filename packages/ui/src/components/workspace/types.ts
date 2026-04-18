@@ -11,6 +11,7 @@ export interface WorkspaceCanvasProps<
     emptyMessage?: string;
     includeHidden?: boolean;
     renderSurfaceContent?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => React.ReactNode;
+    getSurfaceTitle?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string;
     getSurfaceSubtitle?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string | undefined;
     getSurfaceSummary?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string | undefined;
     getSurfaceSnapshot?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => string | undefined;

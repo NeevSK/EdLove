@@ -29,23 +29,27 @@ import type { WorkspaceLayoutTarget } from '../../api/schemas/workspace-layout.s
 const UUID_PATTERN =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export interface UseWorkspaceLayoutSyncOptions<TSurfaceId extends string = string,
-    TCapabilityKey extends string = string
+export interface UseWorkspaceLayoutSyncOptions<
+    TSurfaceId extends string = string,
+    TCapabilityKey extends string = string,
+    TDefinition extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> = WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>
 > {
     workspaceId: string;
     userId: string | null | undefined;
-    surfaces: WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>[];
+    surfaces: TDefinition[];
     enableRemoteSync?: boolean;
     platform?: WorkspaceLayoutPlatformKind;
     screenClass?: WorkspaceLayoutScreenClass;
     compactBreakpoint?: number;
 }
 
-export interface UseWorkspaceLayoutSyncResult<TSurfaceId extends string = string,
-    TCapabilityKey extends string = string
+export interface UseWorkspaceLayoutSyncResult<
+    TSurfaceId extends string = string,
+    TCapabilityKey extends string = string,
+    TDefinition extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> = WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>
 > {
     layout: WorkspaceLayout<TSurfaceId> | null;
-    surfaces: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>[];
+    surfaces: (TDefinition & ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>)[];
     layoutTarget: WorkspaceLayoutTarget;
     isHydrated: boolean;
     isSyncing: boolean;
@@ -80,8 +84,10 @@ async function fetchRemoteLayout<TSurfaceId extends string>(
     return shared ? toWorkspaceLayoutRecord<TSurfaceId>(shared) : null;
 }
 
-export function useWorkspaceLayoutSync<TSurfaceId extends string = string,
-    TCapabilityKey extends string = string
+export function useWorkspaceLayoutSync<
+    TSurfaceId extends string = string,
+    TCapabilityKey extends string = string,
+    TDefinition extends WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey> = WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>
 >({
     workspaceId,
     userId,
@@ -90,8 +96,10 @@ export function useWorkspaceLayoutSync<TSurfaceId extends string = string,
     platform,
     screenClass,
     compactBreakpoint = 768,
-}: UseWorkspaceLayoutSyncOptions<TSurfaceId, TCapabilityKey>): UseWorkspaceLayoutSyncResult<TSurfaceId,
-    TCapabilityKey
+}: UseWorkspaceLayoutSyncOptions<TSurfaceId, TCapabilityKey, TDefinition>): UseWorkspaceLayoutSyncResult<
+    TSurfaceId,
+    TCapabilityKey,
+    TDefinition
 > {
     const dimensions = useWindowDimensions();
     const inferredPlatform: WorkspaceLayoutPlatformKind = platform ?? (Platform.OS === 'web' ? 'web' : 'native');
