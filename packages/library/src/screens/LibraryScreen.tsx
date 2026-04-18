@@ -15,6 +15,7 @@ import {
     Share,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import {
     Box,
     VStack,
     HStack,

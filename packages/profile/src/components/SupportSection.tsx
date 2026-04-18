@@ -1,5 +1,4 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
 import {
     Box,
     VStack,
@@ -7,14 +6,16 @@ import {
     Text,
     Heading,
     openExternalURL,
+    Pressable,
 } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight, Info, Star } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * SUPPORT SECTION
+ * Sanctuary V3 standard for displaying support and feedback options.
+ */
 export default function SupportSection() {
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     const handleSupport = () => {
@@ -27,35 +28,38 @@ export default function SupportSection() {
         });
     };
 
-    const SupportItem = ({ icon: Icon, title, subtitle, onPress }: { icon: any, title: string, subtitle: string, onPress: () => void }) => (
-        <TouchableOpacity onPress={onPress}>
+    const SupportItem = ({ 
+        icon: Icon, 
+        title, 
+        subtitle, 
+        onPress 
+    }: { 
+        icon: any, 
+        title: string, 
+        subtitle: string, 
+        onPress: () => void 
+    }) => (
+        <Pressable onPress={onPress}>
             <HStack
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{
-                    p: Theme.spacing.md,
-                    bg: colors.secondary,
-                    borderRadius: Theme.corners.comfortable,
-                    mb: Theme.spacing.sm
-                }}
+                className="items-center justify-between p-4 bg-phase-canvas rounded-2xl border border-phase-surface mb-2"
             >
-                <HStack space="md" alignItems="center">
-                    <Box sx={{ p: 8, bg: `${colors.action}20`, borderRadius: 8 }}>
-                        <Icon size={20} color={colors.action} />
+                <HStack space="md" className="items-center">
+                    <Box className="p-2 bg-phase-interactive/10 rounded-lg">
+                        <Icon size={20} color="#4A90E2" />
                     </Box>
                     <VStack>
-                        <Text color={colors.text} bold>{title}</Text>
-                        <Text color={colors.textSecondary} size="xs">{subtitle}</Text>
+                        <Text className="text-phase-text-primary font-bold">{title}</Text>
+                        <Text className="text-phase-text-tertiary text-xs">{subtitle}</Text>
                     </VStack>
                 </HStack>
-                <ChevronRight size={20} color={colors.textTertiary} />
+                <ChevronRight size={20} color="#9DA1A3" />
             </HStack>
-        </TouchableOpacity>
+        </Pressable>
     );
 
     return (
-        <VStack space="md" mt={Theme.spacing.lg}>
-            <Heading color={colors.textSecondary as any} size="sm" mb="$2">
+        <VStack space="md" className="mt-6">
+            <Heading className="text-phase-text-secondary text-sm mb-1 px-1">
                 {t('support.title', 'Support & Feedback')}
             </Heading>
 

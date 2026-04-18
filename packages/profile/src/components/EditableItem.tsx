@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import {
+import { 
     Box,
     VStack,
     HStack,
     Text,
-    useThemedColors,
-    Theme,
     Input,
     InputField,
+    Pressable,
 } from '@repo/ui';
 import { Edit2, Check, X } from 'lucide-react-native';
 import { ProfileValidator } from '../lib/validator';
@@ -27,6 +25,10 @@ interface EditableItemProps {
     transform?: (value: string) => string;
 }
 
+/**
+ * EDITABLE ITEM
+ * Sanctuary V3 standard for in-place profile field editing.
+ */
 export const EditableItem = ({
     icon: Icon,
     label,
@@ -39,7 +41,6 @@ export const EditableItem = ({
     helperText,
     transform,
 }: EditableItemProps) => {
-    const colors = useThemedColors();
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(value);
     const [isSaving, setIsSaving] = useState(false);
@@ -86,28 +87,19 @@ export const EditableItem = ({
     };
 
     return (
-        <HStack space="md" alignItems="center">
-            <Box
-                sx={{
-                    padding: 10,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: colors.tertiary
-                }}
-            >
-                <Icon size={20} color={colors.action} />
+        <HStack space="md" className="items-center">
+            <Box className="p-2.5 rounded-full bg-phase-surface">
+                <Icon size={20} color="#4A90E2" />
             </Box>
-            <VStack flex={1}>
-                <Text size="xs" color={colors.textSecondary}>
+            <VStack className="flex-1">
+                <Text className="text-[10px] text-phase-text-tertiary uppercase font-bold tracking-tighter">
                     {label}
                 </Text>
                 {isEditing ? (
                     <VStack space="xs">
-                        <HStack space="sm" alignItems="center">
+                        <HStack space="sm" className="items-center">
                             <Input
-                                sx={{
-                                    flex: 1,
-                                    borderColor: error ? colors.error : colors.action
-                                }}
+                                className={`flex-1 ${error ? 'border-phase-error' : 'border-phase-interactive'}`}
                             >
                                 <InputField
                                     value={editValue}
@@ -117,40 +109,41 @@ export const EditableItem = ({
                                     }}
                                     placeholder={placeholder}
                                     autoFocus
-                                    color={colors.text}
+                                    className="text-phase-text-primary text-sm"
+                                    placeholderTextColor="#9DA1A3"
                                     multiline={multiline}
                                 />
                             </Input>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={handleSave}
                                 disabled={isSaving || !!error}
-                                style={{ opacity: (isSaving || !!error) ? 0.3 : 1 }}
+                                className={isSaving || !!error ? 'opacity-30' : 'opacity-100'}
                             >
-                                <Check size={20} color={colors.success} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleCancel}>
-                                <X size={20} color={colors.error} />
-                            </TouchableOpacity>
+                                <Check size={20} color="#00C853" />
+                            </Pressable>
+                            <Pressable onPress={handleCancel}>
+                                <X size={20} color="#FF6B6B" />
+                            </Pressable>
                         </HStack>
                         {error && (
-                            <Text size="xs" color={colors.error}>
+                            <Text className="text-xs text-phase-error">
                                 {error}
                             </Text>
                         )}
                     </VStack>
                 ) : (
-                    <TouchableOpacity
+                    <Pressable
                         onPress={handleStartEdit}
-                        style={styles.touchableDisplay}
+                        className="flex-row items-center justify-between"
                     >
-                        <Text size="md" color={value ? colors.text : colors.textTertiary} bold>
+                        <Text className={`text-base font-bold ${value ? 'text-phase-text-primary' : 'text-phase-text-tertiary'}`}>
                             {value || placeholder}
                         </Text>
-                        {!disabled && <Edit2 size={14} color={colors.textTertiary} />}
-                    </TouchableOpacity>
+                        {!disabled && <Edit2 size={14} color="#9DA1A3" />}
+                    </Pressable>
                 )}
                 {helperText && (
-                    <Text size="xs" color={colors.textTertiary} mt={2} sx={{ opacity: 0.8 }}>
+                    <Text className="text-xs text-phase-text-tertiary mt-1 opacity-80">
                         {helperText}
                     </Text>
                 )}
@@ -158,11 +151,3 @@ export const EditableItem = ({
         </HStack>
     );
 };
-
-const styles = StyleSheet.create({
-    touchableDisplay: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-});

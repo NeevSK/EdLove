@@ -16,6 +16,7 @@ import {
     ActivityIndicator,
     StyleSheet
 } from 'react-native';
+import {
     Text,
     useTheme,
     PositiveInvitation,
@@ -392,8 +393,6 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                             </Pressable>
                         </Box>
                     )}
-                </VStack>
-            </KeyboardAvoidingView>
         </ScreenWrapper>
     );
 }

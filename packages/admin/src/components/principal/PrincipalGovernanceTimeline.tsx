@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { TouchableOpacity, TextInput } from 'react-native';
-import { api, useTemporalStore, type PrincipalGovernanceEventZod } from '@repo/core';
-import { Box, HStack, Text, VStack, useTheme, Theme } from '@repo/ui';
+import { Box, HStack, Text, VStack, useTheme } from '@repo/ui';
+import { styled } from 'nativewind';
+
+const StyledTextInput = styled(TextInput);
+const StyledTouchableOpacity = styled(TouchableOpacity);
 
 interface PrincipalGovernanceTimelineProps {
   schoolId: string;
@@ -128,143 +129,96 @@ export default function PrincipalGovernanceTimeline({
     }
   };
 
-  const infoColor = Theme.colors.gurudeviBlue;
-  const errorColor = Theme.colors.error;
-  const warningColor = Theme.colors.warning;
+  const infoColor = theme.accent.action;
+  const errorColor = theme.accent.danger;
+  const warningColor = theme.accent.templeGold;
 
   return (
-    <VStack style={{ gap: Theme.spacing.sm }}>
-      <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text.primary }}>
+    <VStack className="gap-2">
+      <Text className="text-base font-bold text-phaseText-primary">
         Governance timeline
       </Text>
-      <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
+      <Text className="text-xs text-phaseText-secondary leading-relaxed">
         Official institutional events for invites and principal observations as of {viewDate}.
       </Text>
 
       {!isLoading && !error && observationSnapshot.length > 0 && (
-        <Box
-          style={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: theme.scene.canvas.bg,
-            borderWidth: 1,
-            borderColor: theme.scene.canvas.border,
-            gap: Theme.spacing.sm
-          }}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
+        <Box className="rounded-2xl p-4 bg-phase-canvas border border-phase-border gap-2">
+          <Text className="text-[13px] font-bold text-phaseText-primary">
             Active governance snapshot
           </Text>
-          <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
+          <Text className="text-xs text-phaseText-secondary leading-relaxed">
             Latest official observation state as of {viewDate}. This is the current institutional surface, not the full history.
           </Text>
           {observationSnapshot.map((event) => (
             <Box
               key={`snapshot-${event.id}`}
-              style={{
-                borderRadius: Theme.corners.comfortable,
-                padding: Theme.spacing.sm,
-                backgroundColor: theme.scene.surface.bg,
-                borderWidth: 1,
-                borderColor: theme.scene.surface.border,
-                gap: Theme.spacing.xs
-              }}>
-              <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}>
-                <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.primary }}>
+              className="rounded-2xl p-2 bg-phase-surface border border-phase-border gap-2"
+            >
+              <HStack className="justify-between items-center gap-2">
+                <Text className="text-xs font-bold text-phaseText-primary">
                   Observation {event.entity_id}
                 </Text>
-                <Text style={{ fontSize: 11, color: infoColor, fontWeight: '700' }}>
+                <Text style={{ color: infoColor }} className="text-[11px] font-bold">
                   {EVENT_LABELS[event.event_type] || event.event_type}
                 </Text>
               </HStack>
-              <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
+              <Text className="text-xs text-phaseText-secondary leading-relaxed">
                 {(event.snapshot?.content as string) || 'Official observation state is available.'}
               </Text>
-              <TouchableOpacity onPress={() => setFollowUpTarget(event.entity_id)} activeOpacity={0.85}>
+              <StyledTouchableOpacity onPress={() => setFollowUpTarget(event.entity_id)} activeOpacity={0.85}>
                 <Box
-                  style={{
-                    alignSelf: 'flex-start',
-                    marginTop: Theme.spacing.xs,
-                    paddingHorizontal: Theme.spacing.md,
-                    paddingVertical: Theme.spacing.xs,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: `${infoColor}18`,
-                    borderWidth: 1,
-                    borderColor: theme.scene.surface.border
-                  }}>
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: infoColor }}>
+                  style={{ backgroundColor: `${infoColor}18` }}
+                  className="self-start mt-2 px-4 py-1 rounded-full border border-phase-border"
+                >
+                  <Text style={{ color: infoColor }} className="text-[11px] font-bold">
                     Add follow-up
                   </Text>
                 </Box>
-              </TouchableOpacity>
+              </StyledTouchableOpacity>
             </Box>
           ))}
         </Box>
       )}
 
       {isLoading && (
-        <Box
-          style={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: theme.scene.canvas.bg,
-            borderWidth: 1,
-            borderColor: theme.scene.canvas.border
-          }}>
-          <Text style={{ color: theme.text.secondary }}>Loading governance history...</Text>
+        <Box className="rounded-2xl p-4 bg-phase-canvas border border-phase-border">
+          <Text className="text-phaseText-secondary">Loading governance history...</Text>
         </Box>
       )}
 
       {!isLoading && error && (
         <Box
-          style={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: errorColor + '10',
-            borderWidth: 1,
-            borderColor: errorColor
-          }}>
-          <Text style={{ color: theme.text.primary }}>{error}</Text>
+          style={{ backgroundColor: errorColor + '10', borderColor: errorColor }}
+          className="rounded-2xl p-4 border"
+        >
+          <Text className="text-phaseText-primary">{error}</Text>
         </Box>
       )}
 
       {!isLoading && !error && events.length === 0 && (
-        <Box
-          style={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: theme.scene.canvas.bg,
-            borderWidth: 1,
-            borderColor: theme.scene.canvas.border
-          }}>
-          <Text style={{ color: theme.text.secondary }}>
+        <Box className="rounded-2xl p-4 bg-phase-canvas border border-phase-border">
+          <Text className="text-phaseText-secondary">
             No official governance events are recorded for this view yet.
           </Text>
         </Box>
       )}
 
       {!isLoading && !error && events.length > 0 && events.map((event) => (
-        <Box
-          key={event.id}
-          style={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: theme.scene.canvas.bg,
-            borderWidth: 1,
-            borderColor: theme.scene.canvas.border
-          }}>
-          <VStack style={{ gap: Theme.spacing.xs }}>
-            <HStack style={{ justifyContent: 'space-between', alignItems: 'center', gap: Theme.spacing.sm }}>
-              <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
+        <Box key={event.id} className="rounded-2xl p-4 bg-phase-canvas border border-phase-border">
+          <VStack className="gap-2">
+            <HStack className="justify-between items-center gap-2">
+              <Text className="text-xs font-bold text-phaseText-primary">
                 {ENTITY_LABELS[event.entity_type] || event.entity_type} {EVENT_LABELS[event.event_type] || event.event_type}
               </Text>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: infoColor }}>
+              <Text style={{ color: infoColor }} className="text-[11px] font-bold">
                 {event.entity_type === 'school_invite' ? 'Invite' : 'Official'}
               </Text>
             </HStack>
-            <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
+            <Text className="text-xs text-phaseText-secondary leading-relaxed">
               {formatWhen(event.occurred_at)}
             </Text>
-            <Text style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 18 }}>
+            <Text className="text-xs text-phaseText-secondary leading-relaxed">
               {event.entity_type === 'school_invite'
                 ? `Invite code ${event.entity_id} entered the governance timeline.`
                 : event.event_type === 'follow_up'
@@ -276,88 +230,65 @@ export default function PrincipalGovernanceTimeline({
       ))}
 
       {followUpTarget && (
-        <Box
-          style={{
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            backgroundColor: theme.scene.surface.bg,
-            borderWidth: 1,
-            borderColor: theme.scene.surface.border,
-            gap: Theme.spacing.sm
-          }}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: theme.text.primary }}>
+        <Box className="rounded-2xl p-4 bg-phase-surface border border-phase-border gap-4">
+          <Text className="text-[13px] font-bold text-phaseText-primary">
             Follow up on observation {followUpTarget}
           </Text>
-          <TextInput
+          <StyledTextInput
             value={followUpContent}
             onChangeText={setFollowUpContent}
             placeholder="Record the next official step, decision, or resolution..."
-            placeholderTextColor={theme.text.secondary}
+            placeholderTextColor={theme.scene.text.muted}
             multiline
-            style={{
-              minHeight: 88,
-              borderWidth: 1,
-              borderColor: theme.scene.surface.border,
-              borderRadius: Theme.corners.comfortable,
-              padding: Theme.spacing.sm,
-              color: theme.text.primary,
-              backgroundColor: theme.scene.canvas.bg,
-              textAlignVertical: 'top'
-            }}
+            className="min-h-[88px] border border-phase-border rounded-2xl p-2 text-phaseText-primary bg-phase-canvas"
+            style={{ textAlignVertical: 'top' }}
           />
-          <HStack style={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}>
+          <HStack className="gap-2 flex-wrap">
             {(['noted', 'escalated', 'resolved'] as const).map((status) => (
-              <TouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}>
+              <StyledTouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}>
                 <Box
-                  style={{
-                    paddingHorizontal: Theme.spacing.md,
-                    paddingVertical: Theme.spacing.xs,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: followUpStatus === status ? infoColor : theme.scene.canvas.bg,
-                    borderWidth: 1,
-                    borderColor: theme.scene.surface.border
-                  }}>
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: followUpStatus === status ? '#FFFFFF' : theme.text.secondary }}>
+                  style={{ backgroundColor: followUpStatus === status ? infoColor : 'transparent' }}
+                  className={`px-4 py-1 rounded-full border border-phase-border`}
+                >
+                  <Text
+                    style={{ color: followUpStatus === status ? '#FFFFFF' : theme.scene.text.secondary }}
+                    className="text-[11px] font-bold"
+                  >
                     {status}
                   </Text>
                 </Box>
-              </TouchableOpacity>
+              </StyledTouchableOpacity>
             ))}
           </HStack>
-          <HStack style={{ gap: Theme.spacing.sm }}>
-            <TouchableOpacity
+          <HStack className="gap-4">
+            <StyledTouchableOpacity
               onPress={() => {
                 setFollowUpTarget(null);
                 setFollowUpContent('');
                 setFollowUpStatus('noted');
               }}
-              activeOpacity={0.85}>
-              <Box
-                style={{
-                  paddingHorizontal: Theme.spacing.md,
-                  paddingVertical: Theme.spacing.sm,
-                  borderRadius: Theme.corners.full,
-                  backgroundColor: theme.scene.canvas.bg,
-                  borderWidth: 1,
-                  borderColor: theme.scene.surface.border
-                }}>
-                <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.secondary }}>Cancel</Text>
+              activeOpacity={0.85}
+              className="flex-1"
+            >
+              <Box className="py-2.5 rounded-full bg-phase-canvas border border-phase-border items-center">
+                <Text className="text-xs font-bold text-phaseText-secondary">Cancel</Text>
               </Box>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSaveFollowUp} activeOpacity={0.85} disabled={savingFollowUp}>
+            </StyledTouchableOpacity>
+            <StyledTouchableOpacity
+              onPress={handleSaveFollowUp}
+              activeOpacity={0.85}
+              disabled={savingFollowUp}
+              className="flex-1"
+            >
               <Box
-                style={{
-                  paddingHorizontal: Theme.spacing.md,
-                  paddingVertical: Theme.spacing.sm,
-                  borderRadius: Theme.corners.full,
-                  backgroundColor: warningColor,
-                  opacity: savingFollowUp ? 0.65 : 1
-                }}>
-                <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
+                style={{ backgroundColor: warningColor }}
+                className={`py-2.5 rounded-full items-center ${savingFollowUp ? 'opacity-50' : ''}`}
+              >
+                <Text className="text-xs font-bold text-white">
                   {savingFollowUp ? 'Saving...' : 'Save follow-up'}
                 </Text>
               </Box>
-            </TouchableOpacity>
+            </StyledTouchableOpacity>
           </HStack>
         </Box>
       )}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { SanctuaryStatsCard } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import type { AuthorityTier } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Users, Clock, Star, Activity, Database, Globe } from 'lucide-react-native';
@@ -17,9 +16,19 @@ interface UserStatsCardProps {
     };
 }
 
+/**
+ * USER STATS CARD
+ * Sanctuary V3 standard for displaying role-based statistics.
+ */
 export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+
+    // Sanctuary V3 Standard Colors
+    const colors = {
+        action: '#4A90E2',
+        success: '#00C853',
+        warning: '#FFAB00',
+    };
 
     // Dynamic content based on role
     const getRoleBasedContent = () => {

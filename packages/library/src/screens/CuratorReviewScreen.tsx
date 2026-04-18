@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View,
     FlatList,
     StyleSheet,
     TouchableOpacity,
@@ -12,7 +11,7 @@ import {
     Text,
     VStack,
     HStack,
-    useThemedColors,
+    useTheme,
     Theme,
     GlobalHeader,
     ScreenWrapper,
@@ -20,14 +19,15 @@ import {
 } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
-import { FileText, Check, X, ExternalLink, AlertCircle, RefreshCw, Trash2 } from 'lucide-react-native';
+import { Check, X, RefreshCw, Trash2 } from 'lucide-react-native';
+import Animated from 'react-native-reanimated';
 
 export default function CuratorReviewScreen() {
     const [items, setItems] = useState<any[]>([]);
     const [brokenResources, setBrokenResources] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'staging' | 'broken'>('staging');
-    const colors = useThemedColors();
+    const theme = useTheme();
     const navigation = useNavigation<any>();
 
     const fetchStaging = async () => {
@@ -96,7 +96,7 @@ export default function CuratorReviewScreen() {
             if (updateError) throw updateError;
 
             // Call the Edge Function
-            const { data, error } = await supabase.functions.invoke('publish-resource', {
+            const { error } = await supabase.functions.invoke('publish-resource', {
                 body: { staging_id: id }
             });
 
@@ -110,50 +110,42 @@ export default function CuratorReviewScreen() {
     };
 
     const renderItem = ({ item }: { item: any }) => (
-        <Box sx={{
-            p: 16,
-            mb: 12,
-            borderRadius: 16,
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.05)'
-        }}>
-            <VStack sx={{ gap: 8 }}>
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.textPrimary, flex: 1 }}>
+        <Box className="p-4 mb-3 rounded-2xl bg-phase-surface border border-phase-border">
+            <VStack className="gap-2">
+                <HStack className="justify-between items-center">
+                    <Text className="text-base font-bold text-phaseText-primary flex-1">
                         {item.title}
                     </Text>
-                    <Box sx={{
-                        px: 8,
-                        py: 2,
-                        borderRadius: 4,
-                        backgroundColor: Theme.colors.sanctuarySaffron + '22'
-                    }}>
-                        <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron }}>
-                            {item.content_type.toUpperCase()}
+                    <Box 
+                        className="px-2 py-0.5 rounded"
+                        style={{ backgroundColor: `${theme.accent.action}22` }}>
+                        <Text 
+                            className="text-[10px] font-bold"
+                            style={{ color: theme.accent.action }}>
+                            {item.content_type?.toUpperCase() || 'EXTERNAL'}
                         </Text>
                     </Box>
                 </HStack>
 
-                <Text sx={{ fontSize: 13, color: colors.textSecondary }} numberOfLines={2}>
+                <Text className="text-[13px] text-phaseText-secondary" numberOfLines={2}>
                     {item.description}
                 </Text>
 
-                <HStack sx={{ gap: 12, mt: 8 }}>
+                <HStack className="gap-3 mt-2">
                     <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                        style={[styles.actionBtn, { backgroundColor: theme.accent.action }]}
                         onPress={() => handlePublish(item.id)}
                     >
                         <Check size={16} color="#fff" />
-                        <Text sx={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>Publish</Text>
+                        <Text className="text-white font-bold text-xs">Publish</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: 'rgba(255,255,255,0.1)' }]}
-                        onPress={() => {/* TODO: Implement rejection/edit */ }}
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-surface/80 border border-phase-border"
+                        onPress={() => {/* TODO */ }}
                     >
-                        <X size={16} color={colors.textSecondary} />
-                        <Text sx={{ color: colors.textSecondary, fontSize: 12 }}>Reject</Text>
+                        <X size={16} color={theme.text.secondary} />
+                        <Text className="text-phaseText-secondary text-xs font-bold">Reject</Text>
                     </TouchableOpacity>
                 </HStack>
             </VStack>
@@ -182,36 +174,29 @@ export default function CuratorReviewScreen() {
     };
 
     const renderBrokenItem = ({ item }: { item: any }) => (
-        <Box sx={{
-            p: 16,
-            mb: 12,
-            borderRadius: 16,
-            backgroundColor: 'rgba(239, 68, 68, 0.05)',
-            borderWidth: 1,
-            borderColor: 'rgba(239, 68, 68, 0.1)'
-        }}>
-            <VStack sx={{ gap: 8 }}>
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text sx={{ fontSize: 16, fontWeight: '700', color: '#fff', flex: 1 }}>{item.title}</Text>
-                    <Box sx={{ px: 8, py: 2, borderRadius: 4, backgroundColor: 'rgba(239, 68, 68, 0.2)' }}>
-                        <Text sx={{ fontSize: 10, color: '#F87171' }}>{item.fail_count || 0} REPORTS</Text>
+        <Box className="p-4 mb-3 rounded-2xl bg-phase-danger/5 border border-phase-danger/10">
+            <VStack className="gap-2">
+                <HStack className="justify-between items-center">
+                    <Text className="text-base font-bold text-phaseText-primary flex-1">{item.title}</Text>
+                    <Box className="px-2 py-0.5 rounded bg-phase-danger/20">
+                        <Text className="text-[10px] text-phase-danger font-bold">{item.fail_count || 0} REPORTS</Text>
                     </Box>
                 </HStack>
-                <Text sx={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }} numberOfLines={1}>{item.url}</Text>
-                <HStack sx={{ gap: 12, mt: 8 }}>
+                <Text className="text-[12px] text-phaseText-secondary" numberOfLines={1}>{item.url}</Text>
+                <HStack className="gap-3 mt-2">
                     <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: '#10B981' }]}
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-accent"
                         onPress={() => handleRepair(item.id)}
                     >
                         <RefreshCw size={14} color="#fff" />
-                        <Text sx={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Fix Link</Text>
+                        <Text className="text-white text-xs font-bold">Fix Link</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: 'rgba(255,255,255,0.05)' }]}
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-danger/10"
                         onPress={() => handleDeleteResource(item.id)}
                     >
-                        <Trash2 size={14} color="#F87171" />
-                        <Text sx={{ color: '#F87171', fontSize: 12 }}>Remove</Text>
+                        <Trash2 size={14} color={theme.palette.danger} />
+                        <Text className="text-phase-danger text-xs font-bold">Remove</Text>
                     </TouchableOpacity>
                 </HStack>
             </VStack>
@@ -226,23 +211,31 @@ export default function CuratorReviewScreen() {
                 onBack={() => navigation.goBack()}
             />
 
-            <HStack sx={{ px: 16, mb: 16, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+            <HStack className="px-4 mb-4 border-b border-phase-border">
                 <TouchableOpacity
                     onPress={() => setActiveTab('staging')}
-                    style={[styles.tab, activeTab === 'staging' && { borderBottomColor: Theme.colors.sanctuarySaffron, borderBottomWidth: 2 }]}
+                    style={[styles.tab, activeTab === 'staging' && { borderBottomColor: theme.accent.action, borderBottomWidth: 2 }]}
                 >
-                    <Text sx={{ color: activeTab === 'staging' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Staged</Text>
+                    <Text 
+                        className="font-bold"
+                        style={{ color: activeTab === 'staging' ? theme.text.primary : theme.text.secondary }}>
+                        Staged
+                    </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => setActiveTab('broken')}
-                    style={[styles.tab, activeTab === 'broken' && { borderBottomColor: Theme.colors.emberRed, borderBottomWidth: 2 }]}
+                    style={[styles.tab, activeTab === 'broken' && { borderBottomColor: theme.palette.danger, borderBottomWidth: 2 }]}
                 >
-                    <Text sx={{ color: activeTab === 'broken' ? '#fff' : colors.textSecondary, fontWeight: 'bold' }}>Broken Links</Text>
+                    <Text 
+                        className="font-bold"
+                        style={{ color: activeTab === 'broken' ? theme.palette.danger : theme.text.secondary }}>
+                        Broken Links
+                    </Text>
                 </TouchableOpacity>
             </HStack>
 
             {loading ? (
-                <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} style={{ marginTop: 40 }} />
+                <ActivityIndicator size="large" color={theme.accent.action} style={{ marginTop: 40 }} />
             ) : (
                 <FlatList
                     data={activeTab === 'staging' ? items : brokenResources}
@@ -250,8 +243,10 @@ export default function CuratorReviewScreen() {
                     renderItem={activeTab === 'staging' ? renderItem : renderBrokenItem}
                     contentContainerStyle={{ padding: 16 }}
                     ListEmptyComponent={
-                        <Box sx={{ mt: 100, alignItems: 'center' }}>
-                            <Text sx={{ color: colors.textSecondary }}>The stream is quiet today.</Text>
+                        <Box className="mt-20 items-center">
+                            <Text className="text-phaseText-secondary text-center">
+                                The wisdom stream is quiet today.
+                            </Text>
                         </Box>
                     }
                 />

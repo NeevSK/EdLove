@@ -1,6 +1,5 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, Theme, useThemedColors, hapticLight } from '@repo/ui';
+import { Box, HStack, VStack, Text, Pressable, hapticLight } from '@repo/ui';
 import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +13,10 @@ interface ProfileListItemProps {
     showChevron?: boolean;
 }
 
+/**
+ * PROFILE LIST ITEM
+ * Sanctuary V3 standard for settings and navigation items within profiles.
+ */
 const ProfileListItem: React.FC<ProfileListItemProps> = ({
     icon: Icon,
     iconColor,
@@ -23,7 +26,6 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
     rightElement,
     showChevron = true
 }) => {
-    const colors = useThemedColors() as any;
     const { t } = useTranslation();
 
     const handlePress = () => {
@@ -32,44 +34,29 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
     };
 
     return (
-        <TouchableOpacity
+        <Pressable
             onPress={handlePress}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel={accessibilityLabel || label}
-            style={{
-                backgroundColor: colors.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.5)',
-                borderRadius: Theme.corners.comfortable,
-                padding: Theme.spacing.md,
-                borderWidth: 1,
-                borderColor: colors.border,
-                minHeight: 52,
-                justifyContent: 'center',
-                ...Theme.shadows.none
-            }}
+            className="bg-phase-canvas/50 rounded-2xl p-4 border border-phase-surface min-h-[52px] justify-center"
         >
-            <HStack justifyContent="space-between" alignItems="center">
-                <HStack space="md" alignItems="center">
-                    <Box
-                        sx={{
-                            p: '$2',
-                            bg: colors.isDark ? 'rgba(255,255,255,0.05)' : colors.secondary,
-                            borderRadius: '$full'
-                        }}
-                    >
-                        <Icon size={18} color={iconColor || colors.action} />
+            <HStack className="justify-between items-center">
+                <HStack space="md" className="items-center">
+                    <Box className="p-2 bg-phase-interactive/10 rounded-full">
+                        <Icon size={18} color={iconColor || '#4A90E2'} />
                     </Box>
-                    <Text color={colors.text} size="sm" bold>
+                    <Text className="text-phase-text-primary text-sm font-bold">
                         {label}
                     </Text>
                 </HStack>
 
-                <HStack space="xs" alignItems="center">
+                <HStack space="xs" className="items-center">
                     {rightElement}
-                    {showChevron && <ChevronRight size={16} color={colors.textTertiary} />}
+                    {showChevron && <ChevronRight size={16} color="#9DA1A3" />}
                 </HStack>
             </HStack>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 

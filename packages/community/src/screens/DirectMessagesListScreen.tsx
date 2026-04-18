@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { TouchableOpacity, ActivityIndicator } from 'react-native';
 import {
     Box,
     VStack,
@@ -14,8 +14,6 @@ import {
     Avatar,
     AvatarFallbackText,
     AvatarImage,
-    useThemedColors,
-    Theme,
     SanctuaryFlashList,
     FadeInDown,
 } from '@repo/ui';
@@ -28,7 +26,6 @@ import { DirectConversation } from '../types';
 
 export default function DirectMessagesListScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-    const colors = useThemedColors();
     const [conversations, setConversations] = useState<DirectConversation[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -53,44 +50,38 @@ export default function DirectMessagesListScreen() {
     };
 
     const renderItem = ({ item, index }: { item: DirectConversation; index: number }) => {
-        const initials = item.other_user_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const name = item.other_user_name || 'Explorer';
+        const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
         return (
             <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
                 <TouchableOpacity
                     onPress={() => navigation.navigate('DirectMessage', {
                         conversationId: item.id,
-                        userName: item.other_user_name
+                        userName: name
                     })}
                 >
                     <HStack
-                        sx={{
-                            padding: Theme.spacing.md,
-                            alignItems: 'center',
-                            backgroundColor: colors.secondary,
-                            borderBottomWidth: 1,
-                            borderBottomColor: colors.border,
-                            gap: Theme.spacing.md,
-                        }}
+                        className="p-4 items-center bg-surface-low border-b border-outline-variant gap-4"
                     >
-                        <Avatar size="md" sx={{ backgroundColor: colors.action }}>
+                        <Avatar size="md" className="bg-primary-500">
                             {item.other_user_avatar ? (
-                                <AvatarImage source={{ uri: item.other_user_avatar }} alt={item.other_user_name} />
+                                <AvatarImage source={{ uri: item.other_user_avatar }} alt={name} />
                             ) : (
                                 <AvatarFallbackText>{initials}</AvatarFallbackText>
                             )}
                         </Avatar>
 
-                        <VStack sx={{ flex: 1 }}>
-                            <Text sx={{ fontWeight: '700', color: colors.textPrimary }}>
-                                {item.other_user_name}
+                        <VStack className="flex-1">
+                            <Text className="font-bold text-foreground">
+                                {name}
                             </Text>
-                            <Text sx={{ fontSize: 12, color: colors.textTertiary }} numberOfLines={1}>
+                            <Text className="text-[12px] text-muted-foreground" numberOfLines={1}>
                                 Tap to continue conversation
                             </Text>
                         </VStack>
 
-                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}>
+                        <Text className="text-[10px] text-muted-foreground">
                             {new Date(item.updated_at).toLocaleDateString()}
                         </Text>
                     </HStack>
@@ -101,14 +92,14 @@ export default function DirectMessagesListScreen() {
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            <Box className="flex-1 justify-center items-center bg-background">
+                <ActivityIndicator color="#E67E22" />
             </Box>
         );
     }
 
     return (
-        <Box sx={{ flex: 1 }}>
+        <Box className="flex-1 bg-background">
             <SanctuaryFlashList
                 data={conversations}
                 keyExtractor={(item) => item.id}
@@ -117,8 +108,8 @@ export default function DirectMessagesListScreen() {
                 onRefresh={onRefresh}
                 refreshing={refreshing}
                 ListEmptyComponent={
-                    <Box sx={{ flex: 1, padding: Theme.spacing.xl, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text sx={{ textAlign: 'center', color: colors.textTertiary }}>
+                    <Box className="flex-1 p-10 items-center justify-center">
+                        <Text className="text-center text-muted-foreground">
                             No messages yet. Start a conversation from a user's profile!
                         </Text>
                     </Box>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, TouchableOpacity, Image, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -11,7 +11,17 @@ import {
     SanctuaryButton,
     SanctuaryFlashList,
     useLotusToast,
-    Theme
+    Theme,
+    Spinner,
+    Image,
+    Pressable,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    Heading as UIHeading
 } from '@repo/ui';
 import {
     ChevronLeft,
@@ -20,7 +30,8 @@ import {
     MoreVertical,
     UserPlus,
     MessageSquare,
-    QrCode
+    QrCode,
+    X
 } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -39,18 +50,6 @@ import {
     QRBuilder,
     QRCodeGenerator
 } from '@repo/scanner-kit';
-import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    Icon,
-    CloseIcon,
-    Heading as UIHeading
-} from '@repo/ui';
 
 type GroupDetailsRouteProp = {
     key: string;
@@ -171,7 +170,7 @@ export default function GroupDetailsScreen() {
         return (
             <ScreenWrapper>
                 <Box className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color="#E67E22" />
+                    <Spinner size="large" />
                 </Box>
             </ScreenWrapper>
         );
@@ -184,10 +183,10 @@ export default function GroupDetailsScreen() {
     if (showAdmin && isAdmin) {
         return (
             <Box className="flex-1 bg-background">
-                <HStack space="md" className="p-4 pt-10 items-center bg-secondary-50">
-                    <TouchableOpacity onPress={() => setShowAdmin(false)}>
-                        <ChevronLeft className="text-foreground" />
-                    </TouchableOpacity>
+                <HStack className="p-4 pt-10 items-center bg-surface-low gap-4">
+                    <Pressable onPress={() => setShowAdmin(false)}>
+                        <ChevronLeft color="#FFFFFF" />
+                    </Pressable>
                     <Text className="font-bold text-lg text-foreground">{t('community.groups.manage')}</Text>
                 </HStack>
                 <GroupMemberManagement groupId={groupId} />
@@ -196,12 +195,12 @@ export default function GroupDetailsScreen() {
     }
 
     const renderHeader = () => (
-        <VStack space="xl" className="p-4">
+        <VStack className="p-4 gap-6">
             <Animated.View entering={FadeInDown.duration(600).springify()}>
-                <SanctuaryCard variant="glass">
-                    <VStack space="md">
-                        <HStack space="md" className="items-center">
-                            <Box className={`w-16 h-16 rounded-full justify-center items-center overflow-hidden border-2 border-white/15 ${group.image_url ? 'bg-transparent' : 'bg-primary-500'}`}>
+                <SanctuaryCard className="bg-surface-lowest">
+                    <VStack className="gap-4">
+                        <HStack className="items-center gap-4">
+                            <Box className={`w-16 h-16 rounded-full justify-center items-center overflow-hidden border-2 border-outline/15 ${group.image_url ? 'bg-transparent' : 'bg-primary-500'}`}>
                                 {group.image_url ? (
                                     <Image
                                         source={{ uri: group.image_url }}
@@ -214,8 +213,8 @@ export default function GroupDetailsScreen() {
                                 )}
                             </Box>
                             <VStack className="flex-1">
-                                <HStack space="sm" className="items-center">
-                                    <Text className="font-bold text-xl text-white">{group.name}</Text>
+                                <HStack className="items-center gap-2">
+                                    <Text className="font-bold text-xl text-foreground">{group.name}</Text>
                                     {group.classroom_id && (
                                         <Box className="px-2 py-0.5 bg-primary-500/15 rounded-sm border border-primary-500">
                                             <Text className="text-primary-500 text-[10px] font-extrabold uppercase">
@@ -224,8 +223,8 @@ export default function GroupDetailsScreen() {
                                         </Box>
                                     )}
                                 </HStack>
-                                <HStack space="xs" className="items-center">
-                                    <Users size={14} className="text-muted-foreground" />
+                                <HStack className="items-center gap-1">
+                                    <Users size={14} color="rgba(255,255,255,0.6)" />
                                     <Text className="text-muted-foreground text-[13px]">
                                         {group.member_count || 0} {t('community.groups.members')}
                                     </Text>
@@ -257,9 +256,9 @@ export default function GroupDetailsScreen() {
 
             <PinnedResourcesShelf resources={[]} />
 
-            <HStack space="sm" className="items-center mt-1">
+            <HStack className="items-center mt-1 gap-2">
                 <MessageSquare size={18} color="#E67E22" />
-                <Text className="font-bold text-base text-white">
+                <Text className="font-bold text-base text-foreground">
                     {t('community.groups.feed')}
                 </Text>
             </HStack>
@@ -271,30 +270,30 @@ export default function GroupDetailsScreen() {
             <Box className="flex-1">
                 {/* Custom Header */}
                 <HStack className="p-4 items-center justify-between bg-transparent">
-                    <HStack space="md" className="items-center">
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <ChevronLeft className="text-foreground" />
-                        </TouchableOpacity>
+                    <HStack className="items-center gap-4">
+                        <Pressable onPress={() => navigation.goBack()}>
+                            <ChevronLeft color="#FFFFFF" />
+                        </Pressable>
                         <Text className="font-bold text-lg text-foreground max-w-[200px]" numberOfLines={1}>
                             {group.name}
                         </Text>
                     </HStack>
 
-                    <HStack space="md" className="items-center">
-                        <TouchableOpacity onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}>
-                            <MessageSquare size={20} className="text-muted-foreground" />
-                        </TouchableOpacity>
+                    <HStack className="items-center gap-4">
+                        <Pressable onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}>
+                            <MessageSquare size={20} color="rgba(255,255,255,0.6)" />
+                        </Pressable>
                         {isAdmin && (
-                            <TouchableOpacity onPress={() => setShowAdmin(true)}>
-                                <Settings size={20} className="text-muted-foreground" />
-                            </TouchableOpacity>
+                            <Pressable onPress={() => setShowAdmin(true)}>
+                                <Settings size={20} color="rgba(255,255,255,0.6)" />
+                            </Pressable>
                         )}
-                        <TouchableOpacity onPress={() => setShowQRModal(true)}>
-                            <QrCode size={20} className="text-muted-foreground" />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <MoreVertical size={20} className="text-muted-foreground" />
-                        </TouchableOpacity>
+                        <Pressable onPress={() => setShowQRModal(true)}>
+                            <QrCode size={20} color="rgba(255,255,255,0.6)" />
+                        </Pressable>
+                        <Pressable>
+                            <MoreVertical size={20} color="rgba(255,255,255,0.6)" />
+                        </Pressable>
                     </HStack>
                 </HStack>
 
@@ -327,9 +326,9 @@ export default function GroupDetailsScreen() {
                     )}
                     ListEmptyComponent={
                         posts.length === 0 ? (
-                            <VStack className="p-8 items-center" space="md">
+                            <VStack className="p-8 items-center gap-4">
                                 <Box className="p-6 rounded-full bg-white/5">
-                                    <MessageSquare size={32} className="text-muted-foreground" />
+                                    <MessageSquare size={32} color="rgba(255,255,255,0.4)" />
                                 </Box>
                                 <Text className="text-muted-foreground text-center">
                                     {t('community.groups.emptyFeed')}
@@ -360,23 +359,23 @@ export default function GroupDetailsScreen() {
                 <Modal
                     isOpen={showQRModal}
                     onClose={() => setShowQRModal(false)}
-                    size="md"
                 >
-                    <ModalBackdrop />
-                    <ModalContent className="bg-secondary-50">
+                    <ModalContent className="bg-surface-low">
                         <ModalHeader>
                             <UIHeading className="text-xl">{t('community.groups.qrTitle', 'Group QR Code')}</UIHeading>
                             <ModalCloseButton>
-                                <Icon as={CloseIcon} />
+                                <Pressable onPress={() => setShowQRModal(false)}>
+                                    <X size={20} color="#FFFFFF" />
+                                </Pressable>
                             </ModalCloseButton>
                         </ModalHeader>
                         <ModalBody>
-                            <VStack space="xl" className="items-center py-6">
+                            <VStack className="items-center py-6 gap-6">
                                 <QRCodeGenerator
                                     value={QRBuilder.group(group.id, group.handle)}
                                     size={240}
                                 />
-                                <VStack space="xs" className="items-center">
+                                <VStack className="items-center gap-1">
                                     <Text className="font-bold text-xl text-center text-foreground">{group.name}</Text>
                                     {group.handle && (
                                         <Text className="text-muted-foreground text-[13px]">@{group.handle}</Text>

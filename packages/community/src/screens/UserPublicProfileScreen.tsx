@@ -10,6 +10,9 @@ import {
   GlobalHeader,
   SanctuaryCard,
   Button,
+  ButtonText,
+  ButtonIcon,
+  ButtonSpinner,
   useRegisterFAB,
   Theme
 } from '@repo/ui';
@@ -158,10 +161,10 @@ export default function UserPublicProfileScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 16 }}
         >
-          <VStack space="md">
+          <VStack className="gap-4">
             {/* Basic Identity Card */}
-            <SanctuaryCard>
-              <VStack space="md" className="items-center p-4">
+            <SanctuaryCard className="bg-surface-lowest">
+              <VStack className="items-center p-4 gap-4">
                 <UserAvatar
                   avatarUrl={user?.avatar_url}
                   fullName={user?.full_name ?? userName ?? "?"}
@@ -169,29 +172,29 @@ export default function UserPublicProfileScreen() {
                   size={120}
                 />
 
-                <VStack space="xs" className="items-center">
+                <VStack className="items-center gap-1">
                   <Text className="text-foreground text-xl font-bold">
                     {user?.full_name ?? userName}
                   </Text>
 
-                  <HStack space="xs" className="items-center">
-                    <BadgeCheck className="text-primary-500" size={14} />
+                  <HStack className="items-center gap-1">
+                    <BadgeCheck color="#E67E22" size={14} />
                     <Text className="text-muted-foreground text-[13px]">
                       {authorityLabel}
                     </Text>
                   </HStack>
 
                   {user?.school_name && (
-                    <HStack space="xs" className="items-center">
-                      <School className="text-muted-foreground" size={12} />
+                    <HStack className="items-center gap-1">
+                      <School color="rgba(255,255,255,0.6)" size={12} />
                       <Text className="text-muted-foreground text-[11px]">{user.school_name}</Text>
                     </HStack>
                   )}
                 </VStack>
 
                 {isPrivate && (
-                  <HStack space="xs" className="mt-1 items-center opacity-60">
-                    <Shield size={14} className="text-muted-foreground" />
+                  <HStack className="mt-1 items-center opacity-60 gap-1">
+                    <Shield size={14} color="rgba(255,255,255,0.6)" />
                     <Text className="text-[11px] text-muted-foreground italic">
                       {t("community.profile.privateSanctuary") || "Private Sanctuary"}
                     </Text>
@@ -199,20 +202,26 @@ export default function UserPublicProfileScreen() {
                 )}
 
                 {user && currentUserId && currentUserId !== userId && (
-                  <VStack space="sm" className="w-full mt-4">
+                  <VStack className="w-full mt-4 gap-2">
                     <Button
-                      label={t("community.profile.sendMessage")}
                       onPress={handleMessagePress}
-                      icon={<Send size={20} color="white" />}
-                      variant="primary"
-                      loading={initiatingDM}
-                    />
+                      variant="solid"
+                      isDisabled={initiatingDM}
+                    >
+                      {initiatingDM ? <ButtonSpinner color="white" /> : <ButtonIcon as={Send} size={20} color="white" />}
+                      <ButtonText className="text-white ml-2">
+                        {t("community.profile.sendMessage")}
+                      </ButtonText>
+                    </Button>
                     <Button
-                      label={t("community.profile.reportAccount")}
                       onPress={() => setShowShieldModal(true)}
-                      icon={<ShieldAlert size={18} className="text-muted-foreground" />}
                       variant="outline"
-                    />
+                    >
+                      <ButtonIcon as={ShieldAlert} size={18} color="rgba(255,255,255,0.6)" />
+                      <ButtonText className="text-muted-foreground ml-2">
+                        {t("community.profile.reportAccount")}
+                      </ButtonText>
+                    </Button>
                   </VStack>
                 )}
               </VStack>
@@ -227,10 +236,10 @@ export default function UserPublicProfileScreen() {
             ) : (
               <>
                 {user?.bio && (
-                  <SanctuaryCard>
-                    <VStack space="xs" className="p-4">
-                      <HStack space="xs" className="items-center mb-1">
-                        <Info size={14} className="text-primary-500" />
+                  <SanctuaryCard className="bg-surface-lowest">
+                    <VStack className="p-4 gap-1">
+                      <HStack className="items-center mb-1 gap-1">
+                        <Info size={14} color="#E67E22" />
                         <Text className="text-muted-foreground text-[10px] font-extrabold uppercase tracking-tight">
                           {t("community.profile.aspiration")}
                         </Text>
@@ -242,30 +251,30 @@ export default function UserPublicProfileScreen() {
                   </SanctuaryCard>
                 )}
 
-                <SanctuaryCard>
-                  <VStack space="md" className="p-4">
+                <SanctuaryCard className="bg-surface-lowest">
+                  <VStack className="p-4 gap-4">
                     <Text className="text-muted-foreground text-[10px] font-extrabold uppercase tracking-widest">
                       {t("community.profile.contributions")}
                     </Text>
-                    <HStack space="lg" className="justify-around items-center">
-                      <VStack space="xs" className="items-center flex-1">
-                        <MessageSquare className="text-primary-500" size={20} />
+                    <HStack className="justify-around items-center gap-4">
+                      <VStack className="items-center flex-1 gap-1">
+                        <MessageSquare color="#E67E22" size={20} />
                         <Text className="text-foreground text-lg font-bold">{stats.posts}</Text>
                         <Text className="text-muted-foreground text-[11px]">
                           {t("community.profile.posts")}
                         </Text>
                       </VStack>
                       <Box className="w-[1px] bg-outline-variant h-5/6" />
-                      <VStack space="xs" className="items-center flex-1">
-                        <ThumbsUp className="text-success-500" size={20} />
+                      <VStack className="items-center flex-1 gap-1">
+                        <ThumbsUp color="#2ECC71" size={20} />
                         <Text className="text-foreground text-lg font-bold">{stats.endorsements}</Text>
                         <Text className="text-muted-foreground text-[11px]">
                           {t("community.profile.endorsements")}
                         </Text>
                       </VStack>
                       <Box className="w-[1px] bg-outline-variant h-5/6" />
-                      <VStack space="xs" className="items-center flex-1">
-                        <BookOpen className="text-info-500" size={20} />
+                      <VStack className="items-center flex-1 gap-1">
+                        <BookOpen color="#3498DB" size={20} />
                         <Text className="text-muted-foreground text-[11px] text-center">
                           {t("community.profile.badgesComingSoon") || "Badges Soon"}
                         </Text>

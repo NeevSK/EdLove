@@ -1,17 +1,19 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, StyleSheet, TextInput } from 'react-native';
+import { Modal } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
     Heading,
-    useThemedColors,
-    Theme,
-    SanctuaryButton,
+    Button,
+    ButtonText,
+    Input,
+    InputField,
     useLotusToast,
     hapticSuccess,
     hapticError,
+    Pressable,
 } from '@repo/ui';
 import { thuthimalAPI } from '@repo/core';
 
@@ -28,6 +30,10 @@ interface GiveThuthimalModalProps {
     giverName: string;
 }
 
+/**
+ * GIVE THUTHIMAL MODAL
+ * Sanctuary V3 standard for gifting gratitude (Pro subscriptions).
+ */
 export function GiveThuthimalModal({
     isOpen,
     onClose,
@@ -37,7 +43,6 @@ export function GiveThuthimalModal({
     giverId,
     giverName,
 }: GiveThuthimalModalProps) {
-    const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const [isSending, setIsSending] = useState(false);
     const [message, setMessage] = useState('');
@@ -73,78 +78,58 @@ export function GiveThuthimalModal({
             onRequestClose={onClose}
         >
             <Box
-                sx={{
-                    flex: 1,
-                    backgroundColor: 'rgba(38,26,69,0.7)',
-                    justifyContent: 'flex-end',
-                }}
+                className="flex-1 justify-end bg-black/60"
             >
                 <Box
-                    sx={{
-                        backgroundColor: colors.secondary,
-                        borderTopLeftRadius: Theme.corners.generous,
-                        borderTopRightRadius: Theme.corners.generous,
-                        padding: Theme.spacing.xl,
-                        paddingBottom: Theme.spacing.xl + 20,
-                        borderTopWidth: 1,
-                        borderColor: colors.border,
-                    }}
+                    className="bg-phase-canvas rounded-t-generous p-8 pb-12 border-t border-phase-surface"
                 >
                     <VStack space="lg">
-                        <HStack justifyContent="space-between" alignItems="center">
-                            <Heading size="md" color={colors.text}>
+                        <HStack className="justify-between items-center">
+                            <Heading className="text-xl text-phase-text-primary">
                                 🎁 Give Gratitude
                             </Heading>
-                            <SanctuaryButton variant="ghost" size="sm" onPress={onClose} accessibilityLabel="Close">
-                                Close
-                            </SanctuaryButton>
+                            <Pressable onPress={onClose} accessibilityLabel="Close" className="p-2">
+                                <Text className="text-phase-interactive text-sm font-bold">Close</Text>
+                            </Pressable>
                         </HStack>
 
-                        <Text size="sm" color={colors.textSecondary}>
+                        <Text className="text-sm text-phase-text-secondary leading-5">
                             Send a Thuthimal gift to {recipientName}. They will receive a notification when the gift is claimed.
                         </Text>
 
                         {/* Optional personal message */}
-                        <TextInput
-                            value={message}
-                            onChangeText={setMessage}
-                            placeholder="Add a personal message (optional)"
-                            placeholderTextColor={colors.textSecondary}
-                            multiline
-                            numberOfLines={3}
-                            maxLength={300}
-                            style={[
-                                styles.messageInput,
-                                {
-                                    backgroundColor: colors.primary,
-                                    color: colors.text,
-                                    borderColor: colors.border,
-                                },
-                            ]}
-                            accessibilityLabel="Personal message"
-                        />
+                        <Input
+                            className="h-28 rounded-xl bg-phase-surface border-phase-surface"
+                            isDisabled={isSending}
+                        >
+                            <InputField
+                                value={message}
+                                onChangeText={setMessage}
+                                placeholder="Add a personal message (optional)"
+                                placeholderTextColor="#9DA1A3"
+                                multiline
+                                numberOfLines={4}
+                                maxLength={300}
+                                className="text-phase-text-primary p-3"
+                                style={{ textAlignVertical: 'top' }}
+                                accessibilityLabel="Personal message"
+                            />
+                        </Input>
 
-                        <SanctuaryButton
+                        <Button
+                            size="xl"
+                            className="mt-4 bg-phase-interactive rounded-comfortable h-14"
+                            isDisabled={isSending}
                             onPress={handleSend}
-                            isLoading={isSending}
                             accessibilityLabel="Send gift of gratitude"
                         >
-                            Send Gift of Gratitude
-                        </SanctuaryButton>
+                            <ButtonText className="text-white font-bold">
+                                {isSending ? 'Sending...' : 'Send Gift of Gratitude'}
+                            </ButtonText>
+                        </Button>
                     </VStack>
                 </Box>
             </Box>
         </Modal>
     );
 }
-
-const styles = StyleSheet.create({
-    messageInput: {
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 14,
-        minHeight: 80,
-        textAlignVertical: 'top',
-    },
-});

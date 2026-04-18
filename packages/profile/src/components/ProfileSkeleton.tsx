@@ -1,22 +1,24 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
-import { Box, VStack, HStack, Center, Theme, useThemedColors } from '@repo/ui';
+import { useWindowDimensions } from 'react-native';
+import { Box, VStack, HStack, Center } from '@repo/ui';
 import { SkeletonLoader, SkeletonCard, SkeletonAvatar, SkeletonTextLine } from '@repo/ui';
 
-const { width } = Dimensions.get('window');
-
+/**
+ * PROFILE SKELETON
+ * Sanctuary V3 standard for profile loading states.
+ */
 export default function ProfileSkeleton() {
-    const colors = useThemedColors();
+    const { width } = useWindowDimensions();
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary, padding: Theme.spacing.md }}>
+        <Box className="flex-1 bg-phase-canvas p-4">
             <VStack space="2xl">
                 {/* Identity Card Placeholder */}
                 <Center>
                     <SkeletonLoader
                         width={width - 48}
                         height={200}
-                        borderRadius={Theme.corners.generous}
+                        borderRadius={24}
                     />
                 </Center>
 
@@ -27,7 +29,7 @@ export default function ProfileSkeleton() {
 
                 {/* Achievements Placeholder */}
                 <Box>
-                    <SkeletonTextLine width={150} mb={12} />
+                    <SkeletonTextLine width={150} className="mb-3" />
                     <HStack space="md">
                         <SkeletonAvatar size={60} />
                         <SkeletonAvatar size={60} />
@@ -37,20 +39,20 @@ export default function ProfileSkeleton() {
                 </Box>
 
                 {/* Contact Info Placeholder */}
-                <Box sx={{ padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border }}>
-                    <SkeletonTextLine width={100} mb={16} />
+                <Box className="p-5 rounded-2xl border border-phase-surface">
+                    <SkeletonTextLine width={100} className="mb-4" />
                     <VStack space="md">
-                        <HStack space="md" alignItems="center">
+                        <HStack space="md" className="items-center">
                             <SkeletonAvatar size={18} />
-                            <VStack flex={1}>
-                                <SkeletonTextLine width={60} mb={4} />
+                            <VStack className="flex-1">
+                                <SkeletonTextLine width={60} className="mb-1" />
                                 <SkeletonTextLine width="80%" />
                             </VStack>
                         </HStack>
-                        <HStack space="md" alignItems="center">
+                        <HStack space="md" className="items-center">
                             <SkeletonAvatar size={18} />
-                            <VStack flex={1}>
-                                <SkeletonTextLine width={60} mb={4} />
+                            <VStack className="flex-1">
+                                <SkeletonTextLine width={60} className="mb-1" />
                                 <SkeletonTextLine width="60%" />
                             </VStack>
                         </HStack>
