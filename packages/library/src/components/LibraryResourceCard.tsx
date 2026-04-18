@@ -37,46 +37,18 @@ export function LibraryResourceCard({
     onLike,
     isLiked
 }: LibraryResourceCardProps) {
-    const colors = useThemedColors();
     const config = TYPE_CONFIG[type] || { icon: FileText, color: 'sageGreen' as const, label: 'Resource' };
     const Icon = config.icon;
 
-    const styles = useMemo(() => StyleSheet.create({
-        title: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '600',
-            color: colors.text,
-            marginBottom: 4,
-        },
-        description: {
-            fontSize: Theme.typography.fontSize.sm,
-            color: colors.textSecondary,
-            marginBottom: 8,
-        },
-        typeLabel: {
-            marginTop: 4,
-            fontSize: 10,
-            fontWeight: '700',
-            color: colors.text,
-            textAlign: 'center',
-        },
-        badge: {
-            fontSize: 10,
-            fontWeight: '600',
-            color: colors.textSecondary,
-        },
-    }), [colors]);
-
     const renderFooter = () => (
-        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.sm }}>
-            <HStack sx={{ gap: Theme.spacing.sm }}>
+        <HStack className="justify-between items-center mt-2">
+            <HStack className="gap-2">
                 {onLike && (
                     <SanctuaryButton
                         onPress={onLike}
                         variant="ghost"
                         size="xs"
                         leftIcon={Heart}
-                        action={isLiked ? 'negative' : 'secondary'}
                     >
                         {isLiked ? 'Liked' : 'Like'}
                     </SanctuaryButton>
@@ -87,7 +59,6 @@ export function LibraryResourceCard({
                         variant="ghost"
                         size="xs"
                         leftIcon={Plus}
-                        action="primary"
                     >
                         Add to Desk
                     </SanctuaryButton>
@@ -103,45 +74,28 @@ export function LibraryResourceCard({
             footer={renderFooter()}
             elevated
         >
-            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+            <HStack className="gap-3 items-center">
                 <Box
-                    sx={{
-                        backgroundColor: colors.secondary,
-                        padding: Theme.spacing.md,
-                        borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderWidth: 1,
-                        borderColor: colors.border
-                    }}
+                    className="w-14 h-14 bg-phase-surface rounded-xl items-center justify-center border border-phase-border"
                 >
-                    <Icon color={colors.action} size={24} />
-                    <Text style={styles.typeLabel}>{config.label}</Text>
+                    <Icon className="text-phase-accent" size={24} />
+                    <Text className="text-[10px] font-bold text-phaseText-primary text-center mt-1">{config.label}</Text>
                 </Box>
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.title} numberOfLines={2}>
+                <VStack className="flex-1">
+                    <Text className="text-base font-semibold text-phaseText-primary" numberOfLines={2}>
                         {title}
                     </Text>
                     {description && (
-                        <Text style={styles.description} numberOfLines={2}>
+                        <Text className="text-sm text-phaseText-secondary" numberOfLines={2}>
                             {description}
                         </Text>
                     )}
                     {isPublic && (
-                        <Box sx={{
-                            alignSelf: 'flex-start',
-                            backgroundColor: colors.tertiary,
-                            paddingHorizontal: 6,
-                            paddingVertical: 2,
-                            borderRadius: 4,
-                            marginTop: 4,
-                            borderWidth: 0.5,
-                            borderColor: colors.border
-                        }}>
-                            <Text style={styles.badge}>Public Resource</Text>
+                        <Box className="self-start bg-phase-surface shadow-sm px-1.5 py-0.5 rounded border border-phase-border mt-1">
+                            <Text className="text-[10px] font-semibold text-phaseText-secondary">Public Resource</Text>
                         </Box>
                     )}
-                </View>
+                </VStack>
             </HStack>
         </SanctuaryCard>
     );

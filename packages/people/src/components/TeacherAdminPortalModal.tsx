@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { Modal } from 'react-native';
 import { X } from 'lucide-react-native';
-import { Box, HStack, Heading, Theme, hapticLight, useThemedColors } from '@repo/ui';
+import { Box, HStack, Text, hapticLight, ScrollView, Pressable, Icon } from '@repo/ui';
 import TeacherAdminWidget from './TeacherAdminWidget';
 
 interface TeacherAdminPortalModalProps {
@@ -17,8 +17,6 @@ export default function TeacherAdminPortalModal({
   onAction,
   title = 'Administrative Portal',
 }: TeacherAdminPortalModalProps) {
-  const colors = useThemedColors();
-
   return (
     <Modal
       visible={visible}
@@ -26,38 +24,24 @@ export default function TeacherAdminPortalModal({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <Box flex={1} sx={{ backgroundColor: colors.primary }}>
-        <Box
-          sx={{
-            paddingTop: 50,
-            paddingBottom: Theme.spacing.md,
-            paddingHorizontal: Theme.spacing.md,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border,
-          }}
-        >
-          <HStack justifyContent="space-between" alignItems="center">
-            <Heading size="lg" color={colors.text}>
+      <Box className="flex-1 bg-background">
+        <Box className="pt-12 pb-4 px-4 border-b border-border">
+          <HStack className="justify-between items-center">
+            <Text className="text-xl font-bold text-textPrimary">
               {title}
-            </Heading>
-            <TouchableOpacity
+            </Text>
+            <Pressable
               onPress={() => {
                 hapticLight();
                 onClose();
               }}
-              style={{
-                padding: 8,
-                borderRadius: Theme.corners.full,
-                backgroundColor: colors.tertiary,
-                borderColor: colors.border,
-                borderWidth: 1,
-              }}
+              className="p-2 rounded-full bg-silk border border-border"
             >
-              <X size={24} color={colors.text} />
-            </TouchableOpacity>
+              <Icon as={X} size="lg" className="text-textPrimary" />
+            </Pressable>
           </HStack>
         </Box>
-        <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
+        <ScrollView contentContainerStyle={{ padding: 24 }}>
           <TeacherAdminWidget onAction={onAction} />
         </ScrollView>
       </Box>

@@ -67,4 +67,11 @@ export const QRBuilder = {
    */
   thuthimal: (gift_token: string, gifter_name: string): string =>
     buildQRString({ v: 1, action: 'thuthimal_gift', gift_token, gifter_name }),
-} as const;
+
+  /**
+   * Library Resource QR — scanning allows the user to view or import the resource.
+   * Used for sharing documents, videos, and collections.
+   */
+  resource: (resource_id: string, title?: string): string =>
+    buildQRString({ v: 1, action: 'share_resource', resource_id, title }),
+};

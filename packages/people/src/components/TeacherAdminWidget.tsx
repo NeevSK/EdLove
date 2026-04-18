@@ -5,9 +5,8 @@ import {
   Box,
   Text,
   Pressable,
-  Theme,
-  useThemedColors,
   hapticLight,
+  Icon,
 } from '@repo/ui';
 import {
   FileText,
@@ -25,95 +24,80 @@ interface TeacherAdminWidgetProps {
 
 export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps) {
   const { t } = useTranslation();
-  const colors = useThemedColors();
 
-  const AdminAction = ({ icon: LucideIcon, label, color, onPress }: any) => (
-    <Pressable
-      onPress={() => {
-        hapticLight();
-        if (onPress) onPress();
-        if (onAction) onAction(label);
-      }}
-      sx={{
-        flex: 1,
-        backgroundColor: colors.secondary,
-        padding: Theme.spacing.md,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        borderColor: colors.border,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: Theme.spacing.xs,
-        minHeight: 100,
-      }}
-    >
-      <Box
-        sx={{
-          padding: Theme.spacing.sm,
-          borderRadius: Theme.corners.medium,
-          backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',
+  const AdminAction = ({ icon: LucideIcon, label, variant = 'primary', onPress }: any) => {
+    // Map variant to Tailwind classes
+    const colorClasses = {
+      primary: 'text-primary bg-primary/10',
+      warning: 'text-warning bg-warning/10',
+      success: 'text-success bg-success/10',
+      error: 'text-error bg-error/10',
+    };
+    
+    const activeColor = colorClasses[variant as keyof typeof colorClasses] || colorClasses.primary;
+    const [textColor, bgColor] = activeColor.split(' ');
+
+    return (
+      <Pressable
+        onPress={() => {
+          hapticLight();
+          if (onPress) onPress();
+          if (onAction) onAction(label);
         }}
+        className="flex-1 bg-silk p-4 rounded-2xl border border-border items-center justify-center gap-2 min-h-[100px]"
       >
-        <LucideIcon size={20} color={color || Theme.colors.sanctuarySaffron} />
-      </Box>
-      <Text
-        color={colors.text}
-        sx={{
-          fontSize: 11,
-          fontWeight: '700',
-          textAlign: 'center',
-        }}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
+        <Box className={`p-2 rounded-xl ${bgColor}`}>
+          <Icon as={LucideIcon} size="md" className={textColor} />
+        </Box>
+        <Text className="text-[11px] font-bold text-center text-textPrimary">
+          {label}
+        </Text>
+      </Pressable>
+    );
+  };
 
   return (
-    <VStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.sm }}>
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text
-          color={colors.textSecondary}
-          sx={{ fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}
-        >
+    <VStack className="gap-4 mt-2">
+      <HStack className="justify-between items-center">
+        <Text className="text-[13px] font-bold uppercase tracking-widest text-bark">
           {t('teacher.admin.title') || 'Administrative Portal'}
         </Text>
       </HStack>
-      <VStack sx={{ gap: Theme.spacing.sm }}>
-        <HStack sx={{ gap: Theme.spacing.sm }}>
+      <VStack className="gap-2">
+        <HStack className="gap-2">
           <AdminAction
             icon={Calendar}
             label={t('teacher.admin.myLeaves') || 'My Leaves'}
-            color={Theme.colors.amberGlow}
+            variant="warning"
           />
           <AdminAction
             icon={ArrowRightLeft}
             label={t('teacher.admin.substitutions') || 'Substitutions'}
-            color={colors.action}
+            variant="primary"
           />
         </HStack>
-        <HStack sx={{ gap: Theme.spacing.sm }}>
+        <HStack className="gap-2">
           <AdminAction
             icon={FileText}
             label={t('teacher.admin.reportGen') || 'Student Reports'}
-            color={Theme.colors.sageGreen}
+            variant="success"
           />
           <AdminAction
             icon={ClipboardList}
             label={t('teacher.admin.templates') || 'Letter Templates'}
-            color={Theme.colors.emberRed}
+            variant="error"
           />
         </HStack>
-        <HStack sx={{ gap: Theme.spacing.sm }}>
+        <HStack className="gap-2">
           <AdminAction
             icon={DollarSign}
             label={t('teacher.admin.financials') || 'Financials'}
-            color={Theme.colors.sageGreen}
+            variant="success"
           />
           <AdminAction
             icon={CheckSquare}
             label={t('teacher.admin.approvals') || 'Approvals'}
-            color={Theme.colors.emberRed}
+            variant="error"
           />
         </HStack>
       </VStack>

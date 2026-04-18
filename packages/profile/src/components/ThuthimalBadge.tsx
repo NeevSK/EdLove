@@ -18,15 +18,15 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
     const { t, i18n } = useTranslation();
     const displayName = gifterName || 'Anonymous';
 
-    // Sanctuary Saffron Standard
-    const saffron = '#E67E22';
+    // Sanctuary Saffron Standard - represents gratitude and solar wisdom
+    const saffron = '#F2994A'; // Warm saffron
 
     if (compact) {
         return (
-            <HStack className="items-center bg-phase-interactive/10 px-3 py-1.5 rounded-full border border-phase-interactive/30">
-                <Flower2 size={16} color={saffron} />
-                <Text className="text-xs font-bold text-[#E67E22] ml-1.5">
-                    {t('thuthimalBadge.sinhala')}
+            <HStack className="items-center bg-phase-interactive/10 px-4 py-2 rounded-2xl border border-phase-interactive/20">
+                <Flower2 size={16} color={saffron} strokeWidth={2.5} />
+                <Text className="text-xs font-bold text-[#F2994A] ml-2 tracking-tight">
+                    {t('thuthimalBadge.sinhala') || 'තුතිමල්'}
                 </Text>
             </HStack>
         );
@@ -34,41 +34,52 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
 
     return (
         <Box 
-            className="rounded-2xl p-5 mb-4 border-l-4 border-l-[#E67E22] bg-phase-canvas border-phase-surface shadow-md"
-            style={{ shadowColor: '#9DA1A3', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8 }}
+            className="rounded-[32px] p-6 mb-6 bg-phase-canvas border border-phase-surface shadow-lg overflow-hidden"
         >
-            <HStack className="items-center mb-4" space="sm">
-                <Flower2 size={24} color={saffron} />
-                <Text className="text-lg font-bold text-phase-text-primary">
-                    {t('thuthimalBadge.title')}
-                </Text>
-                <Text className="text-lg font-medium text-[#E67E22]">
-                    {t('thuthimalBadge.sinhala')}
-                </Text>
+            {/* Saffron border accent */}
+            <Box className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#F2994A]" />
+
+            <HStack className="items-center mb-5" space="md">
+                <Box className="w-12 h-12 bg-[#F2994A]/10 rounded-2xl items-center justify-center">
+                    <Flower2 size={24} color={saffron} strokeWidth={2.5} />
+                </Box>
+                <VStack className="flex-1">
+                    <Text className="text-lg font-bold text-phase-text-primary tracking-tight">
+                        {t('thuthimalBadge.title') || 'Flower of Gratitude'}
+                    </Text>
+                    <Text className="text-sm font-bold text-[#F2994A] tracking-widest uppercase">
+                        {t('thuthimalBadge.sinhala') || 'තුතිමල්'}
+                    </Text>
+                </VStack>
             </HStack>
 
-            <VStack className="bg-phase-interactive/5 rounded-xl p-3 mb-3">
-                <Text className="text-[10px] text-phase-text-tertiary uppercase tracking-wider mb-1">
-                    {t('thuthimalBadge.giftedBy')}
+            <VStack className="bg-phase-surface/40 rounded-2xl p-4 mb-4 border border-phase-surface/60">
+                <Text className="text-[10px] text-phase-text-tertiary uppercase font-bold tracking-widest mb-1.5">
+                    {t('thuthimalBadge.giftedBy') || 'OFFERED BY'}
                 </Text>
-                <Text className="text-base font-bold text-[#E67E22]">
+                <Text className="text-lg font-bold text-phase-text-primary tracking-tight">
                     {displayName}
                 </Text>
             </VStack>
 
-            <Text className="text-xs italic text-phase-text-tertiary leading-5 mb-2">
-                {t('thuthimalBadge.meaning')}
-            </Text>
-
-            {giftedAt && (
-                <Text className="text-[10px] text-phase-text-tertiary text-right">
-                    {t('thuthimalBadge.giftedOn', { date: new Date(giftedAt).toLocaleDateString(i18n.language, {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }) })}
+            <Box className="px-1">
+                <Text className="text-sm italic text-phase-text-secondary leading-6 mb-4">
+                    {t('thuthimalBadge.meaning') || 'A sacred symbol of appreciation within the Sanctuary, honoring your presence and contribution.'}
                 </Text>
-            )}
+
+                {giftedAt && (
+                    <HStack className="justify-end items-center">
+                        <Box className="w-8 h-[1px] bg-phase-surface/80 mr-3" />
+                        <Text className="text-[10px] uppercase font-bold text-phase-text-tertiary tracking-widest">
+                            {t('thuthimalBadge.giftedOn', { date: new Date(giftedAt).toLocaleDateString(i18n.language, {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }) }) || `ANNO ${new Date(giftedAt).getFullYear()}`}
+                        </Text>
+                    </HStack>
+                )}
+            </Box>
         </Box>
     );
 }

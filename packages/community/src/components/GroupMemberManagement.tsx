@@ -10,7 +10,9 @@ import {
     Box, 
     Pressable, 
     useSanctuaryToast,
-    useTheme
+    Icon,
+    Heading,
+    Spinner
 } from '@repo/ui';
 import { UserCheck, UserX, Shield, Settings, Info } from 'lucide-react-native';
 import { usePermissions } from '@repo/core';
@@ -27,12 +29,10 @@ interface GroupMemberManagementProps {
 
 export default function GroupMemberManagement({ groupId }: GroupMemberManagementProps) {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-    const { theme } = useTheme();
     const { showToast } = useSanctuaryToast();
     const [group, setGroup] = useState<CommunityGroup | null>(null);
     const [pendingMembers, setPendingMembers] = useState<any[]>([]);
     const [activeMembers, setActiveMembers] = useState<any[]>([]);
-    const [currentUserMemberRecord, setCurrentUserMemberRecord] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [policy, setPolicy] = useState<string>('restricted');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -56,9 +56,6 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             setPendingMembers(pending);
             setActiveMembers(active);
             setPolicy(groupData.join_policy);
-
-            const myRecord = active.find((m: any) => m.user_id === userId);
-            setCurrentUserMemberRecord(myRecord);
         } catch (error) {
             console.error(error);
         } finally {
@@ -120,52 +117,52 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     if (!group) return null;
 
     return (
-        <ScreenWrapper>
-            <VStack className="p-lg gap-xl">
+        <ScreenWrapper className="bg-phase-canvas">
+            <VStack className="p-4 gap-6">
                 {/* Header & Settings */}
-                <VStack className="gap-md">
+                <VStack className="gap-4">
                     <HStack className="justify-between items-center">
                         <VStack>
-                            <Text className="text-xl font-bold text-phaseText-primary">
+                            <Heading className="text-xl font-bold text-ink">
                                 {group.name}
-                            </Text>
-                            <Text className="text-phaseText-secondary">
+                            </Heading>
+                            <Text className="text-ink/60">
                                 Member Management
                             </Text>
                         </VStack>
                         <Pressable 
                             onPress={() => setIsEditModalOpen(true)}
-                            className="p-sm rounded-comfortable bg-phase-interactive"
+                            className="p-3 rounded-xl bg-phase-interactive"
                         >
-                            <Settings size={20} color={theme.text.primary} />
+                            <Icon as={Settings} size="sm" className="text-white" />
                         </Pressable>
                     </HStack>
 
-                    <Box className="p-md rounded-comfortable bg-phase-interactive/40 border border-phase-interactive/20">
-                        <HStack className="gap-sm items-center">
-                            <Info size={16} color={theme.accent.action} />
-                            <Text className="text-xs text-phaseText-secondary">
-                                Current Policy: <Text className="font-bold text-phase-accent">{policy?.toUpperCase()}</Text>
+                    <Box className="p-4 rounded-xl bg-phase-interactive/10 border border-phase-interactive/20">
+                        <HStack className="gap-2 items-center">
+                            <Icon as={Info} size="xs" className="text-phase-interactive" />
+                            <Text className="text-xs text-ink/60">
+                                Current Policy: <Text className="font-bold text-phase-interactive">{policy?.toUpperCase()}</Text>
                             </Text>
                         </HStack>
                     </Box>
 
-                    <HStack className="gap-sm">
+                    <HStack className="gap-3">
                         <Button
                             variant={policy === 'open' ? 'solid' : 'outline'}
                             onPress={() => handlePolicyChange('open')}
-                            className="flex-1 h-10"
+                            className={`flex-1 h-11 rounded-xl ${policy === 'open' ? 'bg-phase-interactive' : 'border-border'}`}
                         >
-                            <Text className={`text-xs font-bold ${policy === 'open' ? 'text-phaseText-inverse' : 'text-phaseText-primary'}`}>
+                            <Text className={`text-xs font-bold ${policy === 'open' ? 'text-white' : 'text-ink'}`}>
                                 NO VERIFICATION
                             </Text>
                         </Button>
                         <Button
                             variant={policy === 'restricted' ? 'solid' : 'outline'}
                             onPress={() => handlePolicyChange('restricted')}
-                            className="flex-1 h-10"
+                            className={`flex-1 h-11 rounded-xl ${policy === 'restricted' ? 'bg-phase-interactive' : 'border-border'}`}
                         >
-                            <Text className={`text-xs font-bold ${policy === 'restricted' ? 'text-phaseText-inverse' : 'text-phaseText-primary'}`}>
+                            <Text className={`text-xs font-bold ${policy === 'restricted' ? 'text-white' : 'text-ink'}`}>
                                 NEED VERIFICATION
                             </Text>
                         </Button>
@@ -173,9 +170,9 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 </VStack>
 
                 {/* Pending Requests */}
-                <VStack className="gap-md">
-                    <HStack className="justify-between items-center">
-                        <Text className="font-bold text-phaseText-primary">
+                <VStack className="gap-4">
+                    <HStack className="justify-between items-center px-1">
+                        <Text className="font-bold text-ink">
                             Pending Requests ({pendingMembers.length})
                         </Text>
                         {pendingMembers.length > 0 && (
@@ -186,7 +183,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         .catch(() => { /* non-fatal */ });
                                 }}
                             >
-                                <Text className="text-phase-accent font-semibold">
+                                <Text className="text-phase-interactive font-semibold text-sm">
                                     Approve All
                                 </Text>
                             </Pressable>
@@ -194,36 +191,38 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     </HStack>
 
                     {pendingMembers.length === 0 ? (
-                        <Text className="text-center text-phaseText-secondary py-5">
-                            No pending requests at the moment.
-                        </Text>
+                        <Box className="bg-phase-surface/50 border border-border border-dashed p-8 rounded-2xl items-center">
+                            <Text className="text-center text-ink/40">
+                                No pending requests at the moment.
+                            </Text>
+                        </Box>
                     ) : (
                         pendingMembers.map((request: any) => (
                             <Box
                                 key={request.user_id}
-                                className="p-md rounded-comfortable bg-phase-surface border border-phase-interactive/20"
+                                className="p-4 rounded-2xl bg-phase-surface border border-border"
                             >
                                 <HStack className="justify-between items-center">
-                                    <VStack className="gap-0.5 flex-1">
-                                        <Text className="font-semibold text-phaseText-primary">
+                                    <VStack className="gap-1 flex-1">
+                                        <Text className="font-semibold text-ink">
                                             {request.user?.full_name}
                                         </Text>
-                                        <HStack className="gap-xs items-center">
-                                            <Shield size={12} color={theme.text.secondary} />
-                                            <Text className="text-xs text-phaseText-secondary">
+                                        <HStack className="gap-1 items-center">
+                                            <Icon as={Shield} size="xs" className="text-ink/40" />
+                                            <Text className="text-xs text-ink/40">
                                                 {request.user?.authority?.toUpperCase() || 'USER'}
                                             </Text>
                                         </HStack>
-                                        <HStack className="gap-md items-center mt-1">
+                                        <HStack className="gap-2 items-center mt-2">
                                             {request.user?.index_number && (
-                                                <Box className="bg-amber-500/10 rounded-tight border border-amber-500/30 px-2 py-0.5">
+                                                <Box className="bg-amber-500/10 rounded-md border border-amber-500/30 px-2 py-0.5">
                                                     <Text className="text-[10px] text-amber-500 font-bold">
                                                         INDEX: {request.user.index_number}
                                                     </Text>
                                                 </Box>
                                             )}
                                             {request.user?.nic_number && (
-                                                <Box className="bg-amber-500/10 rounded-tight border border-amber-500/30 px-2 py-0.5">
+                                                <Box className="bg-amber-500/10 rounded-md border border-amber-500/30 px-2 py-0.5">
                                                     <Text className="text-[10px] text-amber-500 font-bold">
                                                         NIC: {request.user.nic_number}
                                                     </Text>
@@ -231,18 +230,18 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                             )}
                                         </HStack>
                                     </VStack>
-                                    <HStack className="gap-sm">
+                                    <HStack className="gap-2">
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'rejected')}
-                                            className="p-2.5 rounded-full bg-red-500/20"
+                                            className="p-3 rounded-full bg-phase-danger/10"
                                         >
-                                            <UserX size={20} color={theme.accent.danger} />
+                                            <Icon as={UserX} size="sm" className="text-phase-danger" />
                                         </Pressable>
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'active')}
-                                            className="p-2.5 rounded-full bg-green-500/20"
+                                            className="p-3 rounded-full bg-phase-reward/10"
                                         >
-                                            <UserCheck size={20} color={theme.accent.sageGreen} />
+                                            <Icon as={UserCheck} size="sm" className="text-phase-reward" />
                                         </Pressable>
                                     </HStack>
                                 </HStack>
@@ -252,8 +251,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 </VStack>
 
                 {/* Active Members & Capacity Management */}
-                <VStack className="gap-md">
-                    <Text className="font-bold text-phaseText-primary">
+                <VStack className="gap-4">
+                    <Text className="font-bold text-ink px-1">
                         Active Members ({activeMembers.length})
                     </Text>
                     {activeMembers.map((member) => {
@@ -271,27 +270,29 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                 })}
                             >
                                 <Box
-                                    className={`p-md rounded-comfortable bg-phase-surface border ${
-                                        isOwner ? 'border-phase-accent' : 'border-phase-interactive/20'
+                                    className={`p-4 rounded-2xl bg-phase-surface border ${
+                                        isOwner ? 'border-amber-500/50' : 'border-border'
                                     }`}
                                 >
                                     <HStack className="justify-between items-center">
-                                        <HStack className="gap-md items-center flex-1">
+                                        <HStack className="gap-3 items-center flex-1">
                                             <Box className="w-10 h-10 rounded-full bg-phase-interactive items-center justify-center">
-                                                <Text className="font-bold text-phaseText-primary">
+                                                <Text className="font-bold text-white uppercase">
                                                     {member.user?.full_name?.charAt(0) || '?'}
                                                 </Text>
                                             </Box>
                                             <VStack className="gap-0.5">
-                                                <Text className="font-semibold text-phaseText-primary">
+                                                <Text className="font-semibold text-ink">
                                                     {member.user?.full_name} {isMe ? '(You)' : ''}
                                                 </Text>
-                                                <HStack className="gap-xs items-center">
-                                                    <Shield size={12} color={isOwner ? theme.accent.action : (isAdmin ? theme.text.primary : theme.text.secondary)} />
-                                                    <Text className={`text-xs ${
-                                                        (isOwner || isAdmin) ? 'font-bold' : 'font-normal'
-                                                    } ${
-                                                        isOwner ? 'text-phase-accent' : (isAdmin ? 'text-phaseText-primary' : 'text-phaseText-secondary')
+                                                <HStack className="gap-1 items-center">
+                                                    <Icon 
+                                                        as={Shield} 
+                                                        size="xs" 
+                                                        className={isOwner ? 'text-amber-500' : (isAdmin ? 'text-phase-interactive' : 'text-ink/40')} 
+                                                    />
+                                                    <Text className={`text-[10px] font-bold ${
+                                                        isOwner ? 'text-amber-500' : (isAdmin ? 'text-phase-interactive' : 'text-ink/40')
                                                     }`}>
                                                         {member.capacity.toUpperCase()}
                                                     </Text>
@@ -300,13 +301,13 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         </HStack>
 
                                         {canManage && !isOwner && !isMe && (
-                                            <HStack className="gap-sm">
+                                            <HStack className="gap-2">
                                                 <Button
                                                     variant="outline"
                                                     onPress={() => handleCapacityChange(member.user_id, isAdmin ? 'member' : 'admin')}
-                                                    className="h-8 px-3"
+                                                    className="h-8 px-3 border-border rounded-lg"
                                                 >
-                                                    <Text className="text-phaseText-primary text-[10px] font-bold">
+                                                    <Text className="text-ink text-[10px] font-bold">
                                                         {isAdmin ? "DEMOTE" : "PROMOTE"}
                                                     </Text>
                                                 </Button>
@@ -319,7 +320,6 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     })}
                 </VStack>
             </VStack>
-            <LoadingOverlay visible={loading} />
             
             <CreateGroupModal
                 isOpen={isEditModalOpen}
