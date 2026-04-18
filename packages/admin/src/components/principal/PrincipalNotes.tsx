@@ -26,9 +26,10 @@ import {
     Pressable,
     HStack,
     VStack,
-    Box
+    Box,
+    Input,
+    InputField
 } from '@repo/ui';
-import { styled } from 'nativewind';
 import {
     NotebookPen,
     CheckSquare,
@@ -50,9 +51,6 @@ interface PrincipalNotesProps {
     schoolId: string;
     onBack: () => void;
 }
-
-const StyledKeyboardAvoidingView = styled(KeyboardAvoidingView);
-const StyledTextInput = styled(TextInput);
 
 type NoteGroup = { label: string; data: PrincipalNote[] };
 
@@ -295,7 +293,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 onBack={onBack}
             />
 
-            <StyledKeyboardAvoidingView
+            <KeyboardAvoidingView
                 className="flex-1"
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={100}>
@@ -324,7 +322,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         />
                     )}
                 </VStack>
-            </StyledKeyboardAvoidingView>
+            </KeyboardAvoidingView>
 
             {composing ? (
                 <Box
@@ -352,16 +350,17 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         })}
                     </HStack>
 
-                    <StyledTextInput
-                        value={draft}
-                        onChangeText={setDraft}
-                        placeholder={NOTE_TYPE_META[draftType].placeholder}
-                        placeholderTextColor={theme.text.muted}
-                        multiline
-                        autoFocus
-                        className="min-h-[120px] border rounded-xl p-3 text-base text-phaseText-primary bg-phase-surface border-phase-border"
-                        style={{ textAlignVertical: 'top' }}
-                    />
+                    <Input className="min-h-[120px] bg-phase-surface border-phase-border rounded-xl p-3">
+                        <InputField
+                            value={draft}
+                            onChangeText={setDraft}
+                            placeholder={NOTE_TYPE_META[draftType].placeholder}
+                            placeholderTextColor={theme.text.muted}
+                            multiline
+                            autoFocus
+                            className="text-base text-phaseText-primary"
+                        />
+                    </Input>
 
                             <HStack className="justify-end gap-2 mt-sm">
                                 <Pressable

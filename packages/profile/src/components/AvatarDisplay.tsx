@@ -100,49 +100,57 @@ export function AvatarDisplay({
   }, [peekable, userId, peekType, openPublicProfile]);
 
   const displayUri = localCachePath || avatarUrl || null;
-  const borderRadius = size / 2;
 
   const content = (
     <UserAvatar
       avatarUrl={displayUri}
       fullName={fullName}
       size={size}
-      borderRadius={borderRadius}
     />
   );
 
-  const containerClassName = `overflow-hidden w-[${size}px] h-[${size}px] rounded-full`;
+  const containerStyle = { width: size, height: size };
 
   if (!editable) {
     if (peekable) {
       return (
         <Pressable 
-          className={containerClassName} 
+          className="rounded-full overflow-hidden"
+          style={[containerStyle, style]}
           onPress={handlePeek}
         >
           {content}
         </Pressable>
       );
     }
-    return <Box className={containerClassName}>{content}</Box>;
+    return (
+      <Box 
+        className="rounded-full overflow-hidden"
+        style={[containerStyle, style]}
+      >
+        {content}
+      </Box>
+    );
   }
 
   return (
     <Pressable 
-      className={containerClassName} 
+      className="rounded-full overflow-hidden items-center justify-center"
+      style={[containerStyle, style]}
       onPress={handlePickAndUpload}
     >
       {content}
-      <Box 
-        className="absolute inset-0 bg-black/35 items-center justify-center rounded-full"
-      >
-        {uploading ? (
+      {uploading ? (
+        <Box className="absolute inset-0 bg-black/40 items-center justify-center">
           <Spinner className="text-white" size="small" />
-        ) : (
-          <Camera size={size * 0.22} color="white" />
-        )}
-      </Box>
+        </Box>
+      ) : (
+        <Box className="absolute inset-0 bg-black/20 items-center justify-center">
+            <Box className="bg-black/30 p-2 rounded-full">
+                <Camera size={size * 0.25} color="white" />
+            </Box>
+        </Box>
+      )}
     </Pressable>
   );
 }
-

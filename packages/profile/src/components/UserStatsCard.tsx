@@ -1,5 +1,13 @@
 import React from 'react';
-import { SanctuaryStatsCard } from '@repo/ui';
+import { 
+    Box, 
+    HStack, 
+    VStack, 
+    Text, 
+    Heading, 
+    Progress, 
+    ProgressFilledTrack 
+} from '@repo/ui';
 import type { AuthorityTier } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Users, Clock, Star, Activity, Database, Globe } from 'lucide-react-native';
@@ -94,11 +102,42 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
     const content = getRoleBasedContent();
 
     return (
-        <SanctuaryStatsCard
-            title={content.title}
-            items={content.items}
-            progressLabel={content.progressLabel}
-            progressValue={content.progressValue}
-        />
+        <Box className="bg-phase-canvas border border-phase-surface rounded-[32px] overflow-hidden shadow-lg mb-6">
+            <VStack space="lg" className="p-8">
+                <Heading size="sm" className="text-phase-text-primary tracking-tight">
+                    {content.title}
+                </Heading>
+
+                <HStack className="justify-between items-center" space="md">
+                    {content.items.map((item, index) => (
+                        <VStack key={index} className="items-center flex-1" space="xs">
+                            <Box className="w-12 h-12 rounded-2xl bg-phase-surface/40 items-center justify-center border border-phase-surface/20">
+                                <item.icon size={22} color={item.color} />
+                            </Box>
+                            <Text className="text-[11px] font-bold text-phase-text-tertiary uppercase tracking-wider mt-1">
+                                {item.label}
+                            </Text>
+                            <Text className="text-lg font-bold text-phase-text-primary">
+                                {item.value}
+                            </Text>
+                        </VStack>
+                    ))}
+                </HStack>
+
+                <VStack space="xs" className="mt-2">
+                    <HStack className="justify-between items-center mb-1">
+                        <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-widest">
+                            {content.progressLabel}
+                        </Text>
+                        <Text className="text-xs font-bold text-phase-interactive">
+                            {content.progressValue}%
+                        </Text>
+                    </HStack>
+                    <Progress value={content.progressValue} className="h-2 rounded-full bg-phase-surface/30">
+                        <ProgressFilledTrack className="bg-phase-interactive rounded-full" />
+                    </Progress>
+                </VStack>
+            </VStack>
+        </Box>
     );
 }

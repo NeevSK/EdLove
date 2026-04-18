@@ -124,7 +124,6 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     </HStack>
 
                     <Button
-                        action="primary"
                         leftIcon={Plus}
                         className="rounded-[24px] h-14 shadow-sm"
                         fullWidth
@@ -163,7 +162,6 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    action="primary"
                                     className="rounded-full h-8 px-4"
                                     onPress={() => {
                                         setSelectedSectionId(section.id);
@@ -254,7 +252,6 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 </ButtonText>
                             </Button>
                             <Button
-                                action="primary"
                                 className="flex-1 rounded-2xl h-12 shadow-sm"
                                 onPress={handleAddSection}
                             >
@@ -313,7 +310,6 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 </ButtonText>
                             </Button>
                             <Button
-                                action="primary"
                                 className="flex-1 rounded-2xl h-12 shadow-sm"
                                 onPress={handleAddGrade}
                             >

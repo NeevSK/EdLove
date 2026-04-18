@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, Platform, Share, ActivityIndicator, Animated, View } from 'react-native';
+import { StyleSheet, Image, Platform, Share, Animated, View } from 'react-native';
 import { 
     Box, 
     HStack, 
@@ -13,7 +13,8 @@ import {
     Theme, 
     useTheme, 
     LivingGlow,
-    Pressable
+    Pressable,
+    Spinner
 } from '@repo/ui';
 import { 
     MoreHorizontal, 
@@ -124,9 +125,9 @@ export const PostCard = React.memo(function PostCard({
 
         if (media_type === 'image') {
             return (
-                <Box className="mt-sm">
+                <Box className="mt-2">
                     <Box
-                        className="rounded-comfortable overflow-hidden border border-white/5 bg-phase-surface relative"
+                        className="rounded-xl overflow-hidden border border-white/5 bg-phase-surface relative"
                         style={{ height: MEDIA_HEIGHT }}
                     >
                         <Image
@@ -155,14 +156,14 @@ export const PostCard = React.memo(function PostCard({
                         trustLevel: 'external',
                     }).catch(() => {});
                 }}
-                className="flex-row items-center px-3 py-2 rounded-comfortable border border-phase-interactive mt-2 self-start active:opacity-70"
+                className="flex-row items-center px-3 py-2 rounded-xl border border-phase-interactive mt-2 self-start active:opacity-70 gap-2"
                 accessibilityLabel={`Open ${mediaLabel}`}
             >
                 {media_type === 'video' ? <Video size={16} color={theme.accent.action} />
                     : media_type === 'audio' ? <Music size={16} color={theme.accent.action} />
                     : <FileText size={16} color={theme.accent.action} />}
-                <Text className="text-phase-accent text-sm ml-2">{mediaLabel}</Text>
-                <Link2 size={12} color={theme.accent.action} className="ml-1" />
+                <Text className="text-phase-accent text-sm">{mediaLabel}</Text>
+                <Link2 size={12} color={theme.accent.action} />
             </Pressable>
         );
     };
@@ -178,13 +179,13 @@ export const PostCard = React.memo(function PostCard({
             return (
                 <HStack className="items-center mb-2 gap-2">
                     {urgency && urgency !== 'low' && (
-                        <Box className={`${urg.bgClass} px-2 py-0.5 rounded-tight flex-row items-center gap-1`}>
+                        <Box className={`${urg.bgClass} px-2 py-0.5 rounded-md flex-row items-center gap-1`}>
                             <AlertTriangle size={11} color={urgency === 'high' ? '#DC2626' : '#D97706'} />
                             <Text className={`text-[11px] font-bold ${urg.textClass}`}>{urg.label}</Text>
                         </Box>
                     )}
                     {has_accepted_answer && (
-                        <Box className="bg-emerald-600/10 px-2 py-0.5 rounded-tight flex-row items-center gap-1">
+                        <Box className="bg-emerald-600/10 px-2 py-0.5 rounded-md flex-row items-center gap-1">
                             <CheckCircle2 size={11} color="#16A34A" />
                             <Text className="text-[11px] font-bold text-emerald-600">Answered</Text>
                         </Box>
@@ -196,7 +197,7 @@ export const PostCard = React.memo(function PostCard({
         if (isResource) {
             return (
                 <Box className="mb-2">
-                    <Box className="bg-indigo-500/10 px-2 py-0.5 rounded-tight self-start flex-row items-center gap-1">
+                    <Box className="bg-indigo-500/10 px-2 py-0.5 rounded-md self-start flex-row items-center gap-1">
                         <BookOpen size={11} color="#6366F1" />
                         <Text className="text-[11px] font-bold text-indigo-500">Resource</Text>
                     </Box>
@@ -215,11 +216,11 @@ export const PostCard = React.memo(function PostCard({
             const cfg = statusConfig[feedback_status ?? 'pending'];
             return (
                 <VStack className="mb-2 gap-1.5">
-                    <Box className={`${cfg.bgClass} px-2 py-0.5 rounded-tight self-start`}>
+                    <Box className={`${cfg.bgClass} px-2 py-0.5 rounded-md self-start`}>
                         <Text className={`text-[11px] font-bold ${cfg.textClass}`}>{cfg.label}</Text>
                     </Box>
                     {!!feedback_response && (
-                        <Box className="bg-phase-surface/50 p-sm rounded-comfortable border-l-[3px] border-sanctuarySaffron">
+                        <Box className="bg-phase-surface/50 p-3 rounded-xl border-l-[3px] border-sanctuarySaffron">
                             <Text className="text-phaseText-secondary text-xs italic">{feedback_response}</Text>
                         </Box>
                     )}
@@ -361,7 +362,7 @@ export const PostCard = React.memo(function PostCard({
                         </Pressable>
 
                         {menuOpen && (
-                            <Box className="absolute top-[25px] right-0 bg-phase-surface rounded-comfortable border border-phase-surface min-w-[160px] z-10 overflow-hidden shadow-xl" style={{ elevation: 4 }}>
+                            <Box className="absolute top-[25px] right-0 bg-phase-surface rounded-xl border border-phase-surface min-w-[160px] z-10 overflow-hidden shadow-xl" style={{ elevation: 4 }}>
                                 <VStack>
                                     {author_id === currentUserId && (
                                         <Pressable className="p-4 border-b border-white/5 active:bg-white/5" onPress={handleDelete}>
@@ -461,7 +462,7 @@ export const PostCard = React.memo(function PostCard({
                             <Box className={`
                                 ${TYPE_BADGE[post_type]?.bgClass ?? 'bg-phase-interactive'} 
                                 ${TYPE_BADGE[post_type]?.borderClass ?? 'border-phase-interactive'} 
-                                border px-2 py-0.5 rounded-tight
+                                border px-2 py-0.5 rounded-md
                             `}>
                                 <Text className={`${TYPE_BADGE[post_type]?.textClass ?? 'text-phase-accent'} text-[10px] font-bold`}>
                                     {TYPE_BADGE[post_type]?.label ?? 'Post'}
@@ -598,21 +599,21 @@ function PollWidget({
     };
 
     if (isLoading) {
-        return <ActivityIndicator size="small" color={theme.accent.action} className="mt-3" />;
+        return <Spinner size="small" className="mt-3" />;
     }
 
     return (
-        <VStack className="gap-2 mt-sm">
+        <VStack className="gap-2 mt-2">
             <HStack className="justify-between items-center">
                 <HStack className="items-center gap-1.5">
                     {pollAnon && (
-                        <Box className="bg-phase-interactive px-2 py-0.5 rounded-tight flex-row items-center gap-1">
+                        <Box className="bg-phase-interactive px-2 py-0.5 rounded-md flex-row items-center gap-1">
                             <Lock size={11} color={theme.text.secondary} />
                             <Text className="text-phaseText-secondary text-[10px]">Anonymous</Text>
                         </Box>
                     )}
                     {allow_multiple && (
-                        <Box className="bg-phase-interactive px-2 py-0.5 rounded-tight">
+                        <Box className="bg-phase-interactive px-2 py-0.5 rounded-md">
                             <Text className="text-phaseText-secondary text-[10px]">Multi-select</Text>
                         </Box>
                     )}
@@ -643,7 +644,7 @@ function PollWidget({
                         onPress={() => handleVote(opt.id)}
                         disabled={!canTap}
                         className={`
-                            h-12 rounded-comfortable overflow-hidden relative justify-center border
+                            h-12 rounded-xl overflow-hidden relative justify-center border
                             ${isWinner ? 'border-sanctuarySaffron' : isSelected ? 'border-phase-accent' : 'border-phase-interactive'}
                             ${isSelected ? 'border-2' : 'border-1'}
                             bg-phase-surface

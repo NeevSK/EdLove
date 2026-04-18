@@ -9,8 +9,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     FlatList,
-    TextInput,
-    TouchableOpacity,
     ActivityIndicator,
 } from 'react-native';
 import {
@@ -23,6 +21,8 @@ import {
     AvatarImage,
     ScreenWrapper,
     GlobalHeader,
+    Pressable,
+    InputField,
     Theme
 } from '@repo/ui';
 import { Send } from 'lucide-react-native';
@@ -162,7 +162,7 @@ export default function BaseChatScreen({
         const time = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const avatar = (side: 'left' | 'right') => (
-            <TouchableOpacity
+            <Pressable
                 onPress={() => onPressAuthor?.(item.author_id, authorName)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
@@ -172,7 +172,7 @@ export default function BaseChatScreen({
                         : <AvatarFallbackText>{initials}</AvatarFallbackText>
                     }
                 </Avatar>
-            </TouchableOpacity>
+            </Pressable>
         );
 
         return (
@@ -182,7 +182,7 @@ export default function BaseChatScreen({
                     {!isOwn && (
                         <Text className="text-[11px] text-muted-foreground ml-0.5">{authorName}</Text>
                     )}
-                    <Box className={`px-4 py-2 rounded-comfortable border ${isOwn ? 'bg-primary-500 border-primary-500 rounded-br-sm' : 'bg-surface-low border-outline-variant rounded-bl-sm'}`}>
+                    <Box className={`px-4 py-2 rounded-xl border ${isOwn ? 'bg-primary-500 border-primary-500 rounded-br-sm' : 'bg-surface-low border-outline-variant rounded-bl-sm'}`}>
                         <Text className={`text-sm leading-relaxed ${isOwn ? 'text-white' : 'text-foreground'}`}>
                             {item.content}
                         </Text>
@@ -225,7 +225,7 @@ export default function BaseChatScreen({
                 )}
 
                 {/* Compose bar */}
-                <Box className="bg-surface-low border-t border-outline-variant px-4 py-2">
+                <Box className="bg-surface-lowest border-t border-outline-variant px-4 py-2">
                     {isReadOnly ? (
                         <Box className="p-4 items-center">
                             <Text className="text-muted-foreground text-sm italic">
@@ -240,17 +240,16 @@ export default function BaseChatScreen({
                         </Box>
                     ) : (
                         <HStack className="gap-2 items-end">
-                            <TextInput
+                            <InputField
                                 value={draft}
                                 onChangeText={setDraft}
                                 placeholder="Write a message..."
                                 placeholderTextColor="rgba(255,255,255,0.4)"
                                 multiline
-                                className="flex-1 min-h-[40px] max-h-[120px] rounded-comfortable border border-outline-variant px-4 py-2.5 text-sm text-foreground bg-surface-lowest text-left"
-                                style={{ textAlignVertical: 'center' }}
+                                className="flex-1 min-h-[40px] max-h-[120px] rounded-xl border border-outline-variant px-4 py-2 text-sm text-foreground bg-surface-low"
                                 returnKeyType="default"
                             />
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={handleSend}
                                 disabled={!draft.trim() || sending}
                                 className={`w-10 h-10 rounded-full items-center justify-center ${draft.trim() ? 'bg-primary-500' : 'bg-outline-variant'}`}
@@ -259,7 +258,7 @@ export default function BaseChatScreen({
                                     ? <ActivityIndicator size="small" color="white" />
                                     : <Send size={18} color="white" />
                                 }
-                            </TouchableOpacity>
+                            </Pressable>
                         </HStack>
                     )}
                 </Box>

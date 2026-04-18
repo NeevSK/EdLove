@@ -204,7 +204,6 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                                 <HStack className="gap-3 justify-end">
                                                     <Button 
                                                         variant="outline"
-                                                        action="primary"
                                                         onPress={() => { setReplyingTo(null); setReplyText(''); }}
                                                         className="h-10 rounded-xl px-4"
                                                     >
@@ -212,7 +211,6 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                                                     </Button>
                                                     <Button 
                                                         isDisabled={!replyText.trim() || savingReply}
-                                                        action="primary"
                                                         onPress={() => handleSendReply(item.id)}
                                                         className="h-10 rounded-xl px-6 bg-ink border-none"
                                                     >

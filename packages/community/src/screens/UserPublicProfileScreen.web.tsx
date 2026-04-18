@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, View, TouchableOpacity, Platform } from "react-native";
+import { ScrollView, Platform } from "react-native";
 import {
   VStack,
   HStack,
@@ -7,6 +7,8 @@ import {
   Text,
   Heading,
   Button,
+  ButtonText,
+  ButtonIcon,
   ScreenWrapper,
   LoadingOverlay,
   SanctuaryBackground,
@@ -31,7 +33,7 @@ import { useTranslation } from "react-i18next";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { CommunityStackParamList } from "@repo/core";
 import { usePermissions, supabase, useStore } from "@repo/core";
-import { GiveThuthimalModal } from "@repo/profile/components/GiveThuthimalModal";
+import { GiveThuthimalModal } from "@repo/profile";
 import { communityAPI } from "../api/community";
 
 /**
@@ -134,12 +136,12 @@ export default function UserPublicProfileScreen() {
   const isPrivate = user && user.public_profile === false && currentUserId !== userId;
 
   return (
-    <View className="flex-1 w-full h-full">
+    <Box className="flex-1 w-full h-full">
       <SanctuaryBackground />
 
-      <View className="flex-1 flex-row">
+      <HStack className="flex-1">
         {/* 1. Left Column: Profile Card */}
-        <View className="w-[340px] h-full border-r border-outline-variant bg-surface-lowest">
+        <Box className="w-[340px] h-full border-r border-outline-variant bg-surface-lowest">
           <VStack className="gap-6 p-8">
             <VStack className="items-center gap-4">
               <HStack className="justify-center mb-4">
@@ -155,7 +157,7 @@ export default function UserPublicProfileScreen() {
                   <Heading className="text-2xl font-black text-foreground">
                     {user?.full_name || userName}
                   </Heading>
-                  <BadgeCheck size={20} color={Theme.colors.sanctuarySaffron} />
+                  <BadgeCheck size={20} color="#E67E22" />
                 </HStack>
                 <Text className="text-sm text-muted-foreground">
                   @{user?.username || "member"}
@@ -171,7 +173,7 @@ export default function UserPublicProfileScreen() {
 
             {isPrivate && (
               <HStack className="gap-2 items-center opacity-70 p-3 rounded-xl bg-black/5">
-                <Shield size={14} />
+                <Shield size={14} color="rgba(255,255,255,0.6)" />
                 <Text className="text-[12px] text-muted-foreground italic">
                   {t("community.profile.privateSanctuary") || "Private Sanctuary"}
                 </Text>
@@ -181,28 +183,26 @@ export default function UserPublicProfileScreen() {
             {currentUserId !== userId && (
               <VStack className="gap-2.5 mt-3">
                 <Button
-                  action="primary"
+                  variant="solid"
                   onPress={handleMessagePress}
                   isDisabled={initiatingDM}
                   className="h-[52px] rounded-[26px]"
                 >
-                  <HStack className="gap-2 items-center">
-                    <Send size={18} color="white" />
-                    <Text className="text-white font-extrabold">
-                      {t("community.profile.sendMessage")}
-                    </Text>
-                  </HStack>
+                  <ButtonIcon as={Send} size={18} color="white" />
+                  <ButtonText className="text-white font-extrabold ml-2">
+                    {t("community.profile.sendMessage")}
+                  </ButtonText>
                 </Button>
                 {can('create', { __typename: 'Thuthimal', recipient_id: userId } as any) && currentUser && (
                   <Button
-                    action="secondary"
+                    variant="outline"
                     onPress={() => setShowThuthimal(true)}
                     className="h-[52px] rounded-[26px]"
                   >
-                    <HStack className="gap-2 items-center">
-                      <Gift size={18} />
-                      <Text className="font-extrabold">Send Thuthimal {'=O'}</Text>
-                    </HStack>
+                    <ButtonIcon as={Gift} size={18} color="#E67E22" />
+                    <ButtonText className="font-extrabold ml-2">
+                      Send Thuthimal {'=O'}
+                    </ButtonText>
                   </Button>
                 )}
               </VStack>
@@ -220,11 +220,11 @@ export default function UserPublicProfileScreen() {
               />
             )}
           </VStack>
-        </View>
+        </Box>
 
 
         {/* 2. Center Column: Contributions Feed */}
-        <View className="flex-1 h-full">
+        <Box className="flex-1 h-full">
           <GlobalHeader
             title={t("community.profile.resonanceSphere") || "Resonance Sphere"}
             subtitle={`${t("community.profile.publicPresenceOf") || "Public presence of"} ${user?.full_name || userName}`}
@@ -237,7 +237,7 @@ export default function UserPublicProfileScreen() {
             <VStack className="gap-6 max-w-[700px] w-full self-center">
               {isPrivate ? (
                 <Box className="p-10 rounded-3xl bg-surface-lowest border border-outline-variant items-center gap-4">
-                  <Shield size={48} className="text-muted-foreground" />
+                  <Shield size={48} color="rgba(255,255,255,0.4)" />
                   <Text className="text-base text-muted-foreground text-center">
                     {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private."}
                   </Text>
@@ -275,11 +275,11 @@ export default function UserPublicProfileScreen() {
                         </Text>
                         <HStack className="gap-4">
                           <HStack className="gap-1 items-center">
-                            <Heart size={14} className="text-muted-foreground" />
+                            <Heart size={14} color="rgba(255,255,255,0.4)" />
                             <Text className="text-[13px] text-muted-foreground">--</Text>
                           </HStack>
                           <HStack className="gap-1 items-center">
-                            <MessageSquare size={14} className="text-muted-foreground" />
+                            <MessageSquare size={14} color="rgba(255,255,255,0.4)" />
                             <Text className="text-[13px] text-muted-foreground">--</Text>
                           </HStack>
                         </HStack>
@@ -290,11 +290,11 @@ export default function UserPublicProfileScreen() {
               )}
             </VStack>
           </ScrollView>
-        </View>
+        </Box>
 
 
         {/* 3. Right Column: Stats & Badges */}
-        <View className="w-[320px] h-full border-l border-outline-variant bg-white/[0.01]">
+        <Box className="w-[320px] h-full border-l border-outline-variant bg-white/[0.01]">
           <VStack className="gap-8 p-8">
             {!isPrivate && (
               <>
@@ -314,7 +314,7 @@ export default function UserPublicProfileScreen() {
                     {t("community.profile.sanctuaryHonors")}
                   </Heading>
                   <VStack className="gap-3">
-                    <BadgeItem icon={<Medal size={18} color={Theme.colors.sanctuarySaffron} />} title={t("community.profile.explorer") || "Explorer"} />
+                    <BadgeItem icon={<Medal size={18} color="#E67E22" />} title={t("community.profile.explorer") || "Explorer"} />
                     <BadgeItem icon={<BadgeCheck size={18} color="#10b981" />} title={t("community.profile.verified") || "Verified"} />
                   </VStack>
                 </VStack>
@@ -322,18 +322,18 @@ export default function UserPublicProfileScreen() {
             )}
             {isPrivate && (
               <VStack className="gap-3 items-center p-5 rounded-[20px] border border-dashed border-outline-variant">
-                <Shield size={24} className="text-muted-foreground" />
+                <Shield size={24} color="rgba(255,255,255,0.4)" />
                 <Text className="text-[12px] text-muted-foreground text-center">
                   {t("community.profile.privacyProtected") || "Privacy Protected"}
                 </Text>
               </VStack>
             )}
           </VStack>
-        </View>
-      </View>
+        </Box>
+      </HStack>
 
       <LoadingOverlay visible={loading} />
-    </View>
+    </Box>
   );
 }
 
@@ -341,7 +341,7 @@ export default function UserPublicProfileScreen() {
 function InfoRow({ icon, text }: { icon: any; text: string }) {
   return (
     <HStack className="gap-3 items-center">
-      {React.cloneElement(icon, { size: 16, className: "text-muted-foreground" })}
+      {React.cloneElement(icon, { size: 16, color: "rgba(255,255,255,0.6)" })}
       <Text className="text-sm text-muted-foreground">{text}</Text>
     </HStack>
   );
@@ -360,7 +360,7 @@ function StatCard({
     <VStack className="flex-1 min-w-[100px] p-4 rounded-[20px] bg-surface-lowest border border-outline-variant gap-1">
       <HStack className="justify-between items-center">
         {React.cloneElement(icon as React.ReactElement<any>, {
-          color: Theme.colors.sanctuarySaffron,
+          color: "#E67E22",
           size: 14,
         })}
         <Text className="text-[18px] font-black text-foreground">

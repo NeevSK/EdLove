@@ -12,12 +12,14 @@ import {
     Input,
     InputField,
     Icon,
-    Pressable
+    Pressable,
+    Image,
+    Spinner
 } from '@repo/ui';
 import { Mic, Image as ImageIcon, Trash2, BarChart3, Plus, X, Lock, Users, Clock } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
 import { uploadToCloudinary } from '@repo/core';
-import { TouchableOpacity, Image, ActivityIndicator, ScrollView, Switch, Platform } from 'react-native';
+import { ScrollView, Switch, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import type { PollData } from '../types/Community';
 
@@ -267,36 +269,37 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                 <ScrollView
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={{ gap: 6 }}
                                 >
-                                    {DURATION_PRESETS.map(p => {
-                                        const isActive = !showCustomDate && pollDurationHours === p.hours;
-                                        return (
+                                    <HStack className="gap-2">
+                                        {DURATION_PRESETS.map(p => {
+                                            const isActive = !showCustomDate && pollDurationHours === p.hours;
+                                            return (
+                                                <Pressable
+                                                    key={p.label || 'none'}
+                                                    onPress={() => {
+                                                        setShowCustomDate(false);
+                                                        setPollDurationHours(p.hours);
+                                                    }}
+                                                    className={`px-3 py-1.5 rounded-full border ${isActive ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                                                >
+                                                    <Text className={`text-xs ${isActive ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
+                                                        {p.label}
+                                                    </Text>
+                                                </Pressable>
+                                            );
+                                        })}
+
+                                        {Platform.OS === 'web' && (
                                             <Pressable
-                                                key={p.label}
-                                                onPress={() => {
-                                                    setShowCustomDate(false);
-                                                    setPollDurationHours(p.hours);
-                                                }}
-                                                className={`px-3 py-1.5 rounded-full border ${isActive ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                                                onPress={() => { setShowCustomDate(true); setPollDurationHours(null); }}
+                                                className={`px-3 py-1.5 rounded-full border ${showCustomDate ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
                                             >
-                                                <Text className={`text-xs ${isActive ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
-                                                    {p.label}
+                                                <Text className={`text-xs ${showCustomDate ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
+                                                    Custom
                                                 </Text>
                                             </Pressable>
-                                        );
-                                    })}
-
-                                    {Platform.OS === 'web' && (
-                                        <Pressable
-                                            onPress={() => { setShowCustomDate(true); setPollDurationHours(null); }}
-                                            className={`px-3 py-1.5 rounded-full border ${showCustomDate ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
-                                        >
-                                            <Text className={`text-xs ${showCustomDate ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
-                                                Custom
-                                            </Text>
-                                        </Pressable>
-                                    )}
+                                        )}
+                                    </HStack>
                                 </ScrollView>
 
                                 {Platform.OS === 'web' && showCustomDate && (
@@ -331,22 +334,23 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ gap: 8 }}
                     >
-                        {EDUCATION_TAGS.map((tag) => {
-                            const active = selectedTags.includes(tag.id);
-                            return (
-                                <Pressable
-                                    key={tag.id}
-                                    onPress={() => toggleTag(tag.id)}
-                                    className={`px-3 py-1.5 rounded-full border ${active ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
-                                >
-                                    <Text className={`text-xs ${active ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
-                                        {tag.label}
-                                    </Text>
-                                </Pressable>
-                            );
-                        })}
+                        <HStack className="gap-2">
+                            {EDUCATION_TAGS.map((tag) => {
+                                const active = selectedTags.includes(tag.id);
+                                return (
+                                    <Pressable
+                                        key={tag.id}
+                                        onPress={() => toggleTag(tag.id)}
+                                        className={`px-3 py-1.5 rounded-full border ${active ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                                    >
+                                        <Text className={`text-xs ${active ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
+                                            {tag.label}
+                                        </Text>
+                                    </Pressable>
+                                );
+                            })}
+                        </HStack>
                     </ScrollView>
                 </VStack>
 
@@ -355,7 +359,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         <Image
                             source={{ uri: selectedImage }}
                             className="w-full h-full rounded-2xl"
-                            resizeMode="cover"
+                            alt="Selected post image"
                         />
                         <Pressable
                             onPress={() => setSelectedImage(null)}
@@ -365,7 +369,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         </Pressable>
                         {isUploading && (
                             <Box className="absolute inset-0 bg-black/20 justify-center items-center">
-                                <ActivityIndicator color="#6366f1" />
+                                <Spinner />
                             </Box>
                         )}
                     </Box>

@@ -1,9 +1,8 @@
 import React from 'react';
-import { Share, Platform, ScrollView } from 'react-native';
+import { Share, Platform } from 'react-native';
 import { 
     Text, 
     Box, 
-    SanctuaryCard, 
     openExternalURL, 
     showExternalLinkOptions, 
     HStack, 
@@ -122,14 +121,17 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
     if (visibleLinks.length === 0 && !isOwnProfile) return null;
 
     return (
-        <VStack className="my-4 px-1" space="md">
-            <HStack className="justify-between items-center mb-1">
+        <VStack className="my-6 px-4" space="lg">
+            <HStack className="justify-between items-center px-1">
                 <Text className="text-phase-text-primary text-xl font-bold tracking-tight">
                     {t('socialSanctuary.title', 'Social Connections')}
                 </Text>
                 {isOwnProfile && (
-                    <Pressable onPress={shareProfile} className="p-2">
-                        <Share2 size={20} color="#9DA1A3" />
+                    <Pressable 
+                        onPress={shareProfile} 
+                        className="w-10 h-10 rounded-full bg-phase-surface items-center justify-center hover:bg-phase-interactive/10 transition-colors"
+                    >
+                        <Share2 size={18} color="#4A90E2" />
                     </Pressable>
                 )}
             </HStack>
@@ -144,38 +146,39 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                             key={link.id}
                             onPress={() => handlePress(link)}
                             onLongPress={() => handleOpenOptions(link)}
+                            className="bg-phase-canvas border border-phase-surface rounded-3xl overflow-hidden shadow-sm active:scale-[0.98] transition-all"
                         >
-                            <SanctuaryCard variant="glass" className="p-3.5 rounded-2xl">
-                                <HStack className="items-center">
-                                    <Box className="w-11 h-11 rounded-xl justify-center items-center mr-3 bg-phase-interactive/10">
-                                        <PlatformIcon size={24} color="#4A90E2" />
-                                    </Box>
-                                    <VStack className="flex-1">
-                                        <Text className="text-md font-bold text-phase-text-primary">
-                                            {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
-                                        </Text>
-                                        <Text className="text-xs text-phase-text-tertiary" numberOfLines={1}>
-                                            {link.url}
-                                        </Text>
-                                    </VStack>
+                            <HStack className="items-center p-4">
+                                <Box className="w-12 h-12 rounded-2xl justify-center items-center mr-4 bg-phase-interactive/10 border border-phase-interactive/10">
+                                    <PlatformIcon size={24} color="#4A90E2" />
+                                </Box>
+                                <VStack className="flex-1">
+                                    <Text className="text-base font-bold text-phase-text-primary">
+                                        {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
+                                    </Text>
+                                    <Text className="text-xs text-phase-text-tertiary font-medium mt-0.5" numberOfLines={1}>
+                                        {link.url}
+                                    </Text>
+                                </VStack>
+                                <HStack space="md" className="items-center">
                                     {isOwnProfile && PrivacyIcon && (
-                                        <Box className="mr-2">
-                                            <PrivacyIcon size={16} color="#9DA1A3" />
+                                        <Box className="p-1.5 rounded-lg bg-phase-surface/50">
+                                            <PrivacyIcon size={14} color="#9DA1A3" />
                                         </Box>
                                     )}
                                     <ExternalLink size={18} color="#9DA1A3" className="opacity-40" />
                                 </HStack>
-                            </SanctuaryCard>
+                            </HStack>
                         </Pressable>
                     );
                 })}
 
                 {isOwnProfile && visibleLinks.length === 0 && (
-                    <SanctuaryCard variant="glass" className="p-5 items-center">
-                        <Text className="text-sm text-phase-text-tertiary text-center italic">
+                    <Box className="bg-phase-canvas border border-dashed border-phase-surface rounded-3xl p-8 items-center justify-center">
+                        <Text className="text-sm text-phase-text-tertiary text-center italic leading-relaxed">
                             {t('socialSanctuary.empty', 'No social links added yet.')}
                         </Text>
-                    </SanctuaryCard>
+                    </Box>
                 )}
             </VStack>
         </VStack>

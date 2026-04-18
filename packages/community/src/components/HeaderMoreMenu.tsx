@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
+    Pressable
 } from '@repo/ui';
 import { MoreVertical, BellOff, Bell, UserX, ShieldAlert } from 'lucide-react-native';
 import { useSocialShield } from '../hooks/useSocialShield';
@@ -66,37 +66,37 @@ export default function HeaderMoreMenu({
 
     return (
         <Box>
-            <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <MoreVertical size={24} className="text-foreground" />
-            </TouchableOpacity>
+            <Pressable onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <MoreVertical size={24} color="rgba(255,255,255,0.9)" />
+            </Pressable>
 
             {isMenuOpen && (
                 <Box
-                    className="absolute top-8 right-0 bg-surface-lowest rounded-comfortable border border-outline-variant shadow-lg min-w-[180px] z-[1000] overflow-hidden"
+                    className="absolute top-8 right-0 bg-surface-lowest rounded-xl border border-outline-variant shadow-lg min-w-[180px] z-[1000] overflow-hidden"
                 >
                     <VStack>
-                        <TouchableOpacity className="p-3 border-b border-outline-variant/50" onPress={handleToggleMute}>
-                            <HStack space="md" className="items-center">
-                                {isMuted ? <Bell size={18} className="text-foreground" /> : <BellOff size={18} className="text-foreground" />}
+                        <Pressable className="p-3 border-b border-outline-variant/50 active:bg-white/5" onPress={handleToggleMute}>
+                            <HStack className="items-center gap-3">
+                                {isMuted ? <Bell size={18} color="rgba(255,255,255,0.9)" /> : <BellOff size={18} color="rgba(255,255,255,0.9)" />}
                                 <Text className="text-sm text-foreground">{isMuted ? 'Unmute' : 'Mute'} Sanctuary</Text>
                             </HStack>
-                        </TouchableOpacity>
+                        </Pressable>
 
                         {targetUserId && (
-                            <TouchableOpacity className="p-3 border-b border-outline-variant/50" onPress={handleBlock}>
-                                <HStack space="md" className="items-center">
-                                    <UserX size={18} className="text-primary-500" />
+                            <Pressable className="p-3 border-b border-outline-variant/50 active:bg-white/5" onPress={handleBlock}>
+                                <HStack className="items-center gap-3">
+                                    <UserX size={18} color="#E67E22" />
                                     <Text className="text-sm text-primary-500">Block User</Text>
                                 </HStack>
-                            </TouchableOpacity>
+                            </Pressable>
                         )}
 
-                        <TouchableOpacity className="p-3" onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
-                            <HStack space="md" className="items-center">
-                                <ShieldAlert size={18} className="text-foreground" />
+                        <Pressable className="p-3 active:bg-white/5" onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
+                            <HStack className="items-center gap-3">
+                                <ShieldAlert size={18} color="rgba(255,255,255,0.9)" />
                                 <Text className="text-sm text-foreground">Report</Text>
                             </HStack>
-                        </TouchableOpacity>
+                        </Pressable>
                     </VStack>
                 </Box>
             )}

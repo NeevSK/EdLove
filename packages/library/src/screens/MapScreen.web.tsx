@@ -3,7 +3,7 @@ import { StyleSheet, View, useWindowDimensions, TouchableOpacity, ActivityIndica
 import {
     ScreenWrapper,
     GlobalHeader,
-    useThemedColors,
+    useTheme,
     Theme,
     Box,
     Text,
@@ -29,12 +29,12 @@ import {
     JyotiView, 
     TerraView, 
     DharmaView,
-    VatyaView, // Added VatyaView
+    VatyaView,
 } from '../components/perspectives';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import { getAvailablePerspectives as getEnginePerspectives, KnowledgeParser, CaptureEngine } from '@repo/graphics';
 
-type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya'; // Added 'vatya'
+type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 
 interface Perspective {
     id: PerspectiveId;
@@ -50,7 +50,7 @@ const PERSPECTIVES: Perspective[] = [
     { id: 'dharma', label: 'Path', icon: Route, description: 'Sequential learning pathways' },
     { id: 'vastu', label: 'Structure', icon: Network, description: 'Mind maps & hierarchies' },
     { id: 'jyoti', label: 'Insight', icon: BarChart3, description: 'Analytic charts & metrics' },
-    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' }, // Added Vatya
+    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' },
 ];
 
 const getAvailablePerspectives = (topology: any) => {
@@ -69,7 +69,7 @@ const getAvailablePerspectives = (topology: any) => {
  * Achieves parity with native while optimizing for browser-native SVG/div rendering.
  */
 export default function MapScreen() {
-    const colors = useThemedColors();
+    const theme = useTheme();
     const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
     
@@ -146,7 +146,7 @@ export default function MapScreen() {
     const renderContent = () => {
         if (loading) {
             return (
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Box className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
                 </Box>
             );
@@ -224,11 +224,13 @@ export default function MapScreen() {
         }
 
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Box className="flex-1 justify-center items-center">
                 <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
             </Box>
         );
     };
+
+    const accentColor = theme.colors.accent.primary;
 
     return (
         <ScreenWrapper scroll={false}>
@@ -241,26 +243,21 @@ export default function MapScreen() {
                     <TouchableOpacity 
                         onPress={handleExport}
                         disabled={isExporting}
+                        className="flex-row items-center px-4 py-2 rounded-xl mr-3"
                         style={{ 
-                            paddingHorizontal: 16, 
-                            paddingVertical: 8, 
-                            borderRadius: 12, 
-                            backgroundColor: colors.action + '20',
-                            flexDirection: 'row',
-                            alignItems: 'center',
+                            backgroundColor: `${accentColor}20`,
                             opacity: isExporting ? 0.5 : 1,
-                            marginRight: 12
                         }}
                     >
-                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} />
-                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
+                        <FileCheck size={18} color={accentColor} className="mr-2" />
+                        <Text className="text-xs font-bold" style={{ color: accentColor }}>
                             {isExporting ? 'CAPTURING...' : 'EXPORT'}
                         </Text>
                     </TouchableOpacity>
                 }
             />
 
-            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}>
+            <Box className="p-3 bg-phase-surface">
                 <View style={styles.perspectiveSwitcherContainer}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
                         {getAvailablePerspectives(activeData).map((p) => {
@@ -295,51 +292,36 @@ export default function MapScreen() {
                 </View>
             </Box>
 
-            <Box sx={{ 
-                flex: 1, 
-                backgroundColor: colors.obsidian || colors.black,
-                overflow: 'hidden',
-                position: 'relative'
-            }}>
+            <Box className="flex-1 bg-phase-surface overflow-hidden relative">
                 {renderContent()}
 
                 {selectedNode && (
-                    <Box sx={{ 
-                        position: 'absolute', 
-                        bottom: 40, 
-                        left: 20, 
-                        right: 20, 
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                        borderRadius: 32,
-                        padding: 24,
-                        borderWidth: 1,
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                    } as any}>
-                        <VStack spacing={12}>
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box className="absolute bottom-10 left-5 right-5 bg-[#0f172a]/95 rounded-[32px] p-6 border border-white/10">
+                        <VStack className="gap-3">
+                            <HStack className="justify-between items-center">
                                 <VStack>
-                                    <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
+                                    <Text className="text-xl font-black text-white">
                                         {selectedNode.label}
                                     </Text>
-                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
-                                        {selectedNode.type} • {selectedNode.group}
+                                    <Text className="text-xs font-bold text-phase-accent uppercase">
+                                        {selectedNode.type} \u00B7 {selectedNode.group}
                                     </Text>
                                 </VStack>
                                 <TouchableOpacity onPress={() => setSelectedNode(null)}>
-                                    <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                        <X size={20} color={Theme.colors.sacredWhite} />
+                                    <Box className="p-2 rounded-full bg-white/10">
+                                        <X size={20} color="white" />
                                     </Box>
                                 </TouchableOpacity>
                             </HStack>
 
                             {selectedNode.metadata?.description && (
-                                <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
+                                <Text className="text-sm text-phaseText-secondary leading-5">
                                     {selectedNode.metadata.description}
                                 </Text>
                             )}
 
                             <TouchableOpacity 
-                                style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent"
                                 onPress={() => {
                                     if (selectedNode.type === 'resource') {
                                         // @ts-ignore
@@ -347,7 +329,7 @@ export default function MapScreen() {
                                     }
                                 }}
                             >
-                                <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                <Text className="text-phase-surface font-extrabold">
                                     {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                 </Text>
                             </TouchableOpacity>
@@ -388,12 +370,5 @@ const styles = StyleSheet.create({
     activePerspectiveLabel: {
         fontWeight: '800',
         color: Theme.colors.sanctuarySaffron,
-    },
-    actionButton: {
-        height: 56,
-        borderRadius: 28,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 8
     }
 });

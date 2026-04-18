@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Polygon, Line, Text as SvgText, G, Circle } from 'react-native-svg';
-import { useThemedColors, Theme } from '@repo/ui';
+import { useTheme, Theme } from '@repo/ui';
 import { radarLayout } from '@repo/graphics';
 import type { PerspectiveViewProps } from '@repo/graphics';
 
@@ -14,8 +14,12 @@ import type { PerspectiveViewProps } from '@repo/graphics';
 export const VatyaView: React.FC<PerspectiveViewProps> = ({
     selectedNode,
 }) => {
-    const colors = useThemedColors();
+    const theme = useTheme();
     const { width, height } = useWindowDimensions();
+
+    const borderColor = theme.colors.border.primary;
+    const textSecondaryColor = theme.colors.text.secondary;
+    const obsidianColor = theme.colors.background.primary;
 
     // Use selectedNode or a fallback demonstration node
     const activeNode = selectedNode || {
@@ -37,7 +41,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
     const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 w-full h-full items-center justify-center bg-transparent">
             <Svg width={width} height={height * 0.7}>
                 <G>
                     {/* Concentric Circles (Scale) */}
@@ -48,7 +52,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                             cy={layout.center.y}
                             r={layout.radius * scale}
                             fill="none"
-                            stroke={colors.border}
+                            stroke={borderColor}
                             strokeWidth={1}
                             opacity={0.2}
                         />
@@ -62,14 +66,14 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                                 y1={layout.center.y}
                                 x2={axis.x}
                                 y2={axis.y}
-                                stroke={colors.border}
+                                stroke={borderColor}
                                 strokeWidth={1}
                                 opacity={0.3}
                             />
                             <SvgText
                                 x={axis.x}
                                 y={axis.y + (axis.y > layout.center.y ? 20 : -10)}
-                                fill={colors.textSecondary}
+                                fill={textSecondaryColor}
                                 fontSize="12"
                                 fontWeight="bold"
                                 textAnchor="middle"
@@ -95,7 +99,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                             cy={p.y}
                             r={5}
                             fill={Theme.colors.sanctuarySaffron}
-                            stroke={colors.obsidian}
+                            stroke={obsidianColor}
                             strokeWidth={2}
                         />
                     ))}
@@ -104,14 +108,3 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-    }
-});

@@ -1,8 +1,19 @@
-import { Box, HStack, Text, VStack, useTheme } from '@repo/ui';
-import { styled } from 'nativewind';
-
-const StyledTextInput = styled(TextInput);
-const StyledTouchableOpacity = styled(TouchableOpacity);
+import React, { useEffect, useMemo, useState } from 'react';
+import { api, useTemporalStore, type PrincipalGovernanceEventZod } from '@repo/core';
+import { 
+    Box, 
+    HStack, 
+    Text, 
+    VStack, 
+    useTheme, 
+    Input, 
+    InputField, 
+    Pressable,
+    Heading,
+    Button,
+    ButtonText
+} from '@repo/ui';
+import { ShieldCheck, Scale, History, Plus, X } from 'lucide-react-native';
 
 interface PrincipalGovernanceTimelineProps {
   schoolId: string;
@@ -175,7 +186,7 @@ export default function PrincipalGovernanceTimeline({
                     Add follow-up
                   </Text>
                 </Box>
-              </StyledTouchableOpacity>
+              </Pressable>
             </Box>
           ))}
         </Box>
@@ -234,18 +245,20 @@ export default function PrincipalGovernanceTimeline({
           <Text className="text-[13px] font-bold text-phaseText-primary">
             Follow up on observation {followUpTarget}
           </Text>
-          <StyledTextInput
-            value={followUpContent}
-            onChangeText={setFollowUpContent}
-            placeholder="Record the next official step, decision, or resolution..."
-            placeholderTextColor={theme.scene.text.muted}
-            multiline
-            className="min-h-[88px] border border-phase-border rounded-2xl p-2 text-phaseText-primary bg-phase-canvas"
-            style={{ textAlignVertical: 'top' }}
-          />
+          <Input className="min-h-[88px] bg-phase-canvas border-phase-border rounded-2xl p-2">
+            <InputField
+                value={followUpContent}
+                onChangeText={setFollowUpContent}
+                placeholder="Record the next official step, decision, or resolution..."
+                placeholderTextColor={theme.scene.text.muted}
+                multiline
+                textAlignVertical="top"
+                className="text-phaseText-primary"
+            />
+          </Input>
           <HStack className="gap-2 flex-wrap">
             {(['noted', 'escalated', 'resolved'] as const).map((status) => (
-              <StyledTouchableOpacity key={status} onPress={() => setFollowUpStatus(status)} activeOpacity={0.85}>
+              <Pressable key={status} onPress={() => setFollowUpStatus(status)}>
                 <Box
                   style={{ backgroundColor: followUpStatus === status ? infoColor : 'transparent' }}
                   className={`px-4 py-1 rounded-full border border-phase-border`}
@@ -257,26 +270,24 @@ export default function PrincipalGovernanceTimeline({
                     {status}
                   </Text>
                 </Box>
-              </StyledTouchableOpacity>
+              </Pressable>
             ))}
           </HStack>
           <HStack className="gap-4">
-            <StyledTouchableOpacity
+            <Pressable
               onPress={() => {
                 setFollowUpTarget(null);
                 setFollowUpContent('');
                 setFollowUpStatus('noted');
               }}
-              activeOpacity={0.85}
               className="flex-1"
             >
               <Box className="py-2.5 rounded-full bg-phase-canvas border border-phase-border items-center">
                 <Text className="text-xs font-bold text-phaseText-secondary">Cancel</Text>
               </Box>
-            </StyledTouchableOpacity>
-            <StyledTouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={handleSaveFollowUp}
-              activeOpacity={0.85}
               disabled={savingFollowUp}
               className="flex-1"
             >
@@ -288,7 +299,7 @@ export default function PrincipalGovernanceTimeline({
                   {savingFollowUp ? 'Saving...' : 'Save follow-up'}
                 </Text>
               </Box>
-            </StyledTouchableOpacity>
+            </Pressable>
           </HStack>
         </Box>
       )}

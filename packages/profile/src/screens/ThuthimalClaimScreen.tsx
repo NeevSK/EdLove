@@ -6,7 +6,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import {
   Box,
   VStack,
@@ -14,11 +13,11 @@ import {
   Text,
   Heading,
   Spinner,
-  Theme,
-  useThemedColors,
   ScreenWrapper,
   hapticSuccess,
-  hapticError
+  hapticError,
+  Button,
+  ButtonText,
 } from '@repo/ui';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { thuthimalAPI, identityAPI } from '@repo/core';
@@ -45,7 +44,6 @@ type ClaimState = 'loading' | 'success' | 'already_claimed' | 'error';
 export default function ThuthimalClaimScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<ClaimRouteParams, 'ThuthimalClaim'>>();
-  const colors = useThemedColors();
   const { t } = useTranslation();
   const [claimState, setClaimState] = useState<ClaimState>('loading');
   const [gifterName, setGifterName] = useState(route.params?.gifter_name ?? 'Someone special');
@@ -111,10 +109,10 @@ export default function ThuthimalClaimScreen() {
   if (claimState === 'loading') {
     return (
       <ScreenWrapper>
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-            <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
+        <Box className="flex-1 items-center justify-center">
+          <VStack className="items-center" space="lg">
+            <Spinner size="large" color="#E67E22" />
+            <Text className="text-phase-text-secondary text-center">
               {t('thuthimalClaim.loading')}
             </Text>
           </VStack>
@@ -126,28 +124,26 @@ export default function ThuthimalClaimScreen() {
   if (claimState === 'already_claimed') {
     return (
       <ScreenWrapper>
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+        <Box className="flex-1 items-center justify-center p-8">
           <Animated.View entering={FadeInDown.duration(500)}>
-            <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
-              <Text sx={{ fontSize: 56, textAlign: 'center' }}>🌸</Text>
-              <Heading
-                sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize['2xl'] }}
-                color={Theme.colors.starlightGray as any}
-              >
+            <VStack className="items-center" space="lg">
+              <Text className="text-[56px] text-center">🌸</Text>
+              <Heading className="text-center text-2xl text-phase-text-primary">
                 {t('thuthimalClaim.alreadyBloomedTitle')}
               </Heading>
-              <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}>
+              <Text className="text-phase-text-secondary text-center leading-6">
                 {t('thuthimalClaim.alreadyBloomedDesc')}
               </Text>
-              <TouchableOpacity 
-                accessibilityRole="button"
+              <Button
+                size="lg"
+                variant="outline"
                 onPress={() => navigation.goBack()}
-                style={[styles.button, { backgroundColor: Theme.colors.ink }]}
+                className="mt-4 border-phase-surface rounded-2xl"
               >
-                <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
+                <ButtonText className="text-phase-text-primary">
                   {t('thuthimalClaim.goBack')}
-                </Text>
-              </TouchableOpacity>
+                </ButtonText>
+              </Button>
             </VStack>
           </Animated.View>
         </Box>
@@ -158,27 +154,25 @@ export default function ThuthimalClaimScreen() {
   if (claimState === 'error') {
     return (
       <ScreenWrapper>
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
-          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
-            <Text sx={{ fontSize: 48 }}>⚠️</Text>
-            <Heading
-              sx={{ textAlign: 'center' }}
-              color={Theme.colors.emberRed as any}
-            >
+        <Box className="flex-1 items-center justify-center p-8">
+          <VStack className="items-center" space="lg">
+            <Text className="text-5xl">⚠️</Text>
+            <Heading className="text-center text-phase-error">
               {t('thuthimalClaim.errorTitle')}
             </Heading>
-            <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
+            <Text className="text-phase-text-secondary text-center">
               {t('thuthimalClaim.errorDesc')}
             </Text>
-            <TouchableOpacity 
-              accessibilityRole="button"
+            <Button
+              size="lg"
+              variant="outline"
               onPress={() => navigation.goBack()}
-              style={[styles.button, { backgroundColor: Theme.colors.ink }]}
+              className="mt-4 border-phase-surface rounded-2xl"
             >
-              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
+              <ButtonText className="text-phase-text-primary">
                 {t('thuthimalClaim.goBack')}
-              </Text>
-            </TouchableOpacity>
+              </ButtonText>
+            </Button>
           </VStack>
         </Box>
       </ScreenWrapper>
@@ -188,137 +182,56 @@ export default function ThuthimalClaimScreen() {
   // SUCCESS STATE — warm, sacred, non-transactional
   return (
     <ScreenWrapper>
-      <Box
-        sx={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: Theme.spacing.xl,
-          backgroundColor: Theme.colors.obsidian,
-        }}
-      >
+      <Box className="flex-1 items-center justify-center p-8 bg-black">
         {/* Flower */}
-        <Animated.View style={[styles.flowerContainer, flowerStyle]}>
-          <Text style={styles.flowerEmoji}>🌸</Text>
+        <Animated.View style={[flowerStyle]} className="items-center justify-center">
+          <Text className="text-[80px] text-center">🌸</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(400).duration(600)}>
-          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}>
+        <Animated.View entering={FadeInDown.delay(400).duration(600)} className="w-full">
+          <VStack className="items-center mt-8" space="lg">
             {/* Sinhala title */}
-            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}>
+            <Text className="text-phase-interactive text-2xl tracking-[2px] text-center">
               {t('thuthimalClaim.flowerTitle')}
             </Text>
-            <Heading
-              sx={{
-                textAlign: 'center',
-                fontSize: Theme.typography.fontSize['2xl'],
-                fontWeight: '700',
-              }}
-              color={Theme.colors.sacredWhite as any}
-            >
+            <Heading className="text-center text-3xl font-bold text-white">
               {t('thuthimalClaim.giftHeading')}
             </Heading>
 
             {/* Gift message */}
-            <Box
-              sx={{
-                backgroundColor: `${Theme.colors.sanctuarySaffron}18`,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: `${Theme.colors.sanctuarySaffron}40`,
-                padding: Theme.spacing.lg,
-                width: '100%',
-              }}
-            >
-              <Text
-                sx={{
-                  color: Theme.colors.starlightGray,
-                  textAlign: 'center',
-                  lineHeight: 24,
-                  fontSize: 16,
-                }}
-              >
+            <Box className="bg-phase-interactive/10 rounded-[32px] border border-phase-interactive/20 p-8 w-full">
+              <Text className="text-phase-text-secondary text-center leading-6 text-lg">
                 {t('thuthimalClaim.giftFrom')}
               </Text>
-              <Text
-                sx={{
-                  color: Theme.colors.sacredWhite,
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 22,
-                  marginTop: Theme.spacing.sm,
-                }}
-              >
+              <Text className="text-white text-center font-bold text-2xl mt-2">
                 {gifterName}
               </Text>
-              <Text
-                sx={{
-                  color: Theme.colors.mistGray,
-                  textAlign: 'center',
-                  fontSize: 13,
-                  marginTop: Theme.spacing.sm,
-                }}
-              >
+              <Text className="text-phase-text-tertiary text-center text-sm mt-2">
                 {t('thuthimalClaim.giftRecognition')}
               </Text>
             </Box>
 
             {/* Pro status confirmation */}
-            <HStack
-              sx={{
-                backgroundColor: `${Theme.colors.sageGreen}20`,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: `${Theme.colors.sageGreen}40`,
-                paddingHorizontal: Theme.spacing.lg,
-                paddingVertical: Theme.spacing.md,
-                alignItems: 'center',
-                gap: Theme.spacing.sm,
-              }}
-            >
-              <Text sx={{ fontSize: 20 }}>✨</Text>
-              <Text sx={{ color: Theme.colors.sageGreen, fontWeight: '600' }}>
+            <HStack className="bg-emerald-500/10 rounded-2xl border border-emerald-500/20 px-6 py-4 items-center" space="sm">
+              <Text className="text-xl">✨</Text>
+              <Text className="text-emerald-500 font-semibold">
                 {t('thuthimalClaim.proActive')}
               </Text>
             </HStack>
 
             {/* Continue button */}
-            <TouchableOpacity 
-              accessibilityRole="button"
-              onPress={handleContinue}
-              style={[
-                styles.button,
-                {
-                  backgroundColor: Theme.colors.sanctuarySaffron,
-                  width: '100%',
-                  marginTop: Theme.spacing.md,
-                },
-              ]}
+            <Button
+                size="xl"
+                onPress={handleContinue}
+                className="w-full mt-6 bg-phase-interactive rounded-2xl"
             >
-              <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}>
-                {t('thuthimalClaim.enterSanctuary')}
-              </Text>
-            </TouchableOpacity>
+                <ButtonText className="text-white font-bold text-lg">
+                    {t('thuthimalClaim.enterSanctuary')}
+                </ButtonText>
+            </Button>
           </VStack>
         </Animated.View>
       </Box>
     </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  flowerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  flowerEmoji: {
-    fontSize: 80,
-    textAlign: 'center',
-  },
-  button: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: Theme.corners.comfortable,
-    alignItems: 'center',
-  },
-});

@@ -6,7 +6,9 @@ import {
     Heading,
     HStack,
     Text,
-    VStack} from '@repo/ui';
+    VStack,
+    Icon
+} from '@repo/ui';
 import { Compass, DoorOpen, School, Users } from 'lucide-react-native';
 
 interface PrincipalOnboardingViewProps {
@@ -56,7 +58,7 @@ export default function PrincipalOnboardingView({
                         <HStack key={item.title}
                             className="gap-4 items-start p-4 rounded-2xl bg-vellum/50 border border-starlightGray/30">
                             <Box className="w-10 h-10 rounded-xl bg-amber-500/10 items-center justify-center">
-                                <item.icon size={18} className="text-amber-600" />
+                                <Icon as={item.icon} size="sm" className="text-amber-600" />
                             </Box>
                             <VStack className="flex-1 gap-1">
                                 <Text size="sm" className="font-bold text-phaseText-primary">
@@ -82,9 +84,9 @@ export default function PrincipalOnboardingView({
                         </Button>
                     ) : null}
 
-                    <Button variant="link" onPress={onJoinSchool} className="mt-2">
+                    <Button variant="ghost" onPress={onJoinSchool} className="mt-2">
                         <HStack className="items-center gap-2">
-                            <DoorOpen size={16} color="#7DD4C0" />
+                            <Icon as={DoorOpen} size="sm" className="text-[#7DD4C0]" />
                             <ButtonText className="text-phase-accent font-semibold">Join, an existing, school</ButtonText>
                         </HStack>
                     </Button>

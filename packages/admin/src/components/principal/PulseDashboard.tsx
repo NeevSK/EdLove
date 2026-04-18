@@ -43,7 +43,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
         <VStack className="gap-4">
             {/* Primary Pulse Card */}
             <Animated.View entering={FadeInUp.delay(100)}>
-                <SanctuaryCard variant="glass">
+                <SanctuaryCard className="bg-phase-surface/40">
                     <VStack
                         className="gap-4 p-4"
                         accessible={true}

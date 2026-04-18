@@ -108,19 +108,21 @@ interface PathRowProps {
 
 function PathRow({ emoji, pathName, stageLabel, narrative }: PathRowProps) {
     return (
-        <Box className="py-md border-b border-phase-surface/60">
-            <HStack className="items-start gap-md">
-                <Text className="text-2xl leading-8 w-8 text-center">{emoji}</Text>
-                <VStack className="flex-1 gap-xs">
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">{emoji}</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
                     <HStack className="justify-between items-center">
-                        <Text className="text-[10px] text-phaseText-secondary uppercase tracking-[0.8px]">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             {pathName}
                         </Text>
-                        <Text className="text-sm font-bold text-phaseText-primary">
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {stageLabel}
                         </Text>
                     </HStack>
-                    <Text className="text-sm text-phaseText-secondary leading-[18px]">
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed">
                         {narrative}
                     </Text>
                 </VStack>
@@ -140,25 +142,29 @@ interface MoonRowProps {
 
 function MoonRow({ moon, t }: MoonRowProps) {
     return (
-        <Box className="py-md border-b border-phase-surface/60">
-            <HStack className="items-start gap-md">
-                <Text className="text-2xl leading-8 w-8 text-center">{moon.emoji}</Text>
-                <VStack className="flex-1 gap-xs">
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/5 items-center justify-center border border-phase-interactive/10 shadow-sm">
+                    <Text className="text-2xl leading-8">{moon.emoji}</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
                     <HStack className="justify-between items-center">
-                        <Text className="text-[10px] text-phaseText-secondary uppercase tracking-[0.8px]">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             {t('journey.moonTonight')}
                         </Text>
-                        <Text className="text-sm font-bold text-phaseText-primary">
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {moon.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </Text>
                     </HStack>
-                    <Text className="text-sm text-phaseText-secondary leading-[18px] italic">
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed italic">
                         {moon.invitation_en}
                     </Text>
                     {moon.is_poya && (
-                        <Text className="text-xs text-phase-interactive mt-0.5">
-                            {t('journey.poyaDay')}
-                        </Text>
+                        <Box className="bg-phase-interactive/10 self-start px-2 py-0.5 rounded-md mt-1">
+                            <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-wider">
+                                {t('journey.poyaDay')}
+                            </Text>
+                        </Box>
                     )}
                 </VStack>
             </HStack>
@@ -191,29 +197,31 @@ function ResonanceRow({ stats }: ResonanceRowProps) {
     }
 
     return (
-        <Box className="py-md border-b border-phase-surface/60">
-            <HStack className="items-start gap-md">
-                <Text className="text-2xl leading-8 w-8 text-center">✨</Text>
-                <VStack className="flex-1 gap-xs">
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">✨</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
                     <HStack className="justify-between items-center">
-                        <Text className="text-[10px] text-phaseText-secondary uppercase tracking-[0.8px]">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             COMMUNITY RESONANCE
                         </Text>
-                        <Text className="text-sm font-bold text-phaseText-primary">
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {label}
                         </Text>
                     </HStack>
-                    <Text className="text-sm text-phaseText-secondary leading-[18px]">
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed">
                         {narrative}
                     </Text>
-                    <HStack className="gap-sm mt-1">
-                        <Box className="bg-phase-interactive/15 px-2 py-0.5 rounded">
-                            <Text className="text-xs text-phase-interactive">
+                    <HStack className="gap-2 mt-2">
+                        <Box className="bg-phase-interactive/10 px-3 py-1 rounded-full">
+                            <Text className="text-[11px] font-bold text-phase-interactive">
                                 {stats.likes} Likes
                             </Text>
                         </Box>
-                        <Box className="bg-phase-interactive/15 px-2 py-0.5 rounded">
-                            <Text className="text-xs text-phase-interactive">
+                        <Box className="bg-phase-interactive/10 px-3 py-1 rounded-full">
+                            <Text className="text-[11px] font-bold text-phase-interactive">
                                 {stats.comments} Comments
                             </Text>
                         </Box>
@@ -244,29 +252,31 @@ function RecognitionRow({ badges }: RecognitionRowProps) {
         : `Your path has already left ${badges.length} memorable ${badges.length === 1 ? 'signal' : 'signals'} in the platform.`;
 
     return (
-        <Box className="py-md border-b border-phase-surface/60">
-            <HStack className="items-start gap-md">
-                <Text className="text-2xl leading-8 w-8 text-center">🏅</Text>
-                <VStack className="flex-1 gap-xs">
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">🏅</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
                     <HStack className="justify-between items-center">
-                        <Text className="text-[10px] text-phaseText-secondary uppercase tracking-[0.8px]">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             JOURNEY RECOGNITION
                         </Text>
-                        <Text className="text-sm font-bold text-phaseText-primary">
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {label}
                         </Text>
                     </HStack>
-                    <Text className="text-sm text-phaseText-secondary leading-[18px]">
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed">
                         {narrative}
                     </Text>
                     {visibleBadges.length > 0 && (
-                        <HStack className="flex-wrap gap-[6px] mt-1">
+                        <HStack className="flex-wrap gap-2 mt-2">
                             {visibleBadges.map((badge) => (
                                 <Box
                                     key={badge}
-                                    className="px-sm py-1 bg-phase-interactive/15 rounded-full border border-phase-interactive/30"
+                                    className="px-3 py-1 bg-phase-canvas border border-phase-surface rounded-full"
                                 >
-                                    <Text className="text-xs text-phaseText-primary">
+                                    <Text className="text-[11px] font-bold text-phase-text-primary">
                                         {badge}
                                     </Text>
                                 </Box>
@@ -290,32 +300,34 @@ interface WhisperedMomentsRowProps {
 
 function WhisperedMomentsRow({ moments, t }: WhisperedMomentsRowProps) {
     return (
-        <Box className="py-md">
-            <HStack className="items-start gap-md">
-                <Text className="text-2xl leading-8 w-8 text-center">✨</Text>
-                <VStack className="flex-1 gap-xs">
+        <Box className="py-5">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">✨</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
                     <HStack className="justify-between items-center">
-                        <Text className="text-[10px] text-phaseText-secondary uppercase tracking-[0.8px]">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             {t('journey.whisperedMoments')}
                         </Text>
                         {moments.length > 0 && (
-                            <Text className="text-xs text-phaseText-secondary">
+                            <Text className="text-[11px] font-bold text-phase-text-tertiary">
                                 {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}
                             </Text>
                         )}
                     </HStack>
                     {moments.length === 0 ? (
-                        <Text className="text-sm text-phaseText-secondary italic">
+                        <Text className="text-sm text-phase-text-secondary italic leading-relaxed">
                             {t('journey.noMoments')}
                         </Text>
                     ) : (
-                        <HStack className="flex-wrap gap-[6px] mt-2">
+                        <HStack className="flex-wrap gap-2 mt-2">
                             {moments.map(m => (
                                 <Box
                                     key={m.key}
-                                    className="px-sm py-1 bg-phase-interactive/15 rounded-full border border-phase-interactive/30"
+                                    className="px-3 py-1 bg-phase-canvas border border-phase-surface rounded-full"
                                 >
-                                    <Text className="text-xs text-phaseText-primary">
+                                    <Text className="text-[11px] font-bold text-phase-text-primary">
                                         {m.name_en}
                                     </Text>
                                 </Box>
@@ -379,17 +391,17 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
     if (loading) {
         return (
             <Box
-                className="bg-phase-canvas rounded-generous border border-phase-surface p-xl mx-md mt-lg min-h-[180px] items-center justify-center"
+                className="bg-phase-canvas rounded-3xl border border-phase-surface p-10 mx-5 mt-8 min-h-[200px] items-center justify-center shadow-lg"
             >
-                <Spinner className="text-phase-interactive" />
+                <Spinner className="text-phase-interactive" size="large" />
             </Box>
         );
     }
 
     if (!growth) {
         return (
-            <Box className="p-xl items-center">
-                <Text className="text-phaseText-secondary">{t('profile.noJourneyData') || 'No journey data found'}</Text>
+            <Box className="p-12 items-center">
+                <Text className="text-phase-text-tertiary italic">{t('profile.noJourneyData') || 'No journey data found'}</Text>
             </Box>
         );
     }
@@ -409,29 +421,31 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         : FadeInDown.springify();
 
     return (
-        <Animated.View entering={enteringAnimation}>
+        <Animated.View entering={enteringAnimation} className="px-5">
             <Box
-                className="bg-phase-canvas rounded-generous border border-phase-surface shadow-sm mx-md mt-lg overflow-hidden"
+                className="bg-phase-canvas rounded-[40px] border border-phase-surface shadow-xl overflow-hidden mb-10"
             >
                 {/* Header */}
                 <Box
-                    className="px-xl pt-xl pb-md border-b border-phase-surface/60"
+                    className="px-8 pt-8 pb-6 border-b border-phase-surface/40 bg-phase-surface/30"
                 >
-                    <Heading size="sm" className="text-phaseText-secondary">
-                        {t('journey.title')}
+                    <Heading size="md" className="text-phase-text-primary">
+                        {t('journey.title') || "Living Journey"}
                     </Heading>
-                    <Text className="text-xs text-phaseText-secondary mt-1">
-                        {t('journey.subtitle')}
+                    <Text className="text-xs text-phase-text-secondary mt-2 leading-relaxed">
+                        {t('journey.subtitle') || "Observe the evolution of your presence across the sanctuary paths."}
                     </Text>
                     {phase !== 'present' && (
-                        <Text className="text-xs text-phaseText-secondary mt-1.5 opacity-80">
-                            Journey state, discoveries, moon context, and community resonance follow the selected time.
-                        </Text>
+                        <Box className="bg-phase-interactive/10 px-3 py-1 rounded-full self-start mt-4">
+                            <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-wider">
+                                HISTORICAL PERSPECTIVE
+                            </Text>
+                        </Box>
                     )}
                 </Box>
 
                 {/* Path rows */}
-                <Box className="px-xl">
+                <Box className="px-8">
                     {/* Bhumi (Lotus) — all users */}
                     <PathRow
                         emoji="🌸"
@@ -489,4 +503,3 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         </Animated.View>
     );
 }
-

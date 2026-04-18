@@ -10,7 +10,6 @@ import {
     InputField,
     Button,
     ButtonText,
-    SanctuaryCard,
     Pressable,
 } from '@repo/ui';
 import {
@@ -105,12 +104,12 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
     return (
         <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen">
             <Box className="flex-1 justify-end">
-                <Box className="flex-1 w-full bg-[#6B6480]/50">
+                <Box className="flex-1 w-full bg-black/40">
                     <Pressable className="flex-1" onPress={onClose} />
-                    <Box className="bg-phase-canvas rounded-t-generous p-6 max-h-[85%] border border-phase-surface">
-                        <HStack className="justify-between items-center mb-6">
+                    <Box className="bg-phase-canvas rounded-t-[40px] p-6 max-h-[85%] border-t border-phase-surface">
+                        <HStack className="justify-between items-center mb-8">
                             <VStack>
-                                <Heading className="text-phase-text-primary">
+                                <Heading className="text-phase-text-primary text-xl">
                                     {initialLink ? t('addSocialLink.editTitle') : t('addSocialLink.title')}
                                 </Heading>
                                 <Text className="text-xs text-phase-text-tertiary">
@@ -127,27 +126,24 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                         <ScrollView showsVerticalScrollIndicator={false}>
                             <VStack space="xl">
-                                <VStack space="xs">
-                                    <Text className="text-xs font-bold text-phase-text-secondary">{t('addSocialLink.selectPlatform')}</Text>
-                                    <HStack space="sm" className="flex-wrap">
+                                <VStack space="sm">
+                                    <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.selectPlatform')}</Text>
+                                    <HStack className="flex-wrap">
                                         {PLATFORMS.map((p) => (
                                             <Pressable
                                                 key={p.value}
                                                 onPress={() => setPlatform(p.value)}
-                                                className={`flex-row items-center px-3 py-2 rounded-full mb-2 border ${
-                                                    platform === p.value ? '' : 'border-phase-surface bg-phase-surface'
+                                                className={`flex-row items-center px-4 py-3 rounded-2xl mr-2 mb-2 border ${
+                                                    platform === p.value 
+                                                        ? 'border-phase-interactive bg-phase-interactive/5' 
+                                                        : 'border-phase-surface bg-phase-canvas'
                                                 }`}
-                                                style={{
-                                                    borderColor: platform === p.value ? p.color : undefined,
-                                                    backgroundColor: platform === p.value ? `${p.color}15` : undefined
-                                                }}
                                             >
-                                                <p.icon size={16} color={platform === p.value ? p.color : '#9DA1A3'} />
+                                                <p.icon size={18} color={platform === p.value ? '#4A90E2' : '#9DA1A3'} />
                                                 <Text
-                                                    className={`text-xs ml-1.5 ${
-                                                        platform === p.value ? 'font-bold' : ''
+                                                    className={`text-[13px] ml-2 ${
+                                                        platform === p.value ? 'font-bold text-phase-interactive' : 'text-phase-text-secondary'
                                                     }`}
-                                                    style={{ color: platform === p.value ? p.color : '#9DA1A3' }}
                                                 >
                                                     {t(p.labelKey)}
                                                 </Text>
@@ -156,11 +152,11 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     </HStack>
                                 </VStack>
 
-                                <VStack space="xs">
-                                    <Text className="text-xs font-bold text-phase-text-secondary">{t('addSocialLink.handleOrLink')}</Text>
-                                    <Input className="h-[54px] rounded-comfortable bg-phase-canvas border-phase-surface">
+                                <VStack space="sm">
+                                    <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.handleOrLink')}</Text>
+                                    <Input className="h-14 rounded-2xl bg-phase-canvas border-phase-surface px-4">
                                         <InputField
-                                            className="text-phase-text-primary"
+                                            className="text-phase-text-primary text-base"
                                             value={url}
                                             onChangeText={setUrl}
                                             placeholder={platform === 'whatsapp' ? t('addSocialLink.phoneOrLink') : t('addSocialLink.usernameOrLink')}
@@ -169,35 +165,41 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     </Input>
                                 </VStack>
 
-                                <VStack space="xs">
-                                    <Text className="text-xs font-bold text-phase-text-secondary">{t('addSocialLink.privacyLevel')}</Text>
+                                <VStack space="sm">
+                                    <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.privacyLevel')}</Text>
                                     <VStack space="sm">
                                         {PRIVACY_LEVELS.map((pl) => (
                                             <Pressable
                                                 key={pl.value}
                                                 onPress={() => setPrivacy(pl.value)}
+                                                className={`p-4 rounded-[24px] border border-phase-surface bg-phase-canvas ${
+                                                    privacy === pl.value ? 'border-phase-interactive bg-phase-interactive/5' : ''
+                                                }`}
                                             >
-                                                <SanctuaryCard
-                                                    variant={privacy === pl.value ? 'glass' : 'solid'}
-                                                    className={`p-4 ${
-                                                        privacy === pl.value ? 'border-[#F6BF8C]' : 'border-phase-surface'
-                                                    }`}
-                                                >
-                                                    <HStack space="md" className="items-center">
+                                                <HStack space="md" className="items-center">
+                                                    <Box 
+                                                        className={`p-3 rounded-full ${
+                                                            privacy === pl.value ? 'bg-phase-interactive/10' : 'bg-phase-surface'
+                                                        }`}
+                                                    >
                                                         <pl.icon size={20} color={privacy === pl.value ? '#4A90E2' : '#9DA1A3'} />
-                                                        <VStack className="flex-1">
-                                                            <Text className={`font-bold ${
-                                                                privacy === pl.value ? 'text-phase-text-primary' : 'text-phase-text-secondary'
-                                                            }`}>
-                                                                {t(pl.labelKey)}
-                                                            </Text>
-                                                            <Text className="text-xs text-phase-text-tertiary">
-                                                                {t(pl.descKey)}
-                                                            </Text>
-                                                        </VStack>
-                                                        {privacy === pl.value && <ShieldCheck size={18} color="#4A90E2" />}
-                                                    </HStack>
-                                                </SanctuaryCard>
+                                                    </Box>
+                                                    <VStack className="flex-1">
+                                                        <Text className={`font-bold ${
+                                                            privacy === pl.value ? 'text-phase-text-primary' : 'text-phase-text-secondary'
+                                                        }`}>
+                                                            {t(pl.labelKey)}
+                                                        </Text>
+                                                        <Text className="text-xs text-phase-text-tertiary">
+                                                            {t(pl.descKey)}
+                                                        </Text>
+                                                    </VStack>
+                                                    {privacy === pl.value && (
+                                                        <Box className="w-6 h-6 rounded-full bg-phase-interactive items-center justify-center">
+                                                            <Check size={14} color="white" strokeWidth={3} />
+                                                        </Box>
+                                                    )}
+                                                </HStack>
                                             </Pressable>
                                         ))}
                                     </VStack>
@@ -207,17 +209,17 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     size="lg"
                                     onPress={handleSave}
                                     isDisabled={loading || !url}
-                                    className="mt-4 bg-phase-interactive rounded-comfortable h-14"
+                                    className="mt-6 bg-phase-interactive rounded-2xl h-16 shadow-lg shadow-blue-500/30"
                                 >
-                                    <HStack space="xs" className="items-center">
+                                    <HStack space="sm" className="items-center">
                                         {initialLink ? <Check size={20} color="white" /> : <Plus size={20} color="white" />}
-                                        <ButtonText className="text-white font-bold">
+                                        <ButtonText className="text-white font-bold text-lg">
                                             {initialLink ? t('addSocialLink.saveButton') : t('addSocialLink.addButton')}
                                         </ButtonText>
                                     </HStack>
                                 </Button>
                             </VStack>
-                            <Box className="h-8" />
+                            <Box className="h-12" />
                         </ScrollView>
                     </Box>
                 </Box>

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal } from 'react-native';
 import { X } from 'lucide-react-native';
 import { 
     Box, 
     HStack, 
-    Heading, 
     ScrollView, 
     SkeletonCard, 
     Text, 
-    Theme, 
-    useThemedColors,
-    VStack 
+    VStack,
+    Pressable,
+    Icon
 } from '@repo/ui';
 import { teacherFeedbackAPI, type TeacherSentEcho } from '../feedback';
 
@@ -33,7 +32,6 @@ export default function TeacherEchoHistoryModal({
   teacherId,
   onClose,
 }: TeacherEchoHistoryModalProps) {
-  const colors = useThemedColors();
   const [echoes, setEchoes] = useState<TeacherSentEcho[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -66,30 +64,22 @@ export default function TeacherEchoHistoryModal({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+      <Box className="flex-1 bg-background">
         {/* Header */}
-        <Box
-          sx={{
-            paddingTop: Theme.spacing.xl,
-            paddingBottom: Theme.spacing.md,
-            paddingHorizontal: Theme.spacing.md,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border,
-          }}
-        >
-          <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Heading size="lg" sx={{ color: colors.text }}>
+        <Box className="pt-8 pb-4 px-4 border-b border-border">
+          <HStack className="justify-between items-center">
+            <Text className="text-xl font-bold text-textPrimary">
               My Feedback History
-            </Heading>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color={colors.textTertiary} />
-            </TouchableOpacity>
+            </Text>
+            <Pressable onPress={onClose} className="p-1">
+              <Icon as={X} size="lg" className="text-willow" />
+            </Pressable>
           </HStack>
         </Box>
 
         {/* Content */}
         <ScrollView 
-            style={{ flex: 1 }} 
+            className="flex-1" 
             contentContainerStyle={{ padding: 16 }}
         >
           {loading ? (
@@ -99,8 +89,8 @@ export default function TeacherEchoHistoryModal({
                 <SkeletonCard />
             </VStack>
           ) : echoes.length === 0 ? (
-            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center', justifyContent: 'center', marginTop: 40 }}>
-              <Text sx={{ color: colors.textTertiary, fontSize: 14, fontStyle: 'italic', textAlign: 'center' }}>
+            <Box className="p-12 items-center justify-center mt-10">
+              <Text className="text-sm text-willow italic text-center">
                 No echoes sent yet. Use the "Principal Echo" action to share feedback.
               </Text>
             </Box>
@@ -109,58 +99,49 @@ export default function TeacherEchoHistoryModal({
               {echoes.map((echo) => (
                 <Box
                   key={echo.id}
-                  sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.comfortable,
-                    borderLeftWidth: 4,
-                    borderLeftColor: echo.priority === 'high' ? Theme.colors.emberRed : colors.action,
-                  }}
+                  className={`p-4 bg-silk rounded-2xl border-l-4 ${
+                    echo.priority === 'high' ? 'border-error' : 'border-primary'
+                  }`}
                 >
-                  <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <HStack space="xs" sx={{ alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: colors.textSecondary }}>
+                  <HStack className="justify-between items-center mb-2">
+                    <HStack space="xs" className="items-center">
+                        <Text className="text-[10px] font-extrabold uppercase text-bark">
                             {echo.category}
                         </Text>
-                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}>•</Text>
-                        <Text sx={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: echo.priority === 'high' ? Theme.colors.emberRed : colors.textSecondary }}>
+                        <Text className="text-[10px] text-willow">•</Text>
+                        <Text className={`text-[10px] font-extrabold uppercase ${
+                          echo.priority === 'high' ? 'text-error' : 'text-bark'
+                        }`}>
                             {echo.priority}
                         </Text>
-                        <Text sx={{ fontSize: 10, color: colors.textTertiary }}>•</Text>
-                        <Text sx={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: echo.is_read ? colors.success : colors.warning }}>
+                        <Text className="text-[10px] text-willow">•</Text>
+                        <Text className={`text-[10px] font-extrabold uppercase ${
+                          echo.is_read ? 'text-success' : 'text-warning'
+                        }`}>
                             {echo.is_read ? 'read' : 'pending'}
                         </Text>
                     </HStack>
-                    <Text sx={{ fontSize: 10, color: colors.textTertiary }}>
+                    <Text className="text-[10px] text-willow">
                       {new Date(echo.created_at).toLocaleDateString()}
                     </Text>
                   </HStack>
                   
-                  <Text sx={{ color: colors.text, fontSize: 14, lineHeight: 22, marginBottom: 12 }}>
+                  <Text className="text-sm text-textPrimary leading-relaxed mb-3">
                     {echo.content}
                   </Text>
 
                   {echo.principal_response ? (
-                    <Box
-                      sx={{
-                        padding: Theme.spacing.sm,
-                        backgroundColor: colors.primary,
-                        borderRadius: Theme.corners.comfortable,
-                        borderLeftWidth: 3,
-                        borderLeftColor: colors.action,
-                        marginTop: 8
-                      }}
-                    >
-                      <Text sx={{ fontSize: 11, fontWeight: '800', color: colors.action, marginBottom: 4 }}>
+                    <Box className="p-2 bg-background rounded-xl border-l-[3px] border-primary mt-2">
+                      <Text className="text-[11px] font-extrabold text-primary mb-1">
                         Principal's Reply
                       </Text>
-                      <Text sx={{ color: colors.text, fontSize: 13, lineHeight: 18 }}>
+                      <Text className="text-[13px] text-textPrimary leading-normal">
                         {echo.principal_response}
                       </Text>
                     </Box>
                   ) : (
-                    <Box sx={{ marginTop: 4 }}>
-                        <Text sx={{ color: colors.textTertiary, fontSize: 12, fontStyle: 'italic' }}>
+                    <Box className="mt-1">
+                        <Text className="text-xs text-willow italic">
                             Awaiting principal response...
                         </Text>
                     </Box>
@@ -174,9 +155,3 @@ export default function TeacherEchoHistoryModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-    closeButton: {
-        padding: 4,
-    }
-});

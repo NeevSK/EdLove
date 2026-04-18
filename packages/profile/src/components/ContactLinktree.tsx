@@ -6,15 +6,15 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
     VStack,
     HStack,
     Box,
     Text,
-    SanctuaryCard,
-    SanctuaryButton,
+    Button,
+    ButtonText,
     LivingGlow,
     FadeInDown,
     openExternalURL,
@@ -24,16 +24,12 @@ import {
     Pressable,
 } from '@repo/ui';
 import {
-    Phone,
     Linkedin,
     Instagram,
     Globe,
     ExternalLink,
     Mail,
     MessagesSquare,
-    ShieldCheck,
-    Shield,
-    ShieldAlert,
     Link,
     Edit2,
     Trash2,
@@ -222,49 +218,59 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
     return (
         <VStack space="lg" className="w-full">
             {/* Header / Intro */}
-            <VStack space="xs" className="items-center mb-6">
-                <LivingGlow size={64} glowColor="#F6BF8C">
+            <VStack space="xs" className="items-center mb-10">
+                <LivingGlow size={72} glowColor="#F6BF8C">
                     <Box
-                        className="w-16 h-16 rounded-full bg-phase-primary items-center justify-center border-2 border-[#F6BF8C]"
+                        className="w-[72px] h-[72px] rounded-full bg-phase-canvas items-center justify-center border-2 border-phase-interactive"
                     >
-                        <Text className="text-xl font-bold text-phase-text-primary">
+                        <Text className="text-2xl font-bold text-phase-text-primary">
                             {userName.charAt(0)}
                         </Text>
                     </Box>
                 </LivingGlow>
-                <Text className="text-xl font-bold text-phase-text-primary mt-2">
+                <Text className="text-xl font-bold text-phase-text-primary mt-4">
                     {userName}
                 </Text>
                 {bio && (
-                    <Text className="text-sm text-phase-text-secondary text-center px-12">
+                    <Text className="text-sm text-phase-text-secondary text-center px-10 mt-1">
                         {bio}
                     </Text>
                 )}
-                {/* Copy/Share profile link  visible on web always, on native only for own profile */}
-                <HStack space="sm">
+                
+                <HStack space="md" className="mt-6">
                     {(Platform.OS === 'web' || isOwnProfile) && (
-                        <SanctuaryButton
+                        <Button
                             size="sm"
                             variant="outline"
                             onPress={handleCopyProfileLink}
-                            leftIcon={Link}
+                            className="border-phase-surface rounded-xl px-4"
                         >
-                            {Platform.OS === 'web' ? 'Share Profile Link' : 'Copy Profile Link'}
-                        </SanctuaryButton>
+                            <HStack space="xs" className="items-center">
+                                <Link size={14} color="#4A90E2" />
+                                <ButtonText className="text-phase-text-primary text-xs">
+                                    {Platform.OS === 'web' ? 'Share Profile' : 'Copy Link'}
+                                </ButtonText>
+                            </HStack>
+                        </Button>
                     )}
                     
                     {isOwnProfile && editable && (
-                        <SanctuaryButton
+                        <Button
                             size="sm"
                             variant={isEditing ? "solid" : "outline"}
                             onPress={() => {
                                 hapticLight();
                                 setIsEditing(!isEditing);
                             }}
-                            leftIcon={Edit2}
+                            className={`${isEditing ? 'bg-phase-interactive' : 'border-phase-surface'} rounded-xl px-4`}
                         >
-                            {isEditing ? 'Done' : 'Edit Contacts'}
-                        </SanctuaryButton>
+                            <HStack space="xs" className="items-center">
+                                <Edit2 size={14} color={isEditing ? "white" : "#4A90E2"} />
+                                <ButtonText className={`${isEditing ? 'text-white' : 'text-phase-text-primary'} text-xs`}>
+                                    {isEditing ? 'Done' : 'Edit Hub'}
+                                </ButtonText>
+                            </HStack>
+                        </Button>
                     )}
                 </HStack>
             </VStack>
@@ -300,25 +306,25 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             key={`${link.platform}-${index}`}
                             entering={FadeInDown.delay(index * 100).springify()}
                         >
-                            <SanctuaryCard
-                                variant="glass"
+                            <Pressable 
                                 onPress={() => isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)}
                                 onLongPress={() => !isEditing && handleLinkOptions(link.platform, link.url)}
+                                className="bg-phase-canvas border border-phase-surface rounded-3xl overflow-hidden shadow-sm"
                             >
-                                <HStack space="md" className="items-center p-4">
+                                <HStack space="md" className="items-center p-5">
                                     <Box
-                                        className="w-10 h-10 rounded-xl items-center justify-center"
-                                        style={{ backgroundColor: `${config.color}20` }}
+                                        className="w-12 h-12 rounded-2xl items-center justify-center"
+                                        style={{ backgroundColor: `${config.color}15` }}
                                     >
-                                        <Icon color={config.color} size={20} />
+                                        <Icon color={config.color} size={24} />
                                     </Box>
                                     <VStack className="flex-1">
                                         <HStack space="xs" className="items-center">
-                                            <Text className="text-base font-bold text-phase-text-primary">
+                                            <Text className="text-lg font-bold text-phase-text-primary">
                                                 {config.label}
                                             </Text>
                                             {isOwnProfile && PrivacyEmoji && (
-                                                <Text className="text-[13px] ml-1">{PrivacyEmoji}</Text>
+                                                <Text className="text-[14px] ml-1">{PrivacyEmoji}</Text>
                                             )}
                                         </HStack>
                                         <Text className="text-xs text-phase-text-tertiary" numberOfLines={1}>
@@ -326,11 +332,11 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                         </Text>
                                     </VStack>
                                     {isEditing ? (
-                                        <HStack space="sm">
-                                            <Pressable onPress={() => handleEditLink(link)} className="p-1">
+                                        <HStack space="md">
+                                            <Pressable onPress={() => handleEditLink(link)} className="p-2 rounded-lg bg-phase-surface">
                                                 <Edit2 size={18} color="#4A90E2" />
                                             </Pressable>
-                                            <Pressable onPress={() => handleDeleteLink(link.id)} className="p-1">
+                                            <Pressable onPress={() => handleDeleteLink(link.id)} className="p-2 rounded-lg bg-phase-surface">
                                                 <Trash2 size={18} color="#FF6B6B" />
                                             </Pressable>
                                         </HStack>
@@ -338,7 +344,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                         <ExternalLink size={18} color="#9DA1A3" />
                                     )}
                                 </HStack>
-                            </SanctuaryCard>
+                            </Pressable>
                         </Animated.View>
                     );
                 })}
@@ -360,16 +366,15 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             />
                         )}
                         <Animated.View entering={FadeInDown.springify()}>
-                            <SanctuaryCard
-                                variant="glass"
+                            <Pressable
                                 onPress={handleAddLink}
-                                className="border-dashed"
+                                className="bg-phase-canvas border-2 border-dashed border-phase-surface rounded-3xl p-5 items-center justify-center"
                             >
-                                <HStack space="md" className="items-center p-4 justify-center">
+                                <HStack space="sm" className="items-center">
                                     <Plus size={20} color="#4A90E2" />
-                                    <Text className="font-bold text-phase-interactive">Add Social Link</Text>
+                                    <Text className="font-bold text-phase-interactive text-base">Add Social Link</Text>
                                 </HStack>
-                            </SanctuaryCard>
+                            </Pressable>
                         </Animated.View>
                     </>
                 )}
@@ -385,8 +390,8 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
             )}
 
             {displayLinks.length === 0 && (
-                <Box className="py-8 items-center">
-                    <Text className="text-phase-text-tertiary italic">
+                <Box className="py-12 items-center">
+                    <Text className="text-phase-text-tertiary italic text-sm">
                         {isOwnProfile ? t('community.profile.noContactsYet') || "No public contacts shared yet." : t('community.profile.noPublicContacts') || "No public contacts shared yet."}
                     </Text>
                 </Box>

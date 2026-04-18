@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, Platform, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import {
     X,
     Play,
@@ -24,8 +24,8 @@ import {
     Text,
     Theme,
     SanctuaryButton,
-    useThemedColors,
-    SanctuaryFlashList
+    SanctuaryFlashList,
+    useTheme
 } from '@repo/ui';
 import { formatFileSize, formatDuration } from '@repo/core';
 import { libraryAPI } from '../api/library';
@@ -91,7 +91,7 @@ export function ResourceList({
             };
 
             return (
-                <Box sx={{ margin: 6 }}>
+                <Box className="m-1.5">
                     <LibraryThumbnailCard
                         title={item.title}
                         type={item.type}
@@ -116,7 +116,7 @@ export function ResourceList({
     }, [onOpenResource, handleFlashPlay, onPullToDesk, viewMode, onOpenResourceOptions]);
 
     return (
-        <Box sx={{ flex: 1 }}>
+        <Box className="flex-1">
             <SanctuaryFlashList
                 data={resources}
                 renderItem={renderItem}
@@ -162,7 +162,7 @@ interface FlashPlaySheetProps {
 }
 
 function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onReportBroken }: FlashPlaySheetProps) {
-    const colors = useThemedColors();
+    const theme = useTheme();
     const [resonantIslands, setResonantIslands] = useState<any[]>([]);
 
     useEffect(() => {
@@ -190,40 +190,35 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
     return (
         <Actionsheet isOpen={!!resource} onClose={onClose}>
             <ActionsheetBackdrop />
-            <ActionsheetContent sx={{ backgroundColor: Theme.colors.ink }}>
+            <ActionsheetContent className="bg-phase-surface">
                 <ActionsheetDragIndicatorWrapper>
                     <ActionsheetDragIndicator />
                 </ActionsheetDragIndicatorWrapper>
                 
-                <VStack space="lg" p={Theme.spacing.lg} sx={{ width: '100%' }}>
-                    <HStack space="md" alignItems="center">
+                <VStack className="gap-6 p-6 w-full">
+                    <HStack className="gap-4 items-center">
                         <Box
-                            sx={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: Theme.corners.comfortable,
+                            className="w-14 h-14 rounded-xl items-center justify-center border"
+                            style={{
                                 backgroundColor: `${config.color}20`,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                borderWidth: 1,
                                 borderColor: `${config.color}40`,
                             }}
                         >
                             <Icon color={config.color} size={28} />
-                            <Text sx={{ fontSize: 10, fontWeight: '700', color: config.color }}>
+                            <Text className="text-[10px] font-bold" style={{ color: config.color }}>
                                 {config.label}
                             </Text>
                         </Box>
                         
-                        <VStack sx={{ flex: 1 }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontSize: 16, fontWeight: '700' }} numberOfLines={2}>
+                        <VStack className="flex-1">
+                            <Text className="text-phaseText-primary text-base font-bold" numberOfLines={2}>
                                 {resource.title}
                             </Text>
-                            <Text sx={{ color: Theme.colors.mistGray, fontSize: 14 }}>
+                            <Text className="text-phaseText-secondary text-sm">
                                 {resource.creator_name}
                             </Text>
                             {metaParts ? (
-                                <Text sx={{ color: Theme.colors.shroud, fontSize: 12 }}>
+                                <Text className="text-phaseText-tertiary text-xs">
                                     {metaParts}
                                 </Text>
                             ) : null}
@@ -232,37 +227,26 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
 
                     {resource.description ? (
                         <Box 
-                            sx={{ 
-                                backgroundColor: Theme.colors.glass.dark.highlight, 
-                                padding: Theme.spacing.md, 
-                                borderRadius: Theme.corners.comfortable 
-                            }}
+                            className="bg-phase-surface-light p-4 rounded-xl"
                         >
-                            <Text sx={{ color: Theme.colors.starlightGray, fontSize: 14, lineHeight: 20 }} numberOfLines={3}>
+                            <Text className="text-phaseText-secondary text-sm leading-5" numberOfLines={3}>
                                 {resource.description}
                             </Text>
                         </Box>
                     ) : null}
 
                     {resonantIslands.length > 0 && (
-                        <VStack space="xs">
-                            <Text sx={{ color: Theme.colors.shroud, fontSize: 12, fontWeight: '700', textTransform: 'uppercase' }}>
+                        <VStack className="gap-1">
+                            <Text className="text-phaseText-tertiary text-[10px] font-bold uppercase">
                                 Resonant Islands
                             </Text>
-                            <HStack space="xs" sx={{ flexWrap: 'wrap' }}>
+                            <HStack className="gap-2 flex-wrap">
                                 {resonantIslands.map((island) => (
                                     <Box
                                         key={island.id}
-                                        sx={{
-                                            px: 8,
-                                            py: 4,
-                                            borderRadius: 8,
-                                            backgroundColor: 'rgba(255,255,255,0.05)',
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(255,255,255,0.1)'
-                                        }}
+                                        className="px-2 py-1 rounded-lg bg-white/5 border border-white/10"
                                     >
-                                        <Text sx={{ color: "#fff", fontSize: 10 }}>
+                                        <Text className="text-white text-[10px]">
                                             {island.name}
                                         </Text>
                                     </Box>
@@ -271,8 +255,8 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onRep
                         </VStack>
                     )}
 
-                    <HStack space="md">
-                        <Box sx={{ flex: 1 }}>
+                    <HStack className="gap-4">
+                        <Box className="flex-1">
                             <SanctuaryButton
                                 onPress={onOpenFull}
                                 action="primary"

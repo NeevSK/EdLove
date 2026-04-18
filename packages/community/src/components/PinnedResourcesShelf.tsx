@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, Pressable } from 'react-native';
 import { Box, HStack, VStack, Text, Theme } from '@repo/ui';
 import { BookOpen, FileText, Link as LinkIcon, Film, Bookmark } from 'lucide-react-native';
 
@@ -12,12 +12,12 @@ export interface PinnedResourcesShelfProps {
 
 function getResourceIcon(type: string): React.ReactElement {
     switch (type) {
-        case 'video': return <Film size={18} className="text-secondary-400" />;
-        case 'pdf': return <FileText size={18} className="text-error-500" />;
-        case 'doc': return <FileText size={18} className="text-info-500" />;
-        case 'link': return <LinkIcon size={18} className="text-success-500" />;
-        case 'lesson': return <BookOpen size={18} className="text-primary-500" />;
-        default: return <Bookmark size={18} className="text-muted-foreground" />;
+        case 'video': return <Film size={18} color="#3498DB" />;
+        case 'pdf': return <FileText size={18} color="#E74C3C" />;
+        case 'doc': return <FileText size={18} color="#3498DB" />;
+        case 'link': return <LinkIcon size={18} color="#2ECC71" />;
+        case 'lesson': return <BookOpen size={18} color="#E67E22" />;
+        default: return <Bookmark size={18} color="rgba(255,255,255,0.4)" />;
     }
 }
 
@@ -39,16 +39,15 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                 accessibilityLabel="Pinned resources"
                 accessibilityRole="scrollbar"
             >
-                <HStack space="sm">
+                <HStack className="gap-2">
                     {resources.map((resource) => (
-                        <TouchableOpacity
+                        <Pressable
                             key={resource.id}
                             onPress={() => onResourcePress?.(resource)}
-                            activeOpacity={0.75}
                         >
-                            <Box className="w-[140px] bg-surface-lowest rounded-comfortable p-3 border border-outline-variant">
-                                <VStack space="xs">
-                                    <HStack space="xs" className="items-center">
+                            <Box className="w-[140px] bg-surface-lowest rounded-xl p-3 border border-outline-variant active:bg-white/5">
+                                <VStack className="gap-1">
+                                    <HStack className="items-center gap-1.5">
                                         {getResourceIcon(resource.type)}
                                         <Text className="text-[10px] text-muted-foreground uppercase tracking-wider">
                                             {resource.type}
@@ -68,7 +67,7 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                                     </Text>
                                 </VStack>
                             </Box>
-                        </TouchableOpacity>
+                        </Pressable>
                     ))}
                 </HStack>
             </ScrollView>

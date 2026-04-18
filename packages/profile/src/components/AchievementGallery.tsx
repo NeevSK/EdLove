@@ -73,23 +73,22 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
         const IconComponent = achievement.icon;
         return (
             <VStack
-                className={`items-center w-[28%] mb-xs ${!achievement.unlocked ? 'opacity-40' : ''}`}
+                className={`items-center w-[30%] mb-4 ${!achievement.unlocked ? 'opacity-30' : ''}`}
             >
                 <Box
-                    className={`p-md rounded-full border ${
+                    className={`p-4 rounded-full border ${
                         achievement.unlocked
-                            ? 'bg-phase-interactive/15 border-phase-interactive/40'
-                            : 'bg-phaseText-primary/10 border-transparent'
+                            ? 'bg-phase-interactive/10 border-phase-interactive/30'
+                            : 'bg-phase-surface border-transparent'
                     }`}
                 >
                     <IconComponent
                         size={24}
-                        className={achievement.unlocked ? 'text-phase-interactive' : 'text-phaseText-secondary'}
+                        color={achievement.unlocked ? '#4A90E2' : '#9DA1A3'}
                     />
                 </Box>
                 <Text
-                    size="xs"
-                    className={`text-center mt-xs ${achievement.unlocked ? 'font-bold text-phaseText-primary' : 'text-phaseText-secondary'}`}
+                    className={`text-center text-[10px] mt-2 px-1 ${achievement.unlocked ? 'font-bold text-phase-text-primary' : 'text-phase-text-tertiary'}`}
                     numberOfLines={1}
                 >
                     {achievement.title}
@@ -99,23 +98,24 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack className="mt-lg px-md">
+        <VStack className="mt-8 px-4">
             <Box
-                className="bg-phase-canvas rounded-generous p-xl border border-phase-surface shadow-sm"
+                className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+                style={{ shadowColor: '#9DA1A3', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10 }}
             >
                 <Heading
-                    size="sm"
-                    className="text-phaseText-secondary mt-sm mb-md"
+                    className="text-phase-text-secondary text-sm mb-6"
                 >
                     {t('achievements.title', 'Achievements')}
                 </Heading>
-                <HStack className="flex-row flex-wrap justify-start gap-md">
+                <HStack className="flex-row flex-wrap justify-between">
                     {achievements.map((item) => (
                         <AchievementItem key={item.id} achievement={item} />
                     ))}
+                    {/* Spacer for proper alignment */}
+                    <Box className="w-[30%]" />
                 </HStack>
             </Box>
         </VStack>
     );
 }
-

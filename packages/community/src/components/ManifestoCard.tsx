@@ -1,13 +1,14 @@
 import React from 'react';
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    LivingGlow,
-    SanctuaryCard,
-    Theme
+  VStack,
+  HStack,
+  Box,
+  Text,
+  Heading,
+  LivingGlow,
+  SanctuaryCard,
+  Pressable,
+  Theme
 } from '@repo/ui';
 import { Heart, Target, Star, ShieldCheck } from 'lucide-react-native';
 import { SanctuaryManifesto } from '../types';
@@ -28,34 +29,34 @@ export default function ManifestoCard({
     onEndorse,
     onPress,
 }: ManifestoCardProps) {
-    const vibeConfig: Record<string, { icon: any; textColor: string }> = {
-        visionary: { icon: Star, textColor: 'text-primary-500' },
-        supportive: { icon: Heart, textColor: 'text-error-500' },
-        academic: { icon: Target, textColor: 'text-secondary-500' },
-        wellbeing: { icon: ShieldCheck, textColor: 'text-success-500' },
+    const vibeConfig: Record<string, { icon: any; color: string; textColorClass: string }> = {
+        visionary: { icon: Star, color: '#E67E22', textColorClass: 'text-primary-500' },
+        supportive: { icon: Heart, color: '#E74C3C', textColorClass: 'text-error-500' },
+        academic: { icon: Target, color: '#3498DB', textColorClass: 'text-secondary-500' },
+        wellbeing: { icon: ShieldCheck, color: '#2ECC71', textColorClass: 'text-success-500' },
     };
 
-    const config = vibeConfig[vibe] || vibeConfig.visionary;
+    const config = (vibeConfig[vibe] || vibeConfig.visionary) as { icon: any; color: string; textColorClass: string };
     const VibeIcon = config.icon;
 
     return (
-        <SanctuaryCard onPress={onPress} elevated={has_endorsed}>
-            <VStack space="md">
+        <SanctuaryCard onPress={onPress} elevated={has_endorsed} className="bg-surface-lowest">
+            <VStack className="gap-4">
                 <HStack className="justify-between items-center">
-                    <HStack space="xs" className="items-center">
-                        <Box className="p-1 bg-surface-lowest border border-outline-variant rounded-sm">
-                            <VibeIcon size={16} className={config.textColor} />
+                    <HStack className="items-center gap-2">
+                        <Box className="p-1 bg-white/5 border border-outline-variant rounded-md">
+                            <VibeIcon size={16} color={config.color} />
                         </Box>
-                        <Text className={`text-[10px] font-extrabold uppercase ${config.textColor}`}>
+                        <Text className={`text-[10px] font-extrabold uppercase ${config.textColorClass}`}>
                             {vibe} Manifesto
                         </Text>
                     </HStack>
 
-                    <HStack space="xs" className="items-center">
+                    <HStack className="items-center gap-1">
                         <Heart
                             size={16}
-                            fill={has_endorsed ? 'currentColor' : 'none'}
-                            className={has_endorsed ? 'text-error-500' : 'text-muted-foreground'}
+                            fill={has_endorsed ? '#E74C3C' : 'none'}
+                            color={has_endorsed ? '#E74C3C' : 'rgba(255,255,255,0.4)'}
                         />
                         <Text className="text-[12px] font-bold text-muted-foreground">
                             {endorsement_count}
@@ -63,7 +64,7 @@ export default function ManifestoCard({
                     </HStack>
                 </HStack>
 
-                <VStack space="xs">
+                <VStack className="gap-1">
                     <Heading size="md" className="text-foreground">
                         {title}
                     </Heading>
@@ -77,18 +78,21 @@ export default function ManifestoCard({
 
                 <Animated.View layout={LinearTransition}>
                     <HStack className="justify-between items-center mt-1">
-                        <TouchableOpacity
-                            onPress={() => onEndorse?.(id)}
-                            className={`py-1.5 px-3 rounded-comfortable border ${has_endorsed ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-variant'}`}
+                        <Pressable
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                onEndorse?.(id);
+                            }}
+                            className={`py-1.5 px-3 rounded-full border ${has_endorsed ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-variant'}`}
                         >
                             <Text className={`text-[11px] font-bold ${has_endorsed ? 'text-white' : 'text-muted-foreground'}`}>
                                 {has_endorsed ? 'Identified with Mission' : 'Endorse Mission'}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
 
                         {has_endorsed && (
                             <LivingGlow duration={3000}>
-                                <Star size={18} className="text-primary-500" />
+                                <Star size={18} color="#E67E22" />
                             </LivingGlow>
                         )}
                     </HStack>

@@ -8,6 +8,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { TextInput } from 'react-native';
+import { Plus } from 'lucide-react-native';
+import { supabase } from '@repo/core';
 import {
     Box,
     HStack,
@@ -16,13 +18,10 @@ import {
     useTheme,
     Pressable,
     Icon,
-    Theme
+    Theme,
+    Input,
+    InputField
 } from '@repo/ui';
-import { Plus } from 'lucide-react-native';
-import { supabase } from '@repo/core';
-import { styled } from 'nativewind';
-
-const StyledTextInput = styled(TextInput);
 
 interface Observation {
     id: string;
@@ -160,16 +159,16 @@ export default function PrincipalObservationsSection({
 
             {showForm && (
                 <VStack className="mt-4 gap-3">
-                    <StyledTextInput
-                        placeholder="Write your observation..."
-                        placeholderTextColor={theme.text.muted}
-                        value={content}
-                        onChangeText={setContent}
-                        multiline
-                        numberOfLines={3}
-                        className="border border-phase-border rounded-xl px-3 py-2 text-sm text-phaseText-primary bg-phase-surface min-h-[72px]"
-                        style={{ textAlignVertical: 'top' }}
-                    />
+                    <Input className="min-h-[72px] bg-phase-surface border-phase-border rounded-xl px-3 py-2">
+                        <InputField
+                            placeholder="Write your observation..."
+                            placeholderTextColor={theme.text.muted}
+                            value={content}
+                            onChangeText={setContent}
+                            multiline
+                            className="text-sm text-phaseText-primary"
+                        />
+                    </Input>
 
                     <HStack className="gap-2 flex-wrap">
                         {OBS_TYPE_OPTIONS.map((t) => (

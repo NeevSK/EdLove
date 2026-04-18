@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { 
     Theme, 
-    useThemedColors,
+    useTheme,
     Box, 
     VStack, 
     HStack, 
     Text, 
-    SanctuaryStatsCard 
+    SanctuaryStatsCard,
+    ScrollView
 } from '@repo/ui';
 import { Network, Orbit, TrendingUp, Layers } from 'lucide-react-native';
 import type { 
@@ -31,10 +32,14 @@ const { BarChart, PieChart } = require('react-native-gifted-charts') as {
  */
 export const JyotiView: React.FC<PerspectiveViewProps> = ({
     data,
-    onNodePress,
 }) => {
-    const colors = useThemedColors();
+    const theme = useTheme();
     const { width: windowWidth } = useWindowDimensions();
+
+    const actionColor = theme.accent.action;
+    const textPrimary = theme.text.primary;
+    const textSecondary = theme.text.secondary;
+    const textTertiary = theme.text.muted;
 
     // 1. Calculate Metrics
     const totalNodes = data.nodes.length;
@@ -50,7 +55,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     const barData = Object.entries(typeCounts).map(([type, count]) => ({
         value: count,
         label: type.charAt(0).toUpperCase() + type.slice(1),
-        frontColor: type === 'topic' ? Theme.colors.sanctuarySaffron : colors.action,
+        frontColor: type === 'topic' ? Theme.colors.sanctuarySaffron : actionColor,
     }));
 
     // 3. Group Distribution (for Pie Chart)
@@ -64,16 +69,16 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
         return {
             value: count,
             text: group,
-            color: index === 0 ? Theme.colors.sanctuarySaffron : (index === 1 ? colors.action : colors.success),
+            color: index === 0 ? Theme.colors.sanctuarySaffron : (index === 1 ? actionColor : '#10b981'),
         };
     });
 
     return (
         <ScrollView 
-            style={{ flex: 1 }} 
+            className="flex-1"
             contentContainerStyle={{ padding: 24, paddingTop: 100, paddingBottom: 100 }}
         >
-            <VStack spacing={24}>
+            <VStack className="gap-6">
                 {/* Header Stats using Standard Sanctuary Component */}
                 <SanctuaryStatsCard 
                     title="Knowledge Resonance"
@@ -89,7 +94,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                             label: "Connections",
                             value: totalLinks,
                             icon: Orbit,
-                            color: colors.action
+                            color: actionColor
                         }
                     ]}
                     progressLabel="Topology Density"
@@ -97,16 +102,12 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                 />
 
                 {/* Type Distribution - Bar Chart */}
-                <Box sx={{ 
-                    padding: 24, 
-                    backgroundColor: 'rgba(255,255,255,0.03)', 
-                    borderRadius: 24,
-                    borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.05)'
-                }}>
-                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
-                        <Layers size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text>
+                <Box className="p-6 bg-white/5 rounded-3xl border border-white/5">
+                    <HStack className="items-center mb-5">
+                        <Layers size={18} color={Theme.colors.sanctuarySaffron} />
+                        <Box className="ml-2">
+                          <Text className="text-phaseText-primary font-bold text-md">Node Distribution</Text>
+                        </Box>
                     </HStack>
                     
                     <BarChart
@@ -114,50 +115,51 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                         barWidth={40}
                         noOfSections={3}
                         barBorderRadius={6}
-                        frontColor={colors.action}
+                        frontColor={actionColor}
                         yAxisThickness={0}
                         xAxisThickness={0}
                         hideRules
-                        yAxisTextStyle={{ color: colors.textTertiary, fontSize: 10 }}
-                        xAxisLabelTextStyle={{ color: colors.textSecondary, fontSize: 10 }}
+                        yAxisTextStyle={{ color: textTertiary, fontSize: 10 }}
+                        xAxisLabelTextStyle={{ color: textSecondary, fontSize: 10 }}
                         width={windowWidth - 100}
                     />
                 </Box>
 
                 {/* Group Distribution - Pie Chart */}
-                <Box sx={{ 
-                    padding: 24, 
-                    backgroundColor: 'rgba(255,255,255,0.03)', 
-                    borderRadius: 24,
-                    borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.05)'
-                }}>
-                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
-                        <TrendingUp size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                        <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Domain Resonance</Text>
+                <Box className="p-6 bg-white/5 rounded-3xl border border-white/5">
+                    <HStack className="items-center mb-5">
+                        <TrendingUp size={18} color={Theme.colors.sanctuarySaffron} />
+                        <Box className="ml-2">
+                          <Text className="text-phaseText-primary font-bold text-md">Domain Resonance</Text>
+                        </Box>
                     </HStack>
 
-                    <View style={{ alignItems: 'center' }}>
+                    <Box className="items-center">
                         <PieChart
                             data={pieData}
                             donut
                             radius={80}
                             innerRadius={60}
                             centerLabelComponent={() => (
-                                <VStack {...({ alignItems: 'center', justifyContent: 'center' } as any)}>
-                                    <Text {...({ size: "xl", bold: true, color: colors.text } as any)}>{totalNodes}</Text>
-                                    <Text {...({ size: "xs", color: colors.textTertiary } as any)}>Total</Text>
+                                <VStack className="items-center justify-center">
+                                    <Text className="text-xl font-bold text-phaseText-primary">{totalNodes}</Text>
+                                    <Text className="text-xs text-phaseText-tertiary">Total</Text>
                                 </VStack>
                             )}
                         />
-                    </View>
+                    </Box>
 
-                    <VStack spacing={8} sx={{ marginTop: 20 }}>
+                    <VStack className="gap-2 mt-5">
                         {pieData.map((item, i) => (
-                            <HStack key={i} {...({ alignItems: 'center' } as any)}>
-                                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 8 }} />
-                                <Text {...({ size: "xs", color: colors.textSecondary, sx: { flex: 1 } } as any)}>{item.text}</Text>
-                                <Text {...({ size: "xs", bold: true, color: colors.text } as any)}>{item.value}</Text>
+                            <HStack key={i} className="items-center">
+                                <Box 
+                                    className="w-2 h-2 rounded-full mr-2" 
+                                    style={{ backgroundColor: item.color }} 
+                                />
+                                <Box className="flex-1">
+                                  <Text className="text-xs text-phaseText-secondary">{item.text}</Text>
+                                </Box>
+                                <Text className="text-xs font-bold text-phaseText-primary">{item.value}</Text>
                             </HStack>
                         ))}
                     </VStack>
