@@ -10,11 +10,12 @@ import {
     Text, 
     VStack, 
     HStack, 
-    Icon 
+    Icon,
+    AnimatedView 
 } from '@repo/ui';
 import { Activity, Zap } from 'lucide-react-native';
 import { MOOD_LABELS, ENERGY_COLORS } from '../constants/wellbeing';
-import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
+import Animated, { FadeInUp, LinearTransition } from 'react-native-reanimated';
 
 interface EnergyBarChartProps {
     /** Energy forecast rows, already reversed so oldest→newest left→right. */
@@ -42,7 +43,7 @@ export function EnergyBarChart({
     }
 
     return (
-        <Animated.View entering={FadeInUp.duration(800)}>
+        <AnimatedView entering={FadeInUp.duration(800)}>
             <VStack className="w-full gap-4">
                 <HStack className="items-center gap-2">
                     <Icon as={Zap} size={12} className="text-sanctuarySaffron" />
@@ -58,9 +59,9 @@ export function EnergyBarChart({
                         const barColor = colors[level] ?? '#FCD34D'; // sanctuarySaffron fallback
 
                         return (
-                            <Animated.View 
+                            <AnimatedView 
                                 key={f.id ?? i}
-                                layout={Layout}
+                                layout={LinearTransition}
                                 entering={FadeInUp.delay(i * 50)}
                                 className="flex-1"
                                 style={{ height: `${pct}%` }}
@@ -73,7 +74,7 @@ export function EnergyBarChart({
                                         minHeight: 4
                                     }}
                                 />
-                            </Animated.View>
+                            </AnimatedView>
                         );
                     })}
                 </Box>
@@ -90,7 +91,7 @@ export function EnergyBarChart({
                     </Box>
                 </HStack>
             </VStack>
-        </Animated.View>
+        </AnimatedView>
     );
 }
 

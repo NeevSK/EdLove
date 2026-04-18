@@ -12,14 +12,15 @@ import {
     HStack, 
     Pressable, 
     Icon,
-    Heading 
+    Heading,
+    AnimatedView 
 } from '@repo/ui';
 import { Sparkles, ArrowRight, Activity } from 'lucide-react-native';
 import { useOrientationInference } from '../hooks/useOrientationInference';
 import { usePermissions } from '@repo/core';
 import type { MoodLog, EnergyForecast } from '../types/Wellbeing';
 import type { OrientationSeeds } from '@repo/profile';
-import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
+import { FadeIn, SlideInRight } from 'react-native-reanimated';
 
 // —————————————————————————————————————————————————————————————————————————————
 // CONSTANTS
@@ -98,7 +99,7 @@ export function ResonancePatternCard({
     const gridRings = [0.33, 0.66, 1];
 
     return (
-        <Animated.View entering={FadeIn.duration(800)}>
+        <AnimatedView entering={FadeIn.duration(800)}>
             <Box className="p-xl bg-white/5 rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
                 <VStack className="gap-lg">
                     {/* Header */}
@@ -172,7 +173,7 @@ export function ResonancePatternCard({
                                         stroke={ACCENT}
                                         strokeWidth="2"
                                         strokeLinejoin="round"
-                                        style={{ transition: 'all 1s ease' }}
+                                        style={{ transition: 'all 1s ease' } as any}
                                     />
 
                                     {/* Axis Vertices */}
@@ -186,7 +187,7 @@ export function ResonancePatternCard({
                                                 cx={x} cy={y} 
                                                 r="3" 
                                                 fill={ACCENT} 
-                                                style={{ transition: 'all 1s ease' }}
+                                                style={{ transition: 'all 1s ease' } as any}
                                             />
                                         );
                                     })}
@@ -198,7 +199,7 @@ export function ResonancePatternCard({
                                 {AXES.map((axis, index) => {
                                     const value = seeds[axis.key] ?? 50;
                                     return (
-                                        <Animated.View 
+                                        <AnimatedView 
                                             key={axis.key}
                                             entering={SlideInRight.delay(index * 100)}
                                         >
@@ -211,17 +212,17 @@ export function ResonancePatternCard({
                                                 {/* Gauge Track */}
                                                 <Box className="h-1 bg-white/5 rounded-full relative overflow-hidden">
                                                     <Box 
-                                                        className="absolute top-0 bottom-0 bg-sanctuarySaffron/20"
-                                                        style={{ left: 0, width: `${value}%`, transition: 'width 1s ease' }}
+                                                        className="absolute top-0 bottom-0 bg-sanctuarySaffron/20 transition-all duration-1000"
+                                                        style={{ left: 0, width: `${value}%` }}
                                                     />
                                                     {/* Active Indicator Pin */}
                                                     <Box 
-                                                        className="absolute top-0 bottom-0 w-0.5 bg-sanctuarySaffron shadow-sm"
-                                                        style={{ left: `${value}%`, transition: 'left 1s ease' }}
+                                                        className="absolute top-0 bottom-0 w-0.5 bg-sanctuarySaffron shadow-sm transition-all duration-1000"
+                                                        style={{ left: `${value}%` }}
                                                     />
                                                 </Box>
                                             </VStack>
-                                        </Animated.View>
+                                        </AnimatedView>
                                     );
                                 })}
                             </VStack>
@@ -251,7 +252,7 @@ export function ResonancePatternCard({
                     )}
                 </VStack>
             </Box>
-        </Animated.View>
+        </AnimatedView>
     );
 }
 

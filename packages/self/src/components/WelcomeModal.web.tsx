@@ -12,7 +12,9 @@ import {
     Heading,
     Button,
     ButtonText,
-    Icon
+    Icon,
+    HStack,
+    AnimatedView
 } from '@repo/ui';
 import { Sparkles, ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +46,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             // Ensure clicking the overlay closes the modal
             nativeID="modal-overlay"
         >
-            <Animated.View 
+            <AnimatedView 
                 entering={SlideInUp.duration(500).springify()}
                 className="w-full max-w-md bg-sacredWhite rounded-3xl p-lg shadow-2xl border border-mistGray/10 overflow-hidden"
             >
@@ -85,7 +87,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                         </Button>
                     </VStack>
                 </VStack>
-            </Animated.View>
+            </AnimatedView>
 
             {/* Custom keyframe styles for web portal feel */}
             <style dangerouslySetInnerHTML={{ __html: `

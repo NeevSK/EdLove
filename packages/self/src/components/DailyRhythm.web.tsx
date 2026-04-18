@@ -185,7 +185,7 @@ export default function DailyRhythm() {
                         <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Resonance Type</Text>
                         <Select
                             selectedValue={form.type}
-                            onValueChange={(value) => setForm(f => ({ ...f, type: value as Period['type'] }))}
+                            onValueChange={(value: string | null) => setForm(f => ({ ...f, type: value as Period['type'] }))}
                         >
                             <SelectTrigger className="bg-white/5 border-white/10 h-12 px-4 rounded-xl flex-row items-center justify-between">
                                 <SelectInput placeholder="Select frequency" className="text-sacredWhite text-sm font-bold" />

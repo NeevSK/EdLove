@@ -41,7 +41,7 @@ export default function ShadowAgentDrawer() {
                 <Pressable
                     onPress={() => setIsOpen(true)}
                     className="w-14 h-14 rounded-full bg-sanctuarySaffron items-center justify-center cursor-pointer shadow-xl shadow-sanctuarySaffron/40 hover:scale-110 active:scale-90 transition-all duration-300"
-                    style={{ animation: 'orb-pulse 4s ease-in-out infinite' }}
+                    style={{ animation: 'orb-pulse 4s ease-in-out infinite' } as any}
                 >
                     <Icon as={Sparkles} size={24} className="text-obsidian" />
                 </Pressable>
@@ -49,13 +49,13 @@ export default function ShadowAgentDrawer() {
 
             {/* Drawer overlay */}
             {isOpen && (
-                <Box 
+                <Pressable 
                     className="fixed inset-0 bg-black/60 z-[200] flex flex-col justify-end items-center px-4 md:px-0"
                     onPress={() => setIsOpen(false)}
                 >
-                    <Box
+                    <Pressable
                         className="w-full max-w-2xl bg-obsidian rounded-t-[40px] border-t border-white/10 p-8 md:p-12 shadow-2xl animate-in slide-in-from-bottom duration-500"
-                        onPress={e => e.stopPropagation()}
+                        onPress={(e: any) => e.stopPropagation()}
                     >
                         {/* Handle bar */}
                         <Box className="w-12 h-1 bg-white/10 rounded-full mx-auto mb-10 opacity-50" />
@@ -107,8 +107,8 @@ export default function ShadowAgentDrawer() {
                                 </Text>
                             </VStack>
                         </VStack>
-                    </Box>
-                </Box>
+                    </Pressable>
+                </Pressable>
             )}
 
             <style>{`

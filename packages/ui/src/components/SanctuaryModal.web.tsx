@@ -19,6 +19,7 @@ export interface SanctuaryModalProps {
     footer?: React.ReactNode;
     showCloseButton?: boolean;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'full';
+    className?: string;
 }
 
 /**
@@ -35,6 +36,7 @@ export default function SanctuaryModal({
     footer,
     showCloseButton = true,
     size = 'md',
+    className = '',
 }: SanctuaryModalProps) {
     // Responsive width classes
     const sizeClasses = {
@@ -48,7 +50,7 @@ export default function SanctuaryModal({
     return (
         <UniversalModal isOpen={isOpen} onClose={onClose}>
             <Box
-                className={`bg-phase-elevated border border-phase-surface rounded-generous shadow-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]}`}
+                className={`bg-phase-elevated border border-phase-surface rounded-generous shadow-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]} ${className}`}
                 style={{
                     shadowColor: '#6B6480',
                     shadowOffset: { width: 0, height: 10 },

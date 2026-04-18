@@ -17,6 +17,7 @@ import {
     Text, 
     VStack,
     Icon,
+    AnimatedView,
     hapticLight, 
     hapticMedium
 } from '@repo/ui';
@@ -54,8 +55,8 @@ export default function FireJournal({ userId, onBurned, disabled: componentDisab
     const { t } = useTranslation();
 
     // Refs for timeout cleanup
-    const burnTimeoutRef = useRef<NodeJS.Timeout>();
-    const successTimeoutRef = useRef<NodeJS.Timeout>();
+    const burnTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Animation values
     const opacity = useSharedValue(1);
@@ -226,7 +227,7 @@ export default function FireJournal({ userId, onBurned, disabled: componentDisab
             </VStack>
 
             {showSuccess && (
-                <Animated.View entering={FadeIn}>
+                <AnimatedView entering={FadeIn}>
                     <Box className="bg-emeraldGreen/10 p-md rounded-comfortable items-center border border-emeraldGreen/20">
                         <HStack className="items-center gap-2">
                             <Icon as={CheckCircle} className="text-emeraldGreen" size={16} />
@@ -235,7 +236,7 @@ export default function FireJournal({ userId, onBurned, disabled: componentDisab
                             </Text>
                         </HStack>
                     </Box>
-                </Animated.View>
+                </AnimatedView>
             )}
 
             {burnError && (
@@ -249,25 +250,21 @@ export default function FireJournal({ userId, onBurned, disabled: componentDisab
             <Box className="relative">
                 {isBurning && (
                     <>
-                        <Animated.View
-                            style={[ember1Style]}
-                            className="absolute left-[20%] top-[100px] w-2 h-2 rounded-full bg-emberRed z-10"
-                        />
-                        <Animated.View
-                            style={[ember2Style]}
-                            className="absolute left-[50%] top-[80px] w-1.5 h-1.5 rounded-full bg-sanctuarySaffron z-10"
-                        />
-                        <Animated.View
-                            style={[ember3Style]}
-                            className="absolute left-[70%] top-[110px] w-2 h-2 rounded-full bg-goldenApricot z-10"
-                        />
+                        <Box className="absolute left-[20%] top-[100px] w-2 h-2 rounded-full bg-emberRed z-10">
+                            <AnimatedView style={[ember1Style]} className="w-full h-full bg-inherit rounded-full" />
+                        </Box>
+                        <Box className="absolute left-[50%] top-[80px] w-1.5 h-1.5 rounded-full bg-sanctuarySaffron z-10">
+                            <AnimatedView style={[ember2Style]} className="w-full h-full bg-inherit rounded-full" />
+                        </Box>
+                        <Box className="absolute left-[70%] top-[110px] w-2 h-2 rounded-full bg-goldenApricot z-10">
+                            <AnimatedView style={[ember3Style]} className="w-full h-full bg-inherit rounded-full" />
+                        </Box>
                     </>
                 )}
 
-                <Animated.View style={containerStyle}>
+                <AnimatedView style={containerStyle}>
                     <Box className="bg-obsidian rounded-comfortable p-md min-h-[200px] border border-white/5">
                         <Input
-                            variant="outline"
                             className="border-0 flex-1"
                             isDisabled={isBurning || isPastView}
                         >
@@ -282,7 +279,7 @@ export default function FireJournal({ userId, onBurned, disabled: componentDisab
                             />
                         </Input>
                     </Box>
-                </Animated.View>
+                </AnimatedView>
             </Box>
 
             <HStack className="justify-end gap-md">

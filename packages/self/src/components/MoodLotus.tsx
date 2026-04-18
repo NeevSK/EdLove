@@ -6,12 +6,13 @@ import {
     Text, 
     VStack, 
     Pressable,
-    Heading
+    Heading,
+    AnimatedView
 } from '@repo/ui';
 import { StyleSheet } from 'react-native';
 import { Flower2, Wind, Sun, CloudRain, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import Animated, { 
+import { 
     useSharedValue, 
     useAnimatedStyle, 
     withSpring
@@ -67,14 +68,14 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) 
                     {t('self.moodHowAreYou') || 'How is your inner lotus today?'}
                 </Heading>
 
-                <Animated.View style={[lotusStyle]} className="items-center justify-center w-[120px] h-[120px]">
+                <AnimatedView style={[lotusStyle]} className="items-center justify-center w-[120px] h-[120px]">
                     <Icon 
                         as={Flower2}
                         size={80} 
                         className={selectedOption ? selectedOption.colorClass : 'text-mistGray'} 
                         strokeWidth={1.5}
                     />
-                </Animated.View>
+                </AnimatedView>
 
                 <HStack className="justify-center gap-4">
                     {moodOptions.map((option) => {

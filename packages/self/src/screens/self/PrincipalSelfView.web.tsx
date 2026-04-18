@@ -1,12 +1,11 @@
-﻿import React from 'react';
-import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, ink, useTheme, useThemedColors } from '@repo/ui';
+import React from 'react';
+import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, useTheme } from '@repo/ui';
 
 
 import { useTranslation  } from 'react-i18next';
 import {
     usePermissions,
     useStore,
-    useTemporalStore,
     useJourneyHistory} from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 
@@ -35,9 +34,8 @@ import {
 export default function PrincipalSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const { can, context } = usePermissions();
+    const { context } = usePermissions();
     const userId = context.userId;
-    const colors = useTheme().scene;
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
@@ -118,7 +116,7 @@ export default function PrincipalSelfView() {
                             {
                                 id: 'decision_mirror',
                                 label: 'Decision Mirror',
-                                content: <DecisionJournalSection userId={userId ?? ''} colors={colors} t={t} />,
+                                content: <DecisionJournalSection userId={userId ?? ''} />,
                                 historyContent: <DecisionSection decisions={decisions} loading={decisionLoading} />},
                             {
                                 id: 'mood_lotus',
@@ -151,4 +149,3 @@ export default function PrincipalSelfView() {
         </TemporalProvider>
     );
 }
-

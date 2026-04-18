@@ -241,7 +241,6 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           {currentStepData.input && (
             <Box className="mt-2">
               <Input
-                variant="outline"
                 className="bg-white/5 border-white/10 rounded-comfortable min-h-[140px]"
               >
                 <InputField

@@ -13,6 +13,7 @@ import {
     Spinner, 
     Text, 
     VStack, 
+    AnimatedView,
     hapticLight 
 } from '@repo/ui';
 import Animated, {
@@ -111,7 +112,7 @@ export default function CommunityPresence({
     }
 
     return (
-        <Animated.View entering={FadeIn.duration(1000)}>
+        <AnimatedView entering={FadeIn.duration(1000)}>
             <VStack className={`gap-4 ${hidePadding ? '' : 'p-4'}`}>
                 <HStack className="items-center gap-4">
                     <Box className="relative">
@@ -120,7 +121,7 @@ export default function CommunityPresence({
                         ) : (
                             <Box className="w-12 h-12 bg-white/5 rounded-2xl items-center justify-center border border-white/10">
                                 <Icon as={Users} className={vibeColorClass} size={24} />
-                                <Animated.View
+                                <AnimatedView
                                     style={pulseStyle}
                                     className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border border-white/20 ${vibeColorClass.replace('text-', 'bg-')}`}
                                 />
@@ -161,6 +162,6 @@ export default function CommunityPresence({
                     </Box>
                 )}
             </VStack>
-        </Animated.View>
+        </AnimatedView>
     );
 }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GratitudeGlimmers.web.tsx
  *
  * Web override. The native version uses expo-haptics + @repo/ui components.
@@ -64,7 +64,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                 <button
                     onClick={() => setShowForm(v => !v)}
                     style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? '#EF4444' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}>
-                    <Icon as={Plus} size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
+                    <Plus size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
                     {showForm ? 'Cancel' : 'Add Glimmer'}
                 </button>
             </div>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase, GuestDataManager, authAPI, identityAPI, growthSignalsAPI, useTemporalStore, applyTemporalFilter } from '@repo/core';
 
 import { JournalEntry } from '../types';
@@ -97,7 +97,7 @@ export const useJournalEntries = () => {
                 if (error) throw error;
                 setEntries(prev => [data, ...prev]);
                 // Growth signal  fire-and-forget (benefits mobile + web callers)
-                growthSignalsAPI.emitSilent(internalId, 'reflection_written', {});
+                growthSignalsAPI.emitSilent({ user_id: internalId, event_type: 'reflection_written', event_metadata: {} });
                 return data;
             }
         } catch (error) {

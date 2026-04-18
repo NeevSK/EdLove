@@ -97,7 +97,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               </Text>
               
               <Box className="bg-white/5 rounded-2xl border border-white/5 p-4 min-h-[100px]">
-                <Input variant="underlined" className="border-0">
+                <Input className="border-0">
                   <InputField 
                     value={insight}
                     onChangeText={setInsight}

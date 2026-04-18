@@ -93,7 +93,7 @@ export default function PrivacyLedgerScreen() {
     };
 
     return (
-        <ScreenWrapper contentContainerStyle={{ flex: 1 }} scroll={false}>
+        <ScreenWrapper style={{ flex: 1 }} scroll={false}>
             <GlobalHeader
                 title="Privacy Ledger"
                 subtitle="Your data activity journey"

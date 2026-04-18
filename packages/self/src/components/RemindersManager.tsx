@@ -305,7 +305,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                             {/* Title */}
                             <VStack className="gap-1">
                                 <Text className="text-starlightGray text-sm">Title</Text>
-                                <Input variant="outline" size="md" className="bg-ink border-obsidian">
+                                <Input className="bg-ink border-obsidian">
                                     <InputField
                                         value={title}
                                         onChangeText={setTitle}
@@ -319,7 +319,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                             {/* Description */}
                             <VStack className="gap-1">
                                 <Text className="text-starlightGray text-sm">Description (optional)</Text>
-                                <Input variant="outline" size="md" className="bg-ink border-obsidian min-h-[80px]">
+                                <Input className="bg-ink border-obsidian min-h-[80px]">
                                     <InputField
                                         value={description}
                                         onChangeText={setDescription}

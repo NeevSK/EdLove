@@ -41,7 +41,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     const [done, setDone] = useState(false);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const current = CYCLE[phaseIdx] ?? CYCLE[0];
+    const activePhase = CYCLE[phaseIdx] || CYCLE[0]!;
 
     const advance = (cycleIndex: number, phaseIndex: number) => {
         const nextPhaseIndex = (phaseIndex + 1) % CYCLE.length;
@@ -84,9 +84,9 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     }, []);
 
     // Web Scale Logic using ARRAYS for React Native compatibility
-    const scale = active && (current.phase === 'inhale' || current.phase === 'hold')
+    const scale = active && (activePhase.phase === 'inhale' || activePhase.phase === 'hold')
         ? 1.5
-        : active && current.phase === 'exhale'
+        : active && activePhase.phase === 'exhale'
             ? 0.75
             : 1.0;
 
@@ -131,17 +131,17 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                     <Box className="relative items-center justify-center">
                         <Box 
                             className="w-40 h-40 items-center justify-center rounded-full transition-all duration-700"
-                            style={{
-                                transform: [{ scale }],
-                                transition: `transform ${active ? current.duration : 600}ms cubic-bezier(0.4, 0, 0.2, 1), background 500ms, border-color 500ms`,
-                                background: active 
-                                    ? `radial-gradient(circle, ${current.accentColor}33 0%, ${current.accentColor}05 100%)`
-                                    : 'rgba(255,255,255,0.03)',
-                                border: `2px solid ${active ? current.accentColor : 'rgba(255,255,255,0.05)'}`,
-                                boxShadow: active ? `0 0 60px ${current.accentColor}11` : 'none'
-                            } as any}
+                                style={{
+                                    transform: [{ scale }],
+                                    transition: `transform ${active ? activePhase.duration : 600}ms cubic-bezier(0.4, 0, 0.2, 1), background 500ms, border-color 500ms`,
+                                    background: active 
+                                        ? `radial-gradient(circle, ${activePhase.accentColor}33 0%, ${activePhase.accentColor}05 100%)`
+                                        : 'rgba(255,255,255,0.03)',
+                                    border: `2px solid ${active ? activePhase.accentColor : 'rgba(255,255,255,0.05)'}`,
+                                    boxShadow: active ? `0 0 60px ${activePhase.accentColor}11` : 'none'
+                                } as any}
                         >
-                            <Icon as={Wind} size={48} className={active ? current.color : 'text-mistGray/10'} />
+                            <Icon as={Wind} size={48} className={active ? activePhase.color : 'text-mistGray/10'} />
                         </Box>
                         
                         {/* Outer Pulse Rings */}
@@ -149,11 +149,11 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                             <>
                                 <Box 
                                     className="absolute inset-[-20px] rounded-full border border-white/5 animate-ping opacity-20"
-                                    style={{ borderColor: current.accentColor, animationDuration: '3s' }}
+                                    style={{ borderColor: activePhase.accentColor, animationDuration: '3s' } as any}
                                 />
                                 <Box 
                                     className="absolute inset-[-40px] rounded-full border border-white/5 animate-ping opacity-10"
-                                    style={{ borderColor: current.accentColor, animationDuration: '4s' }}
+                                    style={{ borderColor: activePhase.accentColor, animationDuration: '4s' } as any}
                                 />
                             </>
                         )}
@@ -163,14 +163,14 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                     <VStack className="items-center h-24 gap-4 w-64">
                         {active ? (
                             <>
-                                <Heading className={`${current.color} transition-colors duration-500 text-3xl font-black tracking-tighter text-center`}>
-                                    {current.label}
+                                <Heading className={`${activePhase.color} transition-colors duration-500 text-3xl font-black tracking-tighter text-center`}>
+                                    {activePhase.label}
                                 </Heading>
                                 <VStack className="items-center gap-3 w-full">
                                     <Box className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
                                         <Box 
-                                            className={`h-full ${current.color.replace('text-', 'bg-')} transition-all duration-300`}
-                                            style={{ width: `${((cycleIdx * CYCLE.length + phaseIdx + 1) / (TOTAL_CYCLES * CYCLE.length)) * 100}%` }}
+                                            className={`h-full ${activePhase.color.replace('text-', 'bg-')} transition-all duration-300`}
+                                            style={{ width: `${((cycleIdx * CYCLE.length + phaseIdx + 1) / (TOTAL_CYCLES * CYCLE.length)) * 100}%` } as any}
                                         />
                                     </Box>
                                     <HStack className="justify-between w-full px-1">

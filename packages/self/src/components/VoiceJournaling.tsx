@@ -14,6 +14,7 @@ import {
     Button,
     ButtonText,
     Heading,
+    AnimatedView,
     hapticLight,
     hapticSuccess
 } from '@repo/ui';
@@ -134,7 +135,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
             {/* Recording Visual */}
             <Box className="w-40 h-40 items-center justify-center relative my-4">
                 {recordingState === 'recording' && (
-                    <Animated.View 
+                    <AnimatedView 
                         style={[pulseAnimatedStyle]} 
                         className="absolute w-32 h-32 rounded-full bg-sanctuarySaffron"
                     />
@@ -160,7 +161,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
                 {recordingState === 'recording' && (
                     <HStack className="items-center gap-1.5 h-12">
                         {audioGraph.map((val, i) => (
-                            <Animated.View
+                            <AnimatedView
                                 key={i}
                                 style={useAnimatedStyle(() => ({ height: val.value }))}
                                 className="w-1 bg-sanctuarySaffron rounded-full"
@@ -181,7 +182,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
 
             {/* Controls */}
             {recordingState === 'finished' && (
-                <Animated.View entering={FadeInUp} className="w-full">
+                <AnimatedView entering={FadeInUp} className="w-full">
                     <HStack className="justify-center gap-6 mt-2">
                         <Button 
                             onPress={handleReset} 
@@ -198,7 +199,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
                             <Icon as={Check} size={24} className="text-white" />
                         </Button>
                     </HStack>
-                </Animated.View>
+                </AnimatedView>
             )}
 
             {/* Philosophy Note */}

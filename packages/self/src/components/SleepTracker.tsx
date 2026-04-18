@@ -17,6 +17,7 @@ import {
     SliderTrack, 
     Text, 
     VStack,
+    AnimatedView,
     Icon,
     hapticLight, 
     hapticSuccess,
@@ -172,16 +173,16 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
             {/* Sleep visualization */}
             <Box className="items-center justify-center p-xl bg-obsidian rounded-comfortable min-h-[220px] relative border border-white/5">
                 {/* Animated stars */}
-                <Animated.View style={[animatedStarsStyle]} className="absolute top-5 right-8">
+                <AnimatedView style={[animatedStarsStyle]} className="absolute top-5 right-8">
                     <Icon as={Stars} className="text-indigo-400" size={24} />
-                </Animated.View>
+                </AnimatedView>
 
                 {/* Emoji Feedback */}
-                <Animated.View style={animatedMoonStyle}>
+                <AnimatedView style={animatedMoonStyle}>
                     <Text className="text-[96px]">
                         {currentQuality.emoji}
                     </Text>
-                </Animated.View>
+                </AnimatedView>
 
                 <VStack className="items-center mt-4">
                     <Text className={`text-2xl font-bold ${currentQuality.color}`}>
@@ -199,7 +200,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
                     <Box className="px-md">
                         <Slider
                             value={sleepQuality}
-                            onChange={(value: number) => {
+                            onValueChange={(value: number) => {
                                 hapticLight();
                                 setSleepQuality(value);
                             }}
@@ -207,12 +208,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
                             maxValue={5}
                             step={1}
                             className="h-10 w-full"
-                        >
-                            <SliderTrack className="h-2 rounded-full bg-white/5">
-                                <SliderFilledTrack className={currentQuality.bg} />
-                            </SliderTrack>
-                            <SliderThumb className={`h-8 w-8 rounded-full border-4 border-sacredWhite ${currentQuality.bg}`} />
-                        </Slider>
+                        />
 
                         <HStack className="justify-between mt-4">
                             <Text className="text-dimGray text-xs">{t('sleepTracker.restless') || 'Restless'}</Text>
@@ -232,7 +228,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
                     </Button>
                 </VStack>
             ) : (
-                <Animated.View entering={FadeIn}>
+                <AnimatedView entering={FadeIn}>
                     <VStack className="p-lg bg-emeraldGreen/10 rounded-comfortable items-center border border-emeraldGreen/20 gap-2">
                         <Text className="text-emeraldGreen font-bold text-md">
                             ✓ {t('sleepTracker.alreadyLogged') || 'Rest Logged Today'}
@@ -241,7 +237,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
                             {t('sleepTracker.tomorrowHint') || 'You can record your next rest tomorrow morning.'}
                         </Text>
                     </VStack>
-                </Animated.View>
+                </AnimatedView>
             )}
 
             {/* Philosophy note */}

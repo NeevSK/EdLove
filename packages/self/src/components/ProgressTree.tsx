@@ -16,7 +16,8 @@ import {
     ProgressFilledTrack,
     Spinner,
     Button,
-    ButtonText
+    ButtonText,
+    AnimatedView
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
@@ -183,24 +184,24 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                 
                 {/* Milestone Bloom Overlay */}
                 {showBloom && (
-                    <Animated.View 
+                    <AnimatedView 
                         style={[bloomAnimatedStyle, { position: 'absolute', top: 40, zIndex: 20, alignItems: 'center' }]}
                     >
                         <Box className="p-6 bg-sanctuarySaffron/10 rounded-[32px] border border-sanctuarySaffron/20 items-center gap-2 backdrop-blur-md">
                             <Text className="text-6xl mb-2">🌸</Text>
                             <Text className="text-sanctuarySaffron font-black uppercase tracking-[0.2em] text-[10px]">Threshold Transcended</Text>
                         </Box>
-                    </Animated.View>
+                    </AnimatedView>
                 )}
 
                 {/* The Resonant Entity */}
-                <Animated.View style={[treeAnimatedStyle, { alignItems: 'center', justifyContent: 'center' }]}>
+                <AnimatedView style={[treeAnimatedStyle, { alignItems: 'center', justifyContent: 'center' }]}>
                     <Text className="text-[140px] drop-shadow-2xl select-none">
                         {currentStage.emoji}
                     </Text>
-                </Animated.View>
+                </AnimatedView>
 
-                <Animated.View entering={FadeInDown.delay(200)} className="items-center mt-8">
+                <AnimatedView entering={FadeInDown.delay(200)} className="items-center mt-8">
                     <HStack className="items-center gap-3">
                         <Icon as={currentStage.icon} size={24} className="text-emeraldGreen opacity-40" />
                         <Heading className="text-sacredWhite text-3xl font-black tracking-tighter">
@@ -212,7 +213,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                             {currentStage.description}
                         </Text>
                     </Box>
-                </Animated.View>
+                </AnimatedView>
             </Box>
 
             {/* Growth Metrics */}
@@ -249,14 +250,14 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             </VStack>
 
             {/* Guiding Philosophy */}
-            <Animated.View entering={FadeInDown.delay(400)} className="p-6 bg-white/5 rounded-3xl border border-dashed border-white/10">
+            <AnimatedView entering={FadeInDown.delay(400)} className="p-6 bg-white/5 rounded-3xl border border-dashed border-white/10">
                 <HStack className="items-center gap-4">
                     <Icon as={Leaf} size={16} className="text-emeraldGreen/30" />
                     <Text className="text-mistGray/40 text-[11px] font-medium leading-relaxed flex-1 italic">
                         {t('progressTree.philosophy') || 'Growth is an organic unfolding, not a performance. Every breath, every reflection, and every moment of presence nourishes the whole. 🌱'}
                     </Text>
                 </HStack>
-            </Animated.View>
+            </AnimatedView>
         </VStack>
     );
 }

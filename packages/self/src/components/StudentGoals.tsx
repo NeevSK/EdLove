@@ -17,6 +17,7 @@ import {
     ProgressFilledTrack, 
     Text, 
     VStack,
+    AnimatedView,
     Icon,
     hapticLight, 
     hapticSuccess,
@@ -110,7 +111,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
     return (
         <VStack className="gap-lg p-lg">
             {/* Momentum Card */}
-            <Animated.View entering={FadeInUp.duration(600)}>
+            <AnimatedView entering={FadeInUp.duration(600)}>
                 <Box className="p-lg bg-obsidian rounded-comfortable border-l-4 border-l-sanctuarySaffron border-y border-r border-white/5 shadow-2xl">
                     <VStack className="gap-4">
                         <HStack className="justify-between items-center">
@@ -135,7 +136,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                         </VStack>
                     </VStack>
                 </Box>
-            </Animated.View>
+            </AnimatedView>
 
             {/* Goals Header */}
             <VStack className="gap-md">
@@ -148,7 +149,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                     </HStack>
 
                     <Button
-                        variant="link"
+                        variant="ghost"
                         onPress={() => { hapticLight(); setShowAddGoal(!showAddGoal); }}
                         className="px-0"
                     >
@@ -160,7 +161,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
 
                 {/* Add Goal Input */}
                 {showAddGoal && (
-                    <Animated.View entering={FadeInUp} layout={Layout.springify()}>
+                    <AnimatedView entering={FadeInUp} layout={Layout.springify()}>
                         <Box className="p-lg bg-white/5 rounded-3xl border border-white/10 mb-4 shadow-xl">
                             <VStack className="gap-lg">
                                 <Box className="bg-obsidian rounded-2xl border border-white/10 p-2 h-16 justify-center">
@@ -187,13 +188,13 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                 </Button>
                             </VStack>
                         </Box>
-                    </Animated.View>
+                    </AnimatedView>
                 )}
 
                 {/* Goals List */}
                 <VStack className="gap-4">
                     {goals.map((goal, index) => (
-                        <Animated.View 
+                        <AnimatedView 
                             key={goal.id} 
                             entering={FadeInRight.delay(index * 100)}
                             layout={Layout.springify()}
@@ -247,12 +248,12 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                     </VStack>
                                 </VStack>
                             </Box>
-                        </Animated.View>
+                        </AnimatedView>
                     ))}
 
                     {/* Empty State */}
                     {goals.length === 0 && !showAddGoal && (
-                        <Animated.View entering={FadeInUp} className="py-20 items-center justify-center opacity-40">
+                        <AnimatedView entering={FadeInUp} className="py-20 items-center justify-center opacity-40">
                             <Icon as={Target} size={64} className="text-white mb-4" />
                             <Text className="text-mistGray text-center italic font-medium">
                                 {t('studentGoals.noGoals') || 'No intentions set yet.'}
@@ -260,7 +261,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             <Text className="text-mistGray/50 text-[10px] uppercase font-bold tracking-widest mt-2">
                                 Define your path to mastery.
                             </Text>
-                        </Animated.View>
+                        </AnimatedView>
                     )}
                 </VStack>
             </VStack>

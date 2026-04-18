@@ -1,8 +1,5 @@
-﻿import React from 'react';
+import React from 'react';
 import { Button, ButtonText, SanctuaryModal, Text, Theme, VStack, hapticSuccess, useTheme } from '@repo/ui';
-
-
-
 import { useTranslation } from 'react-i18next';
 
 interface WelcomeModalProps {
@@ -38,13 +35,15 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             showCloseButton={false}
             footer={footer}>
             <VStack space="md">
-                <Text size="lg" style={{ lineHeight: "$xl", color: text.primary }}>
+                <Text size="lg" className="text-sacredWhite leading-relaxed">
                     {t('welcome.message')}
                 </Text>
-                <Text size="md" style={{ lineHeight: "$lg", color: text.secondary }}>
+                <Text size="md" className="text-mistGray leading-normal">
                     {t('welcome.description')}
                 </Text>
             </VStack>
         </SanctuaryModal>
     );
 }
+
+export { WelcomeModal };

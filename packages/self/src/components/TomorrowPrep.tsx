@@ -163,8 +163,6 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         <VStack className="gap-4">
           <Box>
             <Input
-              variant="outline"
-              size="md"
               className="bg-ink border-transparent border"
             >
               <InputField

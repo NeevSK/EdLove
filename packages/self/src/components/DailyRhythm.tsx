@@ -68,7 +68,7 @@ function DailyRhythmContent() {
     const [showEditor, setShowEditor] = useState(false);
     const [editingPeriod, setEditingPeriod] = useState<Partial<Period> | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
-    const toast = useToast();
+    const toast = useToast() as any;
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -127,8 +127,8 @@ function DailyRhythmContent() {
     const isPeriodActive = (start: string, end: string) => {
         if (!start || !end) return false;
         const now = currentTime.getHours() * 60 + currentTime.getMinutes();
-        const [sH, sM] = start.split(':').map(Number);
-        const [eH, eM] = end.split(':').map(Number);
+        const [sH = 0, sM = 0] = start.split(':').map(Number);
+        const [eH = 0, eM = 0] = end.split(':').map(Number);
         return now >= (sH * 60 + sM) && now < (eH * 60 + eM);
     };
 
@@ -189,13 +189,15 @@ function DailyRhythmContent() {
                     <SkeletonCard className="h-24 bg-white/5" />
                 </VStack>
             ) : (!periods || periods.length === 0) ? (
-                <Animated.View entering={FadeInDown} className="flex-1 mt-10">
-                    <PositiveInvitation
-                        icon={Clock}
-                        title={t('self.noClasses') || "Undetermined Flow"}
-                        description={t('self.addLesson') || "Map your daily rhythm to surface moments of focus."}
-                    />
-                </Animated.View>
+                <Box className="flex-1 mt-10">
+                    <Animated.View entering={FadeInDown}>
+                        <PositiveInvitation
+                            icon={Clock}
+                            title={t('self.noClasses') || "Undetermined Flow"}
+                            description={t('self.addLesson') || "Map your daily rhythm to surface moments of focus."}
+                        />
+                    </Animated.View>
+                </Box>
             ) : (
                 <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
                     <VStack className="gap-4 pb-20">

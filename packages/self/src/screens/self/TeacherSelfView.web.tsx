@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, ink, useTheme, useThemedColors } from '@repo/ui';
+import React from 'react';
+import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, useTheme } from '@repo/ui';
 
 
 import { useTranslation  } from 'react-i18next';
@@ -44,7 +44,6 @@ export default function TeacherSelfView() {
     const { context } = usePermissions();
     const userId = context.userId;
     const { viewDate } = useTemporalStore();
-    const colors = useTheme().scene;
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
@@ -155,7 +154,7 @@ export default function TeacherSelfView() {
                             { id: 'sleep', label: 'Sleep Tracker', content: <SleepTracker userId={userId ?? undefined} /> },
                             { id: 'reminders', label: 'Reminders', content: <RemindersManager userId={userId ?? undefined} /> },
                             { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling userId={userId ?? undefined} /> },
-                            { id: 'decisions', label: 'Decision Journal', content: <DecisionJournalSection userId={userId} colors={colors} t={t} /> },
+                            { id: 'decisions', label: 'Decision Journal', content: <DecisionJournalSection userId={userId ?? ''} /> },
                         ]},
                 ]}
                 sideBar={sideBar}
@@ -167,4 +166,3 @@ export default function TeacherSelfView() {
         </TemporalProvider>
     );
 }
-

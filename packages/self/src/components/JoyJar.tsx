@@ -21,6 +21,7 @@ import {
     hapticLight,
     hapticSuccess,
     SkeletonCard,
+    AnimatedView,
     PositiveInvitation
 } from '@repo/ui';
 import { Sparkles, Plus, X, Save, User, BookOpen, Star, MessageSquare } from 'lucide-react-native';
@@ -144,7 +145,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                             {joyMoments.map((moment, index) => {
                                 const catInfo = categories.find(c => c.id === moment.category) || categories[3];
                                 return (
-                                    <Animated.View 
+                                    <AnimatedView 
                                         key={moment.id} 
                                         entering={SlideInRight.delay(index * 100)}
                                     >
@@ -167,11 +168,11 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                                                     </Text>
                                                 </VStack>
                                                 <Box className="bg-white/5 p-2 rounded-full border border-white/10">
-                                                    <Text className="text-2xl">{catInfo.emoji}</Text>
+                                                    <Text className="text-2xl">{catInfo?.emoji || '✨'}</Text>
                                                 </Box>
                                             </HStack>
                                         </Box>
-                                    </Animated.View>
+                                    </AnimatedView>
                                 );
                             })}
 
@@ -187,7 +188,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                     </ScrollView>
                 </VStack>
             ) : (
-                <Animated.View entering={FadeInUp}>
+                <AnimatedView entering={FadeInUp}>
                     <VStack className="gap-6 bg-white/5 p-lg rounded-3xl border border-white/10">
                         {/* Student Name */}
                         <VStack className="gap-2">
@@ -273,7 +274,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                             </Button>
                         </HStack>
                     </VStack>
-                </Animated.View>
+                </AnimatedView>
             )}
         </VStack>
     );

@@ -1,9 +1,6 @@
-﻿import React, { useState } from 'react';
-import { Box, PositiveInvitation, ScreenWrapper, VStack, hapticLight, useTheme, useThemedColors } from '@repo/ui';
-
-
+import React, { useState } from 'react';
+import { Box, PositiveInvitation, ScreenWrapper, VStack, hapticLight, useTheme } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
@@ -18,7 +15,6 @@ import {
     PrincipalPulse,
     DecisionSection
 } from '../../views/sections';
-
 
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -44,13 +40,10 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function PrincipalSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
     const userId = context.userId;
-    const isGuest = !userId;
-    const user = useStore(state => state.user);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     const { logs: moodHistory, addMoodLog, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: loadingEnergy } = useEnergyForecast(userId ?? undefined);
@@ -65,7 +58,6 @@ export default function PrincipalSelfView() {
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { decisions, isLoading: loadingDecisions } = useDecisionJournal(userId ?? undefined);
-    const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
         <VStack space="lg" style={{ padding: 20 }}>
@@ -91,11 +83,13 @@ export default function PrincipalSelfView() {
             <BaseSelfView
                 perspective="principal"
                 description={t('self.principalDescription', 'A restorative space for leadership clarity and personal rhythm.')}
-                domains={[{
+                domains={[
+                    {
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#F59E0B',
-                        content: holisticSection},
+                        content: holisticSection
+                    },
                     {
                         id: 'pulse',
                         title: 'Inner Pulse',
@@ -166,18 +160,16 @@ export default function PrincipalSelfView() {
                             {
                                 id: 'decisions',
                                 label: 'Decision Journal',
-                                content: <DecisionJournalSection userId={userId} colors={colors} t={t} />
+                                content: <DecisionJournalSection userId={userId} />
                             },
                             {
                                 id: 'resonance',
                                 label: 'Resonance Patterns',
-                                content: user ? (
-                                    <ResonancePatternCard
-                                        orientationSeeds={(user as any).orientation_seeds}
-                                        moodLogs={moodHistory}
-                                        energyForecasts={forecasts}
-                                    />
-                                ) : null
+                                content: <ResonancePatternCard
+                                    orientationSeeds={null}
+                                    moodLogs={moodHistory}
+                                    energyForecasts={forecasts}
+                                />
                             },
                             {
                                 id: 'wisdom',
@@ -206,7 +198,6 @@ export default function PrincipalSelfView() {
                 }
             />
 
-
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
@@ -214,4 +205,3 @@ export default function PrincipalSelfView() {
         </ScreenWrapper>
     );
 }
-

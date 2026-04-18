@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
 
 
@@ -217,7 +217,7 @@ export default function TeacherSelfView() {
                             {
                                 id: 'decisions',
                                 label: 'Decision Journal',
-                                content: <DecisionJournalSection userId={userId} colors={colors} t={t} />
+                                content: <DecisionJournalSection userId={userId} />
                             }
                         ]
                     }

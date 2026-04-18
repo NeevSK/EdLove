@@ -1,9 +1,6 @@
-﻿import React, { useState } from 'react';
-import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
-
-
+import React, { useState } from 'react';
+import { Box, ScreenWrapper, VStack, useTheme } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-
 import { useTranslation } from 'react-i18next';
 import {
     useStore,
@@ -31,7 +28,6 @@ import { PulseDashboard } from '../../components/PulseDashboard';
 export default function AdminSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -106,7 +102,7 @@ export default function AdminSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box style={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box className="p-6 bg-white/5 rounded-2xl">
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
@@ -157,3 +153,4 @@ export default function AdminSelfView() {
     );
 }
 
+export { AdminSelfView };

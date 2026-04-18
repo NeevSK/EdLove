@@ -20,12 +20,13 @@ import {
     Spinner,
     Pressable,
     Progress,
-    ProgressFilledTrack
+    ProgressFilledTrack,
+    AnimatedView
 } from '@repo/ui';
 import { supabase, useTemporalStore } from '@repo/core';
 import { useMoodLogs } from '../hooks/useMoodLogs';
 import { Wind, CheckCircle, Info, Sparkles, Clock, ChevronRight, Activity } from 'lucide-react-native';
-import Animated, { FadeIn, FadeInDown, Layout, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { FadeIn, FadeInDown, Layout, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 interface MoodLotusProps {
     userId?: string;
@@ -153,19 +154,21 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                             />
                         )}
                         
-                        <Animated.View layout={Layout} entering={FadeIn.duration(600)}>
+                        <AnimatedView layout={Layout} entering={FadeIn.duration(600)}>
                             <Text className={`${isDetail ? 'text-[140px]' : 'text-[100px]'} select-none transition-transform duration-500 hover:scale-110 drop-shadow-2xl`}>
                                 {LOTUS_EMOJIS[displayScore ?? 0] || '🪷'}
                             </Text>
-                        </Animated.View>
+                        </AnimatedView>
                         
                         {displayScore !== null && (
-                            <Animated.View entering={FadeInDown} className="items-center mt-6">
-                                <Heading className={`text-2xl font-black tracking-tighter ${MOOD_TOKEN_COLORS[displayScore]}`}>
-                                    {MOOD_OPTION_LABELS[displayScore]}
-                                </Heading>
+                            <Box className="items-center mt-6">
+                                <AnimatedView entering={FadeInDown}>
+                                    <Heading className={`text-2xl font-black tracking-tighter ${MOOD_TOKEN_COLORS[displayScore]}`}>
+                                        {MOOD_OPTION_LABELS[displayScore]}
+                                    </Heading>
+                                </AnimatedView>
                                 <Text className="text-mistGray/40 text-[10px] uppercase font-black tracking-[0.2em] mt-1">Status Synchronized</Text>
-                            </Animated.View>
+                            </Box>
                         )}
                     </Box>
 
@@ -176,7 +179,6 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                 <Pressable
                                     key={score}
                                     onPress={() => !isPastView && setSelected(score)}
-                                    disabled={isPastView}
                                     className={`w-16 h-16 rounded-[20px] items-center justify-center transition-all duration-300 active:scale-90 ${
                                         selected === score 
                                             ? `${MOOD_TOKEN_BGS[score]} border-2 border-white/20 shadow-xl -translate-y-2` 
@@ -190,7 +192,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
 
                         {/* Intention Log */}
                         {selected !== null && (
-                            <Animated.View entering={FadeInDown} layout={Layout} className="gap-4">
+                            <AnimatedView entering={FadeInDown} layout={Layout} className="gap-4">
                                 <VStack className="gap-1.5">
                                     <Text className="text-[10px] uppercase font-black tracking-widest text-mistGray/40 pl-1">Resonance Note</Text>
                                     <Input className="bg-shroud border-white/10 h-14 rounded-2xl shadow-inner">
@@ -198,7 +200,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                             placeholder={isPastView ? "Preserved Record" : "Capture the essence of this moment..."}
                                             value={note}
                                             onChangeText={setNote}
-                                            isDisabled={isPastView}
+                                            readOnly={isPastView}
                                             className="text-sacredWhite text-sm"
                                             placeholderTextColor="#6A635844"
                                         />
@@ -216,13 +218,13 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                         </ButtonText>
                                     </HStack>
                                 </Button>
-                            </Animated.View>
+                            </AnimatedView>
                         )}
                     </VStack>
 
                     {/* Dynamic Paced Breathing (Web Optimized) */}
                     {(showBreath || isDetail) && (
-                        <Animated.View entering={FadeInDown} layout={Layout}>
+                        <AnimatedView entering={FadeInDown} layout={Layout}>
                             <Box className="p-8 bg-skyBlue/5 rounded-[32px] border border-skyBlue/10 items-center justify-center shadow-xl">
                                 <VStack className="items-center gap-6 w-full">
                                     <HStack className="items-center gap-2 px-3 py-1 bg-skyBlue/10 rounded-full border border-skyBlue/20">
@@ -246,11 +248,11 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                             
                                             {/* Pulsing Visualizer */}
                                             <Box 
-                                                className="w-24 h-24 rounded-full transition-all duration-700 items-center justify-center"
+                                                className="w-24 h-24 rounded-full transition-all duration-1000 items-center justify-center"
                                                 style={{ 
                                                     background: `radial-gradient(circle, ${BREATH_STEPS[breathStep]?.accent}44 0%, transparent 70%)`,
                                                     transform: [{ scale: breathStep === 1 ? 1.5 : breathStep === 2 ? 0.8 : 1.2 }]
-                                                }}
+                                                } as any}
                                             />
 
                                             <Button variant="outline" size="sm" onPress={stopBreath} className="rounded-xl border-white/10 h-10 px-8">
@@ -272,7 +274,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                     )}
                                 </VStack>
                             </Box>
-                        </Animated.View>
+                        </AnimatedView>
                     )}
                 </VStack>
 
@@ -291,7 +293,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                 [1, 2, 3, 4].map(i => <Box key={i} className="h-24 bg-shroud rounded-2xl border border-white/5 animate-pulse" />)
                             ) : moodHistory.length > 0 ? (
                                 moodHistory.slice(0, 10).map((m, idx) => (
-                                    <Animated.View key={m.id} entering={FadeInDown.delay(idx * 100)}>
+                                    <AnimatedView key={m.id} entering={FadeInDown.delay(idx * 100)}>
                                         <HStack className="p-5 bg-shroud rounded-[24px] border border-white/5 items-center gap-5 hover:border-white/10 transition-colors">
                                             <Box className={`w-12 h-12 rounded-[18px] items-center justify-center shadow-lg ${MOOD_TOKEN_BGS[m.mood_score]}`}>
                                                 <Text className="text-2xl">{LOTUS_EMOJIS[m.mood_score]}</Text>
@@ -311,7 +313,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                                                 )}
                                             </VStack>
                                         </HStack>
-                                    </Animated.View>
+                                    </AnimatedView>
                                 ))
                             ) : (
                                 <Box className="py-12 items-center opacity-20">

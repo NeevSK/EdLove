@@ -14,7 +14,8 @@ import {
 } from '@repo/ui';
 import { Droplet, Heart, Sparkles } from 'lucide-react-native';
 import type { ImpactRipple } from '@repo/core';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { AnimatedView } from '@repo/ui';
+import { FadeInDown } from 'react-native-reanimated';
 
 interface ImpactRipplesCardProps {
     ripples: ImpactRipple[];
@@ -24,7 +25,7 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
     if (!ripples || !ripples.length) return null;
 
     return (
-        <Animated.View entering={FadeInDown.duration(800)}>
+        <AnimatedView entering={FadeInDown.duration(800)}>
             <Box className="p-xl bg-skyBlue/5 rounded-3xl border border-skyBlue/10 shadow-sm overflow-hidden">
                 <VStack className="gap-lg">
                     {/* Header */}
@@ -38,7 +39,7 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
                     {/* Ripple List */}
                     <VStack className="gap-3">
                         {ripples.map((ripple, index) => (
-                            <Animated.View 
+                            <AnimatedView 
                                 key={ripple.id} 
                                 entering={FadeInDown.delay(index * 150)}
                             >
@@ -46,7 +47,7 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
                                     <HStack className="gap-4 items-center">
                                         <Box className="w-8 h-8 rounded-full bg-skyBlue/10 items-center justify-center">
                                             <Icon 
-                                                as={ripple.ripple_type === 'gratitude' ? Heart : Sparkles} 
+                                                as={ripple.ripple_type === 'principal_recognition' ? Heart : Sparkles} 
                                                 size={12} 
                                                 className="text-skyBlue" 
                                             />
@@ -58,14 +59,14 @@ export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
                                         </VStack>
                                     </HStack>
                                 </Box>
-                            </Animated.View>
+                            </AnimatedView>
                         ))}
                     </VStack>
 
                     <Box className="mt-2 h-0.5 bg-skyBlue/10 rounded-full w-full opacity-50" />
                 </VStack>
             </Box>
-        </Animated.View>
+        </AnimatedView>
     );
 }
 

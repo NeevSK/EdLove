@@ -16,6 +16,7 @@ import {
     Pressable, 
     Text, 
     VStack,
+    AnimatedView,
     hapticLight,
     hapticSuccess
 } from '@repo/ui';
@@ -234,7 +235,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
             {/* Main Recorder Control */}
             <Box className="w-40 h-40 items-center justify-center relative">
                 {(recordingState === 'recording' || recordingState === 'playing') && (
-                    <Animated.View 
+                    <AnimatedView 
                         style={[pulseStyle]} 
                         className="absolute w-32 h-32 rounded-full bg-sanctuarySaffron/20 border border-sanctuarySaffron/30"
                     />
@@ -259,7 +260,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
             {(recordingState === 'recording' || recordingState === 'playing') && (
                 <HStack className="items-center gap-1 h-16">
                     {[1, 2, 3, 4, 5].map(i => (
-                        <Animated.View
+                        <AnimatedView
                             key={i}
                             style={[waveStyle]}
                             className="w-1.5 bg-sanctuarySaffron rounded-full"
@@ -270,7 +271,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
             {/* Actions */}
             {(recordingState === 'recorded' || recordingState === 'playing') && (
-                <Animated.View entering={FadeInUp}>
+                <AnimatedView entering={FadeInUp}>
                     <HStack className="gap-6 mt-4">
                         <Pressable
                             onPress={discardRecording}
@@ -295,7 +296,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             <Icon as={Check} size={24} className="text-white" />
                         </Pressable>
                     </HStack>
-                </Animated.View>
+                </AnimatedView>
             )}
 
             {/* Status Footer */}

@@ -87,7 +87,6 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                 <VStack className="gap-4">
                     <Box className="relative">
                         <Input
-                            variant="outline"
                             className={`rounded-comfortable min-h-[160px] transition-all duration-300 border-2 ${
                                 burning 
                                     ? 'border-emberRed bg-emberRed/5 opacity-40 animate-pulse' 

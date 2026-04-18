@@ -96,10 +96,9 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                 )}
             </HStack>
 
-            {/* Level Selector */}
             <HStack className="gap-2 justify-between">
                 {[1, 2, 3, 4, 5].map(level => {
-                    const m = LEVEL_LABELS[level];
+                    const m = LEVEL_LABELS[level]!;
                     const isSelected = selectedLevel === level;
                     const colorHex = ENERGY_COLORS[level] || '#8B5CF6';
                     
@@ -140,7 +139,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                                 onChangeText={setNotes}
                                 onBlur={() => !isPastView && selectedLevel && handleSave(selectedLevel)}
                                 placeholder={isPastView ? "Historical resonance log" : "Add context (optional)..."}
-                                disabled={isPastView}
+                                readOnly={isPastView}
                                 className="text-sacredWhite text-xs px-4 h-10"
                                 placeholderTextColor="rgba(255,255,255,0.2)"
                             />

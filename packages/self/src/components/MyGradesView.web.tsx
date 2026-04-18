@@ -5,7 +5,7 @@
  * Purged raw Tailwind colors in favor of Sanctuary tokens.
  */
 import React, { useState, useEffect } from 'react';
-import { Box, VStack, HStack, Text, Heading, SkeletonCard } from '@repo/ui';
+import { Box, VStack, HStack, Text, Heading, SkeletonCard, Icon } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -117,14 +117,14 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                 <Box className="flex-1 p-5 bg-obsidian rounded-comfortable border border-white/5">
                     <Text className="text-[10px] font-bold text-mistGray uppercase tracking-widest mb-1.5">Completed</Text>
                     <HStack className="items-center gap-2">
-                        <BookOpen size={16} className="text-sanctuarySaffron" />
+                        <Icon as={BookOpen} size={16} className="text-sanctuarySaffron" />
                         <Text className="text-2xl font-extrabold text-sacredWhite">{grades.length}</Text>
                     </HStack>
                 </Box>
                 <Box className="flex-1 p-5 bg-obsidian rounded-comfortable border border-white/5">
                     <Text className="text-[10px] font-bold text-mistGray uppercase tracking-widest mb-1.5">Average Grade</Text>
                     <HStack className="items-center gap-2">
-                        <Award size={16} className={avgStats.color} />
+                        <Icon as={Award} size={16} className={avgStats.color} />
                         <Text className={`text-2xl font-extrabold ${avgStats.color}`}>
                             {Math.round(avgGrade)}%
                         </Text>
@@ -162,7 +162,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                                     </Text>
                                     <Box className="w-1 h-1 rounded-full bg-white/10" />
                                     <HStack className="items-center gap-1">
-                                        <Clock size={10} className="text-dimGray" />
+                                        <Icon as={Clock} size={10} className="text-dimGray" />
                                         <Text className="text-[10px] text-dimGray">
                                             {formatDistanceToNow(new Date(item.submitted_at), { addSuffix: true })}
                                         </Text>

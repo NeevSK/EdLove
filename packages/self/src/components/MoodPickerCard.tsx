@@ -128,7 +128,7 @@ export function MoodPickerCard({
                                 </HStack>
 
                                 <Box className="bg-white/5 rounded-xl border border-white/10 px-4 py-1">
-                                    <Input variant="underlined" className="border-0">
+                                    <Input className="border-0">
                                         <InputField
                                             value={note}
                                             onChangeText={setNote}

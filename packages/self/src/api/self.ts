@@ -1,4 +1,4 @@
-﻿import {
+import {
     APIError,
     assertContractCoverage,
     createPOAProxy,
@@ -42,8 +42,11 @@ const rawSelfAPI = {
         }
 
         // Growth signal: teacher chose to check in with themselves (Presence  Tier 2 Care Signal)
-        growthSignalsAPI.emitSilent(userId, 'mood_checkin', {
-            mood_score: score});
+        growthSignalsAPI.emitSilent({
+            user_id: userId,
+            event_type: 'mood_checkin',
+            event_metadata: { mood_score: score }
+        });
 
         return data;
     },
@@ -89,7 +92,11 @@ const rawSelfAPI = {
         }
 
         // Growth signal: teacher processed difficult emotions (Presence  Tier 2 Care Signal)
-        growthSignalsAPI.emitSilent(userId, 'fire_journal_entry', {});
+        growthSignalsAPI.emitSilent({
+            user_id: userId,
+            event_type: 'fire_journal_entry',
+            event_metadata: {}
+        });
 
         return data;
     },

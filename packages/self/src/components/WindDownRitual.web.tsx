@@ -124,7 +124,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                     disabled={saving}
                     style={{ padding: '11px 24px', borderRadius: '10px', background: '#8B5CF6', color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', cursor: saving ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>    {saving ? 'Saving...' : isLast ? (
                         <>
-                            <Icon as={CheckCircle2} size={16} color="#fff" /> Complete Ritual
+                            <CheckCircle2 size={16} color="#fff" /> Complete Ritual
                         </>
                     ) : (
                         `Next -> ${nextStepLabel}`

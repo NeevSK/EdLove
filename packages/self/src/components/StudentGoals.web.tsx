@@ -78,7 +78,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: goal.is_completed ? 0 : '8px' }}>
                                 <button onClick={() => handleToggle(goal)} disabled={updating === goal.id} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}>
                                     {goal.is_completed
-                                        ? <Icon as={CheckCircle2} size={18} color="var(--moss)" />
+                                        ? <CheckCircle2 size={18} color="var(--moss)" />
                                         : <Circle size={18} color="var(--border)" />}
                                 </button>
                                 <span style={{ fontSize: '13px', fontWeight: '600', flex: 1, textDecoration: goal.is_completed ? 'line-through' : 'none', color: goal.is_completed ? 'var(--ink-ghost)' : 'var(--ink)' }}>
