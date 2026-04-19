@@ -1,28 +1,24 @@
-/**
- * CommentSheet
- *
- * A full-featured comment system that works on both React Native (native modal
- * bottom-sheet) and web (fixed bottom drawer). Features:
- *
- * - Real-time comment feed (via useComments hook)
- * - Anonymous posting toggle
- * - Upvote toggle with optimistic update
- * - Delete own comment (long-press menu)
- * - Mark "official answer" for Question-type posts (post author only)
- * - Keyboard-aware layout on both platforms
- */
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Modal,
     FlatList,
-    TextInput,
     KeyboardAvoidingView,
     Platform,
-    ActivityIndicator,
     Alert,
 } from 'react-native';
-import { useTheme, getInitialsFromName, formatTimestamp } from '@repo/ui';
-import { Text, Box, HStack, VStack, Pressable, View } from '@repo/ui';
+import { 
+    Text, 
+    Box, 
+    HStack, 
+    VStack, 
+    Pressable, 
+    View,
+    Icon,
+    InputField,
+    Spinner,
+    getInitialsFromName,
+    formatTimestamp
+} from '@repo/ui';
 import { ChevronDown, Send, ThumbsUp, Trash2, Shield, Lock, EyeOff } from 'lucide-react-native';
 import { useComments } from '../hooks/useComments';
 import type { Comment } from '../types/Community';
@@ -36,9 +32,9 @@ interface CommentSheetProps {
     onClose: () => void;
 }
 
-// 
-// Single comment row
-// 
+/**
+ * Single comment row refactored for Sanctuary V3
+ */
 function CommentRow({
     comment,
     currentUserId,
@@ -56,7 +52,6 @@ function CommentRow({
     onUpvote: (id: string) => void;
     onMarkOfficial: (id: string, flag: boolean) => void;
 }) {
-    const { text, accent, glass } = useTheme();
     const isOwn = comment.author_id === currentUserId;
     const initials = getInitialsFromName(comment.author_name);
 
@@ -73,68 +68,71 @@ function CommentRow({
 
     return (
         <View 
-            className={`flex-row mb-4 pl-1 ${comment.is_official_answer ? 'border-l-4 border-l-phase-reward' : ''}`}
+            className={`flex-row mb-5 pl-1 ${comment.is_official_answer ? 'border-l-4 border-l-phase-reward' : ''}`}
         >
             {/* Avatar */}
             <View 
-                className="w-8 h-8 rounded-full items-center justify-center mr-2.5 mt-0.5 shrink-0"
-                style={{ backgroundColor: (comment.is_anonymous ? glass.interact.bg : accent.muted) as string }}
+                className={`w-9 h-9 rounded-full items-center justify-center mr-3 mt-1 shrink-0 ${comment.is_anonymous ? 'bg-phase-surface border border-border' : 'bg-phase-interactive/10'}`}
             >
                 {comment.is_anonymous ? (
-                    <EyeOff size={14} color={text.muted as string} />
+                    <Icon as={EyeOff} size="xs" className="text-ink/40" />
                 ) : (
-                    <Text className="text-[11px] font-bold text-phase-interactive">{initials}</Text>
+                    <Text className="text-[12px] font-bold text-phase-interactive">{initials}</Text>
                 )}
             </View>
 
             <View className="flex-1">
-                <HStack className="justify-between items-center">
-                    <HStack space="xs" className="items-center">
-                        <Text className="text-xs font-bold text-phaseText-primary">
+                <HStack className="justify-between items-center h-5">
+                    <HStack className="items-center gap-1.5">
+                        <Text className="text-xs font-bold text-ink">
                             {comment.author_name}
                         </Text>
                         {comment.is_official_answer && (
-                            <View className="flex-row items-center px-1.5 py-0.5 rounded-tight bg-phase-reward">
-                                <Shield size={9} color="#fff" />
-                                <Text className="text-[9px] text-white font-bold ml-0.5">Official</Text>
-                            </View>
+                            <HStack className="items-center px-1.5 py-0.5 rounded-md bg-phase-reward">
+                                <Icon as={Shield} size="2xs" className="text-white" />
+                                <Text className="text-[9px] text-white font-bold ml-0.5 uppercase tracking-tighter">Official</Text>
+                            </HStack>
                         )}
                     </HStack>
-                    <Text className="text-[10px] text-mistGray">
+                    <Text className="text-[10px] text-ink/40">
                         {formatTimestamp(comment.created_at)}
                     </Text>
                 </HStack>
 
-                <Text className="text-sm text-phaseText-secondary mt-1 leading-5">
+                <Text className="text-sm text-ink/70 mt-1 leading-relaxed">
                     {comment.content}
                 </Text>
 
-                <HStack space="lg" className="items-center mt-1.5">
+                <HStack className="items-center mt-2.5 gap-6">
                     {/* Upvote */}
                     <Pressable onPress={() => onUpvote(comment.id)} className="flex-row items-center">
-                        <ThumbsUp
-                            size={13}
-                            color={comment.has_upvoted ? (accent.action as string) : (text.muted as string)}
-                            fill={comment.has_upvoted ? (accent.action as string) : 'transparent'}
+                        <Icon 
+                            as={ThumbsUp}
+                            size="xs"
+                            className={comment.has_upvoted ? 'text-phase-interactive' : 'text-ink/40'}
                         />
                         {comment.upvotes > 0 && (
                             <Text 
-                                className={`text-[11px] ml-1 ${comment.has_upvoted ? 'text-phase-interactive' : 'text-mistGray'}`}
+                                className={`text-[11px] font-bold ml-1.5 ${comment.has_upvoted ? 'text-phase-interactive' : 'text-ink/40'}`}
                             >
                                 {comment.upvotes}
                             </Text>
                         )}
                     </Pressable>
 
-                    {/* Mark official (post author, question type) */}
+                    {/* Mark official (post author, question type) - Not anonymous only */}
                     {isPostAuthor && postType === 'question' && !comment.is_anonymous && (
                         <Pressable
                             onPress={() => onMarkOfficial(comment.id, !comment.is_official_answer)}
                             className="flex-row items-center"
                         >
-                            <Shield size={13} color={comment.is_official_answer ? (accent.reward as string) : (text.muted as string)} />
+                            <Icon 
+                                as={Shield} 
+                                size="xs" 
+                                className={comment.is_official_answer ? 'text-phase-reward' : 'text-ink/40'} 
+                            />
                             <Text 
-                                className={`text-[11px] ml-1 ${comment.is_official_answer ? 'text-phase-reward' : 'text-mistGray'}`}
+                                className={`text-[11px] font-bold ml-1.5 ${comment.is_official_answer ? 'text-phase-reward' : 'text-ink/40'}`}
                             >
                                 {comment.is_official_answer ? 'Unmark' : 'Mark answer'}
                             </Text>
@@ -143,8 +141,8 @@ function CommentRow({
 
                     {/* Delete own */}
                     {isOwn && (
-                        <Pressable onPress={confirmDelete} className="flex-row items-center">
-                            <Trash2 size={13} color={text.muted as string} />
+                        <Pressable onPress={confirmDelete} className="flex-row items-center p-1">
+                            <Icon as={Trash2} size="xs" className="text-ink/40" />
                         </Pressable>
                     )}
                 </HStack>
@@ -153,9 +151,9 @@ function CommentRow({
     );
 }
 
-// 
-// Main CommentSheet
-// 
+/**
+ * Main CommentSheet refactored for Sanctuary V3
+ */
 export function CommentSheet({
     postId,
     postAuthorId,
@@ -163,7 +161,6 @@ export function CommentSheet({
     postType,
     onClose,
 }: CommentSheetProps) {
-    const { text, accent, glass } = useTheme();
     const {
         comments,
         isLoading,
@@ -174,16 +171,17 @@ export function CommentSheet({
         markOfficialAnswer,
     } = useComments(postId);
 
-    const [draft, setDraft] = React.useState('');
-    const [isAnonymous, setIsAnonymous] = React.useState(false);
-    const flatListRef = React.useRef<FlatList>(null);
+    const [draft, setDraft] = useState('');
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const flatListRef = useRef<FlatList>(null);
 
     const isPostAuthor = !!currentUserId && currentUserId === postAuthorId;
 
     // Scroll to bottom when new comments arrive
-    React.useEffect(() => {
+    useEffect(() => {
         if (comments.length > 0) {
-            setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+            const timer = setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 150);
+            return () => clearTimeout(timer);
         }
     }, [comments.length]);
 
@@ -200,50 +198,46 @@ export function CommentSheet({
 
     const sheetContent = (
         <KeyboardAvoidingView
-            style={[
-                {
-                    borderTopLeftRadius: 16,
-                    borderTopRightRadius: 16,
-                    borderTopWidth: 1,
-                    minHeight: 320,
-                    maxHeight: '80%',
-                    backgroundColor: (glass?.modal?.bg ?? glass?.surface?.bg ?? '#F5EDD6') as string,
-                    borderTopColor: (glass?.interact?.border ?? 'rgba(42,35,24,0.08)') as string,
-                },
-            ]}
+            className="bg-phase-surface border-t border-border min-h-[380px] max-h-[85%] rounded-t-[32px] overflow-hidden shadow-2xl"
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
         >
+            {/* Header Handle */}
+            <Box className="w-12 h-1.5 bg-ink/10 rounded-full self-center mt-3 mb-1" />
+
             {/* Header */}
-            <View className="flex-row items-center px-4 py-3">
+            <HStack className="items-center px-5 py-4">
                 <Pressable 
                     onPress={onClose} 
-                    className="w-[34px] items-start"
-                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-ink/5"
+                    hitSlop={12}
                 >
-                    <ChevronDown size={22} color={text.secondary as string} />
+                    <Icon as={ChevronDown} size="md" className="text-ink/60" />
                 </Pressable>
-                <Text className="text-[15px] font-bold text-phaseText-primary flex-1 text-center">
-                    {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}
+                <Text className="text-md font-bold text-ink flex-1 text-center">
+                    {isLoading ? 'Loading resonance\u2026' : `${comments.length} Reflection${comments.length !== 1 ? 's' : ''}`}
                 </Text>
-                <View className="w-[34px]" />
-            </View>
+                <Box className="w-10" />
+            </HStack>
 
             {/* Comment list */}
             {isLoading ? (
-                <ActivityIndicator color={accent.action as string} style={{ marginVertical: 40 }} />
+                <Box className="flex-1 items-center justify-center py-20">
+                    <Spinner />
+                </Box>
             ) : comments.length === 0 ? (
-                <View className="flex-1 items-center justify-center py-10 px-6">
-                    <Text className="text-sm text-mistGray text-center">
-                        Be the first to share a thought
+                <VStack className="flex-1 items-center justify-center py-12 px-8 gap-3">
+                    <Text className="text-md font-bold text-ink/20">The Heart is Quiet</Text>
+                    <Text className="text-sm text-ink/40 text-center leading-relaxed">
+                        Be the first to seed a reflection into this conversation circle.
                     </Text>
-                </View>
+                </VStack>
             ) : (
                 <FlatList
                     ref={flatListRef}
                     data={comments}
                     keyExtractor={item => item.id}
-                    contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}
+                    contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 24 }}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <CommentRow
@@ -260,61 +254,46 @@ export function CommentSheet({
             )}
 
             {/* Composer */}
-            <View 
-                className="flex-row items-end p-3 gap-2 border-t"
-                style={{ borderTopColor: (glass.interact.border || 'rgba(0,0,0,0.1)') as string }}
+            <HStack 
+                className="items-end p-4 gap-3 border-t border-border bg-phase-surface/80"
             >
                 {/* Anonymous toggle */}
                 <Pressable
                     onPress={() => setIsAnonymous(v => !v)}
-                    className="w-9 h-9 rounded-full border-1.5 items-center justify-center shrink-0"
-                    style={{ borderColor: (isAnonymous ? accent.action : glass.interact.border) as string }}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    className={`w-11 h-11 rounded-2xl border items-center justify-center shrink-0 ${isAnonymous ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                    hitSlop={8}
                 >
-                    <Lock size={14} color={(isAnonymous ? accent.action : text.muted) as string} />
+                    <Icon as={Lock} size="sm" className={isAnonymous ? 'text-white' : 'text-ink/40'} />
                 </Pressable>
 
-                <TextInput
-                    style={{
-                        flex: 1,
-                        borderWidth: 1,
-                        borderRadius: 16,
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        fontSize: 14,
-                        maxHeight: 120,
-                        backgroundColor: (glass.interact.bg || 'rgba(0,0,0,0.05)') as string,
-                        borderColor: (glass.interact.border || 'rgba(0,0,0,0.1)') as string,
-                        color: text.primary as string,
-                    }}
-                    placeholder={isAnonymous ? 'Reply anonymously...' : 'Add a comment...'}
-                    placeholderTextColor={text.muted as string}
-                    value={draft}
-                    onChangeText={setDraft}
-                    multiline
-                    maxLength={1000}
-                    returnKeyType="default"
-                    blurOnSubmit={false}
-                />
+                <Box className="flex-1 bg-ink/5 rounded-2xl border border-border px-1">
+                    <InputField
+                        className="text-ink text-sm py-2.5 px-3 min-h-[44px] max-h-[120px]"
+                        placeholder={isAnonymous ? 'Reflect anonymously\u2026' : 'Add a reflection\u2026'}
+                        placeholderTextColor="#94a3b8"
+                        value={draft}
+                        onChangeText={setDraft}
+                        multiline
+                        maxLength={1000}
+                    />
+                </Box>
 
                 <Pressable
                     onPress={handleSend}
                     disabled={!draft.trim() || isCreatingComment}
-                    className="w-9 h-9 rounded-full items-center justify-center shrink-0"
-                    style={{ backgroundColor: (!draft.trim() ? glass.interact.bg : accent.action) as string }}
+                    className={`w-11 h-11 rounded-2xl items-center justify-center shrink-0 ${!draft.trim() ? 'bg-ink/5' : 'bg-phase-interactive'}`}
                 >
                     {isCreatingComment ? (
-                        <ActivityIndicator size="small" color="#fff" />
+                        <Spinner />
                     ) : (
-                        <Send size={16} color={!draft.trim() ? (text.muted as string) : '#fff'} />
+                        <Icon as={Send} size="sm" className={!draft.trim() ? 'text-ink/20' : 'text-white'} />
                     )}
                 </Pressable>
-            </View>
+            </HStack>
         </KeyboardAvoidingView>
     );
 
     if (Platform.OS === 'web') {
-        // Web: fixed bottom drawer, no RN Modal needed
         if (!postId) return null;
         return (
             <View
@@ -323,11 +302,9 @@ export function CommentSheet({
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    maxHeight: '70vh',
+                    maxHeight: '85vh',
                     zIndex: 1000,
-                    borderTopLeftRadius: 16, // Theme.corners.comfortable
-                    borderTopRightRadius: 16,
-                    boxShadow: '0 -4px 32px rgba(107,100,128,0.18)',
+                    boxShadow: '0 -10px 40px rgba(107,100,128,0.15)',
                     overflow: 'hidden',
                 } as any}
             >
@@ -336,7 +313,6 @@ export function CommentSheet({
         );
     }
 
-    // Native: Modal bottom sheet
     return (
         <Modal
             visible={!!postId}
@@ -344,12 +320,13 @@ export function CommentSheet({
             transparent
             onRequestClose={onClose}
         >
-            <Pressable
-                className="flex-1 bg-[rgba(17,12,36,0.55)]"
-                onPress={onClose}
-            >
+            <View className="flex-1">
+                <Pressable
+                    className="flex-1 bg-black/40"
+                    onPress={onClose}
+                />
                 {sheetContent}
-            </Pressable>
+            </View>
         </Modal>
     );
 }

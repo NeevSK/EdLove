@@ -1,6 +1,7 @@
 /**
  * COMMUNITY PRESENCE
  * Shows how many teachers/students are currently online based on role.
+ * Refactored for Sanctuary V3.
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -11,8 +12,8 @@ import {
     Text,
     Heading,
     Spinner,
-    useThemedColors,
     View,
+    Icon
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
@@ -39,7 +40,6 @@ export default function CommunityPresence({
     userId,
 }: CommunityPresenceProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const dominantVibe = userVibe;
     const { onlineCount, isLoading, isOffline, perspective } = useCommunityPresence({ userId, userVibe });
 
@@ -64,19 +64,20 @@ export default function CommunityPresence({
         opacity: pulseOpacity.value,
     }));
 
-    const getVibeColor = (vibe: string) => {
+    // Replaced hardcoded HEX with semantic Tailwind equivalents for better theme reactivity
+    const getVibeClass = (vibe: string) => {
         switch (vibe.toLowerCase()) {
-            case 'active': return '#F6BF8C'; // colors.action
-            case 'focused': return '#F6BF8C';
-            case 'reflecting': return '#B8A9E0'; // colors.secondary
-            case 'teaching': return '#8BBF7A'; // colors.success
-            case 'planning': return '#F6BF8C';
-            default: return '#8BBF7A';
+            case 'active': return 'text-phase-interactive';
+            case 'focused': return 'text-phase-interactive';
+            case 'reflecting': return 'text-phase-interactive'; // standardizing for now
+            case 'teaching': return 'text-ink';
+            case 'planning': return 'text-phase-interactive';
+            default: return 'text-ink/60';
         }
     };
 
-    const vibeColor = useMemo(
-        () => isOffline ? '#968E80' : getVibeColor(dominantVibe),
+    const vibeClass = useMemo(
+        () => isOffline ? 'text-ink/40' : getVibeClass(dominantVibe),
         [isOffline, dominantVibe]
     );
 
@@ -95,11 +96,10 @@ export default function CommunityPresence({
     if (isLoading) {
         return (
             <HStack 
-                space="md" 
-                className={`items-center opacity-60 ${hidePadding || compact ? 'p-0' : 'p-4'}`}
+                className={`items-center opacity-60 gap-3 ${hidePadding || compact ? 'p-0' : 'p-4'}`}
             >
-                <Spinner size="small" />
-                <Text className="text-willow text-sm">
+                <Spinner />
+                <Text className="text-ink/60 text-sm">
                     Locating Sanctuary Presence...
                 </Text>
             </HStack>
@@ -108,12 +108,11 @@ export default function CommunityPresence({
 
     if (compact) {
         return (
-            <HStack space="xs" className="items-center">
-                <View
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: vibeColor }}
+            <HStack className="items-center gap-2">
+                <Box
+                    className={`w-2 h-2 rounded-full ${isOffline ? 'bg-ink/40' : 'bg-phase-interactive'}`}
                 />
-                <Text className="text-[12px] text-willow font-bold">
+                <Text className="text-[12px] text-ink/60 font-bold">
                     {isOffline ? t('community.offline') || 'Offline' : `${onlineCount} ${roleLabel}`}
                 </Text>
             </HStack>
@@ -121,52 +120,44 @@ export default function CommunityPresence({
     }
 
     return (
-        <VStack space="md" className={hidePadding || compact ? 'p-0' : 'p-4'}>
-            <HStack space="md" className="items-center">
+        <VStack className={`gap-4 ${hidePadding || compact ? 'p-0' : 'p-4'}`}>
+            <HStack className="items-center gap-4">
                 <View className="relative">
                     {isOffline ? (
-                        <WifiOff color="#968E80" size={28} />
+                        <Icon as={WifiOff} className="text-ink/40" size="lg" />
                     ) : (
-                        <Users color={vibeColor} size={28} />
+                        <Icon as={Users} className={vibeClass} size="lg" />
                     )}
                     {!isOffline && (
                         <Animated.View
                             style={[
                                 pulseStyle,
-                                {
-                                    position: 'absolute',
-                                    top: -4,
-                                    right: -4,
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: 6,
-                                    backgroundColor: vibeColor,
-                                },
                             ]}
+                            className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-phase-interactive"
                         />
                     )}
                 </View>
-                <VStack>
-                    <Heading size="sm" className="text-phaseText-primary">
+                <VStack className="gap-0.5">
+                    <Heading className="text-sm font-bold text-ink">
                         {isOffline ? t('community.offlineTitle') || 'Connection Lost' : t('community.sanctuaryPulse') || 'Sanctuary Pulse'}
                     </Heading>
-                    <Text className="text-willow text-sm">
+                    <Text className="text-ink/60 text-sm leading-snug">
                         {isOffline
                             ? t('community.offlineDesc') || 'You are viewing a static instance.'
                             : `${onlineCount} ${roleLabel} ${t('community.onlineNow') || 'present now'}`}
                     </Text>
                     {!isOffline && (
-                        <Text className="text-mistGray text-[12px] mt-1">
-                            {t('community.dominantVibe') || 'Dominant Vibe'}: {dominantVibe}
+                        <Text className="text-ink/40 text-[11px] font-medium mt-0.5">
+                            {t('community.dominantVibe') || 'Dominant Vibe'}: <Text className="text-phase-interactive lowercase">{dominantVibe}</Text>
                         </Text>
                     )}
                 </VStack>
             </HStack>
             
             {!isOffline && onlineCount > 0 && (
-                <Box className="bg-linen p-3 rounded-comfortable border border-linen">
-                    <Text className="text-[12px] text-willow italic">
-                        {motivationText}
+                <Box className="bg-phase-surface/50 p-4 rounded-2xl border border-border">
+                    <Text className="text-[12px] text-ink/60 italic leading-relaxed">
+                        "{motivationText}"
                     </Text>
                 </Box>
             )}

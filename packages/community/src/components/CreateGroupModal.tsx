@@ -8,7 +8,6 @@ import {
   Text,
   Icon,
   SanctuaryButton,
-  Theme
 } from "@repo/ui";
 import { CheckCircle } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -56,22 +55,23 @@ export default function CreateGroupModal({
       <SanctuaryModal
         isOpen={isOpen}
         onClose={onClose}
-        title="Community Founded!"
+        title="Circle Founded"
       >
-        <VStack className="gap-8 items-center py-6">
-          <Box className="bg-[#F6BF8C]/10 p-6 rounded-[60px]">
-            <Icon as={CheckCircle} className="text-primary-500" size={64} />
-          </Box>
-          <VStack className="gap-2 items-center">
-            <Heading size="xl" className="text-center text-foreground">
-              Group Ready!
+        <VStack className="gap-8 items-center py-8">
+            <Box className="w-24 h-24 rounded-full bg-phase-interactive/10 items-center justify-center border border-phase-interactive/20">
+                <Icon as={CheckCircle} className="text-phase-interactive" size="xl" />
+            </Box>
+          
+          <VStack className="gap-2 items-center px-4">
+            <Heading className="text-center text-ink text-2xl font-black">
+                Resonance Established
             </Heading>
-            <Text className="text-center text-muted-foreground">
-              Your community is ready to welcome its members.
+            <Text className="text-center text-ink/60 text-sm leading-relaxed px-5">
+              Your new circle is ready to welcome its members. Share this portal to begin the resonance.
             </Text>
           </VStack>
 
-          <Box className="p-5 bg-white rounded-xl">
+          <Box className="p-6 bg-white rounded-3xl shadow-lg border border-border">
             <QRCodeGenerator
               value={groupQRValue}
               size={180}
@@ -80,12 +80,14 @@ export default function CreateGroupModal({
           </Box>
           
           <SanctuaryButton
+            action="primary"
+            className="w-full h-14 rounded-2xl"
             onPress={() => {
               onClose();
               navigation.navigate("GroupDetails", { groupId: createdGroupId });
             }}
           >
-            <Text className="text-white font-bold">Enter Group Space</Text>
+            <Text className="text-white font-bold text-lg">Enter Circle Space</Text>
           </SanctuaryButton>
         </VStack>
       </SanctuaryModal>
@@ -99,6 +101,7 @@ export default function CreateGroupModal({
       definition={groupDefinition}
       mode={mode as any}
       instance={initialData}
+      onSuccess={handleSuccess}
     />
   );
 }

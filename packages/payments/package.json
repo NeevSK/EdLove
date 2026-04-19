@@ -12,6 +12,7 @@
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
+    "@repo/accounting": "workspace:*",
     "@repo/core": "workspace:*",
     "@supabase/supabase-js": "^2.39.0"
   },

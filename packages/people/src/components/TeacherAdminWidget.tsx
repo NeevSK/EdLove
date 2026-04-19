@@ -17,6 +17,7 @@ import {
   CheckSquare,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { usePermissions } from '@repo/core';
 
 interface TeacherAdminWidgetProps {
   onAction?: (action: string) => void;
@@ -24,9 +25,9 @@ interface TeacherAdminWidgetProps {
 
 export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps) {
   const { t } = useTranslation();
+  const { flags } = usePermissions();
 
   const AdminAction = ({ icon: LucideIcon, label, variant = 'primary', onPress }: any) => {
-    // Map variant to Tailwind classes
     const colorClasses = {
       primary: 'text-primary bg-primary/10',
       warning: 'text-warning bg-warning/10',
@@ -56,6 +57,54 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
     );
   };
 
+  // Define actions with their visibility conditions
+  const actions = [
+    {
+      icon: Calendar,
+      label: t('teacher.admin.myLeaves') || 'My Leaves',
+      variant: 'warning',
+      visible: flags.isStaffManagementEnabled,
+    },
+    {
+      icon: ArrowRightLeft,
+      label: t('teacher.admin.substitutions') || 'Substitutions',
+      variant: 'primary',
+      visible: flags.isStaffManagementEnabled,
+    },
+    {
+      icon: FileText,
+      label: t('teacher.admin.reportGen') || 'Student Reports',
+      variant: 'success',
+      visible: flags.isStudentReportingEnabled,
+    },
+    {
+      icon: ClipboardList,
+      label: t('teacher.admin.templates') || 'Letter Templates',
+      variant: 'error',
+      visible: flags.isTemplateManagementEnabled,
+    },
+    {
+      icon: DollarSign,
+      label: t('teacher.admin.financials') || 'Financials',
+      variant: 'success',
+      visible: flags.isAccountingEnabled,
+    },
+    {
+      icon: CheckSquare,
+      label: t('teacher.admin.approvals') || 'Approvals',
+      variant: 'error',
+      visible: flags.isStaffManagementEnabled,
+    },
+  ].filter(action => action.visible);
+
+  // Group actions into rows of 2
+  const rows = [];
+  for (let i = 0; i < actions.length; i += 2) {
+    rows.push(actions.slice(i, i + 2));
+  }
+
+  if (actions.length === 0) return null;
+
   return (
     <VStack className="gap-4 mt-2">
       <HStack className="justify-between items-center">
@@ -64,42 +113,20 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
         </Text>
       </HStack>
       <VStack className="gap-2">
-        <HStack className="gap-2">
-          <AdminAction
-            icon={Calendar}
-            label={t('teacher.admin.myLeaves') || 'My Leaves'}
-            variant="warning"
-          />
-          <AdminAction
-            icon={ArrowRightLeft}
-            label={t('teacher.admin.substitutions') || 'Substitutions'}
-            variant="primary"
-          />
-        </HStack>
-        <HStack className="gap-2">
-          <AdminAction
-            icon={FileText}
-            label={t('teacher.admin.reportGen') || 'Student Reports'}
-            variant="success"
-          />
-          <AdminAction
-            icon={ClipboardList}
-            label={t('teacher.admin.templates') || 'Letter Templates'}
-            variant="error"
-          />
-        </HStack>
-        <HStack className="gap-2">
-          <AdminAction
-            icon={DollarSign}
-            label={t('teacher.admin.financials') || 'Financials'}
-            variant="success"
-          />
-          <AdminAction
-            icon={CheckSquare}
-            label={t('teacher.admin.approvals') || 'Approvals'}
-            variant="error"
-          />
-        </HStack>
+        {rows.map((row, rowIndex) => (
+          <HStack key={rowIndex} className="gap-2">
+            {row.map((action, actionIndex) => (
+              <AdminAction
+                key={actionIndex}
+                icon={action.icon}
+                label={action.label}
+                variant={action.variant}
+              />
+            ))}
+            {/* Fill space if only one item in row */}
+            {row.length === 1 && <Box className="flex-1" />}
+          </HStack>
+        ))}
       </VStack>
     </VStack>
   );

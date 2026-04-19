@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, ActivityIndicator } from "react-native";
+import { ScrollView } from "react-native";
 import {
   Box,
   VStack,
@@ -9,12 +9,10 @@ import {
   ScreenWrapper,
   GlobalHeader,
   SanctuaryCard,
-  Button,
-  ButtonText,
-  ButtonIcon,
-  ButtonSpinner,
+  SanctuaryButton,
+  Spinner,
   useRegisterFAB,
-  Theme
+  Icon
 } from '@repo/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
@@ -140,11 +138,11 @@ export default function UserPublicProfileScreen() {
     tabType: 'profile',
     visible: !loading && !!user && !!currentUserId && currentUserId !== userId,
     onPress: handleMessagePress,
-    icon: <Send size={24} color="white" />
+    icon: <Icon as={Send} size="md" className="text-white" />
   });
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
       <GlobalHeader
         title={user?.full_name ?? userName ?? "Profile"}
         subtitle={authorityLabel}
@@ -154,137 +152,163 @@ export default function UserPublicProfileScreen() {
 
       {loading ? (
         <Box className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#E67E22" />
+          <Spinner />
+          <Text className="text-ink/40 text-xs font-bold uppercase tracking-widest mt-4">Gathering Presence...</Text>
         </Box>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
         >
-          <VStack className="gap-4">
+          <VStack className="gap-5">
             {/* Basic Identity Card */}
-            <SanctuaryCard className="bg-surface-lowest">
-              <VStack className="items-center p-4 gap-4">
-                <UserAvatar
-                  avatarUrl={user?.avatar_url}
-                  fullName={user?.full_name ?? userName ?? "?"}
-                  authority={user?.authority}
-                  size={120}
-                />
+            <SanctuaryCard className="bg-phase-surface border border-border rounded-[32px] overflow-hidden">
+              <VStack className="items-center p-6 gap-5">
+                <Box className="shadow-xl">
+                  <UserAvatar
+                    avatarUrl={user?.avatar_url}
+                    fullName={user?.full_name ?? userName ?? "?"}
+                    authority={user?.authority}
+                    size={120}
+                  />
+                </Box>
 
-                <VStack className="items-center gap-1">
-                  <Text className="text-foreground text-xl font-bold">
+                <VStack className="items-center gap-2">
+                  <Text className="text-ink text-2xl font-black">
                     {user?.full_name ?? userName}
                   </Text>
 
-                  <HStack className="items-center gap-1">
-                    <BadgeCheck color="#E67E22" size={14} />
-                    <Text className="text-muted-foreground text-[13px]">
+                  <HStack className="items-center gap-2 bg-phase-interactive/10 px-3 py-1 rounded-full border border-phase-interactive/20">
+                    <Icon as={BadgeCheck} size="2xs" className="text-phase-interactive" />
+                    <Text className="text-phase-interactive text-[12px] font-bold">
                       {authorityLabel}
                     </Text>
                   </HStack>
 
                   {user?.school_name && (
-                    <HStack className="items-center gap-1">
-                      <School color="rgba(255,255,255,0.6)" size={12} />
-                      <Text className="text-muted-foreground text-[11px]">{user.school_name}</Text>
+                    <HStack className="items-center gap-1.5 mt-1">
+                      <Icon as={School} size="xs" className="text-ink/40" />
+                      <Text className="text-ink/60 text-xs font-medium">{user.school_name}</Text>
                     </HStack>
                   )}
                 </VStack>
 
                 {isPrivate && (
-                  <HStack className="mt-1 items-center opacity-60 gap-1">
-                    <Shield size={14} color="rgba(255,255,255,0.6)" />
-                    <Text className="text-[11px] text-muted-foreground italic">
+                  <HStack className="mt-1 items-center gap-2 px-3 py-1.5 bg-ink/5 rounded-xl border border-border/50">
+                    <Icon as={Shield} size="xs" className="text-ink/40" />
+                    <Text className="text-[11px] text-ink/60 font-medium italic">
                       {t("community.profile.privateSanctuary") || "Private Sanctuary"}
                     </Text>
                   </HStack>
                 )}
 
                 {user && currentUserId && currentUserId !== userId && (
-                  <VStack className="w-full mt-4 gap-2">
-                    <Button
+                  <VStack className="w-full mt-4 gap-3">
+                    <SanctuaryButton
+                      action="primary"
                       onPress={handleMessagePress}
-                      variant="solid"
                       isDisabled={initiatingDM}
+                      className="h-12 rounded-xl"
                     >
-                      {initiatingDM ? <ButtonSpinner color="white" /> : <ButtonIcon as={Send} size={20} color="white" />}
-                      <ButtonText className="text-white ml-2">
-                        {t("community.profile.sendMessage")}
-                      </ButtonText>
-                    </Button>
-                    <Button
+                        <HStack className="items-center gap-2">
+                            {initiatingDM ? <Spinner /> : <Icon as={Send} size="sm" className="text-white" />}
+                            <Text className="text-white font-bold">
+                                {t("community.profile.sendMessage")}
+                            </Text>
+                        </HStack>
+                    </SanctuaryButton>
+                    <SanctuaryButton
+                      action="secondary"
                       onPress={() => setShowShieldModal(true)}
-                      variant="outline"
+                      className="h-12 rounded-xl border-border bg-transparent"
                     >
-                      <ButtonIcon as={ShieldAlert} size={18} color="rgba(255,255,255,0.6)" />
-                      <ButtonText className="text-muted-foreground ml-2">
-                        {t("community.profile.reportAccount")}
-                      </ButtonText>
-                    </Button>
+                        <HStack className="items-center gap-2">
+                            <Icon as={ShieldAlert} size="sm" className="text-ink/60" />
+                            <Text className="text-ink/60 font-bold">
+                                {t("community.profile.reportAccount")}
+                            </Text>
+                        </HStack>
+                    </SanctuaryButton>
                   </VStack>
                 )}
               </VStack>
             </SanctuaryCard>
 
             {isPrivate ? (
-              <Box className="p-4 items-center">
-                <Text className="text-center text-muted-foreground text-[13px]">
-                  {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private."}
+              <Box className="p-6 items-center bg-ink/5 rounded-2xl border border-dashed border-border/60">
+                <Text className="text-center text-ink/40 text-xs font-medium leading-relaxed">
+                  {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private within the sanctuary."}
                 </Text>
               </Box>
             ) : (
               <>
                 {user?.bio && (
-                  <SanctuaryCard className="bg-surface-lowest">
-                    <VStack className="p-4 gap-1">
-                      <HStack className="items-center mb-1 gap-1">
-                        <Info size={14} color="#E67E22" />
-                        <Text className="text-muted-foreground text-[10px] font-extrabold uppercase tracking-tight">
+                  <SanctuaryCard className="bg-phase-surface border border-border rounded-3xl">
+                    <VStack className="p-5 gap-3">
+                      <HStack className="items-center gap-2 opacity-60">
+                        <Icon as={Info} size="xs" className="text-phase-interactive" />
+                        <Text className="text-ink text-[10px] font-bold uppercase tracking-widest">
                           {t("community.profile.aspiration")}
                         </Text>
                       </HStack>
-                      <Text className="text-foreground text-sm leading-relaxed">
+                      <Text className="text-ink/70 text-sm leading-relaxed px-1">
                         {user.bio}
                       </Text>
                     </VStack>
                   </SanctuaryCard>
                 )}
 
-                <SanctuaryCard className="bg-surface-lowest">
-                  <VStack className="p-4 gap-4">
-                    <Text className="text-muted-foreground text-[10px] font-extrabold uppercase tracking-widest">
+                <SanctuaryCard className="bg-phase-surface border border-border rounded-3xl">
+                  <VStack className="p-5 gap-6">
+                    <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-[2px]">
                       {t("community.profile.contributions")}
                     </Text>
-                    <HStack className="justify-around items-center gap-4">
-                      <VStack className="items-center flex-1 gap-1">
-                        <MessageSquare color="#E67E22" size={20} />
-                        <Text className="text-foreground text-lg font-bold">{stats.posts}</Text>
-                        <Text className="text-muted-foreground text-[11px]">
-                          {t("community.profile.posts")}
-                        </Text>
+                    <HStack className="justify-between items-center px-4">
+                      <VStack className="items-center flex-1 gap-2">
+                        <Box className="w-10 h-10 rounded-xl bg-phase-interactive/10 items-center justify-center">
+                            <Icon as={MessageSquare} size="sm" className="text-phase-interactive" />
+                        </Box>
+                        <VStack className="items-center gap-0.5">
+                            <Text className="text-ink text-xl font-black">{stats.posts}</Text>
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
+                            {t("community.profile.posts")}
+                            </Text>
+                        </VStack>
                       </VStack>
-                      <Box className="w-[1px] bg-outline-variant h-5/6" />
-                      <VStack className="items-center flex-1 gap-1">
-                        <ThumbsUp color="#2ECC71" size={20} />
-                        <Text className="text-foreground text-lg font-bold">{stats.endorsements}</Text>
-                        <Text className="text-muted-foreground text-[11px]">
-                          {t("community.profile.endorsements")}
-                        </Text>
+
+                      <Box className="w-[1px] bg-border h-12 mx-2" />
+
+                      <VStack className="items-center flex-1 gap-2">
+                        <Box className="w-10 h-10 rounded-xl bg-green-500/10 items-center justify-center">
+                            <Icon as={ThumbsUp} size="sm" className="text-green-600" />
+                        </Box>
+                        <VStack className="items-center gap-0.5">
+                            <Text className="text-ink text-xl font-black">{stats.endorsements}</Text>
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
+                            {t("community.profile.endorsements")}
+                            </Text>
+                        </VStack>
                       </VStack>
-                      <Box className="w-[1px] bg-outline-variant h-5/6" />
-                      <VStack className="items-center flex-1 gap-1">
-                        <BookOpen color="#3498DB" size={20} />
-                        <Text className="text-muted-foreground text-[11px] text-center">
-                          {t("community.profile.badgesComingSoon") || "Badges Soon"}
-                        </Text>
+
+                      <Box className="w-[1px] bg-border h-12 mx-2" />
+
+                      <VStack className="items-center flex-1 gap-2">
+                        <Box className="w-10 h-10 rounded-xl bg-ink/5 items-center justify-center">
+                            <Icon as={BookOpen} size="sm" className="text-ink/40" />
+                        </Box>
+                        <VStack className="items-center gap-0.5">
+                            <Text className="text-ink/20 text-md font-black">---</Text>
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight text-center">
+                            Badges
+                            </Text>
+                        </VStack>
                       </VStack>
                     </HStack>
                   </VStack>
                 </SanctuaryCard>
 
-                <Text className="text-muted-foreground text-[11px] text-center px-4 mt-2">
-                  {t("community.profile.privacyNote")}
+                <Text className="text-ink/40 text-[10px] font-medium text-center px-10 leading-relaxed">
+                  {t("community.profile.privacyNote") || "Profile data is maintained securely within the Sanctuary network."}
                 </Text>
               </>
             )}

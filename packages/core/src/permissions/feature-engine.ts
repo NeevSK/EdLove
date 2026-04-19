@@ -6,8 +6,17 @@ import { UserContext } from './schemas/user.schema';
  * FAANG Principle: "Strongly Typed Gates". Never use magic strings in the UI.
  */
 export interface FeatureFlags {
-  // Infrastructure Flags (Deployment Gating)
+  // ERP / Financial Flags
   isInventoryEnabled: boolean;
+  isPaymentsEnabled: boolean;
+  isAccountingEnabled: boolean;
+  
+  // People & Administration Flags
+  isStaffManagementEnabled: boolean;
+  isStudentReportingEnabled: boolean;
+  isTemplateManagementEnabled: boolean;
+  
+  // Infrastructure Flags (Deployment Gating)
   isLibraryManagementEnabled: boolean;
   
   // Business Flags (Entitlements / Tiers)
@@ -53,7 +62,12 @@ export const resolveFeatureFlags = (
   // 0. Default Safe Harbor State
   const flags: FeatureFlags = {
     isInventoryEnabled: false,
+    isPaymentsEnabled: false,
+    isAccountingEnabled: false,
     isLibraryManagementEnabled: true,
+    isStaffManagementEnabled: true, // Defaulting to true for now unless ERP is on
+    isStudentReportingEnabled: true,
+    isTemplateManagementEnabled: true,
     isProMember: false,
     canUseOCR: false,
     isAIAssistantEnabled: false,
@@ -88,7 +102,13 @@ export const resolveFeatureFlags = (
       process.env.EXPO_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true' ||
       process.env.NEXT_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true'};
 
-  if (envFlags.ERP) flags.isInventoryEnabled = true;
+  if (envFlags.ERP) {
+    flags.isInventoryEnabled = true;
+    flags.isPaymentsEnabled = true;
+    flags.isAccountingEnabled = true;
+    flags.isStaffManagementEnabled = true;
+    flags.isStudentReportingEnabled = true;
+  }
   if (envFlags.NEW_ONBOARDING) flags.isNewOnboardingEnabled = true;
   if (envFlags.GUARDIAN_WORKSPACE) flags.isGuardianWorkspaceEnabled = true;
   if (envFlags.STUDENT_REWARDS_WORKSPACE) flags.isStudentRewardsWorkspaceEnabled = true;
@@ -104,6 +124,8 @@ export const resolveFeatureFlags = (
   
   if (context.features.includes('OCR') || isAdmin) flags.canUseOCR = true;
   if (context.features.includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;
+  if (context.features.includes('STAFF_MANAGEMENT')) flags.isStaffManagementEnabled = true;
+  if (context.features.includes('STUDENT_REPORTING')) flags.isStudentReportingEnabled = true;
   if (context.features.includes('BETA_TESTER')) flags.isNewOnboardingEnabled = true;
   if (
     context.features.includes('GUARDIAN_WORKSPACE') ||

@@ -1,15 +1,13 @@
 /**
- * LibraryThumbnailCard - sanctuary-style resource card for mobile/native.
+ * LibraryThumbnailCard - sanctuary-style resource card.
+ * 
+ * Sanctuary V3: Migrated to useTheme, @repo/ui primitives, and NativeWind className utilities.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
     Pressable,
-    View,
-    Text,
-    StyleSheet,
     ImageBackground,
-    TouchableOpacity,
     Platform,
 } from 'react-native';
 import {
@@ -28,11 +26,7 @@ import {
     BadgeCheck,
     Bookmark,
 } from 'lucide-react-native';
-import { Theme, useThemedColors } from '@repo/ui';
-
-const CARD_WIDTH = 148;
-const CARD_HEIGHT = 192;
-const ARTWORK_HEIGHT = 104;
+import { Theme, useTheme, Box, VStack, HStack, Text } from '@repo/ui';
 
 type ThumbnailType =
     | 'lesson' | 'worksheet' | 'guide' | 'reading' | 'pedagogy'
@@ -96,232 +90,119 @@ export function LibraryThumbnailCard({
     href,
     target = '_self',
 }: LibraryThumbnailCardProps) {
-    const colors = useThemedColors();
+    const theme = useTheme();
     const cfg = TYPE_CONFIG[resolveType(type)];
     const Icon = cfg.icon;
-    const tintSurface = cfg.color + '14';
-    const tintBorder = cfg.color + '26';
-
-    const styles = useMemo(() => StyleSheet.create({
-        pressable: {
-            width: CARD_WIDTH,
-            marginRight: Theme.spacing.md,
-            borderRadius: Theme.corners.generous,
-        },
-        card: {
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
-            borderRadius: Theme.corners.generous,
-            overflow: 'hidden',
-            backgroundColor: colors.secondary,
-            borderWidth: 1,
-            borderColor: colors.border,
-            ...Theme.shadows.md,
-        },
-        imageShell: {
-            height: ARTWORK_HEIGHT,
-            backgroundColor: tintSurface,
-            overflow: 'hidden',
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border,
-        },
-        image: {
-            flex: 1,
-        },
-        imageSoftener: {
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: 'rgba(255,255,255,0.08)',
-        },
-        fallback: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: tintSurface,
-        },
-        topBar: {
-            position: 'absolute',
-            top: 8,
-            left: 8,
-            right: 8,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-        },
-        typeBadge: {
-            alignSelf: 'flex-start',
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 999,
-            backgroundColor: 'rgba(252,249,242,0.94)',
-            borderWidth: 1,
-            borderColor: tintBorder,
-        },
-        typeText: {
-            fontSize: 9,
-            fontWeight: '800',
-            color: cfg.color,
-            letterSpacing: 0.5,
-            textTransform: 'uppercase',
-        },
-        body: {
-            flex: 1,
-            paddingHorizontal: 10,
-            paddingVertical: 10,
-            justifyContent: 'space-between',
-        },
-        eyebrow: {
-            fontSize: 10,
-            fontWeight: '700',
-            color: cfg.color,
-            letterSpacing: 0.3,
-            marginBottom: 4,
-        },
-        title: {
-            fontSize: 12,
-            fontWeight: '700',
-            color: colors.textPrimary,
-            lineHeight: 16,
-            marginBottom: 6,
-        },
-        metaRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 8,
-        },
-        metaBadge: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 7,
-            paddingVertical: 4,
-            borderRadius: 999,
-            backgroundColor: tintSurface,
-            gap: 4,
-        },
-        metaText: {
-            fontSize: 10,
-            color: colors.textSecondary,
-        },
-        copyrightBadge: {
-            marginTop: 6,
-            paddingHorizontal: 6,
-            paddingVertical: 3,
-            borderRadius: 6,
-            backgroundColor: tintSurface,
-            alignSelf: 'flex-start',
-        },
-        copyrightText: {
-            fontSize: 8,
-            color: colors.textSecondary,
-        },
-    }), [cfg.color, colors.border, colors.secondary, colors.textPrimary, colors.textSecondary, tintBorder, tintSurface]);
-
-    const artwork = (
-        <View style={styles.imageShell}>
-            {thumbnailUrl ? (
-                <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">
-                    <View style={styles.imageSoftener} />
-                </ImageBackground>
-            ) : (
-                <View style={styles.fallback}>
-                    <View
-                        style={{
-                            width: 54,
-                            height: 54,
-                            borderRadius: 18,
-                            backgroundColor: cfg.color + '20',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Icon size={24} color={cfg.color} />
-                    </View>
-                </View>
-            )}
-
-            <View style={styles.topBar}>
-                <View style={styles.typeBadge}>
-                    <Text style={styles.typeText}>{cfg.label}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {onBookmarkToggle && (
-                        <TouchableOpacity
-                            onPress={(event) => {
-                                if (Platform.OS === 'web') (event as any).stopPropagation();
-                                void onBookmarkToggle();
-                            }}
-                            style={{ marginLeft: 6, padding: 4 }}
-                            accessibilityRole="button"
-                        >
-                            <Bookmark
-                                size={16}
-                                color={has_bookmarked ? Theme.colors.sanctuarySaffron : colors.textPrimary}
-                                fill={has_bookmarked ? Theme.colors.sanctuarySaffron : 'transparent'}
-                            />
-                        </TouchableOpacity>
-                    )}
-                    {verified && (
-                        <View style={{ marginLeft: 6, padding: 4 }}>
-                            <BadgeCheck color={Theme.colors.sageGreen} size={14} />
-                        </View>
-                    )}
-                </View>
-            </View>
-        </View>
-    );
 
     return (
-        <Pressable
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={(state: any) => [
-                styles.pressable,
-                Platform.OS === 'web' && state.hovered && { opacity: 0.96, transform: [{ scale: 1.01 }] },
-            ]}
-            accessibilityRole={href ? 'link' : 'button'}
-            // @ts-ignore
-            href={href}
-            hrefAttrs={{
-                target,
-                rel: target === '_blank' ? 'noopener noreferrer' : undefined,
-            }}
-        >
-            <View style={styles.card}>
-                {artwork}
-                <View style={styles.body}>
-                    <View>
-                        <Text style={styles.eyebrow} numberOfLines={1}>
-                            {subject || 'General wisdom'}
-                        </Text>
-                        <Text style={styles.title} numberOfLines={2}>
-                            {title}
-                        </Text>
-                    </View>
+        <Box className="w-[148px] mr-4 mb-4">
+            <Pressable
+                onPress={onPress}
+                onLongPress={onLongPress}
+                className="w-[148px] h-[192px] rounded-3xl overflow-hidden bg-phase-surface border border-phase-border shadow-sm active:opacity-90 active:scale-[0.98]"
+                accessibilityRole={href ? 'link' : 'button'}
+                // @ts-ignore
+                href={href}
+                hrefAttrs={{
+                    target,
+                    rel: target === '_blank' ? 'noopener noreferrer' : undefined,
+                }}
+            >
+                <VStack className="flex-1">
+                    {/* Artwork / Thumbnail Area */}
+                    <Box className="h-[104px] overflow-hidden bg-black/5 border-b border-phase-border relative">
+                        {thumbnailUrl ? (
+                            <ImageBackground 
+                                source={{ uri: thumbnailUrl }} 
+                                className="flex-1"
+                                resizeMode="cover"
+                            >
+                                <Box className="absolute inset-0 bg-white/5" />
+                            </ImageBackground>
+                        ) : (
+                            <Box className="flex-1 items-center justify-center bg-phase-accent/5">
+                                <Box 
+                                    className="w-14 h-14 rounded-2xl items-center justify-center"
+                                    style={{ backgroundColor: cfg.color + '20' }}
+                                >
+                                    <Icon size={24} color={cfg.color} />
+                                </Box>
+                            </Box>
+                        )}
 
-                    <View>
-                        <View style={styles.metaRow}>
-                            {endorsements > 0 ? (
-                                <View style={styles.metaBadge}>
-                                    <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
-                                    <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron, fontWeight: '700' }]}>
-                                        {endorsements}
-                                    </Text>
-                                </View>
-                            ) : <View />}
-                            <Text style={[styles.metaText, { fontWeight: '700' }]}>Open</Text>
-                        </View>
-
-                        {copyrightNotice ? (
-                            <View style={styles.copyrightBadge}>
-                                <Text style={styles.copyrightText} numberOfLines={1}>
-                                    (c) {copyrightNotice}
+                        {/* Top Overlays */}
+                        <HStack className="absolute top-2 left-2 right-2 justify-between items-start">
+                            <Box 
+                                className="px-2 py-1 rounded-full bg-white/95 border shadow-sm"
+                                style={{ borderColor: cfg.color + '40' }}
+                            >
+                                <Text className="text-[9px] font-black uppercase tracking-widest" style={{ color: cfg.color }}>
+                                    {cfg.label}
                                 </Text>
-                            </View>
-                        ) : null}
-                    </View>
-                </View>
-            </View>
-        </Pressable>
+                            </Box>
+                            
+                            <HStack className="gap-1 items-center">
+                                {onBookmarkToggle && (
+                                    <Pressable
+                                        onPress={(event) => {
+                                            if (Platform.OS === 'web') (event as any).stopPropagation();
+                                            void onBookmarkToggle();
+                                        }}
+                                        className="p-1 rounded-full bg-white/90 shadow-sm"
+                                        accessibilityRole="button"
+                                    >
+                                        <Bookmark
+                                            size={14}
+                                            color={has_bookmarked ? theme.accent.action : theme.text.primary}
+                                            fill={has_bookmarked ? theme.accent.action : 'transparent'}
+                                        />
+                                    </Pressable>
+                                )}
+                                {verified && (
+                                    <Box className="p-1 rounded-full bg-white/90 shadow-sm">
+                                        <BadgeCheck color={theme.accent.sageGreen} size={14} />
+                                    </Box>
+                                )}
+                            </HStack>
+                        </HStack>
+                    </Box>
+
+                    {/* Content Body */}
+                    <VStack className="flex-1 p-2.5 justify-between">
+                        <VStack className="gap-1">
+                            <Text className="text-[10px] font-bold uppercase tracking-wider" style={{ color: cfg.color }} numberOfLines={1}>
+                                {subject || 'General'}
+                            </Text>
+                            <Text className="text-xs font-bold text-phaseText-primary leading-4" numberOfLines={2}>
+                                {title}
+                            </Text>
+                        </VStack>
+
+                        <VStack className="gap-1">
+                            <HStack className="justify-between items-center">
+                                {endorsements > 0 ? (
+                                    <HStack className="items-center gap-1 bg-phase-accent/10 px-1.5 py-0.5 rounded-full">
+                                        <ThumbsUp size={8} color={theme.accent.action} />
+                                        <Text className="text-[9px] font-black" style={{ color: theme.accent.action }}>
+                                            {endorsements}
+                                        </Text>
+                                    </HStack>
+                                ) : <Box />}
+                                <Text className="text-[10px] font-bold text-phaseText-tertiary uppercase">Open</Text>
+                            </HStack>
+
+                            {copyrightNotice && (
+                                <Box className="bg-black/5 rounded py-0.5 px-1 self-start">
+                                    <Text className="text-[8px] text-phaseText-tertiary italic" numberOfLines={1}>
+                                        \u00A9 {copyrightNotice}
+                                    </Text>
+                                </Box>
+                            )}
+                        </VStack>
+                    </VStack>
+                </VStack>
+            </Pressable>
+        </Box>
     );
 }
 

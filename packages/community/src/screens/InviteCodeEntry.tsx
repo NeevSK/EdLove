@@ -3,21 +3,19 @@ import {
     Box,
     VStack,
     HStack,
-    Input,
     InputField,
-    Button,
+    SanctuaryButton,
     Text,
     Heading,
     Pressable,
     Spinner,
     useToast,
-    Toast,
-    ToastTitle,
     ScreenWrapper,
     hapticLight,
     hapticSuccess,
     hapticError,
-    Icon
+    Icon,
+    Toast,
 } from '@repo/ui';
 import { ArrowRight, HelpCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -67,9 +65,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
             placement: 'bottom',
             render: ({ id }: { id: string }) => (
                 <Toast nativeID={id} action={action} variant="solid">
-                    <VStack space="xs">
-                        <ToastTitle>{message}</ToastTitle>
-                    </VStack>
+                    <Text className="text-white font-bold">{message}</Text>
                 </Toast>
             ),
         });
@@ -93,95 +89,102 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
     }
 
     return (
-        <ScreenWrapper scroll={true}>
-            <Box className="flex-1 bg-slate-950 p-8 justify-center min-h-screen">
-                <VStack className="gap-8 max-w-[400px] w-full self-center">
+        <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
+            <Box className="flex-1 p-8 justify-center">
+                <VStack className="gap-10 max-w-[400px] w-full self-center">
                     {/* Header */}
-                    <VStack className="gap-2 mb-6">
-                        <Heading className="text-3xl text-amber-500 text-center font-bold">
-                            {t('invite.enterCode') || 'Enter Invite Code'}
+                    <VStack className="gap-3 items-center">
+                        <Box className="w-16 h-16 rounded-3xl bg-phase-interactive/10 items-center justify-center mb-2">
+                             <Icon as={Shield} size="xl" className="text-phase-interactive" />
+                        </Box>
+                        <Heading className="text-3xl text-ink text-center font-black">
+                            {t('invite.enterCode') || 'Sanctuary Key'}
                         </Heading>
-                        <Text className="text-slate-400 text-lg text-center font-medium">
-                            {t('invite.codeDesc') || 'Join your school with an invite code'}
+                        <Text className="text-ink/60 text-base text-center font-medium">
+                            {t('invite.codeDesc') || 'Unlock your school community with your invitation key.'}
                         </Text>
                     </VStack>
  
                     {/* Code Input */}
-                    <VStack className="gap-2">
-                        <Text className="text-white text-sm font-semibold mb-1">
-                            {t('invite.inviteCode') || 'Invite Code'}
-                        </Text>
-                        <Input
-                            className="h-14 bg-slate-900 border-slate-700 rounded-xl"
-                        >
-                            <InputField
-                                placeholder="GURU-ABC123-TEACH"
-                                value={code}
-                                onChangeText={handleCodeChange}
-                                autoCapitalize="characters"
-                                maxLength={20}
-                                className="text-white"
-                                placeholderTextColor="#475569" // slate-500
-                                onSubmitEditing={handleValidateCode}
-                            />
-                        </Input>
-                        <Text className="text-slate-500 text-xs font-medium">
-                            {t('invite.codeFormat') || 'Format: GURU-XXXXXX-TEACH'}
-                        </Text>
+                    <VStack className="gap-4">
+                        <VStack className="gap-2">
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest ml-1">
+                                {t('invite.inviteCode') || 'Invitation Key'}
+                            </Text>
+                            <Box className="bg-phase-surface border border-border rounded-2xl p-1 overflow-hidden h-16 justify-center">
+                                <InputField
+                                    placeholder="GURU-ABC123-TEACH"
+                                    value={code}
+                                    onChangeText={handleCodeChange}
+                                    autoCapitalize="characters"
+                                    maxLength={20}
+                                    className="text-ink text-xl font-black text-center"
+                                    placeholderTextColor="rgba(var(--ink), 0.2)"
+                                    onSubmitEditing={handleValidateCode}
+                                />
+                            </Box>
+                            <Text className="text-ink/40 text-[10px] font-medium text-center italic">
+                                {t('invite.codeFormat') || 'Keys follow the GURU-XXXXXX-XXXX format'}
+                            </Text>
+                        </VStack>
                     </VStack>
  
-                    {/* Validate Button */}
-                    <Button
-                        onPress={handleValidateCode}
-                        isDisabled={loading || code.length < 5}
-                        className="h-14 bg-amber-500 rounded-xl items-center justify-center"
-                    >
-                        {loading ? (
-                            <Spinner color="white" />
-                        ) : (
-                            <HStack className="gap-2 items-center">
-                                <Text className="text-slate-950 font-bold text-lg">
-                                    {t('invite.validate') || 'Validate Code'}
-                                </Text>
-                                <Icon as={ArrowRight} className="text-slate-950" size="sm" />
+                    {/* Actions */}
+                    <VStack className="gap-4">
+                        <SanctuaryButton
+                            action="primary"
+                            onPress={handleValidateCode}
+                            isDisabled={loading || code.length < 5}
+                            className="h-16 rounded-2xl"
+                        >
+                            {loading ? (
+                                <Spinner />
+                            ) : (
+                                <HStack className="gap-2 items-center">
+                                    <Text className="text-white font-black text-lg">
+                                        {t('invite.validate') || 'Activate Key'}
+                                    </Text>
+                                    <Icon as={ArrowRight} className="text-white" size="sm" />
+                                </HStack>
+                            )}
+                        </SanctuaryButton>
+
+                         {/* Info Box */}
+                        <Box
+                            className="p-5 bg-phase-surface border border-border rounded-2xl mt-2"
+                        >
+                            <HStack className="gap-4 items-start">
+                                <Box className="w-8 h-8 rounded-full bg-phase-interactive/10 items-center justify-center">
+                                    <Icon as={HelpCircle} className="text-phase-interactive" size="xs" />
+                                </Box>
+                                <VStack className="gap-1 flex-1">
+                                    <Text className="text-ink text-xs font-black">
+                                        {t('invite.whereToFind') || 'Lost your key?'}
+                                    </Text>
+                                    <Text className="text-ink/60 text-[11px] font-medium leading-relaxed">
+                                        {t('invite.whereDesc') || 'Keys are generated by school authorities. Please consult your principal or mentor.'}
+                                    </Text>
+                                </VStack>
                             </HStack>
-                        )}
-                    </Button>
- 
-                    {/* Info Box */}
-                    <Box
-                        className="p-6 bg-slate-900/50 border border-slate-700 rounded-xl mt-4"
-                    >
-                        <HStack className="gap-4 items-start">
-                            <Icon as={HelpCircle} className="text-amber-500" size="sm" />
-                            <VStack className="gap-1 flex-1">
-                                <Text className="text-white text-sm font-bold">
-                                    {t('invite.whereToFind') || 'Where to find your code?'}
-                                </Text>
-                                <Text className="text-slate-500 text-xs font-medium leading-relaxed">
-                                    {t('invite.whereDesc') || 'Ask your principal or administrator for an invite code'}
-                                </Text>
-                            </VStack>
-                        </HStack>
-                    </Box>
+                        </Box>
+                    </VStack>
  
                     {/* Skip / Create School */}
-                    <VStack className="mt-4">
+                    <VStack className="mt-2 items-center">
                         <Pressable 
                             onPress={() => {
                                 hapticLight();
                                 onSkip();
                             }}
-                            className="active:opacity-70"
+                            className="active:opacity-70 px-4 py-2"
                         >
-                            <Text className="text-amber-500 text-sm text-center font-bold">
-                                {t('invite.createSchool') || "I'm a Principal - Create my school →"}
+                            <Text className="text-phase-interactive text-sm font-bold">
+                                {t('invite.createSchool') || "Principal registration? Create School →"}
                             </Text>
                         </Pressable>
                     </VStack>
                 </VStack>
             </Box>
         </ScreenWrapper>
-
     );
 }

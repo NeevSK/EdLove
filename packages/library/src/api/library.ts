@@ -325,9 +325,13 @@ const rawLibraryAPI = {
         }
 
         // Trigger Growth Signals (Whispered Moment & Nourishing dimension)
-        growthSignalsAPI.emitSilent(creatorId, 'resource_uploaded', {
-            resource_id: data.id,
-            resource_type: input.type,
+        growthSignalsAPI.emitSilent({
+            user_id: creatorId,
+            event_type: 'resource_uploaded',
+            event_metadata: {
+                resource_id: data.id,
+                resource_type: input.type,
+            },
         });
 
         // Direct Rewards: Add 50 points for contribution
@@ -412,8 +416,12 @@ const rawLibraryAPI = {
             ]);
 
             // Growth signal: user explored a resource (Witnessing dimension  absorbing, growing inward)
-            growthSignalsAPI.emitSilent(userId, 'resource_read', {
-                resource_id: resourceId,
+            growthSignalsAPI.emitSilent({
+                user_id: userId,
+                event_type: 'resource_read',
+                event_metadata: {
+                    resource_id: resourceId,
+                },
             });
         }
     },

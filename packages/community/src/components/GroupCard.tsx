@@ -1,6 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Box, HStack, VStack, Text, SanctuaryCard, Theme } from '@repo/ui';
+import { Box, HStack, VStack, Text, SanctuaryCard, Icon } from '@repo/ui';
 import { Users, Lock, Globe } from 'lucide-react-native';
 
 interface GroupCardProps {
@@ -23,68 +22,58 @@ const GroupCard = React.memo(function GroupCard({
 
     const getIcon = () => {
         switch (type) {
-            case 'staff': return <Lock size={14} color="#FF6F61" />; // Theme.colors.emberRed
-            case 'public': return <Globe size={14} color="#8BBF7A" />; // Theme.colors.sageGreen
-            default: return <Users size={14} color="#F6BF8C" />; // Theme.colors.sanctuarySaffron
+            case 'staff': return <Icon as={Lock} size="2xs" className="text-phase-interactive" />;
+            case 'public': return <Icon as={Globe} size="2xs" className="text-phase-interactive" />;
+            default: return <Icon as={Users} size="2xs" className="text-phase-interactive" />;
         }
     };
 
     return (
         <SanctuaryCard
             onPress={onPress}
-            className="mb-2 rounded-2xl bg-white/[0.03] border border-white/[0.05]"
+            className="mb-3 rounded-3xl bg-phase-surface border border-border shadow-sm p-4 overflow-hidden"
         >
-            <HStack space="md" className="items-center">
+            <HStack className="items-center gap-4">
                 {/* Avatar with Modern Gradient/Placeholder */}
                 <Box
-                    className="w-14 h-14 rounded-full justify-center items-center border-2 border-white/10"
-                    style={{ backgroundColor: type === 'public' ? 'rgba(108, 92, 231, 0.15)' : 'rgba(247, 183, 49, 0.15)' }}
+                    className={`w-14 h-14 rounded-2xl justify-center items-center ${type === 'public' ? 'bg-phase-interactive/10' : 'bg-phase-interactive/5'}`}
                 >
                     <Text
-                        className={`text-[22px] font-bold ${type === 'public' ? 'text-gurudeviViolet' : 'text-sanctuarySaffron'}`}
-                        style={{ textShadowColor: 'rgba(0,0,0,0.2)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}
+                        className="text-2xl font-bold text-phase-interactive shadow-sm"
                     >
                         {(name || 'G').charAt(0).toUpperCase()}
                     </Text>
                 </Box>
 
-                <VStack className="flex-1">
+                <VStack className="flex-1 gap-1">
                     <HStack className="justify-between items-center">
                         <Text
-                            className="text-sacredWhite font-semibold text-[17px] flex-1 mr-2"
+                            className="text-ink font-bold text-[17px] flex-1 mr-2"
                             numberOfLines={1}
                         >
                             {name}
                         </Text>
-                        <HStack space="xs" className="items-center">
+                        <Box className="px-2 py-0.5 rounded-full bg-phase-interactive/10 border border-phase-interactive/20">
                             {getIcon()}
-                        </HStack>
+                        </Box>
                     </HStack>
 
-                    {description ? (
-                        <Text
-                            className="text-mistGray text-[13px] mt-0.5 leading-[18px]"
-                            numberOfLines={1}
-                        >
-                            {description}
-                        </Text>
-                    ) : (
-                        <Text
-                            className="text-willow text-[13px] mt-0.5 italic"
-                        >
-                            No description available
-                        </Text>
-                    )}
+                    <Text
+                        className="text-ink/60 text-[13px] leading-relaxed pr-2"
+                        numberOfLines={1}
+                    >
+                        {description || "A space for shared exploration and connection."}
+                    </Text>
 
-                    <HStack space="sm" className="items-center mt-1.5">
-                        <HStack space="xs" className="items-center">
-                            <Users size={12} color="#968E80" />
-                            <Text className="text-mistGray text-xs">
+                    <HStack className="items-center mt-1 gap-3">
+                        <HStack className="items-center gap-1.5">
+                            <Icon as={Users} size="2xs" className="text-ink/40" />
+                            <Text className="text-ink/40 text-xs font-medium">
                                 {memberCount} members
                             </Text>
                         </HStack>
-                        <Text className="text-white/15 text-xs">•</Text>
-                        <Text className="text-mistGray text-[11px] uppercase tracking-wider">
+                        <Text className="text-ink/10 text-xs">•</Text>
+                        <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest">
                             {type}
                         </Text>
                     </HStack>

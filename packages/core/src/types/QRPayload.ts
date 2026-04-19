@@ -78,3 +78,14 @@ export interface ThuthimalGiftPayload {
   gift_token: string;
   gifter_name: string;
 }
+
+/** Share a resource (PDF, Video, etc.) via QR */
+export interface ShareResourcePayload {
+  v: typeof QR_VERSION;
+  action: 'share_resource';
+  resource_id: string;
+  resource_type: string;
+  title: string;
+  url?: string;
+}
+

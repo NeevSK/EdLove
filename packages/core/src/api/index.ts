@@ -16,6 +16,7 @@ import { classroomsAPI as rawClassroomsAPI } from './classrooms';
 import { classroomGroupsAPI as rawClassroomGroupsAPI } from './classroomGroups';
 import { onboardingAPI } from './onboarding';
 import { inventoryAPI as rawInventoryAPI } from './inventory';
+import { accountingAPI as rawAccountingAPI, paymentsAPI as rawPaymentsAPI } from './erp';
 import { dailyContentAPI } from './dailyContent';
 import { thuthimalAPI } from './thuthimal';
 import { classroomNotesAPI as rawClassroomNotesAPI } from './classroomNotes';
@@ -105,6 +106,19 @@ const attendanceCoverage = assertContractCoverage(rawAttendanceAPI, defineContra
 const attendanceAPI = createTemporalPOAProxy('attendance', rawAttendanceAPI, attendanceCoverage.contract, attendanceCoverage.methodMapping, {
     strictUnmappedMethods: true,
 });
+
+// ERP Domain Hardening
+import { erpContract } from './erp.contract';
+const accountingAPI = createPOAProxy('accounting', rawAccountingAPI, erpContract, {
+    getAccounts: 'getAccounts',
+    recordTransaction: 'recordTransaction',
+});
+const paymentsAPI = createPOAProxy('payments', rawPaymentsAPI, erpContract, {
+    createPaymentIntent: 'createPaymentIntent',
+    getInvoices: 'getInvoices',
+    getReceipt: 'getReceipt',
+});
+
 const classroomsCoverage = assertContractCoverage(rawClassroomsAPI, defineContractCoverage({
     moduleName: 'classrooms',
     contract: educationalContract,
@@ -427,6 +441,8 @@ export * from './mockData';
 export * from './types';
 export * from './assignments'; // Export assignments/submissions API
 export * from './classroomGroups';
+export * from './erp';
+export * from './erp.contract';
 export * from './thuthimal'; // Restore types and thuthimalAPI
 export * from './grading.contract';
 export * from './identity.contract';
@@ -495,6 +511,13 @@ export const api = {
     grading: gradingAPI,
     school: schoolAPI,
     inventory: inventoryAPI,
+    accounting: accountingAPI,
+    payments: paymentsAPI,
+    erp: {
+        inventory: inventoryAPI,
+        accounting: accountingAPI,
+        payments: paymentsAPI,
+    },
     rewards: rewardsAPI,
     tracking: trackingAPI,
     onboarding: onboardingAPI,

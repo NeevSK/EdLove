@@ -12,7 +12,8 @@ import {
     GlassCard,
     Heading,
     Pressable,
-    View
+    View,
+    Icon
 } from '@repo/ui';
 import { Sparkles, Megaphone, Users, Heart } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +48,7 @@ export default function CommunityHearth({
         ? Math.min(windowWidth - 120, 700)
         : windowWidth * 0.85;
 
-    const SNAP_INTERVAL = CARD_WIDTH + 9; // Theme.spacing.md is 9px
+    const SNAP_INTERVAL = CARD_WIDTH + 16; 
 
     useEffect(() => {
         if (!manifestos || !manifestos.length) return;
@@ -61,36 +62,38 @@ export default function CommunityHearth({
 
     const renderManifesto = ({ item }: { item: SanctuaryManifesto }) => (
         <GlassCard 
-            className="p-6 rounded-generous min-h-[180px]" 
+            className="p-6 rounded-3xl min-h-[180px] border border-white/10" 
             style={{ width: CARD_WIDTH }}
         >
-            <VStack space="md">
-                <HStack space="sm" className="items-center">
-                    <Sparkles size={18} color="#F6BF8C" />
-                    <Text className="font-bold text-sanctuarySaffron">
+            <VStack className="gap-4">
+                <HStack className="items-center gap-2">
+                    <Icon as={Sparkles} size="xs" className="text-phase-interactive" />
+                    <Text className="font-bold text-phase-interactive uppercase tracking-wider text-[10px]">
                         {t('community.manifestoTopic') || 'Community Manifesto'}
                     </Text>
                 </HStack>
                 
-                <Heading size="sm" className="mt-1">{item.title}</Heading>
-                <Text size="sm" className="text-willow" numberOfLines={3}>
-                    {item.content}
-                </Text>
+                <VStack className="gap-1">
+                    <Heading className="text-lg font-bold text-ink">{item.title}</Heading>
+                    <Text className="text-sm text-ink/60 leading-relaxed" numberOfLines={3}>
+                        {item.content}
+                    </Text>
+                </VStack>
 
-                <HStack className="justify-between items-center mt-3">
-                    <HStack space="xs" className="items-center">
-                        <Users size={14} color="#968E80" />
-                        <Text className="text-xs text-mistGray">
+                <HStack className="justify-between items-center mt-2">
+                    <HStack className="items-center gap-1.5">
+                        <Icon as={Users} size="xs" className="text-ink/40" />
+                        <Text className="text-xs text-ink/40 font-medium">
                             {item.endorsement_count || 0} {t('community.endorsers') || 'Endorsers'}
                         </Text>
                     </HStack>
                     
                     <Pressable 
                         onPress={() => onEndorseManifesto?.(item.id)}
-                        className="flex-row items-center bg-sanctuarySaffron px-4 py-2 rounded-full active:opacity-70"
+                        className="flex-row items-center bg-phase-interactive px-4 py-2.5 rounded-2xl active:opacity-80 shadow-sm"
                     >
-                        <Heart size={16} color="white" fill="white" />
-                        <Text className="text-xs font-bold text-white ml-1.5">
+                        <Icon as={Heart} size="sm" className="text-white fill-white" />
+                        <Text className="text-xs font-bold text-white ml-2">
                             {t('community.endorse') || 'Endorse'}
                         </Text>
                     </Pressable>
@@ -100,17 +103,17 @@ export default function CommunityHearth({
     );
 
     return (
-        <View className="py-5">
-            <VStack space="lg">
-                <HStack className="justify-between items-center px-5">
-                    <VStack>
-                        <Heading size="lg">{t('community.hearthTitle') || 'The Hearth'}</Heading>
-                        <Text className="text-xs text-willow">
+        <View className="py-6">
+            <VStack className="gap-6">
+                <HStack className="justify-between items-center px-6">
+                    <VStack className="gap-0.5">
+                        <Heading className="text-2xl font-bold text-ink">{t('community.hearthTitle') || 'The Hearth'}</Heading>
+                        <Text className="text-xs text-ink/60">
                             {t('community.hearthSubtitle') || 'Where the community pulse beats strongest'}
                         </Text>
                     </VStack>
-                    <Box className="bg-sageGreen/20 px-3 py-1 rounded-full">
-                        <Text className="text-xs font-bold text-sageGreen">
+                    <Box className="bg-phase-interactive/10 px-3.5 py-1.5 rounded-full border border-phase-interactive/20">
+                        <Text className="text-[10px] font-bold text-phase-interactive tracking-widest">
                             {userVibe.toUpperCase()}
                         </Text>
                     </Box>
@@ -125,7 +128,8 @@ export default function CommunityHearth({
                     showsHorizontalScrollIndicator={false}
                     snapToInterval={SNAP_INTERVAL}
                     decelerationRate="fast"
-                    contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
+                    contentContainerStyle={{ paddingHorizontal: 20 }}
+                    ItemSeparatorComponent={() => <Box className="w-4" />}
                     onMomentumScrollEnd={(e) => {
                         const index = Math.round(e.nativeEvent.contentOffset.x / SNAP_INTERVAL);
                         setActiveIndex(index);
@@ -133,16 +137,18 @@ export default function CommunityHearth({
                 />
 
                 {spotlightPost && (
-                    <Box className="px-5 mt-2">
+                    <Box className="px-6 mt-2">
                         <Pressable onPress={() => onPressSpotlight?.(spotlightPost.id)}>
-                            <GlassCard className="p-4 rounded-comfortable border-l-4 border-l-skyBlue">
-                                <HStack space="md" className="items-center">
-                                    <Megaphone size={24} color="#87CEEB" />
-                                    <VStack className="flex-1">
-                                        <Text className="text-xs font-bold text-skyBlue">
+                            <GlassCard className="p-5 rounded-3xl border-l-4 border-l-phase-interactive border border-border">
+                                <HStack className="items-center gap-4">
+                                    <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+                                        <Icon as={Megaphone} size="md" className="text-phase-interactive" />
+                                    </Box>
+                                    <VStack className="flex-1 gap-0.5">
+                                        <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-[2px]">
                                             {t('community.spotlight') || 'SPOTLIGHT'}
                                         </Text>
-                                        <Text size="sm" className="font-semibold" numberOfLines={2}>
+                                        <Text className="text-sm font-semibold text-ink leading-tight" numberOfLines={2}>
                                             {spotlightPost.content}
                                         </Text>
                                     </VStack>

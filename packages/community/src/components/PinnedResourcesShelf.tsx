@@ -1,23 +1,21 @@
 import React from 'react';
-import { ScrollView, Pressable } from 'react-native';
-import { Box, HStack, VStack, Text, Theme } from '@repo/ui';
+import { ScrollView } from 'react-native';
+import { Box, HStack, VStack, Text, Icon, Pressable } from '@repo/ui';
 import { BookOpen, FileText, Link as LinkIcon, Film, Bookmark } from 'lucide-react-native';
 
-// Import correctly from the source if possible, or define type locally if it's just a ref
-// Assuming LibraryResource might be needed for types
 export interface PinnedResourcesShelfProps {
-    resources: any[]; // Decoupling from @repo/library for this heal to avoid circular/dependency issues
+    resources: any[]; 
     onResourcePress?: (resource: any) => void;
 }
 
-function getResourceIcon(type: string): React.ReactElement {
+function getResourceIcon(type: string) {
     switch (type) {
-        case 'video': return <Film size={18} color="#3498DB" />;
-        case 'pdf': return <FileText size={18} color="#E74C3C" />;
-        case 'doc': return <FileText size={18} color="#3498DB" />;
-        case 'link': return <LinkIcon size={18} color="#2ECC71" />;
-        case 'lesson': return <BookOpen size={18} color="#E67E22" />;
-        default: return <Bookmark size={18} color="rgba(255,255,255,0.4)" />;
+        case 'video': return { icon: Film, className: 'text-phase-interactive' };
+        case 'pdf': return { icon: FileText, className: 'text-phase-interactive' };
+        case 'doc': return { icon: FileText, className: 'text-phase-interactive' };
+        case 'link': return { icon: LinkIcon, className: 'text-phase-interactive' };
+        case 'lesson': return { icon: BookOpen, className: 'text-phase-interactive' };
+        default: return { icon: Bookmark, className: 'text-ink/40' };
     }
 }
 
@@ -28,9 +26,9 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
     if (!resources || resources.length === 0) return null;
 
     return (
-        <Box className="mb-3">
-            <Text className="text-[10px] font-extrabold text-muted-foreground px-1 mb-2 tracking-widest uppercase">
-                PINNED RESOURCES
+        <Box className="mb-4">
+            <Text className="text-[10px] font-bold text-ink/40 px-1 mb-3 tracking-[2px] uppercase">
+                Pinned Resources
             </Text>
             <ScrollView
                 horizontal
@@ -39,36 +37,42 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                 accessibilityLabel="Pinned resources"
                 accessibilityRole="scrollbar"
             >
-                <HStack className="gap-2">
-                    {resources.map((resource) => (
-                        <Pressable
-                            key={resource.id}
-                            onPress={() => onResourcePress?.(resource)}
-                        >
-                            <Box className="w-[140px] bg-surface-lowest rounded-xl p-3 border border-outline-variant active:bg-white/5">
-                                <VStack className="gap-1">
-                                    <HStack className="items-center gap-1.5">
-                                        {getResourceIcon(resource.type)}
-                                        <Text className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                                            {resource.type}
-                                        </Text>
+                <HStack className="gap-3">
+                    {resources.map((resource) => {
+                        const { icon, className } = getResourceIcon(resource.type);
+                        return (
+                            <Pressable
+                                key={resource.id}
+                                onPress={() => onResourcePress?.(resource)}
+                                className="w-[150px] bg-phase-surface rounded-2xl p-4 border border-border active:bg-ink/5 transition-all shadow-sm"
+                            >
+                                <VStack className="gap-2.5">
+                                    <HStack className="items-center justify-between">
+                                        <Icon as={icon} size="xs" className={className} />
+                                        <Box className="px-1.5 py-0.5 rounded-md bg-ink/5">
+                                            <Text className="text-[9px] text-ink/40 font-bold uppercase tracking-wider">
+                                                {resource.type}
+                                            </Text>
+                                        </Box>
                                     </HStack>
-                                    <Text
-                                        numberOfLines={2}
-                                        className="text-sm font-bold text-foreground"
-                                    >
-                                        {resource.title}
-                                    </Text>
-                                    <Text
-                                        numberOfLines={1}
-                                        className="text-[11px] text-muted-foreground"
-                                    >
-                                        {resource.subjects?.[0] || ''}
-                                    </Text>
+                                    <VStack className="gap-0.5">
+                                        <Text
+                                            numberOfLines={2}
+                                            className="text-sm font-bold text-ink leading-tight"
+                                        >
+                                            {resource.title}
+                                        </Text>
+                                        <Text
+                                            numberOfLines={1}
+                                            className="text-[11px] font-medium text-ink/40"
+                                        >
+                                            {resource.subjects?.[0] || 'Resource'}
+                                        </Text>
+                                    </VStack>
                                 </VStack>
-                            </Box>
-                        </Pressable>
-                    ))}
+                            </Pressable>
+                        );
+                    })}
                 </HStack>
             </ScrollView>
         </Box>
