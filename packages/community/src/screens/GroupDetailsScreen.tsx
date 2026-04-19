@@ -11,16 +11,11 @@ import {
     SanctuaryButton,
     SanctuaryFlashList,
     useLotusToast,
-    Theme,
     Spinner,
     Image,
     Pressable,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
+    SanctuaryModal,
+    Icon,
     Heading as UIHeading
 } from '@repo/ui';
 import {
@@ -31,7 +26,8 @@ import {
     UserPlus,
     MessageSquare,
     QrCode,
-    X
+    X,
+    Shield
 } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -168,9 +164,10 @@ export default function GroupDetailsScreen() {
 
     if (loading) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper noTopInset className="bg-phase-canvas">
                 <Box className="flex-1 justify-center items-center">
-                    <Spinner size="large" />
+                    <Spinner />
+                    <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">Calibrating Resonance...</Text>
                 </Box>
             </ScreenWrapper>
         );
@@ -182,12 +179,12 @@ export default function GroupDetailsScreen() {
 
     if (showAdmin && isAdmin) {
         return (
-            <Box className="flex-1 bg-background">
-                <HStack className="p-4 pt-10 items-center bg-surface-low gap-4">
+            <Box className="flex-1 bg-phase-canvas">
+                <HStack className="p-4 pt-10 items-center bg-phase-surface border-b border-border gap-4">
                     <Pressable onPress={() => setShowAdmin(false)}>
-                        <ChevronLeft color="#FFFFFF" />
+                        <Icon as={ChevronLeft} size="md" className="text-ink" />
                     </Pressable>
-                    <Text className="font-bold text-lg text-foreground">{t('community.groups.manage')}</Text>
+                    <Text className="font-black text-lg text-ink">{t('community.groups.manage')}</Text>
                 </HStack>
                 <GroupMemberManagement groupId={groupId} />
             </Box>
@@ -195,58 +192,67 @@ export default function GroupDetailsScreen() {
     }
 
     const renderHeader = () => (
-        <VStack className="p-4 gap-6">
+        <VStack className="p-5 gap-6">
             <Animated.View entering={FadeInDown.duration(600).springify()}>
-                <SanctuaryCard className="bg-surface-lowest">
-                    <VStack className="gap-4">
-                        <HStack className="items-center gap-4">
-                            <Box className={`w-16 h-16 rounded-full justify-center items-center overflow-hidden border-2 border-outline/15 ${group.image_url ? 'bg-transparent' : 'bg-primary-500'}`}>
+                <SanctuaryCard className="bg-phase-surface border border-border rounded-[32px] overflow-hidden p-6 shadow-sm">
+                    <VStack className="gap-5">
+                        <HStack className="items-center gap-5">
+                            <Box className={`w-18 h-18 rounded-3xl justify-center items-center overflow-hidden border-2 border-border ${group.image_url ? 'bg-transparent' : 'bg-phase-interactive'}`}>
                                 {group.image_url ? (
                                     <Image
                                         source={{ uri: group.image_url }}
-                                        className="w-16 h-16 rounded-full"
+                                        className="w-full h-full"
                                     />
                                 ) : (
-                                    <Text className="text-2xl font-bold text-white">
+                                    <Text className="text-3xl font-black text-white">
                                         {group.name.charAt(0).toUpperCase()}
                                     </Text>
                                 )}
                             </Box>
-                            <VStack className="flex-1">
-                                <HStack className="items-center gap-2">
-                                    <Text className="font-bold text-xl text-foreground">{group.name}</Text>
+                            <VStack className="flex-1 gap-1">
+                                <HStack className="items-center gap-2 flex-wrap">
+                                    <Text className="font-black text-2xl text-ink" numberOfLines={2}>{group.name}</Text>
                                     {group.classroom_id && (
-                                        <Box className="px-2 py-0.5 bg-primary-500/15 rounded-sm border border-primary-500">
-                                            <Text className="text-primary-500 text-[10px] font-extrabold uppercase">
-                                                CLASS
+                                        <Box className="px-2 py-0.5 bg-phase-interactive/10 rounded-full border border-phase-interactive/20">
+                                            <Text className="text-phase-interactive text-[10px] font-black uppercase">
+                                                CLASSROOM
                                             </Text>
                                         </Box>
                                     )}
                                 </HStack>
-                                <HStack className="items-center gap-1">
-                                    <Users size={14} color="rgba(255,255,255,0.6)" />
-                                    <Text className="text-muted-foreground text-[13px]">
+                                <HStack className="items-center gap-1.5">
+                                    <Icon as={Users} size="2xs" className="text-ink/40" />
+                                    <Text className="text-ink/60 text-xs font-bold uppercase tracking-wider">
                                         {group.member_count || 0} {t('community.groups.members')}
                                     </Text>
                                 </HStack>
                             </VStack>
                         </HStack>
 
-                        <Text className="text-muted-foreground text-sm">
+                        <Text className="text-ink/70 text-sm leading-relaxed font-medium">
                             {group.description || t('community.groups.noDesc')}
                         </Text>
 
                         {!isAdmin && (
-                            <Box className="mt-2">
+                            <Box className="mt-1">
                                 <SanctuaryButton
                                     action={isMember ? "secondary" : "primary"}
-                                    variant={isMember ? "outline" : "solid"}
                                     onPress={isMember ? () => {} : handleJoin}
-                                    isLoading={isJoiningGroup}
-                                    leftIcon={isMember ? Users : UserPlus}
                                     isDisabled={isMember}
+                                    className="h-12 rounded-xl"
                                 >
-                                    {isMember ? (t('community.groups.member') || 'Member') : t('community.groups.join')}
+                                    <HStack className="items-center gap-2">
+                                        {isJoiningGroup ? (
+                                            <Spinner />
+                                        ) : (
+                                            <>
+                                                <Icon as={isMember ? Users : UserPlus} size="sm" className={isMember ? "text-ink/60" : "text-white"} />
+                                                <Text className={isMember ? "text-ink/60 font-bold" : "text-white font-bold"}>
+                                                    {isMember ? (t('community.groups.member') || 'Member') : t('community.groups.join')}
+                                                </Text>
+                                            </>
+                                        )}
+                                    </HStack>
                                 </SanctuaryButton>
                             </Box>
                         )}
@@ -256,9 +262,11 @@ export default function GroupDetailsScreen() {
 
             <PinnedResourcesShelf resources={[]} />
 
-            <HStack className="items-center mt-1 gap-2">
-                <MessageSquare size={18} color="#E67E22" />
-                <Text className="font-bold text-base text-foreground">
+            <HStack className="items-center px-1 gap-2">
+                <Box className="w-8 h-8 rounded-full bg-phase-interactive/10 items-center justify-center">
+                    <Icon as={MessageSquare} size="xs" className="text-phase-interactive" />
+                </Box>
+                <Text className="font-black text-sm uppercase tracking-[2px] text-ink/40">
                     {t('community.groups.feed')}
                 </Text>
             </HStack>
@@ -266,33 +274,45 @@ export default function GroupDetailsScreen() {
     );
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
             <Box className="flex-1">
-                {/* Custom Header */}
-                <HStack className="p-4 items-center justify-between bg-transparent">
+                {/* Custom Precise Header */}
+                <HStack className="p-4 items-center justify-between border-b border-border/10 bg-phase-canvas">
                     <HStack className="items-center gap-4">
-                        <Pressable onPress={() => navigation.goBack()}>
-                            <ChevronLeft color="#FFFFFF" />
+                        <Pressable 
+                            onPress={() => navigation.goBack()}
+                            className="w-10 h-10 rounded-full bg-phase-surface border border-border items-center justify-center"
+                        >
+                            <Icon as={ChevronLeft} size="sm" className="text-ink" />
                         </Pressable>
-                        <Text className="font-bold text-lg text-foreground max-w-[200px]" numberOfLines={1}>
+                        <Text className="font-black text-lg text-ink max-w-[200px]" numberOfLines={1}>
                             {group.name}
                         </Text>
                     </HStack>
 
-                    <HStack className="items-center gap-4">
-                        <Pressable onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}>
-                            <MessageSquare size={20} color="rgba(255,255,255,0.6)" />
+                    <HStack className="items-center gap-3">
+                        <Pressable 
+                            onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}
+                            className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center"
+                        >
+                            <Icon as={MessageSquare} size="sm" className="text-ink/60" />
                         </Pressable>
                         {isAdmin && (
-                            <Pressable onPress={() => setShowAdmin(true)}>
-                                <Settings size={20} color="rgba(255,255,255,0.6)" />
+                            <Pressable 
+                                onPress={() => setShowAdmin(true)}
+                                className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center"
+                            >
+                                <Icon as={Settings} size="sm" className="text-ink/60" />
                             </Pressable>
                         )}
-                        <Pressable onPress={() => setShowQRModal(true)}>
-                            <QrCode size={20} color="rgba(255,255,255,0.6)" />
+                        <Pressable 
+                            onPress={() => setShowQRModal(true)}
+                            className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center"
+                        >
+                            <Icon as={QrCode} size="sm" className="text-ink/60" />
                         </Pressable>
-                        <Pressable>
-                            <MoreVertical size={20} color="rgba(255,255,255,0.6)" />
+                        <Pressable className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center">
+                            <Icon as={MoreVertical} size="sm" className="text-ink/60" />
                         </Pressable>
                     </HStack>
                 </HStack>
@@ -303,7 +323,7 @@ export default function GroupDetailsScreen() {
                     ListHeaderComponent={renderHeader}
                     renderItem={({ item, index }) => (
                         <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
-                            <Box className="px-4 pb-4">
+                            <Box className="px-5 pb-5">
                                 <PostCard
                                     post={item}
                                     currentUserId={user?.id}
@@ -326,12 +346,12 @@ export default function GroupDetailsScreen() {
                     )}
                     ListEmptyComponent={
                         posts.length === 0 ? (
-                            <VStack className="p-8 items-center gap-4">
-                                <Box className="p-6 rounded-full bg-white/5">
-                                    <MessageSquare size={32} color="rgba(255,255,255,0.4)" />
+                            <VStack className="py-20 items-center justify-center gap-4">
+                                <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center">
+                                    <Icon as={MessageSquare} size="lg" className="text-ink/20" />
                                 </Box>
-                                <Text className="text-muted-foreground text-center">
-                                    {t('community.groups.emptyFeed')}
+                                <Text className="text-ink/40 text-sm font-bold text-center px-10">
+                                    {t('community.groups.emptyFeed') || "The feed is quiet. Start a resonance in this circle!"}
                                 </Text>
                             </VStack>
                         ) : null
@@ -356,47 +376,37 @@ export default function GroupDetailsScreen() {
                     onClose={() => setCommentPostId(null)}
                 />
 
-                <Modal
+                <SanctuaryModal
                     isOpen={showQRModal}
                     onClose={() => setShowQRModal(false)}
+                    title={t('community.groups.qrTitle', 'Circle Identity')}
                 >
-                    <ModalContent className="bg-surface-low">
-                        <ModalHeader>
-                            <UIHeading className="text-xl">{t('community.groups.qrTitle', 'Group QR Code')}</UIHeading>
-                            <ModalCloseButton>
-                                <Pressable onPress={() => setShowQRModal(false)}>
-                                    <X size={20} color="#FFFFFF" />
-                                </Pressable>
-                            </ModalCloseButton>
-                        </ModalHeader>
-                        <ModalBody>
-                            <VStack className="items-center py-6 gap-6">
-                                <QRCodeGenerator
-                                    value={QRBuilder.group(group.id, group.handle)}
-                                    size={240}
-                                />
-                                <VStack className="items-center gap-1">
-                                    <Text className="font-bold text-xl text-center text-foreground">{group.name}</Text>
-                                    {group.handle && (
-                                        <Text className="text-muted-foreground text-[13px]">@{group.handle}</Text>
-                                    )}
-                                    <Text className="text-[13px] text-muted-foreground text-center mt-2 px-6">
-                                        {t('community.groups.qrHint', 'Scan to join this community group')}
-                                    </Text>
-                                </VStack>
-                            </VStack>
-                        </ModalBody>
-                        <ModalFooter>
-                            <SanctuaryButton
-                                variant="outline"
-                                action="secondary"
-                                onPress={() => setShowQRModal(false)}
-                            >
-                                {t('common.close') || 'Close'}
-                            </SanctuaryButton>
-                        </ModalFooter>
-                    </ModalContent>
-                </Modal>
+                    <VStack className="items-center py-8 gap-8">
+                        <Box className="p-6 bg-white rounded-[40px] shadow-2xl">
+                            <QRCodeGenerator
+                                value={QRBuilder.group(group.id, group.handle)}
+                                size={220}
+                            />
+                        </Box>
+                        <VStack className="items-center gap-2 px-10">
+                            <Text className="font-black text-2xl text-center text-ink">{group.name}</Text>
+                            {group.handle && (
+                                <Text className="text-phase-interactive text-sm font-bold">@{group.handle}</Text>
+                            )}
+                            <Text className="text-xs text-ink/40 text-center mt-3 font-medium leading-relaxed">
+                                {t('community.groups.qrHint', 'Broadcasters can scan this key to join the circle instantly.')}
+                            </Text>
+                        </VStack>
+
+                        <SanctuaryButton
+                            action="secondary"
+                            className="w-full h-14 rounded-2xl border-border bg-ink/5"
+                            onPress={() => setShowQRModal(false)}
+                        >
+                            <Text className="text-ink font-bold">{t('common.close') || 'Close'}</Text>
+                        </SanctuaryButton>
+                    </VStack>
+                </SanctuaryModal>
             </Box>
         </ScreenWrapper>
     );
