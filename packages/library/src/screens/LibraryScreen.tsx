@@ -471,14 +471,16 @@ export default function LibraryScreen() {
             ) : (
                 <Box className="flex-1">
                     {!isSearchMode && (
-                        <HStack className="px-md py-3 gap-3">
-                            <Pressable 
-                                onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
-                                style={[styles.actionBtn, { borderColor: `${theme.accent.action}88` }]}>
-                                <Icon as={Library} size={14} color={theme.accent.action} />
-                                <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
-                            </Pressable>
-                        </HStack>
+                        <FeatureGuard feature="isLibraryManagementEnabled" action="create" subject="Library">
+                            <HStack className="px-md py-3 gap-3">
+                                <Pressable 
+                                    onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
+                                    style={[styles.actionBtn, { borderColor: `${theme.accent.action}88` }]}>
+                                    <Icon as={Library} size={14} color={theme.accent.action} />
+                                    <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
+                                </Pressable>
+                            </HStack>
+                        </FeatureGuard>
                     )}
 
                     <Box className="flex-1 bg-phase-surface">
@@ -536,7 +538,7 @@ export default function LibraryScreen() {
                                     <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} />
                                 )}
                                 <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} />
-                                <FeatureGuard action="manage" subject="LibraryCuratorDashboard">
+                                <FeatureGuard feature="isLibraryManagementEnabled" action="manage" subject="LibraryCuratorDashboard">
                                     <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} />
                                 </FeatureGuard>
                                 <Box className="pt-md">

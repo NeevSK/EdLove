@@ -42,7 +42,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                 </FormControlLabel>
                 <HStack className="gap-3 flex-wrap">
                     {STUDENT_TYPES.map((type) => {
-                        constisSelected = data.studentType === type.id;
+                        const isSelected = data.studentType === type.id;
                         return (
                             <Pressable
                                 key={type.id}

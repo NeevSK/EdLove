@@ -189,11 +189,11 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       
       <ScrollView 
         className="flex-1 bg-silk" 
-        contentContainerClassName="p-6 pb-12"
+        contentContainerStyle={{ padding: 24, paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
       >
         <VStack className="gap-8">
-            <VStack gap={4}>
+            <VStack className="gap-4">
                 <Heading className="text-base font-black text-ink uppercase tracking-widest opacity-40">
                     Key Performance Metrics
                 </Heading>
@@ -236,7 +236,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
             </VStack>
 
             {liveMetrics && (
-            <VStack gap={4}>
+            <VStack className="gap-4">
                 <Heading className="text-base font-black text-ink uppercase tracking-widest opacity-40">
                     Live System Health
                 </Heading>

@@ -143,9 +143,13 @@ export default function GlobalCreateModal({
             }
 
             if (type === 'classroom' && result) {
-                void growthSignalsAPI.emitSignal(userId, 'classroom_created', {
-                    classroom_id: result.id,
-                    school_id: selectedSchoolId
+                void growthSignalsAPI.emitSignal({
+                    user_id: userId,
+                    event_type: 'classroom_created',
+                    event_metadata: {
+                        classroom_id: result.id,
+                        school_id: selectedSchoolId
+                    }
                 }).catch(() => { });
             }
             onSuccess(type, result);

@@ -151,7 +151,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     <Box className="flex-1 bg-silk">
       <VStack className="p-6 gap-6">
         <HStack className="justify-between items-center">
-            <VStack gap={1}>
+            <VStack className="gap-1">
                 <Heading className="text-3xl font-black text-ink">Documents</Heading>
                 <Text className="text-sm text-ink/40">Manage your institutional artifacts</Text>
             </VStack>
@@ -173,7 +173,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
         <ScrollView 
             className="flex-1" 
-            contentContainerClassName="pb-10" 
+            contentContainerStyle={{ paddingBottom: 40 }} 
             showsVerticalScrollIndicator={false}
         >
             {filteredDocuments.length === 0 ? (

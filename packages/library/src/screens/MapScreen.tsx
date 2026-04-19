@@ -36,7 +36,7 @@ import {
     FileCheck
 } from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
-import { usePermissions } from '@repo/core';
+import { usePermissions, FeatureGuard } from '@repo/core';
 import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
 import { AstroView } from '../components/perspectives/AstroView';
 import { VastuView } from '../components/perspectives/VastuView';
@@ -79,7 +79,7 @@ const getAvailablePerspectives = (topology: any) => {
 
 export default function MapScreen() {
     const theme = useTheme();
-    const { can } = usePermissions();
+    const { can, flags } = usePermissions();
     const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
     
@@ -256,20 +256,22 @@ export default function MapScreen() {
                 showBack
                 onBack={() => navigation.goBack()}
                 rightAction={
-                    <Pressable 
-                        onPress={handleExport}
-                        disabled={isExporting}
-                        className="flex-row items-center px-4 py-2 rounded-xl mr-3"
-                        style={({ pressed }) => ({ 
-                            backgroundColor: `${accentColor}20`,
-                            opacity: (isExporting || pressed) ? 0.5 : 1,
-                        })}
-                    >
-                        <SanctuaryIcon as={FileCheck} size={18} color={accentColor} className="mr-2" />
-                        <Text className="text-xs font-bold" style={{ color: accentColor }}>
-                            {isExporting ? '...' : 'EXPORT'}
-                        </Text>
-                    </Pressable>
+                    <FeatureGuard feature="isProMember">
+                        <Pressable 
+                            onPress={handleExport}
+                            disabled={isExporting}
+                            className="flex-row items-center px-4 py-2 rounded-xl mr-3"
+                            style={({ pressed }) => ({ 
+                                backgroundColor: `${accentColor}20`,
+                                opacity: (isExporting || pressed) ? 0.5 : 1,
+                            })}
+                        >
+                            <SanctuaryIcon as={FileCheck} size={18} color={accentColor} className="mr-2" />
+                            <Text className="text-xs font-bold" style={{ color: accentColor }}>
+                                {isExporting ? '...' : 'EXPORT'}
+                            </Text>
+                        </Pressable>
+                    </FeatureGuard>
                 }
             />
 

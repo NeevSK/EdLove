@@ -34,6 +34,11 @@ export interface FeatureFlags {
   isStudentProgressWorkspaceEnabled: boolean;
   isStudentRewardsWorkspaceEnabled: boolean;
 
+  // Community & Social Flags
+  isCommunityEnabled: boolean;
+  isMessagingEnabled: boolean;
+  isSocialShieldEnabled: boolean;
+
   // Global Safety Flags (Kill Switches)
   isUnderMaintenance: boolean;
 }
@@ -79,6 +84,9 @@ export const resolveFeatureFlags = (
     isStudentGradesWorkspaceEnabled: true,
     isStudentProgressWorkspaceEnabled: true,
     isStudentRewardsWorkspaceEnabled: false,
+    isCommunityEnabled: true,
+    isMessagingEnabled: true,
+    isSocialShieldEnabled: true,
     isUnderMaintenance: false};
 
   // 1. Infrastructure Level (Process Env)
@@ -100,7 +108,10 @@ export const resolveFeatureFlags = (
       process.env.NEXT_PUBLIC_ENABLE_STUDENT_GRADES_WORKSPACE === 'true',
     STUDENT_PROGRESS_WORKSPACE:
       process.env.EXPO_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true' ||
-      process.env.NEXT_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true'};
+      process.env.NEXT_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true',
+    COMMUNITY: process.env.EXPO_PUBLIC_ENABLE_COMMUNITY !== 'false',
+    MESSAGING: process.env.EXPO_PUBLIC_ENABLE_MESSAGING !== 'false',
+    SOCIAL_SHIELD: process.env.EXPO_PUBLIC_ENABLE_SOCIAL_SHIELD !== 'false'};
 
   if (envFlags.ERP) {
     flags.isInventoryEnabled = true;
@@ -115,6 +126,10 @@ export const resolveFeatureFlags = (
   if (envFlags.STUDENT_GOALS_WORKSPACE) flags.isStudentGoalsWorkspaceEnabled = true;
   if (envFlags.STUDENT_GRADES_WORKSPACE) flags.isStudentGradesWorkspaceEnabled = true;
   if (envFlags.STUDENT_PROGRESS_WORKSPACE) flags.isStudentProgressWorkspaceEnabled = true;
+  
+  if (envFlags.COMMUNITY === false) flags.isCommunityEnabled = false;
+  if (envFlags.MESSAGING === false) flags.isMessagingEnabled = false;
+  if (envFlags.SOCIAL_SHIELD === false) flags.isSocialShieldEnabled = false;
 
   // 2. Entitlement Level (Tier & Features Array)
   const isPaidTier = ['pro', 'premium', 'gold', 'silver'].includes(context.tier?.toLowerCase() || '');
@@ -148,6 +163,10 @@ export const resolveFeatureFlags = (
   if (context.features.includes('STUDENT_ASSIGNMENT_QUEUE') || context.features.includes('BETA_STUDENT_WORKSPACE')) {
     flags.isStudentAssignmentQueueEnabled = true;
   }
+  
+  if (context.features.includes('COMMUNITY')) flags.isCommunityEnabled = true;
+  if (context.features.includes('DIRECT_MESSAGING')) flags.isMessagingEnabled = true;
+  if (context.features.includes('SOCIAL_SHIELD')) flags.isSocialShieldEnabled = true;
 
   // 3. Role/Persona Logic
   if (context.authority === 'student') {
@@ -161,6 +180,14 @@ export const resolveFeatureFlags = (
   // 4. Remote Level (Global Configs) - HIGHEST PRIORITY Overrides
   if (globalConfigs['KILL_SWITCH_OCR'] === 'true' || globalConfigs['KILL_SWITCH_OCR'] === true) {
     flags.canUseOCR = false;
+  }
+  
+  if (globalConfigs['KILL_SWITCH_COMMUNITY'] === 'true' || globalConfigs['KILL_SWITCH_COMMUNITY'] === true) {
+    flags.isCommunityEnabled = false;
+  }
+  
+  if (globalConfigs['KILL_SWITCH_MESSAGING'] === 'true' || globalConfigs['KILL_SWITCH_MESSAGING'] === true) {
+    flags.isMessagingEnabled = false;
   }
 
   if (globalConfigs['MAINTENANCE_MODE'] === 'true' || globalConfigs['MAINTENANCE_MODE'] === true) {

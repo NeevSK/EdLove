@@ -1,23 +1,44 @@
 import React from 'react';
 import { usePermissions } from '../hooks/usePermissions';
 import { Actions, Subjects } from '../abilities/base';
+import { FeatureFlags } from '../feature-engine';
 
 interface FeatureGuardProps {
-  action: Actions;
-  subject: Subjects;
+  action?: Actions;
+  subject?: Subjects;
+  feature?: keyof FeatureFlags;
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
 
+/**
+ * FeatureGuard: The declarative gatekeeper for UI elements.
+ * Supports both RBAC (action/subject) and Feature Flags (boolean toggles).
+ */
 export const FeatureGuard: React.FC<FeatureGuardProps> = ({
   action,
   subject,
+  feature,
   children,
   fallback = null,
 }) => {
-  const { can } = usePermissions();
+  const { can, flags } = usePermissions();
 
-  if (can(action, subject)) {
+  let isAllowed = true;
+
+  // 1. Check Feature Flag (Kill Switch / Gating)
+  if (feature && !flags[feature]) {
+    isAllowed = false;
+  }
+
+  // 2. Check RBAC (CASL Ability)
+  if (isAllowed && action && subject) {
+    if (!can(action, subject)) {
+      isAllowed = false;
+    }
+  }
+
+  if (isAllowed) {
     return <>{children}</>;
   }
 

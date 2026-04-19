@@ -264,7 +264,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           horizontal 
           showsHorizontalScrollIndicator={false}
           className="max-h-16 flex-none"
-          contentContainerClassName="px-12 gap-3 py-2"
+          contentContainerStyle={{ paddingLeft: 48, paddingRight: 48, gap: 12, paddingTop: 8, paddingBottom: 8 }}
         >
           {statusFilters.map(status => (
             <Pressable
@@ -289,7 +289,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         {/* Results Area */}
         <ScrollView 
           className="flex-1" 
-          contentContainerClassName="p-12 pb-24"
+          contentContainerStyle={{ padding: 48, paddingBottom: 96 }}
         >
           {filteredDocuments.length === 0 ? (
             <Box className="items-center justify-center p-20 opacity-20">
@@ -308,4 +308,3 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
 };
 
 export default DocumentListScreenWeb;
-);

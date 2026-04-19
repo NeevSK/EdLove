@@ -29,9 +29,7 @@ import {
     Checkbox,
     CheckboxIndicator,
     CheckboxIcon,
-    Theme,
     hapticLight,
-    useThemedColors,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Users, Plus, Trash2, Edit2, Check as CheckIcon } from 'lucide-react-native';
@@ -58,11 +56,11 @@ interface GroupManagerProps {
 
 // Predefined colors for groups
 const GROUP_COLORS = [
-    Theme.colors.sanctuarySaffron,
-    Theme.colors.sageGreen,
-    Theme.colors.twilightBlue,
-    Theme.colors.amberGlow,
-    Theme.colors.lotusDeepPink,
+    '#F6BF8C', // sanctuarySaffron
+    '#8BBF7A', // sageGreen
+    '#6A5ACD', // twilightBlue
+    '#FFB84D', // amberGlow
+    '#DA70D6', // lotusDeepPink
 ];
 
 export default function GroupManager({ classroomId }: GroupManagerProps) {
@@ -74,7 +72,6 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     const [groupDescription, setGroupDescription] = useState('');
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -208,99 +205,71 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
         return (
             <Box
                 key={group.id}
-                sx={{
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.md,
-                    marginBottom: Theme.spacing.md,
+                className="bg-background-50 rounded-2xl p-4 mb-4 border border-outline-300"
+                style={{
                     borderLeftWidth: 4,
                     borderLeftColor: group.color,
-                    borderColor: colors.border,
-                    borderWidth: 1,
                 }}
             >
-                <VStack sx={{ gap: Theme.spacing.sm }}>
-                    <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                        <HStack sx={{ flex: 1, alignItems: 'center', gap: Theme.spacing.sm }}>
+                <VStack className="gap-2">
+                    <HStack className="items-start justify-between gap-4">
+                        <HStack className="flex-1 items-center gap-2">
                             <Box
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: Theme.corners.full,
+                                className="w-10 h-10 rounded-full justify-center items-center opacity-90"
+                                style={{
                                     backgroundColor: group.color,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    opacity: Theme.opacity.heavy,
                                 }}
                             >
-                                <Users color={Theme.colors.sacredWhite} size={20} />
+                                <Users color="white" size={20} />
                             </Box>
-                            <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '700' as const }}>
+                            <VStack className="flex-1">
+                                <Text className="text-typography-900 text-base font-bold">
                                     {group.name}
                                 </Text>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                <Text className="text-typography-500 text-xs">
                                     {t('groups.selectedCount', { count: groupStudents.length }) || `${groupStudents.length} students`}
                                 </Text>
                             </VStack>
                         </HStack>
 
-                        <HStack sx={{ gap: Theme.spacing.xs }}>
+                        <HStack className="gap-1">
                             <Pressable onPress={() => openEditModal(group)}>
                                 <Box
-                                    sx={{
-                                        padding: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                        borderWidth: 1,
-                                    }}
+                                    className="p-2 rounded-lg bg-background-100 border border-outline-200"
                                 >
-                                    <Edit2 color={colors.textSecondary} size={16} />
+                                    <Edit2 className="text-typography-500" size={16} />
                                 </Box>
                             </Pressable>
                             <Pressable onPress={() => deleteGroup(group.id)}>
                                 <Box
-                                    sx={{
-                                        padding: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                        borderWidth: 1,
-                                    }}
+                                    className="p-2 rounded-lg bg-background-100 border border-outline-200"
                                 >
-                                    <Trash2 color={Theme.colors.emberRed} size={16} />
+                                    <Trash2 className="text-error-500" size={16} />
                                 </Box>
                             </Pressable>
                         </HStack>
                     </HStack>
 
                     {group.description && (
-                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                        <Text className="text-typography-500 text-sm">
                             {group.description}
                         </Text>
                     )}
 
                     <Box
-                        sx={{
-                            backgroundColor: colors.tertiary,
-                            borderRadius: Theme.corners.comfortable,
-                            padding: Theme.spacing.sm,
-                            borderColor: colors.border,
-                            borderWidth: 1,
-                        }}
+                        className="bg-background-100 rounded-lg p-2 border border-outline-200"
                     >
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
+                        <VStack className="gap-1">
                             {groupStudents.map((student, index) => (
-                                <HStack key={student.id} sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                <HStack key={student.id} className="items-center gap-1">
+                                    <Text className="text-typography-400 text-xs text-right w-4">
                                         {index + 1}.
                                     </Text>
-                                    <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xs }}>
+                                    <Text className="text-typography-900 text-xs">
                                         {student.full_name}
                                     </Text>
                                     {student.roll_number && (
-                                        <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>
+                                        <Text className="text-typography-400 text-xs">
                                             (#{student.roll_number})
                                         </Text>
                                     )}
@@ -314,39 +283,32 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     };
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg }}>
-                <VStack sx={{ marginBottom: Theme.spacing.xl, gap: Theme.spacing.xs }}>
-                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize['2xl'] }}>
+        <Box className="flex-1 bg-background-50">
+            <ScrollView className="flex-1" contentContainerStyle={{ padding: 24 }}>
+                <VStack className="mb-8 gap-1">
+                    <Heading className="text-typography-900 text-2xl">
                         {t('groups.title') || 'Group Manager'}
                     </Heading>
-                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                    <Text className="text-typography-500 text-sm">
                         {t('groups.subtitle') || 'Create temporary student groups for activities'}
                     </Text>
                 </VStack>
 
                 {isLoading ? (
-                    <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Text sx={{ color: Theme.colors.mistGray }}>Loading groups...</Text>
+                    <Box className="p-8 items-center">
+                        <Text className="text-typography-400">Loading groups...</Text>
                     </Box>
                 ) : groups.length === 0 ? (
                     <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            alignItems: 'center',
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            borderColor: colors.border,
-                            borderWidth: 1,
-                        }}
+                        className="p-8 items-center bg-background-50 rounded-2xl border border-outline-300"
                     >
-                        <Users color={colors.textSecondary} size={48} />
-                        <Text sx={{ color: colors.textSecondary, marginTop: Theme.spacing.md, textAlign: 'center' }}>
+                        <Users className="text-typography-400" size={48} />
+                        <Text className="text-typography-500 mt-4 text-center">
                             {t('groups.emptyState') || 'No groups yet. Tap the + button to create your first group.'}
                         </Text>
                     </Box>
                 ) : (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-4">
                         {groups.map(renderGroupCard)}
                     </VStack>
                 )}
@@ -354,159 +316,108 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
 
             <Pressable
                 onPress={openCreateModal}
+                className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-sanctuarySaffron justify-center items-center shadow-lg"
                 style={{
-                    position: 'absolute',
-                    bottom: 24,
-                    right: 24,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4.65,
+                    elevation: 8,
                 }}
             >
-                <Box
-                    sx={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        ...Theme.shadows.lg,
-                    }}
-                >
-                    <Plus color={Theme.colors.white} size={24} />
-                </Box>
+                <Plus color="white" size={24} />
             </Pressable>
 
             <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
                 <ModalBackdrop />
                 <ModalContent
-                    sx={{
-                        backgroundColor: colors.primary,
-                        maxWidth: 500,
-                        maxHeight: '80%',
-                        borderColor: colors.border,
-                        borderWidth: 1,
-                    }}
+                    className="bg-background-50 max-w-[500px] max-h-[80%] border border-outline-300"
                 >
                     <ModalHeader>
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>
+                        <Heading className="text-typography-900 text-lg">
                             {editingGroup ? (t('groups.editGroup') || 'Edit Group') : (t('groups.createGroup') || 'Create Group')}
                         </Heading>
                     </ModalHeader>
 
                     <ModalBody>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            <VStack sx={{ gap: Theme.spacing.md }}>
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                            <VStack className="gap-4">
+                                <VStack className="gap-1">
+                                    <Text className="text-typography-500 text-sm">
                                         {t('groups.nameLabel') || 'Group Name *'}
                                     </Text>
                                     <Input
-                                        sx={{
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                            borderRadius: Theme.corners.comfortable,
-                                        }}
+                                        className="bg-background-50 border-outline-300 rounded-lg h-12"
                                     >
                                         <InputField
                                             placeholder={t('groups.namePlaceholder') || "e.g., Lab Group A"}
                                             value={groupName}
                                             onChangeText={setGroupName}
-                                            sx={{ color: colors.text }}
+                                            className="text-typography-900"
                                         />
                                     </Input>
                                 </VStack>
 
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                <VStack className="gap-1">
+                                    <Text className="text-typography-500 text-sm">
                                         {t('groups.descriptionLabel') || 'Description (Optional)'}
                                     </Text>
                                     <Input
-                                        sx={{
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                            borderRadius: Theme.corners.comfortable,
-                                        }}
+                                        className="bg-background-50 border-outline-300 rounded-lg h-12"
                                     >
                                         <InputField
                                             placeholder={t('groups.descriptionPlaceholder') || "e.g., First lab rotation"}
                                             value={groupDescription}
                                             onChangeText={setGroupDescription}
-                                            sx={{ color: colors.text }}
+                                            className="text-typography-900"
                                         />
                                     </Input>
                                 </VStack>
 
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                <VStack className="gap-1">
+                                    <Text className="text-typography-500 text-sm">
                                         {t('groups.selectStudentsLabel', { count: selectedStudentIds.length }) || `Select Students * (${selectedStudentIds.length} selected)`}
                                     </Text>
                                     <Box
-                                        sx={{
-                                            backgroundColor: colors.secondary,
-                                            borderRadius: Theme.corners.comfortable,
-                                            padding: Theme.spacing.sm,
-                                            maxHeight: 300,
-                                            borderColor: colors.border,
-                                            borderWidth: 1,
-                                        }}
+                                        className="bg-background-50 rounded-lg p-2 max-h-[300px] border border-outline-300"
                                     >
                                         <ScrollView showsVerticalScrollIndicator={true}>
-                                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                                {students.map((student) => (
-                                                    <Pressable
-                                                        key={student.id}
-                                                        onPress={() => toggleStudentSelection(student.id)}
-                                                    >
-                                                        <HStack
-                                                            sx={{
-                                                                alignItems: 'center',
-                                                                gap: Theme.spacing.sm,
-                                                                padding: Theme.spacing.sm,
-                                                                borderRadius: Theme.corners.comfortable,
-                                                                backgroundColor: selectedStudentIds.includes(
-                                                                    student.id
-                                                                )
-                                                                    ? 'rgba(235,166,90,0.1)'
-                                                                    : Theme.colors.transparent,
-                                                            }}
+                                            <VStack className="gap-1">
+                                                 {students.map((student) => {
+                                                    const isChecked = selectedStudentIds.includes(student.id);
+                                                    return (
+                                                        <Pressable
+                                                            key={student.id}
+                                                            onPress={() => toggleStudentSelection(student.id)}
+                                                            className={`flex-row items-center gap-2 p-2 rounded-lg ${isChecked ? 'bg-primary-50' : 'bg-transparent'}`}
                                                         >
-                                                            <Checkbox
+                                                             <Checkbox
                                                                 value={student.id}
-                                                                isChecked={selectedStudentIds.includes(student.id)}
+                                                                isChecked={isChecked}
                                                                 onChange={() => toggleStudentSelection(student.id)}
                                                                 aria-label="Select student"
                                                             >
                                                                 <CheckboxIndicator
-                                                                    sx={{
-                                                                        borderColor: selectedStudentIds.includes(
-                                                                            student.id
-                                                                        )
-                                                                            ? Theme.colors.sanctuarySaffron
-                                                                            : colors.textSecondary,
-                                                                        backgroundColor: selectedStudentIds.includes(
-                                                                            student.id
-                                                                        )
-                                                                            ? Theme.colors.sanctuarySaffron
-                                                                            : Theme.colors.transparent,
-                                                                    }}
+                                                                    className={isChecked ? 'border-primary-500 bg-primary-500' : 'border-outline-300 bg-transparent'}
                                                                 >
-                                                                    <CheckboxIcon as={CheckIcon} />
+                                                                    <CheckboxIcon as={CheckIcon} className="text-white" />
                                                                 </CheckboxIndicator>
                                                             </Checkbox>
-                                                            <VStack sx={{ flex: 1 }}>
-                                                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.sm }}>
+                                                             <VStack className="flex-1">
+                                                                <Text className="text-typography-900 text-sm">
                                                                     {student.full_name}
                                                                 </Text>
                                                                 {student.roll_number && (
                                                                     <Text
-                                                                        sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}
+                                                                        className="text-typography-400 text-xs"
                                                                     >
                                                                         Roll #{student.roll_number}
                                                                     </Text>
                                                                 )}
                                                             </VStack>
-                                                        </HStack>
-                                                    </Pressable>
-                                                ))}
+                                                        </Pressable>
+                                                    );
+                                                })}
                                             </VStack>
                                         </ScrollView>
                                     </Box>
@@ -516,28 +427,22 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                     </ModalBody>
 
                     <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
+                        <HStack className="gap-2">
                             <Button
                                 variant="outline"
                                 action="secondary"
                                 onPress={() => setShowCreateModal(false)}
-                                sx={{
-                                    flex: 1,
-                                    borderColor: colors.border,
-                                }}
+                                className="flex-1 border-outline-300"
                             >
-                                <ButtonText sx={{ color: colors.textSecondary }}>Cancel</ButtonText>
+                                <ButtonText className="text-typography-500">Cancel</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
                                 onPress={saveGroup}
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
+                                className="flex-1 bg-primary-500"
                                 isDisabled={!groupName.trim() || selectedStudentIds.length === 0}
                             >
-                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                                <ButtonText className="text-white">
                                     {editingGroup ? 'Update' : 'Create'}
                                 </ButtonText>
                             </Button>

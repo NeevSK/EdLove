@@ -28,7 +28,7 @@ import {
     useTemporalStore,
     useTracking,
 } from '@repo/core';
-import { Plus } from 'lucide-react-native';
+import { Plus, Info } from 'lucide-react-native';
 import CreateGroupModal from '../components/CreateGroupModal';
 import CreatePostModal from '../components/CreatePostModal';
 import CommunityHearth from '../components/CommunityHearth';
@@ -58,7 +58,7 @@ export default function CommunityScreen() {
     const { discoverFeature } = useTracking();
     const { can } = usePermissions();
     const { isPastView } = useTemporalStore();
-    const { user } = useStore();
+    const { user, flags } = useStore();
 
     const userId = user?.id ?? 'guest';
     const schoolId = user?.school_id ?? undefined;
@@ -70,6 +70,9 @@ export default function CommunityScreen() {
     const canCreatePost = can('create', 'Post');
     const canCreateGroup = can('create', 'Group');
     const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');
+
+    const isMessagingEnabled = flags.isMessagingEnabled && canReadMessages;
+    const isCommunityEnabled = flags.isCommunityEnabled;
 
     const [activeMode, setActiveMode] = useState<CommunityWorkspaceMode>('feed');
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
@@ -99,6 +102,29 @@ export default function CommunityScreen() {
         hasNextPosts,
         isFetchingNextPosts,
     } = useCommunity(selectedFilter !== 'all' ? selectedFilter : undefined);
+
+    if (!isCommunityEnabled) {
+        return (
+            <ScreenWrapper noTopInset={true}>
+                <GlobalHeader
+                    title="Community"
+                    subtitle="Currently Expanding"
+                />
+                <Box className="flex-1 items-center justify-center p-8 bg-phase-canvas">
+                     <VStack space="xl" className="items-center">
+                        <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+                            <Icon as={Info} size="xl" className="text-phase-warning" />
+                        </Box>
+                        <Heading className="text-center">Sanctuary Maintenance</Heading>
+                        <Text className="text-center text-phase-text-secondary">
+                            The community spaces are currently undergoing a structural expansion. 
+                            Please check back soon for a calmer, more resonant experience.
+                        </Text>
+                     </VStack>
+                </Box>
+            </ScreenWrapper>
+        );
+    }
     const { sanctuaryGroups } = useCommunityGroups({ schoolId });
     const { manifestos } = useManifestos(schoolId || 'default', user?.id ?? undefined);
 
@@ -110,16 +136,16 @@ export default function CommunityScreen() {
     const workspaceSlots = useMemo(() => mapCommunitySurfaceSlots(Platform.OS as any, userId), [userId]);
     const modeChips = useMemo(
         () =>
-            getCommunityModeOptions(canReadAnnouncements).map((mode) => ({
+            getCommunityModeOptions(canReadAnnouncements, flags.isMessagingEnabled).map((mode) => ({
                 label: mode.label,
                 value: mode.key,
             })),
-        [canReadAnnouncements]
+        [canReadAnnouncements, flags.isMessagingEnabled]
     );
 
     useRegisterFAB({
         tabType: 'community',
-        visible: !isPastView && (canCreatePost || canCreateGroup),
+        visible: !isPastView && (canCreatePost || canCreateGroup) && isCommunityEnabled,
         icon: <Plus size={24} color="#FFF" />,
         onPress: () => {
             if (activeMode === 'circles' && canCreateGroup) {
@@ -141,7 +167,7 @@ export default function CommunityScreen() {
     }, [discoverFeature]);
 
     useEffect(() => {
-        if (activeMode !== 'messages' || !canReadMessages) {
+        if (activeMode !== 'messages' || !isMessagingEnabled) {
             return;
         }
 
@@ -348,6 +374,7 @@ export default function CommunityScreen() {
                         <PostCard
                             post={item}
                             currentUserId={user?.id}
+                            isSocialShieldEnabled={flags.isSocialShieldEnabled}
                             onPress={() => {
                                 if (item.group_id) {
                                     navigation.navigate('GroupDetails', {

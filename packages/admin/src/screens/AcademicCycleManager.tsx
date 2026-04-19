@@ -163,7 +163,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
                                 <VStack className="gap-1">
                                     <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">Name (e.g. Term 1 2026)</Text>
-                                    <Input variant="underlined" className="border-border">
+                                    <Input className="border-border">
                                         <InputField 
                                             value={name} 
                                             onChangeText={setName} 
@@ -176,7 +176,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                 <HStack className="gap-4">
                                     <VStack className="flex-1 gap-1">
                                         <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">Start Date</Text>
-                                        <Input variant="underlined" className="border-border">
+                                        <Input className="border-border">
                                             <InputField 
                                                 value={startDate} 
                                                 onChangeText={setStartDate} 
@@ -187,7 +187,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                     </VStack>
                                     <VStack className="flex-1 gap-1">
                                         <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">End Date</Text>
-                                        <Input variant="underlined" className="border-border">
+                                        <Input className="border-border">
                                             <InputField 
                                                 value={endDate} 
                                                 onChangeText={setEndDate} 

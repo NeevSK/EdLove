@@ -202,16 +202,20 @@ export function mapCommunitySurfaceSlots(
     );
 }
 
-export function getCommunityModeOptions(includeAnnouncements: boolean) {
-    const base = [
-        { key: 'feed' as const, label: 'Feed' },
-        { key: 'circles' as const, label: 'Circles' },
-        { key: 'messages' as const, label: 'Messages' },
+export function getCommunityModeOptions(includeAnnouncements: boolean, includeMessaging: boolean = true) {
+    const base: { key: CommunityWorkspaceMode; label: string }[] = [
+        { key: 'feed', label: 'Feed' },
+        { key: 'circles', label: 'Circles' },
     ];
 
+    const modes = [...base];
+    if (includeMessaging) {
+        modes.push({ key: 'messages' as const, label: 'Messages' });
+    }
+
     return includeAnnouncements
-        ? [...base, { key: 'announcements' as const, label: 'Announcements' }]
-        : base;
+        ? [...modes, { key: 'announcements' as const, label: 'Announcements' }]
+        : modes;
 }
 
 export function deriveCommunityPulse(

@@ -20,14 +20,33 @@ import {
 import { supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Check, X, RefreshCw, Trash2 } from 'lucide-react-native';
+import { usePermissions } from '@repo/core';
 
 export default function CuratorReviewScreen() {
+    const { can, flags } = usePermissions();
+    const navigation = useNavigation<any>();
+    
+    const isLibraryEnabled = flags.isLibraryManagementEnabled;
+    const canManage = can('manage', 'LibraryCuratorDashboard');
+
     const [items, setItems] = useState<any[]>([]);
     const [brokenResources, setBrokenResources] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'staging' | 'broken'>('staging');
     const theme = useTheme();
-    const navigation = useNavigation<any>();
+
+    if (!isLibraryEnabled || !canManage) {
+        return (
+            <ScreenWrapper>
+                <GlobalHeader title="Curator Review" showBack onBack={() => navigation.goBack()} />
+                <Box className="flex-1 justify-center items-center p-xl">
+                    <Text className="text-phaseText-secondary text-center">
+                        Access Denied. Curation features are currently restricted.
+                    </Text>
+                </Box>
+            </ScreenWrapper>
+        );
+    }
 
     const fetchStaging = async () => {
         setLoading(true);

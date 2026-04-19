@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { PositiveInvitation, WebScreenHeader } from '@repo/ui';
+import { PositiveInvitation, WebScreenHeader, Box, VStack, Heading, Text, Icon } from '@repo/ui';
 import {
     communityAPI,
     setPendingGateAction,
@@ -9,7 +9,7 @@ import {
     usePermissions,
     useStore,
 } from '@repo/core';
-import { Bell, Compass, Plus, Shield, Users2 } from 'lucide-react-native';
+import { Bell, Compass, Plus, Shield, Users2, Info } from 'lucide-react-native';
 import type { AnnouncementWithAuthor, DirectConversation } from '../types';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -33,7 +33,8 @@ import {
 export default function CommunityScreenWeb() {
     const navigation = useNavigation<any>();
     const { can } = usePermissions();
-    const { user } = useStore();
+    const { user, flags } = useStore();
+    const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
     const pending = usePendingGateAction();
     const { unreadCount } = useNotifications();
 
@@ -63,6 +64,27 @@ export default function CommunityScreenWeb() {
     const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
         selectedFilter !== 'all' ? selectedFilter : undefined
     );
+
+    if (!isCommunityEnabled) {
+        return (
+            <Box className="flex-1 bg-phase-canvas">
+                <WebScreenHeader title="Community" />
+                <Box className="flex-1 items-center justify-center p-12">
+                     <VStack space="xl" className="items-center max-w-md">
+                        <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+                            <Icon as={Info} size="xl" className="text-phase-warning" />
+                        </Box>
+                        <Heading className="text-center">Sanctuary Maintenance</Heading>
+                        <Text className="text-center text-phase-text-secondary">
+                            The community spaces are currently undergoing a structural expansion. 
+                            Please check back soon for a calmer, more resonant experience.
+                        </Text>
+                     </VStack>
+                </Box>
+            </Box>
+        );
+    }
+
     const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({ schoolId, searchQuery });
     const { manifestos } = useManifestos(schoolId, user?.id);
 
@@ -76,8 +98,8 @@ export default function CommunityScreenWeb() {
         [galaxyGroups, sanctuaryGroups]
     );
     const modeOptions = useMemo(
-        () => getCommunityModeOptions(canReadAnnouncements),
-        [canReadAnnouncements]
+        () => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
+        [canReadAnnouncements, isMessagingEnabled]
     );
     const quickPaths = useMemo(() => getCommunityQuickPaths(canReadAnnouncements), [canReadAnnouncements]);
 
@@ -192,6 +214,7 @@ export default function CommunityScreenWeb() {
                 key={post.id}
                 post={post}
                 currentUserId={user?.id}
+                isSocialShieldEnabled={isSocialShieldEnabled}
                 onPress={() => {
                     if (post.group_id) handleOpenGroup(post.group_id, post.group_name ?? 'Circle');
                 }}

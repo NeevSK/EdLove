@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { Box, HStack, Heading, Text, VStack, useThemedColors, ScrollView, Pressable, useTheme } from '@repo/ui';
 import { Building2, MessageSquare, NotebookPen, QrCode, Wind } from 'lucide-react-native';
 import { ManagementStation, PrincipalGovernanceTimeline } from '../components';

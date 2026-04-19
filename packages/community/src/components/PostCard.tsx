@@ -75,6 +75,7 @@ interface PostCardProps {
     onShare?: () => void;
     isSample?: boolean;
     currentUserId?: string;
+    isSocialShieldEnabled?: boolean;
 }
 
 // —————————————————————————————————————————————————————————————————————————————
@@ -91,7 +92,8 @@ export const PostCard = React.memo(function PostCard({
     onAuthorPress,
     onShare,
     isSample,
-    currentUserId
+    currentUserId,
+    isSocialShieldEnabled = true
 }: PostCardProps) {
     const {
         author_id,
@@ -373,7 +375,7 @@ export const PostCard = React.memo(function PostCard({
                                         </Pressable>
                                     )}
 
-                                    {author_id !== currentUserId && (
+                                    {author_id !== currentUserId && isSocialShieldEnabled && (
                                         <Pressable className="p-4 border-b border-white/5 active:bg-white/5" onPress={() => { onReport?.(); setMenuOpen(false); }}>
                                             <HStack className="items-center gap-3">
                                                 <ShieldAlert size={16} color={theme.text.primary} />
@@ -382,7 +384,7 @@ export const PostCard = React.memo(function PostCard({
                                         </Pressable>
                                     )}
 
-                                    {!is_anonymous && author_id !== currentUserId && (
+                                    {!is_anonymous && author_id !== currentUserId && isSocialShieldEnabled && (
                                         <Pressable className="p-4 active:bg-white/5" onPress={handleBlock}>
                                             <HStack className="items-center gap-3">
                                                 <UserX size={16} color={Theme.colors.sanctuarySaffron} />
