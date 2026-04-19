@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
     FlatList,
     StyleSheet,
-    TouchableOpacity,
     ActivityIndicator,
     Alert
 } from 'react-native';
@@ -15,12 +14,12 @@ import {
     Theme,
     GlobalHeader,
     ScreenWrapper,
-    FadeInDown,
+    Pressable,
+    Icon as SanctuaryIcon,
 } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Check, X, RefreshCw, Trash2 } from 'lucide-react-native';
-import Animated from 'react-native-reanimated';
 
 export default function CuratorReviewScreen() {
     const [items, setItems] = useState<any[]>([]);
@@ -132,21 +131,24 @@ export default function CuratorReviewScreen() {
                 </Text>
 
                 <HStack className="gap-3 mt-2">
-                    <TouchableOpacity
-                        style={[styles.actionBtn, { backgroundColor: theme.accent.action }]}
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.actionBtn, 
+                            { backgroundColor: theme.accent.action, opacity: pressed ? 0.8 : 1 }
+                        ]}
                         onPress={() => handlePublish(item.id)}
                     >
-                        <Check size={16} color="#fff" />
+                        <SanctuaryIcon as={Check} size={16} color="#fff" />
                         <Text className="text-white font-bold text-xs">Publish</Text>
-                    </TouchableOpacity>
+                    </Pressable>
 
-                    <TouchableOpacity
-                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-surface/80 border border-phase-border"
+                    <Pressable
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-surface/80 border border-phase-border active:opacity-80"
                         onPress={() => {/* TODO */ }}
                     >
-                        <X size={16} color={theme.text.secondary} />
+                        <SanctuaryIcon as={X} size={16} color={theme.text.secondary} />
                         <Text className="text-phaseText-secondary text-xs font-bold">Reject</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 </HStack>
             </VStack>
         </Box>
@@ -184,20 +186,20 @@ export default function CuratorReviewScreen() {
                 </HStack>
                 <Text className="text-[12px] text-phaseText-secondary" numberOfLines={1}>{item.url}</Text>
                 <HStack className="gap-3 mt-2">
-                    <TouchableOpacity
-                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-accent"
+                    <Pressable
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-accent active:opacity-80"
                         onPress={() => handleRepair(item.id)}
                     >
-                        <RefreshCw size={14} color="#fff" />
+                        <SanctuaryIcon as={RefreshCw} size={14} color="#fff" />
                         <Text className="text-white text-xs font-bold">Fix Link</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-danger/10"
+                    </Pressable>
+                    <Pressable
+                        className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg bg-phase-danger/10 active:opacity-80"
                         onPress={() => handleDeleteResource(item.id)}
                     >
-                        <Trash2 size={14} color={theme.palette.danger} />
+                        <SanctuaryIcon as={Trash2} size={14} color={theme.accent.danger} />
                         <Text className="text-phase-danger text-xs font-bold">Remove</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 </HStack>
             </VStack>
         </Box>
@@ -212,7 +214,7 @@ export default function CuratorReviewScreen() {
             />
 
             <HStack className="px-4 mb-4 border-b border-phase-border">
-                <TouchableOpacity
+                <Pressable
                     onPress={() => setActiveTab('staging')}
                     style={[styles.tab, activeTab === 'staging' && { borderBottomColor: theme.accent.action, borderBottomWidth: 2 }]}
                 >
@@ -221,17 +223,17 @@ export default function CuratorReviewScreen() {
                         style={{ color: activeTab === 'staging' ? theme.text.primary : theme.text.secondary }}>
                         Staged
                     </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Pressable>
+                <Pressable
                     onPress={() => setActiveTab('broken')}
-                    style={[styles.tab, activeTab === 'broken' && { borderBottomColor: theme.palette.danger, borderBottomWidth: 2 }]}
+                    style={[styles.tab, activeTab === 'broken' && { borderBottomColor: theme.accent.danger, borderBottomWidth: 2 }]}
                 >
                     <Text 
                         className="font-bold"
-                        style={{ color: activeTab === 'broken' ? theme.palette.danger : theme.text.secondary }}>
+                        style={{ color: activeTab === 'broken' ? theme.accent.danger : theme.text.secondary }}>
                         Broken Links
                     </Text>
-                </TouchableOpacity>
+                </Pressable>
             </HStack>
 
             {loading ? (
@@ -268,4 +270,6 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 8,
     }
+});
+
 });

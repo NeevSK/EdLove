@@ -111,7 +111,10 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
         onSuccess: () => {
             // Growth signal  post created, fire-and-forget
             if (storeUser?.id) {
-                growthSignalsAPI.emitSilent(storeUser.id, 'community_post_created');
+                growthSignalsAPI.emitSilent({
+                    user_id: storeUser.id,
+                    event_type: 'community_post_created'
+                });
             }
         },
     });

@@ -5,9 +5,12 @@ import { cssInterop } from 'nativewind';
 cssInterop(RNText, { className: 'style' });
 
 export const Text = React.forwardRef<RNText, TextProps & { className?: string; size?: string }>(
-  ({ className, size, ...props }, ref) => (
-    <RNText {...props} ref={ref} className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`} />
-  )
+  ({ className, size, ...props }, ref) => {
+    const Component = RNText as any;
+    return (
+      <Component {...props} ref={ref} className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`} />
+    );
+  }
 );
 Text.displayName = 'Text';
 
@@ -24,8 +27,9 @@ export const Heading = React.forwardRef<RNText, TextProps & { className?: string
       '4xl': 'text-4xl',
       '5xl': 'text-5xl',
     };
+    const Component = RNText as any;
     return (
-      <RNText 
+      <Component 
         {...props} 
         ref={ref} 
         className={`font-bold text-phase-text-primary ${sizeMap[size]} ${className || ''}`} 

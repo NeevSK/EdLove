@@ -298,16 +298,11 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                 minValue={0}
                                                 maxValue={100}
                                                 value={stat.value || 0}
-                                                onChange={(val: number) => {
+                                                onValueChange={(val: number) => {
                                                     setAnalysis(prev => ({ ...prev, [stat.key]: val }));
                                                 }}
                                                 className="h-[30px]"
-                                            >
-                                                <SliderTrack className="bg-white/10">
-                                                    <SliderFilledTrack className="bg-phase-accent" />
-                                                </SliderTrack>
-                                                <SliderThumb className="bg-white w-[18px] h-[18px]" />
-                                            </Slider>
+                                            />
                                         </VStack>
                                     ))}
                                 </VStack>
@@ -317,7 +312,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             {aiInsights && (
                                 <GlassCard style={styles.aiInsightsCard}>
                                     <View style={styles.sectionHeader}>
-                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
+                                        <Sparkles size={16} color="rgba(212, 132, 58, 1)" />
                                         <Text style={styles.sectionTitle}>AI Potential Insights</Text>
                                     </View>
                                     <Text style={styles.aiInsightsText}>{aiInsights}</Text>

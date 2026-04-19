@@ -14,12 +14,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    useThemedColors,
-    Theme,
+    useTheme,
     ScreenWrapper,
     GlobalHeader,
     SanctuaryButton,
@@ -42,7 +37,7 @@ interface PDFViewerScreenProps {
 export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     const { title, url } = route.params;
     const navigation = useNavigation();
-    const colors = useThemedColors();
+    const theme = useTheme();
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [iframeKey, setIframeKey] = useState(0); // bump to reload iframe
 
@@ -53,14 +48,16 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     };
 
     return (
-        <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary, flex: 1 }}>
+        <ScreenWrapper scroll={false} style={{ backgroundColor: theme.phase.surface, flex: 1 }}>
             <GlobalHeader
                 title={title}
                 subtitle="Document Viewer"
                 showBack
                 onBack={() => (navigation as any).goBack()}
                 rightAction={
-                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}>
+                    <Box 
+                        className="rounded-full overflow-hidden" 
+                        style={{ backgroundColor: isBookmarked ? `${theme.accent.action}22` : 'transparent' }}>
                         <SanctuaryButton
                             variant="ghost"
                             size="sm"
@@ -88,14 +85,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
 
             {/* Action bar below the iframe */}
             <HStack
-                sx={{
-                    padding: Theme.spacing.md,
-                    gap: Theme.spacing.sm,
-                    justifyContent: 'center',
-                    backgroundColor: colors.secondary,
-                    borderTopWidth: 1,
-                    borderTopColor: colors.border,
-                }}
+                className="p-md gap-sm justify-center border-t border-phase-border bg-phase-surface"
             >
                 <SanctuaryButton
                     variant="outline"

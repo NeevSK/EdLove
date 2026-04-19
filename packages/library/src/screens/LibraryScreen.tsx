@@ -10,7 +10,6 @@ import {
     Text as RNText,
     ImageBackground,
     StyleSheet,
-    TouchableOpacity,
     Platform,
     Share,
 } from 'react-native';
@@ -37,8 +36,10 @@ import {
     Pressable,
     RefreshControl,
     ScrollView,
+    Icon,
+    openExternalURL,
+    showExternalLinkOptions,
 } from '@repo/ui';
-import { openExternalURL, showExternalLinkOptions } from '@repo/ui/src/utils/linking';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
@@ -88,7 +89,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                 />
                 <HStack className="p-5 gap-4 items-center">
                     <Box className="w-[60px] h-[60px] rounded-[30px] bg-white/10 justify-center items-center">
-                        <MapIcon size={32} color={theme.accent.action} />
+                        <Icon icon={MapIcon} size={32} color={theme.accent.action} />
                     </Box>
                     <VStack className="flex-1 gap-1">
                         <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
@@ -102,7 +103,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                         </Text>
                     </VStack>
                     <Box className="p-2.5 bg-phase-accent rounded-xl">
-                        <Play size={16} color="white" fill="white" />
+                        <Icon icon={Play} size={16} color="white" fill="white" />
                     </Box>
                 </HStack>
             </Pressable>
@@ -126,7 +127,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                 />
                 <HStack className="p-4 gap-4 items-center">
                     <Box className="w-12 h-12 rounded-full bg-phase-accent/10 justify-center items-center">
-                        <FileText size={24} color={theme.accent.action} />
+                        <Icon icon={FileText} size={24} color={theme.accent.action} />
                     </Box>
                     <VStack className="flex-1 gap-0.5">
                         <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
@@ -139,7 +140,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                             Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
                         </Text>
                     </VStack>
-                    <Plus size={16} color={theme.text.secondary} />
+                    <Icon icon={Plus} size={16} color={theme.text.secondary} />
                 </HStack>
             </Pressable>
         </Animated.View>
@@ -440,11 +441,11 @@ export default function LibraryScreen() {
                                 <Box className="w-2 h-2 rounded-full bg-phase-accent" />
                             </Animated.View>
                         )}
-                        <TouchableOpacity 
+                        <Pressable 
                             onPress={() => navigation.navigate('LibraryMap' as any)}
                             style={styles.mapToggleButton}>
-                            <MapIcon size={20} color={theme.text.primary} />
-                        </TouchableOpacity>
+                            <Icon icon={MapIcon} size={20} color={theme.text.primary} />
+                        </Pressable>
                     </HStack>
                 }
             />
@@ -457,9 +458,9 @@ export default function LibraryScreen() {
                     <Text className="text-phase-danger text-center">
                         {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}
                     </Text>
-                    <TouchableOpacity onPress={() => fetchResources()}>
+                    <Pressable onPress={() => fetchResources()}>
                         <Text className="text-phase-accent font-bold">Retry</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 </VStack>
             ) : (loading || isFetchingPublic) && !refreshing ? (
                 <VStack className="p-md mt-lg gap-4">
@@ -471,12 +472,12 @@ export default function LibraryScreen() {
                 <Box className="flex-1">
                     {!isSearchMode && (
                         <HStack className="px-md py-3 gap-3">
-                            <TouchableOpacity 
+                            <Pressable 
                                 onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
                                 style={[styles.actionBtn, { borderColor: `${theme.accent.action}88` }]}>
-                                <Library size={14} color={theme.accent.action} />
+                                <Icon icon={Library} size={14} color={theme.accent.action} />
                                 <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </HStack>
                     )}
 
@@ -501,21 +502,21 @@ export default function LibraryScreen() {
                                     />
                                 </Box>
                                 <HStack className="gap-1 p-1 rounded-xl border border-phase-border bg-phase-surface/80">
-                                    <TouchableOpacity 
+                                    <Pressable 
                                         onPress={() => setViewMode('shelf')} 
-                                        style={[styles.toggleBtn, viewMode === 'shelf' && { backgroundColor: Theme.colors.sanctuarySaffron }]}>
-                                        <Layers size={14} color={viewMode === 'shelf' ? Theme.colors.sacredWhite : theme.text.secondary} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
+                                        style={[styles.toggleBtn, viewMode === 'shelf' && { backgroundColor: theme.accent.action }]}>
+                                        <Icon icon={Layers} size={14} color={viewMode === 'shelf' ? theme.text.inverse : theme.text.secondary} />
+                                    </Pressable>
+                                    <Pressable 
                                         onPress={() => setViewMode('grid')} 
-                                        style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: Theme.colors.sanctuarySaffron }]}>
-                                        <LayoutGrid size={14} color={viewMode === 'grid' ? Theme.colors.sacredWhite : theme.text.secondary} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
+                                        style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: theme.accent.action }]}>
+                                        <Icon icon={LayoutGrid} size={14} color={viewMode === 'grid' ? theme.text.inverse : theme.text.secondary} />
+                                    </Pressable>
+                                    <Pressable 
                                         onPress={() => setViewMode('list')} 
-                                        style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: Theme.colors.sanctuarySaffron }]}>
-                                        <List size={14} color={viewMode === 'list' ? Theme.colors.sacredWhite : theme.text.secondary} />
-                                    </TouchableOpacity>
+                                        style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: theme.accent.action }]}>
+                                        <Icon icon={List} size={14} color={viewMode === 'list' ? theme.text.inverse : theme.text.secondary} />
+                                    </Pressable>
                                 </HStack>
                             </HStack>
                         </Animated.View>
@@ -674,7 +675,7 @@ function SanctuaryPulse({
 
     const items = [
         { label: 'Resources', value: resourceCount, accent: `${theme.accent.action}18` },
-        { label: 'Collections', value: collectionCount, accent: `${theme.accent.secondary}16` },
+        { label: 'Collections', value: collectionCount, accent: `${theme.accent.reward}16` },
         { label: 'Bookmarks', value: bookmarkCount, accent: `${theme.accent.sageGreen}16` },
     ];
 
@@ -746,7 +747,7 @@ function HeroOverlay({ resource, theme }: { resource: LibraryResource; theme: an
                     <Box 
                         className="flex-row items-center gap-1.5 px-3.5 py-2 rounded-xl"
                         style={{ backgroundColor: theme.accent.action }}>
-                        <Play size={14} color="white" fill="white" />
+                        <Icon icon={Play} size={14} color="white" fill="white" />
                         <Text className="text-white font-bold text-[13px]">Open</Text>
                     </Box>
                     {resource.creator_name ? (
@@ -764,9 +765,9 @@ const styles = StyleSheet.create({
     mapToggleButton: {
         padding: 8,
         borderRadius: 12,
-        backgroundColor: Theme.colors.glass.light.highlight,
+        backgroundColor: 'rgba(var(--action-rgb), 0.1)',
         borderWidth: 1,
-        borderColor: Theme.colors.glass.light.border,
+        borderColor: 'rgba(var(--action-rgb), 0.15)',
         marginRight: 4,
     },
     toggleBtn: {
@@ -783,8 +784,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 14,
-        backgroundColor: Theme.colors.glass.light.highlight,
+        backgroundColor: 'rgba(var(--action-rgb), 0.08)',
         borderWidth: 1,
-        borderColor: Theme.colors.glass.light.border,
+        borderColor: 'rgba(var(--action-rgb), 0.12)',
     },
 });

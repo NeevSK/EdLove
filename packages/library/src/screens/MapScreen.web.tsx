@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { StyleSheet, useWindowDimensions, ActivityIndicator } from 'react-native';
 import {
     ScreenWrapper,
     GlobalHeader,
@@ -9,6 +9,10 @@ import {
     Text,
     HStack,
     VStack,
+    Pressable,
+    ScrollView,
+    Icon as SanctuaryIcon,
+    View,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -97,7 +101,7 @@ export default function MapScreen() {
 
     // Simulation: Load Mermaid data if AI mode is active
     const activeData = useMemo(() => {
-        if (activePerspective === 'astro' && !data?.nodes.length) {
+        if (activePerspective === 'astro' && !data?.nodes?.length) {
             return KnowledgeParser.fromMermaid(`
                 graph TD
                 A[Retina Engine] --> B[Astro View]
@@ -230,7 +234,7 @@ export default function MapScreen() {
         );
     };
 
-    const accentColor = theme.colors.accent.primary;
+    const accentColor = theme.accent.action;
 
     return (
         <ScreenWrapper scroll={false}>
@@ -240,20 +244,20 @@ export default function MapScreen() {
                 showBack
                 onBack={() => navigation.goBack()}
                 rightAction={
-                    <TouchableOpacity 
+                    <Pressable 
                         onPress={handleExport}
                         disabled={isExporting}
                         className="flex-row items-center px-4 py-2 rounded-xl mr-3"
-                        style={{ 
+                        style={({ pressed }) => ({ 
                             backgroundColor: `${accentColor}20`,
-                            opacity: isExporting ? 0.5 : 1,
-                        }}
+                            opacity: (isExporting || pressed) ? 0.5 : 1,
+                        })}
                     >
-                        <FileCheck size={18} color={accentColor} className="mr-2" />
+                        <SanctuaryIcon as={FileCheck} size={18} color={accentColor} className="mr-2" />
                         <Text className="text-xs font-bold" style={{ color: accentColor }}>
                             {isExporting ? 'CAPTURING...' : 'EXPORT'}
                         </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 }
             />
 
@@ -265,17 +269,19 @@ export default function MapScreen() {
                             const isDisabled = p.disabled;
                             const Icon = p.icon;
                             return (
-                                <TouchableOpacity
+                                <Pressable
                                     key={p.id}
                                     onPress={() => !isDisabled && setActivePerspective(p.id)}
                                     disabled={isDisabled}
-                                    style={[
+                                    style={({ pressed }) => [
                                         styles.perspectiveButton,
                                         isActive && styles.activePerspectiveButton,
-                                        isDisabled && { opacity: 0.3 }
+                                        isDisabled && { opacity: 0.3 },
+                                        pressed && { opacity: 0.8 }
                                     ]}
                                 >
-                                    <Icon 
+                                    <SanctuaryIcon 
+                                        as={Icon}
                                         size={18} 
                                         color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
                                     />
@@ -285,7 +291,7 @@ export default function MapScreen() {
                                     ]}>
                                         {p.label}
                                     </Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             );
                         })}
                     </ScrollView>
@@ -307,11 +313,11 @@ export default function MapScreen() {
                                         {selectedNode.type} \u00B7 {selectedNode.group}
                                     </Text>
                                 </VStack>
-                                <TouchableOpacity onPress={() => setSelectedNode(null)}>
+                                <Pressable onPress={() => setSelectedNode(null)}>
                                     <Box className="p-2 rounded-full bg-white/10">
-                                        <X size={20} color="white" />
+                                        <SanctuaryIcon as={X} size={20} color="white" />
                                     </Box>
-                                </TouchableOpacity>
+                                </Pressable>
                             </HStack>
 
                             {selectedNode.metadata?.description && (
@@ -320,8 +326,8 @@ export default function MapScreen() {
                                 </Text>
                             )}
 
-                            <TouchableOpacity 
-                                className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent"
+                            <Pressable 
+                                className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent active:opacity-90"
                                 onPress={() => {
                                     if (selectedNode.type === 'resource') {
                                         // @ts-ignore
@@ -332,7 +338,7 @@ export default function MapScreen() {
                                 <Text className="text-phase-surface font-extrabold">
                                     {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                 </Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </VStack>
                     </Box>
                 )}

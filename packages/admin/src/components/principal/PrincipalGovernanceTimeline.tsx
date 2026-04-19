@@ -240,7 +240,6 @@ export default function PrincipalGovernanceTimeline({
                 value={followUpContent}
                 onChangeText={setFollowUpContent}
                 placeholder="Record the next official step, decision, or resolution..."
-                placeholderTextColor={theme.scene.text.muted}
                 multiline
                 textAlignVertical="top"
                 className="text-phaseText-primary"

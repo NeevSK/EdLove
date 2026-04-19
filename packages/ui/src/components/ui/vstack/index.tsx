@@ -18,8 +18,9 @@ const spaceMap: Record<string, string> = {
 export const VStack = React.forwardRef<View, IVStackProps>(
   ({ className, space, reversed, ...props }, ref) => {
     const gapClass = space ? (spaceMap[space] || `gap-${space}`) : '';
+    const Component = View as any;
     return (
-      <View
+      <Component
         {...props}
         ref={ref}
         className={`flex-col ${reversed ? 'flex-col-reverse' : ''} ${gapClass} ${className || ''}`}

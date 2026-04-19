@@ -11,6 +11,7 @@ export interface EntityModalProps {
     mode: EntityMode;
     instance?: EntityInstance;
     title?: string;
+    onSuccess?: (data: any) => void;
 }
 
 /**
@@ -26,6 +27,7 @@ export default function EntityModal({
     mode,
     instance,
     title,
+    onSuccess,
 }: EntityModalProps) {
     const displayTitle = title || `${mode.charAt(0).toUpperCase() + mode.slice(1)} ${definition.type}`;
 
@@ -40,8 +42,9 @@ export default function EntityModal({
                     definition={definition} 
                     instance={instance} 
                     mode={mode} 
-                    onAction={(action: string) => {
+                    onAction={(action: string, payload: any) => {
                         if (action === 'complete' || action === 'close') onClose();
+                        if (action === 'success' || action === 'complete') onSuccess?.(payload);
                     }}
                 />
             );

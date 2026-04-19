@@ -56,6 +56,7 @@ export function CanvasZoneColumn<
     title,
     description,
     renderSurfaceContent,
+    getSurfaceTitle,
     getSurfaceSubtitle,
     getSurfaceSummary,
     getSurfaceSnapshot,

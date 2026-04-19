@@ -5,11 +5,13 @@ import {
     Pressable as RNPressable, 
     FlatList as RNFlatList,
     RefreshControl as RNRefreshControl,
+    KeyboardAvoidingView as RNKeyboardAvoidingView,
     type ViewProps, 
     type ScrollViewProps, 
     type PressableProps,
     type FlatListProps,
-    type RefreshControlProps
+    type RefreshControlProps,
+    type KeyboardAvoidingViewProps
 } from 'react-native';
 import { cssInterop } from 'nativewind';
 import Animated from 'react-native-reanimated';
@@ -19,6 +21,7 @@ cssInterop(RNScrollView, { className: 'style' });
 cssInterop(RNPressable, { className: 'style' });
 cssInterop(RNFlatList, { className: 'style' });
 cssInterop(RNRefreshControl, { className: 'style' });
+cssInterop(RNKeyboardAvoidingView, { className: 'style' });
 cssInterop(Animated.View, { className: 'style' });
 
 export const View = React.forwardRef<RNView, ViewProps & { className?: string }>(
@@ -59,5 +62,10 @@ RefreshControl.displayName = 'RefreshControl';
 // Redefine AnimatedView to ensure TypeScript knows about the className prop (via cssInterop)
 // and handles Reanimated's special entering/exiting/layout props.
 export const AnimatedView = Animated.View as any; 
-// Using 'as any' here as a surgical fix because Reanimated types are complex, 
-// but in a full repo we'd use a more precise intersection type.
+
+export const KeyboardAvoidingView = React.forwardRef<RNKeyboardAvoidingView, KeyboardAvoidingViewProps & { className?: string }>(
+    ({ className, ...props }, ref) => (
+      <RNKeyboardAvoidingView {...props} ref={ref as any} className={className} />
+    )
+);
+KeyboardAvoidingView.displayName = 'KeyboardAvoidingView';

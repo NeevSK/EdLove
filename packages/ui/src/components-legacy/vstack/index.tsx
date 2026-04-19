@@ -21,8 +21,10 @@ const VStack = React.forwardRef<View, IVStackProps>(
     const spaceClass = space ? `gap-${space}` : '';
     const reversedClass = reversed ? 'flex-col-reverse' : 'flex-col';
     
+    const Component = StyledView as any;
+
     return (
-      <StyledView
+      <Component
         {...props}
         ref={ref}
         className={`${reversedClass} ${spaceClass} ${className || ''}`}

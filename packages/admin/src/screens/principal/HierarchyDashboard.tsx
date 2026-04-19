@@ -14,11 +14,12 @@ import {
     FormControl,
     ScrollView,
     SkeletonCard,
-    hapticSuccess
+    hapticSuccess,
+    Pressable
 } from '@repo/ui';
 import { sectionsAPI, type SchoolSectionRow } from '../../sections';
 import { ArrowLeft, Plus, Castle } from 'lucide-react-native';
-import { TouchableOpacity } from 'react-native';
+
 
 interface HierarchyDashboardProps {
     schoolId: string;
@@ -71,12 +72,12 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
     return (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <VStack className="gap-6 p-4">
-                <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
+                <Pressable onPress={onBack} className="active:opacity-70">
                     <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
                         <Icon as={ArrowLeft} size="sm" className="text-ink" />
                         <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
                     </HStack>
-                </TouchableOpacity>
+                </Pressable>
 
                 <VStack className="gap-1">
                     <Heading className="text-2xl font-black text-ink">System Hierarchy</Heading>
@@ -113,7 +114,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
 
                         <Button 
                             onPress={handleCreateSection} 
-                            disabled={!newSectionName.trim() || saving || isPastView} 
+                            isDisabled={!newSectionName.trim() || saving || isPastView} 
                             className="bg-primary rounded-2xl h-12 shadow-sm active:scale-95 px-5"
                         >
                             {saving ? (

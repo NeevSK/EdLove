@@ -7,6 +7,9 @@
         "paths": {
             "@repo/community/*": [
                 "./src/*"
+            ],
+            "@repo/profile": [
+                "../profile/src/index.ts"
             ]
         }
     },

@@ -1,12 +1,15 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { 
-    useThemedColors, 
     Text, 
     HStack, 
     VStack, 
     Box, 
-    GlassCard 
+    GlassCard,
+    Pressable,
+    ScrollView,
+    Icon,
+    Heading,
+    View
 } from '@repo/ui';
 import { UniversalPerspective } from '@repo/library';
 import { GitMerge, Zap, Shield, Share2 } from 'lucide-react-native';
@@ -18,7 +21,6 @@ import { GitMerge, Zap, Shield, Share2 } from 'lucide-react-native';
  * Maps out the platform's architectural priorities as a mind-map/flowchart.
  */
 export default function FounderVisionScreen() {
-    const theme = useThemedColors();
     
     // Theoretical topology for App Architecture
     const appLogicTopology = {
@@ -44,20 +46,20 @@ export default function FounderVisionScreen() {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.scene.backgroundPrimary }]}>
-            <View style={styles.header}>
-                <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <View className="flex-1 bg-phase-canvas">
+            <View className="pt-[60px] px-6 pb-5">
+                <HStack className="justify-between items-center">
                     <VStack>
-                        <Text style={styles.title}>Strategic Vision</Text>
-                        <Text style={styles.subtitle}>Mapping the App Topology</Text>
+                        <Heading className="text-3xl font-black text-phase-text-primary tracking-tighter">Strategic Vision</Heading>
+                        <Text className="text-base text-phase-text-secondary">Mapping the App Topology</Text>
                     </VStack>
-                    <TouchableOpacity style={styles.shareButton}>
-                        <Share2 size={20} color={theme.status.warning} />
-                    </TouchableOpacity>
+                    <Pressable className="w-11 h-11 rounded-full bg-phase-accent/10 justify-center items-center active:opacity-70">
+                        <Icon as={Share2} size="md" className="text-phase-accent" />
+                    </Pressable>
                 </HStack>
             </View>
 
-            <View style={styles.mappingContainer}>
+            <View className="flex-1 rounded-[30px] mx-4 overflow-hidden bg-black/20 border border-white/5">
                 <UniversalPerspective 
                     topology={appLogicTopology as any}
                     initialPerspective="vastu" // Start as a Mind-map
@@ -65,84 +67,27 @@ export default function FounderVisionScreen() {
                 />
             </View>
 
-            <View style={styles.statsFooter}>
+            <View className="py-6">
                 <ScrollView 
                     horizontal 
                     showsHorizontalScrollIndicator={false} 
-                    contentContainerStyle={styles.statusScroll}>
-                    <StatusPill icon={GitMerge} label="7 Ecosystem Nodes" color={theme.status.warning} />
-                    <StatusPill icon={Zap} label="High Resonance" color={theme.status.success} />
-                    <StatusPill icon={Shield} label="RLS Protected" color={theme.status.info} />
+                    contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}>
+                    <StatusPill icon={GitMerge} label="7 Ecosystem Nodes" colorClass="text-phase-warning" />
+                    <StatusPill icon={Zap} label="High Resonance" colorClass="text-phase-reward" />
+                    <StatusPill icon={Shield} label="RLS Protected" colorClass="text-phase-accent" />
                 </ScrollView>
             </View>
         </View>
     );
 }
 
-const StatusPill = ({ icon: Icon, label, color }: any) => {
-    const theme = useThemedColors();
+const StatusPill = ({ icon: LucideIcon, label, colorClass }: { icon: any, label: string, colorClass: string }) => {
     return (
-        <GlassCard style={styles.pill}>
-            <HStack style={{ alignItems: 'center', gap: 6 }}>
-                <Icon size={14} color={color} />
-                <Text style={styles.pillText}>{label}</Text>
+        <GlassCard className="px-4 py-2 rounded-[20px]">
+            <HStack className="items-center gap-1.5">
+                <Icon as={LucideIcon} size="sm" className={colorClass} />
+                <Text className="text-xs font-semibold text-phase-text-primary/80">{label}</Text>
             </HStack>
         </GlassCard>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    header: {
-        paddingTop: 60,
-        paddingHorizontal: 24,
-        paddingBottom: 20
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: '800',
-        color: 'white',
-        letterSpacing: -0.5
-    },
-    subtitle: {
-        fontSize: 16,
-        color: 'rgba(255,255,255,0.6)'
-    },
-    shareButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: 'rgba(255, 179, 0, 0.1)',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    mappingContainer: {
-        flex: 1,
-        borderRadius: 30,
-        marginHorizontal: 16,
-        overflow: 'hidden',
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.05)'
-    },
-    statsFooter: {
-        paddingVertical: 24
-    },
-    statusScroll: {
-        paddingHorizontal: 24,
-        gap: 12,
-        flexDirection: 'row'
-    },
-    pill: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20
-    },
-    pillText: {
-        fontSize: 12,
-        color: 'rgba(255,255,255,0.8)',
-        fontWeight: '600'
-    }
-});

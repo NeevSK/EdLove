@@ -27,6 +27,7 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/self": "workspace:*",
+    "@repo/profile": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
     "expo-clipboard": "~55.0.9",
     "lucide-react-native": "^0.563.0",

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -18,7 +17,9 @@ import {
     ScreenWrapper,
     GlobalHeader,
     Icon,
-    useRegisterFAB
+    useRegisterFAB,
+    Pressable,
+    Spinner
 } from '@repo/ui';
 import {
     Users,
@@ -55,7 +56,7 @@ export default function FounderDashboard() {
     useRegisterFAB({
         tabType: 'founder',
         onPress: () => setIsCreateModalOpen(true),
-        icon: <Plus size={24} color="#FFF" />,
+        icon: <Icon as={Plus} size={24} color="#FFF" />,
         visible: true
     });
 
@@ -75,7 +76,7 @@ export default function FounderDashboard() {
                                 Ecosystem Pulse
                             </Heading>
                             <Box className="flex-row items-center gap-2 bg-phase-warning/10 px-3 py-1.5 rounded-full">
-                                <HeartPulse size={16} className="text-primary" />
+                                <Icon as={HeartPulse} size={16} className="text-primary" />
                                 <Text className="text-xs font-black text-primary">
                                     Health: {stats?.ecosystem_health || 0}%
                                 </Text>
@@ -84,8 +85,7 @@ export default function FounderDashboard() {
 
                         {/* Quick Access to Main School */}
                         {schools.find(s => s.id === user?.school_id) && (
-                            <TouchableOpacity
-                                activeOpacity={0.7}
+                            <Pressable
                                 onPress={() => {
                                     const schoolId = user?.school_id;
                                     if (schoolId) {
@@ -99,7 +99,7 @@ export default function FounderDashboard() {
                                     <HStack className="justify-between items-center">
                                         <HStack className="gap-4 items-center flex-1">
                                             <Box className="w-12 h-12 bg-primary/10 rounded-2xl items-center justify-center">
-                                                <SchoolIcon size={24} className="text-primary" />
+                                                <Icon as={SchoolIcon} size={24} className="text-primary" />
                                             </Box>
                                             <VStack className="flex-1">
                                                 <Text className="font-bold text-ink">Manage My Institution</Text>
@@ -109,13 +109,17 @@ export default function FounderDashboard() {
                                         <Icon as={ChevronRight} size={20} className="text-ink/30" />
                                     </HStack>
                                 </Box>
-                            </TouchableOpacity>
+                            </Pressable>
                         )}
 
                         {isLoading ? (
                             <HStack className="gap-4">
-                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse" />
-                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse" />
+                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                    <Spinner />
+                                </Box>
+                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                    <Spinner />
+                                </Box>
                             </HStack>
                         ) : (
                             <VStack className="gap-4">
@@ -123,13 +127,13 @@ export default function FounderDashboard() {
                                     <StatCard
                                         label="Total Schools"
                                         value={stats?.total_schools || 0}
-                                        icon={<SchoolIcon size={20} />}
+                                        icon={<Icon as={SchoolIcon} size={20} />}
                                         variant="primary"
                                     />
                                     <StatCard
                                         label="Total Souls"
                                         value={stats?.total_users || 0}
-                                        icon={<Users size={20} />}
+                                        icon={<Icon as={Users} size={20} />}
                                         variant="success"
                                     />
                                 </HStack>
@@ -137,13 +141,13 @@ export default function FounderDashboard() {
                                     <StatCard
                                         label="Classrooms"
                                         value={stats?.total_classrooms || 0}
-                                        icon={<LayoutGrid size={20} />}
+                                        icon={<Icon as={LayoutGrid} size={20} />}
                                         variant="warning"
                                     />
                                     <StatCard
                                         label="Teachers"
                                         value={stats?.total_teachers || 0}
-                                        icon={<Zap size={20} />}
+                                        icon={<Icon as={Zap} size={20} />}
                                         variant="accent"
                                     />
                                 </HStack>
@@ -178,8 +182,12 @@ export default function FounderDashboard() {
 
                         {isLoading ? (
                             <VStack className="gap-4">
-                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse" />
-                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse" />
+                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                    <Spinner />
+                                </Box>
+                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                    <Spinner />
+                                </Box>
                             </VStack>
                         ) : (
                             <VStack className="gap-3">
@@ -217,15 +225,14 @@ export default function FounderDashboard() {
     );
 }
 
-function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, label: string, onPress: () => void, color: string }) {
+function QuickAction({ icon, label, onPress, color }: { icon: any, label: string, onPress: () => void, color: string }) {
     return (
         <VStack className="flex-1 gap-2 items-center">
-            <TouchableOpacity
-                activeOpacity={0.7}
+            <Pressable
                 onPress={onPress}
                 className="w-16 h-16 rounded-[20px] bg-white border border-border items-center justify-center shadow-sm active:scale-95">
-                <LucideIcon color={color} size={28} />
-            </TouchableOpacity>
+                <Icon as={icon} color={color} size={28} />
+            </Pressable>
             <Text className="text-center text-[11px] font-bold text-ink">
                 {label}
             </Text>
@@ -258,10 +265,10 @@ function StatCard({ label, value, icon, variant }: { label: string, value: numbe
 
 function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () => void }) {
     return (
-        <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+        <Pressable onPress={onPress}>
             <Box className="p-4 bg-white rounded-3xl border border-border flex-row items-center gap-4 active:bg-ink/5">
                 <Box className="w-12 h-12 rounded-2xl bg-primary/10 items-center justify-center">
-                    <SchoolIcon size={24} className="text-primary" />
+                    <Icon as={SchoolIcon} size={24} className="text-primary" />
                 </Box>
                 <VStack className="flex-1">
                     <Text className="font-bold text-base text-ink">
@@ -273,6 +280,7 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
                 </VStack>
                 <Icon as={ChevronRight} size={20} className="text-ink/30" />
             </Box>
-        </TouchableOpacity>
+        </Pressable>
     );
 }
+

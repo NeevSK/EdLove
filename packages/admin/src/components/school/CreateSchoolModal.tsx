@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { TouchableOpacity, ScrollView } from 'react-native';
+
 import {
     SanctuaryModal,
     SanctuaryInput,
@@ -13,7 +13,9 @@ import {
     Spinner,
     Icon,
     hapticLight, 
-    hapticSuccess
+    hapticSuccess,
+    Pressable,
+    ScrollView
 } from '@repo/ui';
 import { 
     CheckCircle, 
@@ -258,20 +260,20 @@ export default function CreateSchoolModal({
                                             updateBasicInfo({ handle: val.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '') });
                                         }
                                     }}
-                                    icon={Building2}
+                                    leftIcon={Building2}
                                 />
                                 <SanctuaryInput
                                     label="Unique Handle"
                                     value={state.basicInfo.handle}
                                     onChangeText={(val) => updateBasicInfo({ handle: val.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
-                                    icon={Globe}
+                                    leftIcon={Globe}
                                     helperText="Used for QR codes and deep links"
                                 />
                                 <VStack className="gap-2">
                                     <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">Classification</Text>
                                     <HStack className="flex-wrap gap-2">
                                         {Object.values(SRI_LANKAN_SCHOOL_TYPES).map((type) => (
-                                            <TouchableOpacity 
+                                            <Pressable 
                                                 key={type.key}
                                                 onPress={() => updateBasicInfo({ officialType: type.key })}
                                                 className={`px-4 py-2 rounded-full border ${state.basicInfo.officialType === type.key ? 'border-amber-500 bg-amber-500/10' : 'border-border bg-transparent'}`}
@@ -279,7 +281,7 @@ export default function CreateSchoolModal({
                                                 <Text className={`text-xs font-bold ${state.basicInfo.officialType === type.key ? 'text-amber-600' : 'text-ink'}`}>
                                                     {type.en}
                                                 </Text>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         ))}
                                     </HStack>
                                 </VStack>
@@ -294,7 +296,7 @@ export default function CreateSchoolModal({
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                         <HStack className="gap-2">
                                             {SRI_LANKAN_PROVINCES.map((p) => (
-                                                <TouchableOpacity 
+                                                <Pressable 
                                                     key={p.id}
                                                     onPress={() => updateLocation({ provinceId: p.id, districtId: '' })}
                                                     className={`px-5 py-2.5 rounded-xl border ${state.location.provinceId === p.id ? 'border-amber-500 bg-amber-500/10' : 'border-border bg-silk'}`}
@@ -302,7 +304,7 @@ export default function CreateSchoolModal({
                                                     <Text className={`font-bold ${state.location.provinceId === p.id ? 'text-amber-600' : 'text-ink'}`}>
                                                         {p.en}
                                                     </Text>
-                                                </TouchableOpacity>
+                                                </Pressable>
                                             ))}
                                         </HStack>
                                     </ScrollView>
@@ -313,7 +315,7 @@ export default function CreateSchoolModal({
                                         <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">District</Text>
                                         <HStack className="flex-wrap gap-2">
                                             {availableDistricts.map((d) => (
-                                                <TouchableOpacity 
+                                                <Pressable 
                                                     key={d.id}
                                                     onPress={() => updateLocation({ districtId: d.id })}
                                                     className={`px-4 py-2 rounded-lg border ${state.location.districtId === d.id ? 'border-amber-500 bg-amber-500/5' : 'border-border bg-transparent'}`}
@@ -321,7 +323,7 @@ export default function CreateSchoolModal({
                                                     <Text className={`text-sm font-bold ${state.location.districtId === d.id ? 'text-amber-600' : 'text-ink'}`}>
                                                         {d.en}
                                                     </Text>
-                                                </TouchableOpacity>
+                                                </Pressable>
                                             ))}
                                         </HStack>
                                     </VStack>
@@ -332,7 +334,7 @@ export default function CreateSchoolModal({
                                     placeholder="e.g. Colombo 07"
                                     value={state.location.city}
                                     onChangeText={(val) => updateLocation({ city: val })}
-                                    icon={MapPin}
+                                    leftIcon={MapPin}
                                 />
                                 <SanctuaryInput
                                     label="Full Address"
@@ -352,7 +354,7 @@ export default function CreateSchoolModal({
                                     <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">Student Demographic</Text>
                                     <HStack className="gap-3">
                                         {STUDENT_TYPES.map((type) => (
-                                            <TouchableOpacity 
+                                            <Pressable 
                                                 key={type.id}
                                                 onPress={() => updateDemographics({ studentType: type.id as any })}
                                                 className={`flex-1 p-5 rounded-2xl border-2 items-center ${state.demographics.studentType === type.id ? 'border-amber-500 bg-amber-500/5' : 'border-border bg-silk'}`}
@@ -361,7 +363,7 @@ export default function CreateSchoolModal({
                                                     {type.id === 'mixed' ? '\u1F46A' : type.id === 'boys' ? '\u1F466' : '\u1F467'}
                                                 </Text>
                                                 <Text className="text-xs font-black uppercase text-ink text-center">{type.en}</Text>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         ))}
                                     </HStack>
                                 </VStack>
@@ -370,7 +372,7 @@ export default function CreateSchoolModal({
                                     <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">Religious Affiliation</Text>
                                     <HStack className="flex-wrap gap-2">
                                         {RELIGIOUS_AFFILIATIONS.map((r) => (
-                                            <TouchableOpacity 
+                                            <Pressable 
                                                 key={r.id}
                                                 onPress={() => updateDemographics({ religiousAffiliation: r.id })}
                                                 className={`px-4 py-2.5 rounded-xl border ${state.demographics.religiousAffiliation === r.id ? 'border-amber-500 bg-amber-500/10' : 'border-border bg-transparent'}`}
@@ -378,7 +380,7 @@ export default function CreateSchoolModal({
                                                 <Text className={`text-sm font-bold ${state.demographics.religiousAffiliation === r.id ? 'text-amber-600' : 'text-ink'}`}>
                                                     {r.en}
                                                 </Text>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         ))}
                                     </HStack>
                                 </VStack>
@@ -388,7 +390,7 @@ export default function CreateSchoolModal({
                                     value={state.demographics.studentCount}
                                     onChangeText={(val) => updateDemographics({ studentCount: val })}
                                     keyboardType="numeric"
-                                    icon={Users}
+                                    leftIcon={Users}
                                 />
                             </VStack>
                         )}

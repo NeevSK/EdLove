@@ -630,7 +630,7 @@ function createSceneTokens(tokens: PhaseTokens): SceneTokens {
             primary: tokens.text.primary,
             secondary: tokens.text.secondary,
             muted: tokens.text.muted,
-            inverse: tokens.text.onAccent || colors.sacredWhite,
+            inverse: tokens.text.inverse || colors.sacredWhite,
         }
     };
 }

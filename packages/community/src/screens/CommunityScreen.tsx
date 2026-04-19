@@ -293,21 +293,24 @@ export default function CommunityScreen() {
                     >
                         <Text className="text-ink font-bold">New Group</Text>
                     </SanctuaryButton>
-                    {sanctuaryGroups[0] ? (
+                    {sanctuaryGroups[0] && (
                         <SanctuaryButton
                             action="secondary"
                             size="sm"
-                            onPress={() =>
-                                navigation.navigate('GroupDetails', {
-                                    groupId: sanctuaryGroups[0].id,
-                                    groupName: sanctuaryGroups[0].name,
-                                })
-                            }
+                            onPress={() => {
+                                const mainGroup = sanctuaryGroups[0];
+                                if (mainGroup) {
+                                    navigation.navigate('GroupDetails', {
+                                        groupId: mainGroup.id,
+                                        groupName: mainGroup.name,
+                                    });
+                                }
+                            }}
                             className="bg-phase-surface border-border rounded-xl"
                         >
                             <Text className="text-ink font-bold">Open Circle</Text>
                         </SanctuaryButton>
-                    ) : null}
+                    )}
                 </HStack>
             </VStack>
         </Box>

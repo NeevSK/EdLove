@@ -15,8 +15,9 @@ export interface ICenterProps extends ViewProps {
 }
 
 const Center = React.forwardRef<View, ICenterProps>(({ className, ...props }, ref) => {
+  const Component = StyledView as any;
   return (
-    <StyledView
+    <Component
       {...props}
       ref={ref}
       className={`items-center justify-center ${className || ''}`}

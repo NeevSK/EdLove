@@ -10,6 +10,8 @@ import {
     InputField,
     InputSlot,
     InputIcon,
+    HStack,
+    Text,
 } from '../gluestack';
 import { AlertCircle } from 'lucide-react-native';
 
@@ -51,6 +53,7 @@ export default function SanctuaryInput({
     leftIcon,
     rightIcon,
     onRightIconPress,
+    helperText,
     isDisabled = false,
     multiline = false,
     numberOfLines = 1,
@@ -63,9 +66,16 @@ export default function SanctuaryInput({
         <FormControl isInvalid={hasError} isDisabled={isDisabled} className="w-full">
             {label && (
                 <FormControlLabel className="mb-2">
-                    <FormControlLabelText className="text-phase-text-primary font-medium tracking-wide">
-                        {label}
-                    </FormControlLabelText>
+                    <HStack className="justify-between items-center w-full">
+                        <FormControlLabelText className="text-phase-text-primary font-medium tracking-wide">
+                            {label}
+                        </FormControlLabelText>
+                        {helperText && !hasError && (
+                            <Text className="text-[10px] text-phase-text-secondary uppercase tracking-widest font-bold">
+                                {helperText}
+                            </Text>
+                        )}
+                    </HStack>
                 </FormControlLabel>
             )}
 

@@ -494,14 +494,19 @@ export default function CommunityScreenWeb() {
                                     >
                                         New Group
                                     </button>
-                                    {sanctuaryGroups[0] ? (
+                                    {sanctuaryGroups[0] && (
                                         <button
                                             className="secondary-button"
-                                            onClick={() => handleOpenGroup(sanctuaryGroups[0].id, sanctuaryGroups[0].name)}
+                                            onClick={() => {
+                                                const mainGroup = sanctuaryGroups[0];
+                                                if (mainGroup) {
+                                                    handleOpenGroup(mainGroup.id, mainGroup.name);
+                                                }
+                                            }}
                                         >
                                             Open Circle
                                         </button>
-                                    ) : null}
+                                    )}
                                 </div>
                                 <div className="community-filter-row">
                                     {filters.map((filter) => (

@@ -25,8 +25,9 @@ export const Icon = React.forwardRef<View, IIconProps>(
 
     const iconSize = typeof size === 'number' ? size : (sizeMap[size] || 20);
 
+    const Component = As as any;
     return (
-      <As {...props} ref={ref} size={iconSize} color={color} fill={fill} strokeWidth={strokeWidth} className={className} style={style} />
+      <Component {...props} ref={ref} size={iconSize} color={color} fill={fill} strokeWidth={strokeWidth} className={className} style={style} />
     );
   }
 );
