@@ -1,5 +1,3 @@
-import React, { useMemo } from 'react';
-import { TouchableOpacity } from 'react-native';
 import { Box, HStack, Heading, Text, VStack, useThemedColors, ScrollView, Pressable, useTheme } from '@repo/ui';
 import { Building2, MessageSquare, NotebookPen, QrCode, Wind } from 'lucide-react-native';
 import { ManagementStation, PrincipalGovernanceTimeline } from '../components';
@@ -159,19 +157,19 @@ function InstitutionLinks({
     hint: string;
     onPress: () => void;
   }) => (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
-      <Box className="bg-silk rounded-2xl border border-border p-4">
+    <Pressable onPress={onPress} className="active:scale-95">
+      <Box className="bg-silk rounded-3xl border border-border p-5 shadow-sm">
         <HStack className="items-center gap-4">
-          <Box className="w-9 h-9 rounded-xl bg-primary/10 items-center justify-center">
-            <Icon size={18} className="text-primary" />
+          <Box className="w-12 h-12 rounded-2xl bg-action/10 items-center justify-center">
+            <Icon size={22} className="text-action" />
           </Box>
           <VStack className="flex-1">
-            <Text className="text-[13px] font-bold text-ink">{label}</Text>
-            <Text className="text-[11px] text-ink/40 font-bold">{hint}</Text>
+            <Text className="text-[15px] font-black text-ink">{label}</Text>
+            <Text className="text-xs text-ink/40 font-bold">{hint}</Text>
           </VStack>
         </HStack>
       </Box>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   return (

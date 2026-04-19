@@ -1,6 +1,4 @@
-import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import {
+import { 
   Box,
   GlobalHeader,
   HStack,
@@ -8,9 +6,10 @@ import {
   ScrollView,
   SkeletonCard,
   Text,
-  
   VStack,
-  useTheme} from '@repo/ui';
+  useTheme,
+  Pressable
+} from '@repo/ui';
 import type { PrincipalZoneId } from '../principal/workspace';
 
 function ZoneButton({
@@ -28,29 +27,29 @@ function ZoneButton({
   onPress: (zone: PrincipalZoneId) => void;
 }) {
   return (
-    <TouchableOpacity onPress={() => onPress(id)} activeOpacity={0.85} style={{ flex: 1 }}>
+    <Pressable onPress={() => onPress(id)} className="flex-1 active:scale-95">
       <Box
-        className={`p-sm rounded-xl border min-h-[74px] ${ isActive ? 'border-gurudeviBlue bg-gurudeviBlue/10' : 'border-phase-interactive/10 bg-phase-canvas' }`}
+        className={`p-4 rounded-3xl border min-h-[74px] shadow-sm ${ isActive ? 'border-action bg-action/5' : 'border-border bg-white' }`}
       >
         <HStack className="justify-between items-center">
-          <Text className="text-[13px] font-bold text-phaseText-primary">
+          <Text className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-action' : 'text-ink/60'}`}>
             {label}
           </Text>
           <Box
-            className={`px-2 py-0.5 rounded-full ${ isActive ? 'bg-gurudeviBlue/20' : 'bg-phase-interactive/5' }`}
+            className={`px-2 py-0.5 rounded-full ${ isActive ? 'bg-action/10' : 'bg-ink/5' }`}
           >
             <Text
-              className={`text-[10px] font-extrabold ${ isActive ? 'text-gurudeviBlue' : 'text-phaseText-secondary' }`}
+              className={`text-[10px] font-black ${ isActive ? 'text-action' : 'text-ink/40' }`}
             >
               {count}
             </Text>
           </Box>
         </HStack>
-        <Text className="text-[11px] leading-4 text-phaseText-secondary mt-1.5">
+        <Text className="text-[11px] font-bold text-ink/40 mt-2">
           {detail}
         </Text>
       </Box>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

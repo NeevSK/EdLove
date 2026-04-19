@@ -394,18 +394,18 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                                     </Button>
                                 )}
                             </HStack>
-                            <HStack sx={{ gap: Theme.spacing.sm }}>
-                                <Box sx={{ flex: 1, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border, padding: Theme.spacing.sm }}>
-                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>Subject</Text>
-                                    <Text sx={{ color: colors.text, fontWeight: '700' as const }}>{classroom?.subject || 'Classroom'}</Text>
+                            <HStack className="gap-sm">
+                                <Box className="flex-1 rounded-comfortable border p-sm" style={{ backgroundColor: colors.primary, borderColor: colors.border }}>
+                                    <Text className="text-xs uppercase font-bold" style={{ color: colors.textTertiary }}>Subject</Text>
+                                    <Text className="font-bold" style={{ color: colors.text }}>{classroom?.subject || 'Classroom'}</Text>
                                 </Box>
-                                <Box sx={{ flex: 1, backgroundColor: activeTone.tint, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border, padding: Theme.spacing.sm }}>
-                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>Current Lane</Text>
-                                    <Text sx={{ color: activeTone.color, fontWeight: '700' as const }}>{activeTone.label}</Text>
+                                <Box className="flex-1 rounded-comfortable border p-sm" style={{ backgroundColor: activeTone.tint, borderColor: colors.border }}>
+                                    <Text className="text-xs uppercase font-bold" style={{ color: colors.textTertiary }}>Current Lane</Text>
+                                    <Text className="font-bold" style={{ color: activeTone.color }}>{activeTone.label}</Text>
                                 </Box>
-                                <Box sx={{ flex: 1, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border, padding: Theme.spacing.sm }}>
-                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>Signals</Text>
-                                    <Text sx={{ color: colors.text, fontWeight: '700' as const }}>
+                                <Box className="flex-1 rounded-comfortable border p-sm" style={{ backgroundColor: colors.primary, borderColor: colors.border }}>
+                                    <Text className="text-xs uppercase font-bold" style={{ color: colors.textTertiary }}>Signals</Text>
+                                    <Text className="font-bold" style={{ color: colors.text }}>
                                         {workspace.summary.assignmentCount} tasks · {workspace.summary.observationCount} notes
                                     </Text>
                                 </Box>
@@ -446,37 +446,41 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                         </HStack>
                     </Box>
                 </Box>
-                <Box sx={{ backgroundColor: 'rgba(245,237,214,0.96)', paddingBottom: Theme.spacing.md, paddingTop: Theme.spacing.sm, borderTopWidth: 1, borderTopColor: Theme.colors.linen, borderBottomWidth: 1, borderBottomColor: Theme.colors.linen }}>
+                <Box 
+                    className="pb-md pt-sm border-t border-b"
+                    style={{ 
+                        backgroundColor: 'rgba(245,237,214,0.96)',
+                        borderTopColor: Theme.colors.linen, 
+                        borderBottomColor: Theme.colors.linen 
+                    }}
+                >
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
-                        <HStack sx={{ gap: 12 }}>
+                        <HStack className="gap-3">
                             {TEACHER_FEATURES.map((f) => {
                                 const Icon = f.icon;
                                 const isActive = activeFeature === f.id;
                                 const tone = FEATURE_TONES[f.id];
                                 return (
                                     <Pressable key={f.id} onPress={() => { hapticLight(); setActiveFeature(f.id); }}>
-                                        <VStack sx={{
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            paddingHorizontal: Theme.spacing.md,
-                                            paddingVertical: Theme.spacing.sm,
-                                            borderRadius: Theme.corners.full,
-                                            borderWidth: 1,
-                                            borderColor: isActive ? tone.color : Theme.colors.linen,
-                                            backgroundColor: isActive ? tone.color : Theme.colors.silk,
-                                            minWidth: 90,
-                                            gap: Theme.spacing.xs,
-                                            shadowColor: isActive ? Theme.colors.shadowAmbient : 'transparent',
-                                            shadowOffset: { width: 0, height: 4 },
-                                            shadowOpacity: isActive ? 1 : 0,
-                                            shadowRadius: 10,
-                                        }}>
+                                        <VStack 
+                                            className="items-center justify-center px-md py-sm rounded-full border min-w-[90px] gap-xs"
+                                            style={{
+                                                borderColor: isActive ? tone.color : Theme.colors.linen,
+                                                backgroundColor: isActive ? tone.color : Theme.colors.silk,
+                                                shadowColor: isActive ? Theme.colors.shadowAmbient : 'transparent',
+                                                shadowOffset: { width: 0, height: 4 },
+                                                shadowOpacity: isActive ? 1 : 0,
+                                                shadowRadius: 10,
+                                            }}
+                                        >
                                             <Icon size={18} color={isActive ? Theme.colors.sacredWhite : tone.color} />
-                                            <Text sx={{
-                                                fontSize: Theme.typography.fontSize.xs,
-                                                fontWeight: (isActive ? '700' : '400') as any,
-                                                color: isActive ? Theme.colors.sacredWhite : colors.text
-                                            }}>{f.label}</Text>
+                                            <Text 
+                                                className="text-xs"
+                                                style={{
+                                                    fontWeight: isActive ? '700' : '400',
+                                                    color: isActive ? Theme.colors.sacredWhite : colors.text
+                                                }}
+                                            >{f.label}</Text>
                                         </VStack>
                                     </Pressable>
                                 );
@@ -484,25 +488,25 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                         </HStack>
                     </ScrollView>
                 </Box>
-                <Box flex={1} sx={{ backgroundColor: Theme.colors.vellum }}>
+                <Box className="flex-1 bg-vellum">
                     {renderFeatureContent()}
                 </Box>
             </ScrollView>
             {/* Modals */}
             <Modal isOpen={showAddMonthModal} onClose={() => setShowAddMonthModal(false)}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.secondary }}>
-                    <ModalHeader><Heading color={colors.text} sx={{ fontSize: 18 }}>Add Monthly Module</Heading></ModalHeader>
-                    <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
-                        <VStack sx={{ gap: 16 }}>
-                            <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Give this month a title (e.g., "September 2026")</Text>
-                            <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
-                                <InputField placeholder="Enter title..." value={newMonthTitle} onChangeText={setNewMonthTitle} color={colors.text} />
+                <ModalContent style={{ backgroundColor: colors.secondary }}>
+                    <ModalHeader><Heading style={{ color: colors.text }} className="text-lg">Add Monthly Module</Heading></ModalHeader>
+                    <ModalBody className="pb-lg">
+                        <VStack className="gap-4">
+                            <Text style={{ color: colors.textSecondary }} className="text-sm">Give this month a title (e.g., "September 2026")</Text>
+                            <Input className="bg-transparent" style={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                <InputField placeholder="Enter title..." value={newMonthTitle} onChangeText={setNewMonthTitle} style={{ color: colors.text }} />
                             </Input>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <HStack sx={{ gap: 8 }}>
+                        <HStack className="gap-2">
                             <Button variant="outline" action="secondary" onPress={() => setShowAddMonthModal(false)}><ButtonText color={colors.textTertiary}>Cancel</ButtonText></Button>
                             <Button action="primary" onPress={handleAddMonth} isDisabled={!newMonthTitle.trim() || isSubmitting}>
                                 {isSubmitting ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText color={Theme.colors.sacredWhite}>Create</ButtonText>}
@@ -513,52 +517,52 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
             </Modal>
             <Modal isOpen={showAddContentModal} onClose={() => { setShowAddContentModal(false); resetForm(); }}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.secondary, maxWidth: 500 }}>
+                <ModalContent className="max-w-[500px]" style={{ backgroundColor: colors.secondary }}>
                     <ModalHeader>
-                        <Heading color={colors.text} sx={{ fontSize: 18 }}>
+                        <Heading style={{ color: colors.text }} className="text-lg">
                             {contentType === 'material' ? 'Add Academic Material' : 'Create Assignment'}
                         </Heading>
                     </ModalHeader>
-                    <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
-                        <VStack sx={{ gap: 16 }}>
+                    <ModalBody className="pb-lg">
+                        <VStack className="gap-4">
                             {contentType === 'material' && (
-                                <HStack sx={{ gap: 8 }}>
+                                <HStack className="gap-2">
                                     {(['note', 'link', 'pdf'] as const).map((type) => (
-                                        <Pressable key={type} onPress={() => setFormType(type)} style={{ flex: 1 }}>
-                                            <Box sx={{
-                                                padding: Theme.spacing.sm,
-                                                borderRadius: Theme.corners.tight,
-                                                backgroundColor: formType === type ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                                alignItems: 'center'
-                                            }}>
-                                                <Text color={formType === type ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold' }}>{type.toUpperCase()}</Text>
+                                        <Pressable key={type} onPress={() => setFormType(type)} className="flex-1">
+                                            <Box 
+                                                className="p-sm rounded-tight items-center"
+                                                style={{
+                                                    backgroundColor: formType === type ? Theme.colors.sanctuarySaffron : colors.tertiary,
+                                                }}
+                                            >
+                                                <Text style={{ color: formType === type ? Theme.colors.sacredWhite : colors.textSecondary }} className="text-xs font-bold">{type.toUpperCase()}</Text>
                                             </Box>
                                         </Pressable>
                                     ))}
                                 </HStack>
                             )}
-                            <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
-                                <InputField placeholder="Title" value={formTitle} onChangeText={setFormTitle} color={colors.text} />
+                            <Input className="bg-transparent" style={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                <InputField placeholder="Title" value={formTitle} onChangeText={setFormTitle} style={{ color: colors.text }} />
                             </Input>
                             {(contentType === 'assignment' || formType === 'note') && (
-                                <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent', minHeight: 80 }}>
-                                    <InputField placeholder="Description" value={formDescription} onChangeText={setFormDescription} color={colors.text} multiline />
+                                <Input className="bg-transparent min-h-[80px]" style={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                    <InputField placeholder="Description" value={formDescription} onChangeText={setFormDescription} style={{ color: colors.text }} multiline />
                                 </Input>
                             )}
                             {contentType === 'material' && (formType === 'pdf' || formType === 'link') && (
-                                <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
-                                    <InputField placeholder="URL" value={formUrl} onChangeText={setFormUrl} color={colors.text} autoCapitalize="none" />
+                                <Input className="bg-transparent" style={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                    <InputField placeholder="URL" value={formUrl} onChangeText={setFormUrl} style={{ color: colors.text }} autoCapitalize="none" />
                                 </Input>
                             )}
                             {contentType === 'assignment' && (
-                                <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
-                                    <InputField placeholder="Due Date (YYYY-MM-DD)" value={formDueDate} onChangeText={setFormDueDate} color={colors.text} />
+                                <Input className="bg-transparent" style={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                    <InputField placeholder="Due Date (YYYY-MM-DD)" value={formDueDate} onChangeText={setFormDueDate} style={{ color: colors.text }} />
                                 </Input>
                             )}
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <HStack sx={{ gap: 8 }}>
+                        <HStack className="gap-2">
                             <Button variant="outline" action="secondary" onPress={() => { setShowAddContentModal(false); resetForm(); }}><ButtonText color={colors.textTertiary}>Cancel</ButtonText></Button>
                             <Button action="primary" onPress={handleAddContent} isDisabled={!formTitle.trim() || isSubmitting}>
                                 {isSubmitting ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText color={Theme.colors.sacredWhite}>Add</ButtonText>}

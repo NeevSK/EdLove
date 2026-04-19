@@ -22,6 +22,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BlurView } from 'expo-blur';
+// @ts-ignore - nativewind is added to package.json but may not be indexed yet
 import { cssInterop } from 'nativewind';
 import { useNavigation } from '@react-navigation/native';
 import {
