@@ -345,7 +345,7 @@ function WhisperedMomentsRow({ moments, t }: WhisperedMomentsRowProps) {
 // —————————————————————————————————————————————————————————————————————————————
 
 export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) {
-    const { can } = usePermissions();
+    const { can, flags } = usePermissions();
     const { t } = useTranslation();
     const viewDate = useTemporalStore(state => state.viewDate);
     const viewScale = useTemporalStore(state => state.viewScale);
@@ -465,7 +465,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     )}
 
                     {/* River — students */}
-                    {isStudentRole && (
+                    {isStudentRole && flags.isStudentProgressWorkspaceEnabled && (
                         <PathRow
                             emoji="🌊"
                             pathName={t('journey.riverPath')}
@@ -475,7 +475,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     )}
 
                     {/* Crystal — students */}
-                    {isStudentRole && (
+                    {isStudentRole && flags.isStudentProgressWorkspaceEnabled && (
                         <PathRow
                             emoji="💎"
                             pathName={t('journey.crystalPath')}
@@ -491,7 +491,9 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     <ResonanceRow stats={resonance} />
 
                     {/* Rewards / recognition — shown as narrative signals rather than a score */}
-                    <RecognitionRow badges={journeyRewards?.badges ?? []} />
+                    {flags.isStudentRewardsWorkspaceEnabled && (
+                        <RecognitionRow badges={journeyRewards?.badges ?? []} />
+                    )}
 
                     {/* Whispered Moments — all users */}
                     <WhisperedMomentsRow

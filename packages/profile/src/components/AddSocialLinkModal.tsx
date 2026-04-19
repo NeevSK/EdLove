@@ -57,6 +57,7 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKe
 export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId, initialLink }) => {
     const { links, addLink, updateLink } = useSocialLinks(userId);
     const { t } = useTranslation();
+    const { flags } = usePermissions();
     
     const [platform, setPlatform] = useState<SocialPlatform>(initialLink?.platform || 'whatsapp');
     const [url, setUrl] = useState(initialLink?.url || '');
@@ -129,26 +130,32 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                 <VStack space="sm">
                                     <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.selectPlatform')}</Text>
                                     <HStack className="flex-wrap">
-                                        {PLATFORMS.map((p) => (
-                                            <Pressable
-                                                key={p.value}
-                                                onPress={() => setPlatform(p.value)}
-                                                className={`flex-row items-center px-4 py-3 rounded-2xl mr-2 mb-2 border ${
-                                                    platform === p.value 
-                                                        ? 'border-phase-interactive bg-phase-interactive/5' 
-                                                        : 'border-phase-surface bg-phase-canvas'
-                                                }`}
-                                            >
-                                                <p.icon size={18} color={platform === p.value ? '#4A90E2' : '#9DA1A3'} />
-                                                <Text
-                                                    className={`text-[13px] ml-2 ${
-                                                        platform === p.value ? 'font-bold text-phase-interactive' : 'text-phase-text-secondary'
-                                                    }`}
+                                        {PLATFORMS.map((p) => {
+                                            const isProFeature = p.value === 'website' && p.labelKey.includes('portfolio');
+                                            const isLocked = isProFeature && !flags.isProMember;
+                                            
+                                            return (
+                                                <Pressable
+                                                    key={p.value + p.labelKey}
+                                                    onPress={() => !isLocked && setPlatform(p.value)}
+                                                    className={`flex-row items-center px-4 py-3 rounded-2xl mr-2 mb-2 border ${
+                                                        platform === p.value 
+                                                            ? 'border-phase-interactive bg-phase-interactive/5' 
+                                                            : 'border-phase-surface bg-phase-canvas'
+                                                    } ${isLocked ? 'opacity-50' : ''}`}
                                                 >
-                                                    {t(p.labelKey)}
-                                                </Text>
-                                            </Pressable>
-                                        ))}
+                                                    <p.icon size={18} color={platform === p.value ? '#4A90E2' : '#9DA1A3'} />
+                                                    <Text
+                                                        className={`text-[13px] ml-2 ${
+                                                            platform === p.value ? 'font-bold text-phase-interactive' : 'text-phase-text-secondary'
+                                                        }`}
+                                                    >
+                                                        {t(p.labelKey)}
+                                                    </Text>
+                                                    {isLocked && <Text className="ml-1 text-[8px] font-black text-phase-interactive uppercase">PRO</Text>}
+                                                </Pressable>
+                                            );
+                                        })}
                                     </HStack>
                                 </VStack>
 

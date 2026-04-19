@@ -3,30 +3,31 @@
  *
  * Shared chat layout used by GroupChatScreen and (future) DirectMessageScreen.
  * Handles: message list, real-time subscription, optimistic sends, compose bar.
+ * Refactored for Sanctuary V3.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     FlatList,
-    ActivityIndicator,
 } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
-    Avatar,
-    AvatarFallbackText,
-    AvatarImage,
+    UserAvatar,
     ScreenWrapper,
     GlobalHeader,
     Pressable,
     InputField,
-    Theme
+    Spinner,
+    Icon,
+    FadeInDown
 } from '@repo/ui';
-import { Send } from 'lucide-react-native';
+import { Send, MessageSquare } from 'lucide-react-native';
 import { supabase, useStore } from '@repo/core';
+import Animated from 'react-native-reanimated';
 
 export interface ChatMessage {
     id: string;
@@ -110,7 +111,7 @@ export default function BaseChatScreen({
                         if (prev.some(m => m.id === msg.id)) return prev;
                         return [...prev, msg];
                     });
-                    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+                    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
                 }
             )
             .subscribe();
@@ -121,7 +122,7 @@ export default function BaseChatScreen({
     // Scroll to bottom on first load
     useEffect(() => {
         if (!loading && messages.length > 0) {
-            setTimeout(() => listRef.current?.scrollToEnd({ animated: false }), 50);
+            setTimeout(() => listRef.current?.scrollToEnd({ animated: false }), 100);
         }
     }, [loading]);
 
@@ -141,7 +142,7 @@ export default function BaseChatScreen({
             author: { full_name: user.full_name || 'You', avatar_url: user.avatar_url },
         };
         setMessages(prev => [...prev, optimistic]);
-        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
 
         try {
             const real = await sendMessage(content);
@@ -158,44 +159,50 @@ export default function BaseChatScreen({
     const renderMessage = ({ item }: { item: ChatMessage }) => {
         const isOwn = item.author_id === user?.id;
         const authorName = item.author?.full_name || 'Unknown';
-        const initials = authorName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
         const time = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        const avatar = (side: 'left' | 'right') => (
-            <Pressable
-                onPress={() => onPressAuthor?.(item.author_id, authorName)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-                <Avatar size="xs" className={`${side === 'left' ? 'mr-2' : 'ml-2'} mt-1 ${isOwn ? 'bg-primary-500' : 'bg-primary-400'}`}>
-                    {(isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)
-                        ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} />
-                        : <AvatarFallbackText>{initials}</AvatarFallbackText>
-                    }
-                </Avatar>
-            </Pressable>
-        );
-
         return (
-            <HStack className={`justify-${isOwn ? 'end' : 'start'} mb-2 px-4`}>
-                {!isOwn && avatar('left')}
-                <VStack className="max-w-[72%] gap-0.5">
+            <HStack className={`justify-${isOwn ? 'end' : 'start'} mb-4 px-5`}>
+                {!isOwn && (
+                    <Box className="mr-3">
+                        <Pressable 
+                            onPress={() => onPressAuthor?.(item.author_id, authorName)}
+                            className="bg-phase-surface rounded-full shadow-sm"
+                        >
+                            <UserAvatar
+                                avatarUrl={item.author?.avatar_url}
+                                fullName={authorName}
+                                size={32}
+                            />
+                        </Pressable>
+                    </Box>
+                )}
+                
+                <VStack className={`max-w-[75%] gap-1 ${isOwn ? 'items-end' : 'items-start'}`}>
                     {!isOwn && (
-                        <Text className="text-[11px] text-muted-foreground ml-0.5">{authorName}</Text>
+                        <Text className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">
+                            {authorName}
+                        </Text>
                     )}
-                    <Box className={`px-4 py-2 rounded-xl border ${isOwn ? 'bg-primary-500 border-primary-500 rounded-br-sm' : 'bg-surface-low border-outline-variant rounded-bl-sm'}`}>
-                        <Text className={`text-sm leading-relaxed ${isOwn ? 'text-white' : 'text-foreground'}`}>
+                    <Box 
+                        className={`px-4 py-3 rounded-2xl border ${
+                            isOwn 
+                                ? 'bg-phase-interactive border-phase-interactive rounded-tr-sm' 
+                                : 'bg-phase-surface border-border rounded-tl-sm'
+                        }`}
+                    >
+                        <Text className={`text-sm leading-relaxed font-medium ${isOwn ? 'text-white' : 'text-ink'}`}>
                             {item.content}
                         </Text>
                     </Box>
-                    <Text className={`text-[10px] text-muted-foreground ${isOwn ? 'self-end' : 'self-start'}`}>{time}</Text>
+                    <Text className="text-[9px] font-bold text-ink/20 px-1">{time}</Text>
                 </VStack>
-                {isOwn && avatar('right')}
             </HStack>
         );
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true} className="bg-phase-canvas">
             <GlobalHeader
                 title={title}
                 subtitle={subtitle}
@@ -206,7 +213,8 @@ export default function BaseChatScreen({
             <Box className="flex-1">
                 {loading ? (
                     <Box className="flex-1 items-center justify-center">
-                        <ActivityIndicator color="#E67E22" />
+                        <Spinner />
+                        <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">Tuning Frequencies...</Text>
                     </Box>
                 ) : (
                     <FlatList
@@ -214,50 +222,60 @@ export default function BaseChatScreen({
                         data={messages}
                         keyExtractor={item => item.id}
                         renderItem={renderMessage}
-                        contentContainerStyle={{ paddingVertical: 16, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
+                        contentContainerStyle={{ paddingVertical: 20, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
-                            <Text className="text-center text-muted-foreground text-sm">
-                                {t('chat.empty', 'No messages yet. Say hello!')}
-                            </Text>
+                            <Animated.View entering={FadeInDown.duration(800).springify()} className="items-center px-10">
+                                <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
+                                    <Icon as={MessageSquare} size="lg" className="text-ink/20" />
+                                </Box>
+                                <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
+                                    {t('chat.empty', 'A quiet resonance awaits. Be the first to speak in this sanctuary.')}
+                                </Text>
+                            </Animated.View>
                         }
                     />
                 )}
 
                 {/* Compose bar */}
-                <Box className="bg-surface-lowest border-t border-outline-variant px-4 py-2">
+                <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
                     {isReadOnly ? (
-                        <Box className="p-4 items-center">
-                            <Text className="text-muted-foreground text-sm italic">
+                        <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
+                            <Text className="text-ink/40 text-[11px] font-medium italic">
                                 {t('chat.historicalView', 'Viewing historical sanctuary records.')}
                             </Text>
                         </Box>
                     ) : isBlocked ? (
-                        <Box className="p-4 items-center">
-                            <Text className="text-muted-foreground text-sm italic">
+                        <Box className="py-2 items-center bg-red-500/5 rounded-xl border border-dashed border-red-500/20">
+                            <Text className="text-red-500/60 text-[11px] font-medium italic">
                                 {blockedMessage || 'You cannot send messages to this sanctuary.'}
                             </Text>
                         </Box>
                     ) : (
-                        <HStack className="gap-2 items-end">
-                            <InputField
-                                value={draft}
-                                onChangeText={setDraft}
-                                placeholder="Write a message..."
-                                placeholderTextColor="rgba(255,255,255,0.4)"
-                                multiline
-                                className="flex-1 min-h-[40px] max-h-[120px] rounded-xl border border-outline-variant px-4 py-2 text-sm text-foreground bg-surface-low"
-                                returnKeyType="default"
-                            />
+                        <HStack className="gap-3 items-end">
+                            <Box className="flex-1 bg-phase-canvas border border-border rounded-[20px] px-1 py-1">
+                                <InputField
+                                    value={draft}
+                                    onChangeText={setDraft}
+                                    placeholder={t('chat.placeholder', 'Resonate...') as string}
+                                    placeholderTextColor="rgba(var(--ink), 0.2)"
+                                    multiline
+                                    className="min-h-[44px] max-h-[140px] px-4 py-2.5 text-base text-ink font-medium"
+                                    returnKeyType="default"
+                                />
+                            </Box>
                             <Pressable
                                 onPress={handleSend}
                                 disabled={!draft.trim() || sending}
-                                className={`w-10 h-10 rounded-full items-center justify-center ${draft.trim() ? 'bg-primary-500' : 'bg-outline-variant'}`}
+                                className={`w-12 h-12 rounded-full items-center justify-center shadow-lg transition-all ${
+                                    draft.trim() ? 'bg-phase-interactive active:scale-95' : 'bg-ink/5'
+                                }`}
                             >
-                                {sending
-                                    ? <ActivityIndicator size="small" color="white" />
-                                    : <Send size={18} color="white" />
-                                }
+                                {sending ? (
+                                    <Spinner />
+                                ) : (
+                                    <Icon as={Send} size="sm" className={draft.trim() ? 'text-white' : 'text-ink/20'} />
+                                )}
                             </Pressable>
                         </HStack>
                     )}

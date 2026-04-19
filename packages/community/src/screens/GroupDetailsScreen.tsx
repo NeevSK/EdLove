@@ -221,7 +221,7 @@ export default function GroupDetailsScreen() {
                                     )}
                                 </HStack>
                                 <HStack className="items-center gap-1.5">
-                                    <Icon as={Users} size="2xs" className="text-ink/40" />
+                                    <Icon as={Users} size="xs" className="text-ink/40" />
                                     <Text className="text-ink/60 text-xs font-bold uppercase tracking-wider">
                                         {group.member_count || 0} {t('community.groups.members')}
                                     </Text>

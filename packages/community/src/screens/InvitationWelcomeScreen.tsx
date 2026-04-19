@@ -1,17 +1,21 @@
 import React from 'react';
 import {
     VStack,
+    HStack,
     Heading,
     Text,
-    Button,
-    ButtonText,
+    SanctuaryButton,
     Box,
     useSanctuaryToast,
-    ScreenWrapper
+    ScreenWrapper,
+    Icon,
+    FadeInDown
 } from '@repo/ui';
 import { supabase, identityAPI } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { ShieldCheck, GraduationCap, ArrowRight } from 'lucide-react-native';
+import Animated from 'react-native-reanimated';
 
 interface InvitationWelcomeScreenProps {
     route?: {
@@ -65,41 +69,63 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
     };
 
     return (
-        <ScreenWrapper scroll={false} className="bg-phase-canvas">
-            <Box 
-                className="flex-1 justify-center p-8"
-            >
-                <VStack className="gap-8 items-center">
-                    <Text 
-                        className="text-phase-interactive text-xl font-bold uppercase tracking-wider"
-                    >
-                        {t('invitationWelcome.invited') || "You've been invited!"}
-                    </Text>
-                    <Heading 
-                        className="text-4xl text-ink text-center font-bold"
-                    >
-                        {t('invitationWelcome.welcomeTo', { schoolName })}
-                    </Heading>
-                    
-                    <Box 
-                        className="bg-phase-surface p-6 rounded-2xl w-full border border-border mt-4"
-                    >
-                        <Text className="text-ink/60 text-center text-lg">
-                            {t('invitationWelcome.role') || 'Your Role'}: {' '}
-                            <Text className="text-ink font-bold">
-                                {role.charAt(0).toUpperCase() + role.slice(1)}
+        <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
+            <Box className="flex-1 justify-center p-8">
+                <VStack className="gap-12 items-center">
+                    <Animated.View entering={FadeInDown.duration(800).springify()}>
+                        <VStack className="items-center gap-4">
+                            <Box className="w-20 h-20 rounded-[32px] bg-phase-interactive/10 items-center justify-center">
+                                <Icon as={ShieldCheck} size="xl" className="text-phase-interactive" />
+                            </Box>
+                            <Text className="text-phase-interactive text-sm font-black uppercase tracking-[4px]">
+                                {t('invitationWelcome.invited') || "Call to Action"}
                             </Text>
-                        </Text>
-                    </Box>
+                        </VStack>
+                    </Animated.View>
 
-                    <Button
-                        className="bg-phase-interactive w-full h-14 rounded-2xl mt-4 active:opacity-90 shadow-lg"
-                        onPress={handleJoin}
-                    >
-                        <ButtonText className="text-inverted text-lg font-bold">
-                            {t('invitationWelcome.joinButton') || 'Accept Invitation'}
-                        </ButtonText>
-                    </Button>
+                    <Animated.View entering={FadeInDown.delay(200).duration(800).springify()}>
+                        <VStack className="gap-2 items-center">
+                            <Heading className="text-4xl text-ink text-center font-black leading-tight">
+                                {t('invitationWelcome.welcomeTo', { schoolName }) || `Welcome to ${schoolName}`}
+                            </Heading>
+                            <Text className="text-ink/40 text-base text-center font-medium px-4">
+                                {t('invitationWelcome.desc') || 'Your presence has been requested within this sanctuary.'}
+                            </Text>
+                        </VStack>
+                    </Animated.View>
+                    
+                    <Animated.View entering={FadeInDown.delay(400).duration(800).springify()} style={{ width: '100%' }}>
+                        <Box className="bg-phase-surface p-6 rounded-[32px] border border-border shadow-sm">
+                            <HStack className="items-center gap-5">
+                                <Box className="w-12 h-12 rounded-2xl bg-ink/5 items-center justify-center">
+                                    <Icon as={GraduationCap} size="sm" className="text-ink" />
+                                </Box>
+                                <VStack className="gap-0.5">
+                                    <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest text-left">
+                                        {t('invitationWelcome.role') || 'Sovereign Role'}
+                                    </Text>
+                                    <Text className="text-ink text-lg font-black text-left">
+                                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                                    </Text>
+                                </VStack>
+                            </HStack>
+                        </Box>
+                    </Animated.View>
+
+                    <Animated.View entering={FadeInDown.delay(600).duration(800).springify()} style={{ width: '100%' }}>
+                        <SanctuaryButton
+                            action="primary"
+                            className="w-full h-16 rounded-[24px] shadow-xl"
+                            onPress={handleJoin}
+                        >
+                            <HStack className="items-center gap-2">
+                                <Text className="text-white text-lg font-black">
+                                    {t('invitationWelcome.joinButton') || 'Enter Sanctuary'}
+                                </Text>
+                                <Icon as={ArrowRight} size="sm" className="text-white" />
+                            </HStack>
+                        </SanctuaryButton>
+                    </Animated.View>
                 </VStack>
             </Box>
         </ScreenWrapper>

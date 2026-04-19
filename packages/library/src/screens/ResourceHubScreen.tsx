@@ -357,9 +357,13 @@ export default function ResourceHubScreen() {
                 </Box>
             </ScrollView>
 
-            <ResourceShareQRModal visible={qrVisible} onClose={() => setQrVisible(false)}
+            <ResourceShareQRModal 
+                visible={qrVisible} 
+                onClose={() => setQrVisible(false)}
                 resourceId={resource.id}
                 resourceTitle={resource.title}
+                resourceType={resource.type}
+                resourceThumbnailUrl={resource.url}
             />
         </ScreenWrapper>
     );

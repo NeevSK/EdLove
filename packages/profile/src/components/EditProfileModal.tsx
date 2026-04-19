@@ -45,7 +45,7 @@ interface EditProfileModalProps {
  */
 export default function EditProfileModal({ visible, onClose, onSave, currentProfile }: EditProfileModalProps) {
     const { t } = useTranslation();
-    const { ability } = usePermissions();
+    const { ability, flags } = usePermissions();
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [bio, setBio] = useState('');
@@ -221,9 +221,19 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     </VStack>
 
                                     <VStack space="sm">
-                                        <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
-                                            {t('profile.bio') || 'BIO'}
-                                        </Text>
+                                        <HStack className="justify-between items-center ml-1 mb-1">
+                                            <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px]">
+                                                {t('profile.bio') || 'BIO'}
+                                            </Text>
+                                            {flags.isAIAssistantEnabled && (
+                                                <Pressable 
+                                                    onPress={() => hapticLight()}
+                                                    className="bg-phase-interactive/10 px-2 py-0.5 rounded-md border border-phase-interactive/20"
+                                                >
+                                                    <Text className="text-[9px] font-black text-phase-interactive uppercase">AI GENERATE</Text>
+                                                </Pressable>
+                                            )}
+                                        </HStack>
                                         <Input
                                             className="h-32 rounded-[32px] bg-phase-surface/30 border-phase-surface/50 p-2"
                                             isDisabled={loading}

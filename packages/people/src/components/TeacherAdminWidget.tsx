@@ -29,14 +29,14 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
 
   const AdminAction = ({ icon: LucideIcon, label, variant = 'primary', onPress }: any) => {
     const colorClasses = {
-      primary: 'text-primary bg-primary/10',
-      warning: 'text-warning bg-warning/10',
-      success: 'text-success bg-success/10',
-      error: 'text-error bg-error/10',
+      primary: 'text-phase-interactive bg-phase-interactive/5 border-phase-interactive/20',
+      warning: 'text-phase-warning bg-phase-warning/5 border-phase-warning/20',
+      success: 'text-phase-success bg-phase-success/5 border-phase-success/20',
+      error: 'text-phase-error bg-phase-error/5 border-phase-error/20',
     };
     
     const activeColor = colorClasses[variant as keyof typeof colorClasses] || colorClasses.primary;
-    const [textColor, bgColor] = activeColor.split(' ');
+    const [textColor, bgColor, borderColor] = activeColor.split(' ');
 
     return (
       <Pressable
@@ -45,12 +45,12 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
           if (onPress) onPress();
           if (onAction) onAction(label);
         }}
-        className="flex-1 bg-silk p-4 rounded-2xl border border-border items-center justify-center gap-2 min-h-[100px]"
+        className={`flex-1 bg-phase-canvas p-4 rounded-3xl border ${borderColor} items-center justify-center gap-3 min-h-[110px] shadow-sm`}
       >
-        <Box className={`p-2 rounded-xl ${bgColor}`}>
+        <Box className={`p-3 rounded-2xl ${bgColor}`}>
           <Icon as={LucideIcon} size="md" className={textColor} />
         </Box>
-        <Text className="text-[11px] font-bold text-center text-textPrimary">
+        <Text className="text-[12px] font-bold text-center text-phase-text-primary uppercase tracking-tight">
           {label}
         </Text>
       </Pressable>
@@ -106,9 +106,9 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
   if (actions.length === 0) return null;
 
   return (
-    <VStack className="gap-4 mt-2">
+    <VStack className="gap-6 mt-4 px-1">
       <HStack className="justify-between items-center">
-        <Text className="text-[13px] font-bold uppercase tracking-widest text-bark">
+        <Text className="text-[11px] font-black uppercase tracking-[2px] text-phase-text-tertiary">
           {t('teacher.admin.title') || 'Administrative Portal'}
         </Text>
       </HStack>

@@ -9,7 +9,7 @@ import {
     Heading,
     Pressable,
     Spinner,
-    useToast,
+    useSanctuaryToast,
     ScreenWrapper,
     hapticLight,
     hapticSuccess,
@@ -17,7 +17,7 @@ import {
     Icon,
     Toast,
 } from '@repo/ui';
-import { ArrowRight, HelpCircle } from 'lucide-react-native';
+import { ArrowRight, HelpCircle, Shield } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { validateInviteCode, InviteCodeData } from '@repo/core';
 
@@ -30,11 +30,11 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
     const { t } = useTranslation();
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
-    const toast = useToast();
+    const { showToast } = useSanctuaryToast();
 
     async function handleValidateCode() {
         if (!code.trim()) {
-            showToast(t('invite.error.noCode') || 'Please enter an invite code', 'error');
+            notify(t('invite.error.noCode') || 'Please enter an invite code', 'error');
             return;
         }
 
@@ -46,28 +46,24 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
 
             if (result.valid && result.data) {
                 hapticSuccess();
-                showToast(t('invite.success.joining', { school: result.data.school_name }) || `Joining ${result.data.school_name}!`, 'success');
+                notify(t('invite.success.joining', { school: result.data.school_name }) || `Joining ${result.data.school_name}!`, 'success');
                 onCodeValidated(result.data);
             } else {
                 hapticError();
-                showToast(result.error || t('invite.error.invalid') || 'Invalid code', 'error');
+                notify(result.error || t('invite.error.invalid') || 'Invalid code', 'error');
             }
         } catch (err) {
             hapticError();
-            showToast('An unexpected error occurred', 'error');
+            notify('An unexpected error occurred', 'error');
         } finally {
             setLoading(false);
         }
     }
 
-    function showToast(message: string, action: 'error' | 'success') {
-        toast.show({
-            placement: 'bottom',
-            render: ({ id }: { id: string }) => (
-                <Toast nativeID={id} action={action} variant="solid">
-                    <Text className="text-white font-bold">{message}</Text>
-                </Toast>
-            ),
+    function notify(message: string, type: 'error' | 'success') {
+        showToast({
+            message,
+            type
         });
     }
 

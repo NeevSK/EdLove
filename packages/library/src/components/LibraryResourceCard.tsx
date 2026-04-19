@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HStack, Box, Text, Theme, useThemedColors, SanctuaryCard, SanctuaryButton } from '@repo/ui';
+import { HStack, VStack, Box, Text, Theme, useThemedColors, SanctuaryCard, SanctuaryButton } from '@repo/ui';
 import { FileText, Video, Link, File, Heart, Plus } from 'lucide-react-native';
 import { ResourceType } from '../types';
 

@@ -365,6 +365,20 @@ export const ProfileScreen = () => {
                     }
                 >
                     <VStack space="2xl">
+                        {flags.isUnderMaintenance && (
+                            <Center>
+                                <Box className="p-4 bg-phase-warning/10 rounded-2xl border border-phase-warning/20" style={{ width: cardWidth }}>
+                                    <HStack space="sm" className="items-center">
+                                        <Info size={20} color="#F1C40F" />
+                                        <VStack className="flex-1">
+                                            <Text className="text-phase-text-primary font-bold text-sm">Sanctuary Maintenance</Text>
+                                            <Text className="text-phase-text-secondary text-xs">Some features may be limited during this expansion.</Text>
+                                        </VStack>
+                                    </HStack>
+                                </Box>
+                            </Center>
+                        )}
+
                         {profile?.is_anonymous && (
                             <Center>
                                 <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
@@ -408,6 +422,13 @@ export const ProfileScreen = () => {
                                                     </Text>
                                                 </Box>
                                             ))}
+                                            {flags.isProMember && (
+                                                <Box className="px-3 py-1 rounded-full bg-phase-interactive border border-phase-interactive shadow-sm">
+                                                    <Text className="text-[10px] text-white font-black uppercase">
+                                                        PRO
+                                                    </Text>
+                                                </Box>
+                                            )}
                                         </HStack>
                                         <Text className="text-[10px] text-phase-interactive font-bold tracking-widest">
                                             PERSONAL SANCTUARY
@@ -476,17 +497,19 @@ export const ProfileScreen = () => {
                             </Center>
                         </Animated.View>
 
-                        <Animated.View entering={FadeInDown.delay(500).duration(500)}>
-                            <Center>
-                                <Box style={{ width: cardWidth }}>
-                                    <ProfileListItem
-                                        icon={Eye}
-                                        label={t('profile.publicPreviewTitle', 'Public Preview')}
-                                        onPress={() => profile?.id ? navigation.openPublicProfile?.({ id: profile.id, type: 'user' }) : undefined}
-                                    />
-                                </Box>
-                            </Center>
-                        </Animated.View>
+                        {flags.isPublicSensingEnabled && (
+                            <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+                                <Center>
+                                    <Box style={{ width: cardWidth }}>
+                                        <ProfileListItem
+                                            icon={Eye}
+                                            label={t('profile.publicPreviewTitle', 'Public Preview')}
+                                            onPress={() => profile?.id ? navigation.openPublicProfile?.({ id: profile.id, type: 'user' }) : undefined}
+                                        />
+                                    </Box>
+                                </Center>
+                            </Animated.View>
+                        )}
 
                         <Animated.View entering={FadeInDown.delay(550).duration(500)}>
                             <SupportSection t={t} navigation={navigation} cardWidth={cardWidth} />

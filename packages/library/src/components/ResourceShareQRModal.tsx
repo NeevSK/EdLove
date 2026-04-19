@@ -18,6 +18,8 @@ interface ResourceShareQRModalProps {
     onClose: () => void;
     resourceId: string;
     resourceTitle: string;
+    resourceType: string;
+    resourceThumbnailUrl?: string;
 }
 
 export function ResourceShareQRModal({
@@ -25,9 +27,11 @@ export function ResourceShareQRModal({
     onClose,
     resourceId,
     resourceTitle,
+    resourceType,
+    resourceThumbnailUrl,
 }: ResourceShareQRModalProps) {
     const shareUrl = buildLibraryResourceShareUrl(resourceId);
-    const qrValue = QRBuilder.resource(resourceId);
+    const qrValue = QRBuilder.resource(resourceId, resourceType, resourceTitle, resourceThumbnailUrl);
 
     const handleShareLink = useCallback(async () => {
         await Share.share({

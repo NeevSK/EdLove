@@ -22,9 +22,9 @@ const GroupCard = React.memo(function GroupCard({
 
     const getIcon = () => {
         switch (type) {
-            case 'staff': return <Icon as={Lock} size="2xs" className="text-phase-interactive" />;
-            case 'public': return <Icon as={Globe} size="2xs" className="text-phase-interactive" />;
-            default: return <Icon as={Users} size="2xs" className="text-phase-interactive" />;
+            case 'staff': return <Icon as={Lock} size="xs" className="text-phase-interactive" />;
+            case 'public': return <Icon as={Globe} size="xs" className="text-phase-interactive" />;
+            default: return <Icon as={Users} size="xs" className="text-phase-interactive" />;
         }
     };
 
@@ -67,7 +67,7 @@ const GroupCard = React.memo(function GroupCard({
 
                     <HStack className="items-center mt-1 gap-3">
                         <HStack className="items-center gap-1.5">
-                            <Icon as={Users} size="2xs" className="text-ink/40" />
+                            <Icon as={Users} size="xs" className="text-ink/40" />
                             <Text className="text-ink/40 text-xs font-medium">
                                 {memberCount} members
                             </Text>

@@ -14,8 +14,10 @@ import {
     hapticSuccess,
     hapticError,
     Pressable,
+    Icon,
 } from '@repo/ui';
-import { thuthimalAPI } from '@repo/core';
+import { thuthimalAPI, usePermissions } from '@repo/core';
+import { Sparkles, Lock } from 'lucide-react-native';
 
 interface GiveThuthimalModalProps {
     isOpen: boolean;
@@ -44,6 +46,7 @@ export function GiveThuthimalModal({
     giverId,
     giverName,
 }: GiveThuthimalModalProps) {
+    const { flags } = usePermissions();
     const { showToast } = useLotusToast();
     const [isSending, setIsSending] = useState(false);
     const [message, setMessage] = useState('');
@@ -127,15 +130,36 @@ export function GiveThuthimalModal({
 
                         <Button
                             size="xl"
-                            className="mt-4 bg-phase-interactive rounded-3xl h-16 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all"
-                            isDisabled={isSending}
+                            className={`mt-4 rounded-3xl h-16 shadow-lg active:scale-[0.98] transition-all ${
+                                flags.isProMember ? 'bg-phase-interactive shadow-blue-500/30' : 'bg-phase-surface border border-phase-surface shadow-none opacity-80'
+                            }`}
+                            isDisabled={isSending || !flags.isProMember}
                             onPress={handleSend}
                             accessibilityLabel="Send gift of gratitude"
                         >
-                            <ButtonText className="text-white font-bold text-lg">
-                                {isSending ? 'Sending Gratitude...' : 'Send Gift of Gratitude'}
-                            </ButtonText>
+                            <HStack space="sm" className="items-center">
+                                {flags.isProMember ? (
+                                    <>
+                                        <Sparkles size={20} color="white" />
+                                        <ButtonText className="text-white font-bold text-lg">
+                                            {isSending ? 'Sending Gratitude...' : 'Send Gift of Gratitude'}
+                                        </ButtonText>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock size={18} color="#9DA1A3" />
+                                        <ButtonText className="text-phase-text-tertiary font-bold text-lg">
+                                            Pro Member Feature
+                                        </ButtonText>
+                                    </>
+                                )}
+                            </HStack>
                         </Button>
+                        {!flags.isProMember && (
+                            <Text className="text-[10px] text-phase-text-tertiary text-center px-4 italic leading-4">
+                                Gifting Thuthimals is a token of extreme gratitude reserved for sovereign subscribers. Become a Pro member to unlock this level of appreciation.
+                            </Text>
+                        )}
                     </VStack>
                 </Box>
             </Box>

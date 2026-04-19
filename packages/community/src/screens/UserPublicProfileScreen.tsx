@@ -179,7 +179,7 @@ export default function UserPublicProfileScreen() {
                   </Text>
 
                   <HStack className="items-center gap-2 bg-phase-interactive/10 px-3 py-1 rounded-full border border-phase-interactive/20">
-                    <Icon as={BadgeCheck} size="2xs" className="text-phase-interactive" />
+                    <Icon as={BadgeCheck} size="xs" className="text-phase-interactive" />
                     <Text className="text-phase-interactive text-[12px] font-bold">
                       {authorityLabel}
                     </Text>

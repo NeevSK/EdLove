@@ -99,6 +99,7 @@ const PROVIDER_CONFIG: Record<string, {
 
 export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, editable, inline }: ContactLinktreeProps) {
     const { t } = useTranslation();
+    const { flags } = usePermissions();
     const [isEditing, setIsEditing] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingLink, setEditingLink] = useState<SocialLink | undefined>();
@@ -238,7 +239,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                 )}
                 
                 <HStack space="md" className="mt-6">
-                    {(Platform.OS === 'web' || isOwnProfile) && (
+                    {(Platform.OS === 'web' || isOwnProfile) && flags.isPublicSensingEnabled && (
                         <Button
                             size="sm"
                             variant="outline"

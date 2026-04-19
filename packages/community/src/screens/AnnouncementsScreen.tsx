@@ -290,7 +290,7 @@ export default function AnnouncementsScreen({
                                 setNewAnnouncementContent('');
                                 setIsPinned(false);
                             }}
-                            disabled={isCreating}
+                            isDisabled={isCreating}
                         >
                             <Text className="text-ink font-bold">Withdraw</Text>
                         </SanctuaryButton>
@@ -298,7 +298,7 @@ export default function AnnouncementsScreen({
                             action="primary"
                             className="flex-[2] h-14 rounded-2xl"
                             onPress={handleCreateAnnouncement}
-                            disabled={isCreating}
+                            isDisabled={isCreating}
                         >
                             {isCreating ? (
                                 <Spinner />

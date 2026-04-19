@@ -89,7 +89,7 @@ function CommentRow({
                         </Text>
                         {comment.is_official_answer && (
                             <HStack className="items-center px-1.5 py-0.5 rounded-md bg-phase-reward">
-                                <Icon as={Shield} size="2xs" className="text-white" />
+                                <Icon as={Shield} size="xs" className="text-white" />
                                 <Text className="text-[9px] text-white font-bold ml-0.5 uppercase tracking-tighter">Official</Text>
                             </HStack>
                         )}
@@ -196,12 +196,12 @@ export function CommentSheet({
         }
     };
 
-    const sheetContent = (
         <KeyboardAvoidingView
-            className="bg-phase-surface border-t border-border min-h-[380px] max-h-[85%] rounded-t-[32px] overflow-hidden shadow-2xl"
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
+            style={{ flex: 1 }}
         >
+            <Box className="flex-1 bg-phase-surface border-t border-border rounded-t-[32px] overflow-hidden shadow-2xl">
             {/* Header Handle */}
             <Box className="w-12 h-1.5 bg-ink/10 rounded-full self-center mt-3 mb-1" />
 

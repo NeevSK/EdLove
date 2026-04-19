@@ -6,8 +6,6 @@
 
 import React from 'react';
 import {
-    Pressable,
-    ImageBackground,
     Platform,
 } from 'react-native';
 import {
@@ -26,7 +24,7 @@ import {
     BadgeCheck,
     Bookmark,
 } from 'lucide-react-native';
-import { Theme, useTheme, Box, VStack, HStack, Text } from '@repo/ui';
+import { Theme, useTheme, Box, VStack, HStack, Text, Pressable, ImageBackground } from '@repo/ui';
 
 type ThumbnailType =
     | 'lesson' | 'worksheet' | 'guide' | 'reading' | 'pedagogy'
