@@ -66,9 +66,13 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
             const result = await staffAPI.checkIn(userId, schoolId, notes);
             setAttendance(prev => [result, ...prev]);
             // Growth signal: teacher/principal chose to be present
-            growthSignalsAPI.emitSilent(userId, 'attendance_marked', {
-                school_id: schoolId,
-                type: 'check_in'
+            growthSignalsAPI.emitSilent({
+                user_id: userId,
+                event_type: 'attendance_marked',
+                event_metadata: {
+                    school_id: schoolId,
+                    type: 'check_in'
+                }
             });
             return { success: true, data: result };
         } catch (error) {

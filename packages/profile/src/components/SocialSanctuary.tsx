@@ -7,7 +7,8 @@ import {
     showExternalLinkOptions, 
     HStack, 
     VStack, 
-    Pressable 
+    Pressable,
+    Icon,
 } from '@repo/ui';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 import type { SocialLink, SocialPlatform } from '@repo/core';
@@ -90,8 +91,6 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
             sourceLabel: 'Profile',
             sourceBadge: 'Public social link',
             trustLevel: 'external',
-            copyLabel: 'Copy URL',
-            openLabel: 'Open in Browser',
         });
     };
 
@@ -131,7 +130,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                         onPress={shareProfile} 
                         className="w-10 h-10 rounded-full bg-phase-surface items-center justify-center hover:bg-phase-interactive/10 transition-colors"
                     >
-                        <Share2 size={18} color="#4A90E2" />
+                        <Icon as={Share2} size={18} color="#4A90E2" />
                     </Pressable>
                 )}
             </HStack>
@@ -150,7 +149,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                         >
                             <HStack className="items-center p-4">
                                 <Box className="w-12 h-12 rounded-2xl justify-center items-center mr-4 bg-phase-interactive/10 border border-phase-interactive/10">
-                                    <PlatformIcon size={24} color="#4A90E2" />
+                                    <Icon as={PlatformIcon} size={24} color="#4A90E2" />
                                 </Box>
                                 <VStack className="flex-1">
                                     <Text className="text-base font-bold text-phase-text-primary">
@@ -163,10 +162,10 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                                 <HStack space="md" className="items-center">
                                     {isOwnProfile && PrivacyIcon && (
                                         <Box className="p-1.5 rounded-lg bg-phase-surface/50">
-                                            <PrivacyIcon size={14} color="#9DA1A3" />
+                                            <Icon as={PrivacyIcon} size={14} color="#9DA1A3" />
                                         </Box>
                                     )}
-                                    <ExternalLink size={18} color="#9DA1A3" className="opacity-40" />
+                                    <Icon as={ExternalLink} size={18} color="#9DA1A3" className="opacity-40" />
                                 </HStack>
                             </HStack>
                         </Pressable>

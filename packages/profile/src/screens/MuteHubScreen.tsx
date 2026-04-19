@@ -15,6 +15,7 @@ import {
     Pressable,
     ScrollView,
     RefreshControl,
+    Icon,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Shield, XCircle, Trash2 } from 'lucide-react-native';
@@ -100,7 +101,7 @@ export default function MuteHubScreen() {
                         className="p-4 bg-phase-canvas rounded-2xl border border-phase-surface shadow-sm"
                     >
                         <HStack space="md" className="items-center">
-                            <Shield size={24} color="#4A90E2" />
+                            <Icon as={Shield} size={24} color="#4A90E2" />
                             <VStack className="flex-1">
                                 <Text className="text-phase-text-primary font-bold">
                                     {t('profile.safety.mutedTotal') || 'Muted Connections'}
@@ -119,7 +120,7 @@ export default function MuteHubScreen() {
                     {mutedUsers.length === 0 && !loading ? (
                         <Center className="h-48 mt-8">
                             <VStack space="md" className="items-center">
-                                <XCircle size={48} color="#9DA1A3" className="opacity-30" />
+                                <Icon as={XCircle} size={48} color="#9DA1A3" className="opacity-30" />
                                 <Text className="text-phase-text-tertiary">
                                     {t('profile.safety.noMutes') || 'Your list is empty.'}
                                 </Text>
@@ -161,7 +162,7 @@ export default function MuteHubScreen() {
                                             accessibilityHint={t('profile.safety.unmuteHint')}
                                             className="p-3 rounded-xl bg-phase-error/10"
                                         >
-                                            <Trash2 size={20} color="#FF6B6B" />
+                                            <Icon as={Trash2} size={20} color="#FF6B6B" />
                                         </Pressable>
                                     </HStack>
                                 </Box>

@@ -347,7 +347,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                     )}
                                 </HStack>
                             </Pressable>
-                        </Animated.View>
+                        </AnimatedView>
                     );
                 })}
 

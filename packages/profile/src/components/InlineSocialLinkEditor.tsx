@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { 
     X, 
     Check, 
@@ -18,6 +18,9 @@ import {
     Box,
     hapticLight,
     Pressable,
+    Input,
+    InputField,
+    Icon,
 } from '@repo/ui';
 import type { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
 
@@ -89,7 +92,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                     borderColor: platform === p.value ? p.color : undefined,
                                 }}
                             >
-                                <p.icon size={18} color={platform === p.value ? p.color : '#9DA1A3'} />
+                                <Icon as={p.icon} size={18} color={platform === p.value ? p.color : '#9DA1A3'} />
                             </Pressable>
                         ))}
                     </HStack>
@@ -99,14 +102,16 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                 <VStack space="xs">
                     <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-wider mb-1">CONTACT INFO</Text>
                     <HStack space="sm" className="items-center">
-                        <TextInput
+                    <Input className="flex-1 h-12 rounded-xl border border-phase-surface bg-phase-canvas">
+                        <InputField
                             value={url}
                             onChangeText={setUrl}
                             placeholder={platform === 'whatsapp' ? 'Phone number' : 'Username or link'}
                             placeholderTextColor="#9DA1A3"
-                            className="flex-1 h-12 px-4 rounded-xl border border-phase-surface bg-phase-canvas text-phase-text-primary text-sm font-medium"
+                            className="text-phase-text-primary text-sm font-medium"
                             style={Platform.OS === 'web' ? (({ outline: 'none' } as any)) : {}}
                         />
+                    </Input>
                     </HStack>
                 </VStack>
 
@@ -135,11 +140,11 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                                 className="p-2 bg-phase-error/10 rounded-xl"
                                 disabled={isSaving}
                             >
-                                <Trash2 size={18} color="#FF6B6B" />
+                                <Icon as={Trash2} size={18} color="#FF6B6B" />
                             </Pressable>
                         )}
                         <Pressable onPress={onCancel} className="p-2" disabled={isSaving}>
-                            <X size={22} color="#9DA1A3" />
+                            <Icon as={X} size={22} color="#9DA1A3" />
                         </Pressable>
                         <Pressable 
                             onPress={handleSave} 
@@ -149,7 +154,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
                             {isSaving ? (
                                 <Box className="scale-75"><Text>...</Text></Box>
                             ) : (
-                                <Check size={24} color="white" strokeWidth={3} />
+                                <Icon as={Check} size={24} color="white" strokeWidth={3} />
                             )}
                         </Pressable>
                     </HStack>
