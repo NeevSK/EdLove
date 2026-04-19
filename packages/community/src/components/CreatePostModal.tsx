@@ -16,9 +16,8 @@ import {
     Image,
     Spinner
 } from '@repo/ui';
-import { Mic, Image as ImageIcon, Trash2, BarChart3, Plus, X, Lock, Users, Clock } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
-import { uploadToCloudinary } from '@repo/core';
+import { uploadToCloudinary, usePermissions } from '@repo/core';
 import { ScrollView, Switch, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import type { PollData } from '../types/Community';
@@ -55,6 +54,7 @@ interface CreatePostModalProps {
 
 export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePostModalProps) {
     const { createPost } = useCommunity();
+    const { can, flags } = usePermissions();
 
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -386,12 +386,15 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     <Pressable className="p-3 bg-phase-surface rounded-xl">
                         <Icon as={Mic} size="md" className="text-ink/40" />
                     </Pressable>
-                    <Pressable
-                        onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
-                        className={`p-3 rounded-xl ${isPollMode ? 'bg-phase-interactive' : 'bg-phase-surface'}`}
-                    >
-                        <Icon as={BarChart3} size="md" className={isPollMode ? 'text-inverted' : 'text-ink/40'} />
-                    </Pressable>
+                    {/* Polls gated by permissions or a specific flag if we add it, for now using general community flag */}
+                    {flags.isCommunityEnabled && (
+                        <Pressable
+                            onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
+                            className={`p-3 rounded-xl ${isPollMode ? 'bg-phase-interactive' : 'bg-phase-surface'}`}
+                        >
+                            <Icon as={BarChart3} size="md" className={isPollMode ? 'text-inverted' : 'text-ink/40'} />
+                        </Pressable>
+                    )}
                 </HStack>
             </VStack>
         </SanctuaryModal>

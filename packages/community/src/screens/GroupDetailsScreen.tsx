@@ -60,7 +60,7 @@ export default function GroupDetailsScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { t } = useTranslation();
     const { groupId } = route.params;
-    const { can } = usePermissions();
+    const { can, flags } = usePermissions();
     const user = useStore(state => state.user);
     const { showToast } = useLotusToast();
     const { joinGroup, isJoiningGroup, posts, fetchPosts } = useCommunity();
@@ -336,10 +336,10 @@ export default function GroupDetailsScreen() {
                                         setCommentPostAuthorId(item.author_id ?? undefined);
                                         setCommentPostType(item.post_type);
                                     }}
-                                    onReport={() => {
+                                    onReport={flags.isSocialShieldEnabled ? () => {
                                         setReportPostId(item.id);
                                         setShowReportModal(true);
-                                    }}
+                                    } : undefined}
                                 />
                             </Box>
                         </Animated.View>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
 import {
     Box,
     Text,
@@ -8,8 +7,8 @@ import {
     Icon,
     SanctuaryButton,
     ScreenWrapper,
-    useRegisterFAB,
-    useTheme
+    ScrollView,
+    useRegisterFAB
 } from '@repo/ui';
 import { useStore } from '@repo/core';
 import { useAIAgent } from '@repo/ai';
@@ -18,8 +17,6 @@ import { Calendar, Users, AlertCircle, CalendarCheck } from 'lucide-react-native
 export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
     const userRole = useStore((state: any) => state.userRole);
-    const theme = useTheme();
-    const { scene } = theme;
 
     // Register FAB globally
     useRegisterFAB({
@@ -29,15 +26,15 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
     });
 
     return (
-        <ScreenWrapper backgroundColor={scene.primary.main} noTopInset>
-            <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
+        <ScreenWrapper className="bg-phase-canvas" noTopInset>
+            <ScrollView contentContainerClassName="p-6 pb-24">
                 <VStack className="gap-4">
                     {/* Header */}
                     <Box className="py-8">
-                        <Text className="text-2xl font-bold" style={{ color: theme.text.primary }}>
+                        <Text className="text-2xl font-bold text-phaseText-primary">
                             Section Coordination
                         </Text>
-                        <Text style={{ color: theme.text.secondary }}>
+                        <Text className="text-phaseText-secondary">
                             Monitoring section activity and teacher coordination.
                         </Text>
                     </Box>
@@ -51,17 +48,13 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                             {activeGaps.map((gap: any) => (
                                 <Box
                                     key={gap.id}
-                                    className="p-4 rounded-lg border"
-                                    style={{
-                                        backgroundColor: scene.warning.lowOpacity || scene.warning.main + '11',
-                                        borderColor: scene.warning.main
-                                    }}
+                                    className="p-4 rounded-lg border bg-phase-reward/10 border-phase-reward"
                                 >
                                     <HStack className="gap-3 items-center">
-                                        <Icon as={AlertCircle} className="text-phase-warning" size="md" />
+                                        <Icon as={AlertCircle} className="text-phase-reward" size="md" />
                                         <VStack className="flex-1">
-                                            <Text className="font-bold" style={{ color: theme.text.primary }}>{gap.title}</Text>
-                                            <Text className="text-sm" style={{ color: theme.text.secondary }}>{gap.description}</Text>
+                                            <Text className="font-bold text-phaseText-primary">{gap.title}</Text>
+                                            <Text className="text-sm text-phaseText-secondary">{gap.description}</Text>
                                         </VStack>
                                     </HStack>
                                     <Box className="mt-3">
@@ -80,22 +73,17 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
 
                     {/* Agentic Structural Repair: Timetable */}
                     <Box 
-                        className="p-6 rounded-3xl border mt-4"
-                        style={{
-                            backgroundColor: scene.primary.lowOpacity || scene.primary.main + '0D',
-                            borderColor: scene.primary.main + '33'
-                        }}
+                        className="p-6 rounded-3xl border mt-4 bg-phase-interactive/5 border-phase-interactive/20"
                     >
                         <HStack className="justify-between items-center mb-2">
                             <HStack className="gap-2 items-center">
                                 <Icon as={CalendarCheck} size="md" className="text-phase-interactive" />
-                                <Text className="font-bold text-phase-text-primary">Timetable Review</Text>
+                                <Text className="font-bold text-phaseText-primary">Timetable Review</Text>
                             </HStack>
                             <Box 
-                                className="px-2 py-0.5 rounded-full"
-                                style={{ backgroundColor: scene.primary.main + '33' }}
+                                className="px-2 py-0.5 rounded-full bg-phase-interactive/20"
                             >
-                                <Text className="text-[10px] font-bold" style={{ color: scene.primary.main }}>AGENTIC</Text>
+                                <Text className="text-[10px] font-bold text-phase-interactive">AGENTIC</Text>
                             </Box>
                         </HStack>
 
@@ -117,7 +105,7 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                             </VStack>
                         ) : (
                             <VStack className="gap-4">
-                                <Text style={{ color: theme.text.secondary }}>
+                                <Text className="text-phaseText-secondary">
                                     I can help you review and update the current schedule for this section.
                                 </Text>
                                 <SanctuaryButton
@@ -135,42 +123,34 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                     {/* Operational Overview */}
                     <HStack className="gap-3">
                         <Box 
-                            className="flex-1 p-4 rounded-xl border"
-                            style={{ 
-                                backgroundColor: scene.elevated.bg,
-                                borderColor: scene.border.base
-                            }}
+                            className="flex-1 p-4 rounded-xl border bg-phase-surface border-border"
                         >
-                            <Text className="text-[10px]" style={{ color: theme.text.secondary }}>CLASSES</Text>
-                            <Text className="font-bold text-xl" style={{ color: theme.text.primary }}>12</Text>
+                            <Text className="text-[10px] text-phaseText-secondary">CLASSES</Text>
+                            <Text className="font-bold text-xl text-phaseText-primary">12</Text>
                         </Box>
                         <Box 
-                            className="flex-1 p-4 rounded-xl border"
-                            style={{ 
-                                backgroundColor: scene.elevated.bg,
-                                borderColor: scene.border.base
-                            }}
+                            className="flex-1 p-4 rounded-xl border bg-phase-surface border-border"
                         >
-                            <Text className="text-[10px]" style={{ color: scene.text.secondary }}>TEACHERS</Text>
-                            <Text className="font-bold text-xl" style={{ color: scene.text.primary }}>8</Text>
+                            <Text className="text-[10px] text-phaseText-secondary">TEACHERS</Text>
+                            <Text className="font-bold text-xl text-phaseText-primary">8</Text>
                         </Box>
                     </HStack>
 
                     {/* Quick Coordination */}
                     <VStack className="gap-2">
-                        <Text className="font-semibold text-sm" style={{ color: theme.text.secondary }}>
+                        <Text className="font-semibold text-sm text-phaseText-secondary">
                             QUICK COORDINATION
                         </Text>
                         <SanctuaryButton onPress={() => { }} variant="outline">
                             <HStack className="gap-2 items-center">
-                                <Icon as={Calendar} size="sm" color={theme.text.primary} />
-                                <Text style={{ color: theme.text.primary }}>Review Section Schedule</Text>
+                                <Icon as={Calendar} size="sm" className="text-phaseText-primary" />
+                                <Text className="text-phaseText-primary">Review Section Schedule</Text>
                             </HStack>
                         </SanctuaryButton>
                         <SanctuaryButton onPress={() => { }} variant="outline">
                             <HStack className="gap-2 items-center">
-                                <Icon as={Users} size="sm" color={theme.text.primary} />
-                                <Text style={{ color: theme.text.primary }}>Staff Workload Balance</Text>
+                                <Icon as={Users} size="sm" className="text-phaseText-primary" />
+                                <Text className="text-phaseText-primary">Staff Workload Balance</Text>
                             </HStack>
                         </SanctuaryButton>
                     </VStack>

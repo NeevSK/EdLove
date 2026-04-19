@@ -29,10 +29,9 @@ import {
     Textarea,
     TextareaInput,
     SmartShelf,
-    Theme,
+    Icon,
     hapticLight,
     hapticSuccess,
-    useThemedColors,
     GlobalHeader,
     ScreenWrapper,
     SkeletonCard,
@@ -63,7 +62,6 @@ export default function ContentLibrary() {
     const classroomId = route.params?.classroomId || 'demo-class';
 
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const user = useStore(state => state.user);
     const addToDesk = useStore(state => state.addToDesk); 
     const deskItems = useStore(state => state.deskItems || []);
@@ -95,35 +93,35 @@ export default function ContentLibrary() {
     const [newResourceContent, setNewResourceContent] = useState('');
 
     // Resource type configuration
-    const RESOURCE_TYPE_CONFIG: Record<string, { icon: any, color: string, label: string }> = {
+    const RESOURCE_TYPE_CONFIG: Record<string, { icon: any, iconClass: string, label: string }> = {
         pdf: {
             icon: File,
-            color: Theme.colors?.emberRed || '#E53E3E',
+            iconClass: 'text-emberRed',
             label: 'PDF',
         },
         link: {
             icon: LinkIcon,
-            color: colors?.action || '#3182CE',
+            iconClass: 'text-phase-accent',
             label: 'Link',
         },
         note: {
             icon: FileText,
-            color: Theme.colors?.sageGreen || '#48BB78',
+            iconClass: 'text-sageGreen',
             label: 'Note',
         },
         video: {
             icon: Video,
-            color: Theme.colors?.skyBlue || '#63B3ED',
+            iconClass: 'text-skyBlue',
             label: 'Video',
         },
         text: {
             icon: FileText,
-            color: Theme.colors?.sageGreen || '#48BB78',
+            iconClass: 'text-sageGreen',
             label: 'Article',
         },
         doc: {
             icon: FileText,
-            color: Theme.colors?.ink || '#2D3748',
+            iconClass: 'text-ink',
             label: 'Document',
         },
     };
@@ -131,7 +129,7 @@ export default function ContentLibrary() {
     const getResourceConfig = (type: string) => {
         return RESOURCE_TYPE_CONFIG[type] || RESOURCE_TYPE_CONFIG['note'] || {
             icon: FileText,
-            color: Theme.colors?.ink || '#2D3748',
+            iconClass: 'text-ink',
             label: type,
         };
     };
@@ -271,81 +269,52 @@ export default function ContentLibrary() {
     const renderResourceCard = (resource: ClassroomResource) => {
         const config = getResourceConfig(resource.type);
         const ResourceIcon = config.icon;
-        const iconColor = config.color;
 
         return (
             <Box
                 key={resource.id}
-                sx={{
-                    backgroundColor: colors?.surface || '#FFFFFF',
-                    borderRadius: Theme.corners?.generous || 16,
-                    padding: Theme.spacing?.md || 16,
-                    marginBottom: Theme.spacing?.md || 16,
-                    borderWidth: resource.is_pinned ? 2 : 1,
-                    borderColor: resource.is_pinned ? Theme.colors?.sanctuarySaffron || '#ECC94B' : colors?.border || '#E2E8F0',
-                }}
+                className={`bg-phase-surface rounded-generous p-md mb-md border ${
+                    resource.is_pinned ? 'border-2 border-sanctuarySaffron' : 'border-phase-border'
+                }`}
             >
-                <VStack sx={{ gap: Theme.spacing?.sm || 8 }}>
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: Theme.spacing?.md || 16 }}>
-                        <HStack sx={{ flex: 1, alignItems: 'center', gap: Theme.spacing?.sm || 8 }}>
-                            <Box
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: Theme.corners?.comfortable || 8,
-                                    backgroundColor: colors?.tertiary || '#EDF2F7',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <ResourceIcon color={iconColor} size={20} />
+                <VStack className="gap-sm">
+                    <HStack className="justify-between items-start gap-md">
+                        <HStack className="flex-1 items-center gap-sm">
+                            <Box className="w-10 h-10 rounded-comfortable bg-phase-elevated justify-center items-center">
+                                <Icon as={ResourceIcon} className={config.iconClass} size="md" />
                             </Box>
-                            <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: colors?.surface || '#2D3748', fontSize: Theme.typography?.fontSize?.md || 16, fontWeight: '700' as const }}>
+                            <VStack className="flex-1">
+                                <Text className="text-phaseText-onSurface text-md font-bold">
                                     {resource.title}
                                 </Text>
-                                <Text sx={{ color: colors?.surface || '#2D3748', opacity: 0.7, fontSize: Theme.typography?.fontSize?.xs || 12 }}>
+                                <Text className="text-phaseText-tertiary text-xs">
                                     {config.label}
                                 </Text>
                             </VStack>
                         </HStack>
 
                         {resource.is_pinned && (
-                            <Box
-                                sx={{
-                                    backgroundColor: Theme.colors?.sanctuarySaffron || '#ECC94B',
-                                    borderRadius: Theme.corners?.tight || 4,
-                                    padding: 4,
-                                }}
-                            >
-                                <Pin color={Theme.colors?.sacredWhite || '#FFFFFF'} size={14} fill={Theme.colors?.sacredWhite || '#FFFFFF'} />
+                            <Box className="bg-sanctuarySaffron rounded-tight p-1">
+                                <Icon as={Pin} className="text-sacredWhite" size={14} fill="currentColor" />
                             </Box>
                         )}
                     </HStack>
 
                     {resource.description && (
-                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                        <Text className="text-phaseText-secondary text-sm">
                             {resource.description}
                         </Text>
                     )}
 
-                    <HStack sx={{ gap: Theme.spacing.sm, justifyContent: 'flex-end', marginTop: Theme.spacing.sm }}>
+                    <HStack className="gap-sm justify-end mt-sm">
                         <Pressable 
                             accessibilityRole="button"
                             accessibilityLabel={t('library.publishToGlobal') || 'Publish to Global Library'}
                             accessibilityHint="Publishes this resource to the global library"
                             onPress={() => publishMutation.mutate(resource)}
                         >
-                            <Box
-                                sx={{
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                }}
-                            >
-                                <Share2 color={Theme.colors.amberGlow} size={18} />
+                            <Box className="p-sm rounded-comfortable bg-phase-elevated border border-phase-border">
+                                <Icon as={Share2} className="text-amberGlow" size={18} />
                             </Box>
                         </Pressable>
 
@@ -367,16 +336,8 @@ export default function ContentLibrary() {
                                 hapticSuccess();
                             }
                         }}>
-                            <Box
-                                sx={{
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                }}
-                            >
-                                <Download color={Theme.colors.skyBlue} size={18} />
+                            <Box className="p-sm rounded-comfortable bg-phase-elevated border border-phase-border">
+                                <Icon as={Download} className="text-skyBlue" size={18} />
                             </Box>
                         </Pressable>
 
@@ -386,19 +347,12 @@ export default function ContentLibrary() {
                             accessibilityHint="Pins or unpins this resource to the top of the list"
                             onPress={() => togglePin(resource.id)}
                         >
-                            <Box
-                                sx={{
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                }}
-                            >
-                                <Pin
-                                    color={resource.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
+                            <Box className="p-sm rounded-comfortable bg-phase-elevated border border-phase-border">
+                                <Icon
+                                    as={Pin}
+                                    className={resource.is_pinned ? 'text-sanctuarySaffron' : 'text-phaseText-tertiary'}
                                     size={18}
-                                    fill={resource.is_pinned ? Theme.colors.sanctuarySaffron : 'none'}
+                                    fill={resource.is_pinned ? 'currentColor' : 'none'}
                                 />
                             </Box>
                         </Pressable>
@@ -410,16 +364,8 @@ export default function ContentLibrary() {
                                 accessibilityHint="Opens the resource link in a new window"
                                 onPress={() => hapticLight()}
                             >
-                                <Box
-                                    sx={{
-                                        padding: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                        borderWidth: 1,
-                                    }}
-                                >
-                                    <ExternalLink color={colors.textSecondary} size={18} />
+                                <Box className="p-sm rounded-comfortable bg-phase-elevated border border-phase-border">
+                                    <Icon as={ExternalLink} className="text-phaseText-secondary" size={18} />
                                 </Box>
                             </Pressable>
                         )}
@@ -430,16 +376,8 @@ export default function ContentLibrary() {
                             accessibilityHint="Permanently deletes this resource"
                             onPress={() => deleteResource(resource.id)}
                         >
-                            <Box
-                                sx={{
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                }}
-                            >
-                                <Trash2 color={Theme.colors.emberRed} size={18} />
+                            <Box className="p-sm rounded-comfortable bg-phase-elevated border border-phase-border">
+                                <Icon as={Trash2} className="text-emberRed" size={18} />
                             </Box>
                         </Pressable>
                     </HStack>
@@ -459,9 +397,9 @@ export default function ContentLibrary() {
                     placeholder: t('library.searchPlaceholder')
                 }}
             />
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 100 }}>
+            <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
                 {deskItems && deskItems.length > 0 && (
-                    <Box sx={{ marginBottom: Theme.spacing.lg }}>
+                    <Box className="mb-lg">
                         <SmartShelf
                             title={t('library.personalDesk') || 'Your Personal Desk'}
                             horizontalPadding={0}
@@ -502,7 +440,7 @@ export default function ContentLibrary() {
                 )}
 
                 {isLoading ? (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-md">
                         <SkeletonCard height={120} />
                         <SkeletonCard height={120} />
                         <SkeletonCard height={120} />
@@ -513,7 +451,7 @@ export default function ContentLibrary() {
                         onAction={() => setShowAddModal(true)}
                     />
                 ) : (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-md">
                         {filteredResources.map(renderResourceCard)}
                     </VStack>
                 )}
@@ -527,51 +465,34 @@ export default function ContentLibrary() {
                     hapticLight();
                     setShowAddModal(true);
                 }}
-                style={{
-                    position: 'absolute',
-                    bottom: 24,
-                    right: 24,
-                }}
+                className="absolute bottom-6 right-6"
             >
                 <Box
-                    sx={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        ...Theme.shadows.lg,
-                    }}
+                    className="w-14 h-14 rounded-full bg-sanctuarySaffron justify-center items-center shadow-lg"
                 >
-                    <Plus color={Theme.colors.white} size={24} />
+                    <Icon as={Plus} className="text-sacredWhite" size="xl" />
                 </Box>
             </Pressable>
 
             <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
                 <ModalBackdrop />
                 <ModalContent
-                    sx={{
-                        backgroundColor: colors.secondary,
-                        maxWidth: 500,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}
+                    className="bg-phase-surface max-w-[500px] border border-phase-border"
                 >
                     <ModalHeader>
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>
+                        <Heading className="text-phaseText-onSurface text-lg">
                             {t('library.addResource')}
                         </Heading>
                     </ModalHeader>
 
                     <ModalBody>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            <VStack sx={{ gap: Theme.spacing.md }}>
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                            <VStack className="gap-md">
+                                <VStack className="gap-xs">
+                                    <Text className="text-phaseText-secondary text-sm">
                                         {t('library.resourceType')}
                                     </Text>
-                                    <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
+                                    <HStack className="gap-sm flex-wrap">
                                         {(['note', 'link', 'pdf', 'video', 'text', 'doc'] as ResourceType[]).map((type) => (
                                             <Pressable
                                                 key={type}
@@ -579,27 +500,20 @@ export default function ContentLibrary() {
                                                     hapticLight();
                                                     setNewResourceType(type);
                                                 }}
-                                                style={{ width: '31%' }}
+                                                className="w-[31%]"
                                                 accessibilityRole="button"
                                                 accessibilityLabel={`Select ${getResourceConfig(type).label} type`}
                                                 accessibilityHint={`Sets the new resource type to ${getResourceConfig(type).label}`}
                                             >
                                                 <Box
-                                                    sx={{
-                                                        padding: Theme.spacing.sm,
-                                                        borderRadius: Theme.corners.comfortable,
-                                                        backgroundColor: newResourceType === type ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                                        alignItems: 'center',
-                                                        borderWidth: 1,
-                                                        borderColor: newResourceType === type ? Theme.colors.sanctuarySaffron : colors.border,
-                                                    }}
+                                                    className={`p-sm rounded-comfortable items-center border ${
+                                                        newResourceType === type ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-phase-elevated border-phase-border'
+                                                    }`}
                                                 >
                                                     <Text
-                                                        sx={{
-                                                            color: newResourceType === type ? Theme.colors.sacredWhite : colors.textSecondary,
-                                                            fontSize: Theme.typography.fontSize.xs,
-                                                            fontWeight: '700' as const
-                                                        }}
+                                                        className={`text-xs font-bold ${
+                                                            newResourceType === type ? 'text-sacredWhite' : 'text-phaseText-secondary'
+                                                        }`}
                                                     >
                                                         {getResourceConfig(type).label}
                                                     </Text>
@@ -609,45 +523,45 @@ export default function ContentLibrary() {
                                     </HStack>
                                 </VStack>
 
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                <VStack className="gap-xs">
+                                    <Text className="text-phaseText-secondary text-sm">
                                         {t('library.titleLabel')}
                                     </Text>
-                                    <Input sx={{ backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                    <Input className="bg-phase-elevated border-phase-border">
                                         <InputField
                                             placeholder={t('library.titlePlaceholder')}
                                             value={newResourceTitle}
                                             onChangeText={setNewResourceTitle}
-                                            sx={{ color: colors.text }}
+                                            className="text-phaseText-onSurface"
                                         />
                                     </Input>
                                 </VStack>
 
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                <VStack className="gap-xs">
+                                    <Text className="text-phaseText-secondary text-sm">
                                         {t('library.descLabel')}
                                     </Text>
-                                    <Input sx={{ backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                    <Input className="bg-phase-elevated border-phase-border">
                                         <InputField
                                             placeholder={t('library.descPlaceholder')}
                                             value={newResourceDescription}
                                             onChangeText={setNewResourceDescription}
-                                            sx={{ color: colors.text }}
+                                            className="text-phaseText-onSurface"
                                         />
                                     </Input>
                                 </VStack>
 
                                 {(newResourceType === 'pdf' || newResourceType === 'link' || newResourceType === 'video') && (
-                                    <VStack sx={{ gap: Theme.spacing.xs }}>
-                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                    <VStack className="gap-xs">
+                                        <Text className="text-phaseText-secondary text-sm">
                                             {t('library.urlLabel')}
                                         </Text>
-                                        <Input sx={{ backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                        <Input className="bg-phase-elevated border-phase-border">
                                             <InputField
                                                 placeholder="https://..."
                                                 value={newResourceUrl}
                                                 onChangeText={setNewResourceUrl}
-                                                sx={{ color: colors.text }}
+                                                className="text-phaseText-onSurface"
                                                 autoCapitalize="none"
                                             />
                                         </Input>
@@ -655,16 +569,16 @@ export default function ContentLibrary() {
                                 )}
 
                                 {newResourceType === 'note' && (
-                                    <VStack sx={{ gap: Theme.spacing.xs }}>
-                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                    <VStack className="gap-xs">
+                                        <Text className="text-phaseText-secondary text-sm">
                                             {t('library.contentLabel')}
                                         </Text>
-                                        <Textarea sx={{ backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                                        <Textarea className="bg-phase-elevated border-phase-border">
                                             <TextareaInput
                                                 placeholder={t('library.contentPlaceholder')}
                                                 value={newResourceContent}
                                                 onChangeText={setNewResourceContent}
-                                                sx={{ color: colors.text }}
+                                                className="text-phaseText-onSurface"
                                             />
                                         </Textarea>
                                     </VStack>
@@ -674,22 +588,22 @@ export default function ContentLibrary() {
                     </ModalBody>
 
                     <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
+                        <HStack className="gap-sm w-full">
                             <Button
                                 variant="outline"
                                 action="secondary"
                                 onPress={() => setShowAddModal(false)}
-                                sx={{ flex: 1, borderColor: colors.border }}
+                                className="flex-1 border-phase-border"
                             >
-                                <ButtonText sx={{ color: colors.textSecondary }}>{t('common.cancel')}</ButtonText>
+                                <ButtonText className="text-phaseText-secondary font-English">{t('common.cancel')}</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
                                 onPress={addResource}
-                                sx={{ flex: 1, backgroundColor: Theme.colors.sanctuarySaffron }}
+                                className="flex-1 bg-sanctuarySaffron"
                                 isDisabled={!newResourceTitle.trim()}
                             >
-                                <ButtonText sx={{ color: Theme.colors.white }}>{t('common.add')}</ButtonText>
+                                <ButtonText className="text-sacredWhite font-English">{t('common.add')}</ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>
@@ -697,4 +611,5 @@ export default function ContentLibrary() {
             </Modal>
         </ScreenWrapper>
     );
+}
 }

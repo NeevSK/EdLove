@@ -20,24 +20,13 @@ import {
     FormControlLabel,
     FormControlLabelText,
     Spinner,
-    Select,
-    SelectTrigger,
-    SelectInput,
-    SelectIcon,
-    SelectPortal,
-    SelectBackdrop,
-    SelectContent,
-    SelectDragIndicatorWrapper,
-    SelectDragIndicator,
-    SelectItem,
     Icon,
+    hapticLight,
+    hapticSuccess,
 } from '@repo/ui';
-import { ChevronDown, CheckCircle, School, MessageSquare } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-import { api, supabase, identityAPI, communityAPI } from '@repo/core';
+import { CheckCircle, School, MessageSquare } from 'lucide-react-native';
+import { api, identityAPI, communityAPI } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 
 interface CreateSchoolModalProps {
@@ -78,7 +67,6 @@ export default function CreateSchoolModal({
             setStep('details');
         }
     }, [isOpen, initialData]);
-    const colors = useThemedColors();
 
     const handleSubmit = async () => {
         if (!name.trim()) {
@@ -167,40 +155,28 @@ export default function CreateSchoolModal({
         <Modal isOpen={isOpen} onClose={handleClose}>
             <ModalBackdrop />
             <ModalContent
-                sx={{
-                    backgroundColor: colors.secondary,
-                    maxWidth: 400,
-                    borderColor: colors.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.generous,
-                }}
+                className="bg-phase-surface max-w-[400px] border-phase-border border rounded-generous"
             >
                 {step === 'details' && (
                     <>
                         <ModalHeader>
-                            <VStack sx={{ gap: 4 }}>
-                                <Heading color={colors.text} size="lg">
+                            <VStack className="gap-1">
+                                <Heading className="text-phaseText-onSurface" size="lg">
                                     {isEdit ? 'Refine Sanctuary Identity' : (t('school.createTitle') || 'Sanctuary Identity')}
                                 </Heading>
-                                <Text size="xs" color={colors.textSecondary}>
+                                <Text size="xs" className="text-phaseText-secondary">
                                     {isEdit ? 'Update the details of your institution' : 'Step 1 of 2: Name your institution'}
                                 </Text>
                             </VStack>
                         </ModalHeader>
 
                         <ModalBody>
-                            <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: Theme.spacing.md }}>
+                            <VStack className="gap-xl py-md">
                                 {error && (
                                     <Box
-                                        sx={{
-                                            padding: Theme.spacing.md,
-                                            backgroundColor: Theme.colors.emberRed + '30',
-                                            borderRadius: Theme.corners.comfortable,
-                                            borderWidth: 1,
-                                            borderColor: Theme.colors.emberRed,
-                                        }}
+                                        className="p-md bg-emberRed/20 rounded-comfortable border border-emberRed"
                                     >
-                                        <Text color={Theme.colors.emberRed} sx={{ fontSize: 14 }}>
+                                        <Text className="text-emberRed text-sm">
                                             {error}
                                         </Text>
                                     </Box>
@@ -208,18 +184,12 @@ export default function CreateSchoolModal({
 
                                 <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
-                                        <FormControlLabelText color={colors.textSecondary}>
+                                        <FormControlLabelText className="text-phaseText-secondary">
                                             {t('school.labelName') || 'What shall we call your Sanctuary?'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        sx={{
-                                            height: 56,
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                            borderWidth: 1,
-                                            borderRadius: Theme.corners.generous
-                                        }}
+                                        className="h-14 bg-phase-elevated border-phase-border border rounded-generous"
                                     >
                                         <InputField
                                             placeholder={t('school.placeholderName') || "e.g., Green Valley Sanctuary"}
@@ -231,27 +201,20 @@ export default function CreateSchoolModal({
                                                 }
                                                 if (error) setError(null);
                                             }}
-                                            color={colors.text}
-                                            placeholderTextColor={colors.textTertiary}
-                                            sx={{ fontSize: 18, fontWeight: '600' }}
+                                            className="text-phaseText-onSurface text-lg font-semibold"
+                                            placeholderTextColor="PhaseTextTertiary"
                                         />
                                     </Input>
                                 </FormControl>
 
                                 <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
-                                        <FormControlLabelText color={colors.textSecondary}>
+                                        <FormControlLabelText className="text-phaseText-secondary">
                                             URL Handle (unique ID)
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        sx={{
-                                            height: 56,
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                            borderWidth: 1,
-                                            borderRadius: Theme.corners.generous
-                                        }}
+                                        className="h-14 bg-phase-elevated border-phase-border border rounded-generous"
                                     >
                                         <InputField
                                             placeholder="e.g., green-valley"
@@ -260,12 +223,11 @@ export default function CreateSchoolModal({
                                                 setHandle(text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, ''));
                                                 if (error) setError(null);
                                             }}
-                                            color={colors.text}
-                                            placeholderTextColor={colors.textTertiary}
-                                            sx={{ fontSize: 16, fontWeight: '500' }}
+                                            className="text-phaseText-onSurface text-base font-medium"
+                                            placeholderTextColor="PhaseTextTertiary"
                                         />
                                     </Input>
-                                    <Text size="xs" color={colors.textTertiary} sx={{ marginTop: 4 }}>
+                                    <Text size="xs" className="text-phaseText-tertiary mt-1">
                                         Used in your Sanctuary's QR codes and links.
                                     </Text>
                                 </FormControl>
@@ -273,28 +235,25 @@ export default function CreateSchoolModal({
                         </ModalBody>
 
                         <ModalFooter>
-                            <HStack sx={{ width: '100%', gap: Theme.spacing.md }}>
+                            <HStack className="w-full gap-md">
                                 <Button
                                     variant="outline"
                                     action="secondary"
                                     onPress={handleClose}
-                                    sx={{ flex: 1, borderColor: colors.border }}
+                                    className="flex-1 border-phase-border"
                                     isDisabled={isSubmitting}
                                 >
-                                    <ButtonText color={colors.textSecondary}>
+                                    <ButtonText className="text-phaseText-secondary font-English">
                                         {t('common.cancel') || 'Cancel'}
                                     </ButtonText>
                                 </Button>
                                 <Button
                                     action="primary"
                                     onPress={() => setStep('type')}
-                                    sx={{
-                                        flex: 2,
-                                        backgroundColor: Theme.colors.sanctuarySaffron,
-                                    }}
+                                    className="flex-[2] bg-sanctuarySaffron"
                                     isDisabled={!name.trim() || !handle.trim()}
                                 >
-                                    <ButtonText color={Theme.colors.sacredWhite}>
+                                    <ButtonText className="text-sacredWhite font-English">
                                         {isEdit ? 'Continue to Focus' : 'Next — Academic Focus'}
                                     </ButtonText>
                                 </Button>
@@ -306,81 +265,77 @@ export default function CreateSchoolModal({
                 {step === 'type' && (
                     <>
                         <ModalHeader>
-                            <VStack sx={{ gap: 4 }}>
-                                <Heading color={colors.text} size="lg">
+                            <VStack className="gap-1">
+                                <Heading className="text-phaseText-onSurface" size="lg">
                                     Academic Focus
                                 </Heading>
-                                <Text size="xs" color={colors.textSecondary}>
+                                <Text size="xs" className="text-phaseText-secondary">
                                     {isEdit ? 'Update your scope' : 'Step 2 of 2: Define your scope'}
                                 </Text>
                             </VStack>
                         </ModalHeader>
 
                         <ModalBody>
-                            <VStack sx={{ gap: Theme.spacing.lg, paddingVertical: Theme.spacing.md }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
-                                    What is the core mission of <Text sx={{ fontWeight: 'bold', color: colors.text }}>{name}</Text>?
+                            <VStack className="gap-lg py-md">
+                                <Text className="text-phaseText-secondary text-sm">
+                                    What is the core mission of <Text className="font-bold text-phaseText-onSurface">{name}</Text>?
                                 </Text>
 
                                 {([
                                     { id: 'primary', label: 'Primary Excellence', emoji: '🏫', desc: 'Foundational years (Grades 1-5). Focus on literacy and logic.' },
                                     { id: 'secondary', label: 'Higher Foundations', emoji: '🎓', desc: 'Advanced development (Grades 6-13). Specialized disciplines.' },
                                     { id: 'mixed', label: 'All-Grade Sanctuary', emoji: '🌿', desc: 'Holistic journey across all levels. Complete integration.' },
-                                ] as const).map((tType) => (
-                                    <TouchableOpacity
-                                        key={tType.id}
-                                        onPress={() => {
-                                            hapticLight();
-                                            setType(tType.id);
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                padding: Theme.spacing.md,
-                                                borderRadius: Theme.corners.generous,
-                                                borderWidth: 2,
-                                                borderColor: type === tType.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                                backgroundColor: type === tType.id ? 'rgba(212,132,58,0.05)' : colors.tertiary,
+                                ] as const).map((tType) => {
+                                    const isSelected = type === tType.id;
+                                    return (
+                                        <TouchableOpacity
+                                            key={tType.id}
+                                            onPress={() => {
+                                                hapticLight();
+                                                setType(tType.id);
                                             }}
                                         >
-                                            <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                                <Text sx={{ fontSize: 32 }}>{tType.emoji}</Text>
-                                                <VStack sx={{ flex: 1 }}>
-                                                    <Text sx={{ fontWeight: '800', color: colors.text }}>{tType.label}</Text>
-                                                    <Text size="xs" color={colors.textSecondary}>{tType.desc}</Text>
-                                                </VStack>
-                                                {type === tType.id && <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={18} />}
-                                            </HStack>
-                                        </Box>
-                                    </TouchableOpacity>
-                                ))}
+                                            <Box
+                                                className={`p-md rounded-generous border-2 ${
+                                                    isSelected ? 'border-sanctuarySaffron bg-sanctuarySaffron/5' : 'border-phase-border bg-phase-elevated'
+                                                }`}
+                                            >
+                                                <HStack className="gap-md items-center">
+                                                    <Text className="text-[32px]">{tType.emoji}</Text>
+                                                    <VStack className="flex-1">
+                                                        <Text className="font-extrabold text-phaseText-onSurface">{tType.label}</Text>
+                                                        <Text size="xs" className="text-phaseText-secondary">{tType.desc}</Text>
+                                                    </VStack>
+                                                    {isSelected && <Icon as={CheckCircle} className="text-sanctuarySaffron" size="sm" />}
+                                                </HStack>
+                                            </Box>
+                                        </TouchableOpacity>
+                                    );
+                                })}
                             </VStack>
                         </ModalBody>
 
                         <ModalFooter>
-                            <HStack sx={{ width: '100%', gap: Theme.spacing.md }}>
+                            <HStack className="w-full gap-md">
                                 <Button
                                     variant="outline"
                                     action="secondary"
                                     onPress={() => setStep('details')}
-                                    sx={{ flex: 1, borderColor: colors.border }}
+                                    className="flex-1 border-phase-border"
                                     isDisabled={isSubmitting}
                                 >
-                                    <ButtonText color={colors.textSecondary}>Back</ButtonText>
+                                    <ButtonText className="text-phaseText-secondary font-English">Back</ButtonText>
                                 </Button>
                                 <Button
                                     action="primary"
                                     onPress={handleSubmit}
-                                    sx={{
-                                        flex: 2,
-                                        backgroundColor: Theme.colors.sanctuarySaffron,
-                                    }}
+                                    className="flex-[2] bg-sanctuarySaffron"
                                     isDisabled={isSubmitting}
                                 >
                                     {isSubmitting ? (
-                                        <Spinner color={Theme.colors.sacredWhite} size="small" />
+                                        <Spinner size="small" className="text-sacredWhite" />
                                     ) : (
-                                        <ButtonText color={Theme.colors.sacredWhite}>
+                                        <ButtonText className="text-sacredWhite font-English">
                                             {isEdit ? 'Save Changes' : 'Establish Sanctuary'}
                                         </ButtonText>
                                     )}
@@ -393,58 +348,55 @@ export default function CreateSchoolModal({
                 {step === 'success' && (
                     <>
                         <ModalHeader>
-                            <VStack sx={{ alignItems: 'center', width: '100%', gap: Theme.spacing.sm }}>
-                                <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={48} />
-                                <Heading color={colors.text} size="lg" sx={{ textAlign: 'center' }}>
+                            <VStack className="items-center w-full gap-sm">
+                                <Icon as={CheckCircle} className="text-sanctuarySaffron" size="xl" />
+                                <Heading className="text-phaseText-onSurface text-center" size="lg">
                                     Sanctuary Established!
                                 </Heading>
                             </VStack>
                         </ModalHeader>
 
                         <ModalBody>
-                            <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}>
-                                <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
-                                    Congratulations! <Text sx={{ fontWeight: 'bold', color: colors.text }}>{name}</Text> is now live.
+                            <VStack className="gap-lg items-center">
+                                <Text className="text-center text-phaseText-secondary">
+                                    Congratulations! <Text className="font-bold text-phaseText-onSurface">{name}</Text> is now live.
                                 </Text>
                                 
-                                <Box sx={{ backgroundColor: colors.tertiary, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable, width: '100%' }}>
-                                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                            <Icon as={School} color={Theme.colors.sanctuarySaffron} size={16} />
-                                            <Text sx={{ fontSize: 14, color: colors.text }}>School Dashboard Ready</Text>
+                                <Box className="bg-phase-elevated p-md rounded-comfortable w-full">
+                                    <VStack className="gap-sm">
+                                        <HStack className="gap-sm items-center">
+                                            <Icon as={School} className="text-sanctuarySaffron" size="sm" />
+                                            <Text className="text-sm text-phaseText-onSurface">School Dashboard Ready</Text>
                                         </HStack>
-                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                            <Icon as={MessageSquare} color={Theme.colors.sanctuarySaffron} size={16} />
-                                            <Text sx={{ fontSize: 14, color: colors.text }}>Community HQ Created</Text>
+                                        <HStack className="gap-sm items-center">
+                                            <Icon as={MessageSquare} className="text-sanctuarySaffron" size="sm" />
+                                            <Text className="text-sm text-phaseText-onSurface">Community HQ Created</Text>
                                         </HStack>
                                     </VStack>
                                 </Box>
 
-                                <Text sx={{ fontSize: 13, color: colors.textTertiary, textAlign: 'center' }}>
+                                <Text className="text-[13px] text-phaseText-tertiary text-center">
                                     You've been assigned as the Principal. You can now invite staff and start building your curriculum.
                                 </Text>
                             </VStack>
                         </ModalBody>
 
                         <ModalFooter>
-                            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
+                            <VStack className="w-full gap-md">
                                 <Button
                                     action="primary"
                                     onPress={handleClose}
-                                    sx={{
-                                        width: '100%',
-                                        backgroundColor: Theme.colors.sanctuarySaffron,
-                                    }}
+                                    className="w-full bg-sanctuarySaffron"
                                 >
-                                    <ButtonText color={Theme.colors.sacredWhite}>Enter School Dashboard</ButtonText>
+                                    <ButtonText className="text-sacredWhite font-English">Enter School Dashboard</ButtonText>
                                 </Button>
                                 {createdIds?.groupId && (
                                     <Button
                                         variant="outline"
                                         onPress={navigateToCommunity}
-                                        sx={{ width: '100%', borderColor: colors.border }}
+                                        className="w-full border-phase-border"
                                     >
-                                        <ButtonText color={colors.textSecondary}>Visit Community HQ</ButtonText>
+                                        <ButtonText className="text-phaseText-secondary font-English">Visit Community HQ</ButtonText>
                                     </Button>
                                 )}
                             </VStack>

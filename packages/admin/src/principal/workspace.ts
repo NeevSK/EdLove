@@ -7,6 +7,24 @@ export type PrincipalWorkspaceView =
   | 'cycles'
   | 'attendance_report';
 
+export type PrincipalWorkspaceSurfaceId =
+  | 'setup_runway'
+  | 'workspace_switcher'
+  | 'morning_brief'
+  | 'faculty_overview'
+  | 'pending_approvals'
+  | 'institutional_calendar'
+  | 'observations'
+  | 'hierarchy'
+  | 'invites'
+  | 'cycles'
+  | 'log'
+  | 'notes'
+  | 'school_profile'
+  | 'resource_needs'
+  | 'ecosystem_resonance'
+  | 'open_commons';
+
 export type PrincipalZoneId = 'today' | 'institution' | 'outlook';
 
 export type PrincipalFeatureScope = 'institutional' | 'classroom' | 'ecology_crosscutting';

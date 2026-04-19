@@ -8,7 +8,7 @@ import {
   type WorkspaceSwitcherTarget
 } from '@repo/core';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Box, ScreenWrapper, Text, useTheme } from '@repo/ui';
+import { Box, ScreenWrapper, Text } from '@repo/ui';
 import {
   GuardianWorkspaceCanvas,
   type GuardianWorkspaceSurfaceId,
@@ -31,7 +31,6 @@ export default function GuardianDashboard() {
   const { can, flags } = usePermissions();
   const user = useStore((state) => state.user);
   const { dashboard, isLoading, error } = useGuardianWorkspaceData(user?.id || '');
-  const theme = useTheme();
 
   const workspaceTargets = React.useMemo(
     () =>
@@ -176,27 +175,21 @@ export default function GuardianDashboard() {
     );
   }
 
-  if (isLoading && !dashboard) {
+  if (isLoading) {
     return (
-      <ScreenWrapper>
-        <Box className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-phaseText-secondary">
-            Loading the guardian workspace bridge...
-          </Text>
-        </Box>
-      </ScreenWrapper>
+      <Box className="flex-1 justify-center items-center bg-phase-canvas">
+        <Text className="text-phaseText-secondary text-base">Loading dashboard...</Text>
+      </Box>
     );
   }
 
   if (!dashboard) {
     return (
-      <ScreenWrapper>
-        <Box className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-phaseText-primary">
-            {error || 'Guardian workspace could not be loaded right now.'}
-          </Text>
-        </Box>
-      </ScreenWrapper>
+      <Box className="flex-1 justify-center items-center bg-phase-canvas p-5">
+        <Text className="text-phase-danger text-base font-semibold text-center">
+          {error || 'Failed to load dashboard'}
+        </Text>
+      </Box>
     );
   }
 
@@ -214,7 +207,7 @@ export default function GuardianDashboard() {
 
   return (
     <ScreenWrapper scroll={false} noTopInset>
-      <Box className="flex-1 bg-silk px-4 py-4" style={{ backgroundColor: theme.scene.canvas.bg }}>
+      <Box className="flex-1 bg-phase-canvas px-4 py-4">
         <GuardianWorkspaceCanvas 
           layout={workspace.layout}
           surfaces={workspace.surfaces}

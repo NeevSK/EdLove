@@ -9,7 +9,7 @@ import {
 import { MoreVertical, BellOff, Bell, UserX, ShieldAlert } from 'lucide-react-native';
 import { useSocialShield } from '../hooks/useSocialShield';
 import SocialShieldModal from './SocialShieldModal';
-import { supabase, identityAPI } from '@repo/core';
+import { supabase, identityAPI, usePermissions } from '@repo/core';
 
 interface HeaderMoreMenuProps {
     conversationId?: string;
@@ -25,6 +25,7 @@ export default function HeaderMoreMenu({
     targetUserName
 }: HeaderMoreMenuProps) {
     const { toggleMute, blockUser } = useSocialShield();
+    const { flags } = usePermissions();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
@@ -67,7 +68,7 @@ export default function HeaderMoreMenu({
     return (
         <Box>
             <Pressable onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <MoreVertical size={24} color="rgba(255,255,255,0.9)" />
+                <Icon as={MoreVertical} size="lg" color="rgba(255,255,255,0.9)" />
             </Pressable>
 
             {isMenuOpen && (
@@ -77,26 +78,28 @@ export default function HeaderMoreMenu({
                     <VStack>
                         <Pressable className="p-3 border-b border-outline-variant/50 active:bg-white/5" onPress={handleToggleMute}>
                             <HStack className="items-center gap-3">
-                                {isMuted ? <Bell size={18} color="rgba(255,255,255,0.9)" /> : <BellOff size={18} color="rgba(255,255,255,0.9)" />}
+                                <Icon as={isMuted ? Bell : BellOff} size="sm" color="rgba(255,255,255,0.9)" />
                                 <Text className="text-sm text-foreground">{isMuted ? 'Unmute' : 'Mute'} Sanctuary</Text>
                             </HStack>
                         </Pressable>
 
-                        {targetUserId && (
+                        {targetUserId && flags.isSocialShieldEnabled && (
                             <Pressable className="p-3 border-b border-outline-variant/50 active:bg-white/5" onPress={handleBlock}>
                                 <HStack className="items-center gap-3">
-                                    <UserX size={18} color="#E67E22" />
+                                    <Icon as={UserX} size="sm" color="#E67E22" />
                                     <Text className="text-sm text-primary-500">Block User</Text>
                                 </HStack>
                             </Pressable>
                         )}
 
-                        <Pressable className="p-3 active:bg-white/5" onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
-                            <HStack className="items-center gap-3">
-                                <ShieldAlert size={18} color="rgba(255,255,255,0.9)" />
-                                <Text className="text-sm text-foreground">Report</Text>
-                            </HStack>
-                        </Pressable>
+                        {flags.isSocialShieldEnabled && (
+                            <Pressable className="p-3 active:bg-white/5" onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
+                                <HStack className="items-center gap-3">
+                                    <Icon as={ShieldAlert} size="sm" color="rgba(255,255,255,0.9)" />
+                                    <Text className="text-sm text-foreground">Report</Text>
+                                </HStack>
+                            </Pressable>
+                        )}
                     </VStack>
                 </Box>
             )}

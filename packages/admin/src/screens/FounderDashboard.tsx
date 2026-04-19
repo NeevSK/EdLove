@@ -56,7 +56,7 @@ export default function FounderDashboard() {
     useRegisterFAB({
         tabType: 'founder',
         onPress: () => setIsCreateModalOpen(true),
-        icon: <Icon as={Plus} size={24} color="#FFF" />,
+        icon: <Icon as={Plus} size={24} className="text-white" />,
         visible: true
     });
 
@@ -72,12 +72,12 @@ export default function FounderDashboard() {
                     {/* 1. Ecosystem Pulse */}
                     <VStack className="gap-4">
                         <HStack className="justify-between items-center">
-                            <Heading className="text-xl font-bold text-ink">
+                            <Heading className="text-xl font-bold text-phaseText-primary">
                                 Ecosystem Pulse
                             </Heading>
-                            <Box className="flex-row items-center gap-2 bg-phase-warning/10 px-3 py-1.5 rounded-full">
-                                <Icon as={HeartPulse} size={16} className="text-primary" />
-                                <Text className="text-xs font-black text-primary">
+                            <Box className="flex-row items-center gap-2 bg-phase-accent/10 px-3 py-1.5 rounded-full">
+                                <Icon as={HeartPulse} size={16} className="text-phase-accent" />
+                                <Text className="text-xs font-black text-phase-accent">
                                     Health: {stats?.ecosystem_health || 0}%
                                 </Text>
                             </Box>
@@ -95,18 +95,18 @@ export default function FounderDashboard() {
                                         });
                                     }
                                 }}>
-                                <Box className="p-4 bg-primary/5 rounded-3xl border border-primary/20">
+                                <Box className="p-4 bg-phase-interactive/5 rounded-3xl border border-phase-interactive/20">
                                     <HStack className="justify-between items-center">
                                         <HStack className="gap-4 items-center flex-1">
-                                            <Box className="w-12 h-12 bg-primary/10 rounded-2xl items-center justify-center">
-                                                <Icon as={SchoolIcon} size={24} className="text-primary" />
+                                            <Box className="w-12 h-12 bg-phase-interactive/10 rounded-2xl items-center justify-center">
+                                                <Icon as={SchoolIcon} size={24} className="text-phase-interactive" />
                                             </Box>
                                             <VStack className="flex-1">
-                                                <Text className="font-bold text-ink">Manage My Institution</Text>
-                                                <Text className="text-xs text-ink/60">Full principal oversight for your school</Text>
+                                                <Text className="font-bold text-phaseText-primary">Manage My Institution</Text>
+                                                <Text className="text-xs text-phaseText-secondary">Full principal oversight for your school</Text>
                                             </VStack>
                                         </HStack>
-                                        <Icon as={ChevronRight} size={20} className="text-ink/30" />
+                                        <Icon as={ChevronRight} size={20} className="text-phaseText-muted" />
                                     </HStack>
                                 </Box>
                             </Pressable>
@@ -114,10 +114,10 @@ export default function FounderDashboard() {
 
                         {isLoading ? (
                             <HStack className="gap-4">
-                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                <Box className="flex-1 h-24 bg-phase-canvas rounded-3xl animate-pulse items-center justify-center">
                                     <Spinner />
                                 </Box>
-                                <Box className="flex-1 h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                <Box className="flex-1 h-24 bg-phase-canvas rounded-3xl animate-pulse items-center justify-center">
                                     <Spinner />
                                 </Box>
                             </HStack>
@@ -160,7 +160,7 @@ export default function FounderDashboard() {
                                 icon={Wind}
                                 label={t('founder.breathing') || 'Breathing Reset'}
                                 onPress={() => setBreathingOpen(true)}
-                                color="#D4843A"
+                                className="text-phase-accent"
                             />
                             <Box className="flex-1" />
                             <Box className="flex-1" />
@@ -170,11 +170,11 @@ export default function FounderDashboard() {
                     {/* 2. School Gallery */}
                     <VStack className="gap-4">
                         <HStack className="justify-between items-center">
-                            <Heading className="text-xl font-bold text-ink">
+                            <Heading className="text-xl font-bold text-phaseText-primary">
                                 Institutions
                             </Heading>
-                            <Box className="px-3 py-1 bg-ink/5 rounded-full">
-                                <Text className="text-xs text-ink/60 font-bold">
+                            <Box className="px-3 py-1 bg-phase-canvas rounded-full">
+                                <Text className="text-xs text-phaseText-secondary font-bold">
                                     {filteredSchools.length} Registered
                                 </Text>
                             </Box>
@@ -182,10 +182,10 @@ export default function FounderDashboard() {
 
                         {isLoading ? (
                             <VStack className="gap-4">
-                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                <Box className="w-full h-24 bg-phase-canvas rounded-3xl animate-pulse items-center justify-center">
                                     <Spinner />
                                 </Box>
-                                <Box className="w-full h-24 bg-ink/5 rounded-3xl animate-pulse items-center justify-center">
+                                <Box className="w-full h-24 bg-phase-canvas rounded-3xl animate-pulse items-center justify-center">
                                     <Spinner />
                                 </Box>
                             </VStack>
@@ -205,8 +205,8 @@ export default function FounderDashboard() {
                                 ))}
 
                                 {filteredSchools.length === 0 && (
-                                    <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
-                                        <Text className="text-ink/40 font-bold">No institutions found</Text>
+                                    <Box className="p-10 items-center justify-center bg-phase-canvas rounded-3xl border border-dashed border-phase-border">
+                                        <Text className="text-phaseText-muted font-bold">No institutions found</Text>
                                     </Box>
                                 )}
                             </VStack>
@@ -225,15 +225,15 @@ export default function FounderDashboard() {
     );
 }
 
-function QuickAction({ icon, label, onPress, color }: { icon: any, label: string, onPress: () => void, color: string }) {
+function QuickAction({ icon, label, onPress, className }: { icon: any, label: string, onPress: () => void, className?: string }) {
     return (
         <VStack className="flex-1 gap-2 items-center">
             <Pressable
                 onPress={onPress}
-                className="w-16 h-16 rounded-[20px] bg-white border border-border items-center justify-center shadow-sm active:scale-95">
-                <Icon as={icon} color={color} size={28} />
+                className="w-16 h-16 rounded-[20px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm active:scale-95">
+                <Icon as={icon} size={28} className={className} />
             </Pressable>
-            <Text className="text-center text-[11px] font-bold text-ink">
+            <Text className="text-center text-[11px] font-bold text-phaseText-primary">
                 {label}
             </Text>
         </VStack>
@@ -242,10 +242,10 @@ function QuickAction({ icon, label, onPress, color }: { icon: any, label: string
 
 function StatCard({ label, value, icon, variant }: { label: string, value: number, icon: React.ReactNode, variant: 'primary' | 'success' | 'warning' | 'accent' }) {
     const variantClasses = {
-        primary: 'border-primary/30 text-primary bg-primary/5',
-        success: 'border-green-500/30 text-green-600 bg-green-500/5',
-        warning: 'border-amber-500/30 text-amber-600 bg-amber-500/5',
-        accent: 'border-orange-500/30 text-orange-600 bg-orange-500/5'
+        primary: 'border-phase-interactive/30 text-phase-interactive bg-phase-interactive/5',
+        success: 'border-phase-reward/30 text-phase-reward bg-phase-reward/5',
+        warning: 'border-phase-accent/30 text-phase-accent bg-phase-accent/5',
+        accent: 'border-phase-interactive/30 text-phase-interactive bg-phase-interactive/5'
     };
 
     return (
@@ -253,10 +253,10 @@ function StatCard({ label, value, icon, variant }: { label: string, value: numbe
             <Box className="mb-2 opacity-60">
                 {icon}
             </Box>
-            <Text className="text-2xl font-black text-ink">
+            <Text className="text-2xl font-black text-phaseText-primary">
                 {value.toLocaleString()}
             </Text>
-            <Text className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40 mt-1">
+            <Text className="text-[10px] font-extrabold uppercase tracking-widest text-phaseText-muted mt-1">
                 {label}
             </Text>
         </Box>
@@ -266,19 +266,19 @@ function StatCard({ label, value, icon, variant }: { label: string, value: numbe
 function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () => void }) {
     return (
         <Pressable onPress={onPress}>
-            <Box className="p-4 bg-white rounded-3xl border border-border flex-row items-center gap-4 active:bg-ink/5">
-                <Box className="w-12 h-12 rounded-2xl bg-primary/10 items-center justify-center">
-                    <Icon as={SchoolIcon} size={24} className="text-primary" />
+            <Box className="p-4 bg-phase-surface rounded-3xl border border-phase-border flex-row items-center gap-4 active:bg-phase-canvas">
+                <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+                    <Icon as={SchoolIcon} size={24} className="text-phase-interactive" />
                 </Box>
                 <VStack className="flex-1">
-                    <Text className="font-bold text-base text-ink">
+                    <Text className="font-bold text-base text-phaseText-primary">
                         {school.name}
                     </Text>
-                    <Text className="text-xs text-ink/60">
+                    <Text className="text-xs text-phaseText-secondary">
                         {school.type} • {school.id.substring(0, 8)}...
                     </Text>
                 </VStack>
-                <Icon as={ChevronRight} size={20} className="text-ink/30" />
+                <Icon as={ChevronRight} size={20} className="text-phaseText-muted" />
             </Box>
         </Pressable>
     );

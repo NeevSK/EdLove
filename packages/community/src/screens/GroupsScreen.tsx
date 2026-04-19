@@ -18,9 +18,8 @@ import {
 import Animated from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import { useTranslation } from 'react-i18next';
 // @ts-ignore - Temporary until we decide on demo logic location
-import { isDemo } from '@repo/core';
+import { isDemo, usePermissions } from '@repo/core';
 import { Compass, Shield, Users, Plus, X, Globe } from 'lucide-react-native';
 import { Group } from '../types';
 
@@ -36,6 +35,7 @@ interface GroupsScreenProps {
 
 export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateGroup, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
+    const { can, flags } = usePermissions();
     const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>(userId ? 'sanctuary' : 'galaxy');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -121,6 +121,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
     const renderGalaxyActions = () => {
         if (activeSubTab !== 'galaxy') return null;
+        if (!flags.isCommunityEnabled || !can('create', 'Group')) return null;
 
         return (
             <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}>
@@ -193,6 +194,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     action="primary"
                     onPress={() => onCreateGroup?.()}
                     className="h-14 rounded-2xl px-10"
+                    isDisabled={!flags.isCommunityEnabled || !can('create', 'Group')}
                 >
                     <Text className="text-white font-black">{t('community.groups.foundCircle') || 'Found a New Circle'}</Text>
                 </SanctuaryButton>

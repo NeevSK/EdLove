@@ -24,16 +24,16 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
 
   if (isLoading) {
     return (
-      <Box className="flex-1 justify-center items-center bg-background">
-        <Text className="text-secondary text-base">Loading dashboard...</Text>
+      <Box className="flex-1 justify-center items-center bg-phase-canvas">
+        <Text className="text-phaseText-secondary text-base">Loading dashboard...</Text>
       </Box>
     );
   }
 
   if (!dashboard) {
     return (
-      <Box className="flex-1 justify-center items-center bg-background p-5">
-        <Text className="text-error text-base font-semibold text-center">
+      <Box className="flex-1 justify-center items-center bg-phase-canvas p-5">
+        <Text className="text-phase-danger text-base font-semibold text-center">
           {error || 'Failed to load dashboard'}
         </Text>
       </Box>
@@ -41,7 +41,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
   }
 
   return (
-    <Box className="flex-1 bg-background">
+    <Box className="flex-1 bg-phase-canvas">
       <GuardianHeader studentCount={dashboard.students.length} />
 
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
@@ -53,7 +53,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
 
           <Box className="flex-col md:flex-row gap-6">
             <VStack className="flex-1 gap-4">
-              <Text className="text-primary font-bold text-lg">
+              <Text className="text-phaseText-primary font-bold text-lg">
                 Recent Notifications
               </Text>
               <GuardianNotifications 
@@ -64,7 +64,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
             </VStack>
 
             <VStack className="flex-1 gap-4">
-              <Text className="text-primary font-bold text-lg">
+              <Text className="text-phaseText-primary font-bold text-lg">
                 Upcoming Events
               </Text>
               <GuardianEvents 

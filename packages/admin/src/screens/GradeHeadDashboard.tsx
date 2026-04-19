@@ -8,7 +8,6 @@ import {
     SanctuaryButton,
     useRegisterFAB,
     ScreenWrapper,
-    useTheme,
     Pressable,
     Icon
 } from '@repo/ui';
@@ -18,7 +17,6 @@ import { BookOpen, Users, AlertCircle } from 'lucide-react-native';
 
 export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { activeGaps, refreshStatus } = useAIAgent();
-    const theme = useTheme();
     const userRole = useStore((state: any) => state.userRole);
 
     // Register FAB globally
@@ -51,7 +49,7 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                             {activeGaps.map((gap: any) => (
                                 <Box
                                     key={gap.id}
-                                    className="p-md rounded-lg bg-orange-500/10 border border-phase-accent"
+                                    className="p-md rounded-lg bg-phase-accent/10 border border-phase-accent"
                                 >
                                     <HStack className="gap-3 items-center">
                                         <Icon as={AlertCircle} className="text-phase-accent" size="lg" />
@@ -64,7 +62,6 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                                         <SanctuaryButton
                                             onPress={() => console.log('Executing relief:', gap.suggestedAction)}
                                             size="sm"
-                                            variant="solid"
                                         >
                                             <Text className="text-white font-bold">Assign Relief Teacher</Text>
                                         </SanctuaryButton>

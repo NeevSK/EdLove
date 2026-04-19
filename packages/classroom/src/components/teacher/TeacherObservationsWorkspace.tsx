@@ -5,6 +5,7 @@ import {
     ButtonText,
     HStack,
     Heading,
+    Icon,
     Input,
     InputField,
     Modal,
@@ -17,9 +18,7 @@ import {
     ScrollView,
     Spinner,
     Text,
-    Theme,
     VStack,
-    useThemedColors,
     hapticLight,
 } from '@repo/ui';
 import { api, Student } from '@repo/core';
@@ -40,7 +39,6 @@ export default function TeacherObservationsWorkspace({
     students,
     canManage,
 }: TeacherObservationsWorkspaceProps) {
-    const colors = useThemedColors();
     const [observations, setObservations] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -109,32 +107,21 @@ export default function TeacherObservationsWorkspace({
     };
 
     return (
-        <Box sx={{ flex: 1 }}>
-            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}>
+        <Box className="flex-1">
+            <VStack className="gap-md p-md">
                 <Box
-                    sx={{
-                        backgroundColor: Theme.colors.silk,
-                        borderRadius: Theme.corners.generous,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        padding: Theme.spacing.lg,
-                        shadowColor: Theme.colors.shadowAmbient,
-                        shadowOffset: { width: 0, height: 8 },
-                        shadowOpacity: 1,
-                        shadowRadius: 18,
-                        elevation: 4,
-                    }}
+                    className="bg-silk rounded-generous border border-phase-border p-lg shadow-sm"
                 >
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                            <VStack sx={{ flex: 1, gap: 4 }}>
-                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <VStack className="gap-md">
+                        <HStack className="items-start justify-between gap-md">
+                            <VStack className="flex-1 gap-1">
+                                <Text className="text-phaseText-onSurface text-[11px] font-bold uppercase tracking-[1px]">
                                     Observations
                                 </Text>
-                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}>
+                                <Heading className="text-phaseText-onSurface text-xl">
                                     Track classroom noticing, not just incidents
                                 </Heading>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                <Text className="text-phaseText-secondary text-sm">
                                     Keep small signals close to the classroom rhythm, so growth and concern stay visible before they become reports.
                                 </Text>
                             </VStack>
@@ -145,59 +132,48 @@ export default function TeacherObservationsWorkspace({
                                         hapticLight();
                                         setShowCreateModal(true);
                                     }}
-                                    sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: Theme.corners.full }}
+                                    className="bg-sanctuarySaffron rounded-full"
                                 >
-                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-                                        <Plus size={16} color={Theme.colors.sacredWhite} />
-                                        <ButtonText sx={{ color: Theme.colors.sacredWhite }}>New</ButtonText>
+                                    <HStack className="items-center gap-xs">
+                                        <Icon as={Plus} size="sm" className="text-sacredWhite" />
+                                        <ButtonText className="text-sacredWhite font-English">New</ButtonText>
                                     </HStack>
                                 </Button>
                             )}
                         </HStack>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
+                        <HStack className="gap-sm">
                             <SignalPill
-                                icon={<MessageCircle size={14} color={Theme.colors.gurudeviBlue} />}
+                                icon={<Icon as={MessageCircle} size="sm" className="text-gurudeviBlue" />}
                                 label="Total"
                                 value={String(observations.length)}
-                                colors={colors}
                             />
                             <SignalPill
-                                icon={<Sparkles size={14} color={Theme.colors.sageGreen} />}
+                                icon={<Icon as={Sparkles} size="sm" className="text-sageGreen" />}
                                 label="Positive"
                                 value={String(positiveCount)}
-                                colors={colors}
                             />
                             <SignalPill
-                                icon={<TriangleAlert size={14} color={Theme.colors.emberRed} />}
+                                icon={<Icon as={TriangleAlert} size="sm" className="text-emberRed" />}
                                 label="Concerns"
                                 value={String(concernCount)}
-                                colors={colors}
                             />
                         </HStack>
                     </VStack>
                 </Box>
 
                 {isLoading ? (
-                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Spinner color={Theme.colors.sanctuarySaffron} />
+                    <Box className="py-xl items-center">
+                        <Spinner className="text-sanctuarySaffron" />
                     </Box>
                 ) : observations.length === 0 ? (
                     <Box
-                        sx={{
-                            backgroundColor: Theme.colors.silk,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            padding: Theme.spacing.xl,
-                            alignItems: 'center',
-                            gap: Theme.spacing.sm,
-                        }}
+                        className="bg-silk rounded-generous border border-phase-border p-xl items-center gap-sm"
                     >
-                        <MessageCircle size={36} color={colors.textTertiary} />
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>
+                        <Icon as={MessageCircle} size="xl" className="text-phaseText-onSurface/40" />
+                        <Heading className="text-phaseText-onSurface text-lg">
                             No observations yet
                         </Heading>
-                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
+                        <Text className="text-phaseText-secondary text-center">
                             Start with one true observation from today. The goal is signal, not volume.
                         </Text>
                     </Box>
@@ -205,38 +181,32 @@ export default function TeacherObservationsWorkspace({
                     observations.map((observation) => (
                         <Box
                             key={observation.id}
-                            sx={{
-                                backgroundColor: Theme.colors.silk,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                borderLeftWidth: 4,
-                                borderLeftColor: observation.observation_type === 'concern'
-                                    ? Theme.colors.emberRed
+                            className={`bg-silk rounded-comfortable border border-phase-border p-md border-l-4 ${
+                                observation.observation_type === 'concern'
+                                    ? 'border-l-emberRed'
                                     : observation.observation_type === 'positive'
-                                        ? Theme.colors.sageGreen
-                                        : Theme.colors.gurudeviBlue,
-                                padding: Theme.spacing.md,
-                            }}
+                                        ? 'border-l-sageGreen'
+                                        : 'border-l-gurudeviBlue'
+                            }`}
                         >
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Text sx={{ color: colors.text, fontWeight: '700' as const }}>
+                            <VStack className="gap-xs">
+                                <HStack className="items-center justify-between gap-md">
+                                    <VStack className="flex-1">
+                                        <Text className="text-phaseText-onSurface font-bold">
                                             {students.find((student) => student.id === observation.student_id)?.full_name || 'Student observation'}
                                         </Text>
-                                        <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase' }}>
+                                        <Text className="text-phaseText-tertiary text-xs uppercase">
                                             {observation.observation_type} • {observation.visibility === 'student_visible' ? 'Visible to student' : 'Private'}
                                         </Text>
                                     </VStack>
                                     {canManage && (
                                         <Pressable onPress={() => handleDelete(observation.id)}>
-                                            <Trash2 size={16} color={Theme.colors.emberRed} />
+                                            <Icon as={Trash2} size="sm" className="text-emberRed" />
                                         </Pressable>
                                     )}
                                 </HStack>
-                                <Text sx={{ color: colors.textSecondary }}>{observation.content}</Text>
-                                <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>
+                                <Text className="text-phaseText-secondary">{observation.content}</Text>
+                                <Text className="text-phaseText-tertiary text-xs">
                                     {observation.created_at ? new Date(observation.created_at).toLocaleDateString() : 'Just now'}
                                 </Text>
                             </VStack>
@@ -247,35 +217,30 @@ export default function TeacherObservationsWorkspace({
 
             <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}>
+                <ModalContent className="bg-phase-canvas border border-phase-border">
                     <ModalHeader>
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>
+                        <Heading className="text-phaseText-onCanvas text-lg">
                             Create observation
                         </Heading>
                     </ModalHeader>
                     <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                        <VStack className="gap-md">
+                            <VStack className="gap-xs">
+                                <Text className="text-phaseText-secondary text-sm">
                                     Student
                                 </Text>
                                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                                    <HStack className="gap-sm">
                                         {students.map((student) => {
                                             const isActive = selectedStudentId === student.id;
                                             return (
                                                 <Pressable key={student.id} onPress={() => setSelectedStudentId(student.id)}>
                                                     <Box
-                                                        sx={{
-                                                            paddingHorizontal: Theme.spacing.md,
-                                                            paddingVertical: Theme.spacing.sm,
-                                                            borderRadius: Theme.corners.full,
-                                                            borderWidth: 1,
-                                                            borderColor: isActive ? Theme.colors.sanctuarySaffron : colors.border,
-                                                            backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.secondary,
-                                                        }}
+                                                        className={`px-md py-sm rounded-full border ${
+                                                            isActive ? 'border-sanctuarySaffron bg-sanctuarySaffron' : 'border-phase-border bg-phase-surface'
+                                                        }`}
                                                     >
-                                                        <Text sx={{ color: isActive ? Theme.colors.sacredWhite : colors.text }}>
+                                                        <Text className={isActive ? 'text-sacredWhite' : 'text-phaseText-onSurface'}>
                                                             {student.full_name}
                                                         </Text>
                                                     </Box>
@@ -286,26 +251,21 @@ export default function TeacherObservationsWorkspace({
                                 </ScrollView>
                             </VStack>
 
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                            <VStack className="gap-xs">
+                                <Text className="text-phaseText-secondary text-sm">
                                     Observation type
                                 </Text>
-                                <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
+                                <HStack className="gap-sm flex-wrap">
                                     {OBSERVATION_TYPES.map((type) => {
                                         const isActive = observationType === type;
                                         return (
                                             <Pressable key={type} onPress={() => setObservationType(type)}>
                                                 <Box
-                                                    sx={{
-                                                        paddingHorizontal: Theme.spacing.md,
-                                                        paddingVertical: Theme.spacing.xs,
-                                                        borderRadius: Theme.corners.full,
-                                                        borderWidth: 1,
-                                                        borderColor: isActive ? Theme.colors.gurudeviBlue : colors.border,
-                                                        backgroundColor: isActive ? Theme.colors.gurudeviBlue : colors.secondary,
-                                                    }}
+                                                    className={`px-md py-xs rounded-full border ${
+                                                        isActive ? 'border-gurudeviBlue bg-gurudeviBlue' : 'border-phase-border bg-phase-surface'
+                                                    }`}
                                                 >
-                                                    <Text sx={{ color: isActive ? Theme.colors.sacredWhite : colors.text, textTransform: 'capitalize' }}>
+                                                    <Text className={`capitalize ${isActive ? 'text-sacredWhite' : 'text-phaseText-onSurface'}`}>
                                                         {type}
                                                     </Text>
                                                 </Box>
@@ -315,26 +275,21 @@ export default function TeacherObservationsWorkspace({
                                 </HStack>
                             </VStack>
 
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                            <VStack className="gap-xs">
+                                <Text className="text-phaseText-secondary text-sm">
                                     Visibility
                                 </Text>
-                                <HStack sx={{ gap: Theme.spacing.sm }}>
+                                <HStack className="gap-sm">
                                     {(['private', 'student_visible'] as const).map((option) => {
                                         const isActive = visibility === option;
                                         return (
                                             <Pressable key={option} onPress={() => setVisibility(option)}>
                                                 <Box
-                                                    sx={{
-                                                        paddingHorizontal: Theme.spacing.md,
-                                                        paddingVertical: Theme.spacing.xs,
-                                                        borderRadius: Theme.corners.full,
-                                                        borderWidth: 1,
-                                                        borderColor: isActive ? Theme.colors.sageGreen : colors.border,
-                                                        backgroundColor: isActive ? Theme.colors.sageGreen : colors.secondary,
-                                                    }}
+                                                    className={`px-md py-xs rounded-full border ${
+                                                        isActive ? 'border-sageGreen bg-sageGreen' : 'border-phase-border bg-phase-surface'
+                                                    }`}
                                                 >
-                                                    <Text sx={{ color: isActive ? Theme.colors.sacredWhite : colors.text }}>
+                                                    <Text className={isActive ? 'text-sacredWhite' : 'text-phaseText-onSurface'}>
                                                         {option === 'student_visible' ? 'Visible to student' : 'Private'}
                                                     </Text>
                                                 </Box>
@@ -344,34 +299,36 @@ export default function TeacherObservationsWorkspace({
                                 </HStack>
                             </VStack>
 
-                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 100 }}>
+                            <Input className="bg-phase-surface border-phase-border min-h-[100px]">
                                 <InputField
                                     placeholder="What did you notice?"
                                     value={content}
                                     onChangeText={setContent}
                                     multiline
-                                    sx={{ color: colors.text }}
+                                    className="text-phaseText-onSurface"
                                 />
                             </Input>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
-                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} sx={{ flex: 1 }}>
-                                <ButtonText sx={{ color: colors.textSecondary }}>Cancel</ButtonText>
+                        <HStack className="gap-sm w-full">
+                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} className="flex-1">
+                                <ButtonText className="text-phaseText-secondary font-English">Cancel</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
                                 onPress={handleCreate}
                                 isDisabled={!content.trim() || !selectedStudent || !userId || isSaving}
-                                sx={{ flex: 1, backgroundColor: Theme.colors.sanctuarySaffron }}
+                                className="flex-1 bg-sanctuarySaffron"
                             >
-                                {isSaving ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText sx={{ color: Theme.colors.sacredWhite }}>Save</ButtonText>}
+                                {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-English">Save</ButtonText>}
                             </Button>
                         </HStack>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+        </Box>
+    );</Modal>
         </Box>
     );
 }
@@ -380,32 +337,21 @@ function SignalPill({
     icon,
     label,
     value,
-    colors,
 }: {
     icon: React.ReactNode;
     label: string;
     value: string;
-    colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: colors.primary,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: colors.border,
-                padding: Theme.spacing.sm,
-            }}
-        >
-            <VStack sx={{ gap: 4 }}>
-                <HStack sx={{ alignItems: 'center', gap: 6 }}>
+        <Box className="flex-1 bg-phase-canvas rounded-comfortable border border-phase-border p-sm">
+            <VStack className="gap-1">
+                <HStack className="items-center gap-1.5">
                     {icon}
-                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}>
+                    <Text className="text-phaseText-tertiary text-xs font-bold uppercase">
                         {label}
                     </Text>
                 </HStack>
-                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}>
+                <Text className="text-phaseText-onSurface font-bold text-md">
                     {value}
                 </Text>
             </VStack>

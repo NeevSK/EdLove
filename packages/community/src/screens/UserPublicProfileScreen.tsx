@@ -16,7 +16,7 @@ import {
 } from '@repo/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
-import { supabase } from '@repo/core';
+import { supabase, usePermissions } from '@repo/core';
 import { BadgeCheck, BookOpen, MessageSquare, ThumbsUp, School, Send, Info, ShieldAlert, Shield } from 'lucide-react-native';
 import { communityAPI } from '../api/community';
 import { useStore } from '@repo/core';
@@ -53,6 +53,7 @@ export default function UserPublicProfileScreen() {
   const { userId: userIdParam, id, userName } =
     ((route as { params?: { userId?: string; id?: string; userName?: string } }).params ?? {});
   const userId = userIdParam || id || '';
+  const { can, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id);
 
   const [user, setUser] = useState<PublicUser | null>(null);
@@ -136,7 +137,7 @@ export default function UserPublicProfileScreen() {
 
   useRegisterFAB({
     tabType: 'profile',
-    visible: !loading && !!user && !!currentUserId && currentUserId !== userId,
+    visible: !loading && !!user && !!currentUserId && currentUserId !== userId && flags.isMessagingEnabled && can('create', 'DirectConversation'),
     onPress: handleMessagePress,
     icon: <Icon as={Send} size="md" className="text-white" />
   });
@@ -204,31 +205,36 @@ export default function UserPublicProfileScreen() {
 
                 {user && currentUserId && currentUserId !== userId && (
                   <VStack className="w-full mt-4 gap-3">
-                    <SanctuaryButton
-                      action="primary"
-                      onPress={handleMessagePress}
-                      isDisabled={initiatingDM}
-                      className="h-12 rounded-xl"
-                    >
-                        <HStack className="items-center gap-2">
-                            {initiatingDM ? <Spinner /> : <Icon as={Send} size="sm" className="text-white" />}
-                            <Text className="text-white font-bold">
-                                {t("community.profile.sendMessage")}
-                            </Text>
-                        </HStack>
-                    </SanctuaryButton>
-                    <SanctuaryButton
-                      action="secondary"
-                      onPress={() => setShowShieldModal(true)}
-                      className="h-12 rounded-xl border-border bg-transparent"
-                    >
-                        <HStack className="items-center gap-2">
-                            <Icon as={ShieldAlert} size="sm" className="text-ink/60" />
-                            <Text className="text-ink/60 font-bold">
-                                {t("community.profile.reportAccount")}
-                            </Text>
-                        </HStack>
-                    </SanctuaryButton>
+                    {flags.isMessagingEnabled && can('create', 'DirectConversation') && (
+                        <SanctuaryButton
+                            action="primary"
+                            onPress={handleMessagePress}
+                            isDisabled={initiatingDM}
+                            className="h-12 rounded-xl"
+                        >
+                            <HStack className="items-center gap-2">
+                                {initiatingDM ? <Spinner /> : <Icon as={Send} size="sm" className="text-white" />}
+                                <Text className="text-white font-bold">
+                                    {t("community.profile.sendMessage")}
+                                </Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    )}
+
+                    {flags.isSocialShieldEnabled && (
+                        <SanctuaryButton
+                            action="secondary"
+                            onPress={() => setShowShieldModal(true)}
+                            className="h-12 rounded-xl border-border bg-transparent"
+                        >
+                            <HStack className="items-center gap-2">
+                                <Icon as={ShieldAlert} size="sm" className="text-ink/60" />
+                                <Text className="text-ink/60 font-bold">
+                                    {t("community.profile.reportAccount")}
+                                </Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    )}
                   </VStack>
                 )}
               </VStack>

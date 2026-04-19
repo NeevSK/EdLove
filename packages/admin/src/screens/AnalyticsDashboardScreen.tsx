@@ -7,8 +7,6 @@ import {
     Heading, 
     ScrollView, 
     Pressable, 
-    useTheme, 
-    useThemedColors,
     ScreenWrapper,
     GlobalHeader
 } from '@repo/ui';
@@ -29,8 +27,6 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   onReportPress,
   onMetricDrillDown
 }) => {
-  const theme = useTheme();
-  const colors = useThemedColors();
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -101,19 +97,19 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
-    if (!threshold) return 'text-ink/60';
+    if (!threshold) return 'text-phaseText-secondary';
 
-    if (value >= threshold.good) return 'text-action';
-    if (value >= threshold.warning) return 'text-amber-500';
-    return 'text-error';
+    if (value >= threshold.good) return 'text-phase-interactive';
+    if (value >= threshold.warning) return 'text-phase-warning';
+    return 'text-phase-danger';
   };
 
   const getSystemHealthColor = (health: string) => {
     switch (health) {
-      case 'healthy': return 'text-action';
-      case 'warning': return 'text-amber-500';
-      case 'critical': return 'text-error';
-      default: return 'text-ink/60';
+      case 'healthy': return 'text-phase-interactive';
+      case 'warning': return 'text-phase-warning';
+      case 'critical': return 'text-phase-danger';
+      default: return 'text-phaseText-secondary';
     }
   };
 
@@ -139,17 +135,17 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     <Pressable
       key={key}
       onPress={() => onMetricDrillDown(key, { value, title })}
-      className="bg-white p-4 rounded-3xl border border-border w-[47%] mb-3 active:scale-95"
+      className="bg-phase-surface p-4 rounded-3xl border border-phase-border w-[47%] mb-3 active:scale-95"
     >
       <VStack className="items-center gap-2">
         <Text className="text-2xl">{icon}</Text>
-        <Text className="text-[10px] font-black uppercase tracking-wider text-ink/40 text-center">
+        <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-muted text-center">
           {title}
         </Text>
         <Text className={`text-2xl font-black ${getMetricColor(value, key)}`}>
           {formatValue(value, key)}
         </Text>
-        <Text className="text-[10px] font-bold text-ink/20">
+        <Text className="text-[10px] font-bold text-phaseText-muted/50">
           {getChangeIndicator(key)}
         </Text>
       </VStack>
@@ -159,15 +155,15 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, colorClass: string) => (
     <Box
       key={title}
-      className="bg-white p-4 rounded-3xl border border-border flex-1 min-w-[140px] mb-3 items-center"
+      className="bg-phase-surface p-4 rounded-3xl border border-phase-border flex-1 min-w-[140px] mb-3 items-center"
     >
-      <Text className="text-[10px] font-black uppercase tracking-wider text-ink/40 mb-2">
+      <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-muted mb-2">
         {title}
       </Text>
       <Text className={`text-xl font-black ${colorClass}`}>
         {value}
       </Text>
-      <Text className="text-[10px] font-bold text-ink/20 mt-1">
+      <Text className="text-[10px] font-bold text-phaseText-muted/50 mt-1">
         {subtitle}
       </Text>
     </Box>
@@ -176,8 +172,8 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   if (isLoading) {
     return (
       <ScreenWrapper>
-        <Box className="flex-1 items-center justify-center p-10 bg-silk">
-          <Text className="text-ink/40 font-bold italic">Loading analytics dashboard...</Text>
+        <Box className="flex-1 items-center justify-center p-10 bg-phase-canvas">
+          <Text className="text-phaseText-muted font-bold italic">Loading analytics dashboard...</Text>
         </Box>
       </ScreenWrapper>
     );
@@ -188,13 +184,13 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       <GlobalHeader title="Analytics" subtitle={tenantName} />
       
       <ScrollView 
-        className="flex-1 bg-silk" 
+        className="flex-1 bg-phase-canvas" 
         contentContainerStyle={{ padding: 24, paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
       >
         <VStack className="gap-8">
             <VStack className="gap-4">
-                <Heading className="text-base font-black text-ink uppercase tracking-widest opacity-40">
+                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
                     Key Performance Metrics
                 </Heading>
                 <HStack className="flex-wrap justify-between">
@@ -237,13 +233,13 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
             {liveMetrics && (
             <VStack className="gap-4">
-                <Heading className="text-base font-black text-ink uppercase tracking-widest opacity-40">
+                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
                     Live System Health
                 </Heading>
                 <HStack className="flex-wrap gap-4">
-                    {renderLiveMetricCard('Active Users', liveMetrics.active_users, 'Currently online', 'text-action')}
+                    {renderLiveMetricCard('Active Users', liveMetrics.active_users, 'Currently online', 'text-phase-interactive')}
                     {renderLiveMetricCard('API Reqs/m', liveMetrics.api_requests_per_minute, 'Last 60s', getSystemHealthColor(liveMetrics.system_health))}
-                    {renderLiveMetricCard('Error Rate', `${liveMetrics.error_rate.toFixed(1)}%`, 'Last 60s', liveMetrics.error_rate > 5 ? 'text-error' : 'text-action')}
+                    {renderLiveMetricCard('Error Rate', `${liveMetrics.error_rate.toFixed(1)}%`, 'Last 60s', liveMetrics.error_rate > 5 ? 'text-phase-danger' : 'text-phase-interactive')}
                     {renderLiveMetricCard('Health', liveMetrics.system_health.toUpperCase(), `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`, getSystemHealthColor(liveMetrics.system_health))}
                 </HStack>
             </VStack>

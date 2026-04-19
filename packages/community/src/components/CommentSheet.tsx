@@ -17,10 +17,12 @@ import {
     InputField,
     Spinner,
     getInitialsFromName,
-    formatTimestamp
+    formatTimestamp,
+    Actionsheet
 } from '@repo/ui';
 import { ChevronDown, Send, ThumbsUp, Trash2, Shield, Lock, EyeOff } from 'lucide-react-native';
 import { useComments } from '../hooks/useComments';
+import { usePermissions } from '@repo/core';
 import type { Comment } from '../types/Community';
 
 interface CommentSheetProps {
@@ -139,8 +141,8 @@ function CommentRow({
                         </Pressable>
                     )}
 
-                    {/* Delete own */}
-                    {isOwn && (
+                    {/* Delete own or if has manage permissions */}
+                    {(isOwn || can('delete', 'Comment')) && flags.isCommunityEnabled && (
                         <Pressable onPress={confirmDelete} className="flex-row items-center p-1">
                             <Icon as={Trash2} size="xs" className="text-ink/40" />
                         </Pressable>
@@ -161,6 +163,7 @@ export function CommentSheet({
     postType,
     onClose,
 }: CommentSheetProps) {
+    const { can, flags } = usePermissions();
     const {
         comments,
         isLoading,
@@ -202,9 +205,8 @@ export function CommentSheet({
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
             style={{ flex: 1 }}
         >
-            <Box className="flex-1 bg-phase-surface border-t border-border rounded-t-[32px] overflow-hidden shadow-2xl">
-            {/* Header Handle */}
-            <Box className="w-12 h-1.5 bg-ink/10 rounded-full self-center mt-3 mb-1" />
+            <Box className="flex-1 bg-phase-surface overflow-hidden">
+            {/* Header Handle managed by Actionsheet */}
 
             {/* Header */}
             <HStack className="items-center px-5 py-4">
@@ -295,40 +297,14 @@ export function CommentSheet({
         </KeyboardAvoidingView>
     );
 
-    if (Platform.OS === 'web') {
-        if (!postId) return null;
-        return (
-            <View
-                style={{
-                    position: 'fixed' as any,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    maxHeight: '85vh',
-                    zIndex: 1000,
-                    boxShadow: '0 -10px 40px rgba(107,100,128,0.15)',
-                    overflow: 'hidden',
-                } as any}
-            >
-                {sheetContent}
-            </View>
-        );
-    }
-
     return (
-        <Modal
-            visible={!!postId}
-            animationType="slide"
-            transparent
-            onRequestClose={onClose}
+        <Actionsheet
+            isOpen={!!postId}
+            onClose={onClose}
         >
-            <View className="flex-1">
-                <Pressable
-                    className="flex-1 bg-black/40"
-                    onPress={onClose}
-                />
+            <Box style={{ height: '80%' }}>
                 {sheetContent}
-            </View>
-        </Modal>
+            </Box>
+        </Actionsheet>
     );
 }

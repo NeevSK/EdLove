@@ -9,14 +9,11 @@ import {
     ScrollView,
     Icon,
     GlobalHeader,
-    useThemedColors,
-    useTheme,
     ScreenWrapper,
     SandboxBanner,
     SkeletonCard,
     PositiveInvitation,
     hapticLight,
-    Theme,
     Pressable
 } from '@repo/ui';
 import { useStore, useFeatureAccess, type FounderStackParamList } from '@repo/core';
@@ -34,8 +31,6 @@ interface FounderSchoolDashboardProps {
 
 export default function FounderSchoolDashboard({ schoolId, userId }: FounderSchoolDashboardProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
-    const theme = useTheme();
     const { isGuest } = useFeatureAccess();
     const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
@@ -59,14 +54,10 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                         <VStack className="gap-6">
                             {(stats as any).is_sample && (
                                 <Box 
-                                    className="p-4 rounded-xl border items-center justify-center flex-row gap-2 mb-2"
-                                    style={{
-                                        backgroundColor: (theme.accent.reward || '#ffc107') + '22',
-                                        borderColor: theme.accent.reward || '#ffc107',
-                                    }}
+                                    className="p-4 rounded-xl border items-center justify-center flex-row gap-2 mb-2 bg-phase-reward/10 border-phase-reward"
                                 >
-                                    <Icon as={Zap} size="sm" color={theme.accent.reward} fill={theme.accent.reward} />
-                                    <Text className="text-xs font-bold" style={{ color: theme.accent.reward }}>
+                                    <Icon as={Zap} size="sm" className="text-phase-reward fill-phase-reward" />
+                                    <Text className="text-xs font-bold text-phase-reward">
                                         {t('demoMode.visionaryEcology') || "VISIONARY ECOLOGY: Previewing platform potential"}
                                     </Text>
                                 </Box>
@@ -74,23 +65,18 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
 
                             {/* Visionary Summary */}
                             <Box
-                                className="p-8 rounded-3xl"
-                                style={{
-                                    backgroundColor: colors.action,
-                                    ...Theme.shadows.lg
-                                }}
+                                className="p-8 rounded-3xl bg-phase-interactive shadow-lg"
                             >
                                 <VStack className="gap-2">
                                     <HStack className="items-center gap-2">
-                                        <Icon as={Compass} color={theme.text.inverse} size="lg" />
+                                        <Icon as={Compass} className="text-phaseText-inverse" size="lg" />
                                         <Text 
-                                            className="font-bold text-lg"
-                                            style={{ color: theme.text.inverse }}
+                                            className="font-bold text-lg text-phaseText-inverse"
                                         >
                                             {t('founder.ecologyStatus', { status: 'Balanced' })}
                                         </Text>
                                     </HStack>
-                                    <Text className="text-sm opacity-90" style={{ color: theme.text.inverse }}>
+                                    <Text className="text-sm opacity-90 text-phaseText-inverse">
                                         {t('founder.visionManifesting', { count: stats?.total_sections || 0 })}
                                     </Text>
                                 </VStack>
@@ -98,28 +84,28 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
 
                             {/* Platform Metrics */}
                             <VStack className="gap-4">
-                                <Heading className="text-base" style={{ color: theme.text.primary }}>
+                                <Heading className="text-base text-phaseText-primary">
                                     {t('founder.executiveOversight')}
                                 </Heading>
                                 <HStack className="gap-4">
-                                    <Box className="flex-1 p-4 rounded-xl" style={{ backgroundColor: colors.secondary }}>
+                                    <Box className="flex-1 p-4 rounded-xl bg-phase-surface">
                                         <HStack className="justify-between items-center">
-                                            <Icon as={Globe} color={colors.action} size="md" />
-                                            {isDemoMode && <Icon as={Zap} size="xs" color={theme.accent.reward} fill={theme.accent.reward} />}
+                                            <Icon as={Globe} className="text-phase-interactive" size="md" />
+                                            {isDemoMode && <Icon as={Zap} size="xs" className="text-phase-reward fill-phase-reward" />}
                                         </HStack>
-                                        <Text className="font-bold text-2xl mt-2" style={{ color: theme.text.primary }}>
+                                        <Text className="font-bold text-2xl mt-2 text-phaseText-primary">
                                             {stats?.total_students || 0}
                                         </Text>
-                                        <Text className="text-xs" style={{ color: theme.text.secondary }}>
+                                        <Text className="text-xs text-phaseText-secondary">
                                             {t('founder.totalSouls')}
                                         </Text>
                                     </Box>
-                                    <Box className="flex-1 p-4 rounded-xl" style={{ backgroundColor: colors.secondary }}>
-                                        <Icon as={Zap} color={colors.warning} size="md" />
-                                        <Text className="font-bold text-2xl mt-2" style={{ color: theme.text.primary }}>
+                                    <Box className="flex-1 p-4 rounded-xl bg-phase-surface">
+                                        <Icon as={Zap} className="text-amber-500" size="md" />
+                                        <Text className="font-bold text-2xl mt-2 text-phaseText-primary">
                                             {stats?.total_teachers || 0}
                                         </Text>
-                                        <Text className="text-xs" style={{ color: theme.text.secondary }}>
+                                        <Text className="text-xs text-phaseText-secondary">
                                             {t('founder.guidingSpirits')}
                                         </Text>
                                     </Box>
@@ -128,26 +114,22 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
 
                             {/* Ecology Health */}
                             <VStack className="gap-4">
-                                <Heading className="text-sm" style={{ color: theme.text.secondary }}>
+                                <Heading className="text-sm text-phaseText-secondary">
                                     {t('founder.visionaryInsights')}
                                 </Heading>
                                 <Box 
-                                    className="p-4 rounded-xl border"
-                                    style={{ 
-                                        backgroundColor: colors.secondary,
-                                        borderColor: colors.border
-                                    }}
+                                    className="p-4 rounded-xl border bg-phase-surface border-border"
                                 >
                                     <HStack className="justify-between items-center">
                                         <VStack className="gap-1">
-                                            <Text className="font-bold" style={{ color: theme.text.primary }}>
+                                            <Text className="font-bold text-phaseText-primary">
                                                 {t('founder.wellnessIndex')}
                                             </Text>
-                                            <Text className="text-xs" style={{ color: colors.success }}>
+                                            <Text className="text-xs text-sageGreen">
                                                 {t('founder.wellnessIncrease', { percent: 12 })}
                                             </Text>
                                         </VStack>
-                                        <Icon as={Heart} color={colors.error} size={24} fill={colors.error} />
+                                        <Icon as={Heart} className="text-emberRed fill-emberRed" size={24} />
                                     </HStack>
                                 </Box>
                             </VStack>
@@ -161,30 +143,22 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                         userId: userId
                                     });
                                 }}
+                                className="p-4 rounded-xl border flex-row items-center gap-4 bg-phase-surface border-phase-interactive active:bg-ink/5"
                             >
                                 <Box 
-                                    className="p-4 rounded-xl border flex-row items-center gap-4 active:bg-ink/5"
-                                    style={{
-                                        backgroundColor: colors.secondary,
-                                        borderColor: colors.action
-                                    }}
+                                    className="w-10 h-10 rounded-full justify-center items-center bg-phase-interactive/10"
                                 >
-                                    <Box 
-                                        className="w-10 h-10 rounded-full justify-center items-center"
-                                        style={{ backgroundColor: colors.action + '11' }}
-                                    >
-                                        <Icon as={Zap} color={colors.action} size="md" />
-                                    </Box>
-                                    <VStack className="flex-1">
-                                        <Text className="font-bold" style={{ color: theme.text.primary }}>
-                                            {t('founder.principalsOffice') || "Principal's Office"}
-                                        </Text>
-                                        <Text className="text-xs" style={{ color: theme.text.secondary }}>
-                                            {t('founder.manageOperations') || "Manage staff, students, and operations"}
-                                        </Text>
-                                    </VStack>
-                                    <Icon as={Compass} color={theme.text.secondary} size="md" />
+                                    <Icon as={Zap} className="text-phase-interactive" size="md" />
                                 </Box>
+                                <VStack className="flex-1">
+                                    <Text className="font-bold text-phaseText-primary">
+                                        {t('founder.principalsOffice') || "Principal's Office"}
+                                    </Text>
+                                    <Text className="text-xs text-phaseText-secondary">
+                                        {t('founder.manageOperations') || "Manage staff, students, and operations"}
+                                    </Text>
+                                </VStack>
+                                <Icon as={Compass} className="text-phaseText-secondary" size="md" />
                             </Pressable>
 
                             {isGuest && (

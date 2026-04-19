@@ -26,26 +26,11 @@ import TeacherCarousel from '../components/principal/TeacherCarousel';
 import {
   getPrincipalCapabilityMeta,
   type PrincipalCapabilityId,
-  type PrincipalWorkspaceView} from './workspace';
+  type PrincipalWorkspaceView,
+  type PrincipalWorkspaceSurfaceId} from './workspace';
 import { getPrincipalPreviewSummary } from './workspacePreview';
 
-export type PrincipalWorkspaceSurfaceId =
-  | 'setup_runway'
-  | 'workspace_switcher'
-  | 'morning_brief'
-  | 'faculty_overview'
-  | 'pending_approvals'
-  | 'institutional_calendar'
-  | 'observations'
-  | 'hierarchy'
-  | 'invites'
-  | 'cycles'
-  | 'log'
-  | 'notes'
-  | 'school_profile'
-  | 'resource_needs'
-  | 'ecosystem_resonance'
-  | 'open_commons';
+
 
 export type PrincipalWorkspaceSurface = WorkspaceSurfaceDefinition<
   PrincipalWorkspaceSurfaceId,

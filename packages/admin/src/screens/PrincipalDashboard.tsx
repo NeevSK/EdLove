@@ -18,7 +18,6 @@ import {
   hapticLight,
   QRBuilder,
   QRCodeGenerator,
-  useTheme,
   useRegisterFAB} from '@repo/ui';
 import {
   Building2,
@@ -159,17 +158,17 @@ export default function PrincipalDashboard({
         title="School QR Code"
       >
         <VStack className="items-center gap-6 py-5">
-          <Box className="p-6 bg-white rounded-3xl border border-border">
+          <Box className="p-6 bg-phase-surface rounded-3xl border border-phase-border">
             <QRCodeGenerator
               value={QRBuilder.school(schoolId, '', school?.handle ?? undefined)}
               size={220}
             />
           </Box>
-          <Text className="text-ink/60 text-center leading-relaxed font-bold">
-            Scan to join the <Text className="text-ink font-black">{school?.name}</Text> sanctuary.
+          <Text className="text-phaseText-secondary text-center leading-relaxed font-bold">
+            Scan to join the <Text className="text-phaseText-primary font-black">{school?.name}</Text> sanctuary.
           </Text>
           {school?.handle ? (
-            <Text className="text-ink/30 mt-2 text-xs font-bold uppercase tracking-widest">
+            <Text className="text-phaseText-muted mt-2 text-xs font-bold uppercase tracking-widest">
               @{school.handle}
             </Text>
           ) : null}
@@ -181,7 +180,7 @@ export default function PrincipalDashboard({
             }}
             className="w-full bg-phase-interactive h-14 rounded-2xl mt-4"
           >
-            <ButtonText className="text-inverted font-black uppercase tracking-widest">Close</ButtonText>
+            <ButtonText className="text-phaseText-inverse font-black uppercase tracking-widest">Close</ButtonText>
           </Button>
         </VStack>
       </SanctuaryModal>

@@ -1,4 +1,4 @@
-import type { PrincipalWorkspaceSurfaceId } from './usePrincipalWorkspaceCanvas';
+import type { PrincipalWorkspaceSurfaceId } from './workspace';
 
 const PRINCIPAL_PREVIEW_SUMMARY: Record<PrincipalWorkspaceSurfaceId, string>  = {
     setup_runway:

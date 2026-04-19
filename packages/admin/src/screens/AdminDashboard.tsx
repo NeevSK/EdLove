@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Box, ScreenWrapper, Text, VStack, useTheme } from '@repo/ui';
+import { Box, ScreenWrapper, Text, VStack } from '@repo/ui';
 import { usePermissions, useStore } from '@repo/core';
 import {
   AdminWorkspaceCanvas,
@@ -15,7 +15,6 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ userId }: AdminDashboardProps) {
-  const { scene } = useTheme();
   const navigation = useNavigation<any>();
   const { context } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id ?? null);
@@ -48,8 +47,8 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
 
   return (
     <ScreenWrapper scroll={false} noTopInset>
-      <Box className="flex-1" style={{ backgroundColor: scene.canvas.bg }}>
-        <Box className="border-b border-starlightGray/10 px-4 py-3">
+      <Box className="flex-1 bg-phase-canvas">
+        <Box className="border-b border-phase-canvas px-4 py-3">
           <VStack className="gap-1">
             <Text className="text-sm font-bold text-phaseText-primary">
               {data.isLoading ? 'Loading platform signal...' : `${data.schoolCount} schools, ${data.userCount} users, ${data.pendingApprovalCount} approvals`}

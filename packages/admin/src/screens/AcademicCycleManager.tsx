@@ -123,9 +123,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         );
     };
 
-    if (loading) {
         return (
-            <Box className="flex-1 bg-silk">
+            <Box className="flex-1 bg-phase-canvas">
                 <GlobalHeader title="Academic Cycles" onBack={onBack} />
                 <VStack className="p-6 gap-4">
                     <SkeletonCard height={100} />
@@ -134,16 +133,15 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                 </VStack>
             </Box>
         );
-    }
 
     return (
-        <Box className="flex-1 bg-silk">
+        <Box className="flex-1 bg-phase-canvas">
             <GlobalHeader
                 title={t('principal.cycles.title') || 'Academic Cycles'}
                 onBack={onBack}
                 rightAction={
                     <Pressable onPress={() => setShowAddForm(!showAddForm)}>
-                        <Icon as={Plus} size={24} className="text-primary" />
+                        <Icon as={Plus} size={24} className="text-phase-interactive" />
                     </Pressable>
                 }
             />
@@ -151,48 +149,48 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             <ScrollView contentContainerStyle={{ padding: 24 }}>
                 <VStack className="gap-8">
                     <Box>
-                        <Text className="text-ink/60 text-[13px] mb-1">
+                        <Text className="text-phaseText-secondary text-[13px] mb-1">
                             {t('principal.cycles.description') || 'Define your terms and semesters to synchronize syllabus progress and attendance reports.'}
                         </Text>
                     </Box>
 
                     {showAddForm && (
-                        <Box className="bg-white p-6 rounded-[24px] border border-border shadow-sm">
+                        <Box className="bg-phase-surface p-6 rounded-[24px] border border-phase-border shadow-sm">
                             <VStack className="gap-4">
-                                <Text className="text-sm font-black text-ink uppercase tracking-widest">New Cycle</Text>
+                                <Text className="text-sm font-black text-phaseText-primary uppercase tracking-widest">New Cycle</Text>
 
                                 <VStack className="gap-1">
-                                    <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">Name (e.g. Term 1 2026)</Text>
-                                    <Input className="border-border">
+                                    <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-wider">Name (e.g. Term 1 2026)</Text>
+                                    <Input className="border-phase-border">
                                         <InputField 
                                             value={name} 
                                             onChangeText={setName} 
                                             placeholder="Cycle Name" 
-                                            className="text-ink font-bold"
+                                            className="text-phaseText-primary font-bold"
                                         />
                                     </Input>
                                 </VStack>
 
                                 <HStack className="gap-4">
                                     <VStack className="flex-1 gap-1">
-                                        <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">Start Date</Text>
-                                        <Input className="border-border">
+                                        <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-wider">Start Date</Text>
+                                        <Input className="border-phase-border">
                                             <InputField 
                                                 value={startDate} 
                                                 onChangeText={setStartDate} 
                                                 placeholder="YYYY-MM-DD" 
-                                                className="text-ink font-bold"
+                                                className="text-phaseText-primary font-bold"
                                             />
                                         </Input>
                                     </VStack>
                                     <VStack className="flex-1 gap-1">
-                                        <Text className="text-xs font-bold text-ink/40 uppercase tracking-wider">End Date</Text>
-                                        <Input className="border-border">
+                                        <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-wider">End Date</Text>
+                                        <Input className="border-phase-border">
                                             <InputField 
                                                 value={endDate} 
                                                 onChangeText={setEndDate} 
                                                 placeholder="YYYY-MM-DD" 
-                                                className="text-ink font-bold"
+                                                className="text-phaseText-primary font-bold"
                                             />
                                         </Input>
                                     </VStack>
@@ -201,8 +199,8 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                 <HStack className="gap-3 items-center">
                                     <Pressable onPress={() => setIsCurrent(!isCurrent)}>
                                         <HStack className="gap-2 items-center">
-                                            {isCurrent ? <Icon as={CheckCircle2} size={18} className="text-green-500" /> : <Icon as={Circle} size={18} className="text-ink/40" />}
-                                            <Text className="text-[13px] font-bold text-ink">Set as Current Cycle</Text>
+                                            {isCurrent ? <Icon as={CheckCircle2} size={18} className="text-phase-success" /> : <Icon as={Circle} size={18} className="text-phaseText-muted" />}
+                                            <Text className="text-[13px] font-bold text-phaseText-primary">Set as Current Cycle</Text>
                                         </HStack>
                                     </Pressable>
                                 </HStack>
@@ -210,7 +208,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                 <Button
                                     onPress={handleCreate}
                                     isDisabled={saving}
-                                    className="bg-primary rounded-full h-12 shadow-sm mt-2"
+                                    className="bg-phase-interactive rounded-full h-12 shadow-sm mt-2"
                                 >
                                     <ButtonText className="text-white font-black uppercase tracking-widest">{saving ? 'Saving...' : 'Create Cycle'}</ButtonText>
                                 </Button>
@@ -221,28 +219,28 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <VStack className="gap-4">
                         {cycles.length === 0 ? (
                             <Box className="items-center p-12">
-                                <Icon as={Calendar} size={48} className="text-ink/20" strokeWidth={1} />
-                                <Text className="mt-4 text-ink/40 font-bold">No cycles defined yet.</Text>
+                                <Icon as={Calendar} size={48} className="text-phaseText-muted" strokeWidth={1} />
+                                <Text className="mt-4 text-phaseText-muted font-bold">No cycles defined yet.</Text>
                             </Box>
                         ) : (
                             cycles.map((cycle) => (
                                 <Box
                                     key={cycle.id}
-                                    className={`bg-white p-5 rounded-[24px] border border-border shadow-sm ${cycle.is_current ? 'border-green-500/30' : ''}`}
+                                    className={`bg-phase-surface p-5 rounded-[24px] border border-phase-border shadow-sm ${cycle.is_current ? 'border-phase-success/30' : ''}`}
                                 >
                                     <HStack className="justify-between items-start">
                                         <VStack className="gap-1 flex-1">
                                             <HStack className="gap-2 items-center">
-                                                <Text className="text-lg font-black text-ink">{cycle.name}</Text>
+                                                <Text className="text-lg font-black text-phaseText-primary">{cycle.name}</Text>
                                                 {cycle.is_current && (
-                                                    <Box className="bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
-                                                        <Text className="text-[10px] font-black text-green-600 uppercase">CURRENT</Text>
+                                                    <Box className="bg-phase-success/10 px-2 py-0.5 rounded-full border border-phase-success/30">
+                                                        <Text className="text-[10px] font-black text-phase-success uppercase">CURRENT</Text>
                                                     </Box>
                                                 )}
                                             </HStack>
                                             <HStack className="gap-2 items-center">
-                                                <Icon as={Clock} size={12} className="text-ink/40" />
-                                                <Text className="text-xs font-bold text-ink/40">
+                                                <Icon as={Clock} size={12} className="text-phaseText-muted" />
+                                                <Text className="text-xs font-bold text-phaseText-muted">
                                                     {cycle.start_date} to {cycle.end_date}
                                                 </Text>
                                             </HStack>
@@ -251,11 +249,11 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                                         <HStack className="gap-4">
                                             {!cycle.is_current && (
                                                 <Pressable onPress={() => handleSetCurrent(cycle.id)} className="active:scale-90">
-                                                    <Icon as={CheckCircle2} size={20} className="text-ink/20" />
+                                                    <Icon as={CheckCircle2} size={20} className="text-phaseText-muted" />
                                                 </Pressable>
                                             )}
                                             <Pressable onPress={() => handleDelete(cycle.id)} className="active:scale-90">
-                                                <Icon as={Trash2} size={20} className="text-red-500" />
+                                                <Icon as={Trash2} size={20} className="text-phase-danger" />
                                             </Pressable>
                                         </HStack>
                                     </HStack>
