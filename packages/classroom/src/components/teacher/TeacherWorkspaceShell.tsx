@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { useWindowDimensions, type ViewStyle } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { resolveWorkspaceSurfaceLayout, type WorkspaceLayout } from '@repo/core';
-import { Box, HStack, Text, Theme, VStack, useThemedColors } from '@repo/ui';
+import { Box, HStack, Text, VStack, Heading } from '@repo/ui';
 import type {
     TeacherDashboardCapabilityKey,
     TeacherDashboardSurface,
@@ -37,7 +37,6 @@ export function TeacherWorkspaceShell({
     stats,
     isDemoMode,
 }: TeacherWorkspaceShellProps) {
-    const colors = useThemedColors();
     const { width } = useWindowDimensions();
     const isDesktop = width >= 1024;
 
@@ -71,66 +70,48 @@ export function TeacherWorkspaceShell({
     ].filter((slot): slot is NonNullable<SurfaceSlot> => Boolean(slot));
 
     return (
-        <VStack style={{ gap: Theme.spacing.lg }}>
-            <Box style={heroCard(colors)}>
-                <Box style={heroGlowTop} />
-                <Box style={heroGlowBottom} />
+        <VStack className="gap-8">
+            <Box className="bg-sanctuary-surface-secondary rounded-[32px] p-8 border border-sanctuary-border/10 overflow-hidden shadow-sm relative">
+                {/* Decorative Glow Elements */}
+                <Box className="absolute -top-4 -right-4 w-44 h-44 rounded-full bg-sanctuarySaffron/10" />
+                <Box className="absolute -bottom-12 -left-4 w-40 h-40 rounded-full bg-gurudeviBlue/5" />
 
-                <VStack style={{ gap: Theme.spacing.lg }}>
-                    <HStack
-                        style={{
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            gap: Theme.spacing.md,
-                            flexWrap: 'wrap',
-                        }}
-                    >
-                        <VStack style={{ flex: 1, minWidth: 240, gap: Theme.spacing.sm }}>
-                            <HStack style={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}>
+                <VStack className="gap-8 relative">
+                    <HStack className="items-start justify-between gap-6 flex-wrap">
+                        <VStack className="flex-1 min-w-[240px] gap-4">
+                            <HStack className="gap-2 flex-wrap">
                                 <HeroBadge label={title} />
                                 <HeroBadge label="Teacher role" tone="muted" />
                                 {isDemoMode ? <HeroBadge label="Demo data" tone="accent" /> : null}
                             </HStack>
 
-                            <VStack style={{ gap: 6 }}>
-                                <Text style={heroEyebrow(colors)}>Classroom workspace</Text>
-                                <Text
-                                    style={{
-                                        fontSize: isDesktop ? Theme.typography.fontSize['3xl'] : Theme.typography.fontSize['2xl'],
-                                        lineHeight: isDesktop ? 44 : 34,
-                                        fontWeight: '700',
-                                        color: colors.text,
-                                    }}
-                                >
-                                    Registry & Resonance.
+                            <VStack className="gap-2 mt-2">
+                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.2em] ml-0.5">
+                                    Classroom workspace
                                 </Text>
-                                <Text style={heroCopy(colors)}>
+                                <Heading className="text-sanctuary-text text-3xl font-bold leading-tight lg:text-4xl">
+                                    Registry & Resonance.
+                                </Heading>
+                                <Text className="text-sanctuary-text-muted text-sm leading-6 max-w-2xl">
                                     Classroom registry becomes the working surface. Actions stay close, pulse stays readable,
                                     and the teacher role leads from one calm operational shell.
                                 </Text>
                             </VStack>
                         </VStack>
 
-                        <Box
-                            style={{
-                                minWidth: isDesktop ? 250 : width - Theme.spacing.lg * 2,
-                                backgroundColor: 'rgba(250, 247, 237, 0.68)',
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                borderRadius: 24,
-                                padding: Theme.spacing.md,
-                            }}
-                        >
-                            <VStack style={{ gap: Theme.spacing.sm }}>
-                                <Text style={sectionEyebrow(colors)}>Workspace frame</Text>
-                                <Text style={{ fontSize: Theme.typography.fontSize.sm, lineHeight: 22, color: colors.text }}>
+                        <Box className="min-w-[280px] bg-sanctuary-surface/40 border border-sanctuary-border/10 rounded-2xl p-6 lg:min-w-[320px]">
+                            <VStack className="gap-2">
+                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.15em]">
+                                    Workspace frame
+                                </Text>
+                                <Text className="text-sanctuary-text text-sm leading-6">
                                     {subtitle}
                                 </Text>
                             </VStack>
                         </Box>
                     </HStack>
 
-                    <HStack style={{ gap: Theme.spacing.md, flexWrap: 'wrap' }}>
+                    <HStack className="gap-4 flex-wrap">
                         {heroMetrics.map((metric) => (
                             <HeroMetricCard key={metric.label} label={metric.label} value={metric.value} />
                         ))}
@@ -139,26 +120,26 @@ export function TeacherWorkspaceShell({
             </Box>
 
             {isDesktop ? (
-                <HStack style={{ alignItems: 'flex-start', gap: Theme.spacing.lg }}>
-                    <VStack style={{ flex: 1.75, gap: Theme.spacing.lg }}>
+                <HStack className="items-start gap-8">
+                    <VStack className="flex-[1.75] gap-8">
                         <SurfacePanel slot={surfaceSlots['classroom-registry']} emphasis="primary" />
-                        <HStack style={{ alignItems: 'flex-start', gap: Theme.spacing.lg }}>
-                            <Box style={{ flex: 1.1 }}>
+                        <HStack className="items-start gap-8">
+                            <Box className="flex-[1.1]">
                                 <SurfacePanel slot={surfaceSlots['temporal-context']} />
                             </Box>
-                            <Box style={{ flex: 0.9 }}>
+                            <Box className="flex-[0.9]">
                                 <SurfacePanel slot={surfaceSlots.pulse} />
                             </Box>
                         </HStack>
                     </VStack>
 
-                    <VStack style={{ width: 320, gap: Theme.spacing.lg }}>
+                    <VStack className="w-80 gap-8">
                         <SurfacePanel slot={surfaceSlots['primary-actions']} />
                         <SurfacePanel slot={surfaceSlots['support-tools']} />
                     </VStack>
                 </HStack>
             ) : (
-                <VStack style={{ gap: Theme.spacing.lg }}>
+                <VStack className="gap-8">
                     {mobilePanels.map((slot) => (
                         <SurfacePanel
                             key={slot.surface.surfaceId}
@@ -199,29 +180,22 @@ function HeroBadge({
     label: string;
     tone?: 'default' | 'muted' | 'accent';
 }) {
-    const colors = useThemedColors();
-
-    const backgroundColor =
-        tone === 'accent'
-            ? 'rgba(246, 191, 140, 0.18)'
-            : tone === 'muted'
-              ? 'rgba(42, 35, 24, 0.05)'
-              : 'rgba(184, 169, 224, 0.16)';
-
-    const color = tone === 'accent' ? Theme.colors.saffronMuted : colors.text;
+    const badgeStyle = useMemo(() => {
+        switch (tone) {
+            case 'accent':
+                return 'bg-sanctuarySaffron/10 border-sanctuarySaffron/20 text-sanctuarySaffron';
+            case 'muted':
+                return 'bg-sanctuary-text-muted/5 border-sanctuary-border/10 text-sanctuary-text-muted';
+            default:
+                return 'bg-gurudeviBlue/10 border-gurudeviBlue/20 text-gurudeviBlue';
+        }
+    }, [tone]);
 
     return (
         <Box
-            style={{
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: Theme.corners.full,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor,
-            }}
+            className={`px-3 py-1.5 rounded-full border ${badgeStyle}`}
         >
-            <Text style={{ fontSize: 11, fontWeight: '700', letterSpacing: 1.1, textTransform: 'uppercase', color }}>
+            <Text className="text-[10px] font-bold tracking-[0.1em] uppercase inherit-color">
                 {label}
             </Text>
         </Box>
@@ -235,30 +209,12 @@ function HeroMetricCard({
     label: string;
     value: string;
 }) {
-    const colors = useThemedColors();
-
     return (
-        <Box
-            style={{
-                flexGrow: 1,
-                minWidth: 132,
-                paddingHorizontal: Theme.spacing.md,
-                paddingVertical: Theme.spacing.md,
-                borderRadius: 22,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor: 'rgba(252, 249, 242, 0.74)',
-            }}
-        >
-            <Text style={sectionEyebrow(colors)}>{label}</Text>
-            <Text
-                style={{
-                    marginTop: 10,
-                    fontSize: Theme.typography.fontSize['2xl'],
-                    fontWeight: '700',
-                    color: colors.text,
-                }}
-            >
+        <Box className="flex-1 min-w-[140px] px-6 py-6 rounded-2xl border border-sanctuary-border/10 bg-sanctuary-surface/60 shadow-sm">
+            <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.1em]">
+                {label}
+            </Text>
+            <Text className="text-sanctuary-text text-2xl font-bold mt-2">
                 {value}
             </Text>
         </Box>
@@ -272,61 +228,33 @@ function SurfacePanel({
     slot: SurfaceSlot;
     emphasis?: 'default' | 'primary';
 }) {
-    const colors = useThemedColors();
-
     if (!slot) {
         return null;
     }
 
+    const isPrimary = emphasis === 'primary';
+
     return (
         <Box
-            style={{
-                borderRadius: emphasis === 'primary' ? 30 : 26,
-                padding: Theme.spacing.lg,
-                backgroundColor: emphasis === 'primary' ? colors.secondary : colors.surface,
-                borderWidth: 1,
-                borderColor: colors.border,
-                ...Theme.shadows.md,
-            }}
+            className={`rounded-[32px] p-8 border border-sanctuary-border/10 shadow-md ${
+                isPrimary ? 'bg-sanctuary-surface-secondary' : 'bg-sanctuary-surface'
+            }`}
         >
-            <VStack style={{ gap: Theme.spacing.md }}>
-                <VStack style={{ gap: Theme.spacing.sm }}>
-                    <HStack style={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                        <VStack style={{ flex: 1, gap: 4 }}>
-                            <Text style={sectionEyebrow(colors)}>
+            <VStack className="gap-6">
+                <VStack className="gap-4">
+                    <HStack className="items-center justify-between gap-6">
+                        <VStack className="flex-1 gap-1">
+                            <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.15em]">
                                 {slot.definition.subtitle || 'Capability surface'}
                             </Text>
-                            <Text
-                                style={{
-                                    fontSize: emphasis === 'primary' ? Theme.typography.fontSize.xl : Theme.typography.fontSize.lg,
-                                    fontWeight: '700',
-                                    color: colors.text,
-                                }}
-                            >
+                            <Heading size="md" className="text-sanctuary-text font-bold">
                                 {slot.definition.title}
-                            </Text>
+                            </Heading>
                         </VStack>
 
                         {slot.definition.temporalLabel ? (
-                            <Box
-                                style={{
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 8,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: 'rgba(246, 191, 140, 0.16)',
-                                    borderWidth: 1,
-                                    borderColor: colors.border,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        fontSize: 11,
-                                        fontWeight: '700',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: 1.2,
-                                        color: Theme.colors.saffronMuted,
-                                    }}
-                                >
+                            <Box className="px-3 py-1.5 rounded-full bg-sanctuarySaffron/10 border border-sanctuary-border/10">
+                                <Text className="text-[10px] font-bold uppercase tracking-[0.1em] text-sanctuarySaffron">
                                     {slot.definition.temporalLabel}
                                 </Text>
                             </Box>
@@ -334,108 +262,31 @@ function SurfacePanel({
                     </HStack>
 
                     {slot.definition.summary ? (
-                        <Text style={{ fontSize: Theme.typography.fontSize.sm, lineHeight: 22, color: colors.textSecondary }}>
+                        <Text className="text-sanctuary-text-muted text-sm leading-6">
                             {slot.definition.summary}
                         </Text>
                     ) : null}
 
                     {Array.isArray(slot.definition.metadata) && slot.definition.metadata.length > 0 ? (
-                        <HStack style={{ gap: Theme.spacing.xs, flexWrap: 'wrap' }}>
+                        <HStack className="gap-2 flex-wrap">
                             {slot.definition.metadata.map((item) => (
-                                <Box key={item} style={metadataPill(colors)}>
-                                    <Text style={metadataPillText(colors)}>{item}</Text>
+                                <Box 
+                                    key={item} 
+                                    className="px-2.5 py-1 rounded-full bg-sanctuary-text-muted/5 border border-sanctuary-border/10"
+                                >
+                                    <Text className="text-[9px] font-bold uppercase tracking-[0.05em] text-sanctuary-text-muted">
+                                        {item}
+                                    </Text>
                                 </Box>
                             ))}
                         </HStack>
                     ) : null}
                 </VStack>
 
-                <Box>{slot.definition.content}</Box>
+                <Box className="mt-2">{slot.definition.content}</Box>
             </VStack>
         </Box>
     );
-}
-
-function heroCard(colors: ReturnType<typeof useThemedColors>): ViewStyle {
-    return {
-        borderRadius: 30,
-        padding: Theme.spacing.lg,
-        backgroundColor: colors.secondary,
-        borderWidth: 1,
-        borderColor: colors.border,
-        overflow: 'hidden',
-        ...Theme.shadows.lg,
-    };
-}
-
-const heroGlowTop: ViewStyle = {
-    position: 'absolute',
-    top: -18,
-    right: -14,
-    width: 180,
-    height: 180,
-    borderRadius: Theme.corners.full,
-    backgroundColor: 'rgba(246, 191, 140, 0.22)',
-};
-
-const heroGlowBottom: ViewStyle = {
-    position: 'absolute',
-    bottom: -48,
-    left: -18,
-    width: 160,
-    height: 160,
-    borderRadius: Theme.corners.full,
-    backgroundColor: 'rgba(184, 169, 224, 0.12)',
-};
-
-function heroEyebrow(colors: ReturnType<typeof useThemedColors>) {
-    return {
-        fontSize: 12,
-        fontWeight: '700' as const,
-        letterSpacing: 1.8,
-        textTransform: 'uppercase' as const,
-        color: colors.textSecondary,
-    };
-}
-
-function heroCopy(colors: ReturnType<typeof useThemedColors>) {
-    return {
-        maxWidth: 640,
-        fontSize: Theme.typography.fontSize.sm,
-        lineHeight: 22,
-        color: colors.textSecondary,
-    };
-}
-
-function sectionEyebrow(colors: ReturnType<typeof useThemedColors>) {
-    return {
-        fontSize: 11,
-        fontWeight: '700' as const,
-        letterSpacing: 1.4,
-        textTransform: 'uppercase' as const,
-        color: colors.textSecondary,
-    };
-}
-
-function metadataPill(colors: ReturnType<typeof useThemedColors>): ViewStyle {
-    return {
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: Theme.corners.full,
-        backgroundColor: 'rgba(42, 35, 24, 0.04)',
-        borderWidth: 1,
-        borderColor: colors.border,
-    };
-}
-
-function metadataPillText(colors: ReturnType<typeof useThemedColors>) {
-    return {
-        fontSize: 10,
-        fontWeight: '700' as const,
-        letterSpacing: 1.1,
-        textTransform: 'uppercase' as const,
-        color: colors.textSecondary,
-    };
 }
 
 export default TeacherWorkspaceShell;

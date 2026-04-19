@@ -9,7 +9,6 @@ import {
     Button,
     ButtonText,
     Spinner,
-    useThemedColors,
     hapticLight,
 } from '@repo/ui';
 import { TouchableOpacity } from 'react-native';
@@ -18,7 +17,6 @@ import { ClassroomGradingSettings } from '@repo/core';
 import { useGradebook } from '../hooks/useGradebook';
 import GradebookTable from './grading/GradebookTable';
 import GradingSettings from './grading/GradingSettings';
-import { Theme } from '@repo/ui';
 
 interface GradebookViewProps {
     classroomId: string;
@@ -26,7 +24,6 @@ interface GradebookViewProps {
 
 export default function GradebookView({ classroomId }: GradebookViewProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const {
         grades,
         studentNames,
@@ -64,37 +61,29 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
     }
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}>
-                <VStack sx={{ gap: Theme.spacing.lg }}>
+        <VStack className="flex-1 bg-sanctuary-surface">
+            <ScrollView contentContainerStyle={{ padding: 16 }}>
+                <VStack className="gap-6">
                     {/* Header Stats & Controls */}
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-4">
                         {/* Stats Summary */}
                         <HStack
-                            sx={{
-                                gap: Theme.spacing.md,
-                                padding: Theme.spacing.md,
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                ...Theme.shadows.sm,
-                            }}
+                            className="gap-4 p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border shadow-sm"
                         >
-                            <VStack sx={{ flex: 1 }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                            <VStack className="flex-1">
+                                <Text className="text-sanctuary-text-tertiary text-xs">
                                     {t('grading.gradebook.totalStudents') || 'Total Students'}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}>
+                                <Text className="text-sanctuary-text font-bold text-xl">
                                     {grades.length}
                                 </Text>
                             </VStack>
 
-                            <VStack sx={{ flex: 1 }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                            <VStack className="flex-1">
+                                <Text className="text-sanctuary-text-tertiary text-xs">
                                     {t('grading.gradebook.averageMarks') || 'Average'}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl }}>
+                                <Text className="text-sanctuary-text font-bold text-xl">
                                     {stats.averageMarks}
                                 </Text>
                             </VStack>
@@ -106,17 +95,17 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                     hapticLight();
                                     setShowSettings(true);
                                 }}
-                                sx={{ alignSelf: 'center', height: 36, borderRadius: Theme.corners.full }}
+                                className="self-center h-9 rounded-full px-4 border-sanctuary-border"
                             >
-                                <ButtonText sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
+                                <ButtonText className="text-xs text-sanctuary-text-secondary font-medium">
                                     {t('grading.settings.button') || 'Settings'}
                                 </ButtonText>
                             </Button>
                         </HStack>
 
                         {/* Sort Options */}
-                        <HStack sx={{ flexWrap: 'wrap', gap: Theme.spacing.sm, alignItems: 'center' }}>
-                            <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                        <HStack className="flex-wrap gap-2 items-center px-1">
+                            <Text className="text-sanctuary-text-tertiary text-sm mr-1">
                                 {t('grading.gradebook.sortBy') || 'Sort by:'}
                             </Text>
 
@@ -129,18 +118,18 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                     }}
                                 >
                                     <Box
-                                        sx={{
-                                            paddingVertical: Theme.spacing.xs,
-                                            paddingHorizontal: Theme.spacing.md,
-                                            backgroundColor: sortBy === option ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                            borderRadius: Theme.corners.full,
-                                            borderWidth: 1,
-                                            borderColor: sortBy === option ? Theme.colors.sanctuarySaffron : colors.border,
-                                        }}
+                                        className={`py-1.5 px-4 rounded-full border ${
+                                            sortBy === option
+                                                ? 'bg-sanctuarySaffron border-sanctuarySaffron'
+                                                : 'bg-sanctuary-surface-secondary border-sanctuary-border'
+                                        }`}
                                     >
                                         <Text
-                                            color={sortBy === option ? Theme.colors.sacredWhite : colors.textSecondary}
-                                            sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: sortBy === option ? '700' : '400' }}
+                                            className={`text-xs ${
+                                                sortBy === option
+                                                    ? 'text-white font-bold'
+                                                    : 'text-sanctuary-text-secondary'
+                                            }`}
                                         >
                                             {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
                                         </Text>
@@ -151,16 +140,17 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                     </VStack>
 
                     {/* Content Area */}
-                    <Box sx={{ flex: 1 }}>
+                    <Box className="flex-1">
                         {isLoading && (
-                            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                                <Spinner color={Theme.colors.sanctuarySaffron} />
+                            <Box className="py-12 items-center">
+                                <Spinner className="text-sanctuarySaffron" />
+                                <Text className="text-sanctuary-text-tertiary mt-4 animate-pulse">Synchronizing Gradebook...</Text>
                             </Box>
                         )}
 
                         {error && !isLoading && (
-                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.errorBackground, borderRadius: Theme.corners.comfortable }}>
-                                <Text color={Theme.colors.errorText} sx={{ fontSize: Theme.typography.fontSize.sm }}>{error}</Text>
+                            <Box className="p-4 bg-sanctuary-error-transparent rounded-2xl border border-sanctuary-error">
+                                <Text className="text-sanctuary-error text-sm font-medium">{error}</Text>
                             </Box>
                         )}
 
@@ -173,9 +163,9 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                         )}
 
                         {!isLoading && !error && grades.length === 0 && (
-                            <Box sx={{ padding: Theme.spacing['2xl'], alignItems: 'center', marginTop: 40 }}>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}>
-                                    {t('grading.gradebook.noGrades') || 'No grades recorded yet'}
+                            <Box className="py-20 items-center justify-center bg-sanctuary-surface-secondary rounded-[32px] border border-dashed border-sanctuary-border">
+                                <Text className="text-sanctuary-text-tertiary text-base text-center px-8">
+                                    {t('grading.gradebook.noGrades') || 'No grades found in the sacred archives for this classroom.'}
                                 </Text>
                             </Box>
                         )}
@@ -185,4 +175,5 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
         </VStack>
     );
 }
+
 

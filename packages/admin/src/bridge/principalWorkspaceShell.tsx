@@ -47,13 +47,13 @@ function ZoneIntro({
 }) {
   return (
     <VStack className="gap-2">
-      <Text className="text-[12px] font-black uppercase text-primary tracking-widest">
+      <Text className="text-[12px] font-black uppercase text-phase-interactive tracking-widest">
         {eyebrow}
       </Text>
-      <Heading className="text-2xl font-black text-ink">
+      <Heading className="text-2xl font-black text-phaseText-primary">
         {title}
       </Heading>
-      <Text className="text-[13px] leading-relaxed text-ink/60">{copy}</Text>
+      <Text className="text-[13px] leading-relaxed text-phaseText-secondary">{copy}</Text>
     </VStack>
   );
 }
@@ -65,19 +65,19 @@ export const PrincipalWorkspaceShell: React.FC<any> = ({
     isLoading 
 }) => {
     return (
-        <Box className="flex-1 bg-white">
+        <Box className="flex-1 bg-phase-canvas">
             <ScrollView className="flex-1">
                 <VStack className="p-6 gap-8">
                     <VStack className="gap-2">
-                        <Heading className="text-3xl font-black text-ink">
-                            Principal <Text className="text-primary font-black">Workspace</Text>.
+                        <Heading className="text-3xl font-black text-phaseText-primary">
+                            Principal <Text className="text-phase-interactive font-black">Workspace</Text>.
                         </Heading>
-                        <Text className="text-base text-ink/60 font-medium">
+                        <Text className="text-base text-phaseText-secondary font-medium">
                             Operational cockpit for institution leaders.
                         </Text>
                     </VStack>
 
-                    <HStack className="gap-1 bg-silk p-1.5 rounded-2xl self-start border border-border/50">
+                    <HStack className="gap-1 bg-phase-canvas p-1.5 rounded-2xl self-start border border-phase-border">
                         {['Dashboard', 'Structure', 'Invites', 'Logbook'].map((tab, i) => {
                             const isActive = (tab === 'Dashboard' && activeView === 'main') || 
                                            (tab === 'Structure' && activeView === 'hierarchy') ||
@@ -93,9 +93,9 @@ export const PrincipalWorkspaceShell: React.FC<any> = ({
                                         if (tab === 'Invites') onViewChange('invites');
                                         if (tab === 'Logbook') onViewChange('log');
                                     }}
-                                    className={`px-5 py-2.5 rounded-xl transition-all ${isActive ? 'bg-white shadow-sm border border-border/50' : ''}`}
+                                    className={`px-5 py-2.5 rounded-xl transition-all ${isActive ? 'bg-phase-canvas shadow-sm border border-phase-border' : ''}`}
                                 >
-                                    <Text className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-primary' : 'text-ink/40'}`}>
+                                    <Text className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}`}>
                                         {tab}
                                     </Text>
                                 </Pressable>
@@ -106,8 +106,8 @@ export const PrincipalWorkspaceShell: React.FC<any> = ({
                     <Box className="flex-1 min-h-[500px]">
                         {isLoading ? (
                             <VStack className="flex-1 items-center justify-center p-12 gap-4">
-                                <Box className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                                <Text className="text-sm font-bold text-ink/40">Synchronizing workspace...</Text>
+                                <Box className="w-12 h-12 rounded-full border-4 border-phase-interactive/20 border-t-phase-interactive animate-spin" />
+                                <Text className="text-sm font-bold text-phaseText-muted">Synchronizing workspace...</Text>
                             </VStack>
                         ) : (
                             children
@@ -123,11 +123,11 @@ export const PrincipalWorkspaceShell: React.FC<any> = ({
 
 function SnapshotTile({ label, value }: { label: string; value: number | string }) {
   return (
-    <Box className="flex-1 min-w-[47%] bg-silk rounded-2xl border border-border p-4">
-      <Text className="text-[11px] font-bold text-ink/40 uppercase tracking-wider">
+    <Box className="flex-1 min-w-[47%] bg-phase-canvas rounded-2xl border border-phase-border p-4">
+      <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-wider">
         {label}
       </Text>
-      <Text className="text-2xl font-black text-ink mt-1.5">
+      <Text className="text-2xl font-black text-phaseText-primary mt-1.5">
         {value}
       </Text>
     </Box>
@@ -158,15 +158,15 @@ function InstitutionLinks({
     hint: string;
     onPress: () => void;
   }) => (
-    <Pressable onPress={onPress} className="active:scale-95">
-      <Box className="bg-silk rounded-3xl border border-border p-5 shadow-sm">
+    <Pressable onPress={onPress} className="active:scale-95 transition-all">
+      <Box className="bg-phase-canvas rounded-3xl border border-phase-border p-5 shadow-sm active:bg-phase-interactive/5">
         <HStack className="items-center gap-4">
-          <Box className="w-12 h-12 rounded-2xl bg-action/10 items-center justify-center">
-            <Icon size={22} className="text-action" />
+          <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+            <Icon size={22} className="text-phase-interactive" />
           </Box>
           <VStack className="flex-1">
-            <Text className="text-[15px] font-black text-ink">{label}</Text>
-            <Text className="text-xs text-ink/40 font-bold">{hint}</Text>
+            <Text className="text-[15px] font-black text-phaseText-primary">{label}</Text>
+            <Text className="text-xs text-phaseText-muted font-bold">{hint}</Text>
           </VStack>
         </HStack>
       </Box>

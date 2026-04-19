@@ -46,62 +46,65 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
     const scopeHelpText = scopeMeta ? t(scopeMeta.scopeHelpTextKey) : '';
 
     return (
-        <Box className="bg-white rounded-[24px] p-5 border border-border shadow-sm h-full gap-4">
+        <Box className="bg-phase-surface rounded-[40px] p-6 border border-phase-border shadow-md h-full gap-5">
             {/* Header Section */}
             <HStack className="justify-between items-center">
-                <HStack className="items-center gap-3 flex-1">
+                <HStack className="items-center gap-4 flex-1">
                     {FeatureIcon && (
-                        <Box className="w-9 h-9 rounded-xl bg-primary/10 items-center justify-center">
-                            <Icon as={FeatureIcon} size={20} className="text-primary" />
+                        <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+                            <Icon as={FeatureIcon} size={24} className="text-phase-interactive" />
                         </Box>
                     )}
-                    <Text className="text-base font-bold text-ink flex-1" numberOfLines={1}>
-                        {title}
-                    </Text>
-                    {scopeMeta && (
-                        <Box className="px-2 py-0.5 rounded-full bg-silk border border-border/50">
-                            <Text className="text-[10px] font-black uppercase text-ink/40 tracking-wider">
-                                {scopeBadgeLabel}
-                            </Text>
-                        </Box>
-                    )}
+                    <VStack className="flex-1 gap-1">
+                        <Text className="text-[17px] font-black text-phaseText-primary tracking-tight" numberOfLines={1}>
+                            {title}
+                        </Text>
+                        {scopeMeta && (
+                            <Box className="px-2.5 py-0.5 rounded-lg bg-phase-canvas border border-phase-border/20 self-start">
+                                <Text className="text-[9px] font-black uppercase text-phaseText-muted tracking-[0.15em]">
+                                    {scopeBadgeLabel}
+                                </Text>
+                            </Box>
+                        )}
+                    </VStack>
                 </HStack>
-                <HStack className="items-center gap-2">
+                
+                <HStack className="items-center gap-1.5 bg-phase-canvas/50 p-1.5 rounded-2xl border border-phase-border/10">
                     {/* Info Icon (ⓘ) */}
                     <Pressable 
-                        onPress={() => setIsInfoOpen(true)}
+                        onPress={() => { hapticLight(); setIsInfoOpen(true); }}
                         accessibilityRole="button"
-                        className="p-1 active:scale-90 transition-transform"
+                        className="p-2 rounded-xl active:bg-phase-surface transition-all"
                     >
-                        <Icon as={Info} size="sm" className="text-ink/40" />
+                        <Icon as={Info} size="sm" className="text-phaseText-muted" />
                     </Pressable>
-
-                    {/* Add Icon (+) */}
-                    {onAdd && (
-                        <Pressable 
-                            onPress={onAdd}
-                            accessibilityRole="button"
-                            className="p-1.5 rounded-full bg-primary/10 items-center justify-center active:scale-90 transition-transform"
-                        >
-                            <Icon as={Plus} size="sm" className="text-primary" />
-                        </Pressable>
-                    )}
 
                     {/* History Icon (⌛) */}
                     {onHistory && (
                         <Pressable 
-                            onPress={onHistory}
+                            onPress={() => { hapticLight(); onHistory(); }}
                             accessibilityRole="button"
-                            className="p-1 active:scale-90 transition-transform"
+                            className="p-2 rounded-xl active:bg-phase-surface transition-all"
                         >
-                            <Icon as={Clock} size="sm" className="text-ink/40" />
+                            <Icon as={Clock} size="sm" className="text-phaseText-muted" />
+                        </Pressable>
+                    )}
+
+                    {/* Add Icon (+) */}
+                    {onAdd && (
+                        <Pressable 
+                            onPress={() => { hapticLight(); onAdd(); }}
+                            accessibilityRole="button"
+                            className="w-10 h-10 rounded-xl bg-phase-interactive items-center justify-center active:scale-90 transition-transform shadow-sm"
+                        >
+                            <Icon as={Plus} size="sm" className="text-white" />
                         </Pressable>
                     )}
                 </HStack>
             </HStack>
 
             {/* Content Section */}
-            <Box className="flex-1">
+            <Box className="flex-1 px-1">
                 {children}
             </Box>
 
@@ -110,27 +113,27 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                 isOpen={isInfoOpen}
                 onClose={() => setIsInfoOpen(false)}
                 title={featureInfo?.title || title}>
-                <VStack className="gap-4 p-4">
-                    <Text className="text-base leading-6 text-ink">
+                <VStack className="gap-6 p-6">
+                    <Text className="text-[16px] leading-relaxed text-phaseText-secondary font-medium">
                         {featureInfo?.description}
                     </Text>
                     {scopeMeta && (
-                        <VStack className="bg-silk p-3 rounded-2xl gap-1">
-                            <Text className="text-xs font-black text-ink/40 uppercase">
+                        <VStack className="bg-phase-canvas p-5 rounded-3xl gap-2 border border-phase-border shadow-inner">
+                            <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest">
                                 {scopeBadgeLabel}
                             </Text>
-                            <Text className="text-[13px] text-ink/60">
+                            <Text className="text-[14px] text-phaseText-secondary font-medium leading-relaxed">
                                 {scopeHelpText}
                             </Text>
                         </VStack>
                     )}
                     
                     {featureInfo?.howToUse && (
-                        <VStack className="bg-primary/5 p-3 rounded-2xl gap-1 border border-primary/10">
-                            <Text className="text-sm font-black text-primary">
-                                How to use:
+                        <VStack className="bg-phase-interactive/5 p-5 rounded-3xl gap-2 border border-phase-interactive/10">
+                            <Text className="text-[12px] font-black text-phase-interactive uppercase tracking-widest">
+                                Implementation Strategy
                             </Text>
-                            <Text className="text-sm text-ink/60">
+                            <Text className="text-[14px] text-phaseText-secondary font-medium leading-relaxed">
                                 {featureInfo.howToUse}
                             </Text>
                         </VStack>

@@ -44,7 +44,6 @@ export default function InstitutionalCalendarSection({
     principalId,
     onAddEvent
 }: InstitutionalCalendarSectionProps) {
-    const theme = useTheme();
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [showForm, setShowForm] = useState(false);
@@ -56,13 +55,13 @@ export default function InstitutionalCalendarSection({
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
-    const typeBadgeColor = (type: string): string => {
+    const getTypeColorClass = (type: string): string => {
         switch (type) {
-            case 'term_start': return theme.accent.action;
-            case 'exam': return theme.accent.danger;
-            case 'holiday': return theme.accent.sageGreen;
-            case 'event': return theme.accent.action;
-            default: return theme.text.muted;
+            case 'term_start': return 'bg-phase-interactive';
+            case 'exam': return 'bg-phase-danger';
+            case 'holiday': return 'bg-phase-success';
+            case 'event': return 'bg-phase-interactive';
+            default: return 'bg-phaseText-muted';
         }
     };
 
@@ -108,119 +107,119 @@ export default function InstitutionalCalendarSection({
     }
 
     return (
-        <Box className="bg-phase-surface rounded-2xl border border-phase-border p-md">
-            <HStack className="justify-between items-center mb-4">
-                <Text className="text-base font-bold text-phaseText-primary">
-                    School Calendar
+        <Box className="bg-phase-surface rounded-3xl border border-phase-border p-5 shadow-sm">
+            <HStack className="justify-between items-center mb-5">
+                <Text className="text-[17px] font-black text-phaseText-primary">
+                    Institution Calendar
                 </Text>
                 <Pressable
                     onPress={() => {
+                        hapticLight();
                         setShowForm(!showForm);
                         onAddEvent?.();
                     }}
-                    className="bg-phase-accent rounded-lg px-2.5 py-1 flex-row items-center gap-1"
+                    className={`rounded-xl px-4 py-1.5 flex-row items-center gap-2 active:scale-95 transition-all ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
                 >
-                    <Icon as={Plus} size="xs" className="text-white" />
-                    <Text className="text-xs font-bold text-white">Add</Text>
+                    <Icon as={Plus} size="xs" className={showForm ? 'text-phaseText-primary' : 'text-white'} />
+                    <Text className={`text-[12px] font-black uppercase tracking-wider ${showForm ? 'text-phaseText-primary' : 'text-white'}`}>
+                        {showForm ? 'Hide' : 'Add'}
+                    </Text>
                 </Pressable>
             </HStack>
 
             {loading && (
-                <VStack className="gap-2">
-                    <Box className="h-10 bg-phase-surface border border-phase-border rounded-xl opacity-50" />
-                    <Box className="h-10 bg-phase-surface border border-phase-border rounded-xl opacity-30" />
+                <VStack className="gap-3">
+                    <Box className="h-12 bg-phase-canvas border border-phase-border rounded-xl opacity-50" />
+                    <Box className="h-12 bg-phase-canvas border border-phase-border rounded-xl opacity-30" />
                 </VStack>
             )}
 
             {!loading && events.length === 0 && (
-                <Text className="text-sm text-phaseText-secondary text-center py-md">
-                    No upcoming events
-                </Text>
+                <Box className="bg-phase-canvas rounded-2xl border border-dashed border-phase-border py-8 items-center">
+                    <Text className="text-[13px] font-bold text-phaseText-muted text-center">
+                        No upcoming events scheduled
+                    </Text>
+                </Box>
             )}
 
-            {!loading && events.map((ev) => (
+            {!loading && events.map((ev, index) => (
                 <HStack
                     key={ev.id}
-                    className="items-center gap-3 py-2 border-b border-phase-border"
+                    className={`items-center gap-4 py-4 ${index !== events.length - 1 ? 'border-b border-phase-border' : ''}`}
                 >
-                    <Box
-                        className="rounded-lg px-2 py-0.5"
-                        style={{ backgroundColor: typeBadgeColor(ev.type) }}
-                    >
-                        <Text className="text-[10px] font-bold text-white uppercase">
+                    <Box className={`rounded-lg px-2.5 py-0.5 ${getTypeColorClass(ev.type)}`}>
+                        <Text className="text-[9px] font-black text-white uppercase tracking-wider">
                             {TYPE_LABELS[ev.type] || ev.type}
                         </Text>
                     </Box>
-                    <Text className="flex-1 text-[13px] text-phaseText-primary" numberOfLines={1}>
+                    <Text className="flex-1 text-[13px] font-bold text-phaseText-primary" numberOfLines={1}>
                         {ev.title}
                     </Text>
-                    <Text className="text-[11px] text-phaseText-secondary">
-                        {ev.start_date.split('T')[0]}
+                    <Text className="text-[11px] font-black text-phaseText-muted">
+                        {new Date(ev.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </Text>
                 </HStack>
             ))}
 
             {showForm && (
-                <VStack className="mt-4 gap-3">
-                    <Input className="border border-phase-border rounded-xl bg-phase-surface h-10">
+                <VStack className="mt-6 gap-4 border-t border-phase-border pt-6">
+                    <Input className="border border-phase-border rounded-xl bg-phase-canvas h-12 shadow-sm">
                         <InputField
-                            placeholder="Event title"
-                            placeholderTextColor={theme.text.muted}
+                            placeholder="Event Title"
+                            placeholderTextColor="rgba(0,0,0,0.3)"
                             value={title}
                             onChangeText={setTitle}
-                            className="text-sm text-phaseText-primary"
+                            className="text-[14px] font-bold text-phaseText-primary"
                         />
                     </Input>
 
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
                         <HStack className="gap-2">
-                            {TYPE_OPTIONS.map((t) => (
-                                <Pressable key={t} onPress={() => setSelectedType(t)}>
-                                    <Box
-                                        className="rounded-full px-3 py-1 border"
-                                        style={{
-                                            backgroundColor: selectedType === t ? typeBadgeColor(t) : 'transparent',
-                                            borderColor: selectedType === t ? typeBadgeColor(t) : theme.scene.border.base
-                                        }}
-                                    >
-                                        <Text
-                                            className="text-xs font-semibold"
-                                            style={{ color: selectedType === t ? '#FFFFFF' : theme.text.secondary }}
+                            {TYPE_OPTIONS.map((t) => {
+                                const isSelected = selectedType === t;
+                                return (
+                                    <Pressable key={t} onPress={() => { hapticLight(); setSelectedType(t); }}>
+                                        <Box
+                                            className={`rounded-full px-4 py-1.5 border transition-all ${isSelected ? `${getTypeColorClass(t)} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
                                         >
-                                            {TYPE_LABELS[t]}
-                                        </Text>
-                                    </Box>
-                                </Pressable>
-                            ))}
+                                            <Text className={`text-[11px] font-black uppercase tracking-wider ${isSelected ? 'text-white' : 'text-phaseText-secondary'}`}>
+                                                {TYPE_LABELS[t]}
+                                            </Text>
+                                        </Box>
+                                    </Pressable>
+                                );
+                            })}
                         </HStack>
                     </ScrollView>
 
-                    <Input className="border border-phase-border rounded-xl bg-phase-surface h-10">
-                        <InputField
-                            placeholder="Start date (YYYY-MM-DD)"
-                            placeholderTextColor={theme.text.muted}
-                            value={startDate}
-                            onChangeText={setStartDate}
-                            className="text-sm text-phaseText-primary"
-                        />
-                    </Input>
-                    <Input className="border border-phase-border rounded-xl bg-phase-surface h-10">
-                        <InputField
-                            placeholder="End date (YYYY-MM-DD, optional)"
-                            placeholderTextColor={theme.text.muted}
-                            value={endDate}
-                            onChangeText={setEndDate}
-                            className="text-sm text-phaseText-primary"
-                        />
-                    </Input>
+                    <HStack className="gap-3">
+                        <Input className="flex-1 border border-phase-border rounded-xl bg-phase-canvas h-12 shadow-sm">
+                            <InputField
+                                placeholder="Start Date"
+                                placeholderTextColor="rgba(0,0,0,0.3)"
+                                value={startDate}
+                                onChangeText={setStartDate}
+                                className="text-[14px] font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                        <Input className="flex-1 border border-phase-border rounded-xl bg-phase-canvas h-12 shadow-sm">
+                            <InputField
+                                placeholder="End Date"
+                                placeholderTextColor="rgba(0,0,0,0.3)"
+                                value={endDate}
+                                onChangeText={setEndDate}
+                                className="text-[14px] font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                    </HStack>
 
                     <Pressable
                         onPress={handleSave}
                         disabled={saving}
-                        className={`bg-phase-accent rounded-xl p-3 items-center ${saving ? 'opacity-60' : ''}`}
+                        className={`bg-phase-interactive rounded-2xl py-3.5 items-center shadow-sm active:scale-95 transition-all ${saving ? 'opacity-60' : ''}`}
                     >
-                        <Text className="text-sm font-bold text-white">
-                            {saving ? 'Saving...' : 'Save Event'}
+                        <Text className="text-[13px] font-black text-white uppercase tracking-widest">
+                            {saving ? 'Creating Event...' : 'Create Event'}
                         </Text>
                     </Pressable>
                 </VStack>

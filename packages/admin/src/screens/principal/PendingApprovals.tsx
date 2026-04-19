@@ -36,63 +36,67 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = ({
             .replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
+    const getStatusColorClass = (status: string) => {
+        switch (status) {
+            case 'approved': return 'bg-phase-success';
+            case 'pending': return 'bg-phase-warning';
+            case 'rejected': return 'bg-phase-danger';
+            default: return 'bg-phaseText-muted';
+        }
+    };
+
     return (
-        <Box className="bg-silk p-6 rounded-3xl border border-border gap-5">
-            <HStack className="items-center gap-3">
-                <Box className="bg-amber-500/10 p-3 rounded-xl">
-                    <Icon as={ClipboardList} size="md" className="text-amber-600" />
+        <Box className="bg-phase-surface p-6 rounded-[32px] border border-phase-border gap-6 shadow-sm">
+            <HStack className="items-center gap-4">
+                <Box className="bg-phase-warning/10 p-3.5 rounded-2xl shadow-inner">
+                    <Icon as={ClipboardList} size="md" className="text-phase-warning" />
                 </Box>
-                <VStack>
-                    <Heading className="text-lg font-black text-ink">
-                        {t('approvals.pendingTitle') || 'Pending Approvals'}
+                <VStack className="gap-0.5">
+                    <Heading className="text-[18px] font-black text-phaseText-primary tracking-tight">
+                        {t('approvals.pendingTitle') || 'Pending Operations'}
                     </Heading>
-                    <Text className="text-[13px] text-ink/40 font-bold">
-                        {t('approvals.pendingSubtitle') || 'Staff leave and resource requests'}
+                    <Text className="text-[12px] text-phaseText-muted font-bold uppercase tracking-widest">
+                        {t('approvals.pendingSubtitle') || 'Staff Leave and Resource Rights'}
                     </Text>
                 </VStack>
             </HStack>
 
             {leaves.length === 0 ? (
-                <Box className="p-8 items-center justify-center border border-dashed border-border rounded-2xl bg-white/50">
-                    <Text className="text-sm font-bold text-ink/40">
-                        {t('approvals.noPending') || 'No pending requests at this time.'}
+                <Box className="p-10 items-center justify-center border border-dashed border-phase-border rounded-2xl bg-phase-canvas">
+                    <Text className="text-[13px] font-bold text-phaseText-muted uppercase tracking-widest">
+                        {t('approvals.noPending') || 'Cleared for action.'}
                     </Text>
                 </Box>
             ) : (
-                <VStack className="gap-3">
+                <VStack className="gap-4">
                     {leaves.map((leave) => (
                         <HStack 
                             key={leave.id} 
-                            className="p-4 rounded-2xl bg-white border border-border justify-between items-center shadow-sm"
+                            className="p-5 rounded-2xl bg-phase-surface border border-phase-border justify-between items-center shadow-sm"
                         >
-                            <HStack className="items-center gap-3">
-                                <Box 
-                                    className="w-2.5 h-2.5 rounded-full"
-                                    style={{ 
-                                        backgroundColor: (LEAVE_STATUS_COLORS as any)[leave.status] || '#cbd5e1' 
-                                    }} 
-                                />
-                                <VStack>
-                                    <Text className="text-sm font-bold text-ink">{leave.user_id}</Text>
-                                    <Text className="text-[11px] text-ink/40 font-black uppercase tracking-wider">
+                            <HStack className="items-center gap-4 flex-1">
+                                <Box className={`w-3 h-3 rounded-full shadow-sm ${getStatusColorClass(leave.status)}`} />
+                                <VStack className="gap-0.5 flex-1">
+                                    <Text className="text-[15px] font-black text-phaseText-primary tracking-tight">Staff ID: {leave.user_id}</Text>
+                                    <Text className="text-[10px] text-phaseText-muted font-black uppercase tracking-wider leading-relaxed">
                                         {formatLeaveLabel(leave)} · {leave.start_date} to {leave.end_date}
                                     </Text>
                                 </VStack>
                             </HStack>
-                            <HStack className="gap-2">
+                            <HStack className="gap-2.5 ml-2">
                                 <Button
-                                    onPress={() => onReject(leave.id)}
+                                    onPress={() => { hapticLight(); onReject(leave.id); }}
                                     isDisabled={processingId === leave.id}
-                                    className="px-3 h-9 rounded-xl border border-red-500/20 bg-transparent active:bg-red-500/5 group"
+                                    className="px-4 h-10 rounded-xl border border-phase-danger/30 bg-transparent active:bg-phase-danger shadow-inner transition-all"
                                 >
-                                    <ButtonText className="text-red-500 text-xs font-bold group-active:text-red-600">{t('common.reject') || 'Reject'}</ButtonText>
+                                    <ButtonText className="text-phase-danger text-[11px] font-black uppercase tracking-widest">{t('common.reject') || 'Reject'}</ButtonText>
                                 </Button>
                                 <Button
-                                    onPress={() => onApprove(leave.id)}
+                                    onPress={() => { hapticLight(); onApprove(leave.id); }}
                                     isDisabled={processingId === leave.id}
-                                    className="px-4 h-9 rounded-xl bg-phase-interactive shadow-sm active:opacity-90"
+                                    className="px-5 h-10 rounded-xl bg-phase-interactive shadow-sm active:scale-95 transition-all"
                                 >
-                                    <ButtonText className="text-inverted text-xs font-bold">
+                                    <ButtonText className="text-white text-[11px] font-black uppercase tracking-widest">
                                         {processingId === leave.id ? '...' : (t('common.approve') || 'Approve')}
                                     </ButtonText>
                                 </Button>

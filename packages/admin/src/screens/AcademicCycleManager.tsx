@@ -123,6 +123,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         );
     };
 
+    if (loading) {
         return (
             <Box className="flex-1 bg-phase-canvas">
                 <GlobalHeader title="Academic Cycles" onBack={onBack} />
@@ -133,6 +134,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                 </VStack>
             </Box>
         );
+    }
 
     return (
         <Box className="flex-1 bg-phase-canvas">

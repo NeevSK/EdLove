@@ -39,6 +39,10 @@ export interface FeatureFlags {
   isMessagingEnabled: boolean;
   isSocialShieldEnabled: boolean;
 
+  // Development / In-Progress Flags (Strictly off in Prod unless developer role)
+  isDevelopingAnalyticsDashboard: boolean;
+  isDevelopingVoiceNavigation: boolean;
+
   // Global Safety Flags (Kill Switches)
   isUnderMaintenance: boolean;
 }
@@ -87,6 +91,8 @@ export const resolveFeatureFlags = (
     isCommunityEnabled: true,
     isMessagingEnabled: true,
     isSocialShieldEnabled: true,
+    isDevelopingAnalyticsDashboard: false,
+    isDevelopingVoiceNavigation: false,
     isUnderMaintenance: false};
 
   // 1. Infrastructure Level (Process Env)
@@ -171,6 +177,11 @@ export const resolveFeatureFlags = (
   // 3. Role/Persona Logic
   if (context.authority === 'student') {
       flags.isInventoryEnabled = false; // Strictly enforced override
+  }
+
+  if (context.authority === 'developer') {
+    flags.isDevelopingAnalyticsDashboard = true;
+    flags.isDevelopingVoiceNavigation = true;
   }
 
   if (context.authority === 'guardian' || context.authority === 'parent') {

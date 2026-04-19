@@ -8,18 +8,13 @@ import {
     Icon,
     Input,
     InputField,
-    Modal,
-    ModalBackdrop,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
     Pressable,
     ScrollView,
     Spinner,
     Text,
     VStack,
     hapticLight,
+    SanctuaryModal,
 } from '@repo/ui';
 import { api, Student } from '@repo/core';
 import { MessageCircle, Plus, Sparkles, Trash2, TriangleAlert } from 'lucide-react-native';
@@ -110,18 +105,18 @@ export default function TeacherObservationsWorkspace({
         <Box className="flex-1">
             <VStack className="gap-md p-md">
                 <Box
-                    className="bg-silk rounded-generous border border-phase-border p-lg shadow-sm"
+                    className="bg-sanctuary-surface rounded-3xl border border-sanctuary-border/10 p-6 shadow-sm"
                 >
-                    <VStack className="gap-md">
+                    <VStack className="gap-4">
                         <HStack className="items-start justify-between gap-md">
                             <VStack className="flex-1 gap-1">
-                                <Text className="text-phaseText-onSurface text-[11px] font-bold uppercase tracking-[1px]">
+                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.1em]">
                                     Observations
                                 </Text>
-                                <Heading className="text-phaseText-onSurface text-xl">
+                                <Heading size="md" className="text-sanctuary-text">
                                     Track classroom noticing, not just incidents
                                 </Heading>
-                                <Text className="text-phaseText-secondary text-sm">
+                                <Text className="text-sanctuary-text-muted text-sm leading-5">
                                     Keep small signals close to the classroom rhythm, so growth and concern stay visible before they become reports.
                                 </Text>
                             </VStack>
@@ -132,16 +127,16 @@ export default function TeacherObservationsWorkspace({
                                         hapticLight();
                                         setShowCreateModal(true);
                                     }}
-                                    className="bg-sanctuarySaffron rounded-full"
+                                    className="bg-sanctuarySaffron rounded-full px-5"
                                 >
-                                    <HStack className="items-center gap-xs">
+                                    <HStack className="items-center gap-2">
                                         <Icon as={Plus} size="sm" className="text-sacredWhite" />
                                         <ButtonText className="text-sacredWhite font-English">New</ButtonText>
                                     </HStack>
                                 </Button>
                             )}
                         </HStack>
-                        <HStack className="gap-sm">
+                        <HStack className="gap-3">
                             <SignalPill
                                 icon={<Icon as={MessageCircle} size="sm" className="text-gurudeviBlue" />}
                                 label="Total"
@@ -162,18 +157,18 @@ export default function TeacherObservationsWorkspace({
                 </Box>
 
                 {isLoading ? (
-                    <Box className="py-xl items-center">
+                    <Box className="py-10 items-center">
                         <Spinner className="text-sanctuarySaffron" />
                     </Box>
                 ) : observations.length === 0 ? (
                     <Box
-                        className="bg-silk rounded-generous border border-phase-border p-xl items-center gap-sm"
+                        className="bg-sanctuary-surface rounded-3xl border border-sanctuary-border/10 p-10 items-center gap-3 shadow-sm"
                     >
-                        <Icon as={MessageCircle} size="xl" className="text-phaseText-onSurface/40" />
-                        <Heading className="text-phaseText-onSurface text-lg">
+                        <Icon as={MessageCircle} size="xl" className="text-sanctuary-text-muted/30" />
+                        <Heading size="sm" className="text-sanctuary-text text-center">
                             No observations yet
                         </Heading>
-                        <Text className="text-phaseText-secondary text-center">
+                        <Text className="text-sanctuary-text-muted text-center text-sm leading-5">
                             Start with one true observation from today. The goal is signal, not volume.
                         </Text>
                     </Box>
@@ -181,7 +176,7 @@ export default function TeacherObservationsWorkspace({
                     observations.map((observation) => (
                         <Box
                             key={observation.id}
-                            className={`bg-silk rounded-comfortable border border-phase-border p-md border-l-4 ${
+                            className={`bg-sanctuary-surface rounded-2xl border border-sanctuary-border/10 p-5 border-l-4 shadow-sm ${
                                 observation.observation_type === 'concern'
                                     ? 'border-l-emberRed'
                                     : observation.observation_type === 'positive'
@@ -189,24 +184,24 @@ export default function TeacherObservationsWorkspace({
                                         : 'border-l-gurudeviBlue'
                             }`}
                         >
-                            <VStack className="gap-xs">
+                            <VStack className="gap-3">
                                 <HStack className="items-center justify-between gap-md">
                                     <VStack className="flex-1">
-                                        <Text className="text-phaseText-onSurface font-bold">
+                                        <Text className="text-sanctuary-text font-bold">
                                             {students.find((student) => student.id === observation.student_id)?.full_name || 'Student observation'}
                                         </Text>
-                                        <Text className="text-phaseText-tertiary text-xs uppercase">
+                                        <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase mt-0.5">
                                             {observation.observation_type} • {observation.visibility === 'student_visible' ? 'Visible to student' : 'Private'}
                                         </Text>
                                     </VStack>
                                     {canManage && (
-                                        <Pressable onPress={() => handleDelete(observation.id)}>
+                                        <Pressable onPress={() => handleDelete(observation.id)} className="p-2 active:opacity-50">
                                             <Icon as={Trash2} size="sm" className="text-emberRed" />
                                         </Pressable>
                                     )}
                                 </HStack>
-                                <Text className="text-phaseText-secondary">{observation.content}</Text>
-                                <Text className="text-phaseText-tertiary text-xs">
+                                <Text className="text-sanctuary-text-muted text-sm leading-5">{observation.content}</Text>
+                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase mt-1">
                                     {observation.created_at ? new Date(observation.created_at).toLocaleDateString() : 'Just now'}
                                 </Text>
                             </VStack>
@@ -215,118 +210,115 @@ export default function TeacherObservationsWorkspace({
                 )}
             </VStack>
 
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
-                <ModalBackdrop />
-                <ModalContent className="bg-phase-canvas border border-phase-border">
-                    <ModalHeader>
-                        <Heading className="text-phaseText-onCanvas text-lg">
-                            Create observation
-                        </Heading>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack className="gap-md">
-                            <VStack className="gap-xs">
-                                <Text className="text-phaseText-secondary text-sm">
-                                    Student
-                                </Text>
-                                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                    <HStack className="gap-sm">
-                                        {students.map((student) => {
-                                            const isActive = selectedStudentId === student.id;
-                                            return (
-                                                <Pressable key={student.id} onPress={() => setSelectedStudentId(student.id)}>
-                                                    <Box
-                                                        className={`px-md py-sm rounded-full border ${
-                                                            isActive ? 'border-sanctuarySaffron bg-sanctuarySaffron' : 'border-phase-border bg-phase-surface'
-                                                        }`}
-                                                    >
-                                                        <Text className={isActive ? 'text-sacredWhite' : 'text-phaseText-onSurface'}>
-                                                            {student.full_name}
-                                                        </Text>
-                                                    </Box>
-                                                </Pressable>
-                                            );
-                                        })}
-                                    </HStack>
-                                </ScrollView>
-                            </VStack>
+            <SanctuaryModal
+                visible={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                title="Create observation"
+            >
+                <VStack className="gap-6 p-1">
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">
+                            Student
+                        </Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <HStack className="gap-2 p-0.5">
+                                {students.map((student) => {
+                                    const isActive = selectedStudentId === student.id;
+                                    return (
+                                        <Pressable key={student.id} onPress={() => setSelectedStudentId(student.id)}>
+                                            <Box
+                                                className={`px-4 py-2 rounded-xl border ${
+                                                    isActive ? 'border-sanctuarySaffron bg-sanctuarySaffron' : 'border-sanctuary-border/10 bg-sanctuary-surface-secondary'
+                                                }`}
+                                            >
+                                                <Text className={`text-xs font-bold ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                                    {student.full_name}
+                                                </Text>
+                                            </Box>
+                                        </Pressable>
+                                    );
+                                })}
+                            </HStack>
+                        </ScrollView>
+                    </VStack>
 
-                            <VStack className="gap-xs">
-                                <Text className="text-phaseText-secondary text-sm">
-                                    Observation type
-                                </Text>
-                                <HStack className="gap-sm flex-wrap">
-                                    {OBSERVATION_TYPES.map((type) => {
-                                        const isActive = observationType === type;
-                                        return (
-                                            <Pressable key={type} onPress={() => setObservationType(type)}>
-                                                <Box
-                                                    className={`px-md py-xs rounded-full border ${
-                                                        isActive ? 'border-gurudeviBlue bg-gurudeviBlue' : 'border-phase-border bg-phase-surface'
-                                                    }`}
-                                                >
-                                                    <Text className={`capitalize ${isActive ? 'text-sacredWhite' : 'text-phaseText-onSurface'}`}>
-                                                        {type}
-                                                    </Text>
-                                                </Box>
-                                            </Pressable>
-                                        );
-                                    })}
-                                </HStack>
-                            </VStack>
-
-                            <VStack className="gap-xs">
-                                <Text className="text-phaseText-secondary text-sm">
-                                    Visibility
-                                </Text>
-                                <HStack className="gap-sm">
-                                    {(['private', 'student_visible'] as const).map((option) => {
-                                        const isActive = visibility === option;
-                                        return (
-                                            <Pressable key={option} onPress={() => setVisibility(option)}>
-                                                <Box
-                                                    className={`px-md py-xs rounded-full border ${
-                                                        isActive ? 'border-sageGreen bg-sageGreen' : 'border-phase-border bg-phase-surface'
-                                                    }`}
-                                                >
-                                                    <Text className={isActive ? 'text-sacredWhite' : 'text-phaseText-onSurface'}>
-                                                        {option === 'student_visible' ? 'Visible to student' : 'Private'}
-                                                    </Text>
-                                                </Box>
-                                            </Pressable>
-                                        );
-                                    })}
-                                </HStack>
-                            </VStack>
-
-                            <Input className="bg-phase-surface border-phase-border min-h-[100px]">
-                                <InputField
-                                    placeholder="What did you notice?"
-                                    value={content}
-                                    onChangeText={setContent}
-                                    multiline
-                                    className="text-phaseText-onSurface"
-                                />
-                            </Input>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <HStack className="gap-sm w-full">
-                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} className="flex-1">
-                                <ButtonText className="text-phaseText-secondary font-English">Cancel</ButtonText>
-                            </Button>
-                            <Button
-                                action="primary"
-                                onPress={handleCreate}
-                                isDisabled={!content.trim() || !selectedStudent || !userId || isSaving}
-                                className="flex-1 bg-sanctuarySaffron"
-                            >
-                                {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-English">Save</ButtonText>}
-                            </Button>
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">
+                            Observation type
+                        </Text>
+                        <HStack className="gap-2 flex-wrap">
+                            {OBSERVATION_TYPES.map((type) => {
+                                const isActive = observationType === type;
+                                return (
+                                    <Pressable key={type} onPress={() => setObservationType(type)}>
+                                        <Box
+                                            className={`px-4 py-2 rounded-xl border ${
+                                                isActive ? 'border-gurudeviBlue bg-gurudeviBlue' : 'border-sanctuary-border/10 bg-sanctuary-surface-secondary'
+                                            }`}
+                                        >
+                                            <Text className={`capitalize text-xs font-bold ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                                {type}
+                                            </Text>
+                                        </Box>
+                                    </Pressable>
+                                );
+                            })}
                         </HStack>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+                    </VStack>
+
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">
+                            Visibility
+                        </Text>
+                        <HStack className="gap-2">
+                            {(['private', 'student_visible'] as const).map((option) => {
+                                const isActive = visibility === option;
+                                return (
+                                    <Pressable key={option} onPress={() => setVisibility(option)}>
+                                        <Box
+                                            className={`px-4 py-2 rounded-xl border ${
+                                                isActive ? 'border-sageGreen bg-sageGreen' : 'border-sanctuary-border/10 bg-sanctuary-surface-secondary'
+                                            }`}
+                                        >
+                                            <Text className={`text-xs font-bold ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                                {option === 'student_visible' ? 'Visible to student' : 'Private'}
+                                            </Text>
+                                        </Box>
+                                    </Pressable>
+                                );
+                            })}
+                        </HStack>
+                    </VStack>
+
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">Observation</Text>
+                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border/10 rounded-xl min-h-[120px] p-2">
+                            <InputField
+                                placeholder="What did you notice?"
+                                value={content}
+                                onChangeText={setContent}
+                                multiline
+                                className="text-sanctuary-text text-sm"
+                                placeholderTextColor="#94a3b8"
+                            />
+                        </Input>
+                    </VStack>
+
+                    <HStack className="gap-3 mt-4">
+                        <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} className="flex-1 rounded-xl h-12 border-sanctuary-border/20">
+                            <ButtonText className="text-sanctuary-text font-bold">Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            action="primary"
+                            onPress={handleCreate}
+                            isDisabled={!content.trim() || !selectedStudent || !userId || isSaving}
+                            className="flex-1 bg-sanctuarySaffron rounded-xl h-12"
+                        >
+                            {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-bold">Save</ButtonText>}
+                        </Button>
+                    </HStack>
+                </VStack>
+            </SanctuaryModal>
         </Box>
     );
 }
@@ -341,15 +333,15 @@ function SignalPill({
     value: string;
 }) {
     return (
-        <Box className="flex-1 bg-phase-canvas rounded-comfortable border border-phase-border p-sm">
+        <Box className="flex-1 bg-sanctuary-surface-secondary/50 rounded-2xl border border-sanctuary-border/10 p-4">
             <VStack className="gap-1">
                 <HStack className="items-center gap-1.5">
                     {icon}
-                    <Text className="text-phaseText-tertiary text-xs font-bold uppercase">
+                    <Text className="text-sanctuary-text-muted text-[10px] uppercase font-bold tracking-tight">
                         {label}
                     </Text>
                 </HStack>
-                <Text className="text-phaseText-onSurface font-bold text-md">
+                <Text className="text-sanctuary-text font-bold text-lg">
                     {value}
                 </Text>
             </VStack>

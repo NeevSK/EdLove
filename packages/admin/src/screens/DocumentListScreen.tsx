@@ -30,9 +30,6 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   viewDate,
   isPastView
 }) => {
-  viewDate,
-  isPastView
-}) => {
   const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);

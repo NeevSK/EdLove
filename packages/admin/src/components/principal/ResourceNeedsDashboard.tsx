@@ -39,12 +39,12 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     const [needs, setNeeds] = useState<ResourceNeed[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const getPriorityColorClasses = (priority: string) => {
+    const getPriorityClasses = (priority: string) => {
         switch (priority) {
-            case 'urgent': return { text: 'text-red-600', border: 'border-red-600', bg: 'bg-red-500/10' };
-            case 'high': return { text: 'text-amber-600', border: 'border-amber-600', bg: 'bg-amber-500/10' };
-            case 'medium': return { text: 'text-blue-600', border: 'border-blue-600', bg: 'bg-blue-500/10' };
-            default: return { text: 'text-ink/40', border: 'border-border', bg: 'bg-ink/5' };
+            case 'urgent': return { text: 'text-phase-danger', border: 'border-phase-danger', bg: 'bg-phase-danger/10' };
+            case 'high': return { text: 'text-phase-warning', border: 'border-phase-warning', bg: 'bg-phase-warning/10' };
+            case 'medium': return { text: 'text-phase-interactive', border: 'border-phase-interactive', bg: 'bg-phase-interactive/10' };
+            default: return { text: 'text-phaseText-muted', border: 'border-phase-border', bg: 'bg-phase-canvas' };
         }
     };
 
@@ -69,18 +69,18 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     if (isLoading) {
         return (
             <Box className="p-12 items-center justify-center">
-                <ActivityIndicator color="#6366f1" />
+                <ActivityIndicator color="var(--phase-interactive)" />
             </Box>
         );
     }
 
     if (needs.length === 0) {
         return (
-            <Box className="p-8 bg-silk rounded-3xl items-center border border-border">
-                <Heading className="text-xl font-black text-green-600 text-center">
+            <Box className="p-10 bg-phase-canvas rounded-3xl items-center border border-dashed border-phase-border">
+                <Heading className="text-xl font-black text-phase-success text-center">
                     {t('principal.resources.emptyState') || 'Sanctuary is Well-Equipped'}
                 </Heading>
-                <Text className="mt-2 text-sm text-ink/40 font-bold text-center">
+                <Text className="mt-3 text-[13px] text-phaseText-muted font-bold text-center leading-relaxed">
                     {t('principal.resources.emptyStateDesc') || 'No resource requests or damaged items reported.'}
                 </Text>
             </Box>
@@ -88,41 +88,44 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     }
 
     return (
-        <VStack className="gap-6">
-            <VStack className="gap-1">
-                <Heading className="text-2xl font-black text-ink">
+        <VStack className="gap-8">
+            <VStack className="gap-1.5">
+                <Heading className="text-2xl font-black text-phaseText-primary">
                     {t('principal.resources.title') || 'Resource Vistas'}
                 </Heading>
-                <Text className="text-sm font-bold text-ink/40">
-                    {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}
+                <Text className="text-[13px] font-bold text-phaseText-muted uppercase tracking-widest">
+                    {t('principal.resources.subtitle') || 'Aggregated Institutional Needs'}
                 </Text>
             </VStack>
 
-            <VStack className="gap-4">
+            <VStack className="gap-5">
                 {needs.map((need) => {
                     const Icon = ICON_MAP[need.icon] || ICON_MAP.other;
-                    const classes = getPriorityColorClasses(need.priority);
+                    const classes = getPriorityClasses(need.priority);
 
                     return (
                         <Box
                             key={need.id}
-                            className={`p-5 bg-white rounded-3xl border-l-4 border-y border-r border-border ${classes.border.replace('border-', 'border-l-')}`}>
-                            <HStack className="items-center gap-4">
-                                <Box className={`w-12 h-12 rounded-2xl items-center justify-center ${classes.bg}`}>
+                            className={`p-6 bg-phase-surface rounded-3xl border-l-[6px] border-y border-r border-phase-border shadow-sm active:scale-98 transition-all ${classes.border.replace('border-', 'border-l-')}`}>
+                            <HStack className="items-center gap-5">
+                                <Box className={`w-14 h-14 rounded-2xl items-center justify-center ${classes.bg}`}>
                                     <UIIcon as={Icon} className={classes.text} size="md" />
                                 </Box>
 
-                                <VStack className="flex-1 gap-0.5">
-                                    <Text className="text-lg font-black text-ink">
+                                <VStack className="flex-1 gap-1">
+                                    <Text className="text-[18px] font-black text-phaseText-primary">
                                         {t('principal.resources.needUnit', { count: need.requested_by_count }) || `${need.requested_by_count} requests`}
                                     </Text>
-                                    <Text className="text-sm text-ink/60 font-bold">
+                                    <Text className="text-[14px] text-phaseText-secondary font-bold leading-relaxed">
                                         {need.description}
                                     </Text>
                                     {need.priority === 'urgent' && (
-                                        <Text className="text-[10px] font-black uppercase tracking-widest text-red-600 mt-1">
-                                            {t('principal.resources.urgent') || 'Urgent Priority'}
-                                        </Text>
+                                        <HStack className="items-center gap-1.5 mt-1.5">
+                                            <UIIcon as={AlertCircle} size="xs" className="text-phase-danger" />
+                                            <Text className="text-[10px] font-black uppercase tracking-widest text-phase-danger">
+                                                {t('principal.resources.urgent') || 'Urgent Priority'}
+                                            </Text>
+                                        </HStack>
                                     )}
                                 </VStack>
                             </HStack>
@@ -131,8 +134,8 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                 })}
             </VStack>
 
-            <Box className="p-4 bg-silk rounded-2xl mt-4 border border-border">
-                <Text className="italic text-xs text-ink/40 font-bold text-center">
+            <Box className="p-5 bg-phase-canvas rounded-2xl border border-phase-border shadow-inner">
+                <Text className="italic text-[12px] text-phaseText-muted font-bold text-center leading-relaxed">
                     {t('principal.resources.philosophy') || 'Infrastructure is the scaffolding of possibility.'}
                 </Text>
             </Box>

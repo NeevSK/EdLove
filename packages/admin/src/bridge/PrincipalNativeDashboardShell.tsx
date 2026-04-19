@@ -27,25 +27,25 @@ function ZoneButton({
   onPress: (zone: PrincipalZoneId) => void;
 }) {
   return (
-    <Pressable onPress={() => onPress(id)} className="flex-1 active:scale-95">
+    <Pressable onPress={() => onPress(id)} className="flex-1 active:scale-95 transition-all">
       <Box
-        className={`p-4 rounded-3xl border min-h-[74px] shadow-sm ${ isActive ? 'border-action bg-action/5' : 'border-border bg-white' }`}
+        className={`p-4 rounded-3xl border min-h-[74px] shadow-sm ${ isActive ? 'border-phase-interactive bg-phase-interactive/5' : 'border-phase-border bg-phase-surface' }`}
       >
         <HStack className="justify-between items-center">
-          <Text className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-action' : 'text-ink/60'}`}>
+          <Text className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-phase-interactive' : 'text-phaseText-secondary'}`}>
             {label}
           </Text>
           <Box
-            className={`px-2 py-0.5 rounded-full ${ isActive ? 'bg-action/10' : 'bg-ink/5' }`}
+            className={`px-2 py-0.5 rounded-full ${ isActive ? 'bg-phase-interactive/10' : 'bg-phase-canvas' }`}
           >
             <Text
-              className={`text-[10px] font-black ${ isActive ? 'text-action' : 'text-ink/40' }`}
+              className={`text-[10px] font-black ${ isActive ? 'text-phase-interactive' : 'text-phaseText-muted' }`}
             >
               {count}
             </Text>
           </Box>
         </HStack>
-        <Text className="text-[11px] font-bold text-ink/40 mt-2">
+        <Text className={`text-[11px] font-bold mt-2 ${isActive ? 'text-phase-interactive/60' : 'text-phaseText-muted'}`}>
           {detail}
         </Text>
       </Box>

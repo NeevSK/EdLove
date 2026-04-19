@@ -75,9 +75,9 @@ export default function FounderDashboard() {
                             <Heading className="text-xl font-bold text-phaseText-primary">
                                 Ecosystem Pulse
                             </Heading>
-                            <Box className="flex-row items-center gap-2 bg-phase-accent/10 px-3 py-1.5 rounded-full">
-                                <Icon as={HeartPulse} size={16} className="text-phase-accent" />
-                                <Text className="text-xs font-black text-phase-accent">
+                            <Box className="flex-row items-center gap-2 bg-phase-success/10 px-3 py-1.5 rounded-full">
+                                <Icon as={HeartPulse} size={16} className="text-phase-success" />
+                                <Text className="text-xs font-black text-phase-success">
                                     Health: {stats?.ecosystem_health || 0}%
                                 </Text>
                             </Box>
@@ -160,7 +160,7 @@ export default function FounderDashboard() {
                                 icon={Wind}
                                 label={t('founder.breathing') || 'Breathing Reset'}
                                 onPress={() => setBreathingOpen(true)}
-                                className="text-phase-accent"
+                                className="text-phase-interactive"
                             />
                             <Box className="flex-1" />
                             <Box className="flex-1" />
@@ -230,7 +230,7 @@ function QuickAction({ icon, label, onPress, className }: { icon: any, label: st
         <VStack className="flex-1 gap-2 items-center">
             <Pressable
                 onPress={onPress}
-                className="w-16 h-16 rounded-[20px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm active:scale-95">
+                className="w-16 h-16 rounded-[20px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm active:bg-phase-canvas">
                 <Icon as={icon} size={28} className={className} />
             </Pressable>
             <Text className="text-center text-[11px] font-bold text-phaseText-primary">
@@ -242,10 +242,10 @@ function QuickAction({ icon, label, onPress, className }: { icon: any, label: st
 
 function StatCard({ label, value, icon, variant }: { label: string, value: number, icon: React.ReactNode, variant: 'primary' | 'success' | 'warning' | 'accent' }) {
     const variantClasses = {
-        primary: 'border-phase-interactive/30 text-phase-interactive bg-phase-interactive/5',
-        success: 'border-phase-reward/30 text-phase-reward bg-phase-reward/5',
-        warning: 'border-phase-accent/30 text-phase-accent bg-phase-accent/5',
-        accent: 'border-phase-interactive/30 text-phase-interactive bg-phase-interactive/5'
+        primary: 'border-phase-interactive/20 text-phase-interactive bg-phase-interactive/5',
+        success: 'border-phase-success/20 text-phase-success bg-phase-success/5',
+        warning: 'border-phase-interactive/20 text-phase-interactive bg-phase-interactive/5',
+        accent: 'border-phase-interactive/20 text-phase-interactive bg-phase-interactive/5'
     };
 
     return (
@@ -283,4 +283,3 @@ function SchoolGalleryItem({ school, onPress }: { school: School, onPress: () =>
         </Pressable>
     );
 }
-

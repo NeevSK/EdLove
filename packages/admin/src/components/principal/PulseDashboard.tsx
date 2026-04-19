@@ -21,15 +21,14 @@ interface PulseDashboardProps {
 
 export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
     const { pulse, loading, error } = useSchoolPulse(schoolId);
-    const theme = useTheme();
 
     if (loading) {
         return (
-            <VStack className="gap-4 p-4">
-                <SkeletonLoader height={180} />
+            <VStack className="gap-6 p-4">
+                <SkeletonLoader height={200} />
                 <HStack className="gap-4">
-                    <SkeletonLoader height={100} className="flex-1" />
-                    <SkeletonLoader height={100} className="flex-1" />
+                    <SkeletonLoader height={120} className="flex-1" />
+                    <SkeletonLoader height={120} className="flex-1" />
                 </HStack>
             </VStack>
         );
@@ -40,44 +39,42 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
     }
 
     return (
-        <VStack className="gap-4">
+        <VStack className="gap-6">
             {/* Primary Pulse Card */}
             <Animated.View entering={FadeInUp.delay(100)}>
-                <SanctuaryCard className="bg-phase-surface/40">
+                <SanctuaryCard className="bg-phase-surface shadow-sm border border-phase-border">
                     <VStack
-                        className="gap-4 p-4"
+                        className="gap-6 p-6"
                         accessible={true}
                         accessibilityLabel={`Institutional Resonance Score: ${pulse.resonance_score} percent. Trend: ${pulse.trend}`}
                     >
                         <HStack className="justify-between items-center">
-                            <HStack className="gap-2 items-center">
-                                <Box 
-                                    className="p-2 rounded-xl"
-                                    style={{ backgroundColor: `${theme.accent.danger}22` }}
-                                >
-                                    <HeartPulse color={theme.accent.danger} size={20} />
+                            <HStack className="gap-3 items-center">
+                                <Box className="p-2.5 rounded-xl bg-phase-danger/10">
+                                    <Icon as={HeartPulse} size="sm" className="text-phase-danger" />
                                 </Box>
-                                <Text className="text-md font-bold text-phaseText-primary">
-                                    Institutional Resonance
+                                <Text className="text-base font-black text-phaseText-primary">
+                                    Resonance Pulse
                                 </Text>
                             </HStack>
                             <SanctuaryChip
                                 label={pulse.trend.toUpperCase()}
                                 selected={true}
                                 size="sm"
+                                className="bg-phase-interactive"
                             />
                         </HStack>
 
                         <HStack className="justify-between items-end">
-                            <VStack>
-                                <Text className="text-4xl font-bold text-phaseText-primary">
+                            <VStack className="gap-1">
+                                <Text className="text-4xl font-black text-phaseText-primary tracking-tighter">
                                     {pulse.resonance_score}%
                                 </Text>
-                                <Text className="text-sm text-phaseText-secondary">
-                                    Alignment with Sanctuary Values
+                                <Text className="text-[13px] font-bold text-phaseText-muted">
+                                    Value Alignment Index
                                 </Text>
                             </VStack>
-                            <LivingGlow glowColor={theme.accent.action} size={60} />
+                            <LivingGlow glowColor="var(--phase-interactive)" size={50} />
                         </HStack>
                     </VStack>
                 </SanctuaryCard>
@@ -87,15 +84,15 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
             <HStack className="gap-4">
                 <Box className="flex-1">
                     <Animated.View entering={FadeInUp.delay(200)}>
-                        <SanctuaryCard>
-                            <VStack className="gap-1 p-3">
-                                <HStack className="gap-1 items-center">
+                        <SanctuaryCard className="bg-phase-surface border border-phase-border shadow-sm">
+                            <VStack className="gap-2 p-4">
+                                <HStack className="gap-1.5 items-center">
                                     <Icon as={Users} size="xs" className="text-phaseText-muted" />
-                                    <Text className="text-xs font-bold text-phaseText-secondary">
+                                    <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-muted">
                                         Participation
                                     </Text>
                                 </HStack>
-                                <Text className="text-lg font-bold text-phaseText-primary">
+                                <Text className="text-2xl font-black text-phaseText-primary">
                                     {pulse.participation_rate}%
                                 </Text>
                             </VStack>
@@ -104,15 +101,15 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                 </Box>
                 <Box className="flex-1">
                     <Animated.View entering={FadeInUp.delay(300)}>
-                        <SanctuaryCard>
-                            <VStack className="gap-1 p-3">
-                                <HStack className="gap-1 items-center">
+                        <SanctuaryCard className="bg-phase-surface border border-phase-border shadow-sm">
+                            <VStack className="gap-2 p-4">
+                                <HStack className="gap-1.5 items-center">
                                     <Icon as={TrendingUp} size="xs" className="text-phaseText-muted" />
-                                    <Text className="text-xs font-bold text-phaseText-secondary">
-                                        Volume
+                                    <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-muted">
+                                        Interaction
                                     </Text>
                                 </HStack>
-                                <Text className="text-lg font-bold text-phaseText-primary">
+                                <Text className="text-2xl font-black text-phaseText-primary">
                                     {pulse.interaction_volume}
                                 </Text>
                             </VStack>
@@ -123,20 +120,21 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
 
             {/* Trending Interests */}
             <Animated.View entering={FadeInUp.delay(400)}>
-                <VStack className="gap-3">
+                <VStack className="gap-4 mt-2">
                     <HStack className="gap-2 items-center">
-                        <Zap color={theme.accent.action} size={16} />
-                        <Text className="text-sm font-bold text-phaseText-primary">
-                            Trending Interests
+                        <Icon as={Zap} size="xs" className="text-phase-interactive" />
+                        <Text className="text-[14px] font-black text-phaseText-primary uppercase tracking-widest">
+                            Trending Focus
                         </Text>
                     </HStack>
-                    <HStack className="gap-2 flex-wrap">
+                    <HStack className="gap-2.5 flex-wrap">
                         {pulse.top_subjects.map((subject) => (
                             <SanctuaryChip
                                 key={subject}
                                 label={subject}
                                 variant="tag"
                                 size="sm"
+                                className="border-phase-border bg-phase-canvas"
                             />
                         ))}
                     </HStack>

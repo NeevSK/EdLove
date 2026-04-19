@@ -1,12 +1,12 @@
 import React from 'react';
 import { 
-    useThemedColors, 
     Box, 
     VStack, 
     HStack, 
-    Text, 
-    Theme 
+    Text,
+    Icon
 } from '@repo/ui';
+import { MapPin } from 'lucide-react-native';
 
 interface SnapshotItem {
     time: string;
@@ -19,92 +19,46 @@ interface TeacherSnapshotProps {
 }
 
 export const TeacherSnapshot: React.FC<TeacherSnapshotProps> = ({ items }) => {
-    const colors = useThemedColors();
-
     if (items.length === 0) {
         return (
-            <Box
-                sx={{
-                    borderRadius: 22,
-                    borderWidth: 1,
-                    padding: 20,
-                    backgroundColor: 'rgba(250, 247, 237, 0.82)',
-                    borderColor: colors.border,
-                }}
-            >
-                <Text sx={{ 
-                    fontSize: Theme.typography.fontSize.sm, 
-                    fontWeight: '600', 
-                    color: colors.text 
-                }}>
-                    No temporal moments are surfaced yet.
-                </Text>
-                <Text sx={{ 
-                    marginTop: 8, 
-                    fontSize: Theme.typography.fontSize.xs, 
-                    lineHeight: 20, 
-                    color: colors.textSecondary 
-                }}>
-                    Snapshot context will appear here as the day gathers more classroom signal.
-                </Text>
+            <Box className="rounded-[32px] border border-sanctuary-border/10 bg-sanctuary-surface-secondary/50 p-8 shadow-sm">
+                <VStack className="gap-2">
+                    <Text className="text-sm font-bold text-sanctuary-text">
+                        No temporal moments are surfaced yet.
+                    </Text>
+                    <Text className="text-xs leading-5 text-sanctuary-text-muted">
+                        Snapshot context will appear here as the day gathers more classroom signal.
+                    </Text>
+                </VStack>
             </Box>
         );
     }
 
     return (
-        <VStack sx={{ gap: 12 }}>
+        <VStack className="gap-5">
             {items.map((item, index) => (
-                <HStack key={`${item.time}-${index}`} sx={{ gap: 12 }}>
-                    <Box
-                        sx={{
-                            flexShrink: 0,
-                            borderRadius: Theme.corners.full,
-                            paddingHorizontal: 12,
-                            paddingVertical: 8,
-                            backgroundColor: 'rgba(184, 169, 224, 0.14)',
-                            alignSelf: 'flex-start',
-                        }}
-                    >
-                        <Text sx={{
-                            fontSize: 11,
-                            fontWeight: '700',
-                            color: Theme.colors.gurudeviViolet,
-                            letterSpacing: 1.8,
-                            textTransform: 'uppercase'
-                        }}>
+                <HStack key={`${item.time}-${index}`} className="gap-4 items-start">
+                    <Box className="rounded-full bg-sanctuarySaffron/10 border border-sanctuarySaffron/20 px-3 py-2 shrink-0 min-w-[70px] items-center">
+                        <Text className="text-[10px] font-bold uppercase tracking-[0.1em] text-sanctuarySaffron">
                             {item.time}
                         </Text>
                     </Box>
-                    <Box
-                        sx={{
-                            flex: 1,
-                            borderRadius: 18,
-                            borderWidth: 1,
-                            padding: 16,
-                            backgroundColor: 'rgba(250, 247, 237, 0.82)',
-                            borderColor: colors.border,
-                        }}
-                    >
-                        <Text sx={{ 
-                            fontSize: Theme.typography.fontSize.sm, 
-                            fontWeight: '600', 
-                            color: colors.text 
-                        }}>
-                            {item.activity}
-                        </Text>
-                        <Text sx={{ 
-                            marginTop: 4, 
-                            fontSize: 11, 
-                            fontWeight: '500',
-                            color: colors.textSecondary,
-                            letterSpacing: 1.4,
-                            textTransform: 'uppercase'
-                        }}>
-                            {item.location}
-                        </Text>
+                    <Box className="flex-1 rounded-[28px] border border-sanctuary-border/10 bg-sanctuary-surface-secondary/80 p-5 shadow-sm">
+                        <VStack className="gap-2">
+                            <Text className="text-sm font-bold text-sanctuary-text">
+                                {item.activity}
+                            </Text>
+                            <HStack className="items-center gap-2">
+                                <Icon as={MapPin} size="xs" className="text-sanctuary-text-muted" />
+                                <Text className="text-[10px] font-bold uppercase tracking-[0.15em] text-sanctuary-text-muted">
+                                    {item.location}
+                                </Text>
+                            </HStack>
+                        </VStack>
                     </Box>
                 </HStack>
             ))}
         </VStack>
     );
 };
+

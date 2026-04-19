@@ -397,17 +397,17 @@ export default function CreateClassroomModal({
                                     variant="outline"
                                     action="secondary"
                                     onPress={handleClose}
-                                    className="flex-1 border-outline-300"
+                                    className="flex-1 border-sanctuary-border rounded-full"
                                     isDisabled={isSubmitting}
                                 >
-                                    <ButtonText className="text-typography-500">
+                                    <ButtonText className="text-sanctuary-text-secondary">
                                         {t('common.cancel') || 'Cancel'}
                                     </ButtonText>
                                 </Button>
                                 <Button
                                     action="primary"
                                     onPress={() => updateStep(2)}
-                                    className="flex-[2] bg-primary-500 rounded-lg"
+                                    className="flex-[2] bg-sanctuarySaffron rounded-full"
                                     isDisabled={!state.details.name.trim() || !state.details.handle.trim()}
                                 >
                                     <ButtonText className="text-white">
@@ -422,24 +422,24 @@ export default function CreateClassroomModal({
                                     variant="outline"
                                     action="secondary"
                                     onPress={() => updateStep(1)}
-                                    className="flex-1 border-outline-300"
+                                    className="flex-1 border-sanctuary-border rounded-full"
                                     isDisabled={isSubmitting}
                                 >
-                                    <ButtonText className="text-typography-500">
+                                    <ButtonText className="text-sanctuary-text-secondary">
                                         {'Back'}
                                     </ButtonText>
                                 </Button>
                                 <Button
                                     action="primary"
                                     onPress={handleSubmit}
-                                    className="flex-[2] bg-primary-500 rounded-lg"
+                                    className="flex-[2] bg-sanctuarySaffron rounded-full"
                                     isDisabled={isSubmitting || (state.aesthetics.classType === 'subject' && !state.academic.subject.trim())}
                                 >
                                     {isSubmitting ? (
                                         <Spinner size="small" className="text-white" />
                                     ) : (
                                         <ButtonText className="text-white">
-                                            {mode === 'edit' ? 'Save' : 'Establish Sanctuary'}
+                                            {mode === 'edit' ? 'Save Changes' : 'Establish Sanctuary'}
                                         </ButtonText>
                                     )}
                                 </Button>
@@ -449,9 +449,9 @@ export default function CreateClassroomModal({
                             <Button
                                 action="primary"
                                 onPress={handleEnterClassroom}
-                                className="flex-1 bg-primary-500 rounded-lg"
+                                className="flex-1 bg-sanctuarySaffron rounded-full h-14"
                             >
-                                <ButtonText className="text-white">
+                                <ButtonText className="text-white text-lg font-bold">
                                     {'Enter Classroom Dashboard'}
                                 </ButtonText>
                             </Button>
@@ -459,28 +459,28 @@ export default function CreateClassroomModal({
                     </HStack>
                 }
             >
-                <VStack className="gap-6">
+                <VStack className="gap-8">
                     {error && (
                         <Box
-                            className="p-4 bg-error-50 rounded-lg border border-error-500"
+                            className="p-4 bg-sanctuary-error-transparent rounded-2xl border border-sanctuary-error"
                         >
-                            <Text className="text-error-500 text-sm">
+                            <Text className="text-sanctuary-error text-sm font-medium">
                                 {error}
                             </Text>
                         </Box>
                     )}
 
                     {state.step === 1 && (
-                        <VStack className="gap-4">
+                        <VStack className="gap-6">
                             {(mode === 'create' || mode === 'edit') && (
                                 <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
-                                        <FormControlLabelText className="text-typography-500">
-                                            {t('classroom.labelClassName') || 'What shall we call your Sanctuary?'}
+                                        <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest">
+                                            {t('classroom.labelClassName') || 'Name of Sanctuary'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        className="bg-background-50 border-outline-300 h-14 rounded-2xl"
+                                        className="bg-sanctuary-surface-secondary border-sanctuary-border h-16 rounded-[24px]"
                                     >
                                         <InputField
                                             placeholder={t('classroom.placeholderClassName') || "e.g., 10-A Maths"}
@@ -492,7 +492,7 @@ export default function CreateClassroomModal({
                                                 });
                                                 if (error) setError(null);
                                             }}
-                                            className="text-lg font-semibold"
+                                            className="text-xl font-bold text-sanctuary-text"
                                         />
                                     </Input>
                                 </FormControl>
@@ -501,12 +501,12 @@ export default function CreateClassroomModal({
                             {(mode === 'create' || mode === 'edit') && (
                                 <FormControl>
                                     <FormControlLabel>
-                                        <FormControlLabelText className="text-typography-500">
-                                            Classroom Handle (unique ID)
+                                        <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest">
+                                            Classroom Handle
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        className="bg-background-50 border-outline-300 h-14 rounded-2xl"
+                                        className="bg-sanctuary-surface-secondary border-sanctuary-border h-14 rounded-2xl"
                                     >
                                         <InputField
                                             placeholder="e.g. grade-10-maths"
@@ -514,10 +514,11 @@ export default function CreateClassroomModal({
                                             onChangeText={(textValue: string) =>
                                                 updateDetails({ handle: textValue.toLowerCase().replace(/[^a-z0-9_-]/g, '') })
                                             }
+                                            className="text-sanctuary-text font-medium"
                                         />
                                     </Input>
-                                    <Text className="text-xs text-typography-400 mt-1">
-                                        Used for your classroom&apos;s QR codes and deep links.
+                                    <Text className="text-[10px] text-sanctuary-text-tertiary mt-2 italic px-1">
+                                        Unique ID used for QR generation and deep linking.
                                     </Text>
                                 </FormControl>
                             )}
@@ -525,19 +526,20 @@ export default function CreateClassroomModal({
                             {(mode === 'create' || mode === 'edit') && (
                                 <FormControl>
                                     <FormControlLabel>
-                                        <FormControlLabelText className="text-typography-500">
-                                            {t('classroom.description') || 'Brief Description'}
+                                        <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest">
+                                            {t('classroom.description') || 'Vision Statement'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        className="min-h-[100px] bg-background-50 border-outline-300 rounded-lg"
+                                        className="min-h-[120px] bg-sanctuary-surface-secondary border-sanctuary-border rounded-[24px] p-2"
                                     >
                                         <InputField
-                                            placeholder={t('classroom.descPlaceholder') || "e.g., Daily announcements and resource sharing."}
+                                            placeholder={t('classroom.descPlaceholder') || "Describe the learning journey and goals..."}
                                             value={state.details.description}
                                             onChangeText={(text: string) => updateDetails({ description: text })}
                                             multiline
                                             numberOfLines={4}
+                                            className="text-sanctuary-text"
                                         />
                                     </Input>
                                 </FormControl>
@@ -548,22 +550,22 @@ export default function CreateClassroomModal({
                                     <Button
                                         variant="outline"
                                         onPress={() => setIsScannerOpen(true)}
-                                        className="border-primary-500"
+                                        className="border-sanctuarySaffron h-14 rounded-full"
                                     >
                                         <HStack className="gap-2 items-center">
-                                            <ScanLine className="text-primary-500" size={20} />
-                                            <ButtonText className="text-primary-500">
+                                            <Icon as={ScanLine} className="text-sanctuarySaffron" size={20} />
+                                            <ButtonText className="text-sanctuarySaffron font-bold">
                                                 {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
                                             </ButtonText>
                                         </HStack>
                                     </Button>
                                     {schoolId && (
-                                        <HStack alignItems="center" className="my-4">
-                                            <Box className="flex-1 h-[1px] bg-outline-300" />
-                                            <Text className="text-typography-400 px-4 text-sm">
+                                        <HStack alignItems="center" className="my-8">
+                                            <Box className="flex-1 h-[1px] bg-sanctuary-border" />
+                                            <Text className="text-sanctuary-text-tertiary px-6 text-xs uppercase font-bold tracking-widest">
                                                 {t('common.or') || 'OR'}
                                             </Text>
-                                            <Box className="flex-1 h-[1px] bg-outline-300" />
+                                            <Box className="flex-1 h-[1px] bg-sanctuary-border" />
                                         </HStack>
                                     )}
 
@@ -571,20 +573,20 @@ export default function CreateClassroomModal({
                                         <VStack className="gap-4">
                                             <FormControl isRequired>
                                                 <FormControlLabel>
-                                                    <FormControlLabelText className="text-typography-500">
-                                                        {t('classroom.selectSection') || 'Select Section'}
+                                                    <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-2">
+                                                        {t('classroom.selectSection') || 'Select Institutional Section'}
                                                     </FormControlLabelText>
                                                 </FormControlLabel>
-                                                <Box className="flex-row flex-wrap gap-2">
+                                                <Box className="flex-row flex-wrap gap-3">
                                                     {sections.map((section) => (
                                                          <Button
                                                             key={section.id}
                                                             variant={state.academic.sectionId === section.id ? 'solid' : 'outline'}
                                                             size="sm"
                                                             onPress={() => handleSectionChange(section.id)}
-                                                            className={state.academic.sectionId === section.id ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-300'}
+                                                            className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
                                                         >
-                                                            <ButtonText className={state.academic.sectionId === section.id ? 'text-white' : 'text-typography-500'}>
+                                                            <ButtonText className={state.academic.sectionId === section.id ? 'text-white font-bold' : 'text-sanctuary-text-secondary'}>
                                                                 {section.name}
                                                             </ButtonText>
                                                         </Button>
@@ -599,13 +601,13 @@ export default function CreateClassroomModal({
                     )}
 
                     {state.step === 2 && (
-                        <VStack className="gap-4">
+                        <VStack className="gap-Containers-lg">
                             {schoolId && (
                                 <VStack className="gap-4">
                                     <FormControl isRequired>
                                         <FormControlLabel>
-                                            <FormControlLabelText className="text-typography-500">
-                                                {t('classroom.selectGrade') || 'Target Grade'}
+                                            <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-2">
+                                                {t('classroom.selectGrade') || 'Target Grade Level'}
                                             </FormControlLabelText>
                                         </FormControlLabel>
                                         <Box className="flex-row flex-wrap gap-2">
@@ -615,9 +617,9 @@ export default function CreateClassroomModal({
                                                     variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
                                                     size="xs"
                                                     onPress={() => handleGradeChange(grade.id)}
-                                                    className={`px-2 ${state.academic.gradeId === grade.id ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-300'}`}
+                                                    className={`px-4 rounded-full h-10 ${state.academic.gradeId === grade.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
                                                 >
-                                                    <ButtonText className={state.academic.gradeId === grade.id ? 'text-white' : 'text-typography-500'}>
+                                                    <ButtonText className={state.academic.gradeId === grade.id ? 'text-white font-bold' : 'text-sanctuary-text-secondary'}>
                                                         {grade.number}
                                                     </ButtonText>
                                                 </Button>
@@ -629,8 +631,8 @@ export default function CreateClassroomModal({
 
                             <FormControl>
                                 <FormControlLabel>
-                                    <FormControlLabelText className="text-typography-500">
-                                        {t('classroom.labelSubject') || 'Core Subject'}
+                                    <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-2">
+                                        {t('classroom.labelSubject') || 'Academic Core'}
                                     </FormControlLabelText>
                                 </FormControlLabel>
                                 <HStack className="flex-wrap gap-2">
@@ -638,11 +640,11 @@ export default function CreateClassroomModal({
                                          <Button
                                             key={sub.id}
                                             variant={state.academic.subject === sub.id ? 'solid' : 'outline'}
-                                            size="xs"
+                                            size="sm"
                                             onPress={() => updateAcademic({ subject: sub.id })}
-                                            className={state.academic.subject === sub.id ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-300'}
+                                            className={`rounded-full px-5 ${state.academic.subject === sub.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
                                         >
-                                            <ButtonText className={state.academic.subject === sub.id ? 'text-white' : 'text-typography-500'}>
+                                            <ButtonText className={state.academic.subject === sub.id ? 'text-white font-bold' : 'text-sanctuary-text-secondary'}>
                                                 {sub.en}
                                             </ButtonText>
                                         </Button>
@@ -652,20 +654,22 @@ export default function CreateClassroomModal({
 
                             <FormControl>
                                 <FormControlLabel>
-                                    <FormControlLabelText className="text-typography-500">
-                                        {t('classroom.theme') || 'Sanctuary Theme'}
+                                    <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-2">
+                                        {t('classroom.theme') || 'Aesthetic Archetype'}
                                     </FormControlLabelText>
                                 </FormControlLabel>
-                                <HStack className="flex-wrap gap-3 py-1">
+                                <HStack className="flex-wrap gap-5 py-2 px-1">
                                     {CLASSROOM_THEMES.map((theme) => (
                                          <Pressable key={theme.id} onPress={() => updateAesthetics({ themeId: theme.id })}>
                                             <Box
-                                                className={`w-10 h-10 rounded-full justify-center items-center ${state.aesthetics.themeId === theme.id ? 'border-[3px] border-primary-500' : 'border-0'}`}
+                                                className={`w-12 h-12 rounded-full justify-center items-center shadow-sm ${state.aesthetics.themeId === theme.id ? 'border-2 border-sanctuarySaffron scale-110' : 'border border-sanctuary-border/20'}`}
                                                 style={{
                                                     backgroundColor: theme.color
                                                 }}
                                             >
-                                                {state.aesthetics.themeId === theme.id && <Box className="w-2 h-2 rounded-full bg-white" />}
+                                                {state.aesthetics.themeId === theme.id && (
+                                                    <Box className="w-2.5 h-2.5 rounded-full bg-white shadow-inner" />
+                                                )}
                                             </Box>
                                         </Pressable>
                                     ))}
@@ -674,7 +678,7 @@ export default function CreateClassroomModal({
 
                             <FormControl>
                                 <FormControlLabel>
-                                    <FormControlLabelText className="text-typography-500">
+                                    <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-3">
                                         {t('classroom.labelType') || 'Institutional Role'}
                                     </FormControlLabelText>
                                 </FormControlLabel>
@@ -684,10 +688,10 @@ export default function CreateClassroomModal({
                                             key={type}
                                             variant={state.aesthetics.classType === type ? 'solid' : 'outline'}
                                             onPress={() => updateAesthetics({ classType: type })}
-                                            className={`flex-1 h-12 ${state.aesthetics.classType === type ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-300'}`}
+                                            className={`flex-1 h-14 rounded-2xl ${state.aesthetics.classType === type ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
                                         >
-                                            <ButtonText className={state.aesthetics.classType === type ? 'text-white' : 'text-typography-500'}>
-                                                {type === 'own' ? (t('classroom.roleClassTeacher') || 'Class Teacher') : (t('classroom.roleSubjectTeacher') || 'Subject Teacher')}
+                                            <ButtonText className={state.aesthetics.classType === type ? 'text-white font-bold' : 'text-sanctuary-text-secondary'}>
+                                                {type === 'own' ? (t('classroom.roleClassTeacher') || 'Class Principal') : (t('classroom.roleSubjectTeacher') || 'Faculty Mentor')}
                                             </ButtonText>
                                         </Button>
                                     ))}
@@ -697,33 +701,33 @@ export default function CreateClassroomModal({
                     )}
 
                      {state.step === 3 && (
-                        <VStack className="gap-6 items-center py-8">
-                            <Box className="bg-primary-50 p-6 rounded-[60px]">
-                                <Icon as={Globe} className="text-primary-500" size={64} />
+                        <VStack className="gap-8 items-center py-10">
+                            <Box className="bg-sanctuarySaffron/10 p-8 rounded-[60px] border border-sanctuarySaffron/20 shadow-xl">
+                                <Icon as={Globe} className="text-sanctuarySaffron" size={80} />
                             </Box>
                             
-                            <VStack className="gap-2 items-center">
-                                <Heading className="text-typography-900 text-center text-xl">
+                            <VStack className="gap-3 items-center">
+                                <Heading className="text-sanctuary-text text-center text-2xl font-bold tracking-tight">
                                     Sanctuary Established!
                                 </Heading>
-                                <Text className="text-center text-typography-500">
-                                    Your classroom <Text className="font-bold text-typography-900">{state.details.name}</Text> is ready for the breath-like learning journey.
+                                <Text className="text-center text-sanctuary-text-secondary text-base px-4 leading-relaxed">
+                                    Your classroom <Text className="font-bold text-sanctuarySaffron">{state.details.name}</Text> is now woven into the digital fabric of Gurudevi.
                                 </Text>
                             </VStack>
 
-                            <Box className="bg-background-50 p-6 rounded-2xl w-full">
-                                <VStack className="gap-4">
-                                    <HStack className="gap-2 items-center">
-                                        <Box className="w-2 h-2 rounded-full bg-primary-500" />
-                                        <Text className="text-sm text-typography-900">Classroom Hub Initialized</Text>
+                            <Box className="bg-sanctuary-surface-secondary p-8 rounded-[32px] w-full border border-sanctuary-border shadow-sm">
+                                <VStack className="gap-5">
+                                    <HStack className="gap-4 items-center">
+                                        <Box className="w-3 h-3 rounded-full bg-sanctuary-success shadow-sm" />
+                                        <Text className="text-sm font-bold text-sanctuary-text">Classroom Hub Initialized</Text>
                                     </HStack>
-                                    <HStack className="gap-2 items-center">
-                                        <Box className="w-2 h-2 rounded-full bg-primary-500" />
-                                        <Text className="text-sm text-typography-900">Linked Sanctuary Group Active</Text>
+                                    <HStack className="gap-4 items-center">
+                                        <Box className="w-3 h-3 rounded-full bg-sanctuary-success shadow-sm" />
+                                        <Text className="text-sm font-bold text-sanctuary-text">Linked Sanctuary Group Active</Text>
                                     </HStack>
-                                    <HStack className="gap-2 items-center">
-                                        <Box className="w-2 h-2 rounded-full bg-primary-500" />
-                                        <Text className="text-sm text-typography-900">QR Code & Handle Registered</Text>
+                                    <HStack className="gap-4 items-center">
+                                        <Box className="w-3 h-3 rounded-full bg-sanctuary-success shadow-sm" />
+                                        <Text className="text-sm font-bold text-sanctuary-text">Aesthetic Archetype Synchronized</Text>
                                     </HStack>
                                 </VStack>
                             </Box>

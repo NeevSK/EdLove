@@ -134,8 +134,8 @@ export default function SchoolCreationScreen() {
             <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Establishing Sanctuary..." />
                 <Box className="flex-1 bg-phase-canvas items-center justify-center p-8">
-                    <ActivityIndicator size="large" color="#005BFF" /> 
-                    <Text className="mt-6 text-phaseText-secondary text-center font-bold">
+                    <Spinner size="large" /> 
+                    <Text className="mt-6 text-phaseText-secondary text-center font-black uppercase tracking-widest text-xs">
                         Constructing digital foundations...
                     </Text>
                 </Box>

@@ -1,94 +1,58 @@
 import React from 'react';
-import { Box, Text, Theme, useTheme } from '@repo/ui';
+import { Box, Text, VStack, HStack, Heading } from '@repo/ui';
 
 interface TeacherStatCardProps {
-  label: string;
-  value: string | number;
-  accent?: string;
+    label: string;
+    value: string | number;
+    accentColorClass?: string;
 }
 
-export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({ label, value, accent }) => {
-  const theme = useTheme();
-
-  return (
-    <Box
-      sx={{
-        padding: Theme.spacing.lg,
-        borderRadius: 24,
-        background: 'linear-gradient(180deg, rgba(250, 247, 237, 0.94) 0%, rgba(245, 237, 214, 0.9) 100%)',
-        border: `1px solid ${theme.glass.surface.border}`,
-        boxShadow: '0 16px 30px rgba(107, 100, 128, 0.08)',
-      }}
-    >
-      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-        <Text
-          sx={{
-            fontSize: 11,
-            fontWeight: '600',
-            textTransform: 'uppercase',
-            letterSpacing: '0.18em',
-            color: theme.text.secondary,
-          }}
-        >
-          {label}
-        </Text>
-        <Box
-          sx={{
-            height: 10,
-            width: 10,
-            borderRadius: Theme.corners.full,
-            backgroundColor: accent || theme.accent.action,
-            opacity: 0.9,
-          }}
-        />
-      </Box>
-      <Text
-        sx={{
-          marginTop: Theme.spacing.md,
-          fontSize: Theme.typography.fontSize['3xl'],
-          fontWeight: '700',
-          color: theme.text.primary,
-          lineHeight: 1,
-        }}
-      >
-        {value}
-      </Text>
-    </Box>
-  );
+export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({ label, value, accentColorClass = 'bg-sanctuarySaffron' }) => {
+    return (
+        <Box className="rounded-[32px] border border-sanctuary-border/10 bg-sanctuary-surface p-7 shadow-sm overflow-hidden relative">
+            {/* Decorative glow */}
+            <Box className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-5 ${accentColorClass}`} />
+            
+            <VStack className="gap-5">
+                <HStack className="items-center justify-between">
+                    <Text className="text-[10px] font-bold uppercase tracking-[0.2em] text-sanctuary-text-muted">
+                        {label}
+                    </Text>
+                    <Box className={`h-2.5 w-2.5 rounded-full ${accentColorClass} shadow-sm`} />
+                </HStack>
+                <Heading size="xl" className="text-sanctuary-text font-bold tracking-tight">
+                    {value}
+                </Heading>
+            </VStack>
+        </Box>
+    );
 };
 
 interface TeacherStatsProps {
-  stats: {
-    totalStudents: number;
-    averageAttendance: number;
-    pendingAssignments: number;
-    activeClassrooms: number;
-  };
+    stats: {
+        totalStudents: number;
+        averageAttendance: number;
+        pendingAssignments: number;
+        activeClassrooms: number;
+    };
 }
 
 export const TeacherStats: React.FC<TeacherStatsProps> = ({ stats }) => {
-  const statItems = [
-    { label: 'Students', value: stats.totalStudents, accent: Theme.colors.gurudeviBlue },
-    { label: 'Attendance', value: `${stats.averageAttendance}%`, accent: Theme.colors.sageGreen },
-    { label: 'Assignments', value: stats.pendingAssignments, accent: Theme.colors.sanctuarySaffron },
-    { label: 'Classrooms', value: stats.activeClassrooms, accent: Theme.colors.gurudeviViolet },
-  ];
+    const statItems = [
+        { label: 'Students', value: stats.totalStudents, accentColorClass: 'bg-sanctuarySaffron' },
+        { label: 'Attendance', value: `${stats.averageAttendance}%`, accentColorClass: 'bg-sageGreen' },
+        { label: 'Assignments', value: stats.pendingAssignments, accentColorClass: 'bg-emberRed' },
+        { label: 'Classrooms', value: stats.activeClassrooms, accentColorClass: 'bg-gurudeviBlue' },
+    ];
 
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: {
-          base: 'repeat(1, 1fr)',
-          md: 'repeat(2, 1fr)',
-          xl: 'repeat(4, 1fr)',
-        },
-        gap: 16,
-      }}
-    >
-      {statItems.map((item) => (
-        <TeacherStatCard key={item.label} {...item} />
-      ))}
-    </Box>
-  );
+    return (
+        <HStack className="flex-wrap gap-4">
+            {statItems.map((item) => (
+                <Box key={item.label} className="min-w-[160px] flex-1">
+                    <TeacherStatCard {...item} />
+                </Box>
+            ))}
+        </HStack>
+    );
 };
+

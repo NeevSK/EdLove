@@ -45,7 +45,6 @@ export const AddStudentModal = ({
 }: AddStudentModalProps) => {
     const { t } = useTranslation();
     const toast = useToast();
-    const colors = useThemedColors();
     
     const [activeTab, setActiveTab] = useState<AddStudentTab>('manual');
     const [fullName, setFullName] = useState('');
@@ -138,33 +137,23 @@ export const AddStudentModal = ({
     };
 
     const footer = (
-        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+        <HStack className="gap-4 w-full">
             <Button
                 variant="outline"
                 onPress={onClose}
-                sx={{
-                    flex: 1,
-                    backgroundColor: 'transparent',
-                    borderColor: colors.border,
-                    borderRadius: Theme.corners.comfortable
-                }}
+                className="flex-1 bg-transparent border-sanctuary-border rounded-full"
             >
-                <ButtonText sx={{ color: colors.textSecondary }}>
+                <ButtonText className="text-sanctuary-text-tertiary">
                     {t('common.cancel') || 'Cancel'}
                 </ButtonText>
             </Button>
             <Button
                 onPress={handleSave}
-                disabled={isLoading}
-                sx={{
-                    flex: 1,
-                    backgroundColor: Theme.colors.gurudeviBlue,
-                    borderRadius: Theme.corners.comfortable,
-                    opacity: isLoading ? 0.6 : 1
-                }}
+                isDisabled={isLoading}
+                className="flex-[1.5] bg-sanctuarySaffron rounded-full"
             >
-                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
-                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}
+                <ButtonText className="text-white font-bold">
+                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save Member')}
                 </ButtonText>
             </Button>
         </HStack>
@@ -174,46 +163,28 @@ export const AddStudentModal = ({
         <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
-            title={studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
+            title={studentToEdit ? (t('students.editStudent') || 'Update Member') : (t('students.addStudent') || 'Admit Member')}
             footer={footer}
         >
-            <VStack sx={{ gap: Theme.spacing.md }}>
-                {/* Tab switcher — only shown when adding (not editing) */}
+            <VStack className="gap-6">
+                {/* Tab switcher */}
                 {!studentToEdit && (
-                    <HStack sx={{ 
-                        marginBottom: Theme.spacing.md, 
-                        borderRadius: Theme.corners.comfortable, 
-                        overflow: 'hidden', 
-                        borderWidth: 1, 
-                        borderColor: colors.border 
-                    }}>
+                    <Box className="bg-sanctuary-surface-secondary p-1 rounded-full flex-row border border-sanctuary-border">
                         {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
                             <TouchableOpacity
                                 key={tab}
-                                accessibilityRole="button"
-                                accessibilityLabel={tab === 'manual' ? 'Manual entry' : 'Scan register'}
-                                accessibilityHint={`Switches to ${tab === 'manual' ? 'manual' : 'scan'} entry tab`}
+                                activeOpacity={0.7}
                                 onPress={() => setActiveTab(tab)}
-                                style={{
-                                    flex: 1,
-                                    paddingVertical: 10,
-                                    alignItems: 'center',
-                                    backgroundColor: activeTab === tab ? Theme.colors.gurudeviBlue : 'transparent',
-                                }}
+                                className={`flex-1 py-3 rounded-full items-center ${activeTab === tab ? 'bg-white shadow-sm' : 'bg-transparent'}`}
                             >
-                                <Text sx={{
-                                    color: activeTab === tab ? Theme.colors.sacredWhite : colors.textSecondary,
-                                    fontWeight: activeTab === tab ? '700' : '400',
-                                    fontSize: 14,
-                                }}>
-                                    {tab === 'manual' ? '✎ Manual' : '📷 Scan Register'}
+                                <Text className={`text-xs font-bold uppercase tracking-widest ${activeTab === tab ? 'text-sanctuarySaffron' : 'text-sanctuary-text-tertiary'}`}>
+                                    {tab === 'manual' ? 'Manual entry' : 'Scan register'}
                                 </Text>
                             </TouchableOpacity>
                         ))}
-                    </HStack>
+                    </Box>
                 )}
 
-                {/* Scan Register tab */}
                 {activeTab === 'scan' && !studentToEdit ? (
                     <OCRStudentImport
                         classroomId={classroomId}
@@ -234,60 +205,50 @@ export const AddStudentModal = ({
                         onCancel={onClose}
                     />
                 ) : (
-                    /* Manual entry tab (also shown when editing) */
-                    <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any, color: colors.text }}>
-                                {t('students.fullName') || 'Full Name'} *
+                    <VStack className="gap-6 py-2">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-sanctuary-text-tertiary ml-1">
+                                {t('students.fullName') || 'Identity'} *
                             </Text>
-                            <Input sx={{
-                                backgroundColor: colors.surface,
-                                borderColor: colors.border,
-                                borderRadius: Theme.corners.comfortable
-                            }}>
+                            <Input className="bg-sanctuary-surface-secondary border-sanctuary-border h-16 rounded-[24px]">
                                 <InputField
-                                    placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
+                                    placeholder={t('students.fullNamePlaceholder') || "Full Student Name"}
                                     value={fullName}
                                     onChangeText={setFullName}
-                                    sx={{ color: colors.text }}
+                                    className="text-sanctuary-text font-bold"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
                             </Input>
                         </VStack>
 
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any, color: colors.text }}>
-                                {t('students.rollNumber') || 'Roll Number / ID'}
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-sanctuary-text-tertiary ml-1">
+                                {t('students.rollNumber') || 'Institutional ID'}
                             </Text>
-                            <Input sx={{
-                                backgroundColor: colors.surface,
-                                borderColor: colors.border,
-                                borderRadius: Theme.corners.comfortable
-                            }}>
+                            <Input className="bg-sanctuary-surface-secondary border-sanctuary-border h-14 rounded-2xl">
                                 <InputField
-                                    placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
+                                    placeholder={t('students.rollNumberPlaceholder') || "Roll Number"}
                                     value={rollNumber}
                                     onChangeText={setRollNumber}
-                                    sx={{ color: colors.text }}
+                                    className="text-sanctuary-text font-medium"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
                             </Input>
                         </VStack>
 
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any, color: colors.text }}>
-                                {t('students.notes') || 'Notes'}
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-sanctuary-text-tertiary ml-1">
+                                {t('students.notes') || 'Member Insights'}
                             </Text>
-                            <Input sx={{
-                                backgroundColor: colors.surface,
-                                borderColor: colors.border,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 80
-                            }}>
+                            <Input className="bg-sanctuary-surface-secondary border-sanctuary-border rounded-[24px] min-h-[100px] p-2">
                                 <InputField
-                                    placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
+                                    placeholder={t('students.notesPlaceholder') || "Add notes about potential, behavioral traits, or special needs..."}
                                     value={notes}
                                     onChangeText={setNotes}
                                     multiline={true}
-                                    sx={{ color: colors.text, textAlignVertical: 'top' }}
+                                    className="text-sanctuary-text text-sm"
+                                    textAlignVertical="top"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
                             </Input>
                         </VStack>
@@ -295,5 +256,7 @@ export const AddStudentModal = ({
                 )}
             </VStack>
         </SanctuaryModal>
+    );
+};
     );
 };

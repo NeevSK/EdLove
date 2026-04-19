@@ -94,21 +94,21 @@ export default function TeacherAnalysisWorkspace({
         <Box className="flex-1">
             <VStack className="gap-md p-md">
                 <Box
-                    className="bg-phase-surface rounded-generous border border-phase-border p-lg shadow-md"
+                    className="bg-sanctuary-surface rounded-3xl border border-sanctuary-border/10 p-6 shadow-sm"
                 >
-                    <VStack className="gap-md">
+                    <VStack className="gap-4">
                         <VStack className="gap-1">
-                            <Text className="text-phaseText-tertiary text-[11px] font-bold uppercase tracking-wider">
+                            <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.1em]">
                                 Analysis
                             </Text>
-                            <Heading className="text-phaseText-onSurface text-xl">
+                            <Heading size="md" className="text-sanctuary-text">
                                 Read the classroom before reacting
                             </Heading>
-                            <Text className="text-phaseText-secondary text-sm">
+                            <Text className="text-sanctuary-text-muted text-sm leading-5">
                                 Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
                             </Text>
                         </VStack>
-                        <HStack className="gap-sm">
+                        <HStack className="gap-3">
                             <StatCard
                                 label="Average GPA"
                                 value={stats.averageGpa}
@@ -129,38 +129,38 @@ export default function TeacherAnalysisWorkspace({
                 </Box>
 
                 {isLoading ? (
-                    <Box className="items-center py-xl">
+                    <Box className="items-center py-10">
                         <Spinner className="text-sanctuarySaffron" />
                     </Box>
                 ) : (
                     <Box
-                        className="bg-phase-surface rounded-generous border border-phase-border p-lg shadow-sm"
+                        className="bg-sanctuary-surface rounded-3xl border border-sanctuary-border/10 p-6 shadow-sm"
                     >
-                        <VStack className="gap-md">
-                            <Heading className="text-phaseText-onSurface text-md">
+                        <VStack className="gap-6">
+                            <Heading size="xs" className="text-sanctuary-text uppercase tracking-wider">
                                 Student analysis queue
                             </Heading>
                             {studentSignals.length === 0 ? (
-                                <Text className="text-phaseText-secondary">
+                                <Text className="text-sanctuary-text-muted">
                                     No students available for analysis yet.
                                 </Text>
                             ) : (
                                 studentSignals.map((student, index) => (
                                     <HStack
                                         key={student.id}
-                                        className={`items-center justify-between gap-md pb-sm ${
-                                            index === studentSignals.length - 1 ? '' : 'border-b border-phase-border'
+                                        className={`items-center justify-between gap-4 py-3 ${
+                                            index === studentSignals.length - 1 ? '' : 'border-b border-sanctuary-border/5'
                                         }`}
                                     >
                                         <VStack className="flex-1">
-                                            <Text className="text-phaseText-onSurface font-bold">
+                                            <Text className="text-sanctuary-text font-bold">
                                                 {student.full_name}
                                             </Text>
-                                            <Text className="text-phaseText-secondary text-xs">
+                                            <Text className="text-sanctuary-text-muted text-xs">
                                                 {student.observationCount} observations • {student.concernCount} concern signals
                                             </Text>
                                         </VStack>
-                                        <HStack className="gap-sm items-center">
+                                        <HStack className="gap-3 items-center">
                                             {student.concernCount > 0 ? (
                                                 <SignalBadge
                                                     label={`${student.concernCount} concern`}
@@ -176,9 +176,9 @@ export default function TeacherAnalysisWorkspace({
                                                 size="sm"
                                                 action="primary"
                                                 onPress={() => setSelectedStudent({ id: student.id, full_name: student.full_name })}
-                                                className="bg-sanctuarySaffron rounded-full"
+                                                className="bg-sanctuarySaffron rounded-full px-4"
                                             >
-                                                <HStack className="items-center gap-1.5">
+                                                <HStack className="items-center gap-2">
                                                     <Icon as={Sparkles} size="xs" className="text-sacredWhite" />
                                                     <ButtonText className="text-sacredWhite font-English">Open</ButtonText>
                                                 </HStack>
@@ -215,16 +215,16 @@ function StatCard({
 }) {
     return (
         <Box
-            className="flex-1 bg-phase-surface rounded-comfortable border border-phase-border p-md"
+            className="flex-1 bg-sanctuary-surface-secondary/50 rounded-2xl border border-sanctuary-border/10 p-4"
         >
-            <VStack className="gap-xs">
-                <HStack className="items-center gap-xs">
+            <VStack className="gap-1">
+                <HStack className="items-center gap-1.5">
                     {icon}
-                    <Text className="text-phaseText-secondary text-[10px] uppercase font-bold">
+                    <Text className="text-sanctuary-text-muted text-[10px] uppercase font-bold tracking-tight">
                         {label}
                     </Text>
                 </HStack>
-                <Heading className="text-phaseText-onSurface text-xl">
+                <Heading size="md" className="text-sanctuary-text">
                     {value}
                 </Heading>
             </VStack>
@@ -243,9 +243,9 @@ function SignalBadge({
 
     return (
         <Box
-            className={`px-sm py-1 rounded-full border ${isPositive ? 'bg-sageGreen/10 border-sageGreen/20' : 'bg-amberGlow/10 border-amberGlow/20'}`}
+            className={`px-3 py-1 rounded-full border ${isPositive ? 'bg-sageGreen/10 border-sageGreen/20' : 'bg-amberGlow/10 border-amberGlow/20'}`}
         >
-            <Text className={`text-xs font-bold uppercase ${isPositive ? 'text-sageGreen' : 'text-amberGlow'}`}>
+            <Text className={`text-[10px] font-bold uppercase tracking-wider ${isPositive ? 'text-sageGreen' : 'text-amberGlow'}`}>
                 {label}
             </Text>
         </Box>

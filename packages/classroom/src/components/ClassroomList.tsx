@@ -1,18 +1,10 @@
-/**
- * ClassroomList Component
- * 
- * Displays a list of classrooms based on user role:
- * - Teachers: Shows classrooms they teach
- * - Students: Shows classrooms they're enrolled in
- */
-
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     FlatList,
     ListRenderItemInfo,
     GestureResponderEvent,
 } from 'react-native';
-import { Box, Text, Heading, VStack, HStack, Pressable, Spinner, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { Box, Text, Heading, VStack, HStack, Pressable, Spinner, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation, Icon } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap } from 'lucide-react-native';
 import { api, MOCK_CLASSROOMS, identityAPI, useStore, usePermissions, useFeatureAccess } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -226,21 +218,27 @@ export default function ClassroomList({
     if (loading) {
         return (
             <VStack className={`w-full gap-4 ${isNested ? '' : 'p-4'}`}>
-                <SkeletonCard height={80} />
-                <SkeletonCard height={80} />
-                <SkeletonCard height={80} />
+                <SkeletonCard height={90} className="rounded-3xl" />
+                <SkeletonCard height={90} className="rounded-3xl" />
+                <SkeletonCard height={90} className="rounded-3xl" />
             </VStack>
         );
     }
 
     if (error) {
         return (
-            <Box className="flex-1 justify-center items-center p-6">
-                <Text className="text-red-500 text-center mb-4">⚠️ {error}</Text>
+            <Box className="flex-1 justify-center items-center p-8 gap-5">
+                <Box className="w-16 h-16 rounded-full bg-emberRed/10 items-center justify-center">
+                    <Text className="text-2xl">⚠️</Text>
+                </Box>
+                <VStack className="gap-2 items-center">
+                    <Heading size="xs" className="text-sanctuary-text font-bold">Signal Interrupted</Heading>
+                    <Text className="text-sanctuary-text-muted text-center max-w-[240px] text-xs leading-5">{error}</Text>
+                </VStack>
                 <Pressable
-                    className="bg-sanctuarySaffron py-2 px-6 rounded-xl"
+                    className="bg-sanctuarySaffron py-3 px-8 rounded-2xl shadow-sm active:opacity-80"
                     onPress={handleRetry}>
-                    <Text className="text-white font-semibold">{t('classroom.retry')}</Text>
+                    <Text className="text-white font-bold text-sm">{t('classroom.retry') || 'Retry Sync'}</Text>
                 </Pressable>
             </Box>
         );
@@ -294,18 +292,20 @@ export default function ClassroomList({
     }
 
     return (
-        <Box className="flex-1 bg-background-50">
+        <Box className="flex-1 bg-sanctuary-surface-secondary/20">
             {classrooms.length === 0 ? (
-                <PositiveInvitation
-                    context="classroom"
-                    onAction={() => {
-                        hapticLight();
-                        if (canCreateClassroom) {
-                            setPendingInitialData(null);
-                            setIsCreateModalOpen(true);
-                        }
-                    }}
-                />
+                <Box className="flex-1 p-4">
+                    <PositiveInvitation
+                        context="classroom"
+                        onAction={() => {
+                            hapticLight();
+                            if (canCreateClassroom) {
+                                setPendingInitialData(null);
+                                setIsCreateModalOpen(true);
+                            }
+                        }}
+                    />
+                </Box>
             ) : (
                 <>
                     <FlatList
@@ -318,7 +318,7 @@ export default function ClassroomList({
                         showsVerticalScrollIndicator={false}
                         onEndReached={fetchMore}
                         onEndReachedThreshold={0.5}
-                        ListFooterComponent={isFetchingMore ? <Spinner color="#F6BF8C" className="p-2" /> : null}
+                        ListFooterComponent={isFetchingMore ? <Spinner className="p-4" /> : <Box className="h-20" />}
                     />
 
                     {canCreateClassroom && (
@@ -328,9 +328,9 @@ export default function ClassroomList({
                                 setPendingInitialData(null);
                                 setIsCreateModalOpen(true);
                             }}
-                            className="absolute bottom-5 right-5 w-14 h-14 rounded-full bg-sanctuarySaffron justify-center items-center shadow-md z-10"
+                            className="absolute bottom-10 right-6 w-16 h-16 rounded-[24px] bg-sanctuarySaffron justify-center items-center shadow-lg z-10 active:scale-95"
                         >
-                            <Plus size={24} className="text-white" />
+                            <Icon as={Plus} size="sm" className="text-white" />
                         </Pressable>
                     )}
                 </>
@@ -377,68 +377,61 @@ const ClassroomCard = React.memo(({
         onPress(classroom);
     }, [classroom, onPress]);
 
-    const dismissSample = useStore(state => (state as any).dismissSample);
-
     const handleAttendancePress = useCallback((e: GestureResponderEvent) => {
         e.stopPropagation();
         hapticLight();
-        // Attendance action handled here or passed up
-    }, []);    return (
+    }, []);
+
+    return (
         <Pressable
             onPress={handlePress}
-            className="active:opacity-70"
+            className="active:opacity-80 transition-all"
         >
             <Box
-                className="rounded-2xl p-4 border border-outline-300 bg-background-50"
+                className="rounded-[32px] p-5 border border-sanctuary-border/10 bg-sanctuary-surface shadow-sm overflow-hidden relative"
             >
-                <HStack className="items-center gap-4">
-                    <Box className="w-[50px] h-[50px] rounded-lg justify-center items-center bg-background-100">
-                        <BookOpen
-                            size={24}
-                            className="text-templeGold"
-                        />
+                <HStack className="items-center gap-5">
+                    <Box className="w-[60px] h-[60px] rounded-2xl justify-center items-center bg-sanctuarySaffron/10 border border-sanctuarySaffron/5">
+                        <Icon as={BookOpen} size="sm" className="text-sanctuarySaffron" />
                     </Box>
  
-                    <VStack className="flex-1 gap-1">
+                    <VStack className="flex-1 gap-1.5">
                         <HStack className="items-center gap-2">
-                            <Text className="text-lg font-bold text-typography-900">
+                            <Text className="text-base font-bold text-sanctuary-text tracking-tight">
                                 {classroom.name}
                             </Text>
                             {(classroom as any).is_sample && (
-                                <Box className="bg-amber-100 px-1.5 py-0.5 rounded border border-templeGold flex-row items-center gap-0.5">
-                                    <Zap size={10} className="text-templeGold" />
-                                    <Text className="text-[10px] text-templeGold font-bold">
-                                        {t('classroom.sample') || 'SAMPLE'}
+                                <Box className="bg-sanctuarySaffron/10 px-2 py-0.5 rounded-full border border-sanctuarySaffron/20 flex-row items-center gap-1">
+                                    <Icon as={Zap} size={8} className="text-sanctuarySaffron" />
+                                    <Text className="text-[9px] text-sanctuarySaffron font-bold uppercase tracking-tighter">
+                                        {t('classroom.sample') || 'Sample'}
                                     </Text>
                                 </Box>
                             )}
                         </HStack>
-                        <HStack className="items-center gap-2">
-                            <Text className="text-sm font-bold text-templeGold">
-                                {classroom.subject || t('classroom.noSubject')}
+                        <HStack className="items-center gap-3">
+                            <Text className="text-xs font-bold text-sanctuarySaffron uppercase tracking-widest">
+                                {classroom.subject || t('classroom.noSubject') || 'General'}
                             </Text>
-                            <Box
-                                className="w-1 h-1 rounded-full bg-typography-500"
-                            />
-                            <HStack className="items-center gap-1">
-                                <Users size={14} className="text-typography-500" />
-                                <Text className="text-sm text-typography-500">
+                            <Box className="w-1 h-1 rounded-full bg-sanctuary-text-muted/40" />
+                            <HStack className="items-center gap-1.5">
+                                <Icon as={Users} size={10} className="text-sanctuary-text-muted" />
+                                <Text className="text-xs font-medium text-sanctuary-text-muted">
                                     {studentCount}
                                 </Text>
                             </HStack>
                         </HStack>
                     </VStack>
  
-                    <Pressable onPress={handleAttendancePress}>
-                        <Box className="p-2 rounded-lg bg-background-100">
-                            <ClipboardCheck size={20} className="text-sageGreen" />
-                        </Box>
-                    </Pressable>
- 
-                    <ChevronRight
-                        size={20}
-                        className="text-typography-500"
-                    />
+                    <HStack className="gap-3 items-center">
+                        <Pressable onPress={handleAttendancePress} className="active:scale-90">
+                            <Box className="p-3 rounded-2xl bg-sanctuary-surface-secondary">
+                                <Icon as={ClipboardCheck} size="xs" className="text-sageGreen" />
+                            </Box>
+                        </Pressable>
+    
+                        <Icon as={ChevronRight} size="xs" className="text-sanctuary-text-muted/40" />
+                    </HStack>
                 </HStack>
             </Box>
         </Pressable>

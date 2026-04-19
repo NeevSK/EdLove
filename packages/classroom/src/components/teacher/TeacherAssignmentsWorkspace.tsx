@@ -7,17 +7,12 @@ import {
     Heading,
     Input,
     InputField,
-    Modal,
-    ModalBackdrop,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
     Spinner,
     Text,
     VStack,
     Icon,
     hapticLight,
+    SanctuaryModal,
 } from '@repo/ui';
 import { assignmentsAPI } from '@repo/core';
 import { CalendarDays, ClipboardList, Clock3, Plus, Sparkles } from 'lucide-react-native';
@@ -87,18 +82,18 @@ export default function TeacherAssignmentsWorkspace({
         <Box className="flex-1">
             <VStack className="gap-md p-md">
                 <Box
-                    className="bg-phase-surface rounded-generous border border-phase-border p-lg shadow-md"
+                    className="bg-sanctuary-surface rounded-3xl border border-sanctuary-border/10 p-6 shadow-sm"
                 >
-                    <VStack className="gap-md">
+                    <VStack className="gap-6">
                         <HStack className="items-start justify-between gap-md">
                             <VStack className="flex-1 gap-1">
-                                <Text className="text-phaseText-tertiary text-[11px] font-bold uppercase tracking-wider">
+                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.1em]">
                                     Assignment Workspace
                                 </Text>
-                                <Heading className="text-phaseText-onSurface text-xl">
+                                <Heading size="md" className="text-sanctuary-text">
                                     Keep assignment momentum visible
                                 </Heading>
-                                <Text className="text-phaseText-secondary text-sm">
+                                <Text className="text-sanctuary-text-muted text-sm leading-5">
                                     See what is active, what is upcoming, and add top-level classroom work without disappearing into lesson structure.
                                 </Text>
                             </VStack>
@@ -106,16 +101,16 @@ export default function TeacherAssignmentsWorkspace({
                                 <Button
                                     action="primary"
                                     onPress={() => { hapticLight(); setShowCreateModal(true); }}
-                                    className="bg-sanctuarySaffron rounded-full px-md shadow-sm"
+                                    className="bg-sanctuarySaffron rounded-full px-5 shadow-sm"
                                 >
-                                    <HStack className="items-center gap-xs">
+                                    <HStack className="items-center gap-2">
                                         <Icon as={Plus} size="sm" className="text-sacredWhite" />
                                         <ButtonText className="text-sacredWhite font-English">Create</ButtonText>
                                     </HStack>
                                 </Button>
                             )}
                         </HStack>
-                        <HStack className="gap-sm">
+                        <HStack className="gap-3">
                             <SummaryPill
                                 icon={<Icon as={ClipboardList} size="sm" className="text-sanctuarySaffron" />}
                                 label="Total"
@@ -136,18 +131,18 @@ export default function TeacherAssignmentsWorkspace({
                 </Box>
 
                 {isLoading ? (
-                    <Box className="py-xl items-center">
+                    <Box className="py-10 items-center">
                         <Spinner className="text-sanctuarySaffron" />
                     </Box>
                 ) : assignments.length === 0 ? (
                     <Box
-                        className="bg-phase-surface rounded-generous border border-phase-border p-xl items-center gap-sm shadow-sm"
+                        className="bg-sanctuary-surface rounded-3xl border border-sanctuary-border/10 p-10 items-center gap-3 shadow-sm"
                     >
-                        <Icon as={ClipboardList} size="xl" className="text-phaseText-tertiary" />
-                        <Heading className="text-phaseText-onSurface text-lg">
+                        <Icon as={ClipboardList} size="xl" className="text-sanctuary-text-muted/30" />
+                        <Heading size="sm" className="text-sanctuary-text text-center">
                             No assignments yet
                         </Heading>
-                        <Text className="text-phaseText-secondary text-center">
+                        <Text className="text-sanctuary-text-muted text-center text-sm leading-5">
                             Create a classroom assignment here, or add one from a monthly lesson lane when the work belongs to a specific module.
                         </Text>
                     </Box>
@@ -155,31 +150,31 @@ export default function TeacherAssignmentsWorkspace({
                     assignments.map((assignment) => (
                         <Box
                             key={assignment.id}
-                            className="bg-phase-surface rounded-comfortable border border-phase-border p-md border-l-4 border-l-sanctuarySaffron shadow-sm"
+                            className="bg-sanctuary-surface rounded-2xl border border-sanctuary-border/10 p-5 border-l-4 border-l-sanctuarySaffron shadow-sm"
                         >
-                            <VStack className="gap-sm">
+                            <VStack className="gap-3">
                                 <HStack className="items-center justify-between gap-md">
-                                    <Heading className="text-phaseText-onSurface text-md flex-1">
+                                    <Heading size="xs" className="text-sanctuary-text flex-1">
                                         {assignment.title}
                                     </Heading>
-                                    <HStack className="items-center gap-1.5">
+                                    <HStack className="items-center gap-1.5 bg-sanctuary-surface-secondary px-2 py-1 rounded-full">
                                         <Icon as={CalendarDays} size="xs" className="text-gurudeviBlue" />
-                                        <Text className="text-phaseText-secondary text-xs">
+                                        <Text className="text-sanctuary-text-muted text-[10px] uppercase font-bold">
                                             {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
                                         </Text>
                                     </HStack>
                                 </HStack>
                                 {!!assignment.description && (
-                                    <Text className="text-phaseText-secondary text-sm">
+                                    <Text className="text-sanctuary-text-muted text-sm leading-5">
                                         {assignment.description}
                                     </Text>
                                 )}
-                                <HStack className="items-center justify-between">
-                                    <Text className="text-phaseText-tertiary text-xs">
+                                <HStack className="items-center justify-between mt-1">
+                                    <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-wider">
                                         Max points: {assignment.max_points ?? 100}
                                     </Text>
-                                    <Text className="text-sanctuarySaffron font-bold text-xs">
-                                        Lesson-linked work stays in the Lessons lane
+                                    <Text className="text-sanctuarySaffron font-bold text-[10px] uppercase italic">
+                                        Classroom Level
                                     </Text>
                                 </HStack>
                             </VStack>
@@ -188,63 +183,67 @@ export default function TeacherAssignmentsWorkspace({
                 )}
             </VStack>
 
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
-                <ModalBackdrop />
-                <ModalContent className="bg-phase-surface border border-phase-border">
-                    <ModalHeader>
-                        <Heading className="text-phaseText-onSurface text-lg">
-                            Create assignment
-                        </Heading>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack className="gap-md">
-                            <Input className="bg-phase-elevated border-phase-border">
-                                <InputField 
-                                    placeholder="Assignment title" 
-                                    value={title} 
-                                    onChangeText={setTitle} 
-                                    className="text-phaseText-onSurface" 
-                                    placeholderTextColor="PhaseTextTertiary"
-                                />
-                            </Input>
-                            <Input className="bg-phase-elevated border-phase-border min-h-[90px]">
-                                <InputField
-                                    placeholder="What should students complete?"
-                                    value={description}
-                                    onChangeText={setDescription}
-                                    className="text-phaseText-onSurface"
-                                    multiline
-                                    placeholderTextColor="PhaseTextTertiary"
-                                />
-                            </Input>
-                            <Input className="bg-phase-elevated border-phase-border">
-                                <InputField
-                                    placeholder="Due date (YYYY-MM-DD)"
-                                    value={dueDate}
-                                    onChangeText={setDueDate}
-                                    className="text-phaseText-onSurface"
-                                    placeholderTextColor="PhaseTextTertiary"
-                                />
-                            </Input>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <HStack className="gap-sm">
-                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} className="flex-1">
-                                <ButtonText className="text-phaseText-secondary font-English">Cancel</ButtonText>
-                            </Button>
-                            <Button
-                                action="primary"
-                                onPress={() => { hapticLight(); handleCreate(); }}
-                                isDisabled={!title.trim() || isSaving}
-                                className="flex-1 bg-sanctuarySaffron"
-                            >
-                                {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-English">Save</ButtonText>}
-                            </Button>
-                        </HStack>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+            <SanctuaryModal
+                visible={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                title="Create assignment"
+            >
+                <VStack className="gap-6 p-1">
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">Title</Text>
+                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border/10 rounded-xl h-12">
+                            <InputField 
+                                placeholder="Assignment title" 
+                                value={title} 
+                                onChangeText={setTitle} 
+                                className="text-sanctuary-text text-sm" 
+                                placeholderTextColor="#94a3b8"
+                            />
+                        </Input>
+                    </VStack>
+                    
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">Description</Text>
+                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border/10 rounded-xl min-h-[100px] p-2">
+                            <InputField
+                                placeholder="What should students complete?"
+                                value={description}
+                                onChangeText={setDescription}
+                                className="text-sanctuary-text text-sm"
+                                multiline
+                                placeholderTextColor="#94a3b8"
+                            />
+                        </Input>
+                    </VStack>
+
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-bold uppercase text-sanctuary-text-muted ml-1">Due Date</Text>
+                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border/10 rounded-xl h-12">
+                            <InputField
+                                placeholder="YYYY-MM-DD"
+                                value={dueDate}
+                                onChangeText={setDueDate}
+                                className="text-sanctuary-text text-sm"
+                                placeholderTextColor="#94a3b8"
+                            />
+                        </Input>
+                    </VStack>
+
+                    <HStack className="gap-3 mt-4">
+                        <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} className="flex-1 rounded-xl h-12 border-sanctuary-border/20">
+                            <ButtonText className="text-sanctuary-text font-bold">Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            action="primary"
+                            onPress={() => { hapticLight(); handleCreate(); }}
+                            isDisabled={!title.trim() || isSaving}
+                            className="flex-1 bg-sanctuarySaffron rounded-xl h-12"
+                        >
+                            {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-bold">Create</ButtonText>}
+                        </Button>
+                    </HStack>
+                </VStack>
+            </SanctuaryModal>
         </Box>
     );
 }
@@ -260,16 +259,16 @@ function SummaryPill({
 }) {
     return (
         <Box
-            className="flex-1 bg-phase-surface rounded-comfortable border border-phase-border p-sm"
+            className="flex-1 bg-sanctuary-surface-secondary/50 rounded-2xl border border-sanctuary-border/10 p-4"
         >
             <VStack className="gap-1">
                 <HStack className="items-center gap-1.5">
                     {icon}
-                    <Text className="text-phaseText-tertiary text-xs font-bold uppercase">
+                    <Text className="text-sanctuary-text-muted text-[10px] uppercase font-bold tracking-tight">
                         {label}
                     </Text>
                 </HStack>
-                <Text className="text-phaseText-onSurface font-bold text-md">
+                <Text className="text-sanctuary-text font-bold text-lg">
                     {value}
                 </Text>
             </VStack>

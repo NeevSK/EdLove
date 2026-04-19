@@ -70,59 +70,63 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
     };
 
     return (
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <VStack className="gap-6 p-4">
-                <Pressable onPress={onBack} className="active:opacity-70">
-                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
-                        <Icon as={ArrowLeft} size="sm" className="text-ink" />
-                        <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
+        <ScrollView className="flex-1 bg-phase-canvas" showsVerticalScrollIndicator={false}>
+            <VStack className="gap-8 p-5">
+                <Pressable onPress={() => { hapticLight(); onBack(); }} className="active:scale-95 transition-all">
+                    <HStack className="items-center gap-2 bg-phase-surface self-start px-5 py-2.5 rounded-2xl border border-phase-border shadow-sm">
+                        <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
+                        <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-wider">Dashboard</Text>
                     </HStack>
                 </Pressable>
 
-                <VStack className="gap-1">
-                    <Heading className="text-2xl font-black text-ink">System Hierarchy</Heading>
-                    <Text className="text-sm text-ink/60">
-                        Grades, sections and class structure for your school.
+                <VStack className="gap-1.5">
+                    <Heading className="text-3xl font-black text-phaseText-primary tracking-tighter">System Hierarchy</Heading>
+                    <Text className="text-[14px] font-bold text-phaseText-muted uppercase tracking-widest">
+                        Governance structure & class taxonomy
                     </Text>
                 </VStack>
                 
-                <Box className={`bg-white p-5 rounded-3xl border border-border gap-4 ${isPastView ? 'opacity-60' : ''}`}>
-                    <Heading className="text-xs font-black uppercase tracking-widest text-ink/40">Add Section</Heading>
+                <Box className={`bg-phase-surface p-6 rounded-3xl border border-phase-border gap-5 shadow-sm ${isPastView ? 'opacity-60' : ''}`}>
+                    <Heading className="text-[11px] font-black uppercase tracking-[0.2em] text-phaseText-muted">Initialize New Tier</Heading>
                     
                     <HStack className="gap-3 flex-wrap">
                         <FormControl className="flex-1 min-w-[140px]">
-                            <Input className="h-12 rounded-2xl">
+                            <Input className="h-14 rounded-2xl bg-phase-canvas border-phase-border shadow-inner">
                                 <InputField 
                                     value={newSectionGrade} 
                                     onChangeText={setNewSectionGrade}
                                     readOnly={isPastView} 
                                     placeholder="Grade (e.g. 8)" 
+                                    placeholderTextColor="rgba(0,0,0,0.2)"
+                                    className="font-bold text-phaseText-primary"
                                 />
                             </Input>
                         </FormControl>
 
                         <FormControl className="flex-1 min-w-[140px]">
-                            <Input className="h-12 rounded-2xl">
+                            <Input className="h-14 rounded-2xl bg-phase-canvas border-phase-border shadow-inner">
                                 <InputField 
                                     value={newSectionName} 
                                     onChangeText={setNewSectionName}
                                     readOnly={isPastView} 
-                                    placeholder="Name (e.g. 8A)" 
+                                    placeholder="Section (e.g. 8A)" 
+                                    placeholderTextColor="rgba(0,0,0,0.2)"
+                                    className="font-bold text-phaseText-primary"
                                 />
                             </Input>
                         </FormControl>
 
                         <Button 
-                            onPress={handleCreateSection} 
+                            onPress={() => { hapticLight(); handleCreateSection(); }} 
                             isDisabled={!newSectionName.trim() || saving || isPastView} 
-                            className="bg-primary rounded-2xl h-12 shadow-sm active:scale-95 px-5"
+                            className="bg-phase-interactive rounded-2xl h-14 shadow-sm active:scale-95 px-6"
                         >
                             {saving ? (
-                                <ButtonText>...</ButtonText>
+                                <ButtonText className="font-black">...</ButtonText>
                             ) : (
                                 <>
-                                    <ButtonIcon as={Plus} className="mr-2" />
-                                    <ButtonText>Add</ButtonText>
+                                    <ButtonIcon as={Plus} className="text-white" />
+                                    <ButtonText className="font-black uppercase tracking-widest text-white ml-2">Add</ButtonText>
                                 </>
                             )}
                         </Button>
@@ -130,27 +134,28 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                 </Box>
 
                 {loading ? (
-                    <VStack className="gap-3">
-                        <SkeletonCard height={80} />
-                        <SkeletonCard height={80} />
+                    <VStack className="gap-4">
+                        <SkeletonCard height={90} className="rounded-3xl" />
+                        <SkeletonCard height={90} className="rounded-3xl" />
+                        <SkeletonCard height={90} className="rounded-3xl" />
                     </VStack>
                 ) : sections.length === 0 ? (
-                    <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
-                        <Text className="text-ink/40 italic font-bold">No sections yet.</Text>
+                    <Box className="p-12 items-center justify-center bg-phase-canvas rounded-3xl border border-dashed border-phase-border">
+                        <Text className="text-phaseText-muted italic font-black text-sm uppercase tracking-widest">No active modules found</Text>
                     </Box>
                 ) : (
-                    <HStack className="flex-wrap gap-3">
+                    <HStack className="flex-wrap gap-4">
                         {sections.map(s => (
                             <Box 
                                 key={s.id} 
-                                className="bg-white p-5 rounded-3xl border border-border border-l-4 border-l-primary min-w-[160px] flex-1"
+                                className="bg-phase-surface p-6 rounded-3xl border border-phase-border border-l-[6px] border-l-phase-interactive min-w-[160px] flex-1 shadow-sm active:scale-98 transition-all"
                             >
-                                <VStack className="gap-1">
-                                    <Text className="font-extrabold text-lg text-ink">{s.name}</Text>
+                                <VStack className="gap-1.5">
+                                    <Text className="font-black text-xl text-phaseText-primary tracking-tight">{s.name}</Text>
                                     {s.grade && (
-                                        <HStack className="items-center gap-1.5">
-                                            <Icon as={Castle} size={12} className="text-ink/40" />
-                                            <Text className="text-xs text-ink/60 font-medium">Grade {s.grade}</Text>
+                                        <HStack className="items-center gap-2">
+                                            <Icon as={Castle} size="xs" className="text-phase-interactive" />
+                                            <Text className="text-[12px] text-phaseText-muted font-bold uppercase tracking-widest">Grade {s.grade}</Text>
                                         </HStack>
                                     )}
                                 </VStack>

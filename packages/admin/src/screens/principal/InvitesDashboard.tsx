@@ -59,7 +59,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                 current.map(inv => inv.code === code ? { ...inv, is_active: false } : inv)
             );
             toast.showToast({
-                message: 'Revoked access key',
+                message: 'Access Key Revoked',
                 type: 'success'
             });
         } catch (err) {
@@ -74,7 +74,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
             const newCode = await invitesAPI.generateInviteCode(schoolId, inviteRole, userId);
             setInviteCodes((current) => [newCode, ...current]);
             toast.showToast({
-                message: 'New key generated',
+                message: 'New Governance Key Generated',
                 type: 'success'
             });
         } catch (err) {
@@ -88,7 +88,7 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
         try {
             await Clipboard.setStringAsync(code);
             toast.showToast({
-                message: 'Copied to clipboard',
+                message: 'Copied to Command Buffer',
                 type: 'success'
             });
         } catch (err) {
@@ -97,65 +97,65 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
     };
 
     return (
-        <VStack className="flex-1 bg-silk">
+        <VStack className="flex-1 bg-phase-canvas">
             <ScrollView showsVerticalScrollIndicator={false}>
-                <VStack className="gap-8 p-6 pb-20">
+                <VStack className="gap-8 p-5 pb-24">
                     {/* Header Group */}
-                    <VStack className="gap-4">
-                        <Pressable onPress={onBack} className="active:opacity-70">
-                            <HStack className="items-center gap-2 bg-phase-surface px-4 py-2 rounded-xl border border-border self-start shadow-sm">
-                                <Icon as={ArrowLeft} size="sm" className="text-ink" />
-                                <Text className="text-sm font-black text-ink">Back</Text>
+                    <VStack className="gap-5">
+                        <Pressable onPress={() => { hapticLight(); onBack(); }} className="active:opacity-70">
+                            <HStack className="items-center gap-2 bg-phase-surface px-4 py-2.5 rounded-2xl border border-phase-border self-start shadow-sm">
+                                <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
+                                <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-widest">Back</Text>
                             </HStack>
                         </Pressable>
                         
-                        <VStack className="gap-1">
-                            <Heading className="text-3xl font-black text-ink uppercase tracking-wider">
+                        <VStack className="gap-1.5 px-1">
+                            <Heading className="text-[32px] font-black text-phaseText-primary uppercase tracking-tighter leading-none">
                                 Governance
                             </Heading>
-                            <Text className="text-sm font-bold text-ink/40 leading-relaxed">
-                                Establish authority anchors and onboard faculty.
+                            <Text className="text-[14px] font-medium text-phaseText-secondary leading-relaxed">
+                                Establish authority anchors and synchronize faculty onboarding protocols.
                             </Text>
                         </VStack>
                     </VStack>
 
                     {/* Generator Console */}
                     {!isPastView && (
-                        <Box className="bg-phase-surface p-6 rounded-[32px] border border-border gap-6 shadow-sm">
-                            <VStack className="gap-4">
-                                <HStack className="justify-between items-center">
-                                    <Heading className="text-xs font-black uppercase tracking-[0.2em] text-ink/30">Select Anchor Role</Heading>
-                                    <Box className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                        <Box className="bg-phase-surface p-7 rounded-[40px] border border-phase-border gap-7 shadow-sm">
+                            <VStack className="gap-5">
+                                <HStack className="justify-between items-center px-1">
+                                    <Heading className="text-[10px] font-black uppercase tracking-[0.25em] text-phaseText-muted">Select Authority Scope</Heading>
+                                    <Box className="w-2 h-2 rounded-full bg-phase-interactive shadow-[0_0_8px_rgba(var(--color-phase-interactive),0.5)]" />
                                 </HStack>
  
-                                <HStack className="gap-2">
+                                <HStack className="gap-3">
                                     <Pressable 
-                                        onPress={() => setInviteRole('teacher')}
-                                        className={`flex-1 h-12 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'teacher' ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
+                                        onPress={() => { hapticLight(); setInviteRole('teacher'); }}
+                                        className={`flex-1 h-14 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'teacher' ? 'bg-phase-interactive border-phase-interactive shadow-md' : 'bg-phase-canvas border-phase-border'}`}
                                     >
-                                        <Text className={`font-black uppercase tracking-widest text-[10px] ${inviteRole === 'teacher' ? 'text-white' : 'text-ink/40'}`}>Teacher</Text>
+                                        <Text className={`font-black uppercase tracking-widest text-[11px] ${inviteRole === 'teacher' ? 'text-white' : 'text-phaseText-muted'}`}>Staff Anchor</Text>
                                     </Pressable>
                                     <Pressable 
-                                        onPress={() => setInviteRole('principal')}
-                                        className={`flex-1 h-12 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'principal' ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
+                                        onPress={() => { hapticLight(); setInviteRole('principal'); }}
+                                        className={`flex-1 h-14 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'principal' ? 'bg-phase-interactive border-phase-interactive shadow-md' : 'bg-phase-canvas border-phase-border'}`}
                                     >
-                                        <Text className={`font-black uppercase tracking-widest text-[10px] ${inviteRole === 'principal' ? 'text-white' : 'text-ink/40'}`}>Principal</Text>
+                                        <Text className={`font-black uppercase tracking-widest text-[11px] ${inviteRole === 'principal' ? 'text-white' : 'text-phaseText-muted'}`}>Lead Anchor</Text>
                                     </Pressable>
                                 </HStack>
                             </VStack>
  
                             <Button 
-                                onPress={handleGenerateCode}
+                                onPress={() => { hapticMedium(); handleGenerateCode(); }}
                                 isDisabled={generating}
-                                className="bg-ink h-14 rounded-2xl items-center justify-center shadow-lg active:scale-95"
+                                className="bg-phaseText-primary h-16 rounded-[20px] items-center justify-center shadow-lg active:scale-95 transition-all"
                             >
-                                <HStack className="items-center gap-2">
+                                <HStack className="items-center gap-3">
                                     {generating ? (
                                         <Spinner color="white" size="small" />
                                     ) : (
                                         <>
                                             <Icon as={Plus} className="text-white" size="sm" />
-                                            <Text className="text-white font-black uppercase tracking-[0.1em]">Generate Access Key</Text>
+                                            <Text className="text-white font-black uppercase tracking-[0.2em] text-[12px]">Generate Access Key</Text>
                                         </>
                                     )}
                                 </HStack>
@@ -164,61 +164,62 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                     )}
 
                     {/* active keys list */}
-                    <VStack className="gap-4">
+                    <VStack className="gap-5">
                         <HStack className="justify-between items-center px-1">
-                            <Heading className="text-lg font-black text-ink uppercase tracking-widest">Active Keys</Heading>
-                            {loading && <Spinner color="amber" />}
+                            <Heading className="text-[20px] font-black text-phaseText-primary uppercase tracking-widest">Active Anchors</Heading>
+                            {loading && <Spinner color="phase-interactive" />}
                         </HStack>
 
                         {inviteCodes.length === 0 && !loading ? (
-                            <Box className="p-12 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
-                                <Icon as={ShieldAlert} size="xl" className="text-ink/10 mb-3" />
-                                <Text className="text-center font-bold text-ink/30 italic">No keys initialized</Text>
+                            <Box className="p-16 items-center justify-center bg-phase-surface/50 rounded-[40px] border border-dashed border-phase-border">
+                                <Icon as={ShieldAlert} size="xl" className="text-phaseText-muted/20 mb-4" />
+                                <Text className="text-center font-black text-phaseText-muted uppercase tracking-widest text-[11px]">No initialized vectors</Text>
                             </Box>
                         ) : (
-                            <VStack className="gap-3">
+                            <VStack className="gap-4">
                                 {inviteCodes.map((invite) => (
                                     <Box 
                                         key={invite.code} 
-                                        className="bg-white p-5 rounded-3xl border border-border flex-row items-center shadow-sm"
+                                        className="bg-phase-surface p-6 rounded-[32px] border border-phase-border flex-row items-center shadow-sm"
                                     >
-                                        <VStack className="flex-1 gap-2">
-                                            <HStack className="items-baseline gap-2">
-                                                <Text className="text-2xl font-black text-primary italic tracking-widest font-mono">
+                                        <VStack className="flex-1 gap-2.5">
+                                            <HStack className="items-center gap-3">
+                                                <Text className="text-2xl font-black text-phase-interactive italic tracking-[0.15em] font-mono leading-none">
                                                     {invite.code}
                                                 </Text>
-                                                <Box className={`px-2 py-0.5 rounded-lg ${invite.authority === 'principal' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
-                                                    <Text className={`text-[10px] font-black uppercase ${invite.authority === 'principal' ? 'text-amber-600' : 'text-blue-600'}`}>
+                                                <Box className={`px-2.5 py-1 rounded-lg ${invite.authority === 'principal' ? 'bg-phase-warning/10 border border-phase-warning/20' : 'bg-phase-interactive/10 border border-phase-interactive/20'}`}>
+                                                    <Text className={`text-[9px] font-black uppercase tracking-widest ${invite.authority === 'principal' ? 'text-phase-warning' : 'text-phase-interactive'}`}>
                                                         {invite.authority}
                                                     </Text>
                                                 </Box>
                                             </HStack>
                                             
-                                            <HStack className="gap-3">
-                                                <Text className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">
+                                            <HStack className="items-center gap-3">
+                                                <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[0.1em]">
                                                     {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
                                                 </Text>
-                                                <Box className={`w-1.5 h-1.5 rounded-full mt-1 ${invite.used ? 'bg-ink/30' : 'bg-green-500'}`} />
-                                                <Text className={`text-[10px] font-black uppercase tracking-widest ${invite.used ? 'text-ink/30' : 'text-green-600'}`}>
-                                                    {invite.used ? 'Redeemed' : 'Vivid'}
+                                                <Box className="w-1 h-1 rounded-full bg-phase-border" />
+                                                <Box className={`w-2 h-2 rounded-full ${invite.used ? 'bg-phaseText-muted' : 'bg-phase-success shadow-[0_0_6px_rgba(var(--color-phase-success),0.4)]'}`} />
+                                                <Text className={`text-[10px] font-black uppercase tracking-widest ${invite.used ? 'text-phaseText-muted' : 'text-phase-success'}`}>
+                                                    {invite.used ? 'Redeemed' : 'Active'}
                                                 </Text>
                                             </HStack>
                                         </VStack>
 
-                                        <HStack className="gap-2">
+                                        <HStack className="gap-2.5">
                                             <Pressable 
-                                                onPress={() => copyToClipboard(invite.code)}
-                                                className="w-11 h-11 rounded-2xl bg-phase-surface items-center justify-center border border-border transition-transform active:scale-95"
+                                                onPress={() => { hapticLight(); copyToClipboard(invite.code); }}
+                                                className="w-12 h-12 rounded-2xl bg-phase-canvas items-center justify-center border border-phase-border shadow-inner transition-transform active:scale-90"
                                             >
-                                                <Icon as={Copy} className="text-ink/60" size="sm" />
+                                                <Icon as={Copy} className="text-phaseText-primary" size="sm" />
                                             </Pressable>
                                             
                                             {!invite.used && invite.is_active !== false && (
                                                 <Pressable 
-                                                    onPress={() => handleRevoke(invite.code)}
-                                                    className="w-11 h-11 rounded-2xl bg-red-500/10 items-center justify-center border border-red-500/20 transition-transform active:scale-95"
+                                                    onPress={() => { hapticMedium(); handleRevoke(invite.code); }}
+                                                    className="w-12 h-12 rounded-2xl bg-phase-danger/10 items-center justify-center border border-phase-danger/20 shadow-inner transition-transform active:scale-90"
                                                 >
-                                                    <Icon as={X} size="sm" className="text-red-500" />
+                                                    <Icon as={X} size="sm" className="text-phase-danger" />
                                                 </Pressable>
                                             )}
                                         </HStack>

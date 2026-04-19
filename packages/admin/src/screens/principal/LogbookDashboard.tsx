@@ -89,99 +89,105 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
         }
     };
 
-    const getTypeColor = (t: string) => {
+    const getTypeConfig = (t: string) => {
         switch (t) {
-            case 'concern': return 'border-l-red-500 bg-red-500/10 text-red-600';
-            case 'commendation': return 'border-l-green-500 bg-green-500/10 text-green-600';
-            case 'walkthrough': return 'border-l-blue-500 bg-blue-500/10 text-blue-600';
-            default: return 'border-l-primary bg-primary/10 text-primary';
+            case 'concern': return { border: 'border-l-phase-danger', bg: 'bg-phase-danger/10', text: 'text-phase-danger' };
+            case 'commendation': return { border: 'border-l-phase-success', bg: 'bg-phase-success/10', text: 'text-phase-success' };
+            case 'walkthrough': return { border: 'border-l-phase-interactive', bg: 'bg-phase-interactive/10', text: 'text-phase-interactive' };
+            default: return { border: 'border-l-phase-interactive', bg: 'bg-phase-canvas', text: 'text-phaseText-primary' };
         }
     };
 
     return (
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <VStack className="gap-6 p-4">
-                <Pressable onPress={onBack}>
-                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border active:scale-95">
-                        <Icon as={ArrowLeft} size="sm" className="text-ink" />
-                        <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
+        <ScrollView className="flex-1 bg-phase-canvas" showsVerticalScrollIndicator={false}>
+            <VStack className="gap-8 p-5 pb-24">
+                <Pressable onPress={() => { hapticLight(); onBack(); }}>
+                    <HStack className="items-center gap-2 bg-phase-surface self-start px-4 py-2.5 rounded-2xl border border-phase-border shadow-sm active:scale-95 transition-all">
+                        <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
+                        <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-widest">Back to Dashboard</Text>
                     </HStack>
                 </Pressable>
 
-                <VStack className="gap-1">
-                    <Heading className="text-2xl font-black text-ink">Institutional Log</Heading>
-                    <Text className="text-sm text-ink/60">
-                        Your daily operational notes and walkthroughs.
+                <VStack className="gap-1.5 px-1">
+                    <Heading className="text-[30px] font-black text-phaseText-primary tracking-tight">Institutional Log</Heading>
+                    <Text className="text-[14px] font-medium text-phaseText-secondary leading-relaxed">
+                        Secure ledger for daily operational notes, faculty walkthroughs, and leadership insights.
                     </Text>
                 </VStack>
 
-                <Box className={`bg-white p-5 rounded-3xl border border-border gap-4 ${isPastView ? 'opacity-60' : ''}`}>
-                    <Heading className="text-xs font-black uppercase tracking-widest text-ink/40">New Entry</Heading>
+                <Box className={`bg-phase-surface p-7 rounded-[40px] border border-phase-border gap-6 shadow-sm ${isPastView ? 'opacity-50' : ''}`}>
+                    <Heading className="text-[11px] font-black uppercase tracking-[0.25em] text-phaseText-muted">Synchronize Entry</Heading>
                     
                     <LotusDropdown
-                        label="Entry Type"
+                        label="Log Type"
                         options={typeOptions}
                         value={type}
-                        onChange={setType}
+                        onChange={(val: string) => { hapticLight(); setType(val); }}
                         isDisabled={isPastView}
                     />
 
-                    <Textarea className="h-32 rounded-2xl">
+                    <Textarea className="h-40 rounded-3xl bg-phase-canvas/50 border-phase-border transition-all active:border-phase-interactive">
                         <TextareaInput 
+                            className="text-[15px] font-medium text-phaseText-primary leading-relaxed"
                             value={content} 
                             onChangeText={setContent} 
                             readOnly={isPastView} 
-                            placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note..."} 
+                            placeholder={isPastView ? "Synchronized view is locked." : "Record leadership perspective..."} 
+                            placeholderTextColor="#94a3b8"
                         />
                     </Textarea>
 
                     <Button 
-                        onPress={handleSaveObservation} 
+                        size="xl"
+                        onPress={() => { hapticMedium(); handleSaveObservation(); }} 
                         isDisabled={!content.trim() || saving || isPastView} 
-                        className="bg-primary rounded-2xl h-12 self-start px-6 shadow-sm active:scale-95"
+                        className="bg-phase-interactive rounded-[20px] h-14 self-start px-10 shadow-md active:scale-95 transition-all"
                     >
                         {saving ? (
-                            <ButtonText>Logging...</ButtonText>
+                            <ButtonText className="text-white font-black uppercase tracking-widest text-[11px]">Archiving...</ButtonText>
                         ) : (
-                            <>
-                                <ButtonIcon as={Plus} className="mr-2" />
-                                <ButtonText>Log Entry</ButtonText>
-                            </>
+                            <HStack className="items-center gap-2.5">
+                                <ButtonIcon as={Plus} className="text-white" />
+                                <ButtonText className="text-white font-black uppercase tracking-widest text-[11px]">Log Entry</ButtonText>
+                            </HStack>
                         )}
                     </Button>
                 </Box>
 
-                <VStack className="gap-3">
+                <VStack className="gap-4">
                     {loading ? (
-                        <SkeletonCard height={100} />
+                        <SkeletonCard height={120} className="rounded-3xl" />
                     ) : observations.length === 0 ? (
-                        <Box className="p-10 items-center justify-center bg-ink/5 rounded-3xl border border-dashed border-border">
-                            <Text className="text-ink/40 italic font-bold">No entries for this date.</Text>
+                        <Box className="p-16 items-center justify-center bg-phase-surface/50 rounded-[40px] border border-dashed border-phase-border">
+                            <Text className="text-phaseText-muted text-[13px] font-black uppercase tracking-widest">No Operational Records</Text>
                         </Box>
                     ) : (
-                        observations.map(o => (
-                            <Box 
-                                key={o.id} 
-                                className={`bg-white p-5 rounded-3xl border border-border border-l-4 ${getTypeColor(o.type).split(' ')[0]}`}
-                            >
-                                <HStack className="items-center gap-2 mb-2">
-                                    <Box className={`px-2 py-0.5 rounded-md ${getTypeColor(o.type).split(' ').slice(1).join(' ')}`}>
-                                        <HStack className="items-center gap-1.5">
-                                            {getTypeIcon(o.type)}
-                                            <Text className="text-[10px] font-black uppercase">
-                                                {o.type}
-                                            </Text>
-                                        </HStack>
-                                    </Box>
-                                    <Text className="text-[10px] text-ink/40 font-bold uppercase tracking-widest">
-                                        {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
+                        observations.map(o => {
+                            const config = getTypeConfig(o.type);
+                            return (
+                                <Box 
+                                    key={o.id} 
+                                    className={`bg-phase-surface p-6 rounded-[28px] border-y border-r border-phase-border border-l-[6px] shadow-sm ${config.border}`}
+                                >
+                                    <HStack className="items-center gap-3 mb-3">
+                                        <Box className={`px-3 py-1 rounded-lg border border-phase-border/20 ${config.bg}`}>
+                                            <HStack className="items-center gap-2">
+                                                {getTypeIcon(o.type)}
+                                                <Text className={`text-[10px] font-black uppercase tracking-widest ${config.text}`}>
+                                                    {o.type}
+                                                </Text>
+                                            </HStack>
+                                        </Box>
+                                        <Text className="text-[10px] text-phaseText-muted font-black uppercase tracking-[0.1em]">
+                                            {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
+                                        </Text>
+                                    </HStack>
+                                    <Text className="text-[15px] leading-relaxed text-phaseText-primary font-medium">
+                                        {o.content}
                                     </Text>
-                                </HStack>
-                                <Text className="text-sm leading-relaxed text-ink/80">
-                                    {o.content}
-                                </Text>
-                            </Box>
-                        ))
+                                </Box>
+                            );
+                        })
                     )}
                 </VStack>
             </VStack>

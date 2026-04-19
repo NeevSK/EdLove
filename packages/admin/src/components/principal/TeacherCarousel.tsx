@@ -50,20 +50,18 @@ function TeacherCard({
     item: TeacherCarouselItem;
     onTap?: () => void;
 }) {
-    const theme = useTheme();
-
-    const getStatusColor = (status?: string | null): string => {
+    const getStatusColorClass = (status?: string | null): string => {
         switch (status) {
-            case 'present': return theme.accent.sageGreen;
-            case 'late': return theme.accent.action;
-            case 'absent': return theme.accent.danger;
-            case 'on_leave': return theme.accent.templeGold;
-            case 'half_day': return theme.accent.templeGold;
-            default: return theme.text.muted;
+            case 'present': return 'bg-phase-success';
+            case 'late': return 'bg-phase-interactive';
+            case 'absent': return 'bg-phase-danger';
+            case 'on_leave':
+            case 'half_day': return 'bg-phase-warning';
+            default: return 'bg-phaseText-muted';
         }
     };
 
-    const statusColor = getStatusColor(item.todayStatus ?? undefined);
+    const statusColorClass = getStatusColorClass(item.todayStatus ?? undefined);
     const statusLabel = item.todayStatus ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus) : 'No data';
 
     return (
@@ -72,46 +70,40 @@ function TeacherCard({
                 hapticLight();
                 onTap?.();
             }}
-            className="w-40 bg-phase-surface rounded-2xl border border-phase-border p-md items-center justify-center gap-3"
+            className="w-40 bg-phase-surface rounded-2xl border border-phase-border p-4 items-center justify-center gap-4 active:scale-95 transition-all shadow-sm"
         >
             {/* Avatar */}
-            <Box
-                className="w-14 h-14 rounded-full items-center justify-center"
-                style={{ backgroundColor: `${theme.accent.action}22` }}
-            >
-                <Text className="text-xl font-bold text-phase-accent">
+            <Box className="w-16 h-16 rounded-full items-center justify-center bg-phase-interactive/10">
+                <Text className="text-2xl font-black text-phase-interactive">
                     {getInitialsFromName(item.fullName)}
                 </Text>
             </Box>
 
             {/* Name & Role */}
-            <VStack className="items-center gap-1">
+            <VStack className="items-center gap-1.5">
                 <Text
                     numberOfLines={1}
-                    className="text-[13px] font-bold text-phaseText-primary text-center max-w-[136px]"
+                    className="text-[14px] font-black text-phaseText-primary text-center max-w-[136px]"
                 >
                     {item.fullName}
                 </Text>
-                <Box className="bg-phase-interactive rounded-full px-2 py-0.5 border border-phase-border">
-                    <Text className="text-[9px] font-bold text-phase-accent uppercase">
+                <Box className="bg-phase-interactive/10 rounded-full px-2.5 py-0.5">
+                    <Text className="text-[9px] font-black text-phase-interactive uppercase tracking-wider">
                         {formatRole(item.role)}
                     </Text>
                 </Box>
             </VStack>
 
             {/* Status & Load */}
-            <VStack className="items-center gap-1">
-                <HStack className="items-center gap-1.5">
-                    <Box
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: statusColor }}
-                    />
-                    <Text className="text-[11px] text-phaseText-secondary">
+            <VStack className="items-center gap-1 mt-1">
+                <HStack className="items-center gap-2">
+                    <Box className={`w-2 h-2 rounded-full ${statusColorClass}`} />
+                    <Text className="text-[11px] font-bold text-phaseText-secondary">
                         {statusLabel}
                     </Text>
                 </HStack>
-                <Text className="text-[10px] text-phaseText-muted">
-                    {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
+                <Text className="text-[10px] font-bold text-phaseText-muted">
+                    {item.classroomCount === 1 ? '1 Class Assigned' : `${item.classroomCount} Classes Assigned`}
                 </Text>
             </VStack>
         </Pressable>
