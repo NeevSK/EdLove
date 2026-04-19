@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useTheme } from '@repo/ui';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    ScrollView, 
+    Pressable, 
+    useTheme, 
+    useThemedColors,
+    Button,
+    ButtonText
+} from '@repo/ui';
 import { usePermissions } from '@repo/core';
 import { documentWorkflowAPI, type DocumentWorkflow, type DocumentStatus } from '../document-workflow/api';
 
@@ -20,6 +31,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   isPastView
 }) => {
   const theme = useTheme();
+  const colors = useThemedColors();
   const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
@@ -39,7 +51,6 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
       console.error('Failed to load documents:', error);
-      Alert.alert('Error', 'Failed to load documents');
     } finally {
       setIsLoading(false);
     }
@@ -63,12 +74,12 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   const getStatusColor = (status: DocumentStatus) => {
     switch (status) {
-      case 'draft': return theme.accent.danger;
-      case 'review': return theme.accent.action;
-      case 'approved': return theme.text.secondary;
-      case 'published': return theme.accent.action;
-      case 'archived': return theme.text.muted;
-      default: return theme.text.muted;
+      case 'draft': return 'bg-error/10 text-error';
+      case 'review': return 'bg-action/10 text-action';
+      case 'approved': return 'bg-success/10 text-success';
+      case 'published': return 'bg-action/10 text-action';
+      case 'archived': return 'bg-ink/10 text-ink/40';
+      default: return 'bg-ink/5 text-ink/40';
     }
   };
 
@@ -77,44 +88,27 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   };
 
   const renderDocumentItem = (document: DocumentWorkflow, index: number) => (
-    <TouchableOpacity
+    <Pressable
       key={document.id}
-      style={[
-        styles.documentItem,
-        { 
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          marginBottom: index === filteredDocuments.length - 1 ? 0 : 12
-        }
-      ]}
-      onPress={() => onDocumentPress(document)}>
-      <View style={styles.documentHeader}>
-        <Text
-          style={[
-            styles.documentTitle,
-            { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
-          ]}
-          numberOfLines={2}>
-          {document.title}
-        </Text>
-        <div style={{ backgroundColor: getStatusColor(document.status), padding: '4px 8px', borderRadius: '12px' }}>
-          <Text
-            style={[
-              styles.statusText,
-              { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
-            ]}>
-            {document.status.toUpperCase()}
+      onPress={() => onDocumentPress(document)}
+      className="bg-white p-5 rounded-3xl border border-border mb-3 active:scale-[0.98]"
+    >
+      <HStack className="justify-between items-start mb-2">
+        <VStack className="flex-1 mr-4 gap-1">
+          <Text className="font-bold text-lg text-ink" numberOfLines={2}>
+            {document.title}
           </Text>
-        </div>
-      </View>
-      <Text
-        style={[
-          styles.documentMeta,
-          { color: theme.text.secondary, fontFamily: 'System' }
-        ]}>
-        Version {document.version} • Updated {formatDate(document.updatedAt)}
-      </Text>
-    </TouchableOpacity>
+          <Text className="text-xs text-ink/40">
+            Version {document.version} • Updated {formatDate(document.updatedAt)}
+          </Text>
+        </VStack>
+        <Box className={`px-2 py-1 rounded-full ${getStatusColor(document.status).split(' ')[0]}`}>
+          <Text className={`text-[10px] font-black uppercase ${getStatusColor(document.status).split(' ')[1]}`}>
+            {document.status}
+          </Text>
+        </Box>
+      </HStack>
+    </Pressable>
   );
 
   const renderStatusFilter = (status: DocumentStatus | 'all') => {
@@ -124,96 +118,78 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
       : documents.filter(doc => doc.status === status).length;
 
     return (
-      <TouchableOpacity
+      <Pressable
         key={status}
-        style={[
-          styles.filterChip,
-          {
-            backgroundColor: isActive ? theme.accent.action : theme.glass.surface.bg,
-            borderColor: isActive ? theme.accent.action : theme.glass.surface.border
-          }
-        ]}
-        onPress={() => setSelectedStatus(status)}>
+        onPress={() => setSelectedStatus(status)}
+        className={`px-4 py-2 rounded-full border mr-2 ${
+          isActive 
+            ? 'bg-action border-action' 
+            : 'bg-white border-border active:bg-ink/5'
+        }`}
+      >
         <Text
-          style={[
-            styles.filterText,
-            { 
-              color: isActive ? theme.text.inverse : theme.text.primary,
-              fontFamily: 'System', 
-              fontWeight: '500'
-            }
-          ]}>
+          className={`text-sm font-bold ${
+            isActive ? 'text-white' : 'text-ink/60'
+          }`}
+        >
           {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] || '#000' }]}>
-        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-          Loading documents...
-        </Text>
-      </View>
+      <Box className="flex-1 bg-silk items-center justify-center p-10">
+        <Text className="text-ink/40 font-bold italic">Loading documents...</Text>
+      </Box>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] || '#000' }]}>
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
-        <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}>
-          Documents
-        </Text>
-        <TouchableOpacity
-          style={[styles.createButton, { backgroundColor: theme.accent.action }]}
-          onPress={onCreateNew}>
-          <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
-            + New
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.filterContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContent}>
-          {statusFilters.map(renderStatusFilter)}
+    <Box className="flex-1 bg-silk">
+      <VStack className="p-6 gap-6">
+        <HStack className="justify-between items-center">
+            <VStack gap={1}>
+                <Heading className="text-3xl font-black text-ink">Documents</Heading>
+                <Text className="text-sm text-ink/40">Manage your institutional artifacts</Text>
+            </VStack>
+            <Button
+                onPress={onCreateNew}
+                className="bg-action rounded-2xl h-11 px-6 shadow-sm active:scale-95"
+            >
+                <ButtonText className="font-black">+ New</ButtonText>
+            </Button>
+        </HStack>
+
+        <Box className="h-10">
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <HStack>
+                    {statusFilters.map(renderStatusFilter)}
+                </HStack>
+            </ScrollView>
+        </Box>
+
+        <ScrollView 
+            className="flex-1" 
+            contentContainerClassName="pb-10" 
+            showsVerticalScrollIndicator={false}
+        >
+            {filteredDocuments.length === 0 ? (
+                <Box className="p-10 items-center justify-center bg-white rounded-3xl border border-dashed border-border mt-4">
+                    <Text className="text-ink/40 italic font-bold text-center">
+                        {selectedStatus === 'all' ? 'No documents yet.' : `No ${selectedStatus} documents found.`}
+                    </Text>
+                </Box>
+            ) : (
+                filteredDocuments.map((doc, idx) => renderDocumentItem(doc, idx))
+            )}
         </ScrollView>
-      </View>
-      <ScrollView style={styles.documentsContainer} contentContainerStyle={styles.documentsContent} showsVerticalScrollIndicator={false}>
-        {filteredDocuments.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
-              {selectedStatus === 'all' ? 'No documents yet.' : `No ${selectedStatus} documents found.`}
-            </Text>
-          </View>
-        ) : (
-          filteredDocuments.map((doc, idx) => renderDocumentItem(doc, idx))
-        )}
-      </ScrollView>
-    </View>
+      </VStack>
+    </Box>
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1 },
-  title: { fontSize: 24, fontWeight: 'bold' },
-  createButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  createButtonText: { fontSize: 14, fontWeight: '600' },
-  filterContainer: { height: 60 },
-  filterContent: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
-  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1 },
-  filterText: { fontSize: 14 },
-  documentsContainer: { flex: 1 },
-  documentsContent: { padding: 16 },
-  documentItem: { padding: 16, borderRadius: 12, borderWidth: 1 },
-  documentHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
-  documentTitle: { fontSize: 16, fontWeight: '600', flex: 1, marginRight: 12 },
-  statusText: { fontSize: 10, fontWeight: '600' },
-  documentMeta: { fontSize: 14, marginBottom: 8 },
-  emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 60 },
-  emptyText: { fontSize: 16, textAlign: 'center', lineHeight: 24 },
-  loadingText: { fontSize: 16, textAlign: 'center', marginTop: 60 }
-});
-
 export default DocumentListScreen;
+

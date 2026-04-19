@@ -1,5 +1,4 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Users, FileText, CalendarCheck, NotebookPen } from 'lucide-react-native';
 import { 
@@ -8,7 +7,9 @@ import {
     HStack, 
     Text, 
     Heading, 
-    } from '@repo/ui';
+    Icon,
+    Pressable
+} from '@repo/ui';
 import type { PrincipalWorkspaceView } from '../../principal/workspace';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 
@@ -61,24 +62,22 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                     const scopeMeta = getPrincipalFeatureScopeMeta(action.featureId);
                     
                     return (
-                        <TouchableOpacity
+                        <Pressable
                             key={i}
-                            activeOpacity={0.7}
                             onPress={() => !action.isAgentic && onNavigate(action.view)}
-                            disabled={action.isAgentic}
+                            isDisabled={action.isAgentic}
                             accessibilityRole="button"
                             accessibilityLabel={action.label}
-                            className="bg-silk rounded-3xl border border-border items-center p-6 gap-3 shadow-sm"
+                            className={`bg-silk rounded-3xl border border-border items-center p-6 gap-3 shadow-sm active:scale-95 ${action.isAgentic ? 'opacity-60' : 'opacity-100'}`}
                             style={{
                                 width: '47%', // Fixed width for 2 columns layout on mobile
-                                opacity: action.isAgentic ? 0.6 : 1
                             }}
                         >
                             <Box 
                                 className="p-4 rounded-2xl"
                                 style={{ backgroundColor: `${action.color}22` }}
                             >
-                                <action.icon size={24} color={action.color} />
+                                <Icon as={action.icon} size={24} color={action.color} />
                             </Box>
                             
                             <Text className="text-[13px] font-bold text-ink text-center">
@@ -98,7 +97,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                                     {t('common.comingSoon') || 'Coming Soon'}
                                 </Text>
                             )}
-                        </TouchableOpacity>
+                        </Pressable>
                     );
                 })}
             </HStack>
@@ -107,3 +106,4 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
 };
 
 export type { CommandCenterProps };
+

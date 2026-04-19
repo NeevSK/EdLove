@@ -149,7 +149,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                                     <Text className="font-extrabold text-lg text-ink">{s.name}</Text>
                                     {s.grade && (
                                         <HStack className="items-center gap-1.5">
-                                            <Castle size={12} className="text-ink/40" />
+                                            <Icon as={Castle} size={12} className="text-ink/40" />
                                             <Text className="text-xs text-ink/60 font-medium">Grade {s.grade}</Text>
                                         </HStack>
                                     )}

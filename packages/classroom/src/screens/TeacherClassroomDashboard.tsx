@@ -226,23 +226,21 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                 return <ClassroomNotes classroomId={classroomId} isTeacher={can('manage', 'Classroom')} />;
             case 'students':
                 return (
-                    <VStack sx={{ flex: 1 }}>
-                        <Box sx={{ paddingHorizontal: Theme.spacing.md, paddingTop: Theme.spacing.md }}>
+                    <VStack className="flex-1">
+                        <Box className="px-md pt-md">
                             <Box
-                                sx={{
+                                className="p-md border rounded-comfortable"
+                                style={{
                                     backgroundColor: colors.secondary,
-                                    borderWidth: 1,
                                     borderColor: colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                    padding: Theme.spacing.md,
                                 }}
                             >
-                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}>
+                                <HStack className="items-center justify-between gap-md">
+                                    <VStack className="flex-1">
+                                        <Heading className="text-md" style={{ color: colors.text }}>
                                             Classroom roster
                                         </Heading>
-                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                        <Text className="text-sm" style={{ color: colors.textSecondary }}>
                                             Student management, direct edits, removals, and group composition now sit together.
                                         </Text>
                                     </VStack>
@@ -251,9 +249,10 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                                         variant="outline"
                                         action="secondary"
                                         onPress={() => setShowGroupsModal(true)}
-                                        sx={{ borderColor: colors.border, borderRadius: Theme.corners.full }}
+                                        className="border rounded-full"
+                                        style={{ borderColor: colors.border }}
                                     >
-                                        <HStack sx={{ alignItems: 'center', gap: 6 }}>
+                                        <HStack className="items-center gap-1.5">
                                             <Layers3 size={16} color={colors.text} />
                                             <ButtonText color={colors.text}>Groups</ButtonText>
                                         </HStack>
@@ -322,9 +321,9 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
         return (
             <ScreenWrapper>
                 <GlobalHeader title={classroomName} showBack onBack={() => navigation.goBack()} />
-                <VStack sx={{ gap: '$md' as any, padding: '$4' as any }}>
+                <VStack className="gap-md p-4">
                     <SkeletonCard height={100} />
-                    <HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}>
+                    <HStack className="gap-md mt-4">
                         <SkeletonCard width={90} height={70} />
                         <SkeletonCard width={90} height={70} />
                         <SkeletonCard width={90} height={70} />
@@ -354,15 +353,13 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                 showBack
                 onBack={() => navigation.goBack()}
             />
-            <ScrollView stickyHeaderIndices={[2]} contentContainerStyle={{ paddingBottom: bottomPadding, backgroundColor: Theme.colors.vellum }}>
-                <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.vellum }}>
+            <ScrollView stickyHeaderIndices={[2]} contentContainerStyle={{ paddingBottom: bottomPadding }} className="bg-vellum">
+                <Box className="p-md bg-vellum">
                     <Box
-                        sx={{
-                            backgroundColor: Theme.colors.silk,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
+                        className="bg-silk rounded-generous border p-lg shadow-md"
+                        style={{
                             borderColor: Theme.colors.linen,
-                            padding: Theme.spacing.lg,
+                            // Use native shadow for depth since tailwind shadow might be subtle
                             shadowColor: Theme.colors.shadowAmbient,
                             shadowOffset: { width: 0, height: 8 },
                             shadowOpacity: 1,
@@ -370,16 +367,16 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                             elevation: 4,
                         }}
                     >
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: Theme.spacing.md }}>
-                                <VStack sx={{ flex: 1, gap: 4 }}>
-                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <VStack className="gap-md">
+                            <HStack className="justify-between items-start gap-md">
+                                <VStack className="flex-1 gap-1">
+                                    <Text className="text-xs font-bold uppercase tracking-widest" style={{ color: colors.textTertiary }}>
                                         Teacher Classroom
                                     </Text>
-                                    <Heading sx={{ fontSize: Theme.typography.fontSize['2xl'], color: Theme.colors.inkTruth }}>
+                                    <Heading className="text-2xl text-inkTruth">
                                         {classroomName}
                                     </Heading>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                    <Text className="text-sm" style={{ color: colors.textSecondary }}>
                                         Hold the classroom as one living workspace: roster, rhythm, assignments, notes, and insight in one sanctuary.
                                     </Text>
                                 </VStack>
@@ -388,13 +385,9 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                                         size="sm"
                                         action="primary"
                                         onPress={() => setShowAddMonthModal(true)}
-                                        sx={{
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            borderRadius: Theme.corners.full,
-                                            paddingHorizontal: Theme.spacing.md,
-                                        }}
+                                        className="bg-sanctuarySaffron rounded-full px-md"
                                     >
-                                        <HStack alignItems="center" sx={{ gap: 4 }}>
+                                        <HStack alignItems="center" className="gap-1">
                                             <Plus size={16} color={Theme.colors.sacredWhite} />
                                             <ButtonText color={Theme.colors.sacredWhite}>New Module</ButtonText>
                                         </HStack>
@@ -420,35 +413,33 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
                         </VStack>
                     </Box>
                 </Box>
-                <Box sx={{ paddingHorizontal: Theme.spacing.md, paddingBottom: Theme.spacing.md, backgroundColor: Theme.colors.vellum }}>
+                <Box className="px-md pb-md bg-vellum">
                     <Box
-                        sx={{
+                        className="rounded-generous border p-md"
+                        style={{
                             backgroundColor: 'rgba(250,247,237,0.94)',
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
                             borderColor: Theme.colors.linen,
-                            padding: Theme.spacing.md,
                         }}
                     >
-                        <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                            <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>
+                        <HStack className="items-center justify-between gap-md">
+                            <VStack className="flex-1">
+                                <Text className="text-xs uppercase font-bold" style={{ color: colors.textTertiary }}>
                                     Student Pulse
                                 </Text>
-                                <Text sx={{ color: colors.textSecondary }}>
+                                <Text style={{ color: colors.textSecondary }}>
                                     Move between roster and attendance report to follow classroom rhythm without leaving this workspace.
                                 </Text>
                                 {!!workspace.workspaceError && (
-                                    <Text sx={{ color: colors.error, fontSize: Theme.typography.fontSize.xs, marginTop: Theme.spacing.xs }}>
+                                    <Text className="text-xs mt-xs" style={{ color: colors.error }}>
                                         {workspace.workspaceError.message}
                                     </Text>
                                 )}
                             </VStack>
-                            <HStack sx={{ gap: Theme.spacing.sm }}>
+                            <HStack className="gap-sm">
                                 <Button size="sm" variant="outline" action="secondary" onPress={() => setActiveFeature('students')}>
                                     <ButtonText color={colors.text}>Roster</ButtonText>
                                 </Button>
-                                <Button size="sm" action="primary" onPress={() => setActiveView('attendance_report')} sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}>
+                                <Button size="sm" action="primary" onPress={() => setActiveView('attendance_report')} className="bg-sanctuarySaffron">
                                     <ButtonText color={Theme.colors.sacredWhite}>Report</ButtonText>
                                 </Button>
                             </HStack>

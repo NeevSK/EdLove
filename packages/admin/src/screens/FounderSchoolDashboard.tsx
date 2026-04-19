@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
 import {
     Box,
     Text,
@@ -17,7 +16,8 @@ import {
     SkeletonCard,
     PositiveInvitation,
     hapticLight,
-    Theme
+    Theme,
+    Pressable
 } from '@repo/ui';
 import { useStore, useFeatureAccess, type FounderStackParamList } from '@repo/core';
 import { Compass, Zap, Globe, Heart, Plus } from 'lucide-react-native';
@@ -52,7 +52,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                 subtitle={school?.name || t('founder.educationalEcology')}
             />
             
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <VStack className="p-6 gap-6">
                     {/* Main Content */}
                     {stats && !isLoading && (
@@ -147,13 +147,13 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                                 {t('founder.wellnessIncrease', { percent: 12 })}
                                             </Text>
                                         </VStack>
-                                        <Heart color={colors.error} size={24} fill={colors.error} />
+                                        <Icon as={Heart} color={colors.error} size={24} fill={colors.error} />
                                     </HStack>
                                 </Box>
                             </VStack>
 
                             {/* Operational Shortcut for Founders */}
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => {
                                     hapticLight();
                                     (navigation as any).navigate('PrincipalDashboard', {
@@ -163,7 +163,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                 }}
                             >
                                 <Box 
-                                    className="p-4 rounded-xl border flex-row items-center gap-4"
+                                    className="p-4 rounded-xl border flex-row items-center gap-4 active:bg-ink/5"
                                     style={{
                                         backgroundColor: colors.secondary,
                                         borderColor: colors.action
@@ -185,7 +185,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                     </VStack>
                                     <Icon as={Compass} color={theme.text.secondary} size="md" />
                                 </Box>
-                            </TouchableOpacity>
+                            </Pressable>
 
                             {isGuest && (
                                 <PositiveInvitation
@@ -215,16 +215,12 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                 </VStack>
             </ScrollView>
 
-            <TouchableOpacity
+            <Pressable
                 onPress={() => setIsCreateModalOpen(true)}
-                className="absolute bottom-5 right-5 w-14 h-14 rounded-full justify-center items-center z-10"
-                style={{
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    ...Theme.shadows.md,
-                }}
+                className="absolute bottom-5 right-5 w-14 h-14 rounded-full justify-center items-center z-10 bg-amber-500 active:scale-95 shadow-lg"
             >
                 <Icon as={Plus} size="lg" color="white" />
-            </TouchableOpacity>
+            </Pressable>
 
             <CreateSchoolModal
                 isOpen={isCreateModalOpen}
@@ -236,4 +232,5 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
         </ScreenWrapper>
     );
 }
+
 

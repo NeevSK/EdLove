@@ -40,7 +40,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     items={[
                         { label: "Total Nodes", value: data.nodes.length, icon: Network, color: accent.action },
                         { label: "Connections", value: data.links.length, icon: Orbit, color: accent.action },
-                        { label: "Pathways", value: data.nodes.filter(n => n.path).length, icon: Route, color: accent.reward || accent.secondary }
+                        { label: "Pathways", value: data.nodes.filter(n => n.path).length, icon: Route, color: accent.reward }
                     ]}
                     progressLabel="Overall Discovery"
                     progressValue={Math.min(100, Math.floor((data.nodes.length / 100) * 100))}

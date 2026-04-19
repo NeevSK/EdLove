@@ -14,6 +14,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import {
+    Box,
+    VStack,
+    HStack,
+    Text,
     useTheme,
     ScreenWrapper,
     GlobalHeader,
@@ -48,7 +52,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     };
 
     return (
-        <ScreenWrapper scroll={false} style={{ backgroundColor: theme.phase.surface, flex: 1 }}>
+        <ScreenWrapper scroll={false} style={{ backgroundColor: theme.glass.surface.bg, flex: 1 }}>
             <GlobalHeader
                 title={title}
                 subtitle="Document Viewer"

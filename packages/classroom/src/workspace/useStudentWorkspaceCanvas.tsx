@@ -4,12 +4,14 @@ import {
     type WorkspaceLayout,
     type ResolvedWorkspaceSurface,
     type WorkspaceZoneId,
-    useWorkspaceLayoutSync} from '@repo/core';
+    useWorkspaceLayoutSync
+} from '@repo/core';
 import { Box, HStack, Pressable, Text, WorkspaceCanvas } from '@repo/ui';
 import type {
     StudentDashboardCapabilityKey,
     StudentDashboardSurface,
-    StudentDashboardSurfaceId} from './useStudentDashboardSurfaces';
+    StudentDashboardSurfaceId
+} from './useStudentDashboardSurfaces';
 
 type StudentResolvedSurface = StudentDashboardSurface &
     ResolvedWorkspaceSurface<StudentDashboardSurfaceId, StudentDashboardCapabilityKey>;
@@ -18,7 +20,8 @@ const LEGACY_STUDENT_SURFACE_ID_MAP: Partial<
     Record<StudentDashboardSurfaceId | 'demo-assignments' | 'demo-goals', StudentDashboardSurfaceId>
 > = {
     'demo-assignments': 'assignment-queue',
-    'demo-goals': 'growth-goals'};
+    'demo-goals': 'growth-goals'
+};
 
 function migrateStudentSurfaceId(
     surfaceId: StudentDashboardSurfaceId | 'demo-assignments' | 'demo-goals'
@@ -39,7 +42,8 @@ function migrateStudentWorkspaceLayout(
                 migrateStudentSurfaceId(surfaceId as StudentDashboardSurfaceId | 'demo-assignments' | 'demo-goals'),
                 zone,
             ])
-        ) as Partial<Record<StudentDashboardSurfaceId, WorkspaceZoneId>>};
+        ) as Partial<Record<StudentDashboardSurfaceId, WorkspaceZoneId>>
+    };
 }
 
 function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
@@ -57,7 +61,8 @@ export function useStudentWorkspaceLayout(
         userId,
         surfaces,
         migrateLayout: migrateStudentWorkspaceLayout,
-        enableRemoteSync: false});
+        enableRemoteSync: false
+    });
 
     const resolvedSurfaceMap = useMemo(
         () =>
@@ -76,7 +81,8 @@ export function useStudentWorkspaceLayout(
 
                     return {
                         ...surface,
-                        ...resolved} as StudentResolvedSurface;
+                        ...resolved
+                    } as StudentResolvedSurface;
                 })
                 .filter(Boolean) as StudentResolvedSurface[],
         [surfaces, resolvedSurfaceMap]
@@ -84,7 +90,8 @@ export function useStudentWorkspaceLayout(
 
     return {
         ...workspace,
-        surfaces: enrichedSurfaces};
+        surfaces: enrichedSurfaces
+    };
 }
 
 export function StudentWorkspaceCanvas({
@@ -92,7 +99,8 @@ export function StudentWorkspaceCanvas({
     surfaces,
     onToggleHidden,
     onTogglePinned,
-    onMoveToNextZone}: {
+    onMoveToNextZone
+}: {
     layout: {
         order: StudentDashboardSurfaceId[];
         hidden: StudentDashboardSurfaceId[];
@@ -110,13 +118,14 @@ export function StudentWorkspaceCanvas({
     if (!layout) return null;
 
     return (
-        <WorkspaceCanvas, surfaces={surfaces}
+        <WorkspaceCanvas
+            surfaces={surfaces}
             layout={layout as any}
-            title="Student, Workspace Canvas"
-            subtitle="Daily, learning flow, arranged as a, shared canvas, with, room to, pin, hide, and, move surfaces, around real, study rhythms."
-            emptyMessage="No, student surfaces, are available, yet for this workspace."
+            title="Student Workspace Canvas"
+            subtitle="Daily learning flow arranged as a shared canvas, with room to pin, hide, and move surfaces around real study rhythms."
+            emptyMessage="No student surfaces are available yet for this workspace."
             renderSurfaceContent={(surface) => (
-                <Box, className="flex-1">{(surface as StudentResolvedSurface).content}</Box>
+                <Box className="flex-1">{(surface as StudentResolvedSurface).content}</Box>
             )}
             getSurfaceTitle={(surface) => (surface as StudentResolvedSurface).title}
             getSurfaceSubtitle={(surface) => (surface as StudentResolvedSurface).subtitle}
@@ -128,22 +137,24 @@ export function StudentWorkspaceCanvas({
                 const nextZone = getNextZone(typedSurface.zone);
 
                 return (
-                    <HStack, className="gap-3, flex-wrap">
-                        <Pressable, onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
+                    <HStack className="gap-3 flex-wrap">
+                        <Pressable
+                            onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
                             className="active:opacity-80"
                         >
-                            <Box, className="rounded-full, px-4, py-2, bg-phase-primary/5, border border-starlightGray/10">
-                                <Text, className="text-[12px] font-bold, text-phaseText-primary">
+                            <Box className="rounded-full px-4 py-2 bg-phase-primary/5 border border-starlightGray/10">
+                                <Text className="text-[12px] font-bold text-phaseText-primary">
                                     {typedSurface.pinned ? 'Unpin' : 'Pin'}
                                 </Text>
                             </Box>
                         </Pressable>
-                        <Pressable, onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
+                        <Pressable
+                            onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
                             className="active:opacity-80"
                         >
-                            <Box, className="rounded-full, px-4, py-2, bg-phase-primary/5, border border-starlightGray/10">
-                                <Text, className="text-[12px] font-bold, text-phaseText-primary">
-                                    Move, to {nextZone}
+                            <Box className="rounded-full px-4 py-2 bg-phase-primary/5 border border-starlightGray/10">
+                                <Text className="text-[12px] font-bold text-phaseText-primary">
+                                    Move to {nextZone}
                                 </Text>
                             </Box>
                         </Pressable>
@@ -156,3 +167,4 @@ export function StudentWorkspaceCanvas({
         />
     );
 }
+

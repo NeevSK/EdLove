@@ -89,7 +89,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                 />
                 <HStack className="p-5 gap-4 items-center">
                     <Box className="w-[60px] h-[60px] rounded-[30px] bg-white/10 justify-center items-center">
-                        <Icon icon={MapIcon} size={32} color={theme.accent.action} />
+                        <Icon as={MapIcon} size={32} color={theme.accent.action} />
                     </Box>
                     <VStack className="flex-1 gap-1">
                         <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
@@ -103,7 +103,7 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                         </Text>
                     </VStack>
                     <Box className="p-2.5 bg-phase-accent rounded-xl">
-                        <Icon icon={Play} size={16} color="white" fill="white" />
+                        <Icon as={Play} size={16} color="white" fill="white" />
                     </Box>
                 </HStack>
             </Pressable>
@@ -127,7 +127,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                 />
                 <HStack className="p-4 gap-4 items-center">
                     <Box className="w-12 h-12 rounded-full bg-phase-accent/10 justify-center items-center">
-                        <Icon icon={FileText} size={24} color={theme.accent.action} />
+                        <Icon as={FileText} size={24} color={theme.accent.action} />
                     </Box>
                     <VStack className="flex-1 gap-0.5">
                         <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
@@ -140,7 +140,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
                             Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
                         </Text>
                     </VStack>
-                    <Icon icon={Plus} size={16} color={theme.text.secondary} />
+                    <Icon as={Plus} size={16} color={theme.text.secondary} />
                 </HStack>
             </Pressable>
         </Animated.View>
@@ -444,7 +444,7 @@ export default function LibraryScreen() {
                         <Pressable 
                             onPress={() => navigation.navigate('LibraryMap' as any)}
                             style={styles.mapToggleButton}>
-                            <Icon icon={MapIcon} size={20} color={theme.text.primary} />
+                            <Icon as={MapIcon} size={20} color={theme.text.primary} />
                         </Pressable>
                     </HStack>
                 }
@@ -475,7 +475,7 @@ export default function LibraryScreen() {
                             <Pressable 
                                 onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
                                 style={[styles.actionBtn, { borderColor: `${theme.accent.action}88` }]}>
-                                <Icon icon={Library} size={14} color={theme.accent.action} />
+                                <Icon as={Library} size={14} color={theme.accent.action} />
                                 <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
                             </Pressable>
                         </HStack>
@@ -505,17 +505,17 @@ export default function LibraryScreen() {
                                     <Pressable 
                                         onPress={() => setViewMode('shelf')} 
                                         style={[styles.toggleBtn, viewMode === 'shelf' && { backgroundColor: theme.accent.action }]}>
-                                        <Icon icon={Layers} size={14} color={viewMode === 'shelf' ? theme.text.inverse : theme.text.secondary} />
+                                        <Icon as={Layers} size={14} color={viewMode === 'shelf' ? theme.text.inverse : theme.text.secondary} />
                                     </Pressable>
                                     <Pressable 
                                         onPress={() => setViewMode('grid')} 
                                         style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: theme.accent.action }]}>
-                                        <Icon icon={LayoutGrid} size={14} color={viewMode === 'grid' ? theme.text.inverse : theme.text.secondary} />
+                                        <Icon as={LayoutGrid} size={14} color={viewMode === 'grid' ? theme.text.inverse : theme.text.secondary} />
                                     </Pressable>
                                     <Pressable 
                                         onPress={() => setViewMode('list')} 
                                         style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: theme.accent.action }]}>
-                                        <Icon icon={List} size={14} color={viewMode === 'list' ? theme.text.inverse : theme.text.secondary} />
+                                        <Icon as={List} size={14} color={viewMode === 'list' ? theme.text.inverse : theme.text.secondary} />
                                     </Pressable>
                                 </HStack>
                             </HStack>
@@ -747,7 +747,7 @@ function HeroOverlay({ resource, theme }: { resource: LibraryResource; theme: an
                     <Box 
                         className="flex-row items-center gap-1.5 px-3.5 py-2 rounded-xl"
                         style={{ backgroundColor: theme.accent.action }}>
-                        <Icon icon={Play} size={14} color="white" fill="white" />
+                        <Icon as={Play} size={14} color="white" fill="white" />
                         <Text className="text-white font-bold text-[13px]">Open</Text>
                     </Box>
                     {resource.creator_name ? (

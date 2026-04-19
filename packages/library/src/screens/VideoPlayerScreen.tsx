@@ -148,7 +148,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                                     accessibilityRole="button"
                                     className="w-20 h-20 rounded-full bg-phase-accent items-center justify-center shadow-lg"
                                     style={{
-                                        shadowColor: theme.colors.accent.primary,
+                                        shadowColor: theme.accent.action,
                                         shadowRadius: 20,
                                         shadowOpacity: 0.5,
                                     }}

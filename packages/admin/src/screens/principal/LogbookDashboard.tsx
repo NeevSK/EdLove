@@ -8,16 +8,17 @@ import {
     Icon, 
     Button,
     ButtonText,
+    ButtonIcon,
     Textarea,
     TextareaInput,
     ScrollView,
     SkeletonCard,
     hapticSuccess,
-    LotusDropdown
+    LotusDropdown,
+    Pressable
 } from '@repo/ui';
 import { ArrowLeft, Plus, StickyNote, AlertTriangle, Medal, Footprints } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-import { TouchableOpacity } from 'react-native';
 import { observationsAPI, type PrincipalObservation } from '../../observations';
 
 interface LogbookDashboardProps {
@@ -81,10 +82,10 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
 
     const getTypeIcon = (t: string) => {
         switch (t) {
-            case 'walkthrough': return <Footprints size={14} />;
-            case 'concern': return <AlertTriangle size={14} />;
-            case 'commendation': return <Medal size={14} />;
-            default: return <StickyNote size={14} />;
+            case 'walkthrough': return <Icon as={Footprints} size="xs" />;
+            case 'concern': return <Icon as={AlertTriangle} size="xs" />;
+            case 'commendation': return <Icon as={Medal} size="xs" />;
+            default: return <Icon as={StickyNote} size="xs" />;
         }
     };
 
@@ -100,12 +101,12 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
     return (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <VStack className="gap-6 p-4">
-                <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
-                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
+                <Pressable onPress={onBack}>
+                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border active:scale-95">
                         <Icon as={ArrowLeft} size="sm" className="text-ink" />
                         <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
                     </HStack>
-                </TouchableOpacity>
+                </Pressable>
 
                 <VStack className="gap-1">
                     <Heading className="text-2xl font-black text-ink">Institutional Log</Heading>
@@ -122,21 +123,21 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                         options={typeOptions}
                         value={type}
                         onValueChange={setType}
-                        disabled={isPastView}
+                        isDisabled={isPastView}
                     />
 
                     <Textarea className="h-32 rounded-2xl">
                         <TextareaInput 
                             value={content} 
                             onChangeText={setContent} 
-                            disabled={isPastView} 
+                            isDisabled={isPastView} 
                             placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note..."} 
                         />
                     </Textarea>
 
                     <Button 
                         onPress={handleSaveObservation} 
-                        disabled={!content.trim() || saving || isPastView} 
+                        isDisabled={!content.trim() || saving || isPastView} 
                         className="bg-primary rounded-2xl h-12 self-start px-6 shadow-sm active:scale-95"
                     >
                         {saving ? (
@@ -189,3 +190,4 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
 };
 
 export type { LogbookDashboardProps };
+

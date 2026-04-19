@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { useTheme } from '@repo/ui';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    ScrollView, 
+    Pressable, 
+    useTheme, 
+    useThemedColors,
+    ScreenWrapper,
+    GlobalHeader
+} from '@repo/ui';
 import { multiTenantAnalyticsAPI, type TenantMetrics, type LiveMetrics } from '@repo/analytics';
 
 interface AnalyticsDashboardScreenProps {
@@ -11,8 +22,6 @@ interface AnalyticsDashboardScreenProps {
   onMetricDrillDown: (metric: string, data: any) => void;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
-
 export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> = ({
   tenantId,
   tenantName,
@@ -21,12 +30,11 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   onMetricDrillDown
 }) => {
   const theme = useTheme();
+  const colors = useThemedColors();
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
-
-  const isDesktop = screenWidth > 1024;
 
   useEffect(() => {
     loadDashboard();
@@ -93,296 +101,158 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
-    if (!threshold) return theme.text.secondary;
+    if (!threshold) return 'text-ink/60';
 
-    if (value >= threshold.good) return theme.accent.action;
-    if (value >= threshold.warning) return theme.accent.reward;
-    return theme.accent.danger;
+    if (value >= threshold.good) return 'text-action';
+    if (value >= threshold.warning) return 'text-amber-500';
+    return 'text-error';
   };
 
   const getSystemHealthColor = (health: string) => {
     switch (health) {
-      case 'healthy': return theme.accent.action;
-      case 'warning': return theme.templeGold;
-      case 'critical': return theme.accent.danger;
-      default: return theme.text.secondary;
+      case 'healthy': return 'text-action';
+      case 'warning': return 'text-amber-500';
+      case 'critical': return 'text-error';
+      default: return 'text-ink/60';
     }
   };
 
   const getChangeIndicator = (metric: string) => {
     const trends: Record<string, string> = {
-      attendance_rate: '\u2191 2.3%',
-      grade_average: '\u2191 1.8%',
-      parent_engagement: '\u2193 0.5%',
-      operational_efficiency: '\u2191 3.2%',
-      compliance_score: '\u2192 0.0%'
+      attendance_rate: '↑ 2.3%',
+      grade_average: '↑ 1.8%',
+      parent_engagement: '↓ 0.5%',
+      operational_efficiency: '↑ 3.2%',
+      compliance_score: '→ 0.0%'
     };
     
-    return trends[metric] || '\u2192 0.0%';
+    return trends[metric] || '→ 0.0%';
   };
 
-  const linkText = (value: number, key: string) => {
+  const formatValue = (value: number, key: string) => {
     const formatted = typeof value === 'number' ? value.toFixed(1) : (value || 0);
     const suffix = key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : '';
     return `${formatted}${suffix}`;
   };
 
   const renderMetricCard = (key: string, value: number, title: string, icon: string) => (
-    <TouchableOpacity
+    <Pressable
       key={key}
-      style={[
-        styles.metricCard,
-        {
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          borderWidth: 1
-        }
-      ]}
-      onPress={() => onMetricDrillDown(key, { value, title })}>
-      <View style={styles.metricHeader}>
-        <Text 
-          style={[
-            styles.metricIcon,
-            { 
-              color: theme.accent.action,
-              fontSize: isDesktop ? 24 : 20
-            }
-          ]}>
-          {icon}
-        </Text>
-        <Text 
-          style={[
-            styles.metricTitle,
-            { 
-              color: theme.text.secondary,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10
-            }
-          ]}>
+      onPress={() => onMetricDrillDown(key, { value, title })}
+      className="bg-white p-4 rounded-3xl border border-border w-[47%] mb-3 active:scale-95"
+    >
+      <VStack className="items-center gap-2">
+        <Text className="text-2xl">{icon}</Text>
+        <Text className="text-[10px] font-black uppercase tracking-wider text-ink/40 text-center">
           {title}
         </Text>
-      </View>
-      <Text 
-        style={[
-          styles.metricValue,
-          { 
-            color: getMetricColor(value, key),
-            fontFamily: 'System',
-            fontWeight: '700',
-            fontSize: isDesktop ? 28 : 24
-          }
-        ]}>
-        {linkText(value, key)}
-      </Text>
-      <Text 
-        style={[
-          styles.metricChange,
-          { 
-            color: theme.text.muted,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 11 : 9
-          }
-        ]}>
-        {getChangeIndicator(key)}
-      </Text>
-    </TouchableOpacity>
+        <Text className={`text-2xl font-black ${getMetricColor(value, key)}`}>
+          {formatValue(value, key)}
+        </Text>
+        <Text className="text-[10px] font-bold text-ink/20">
+          {getChangeIndicator(key)}
+        </Text>
+      </VStack>
+    </Pressable>
   );
 
-  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, color: string) => (
-    <View
+  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, colorClass: string) => (
+    <Box
       key={title}
-      style={[
-        styles.liveMetricCard,
-        {
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          borderWidth: 1
-        }
-      ]}>
-      <Text 
-        style={[
-          styles.liveMetricTitle,
-          { 
-            color: theme.text.secondary,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 12 : 10
-          }
-        ]}>
+      className="bg-white p-4 rounded-3xl border border-border flex-1 min-w-[140px] mb-3 items-center"
+    >
+      <Text className="text-[10px] font-black uppercase tracking-wider text-ink/40 mb-2">
         {title}
       </Text>
-      <Text 
-        style={[
-          styles.liveMetricValue,
-          { 
-            color,
-            fontFamily: 'System',
-            fontWeight: '700',
-            fontSize: isDesktop ? 20 : 16
-          }
-        ]}>
+      <Text className={`text-xl font-black ${colorClass}`}>
         {value}
       </Text>
-      <Text 
-        style={[
-          styles.liveMetricSubtitle,
-          { 
-            color: theme.text.muted,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 10 : 8
-          }
-        ]}>
+      <Text className="text-[10px] font-bold text-ink/20 mt-1">
         {subtitle}
       </Text>
-    </View>
+    </Box>
   );
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-          Loading analytics dashboard...
-        </Text>
-      </View>
+      <ScreenWrapper>
+        <Box className="flex-1 items-center justify-center p-10 bg-silk">
+          <Text className="text-ink/40 font-bold italic">Loading analytics dashboard...</Text>
+        </Box>
+      </ScreenWrapper>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
-        <View style={styles.headerLeft}>
-          <Text 
-            style={[
-              styles.title,
-              { 
-                color: theme.text.primary,
-                fontFamily: 'System',
-                fontWeight: '700',
-                fontSize: isDesktop ? 32 : 24
-              }
-            ]}>
-            Analytics Dashboard
-          </Text>
-          <Text 
-            style={[
-              styles.subtitle,
-              { 
-                color: theme.text.secondary,
-                fontFamily: 'System',
-                fontSize: isDesktop ? 16 : 14
-              }
-            ]}>
-            {tenantName}
-          </Text>
-        </View>
-      </View>
+    <ScreenWrapper noTopInset={true}>
+      <GlobalHeader title="Analytics" subtitle={tenantName} />
+      
       <ScrollView 
-        style={styles.content}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.section}>
-          <Text style={[styles.sectionHeader, { color: theme.text.primary, fontSize: isDesktop ? 20 : 16 }]}>
-            Key Performance Metrics
-          </Text>
-          <View style={styles.metricsGrid}>
-            {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
-              const metricTitles: Record<string, string> = {
-                attendance_rate: 'Attendance Rate',
-                grade_average: 'Grade Average',
-                enrollment_count: 'Total Enrollment',
-                staff_turnover: 'Staff Turnover',
-                resource_utilization: 'Resource Utilization',
-                parent_engagement: 'Parent Engagement',
-                document_processing_time: 'Doc Processing Time',
-                revenue_per_student: 'Revenue per Student',
-                operational_efficiency: 'Operational Efficiency',
-                compliance_score: 'Compliance Score'
-              };
-              
-              const metricIcons: Record<string, string> = {
-                attendance_rate: '\uD83D\uDCCA',
-                grade_average: '\uD83C\uDFAF',
-                enrollment_count: '\uD83D\uDC65',
-                staff_turnover: '\uD83D\uDD04',
-                resource_utilization: '\uD83D\uDCE6',
-                parent_engagement: '\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66',
-                document_processing_time: '\uD83D\uDCC4',
-                revenue_per_student: '\uD83D\uDCB0',
-                operational_efficiency: '\u26A1',
-                compliance_score: '\u2705'
-              };
-              
-              return renderMetricCard(
-                key, 
-                value as number, 
-                metricTitles[key] || key,
-                metricIcons[key] || '\uD83D\uDCCA'
-              );
-            })}
-          </View>
-        </View>
+        className="flex-1 bg-silk" 
+        contentContainerClassName="p-6 pb-12"
+        showsVerticalScrollIndicator={false}
+      >
+        <VStack className="gap-8">
+            <VStack gap={4}>
+                <Heading className="text-base font-black text-ink uppercase tracking-widest opacity-40">
+                    Key Performance Metrics
+                </Heading>
+                <HStack className="flex-wrap justify-between">
+                    {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
+                    const metricTitles: Record<string, string> = {
+                        attendance_rate: 'Attendance',
+                        grade_average: 'Grades',
+                        enrollment_count: 'Enrollment',
+                        staff_turnover: 'Turnover',
+                        resource_utilization: 'Resources',
+                        parent_engagement: 'Engagement',
+                        document_processing_time: 'Doc Speed',
+                        revenue_per_student: 'Revenue',
+                        operational_efficiency: 'Efficiency',
+                        compliance_score: 'Compliance'
+                    };
+                    
+                    const metricIcons: Record<string, string> = {
+                        attendance_rate: '📊',
+                        grade_average: '🎯',
+                        enrollment_count: '👥',
+                        staff_turnover: '🔄',
+                        resource_utilization: '📦',
+                        parent_engagement: '👨‍👩‍👧‍👦',
+                        document_processing_time: '📄',
+                        revenue_per_student: '💰',
+                        operational_efficiency: '⚡',
+                        compliance_score: '✅'
+                    };
+                    
+                    return renderMetricCard(
+                        key, 
+                        value as number, 
+                        metricTitles[key] || key,
+                        metricIcons[key] || '📊'
+                    );
+                    })}
+                </HStack>
+            </VStack>
 
-        {liveMetrics && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionHeader, { color: theme.text.primary, fontSize: isDesktop ? 20 : 16 }]}>
-              Live System Metrics
-            </Text>
-            <View style={styles.liveMetricsGrid}>
-              {renderLiveMetricCard('Active Users', liveMetrics.active_users, 'Currently online', theme.sageGreen)}
-              {renderLiveMetricCard('API Requests/min', liveMetrics.api_requests_per_minute, 'Last 60 seconds', getSystemHealthColor(liveMetrics.system_health))}
-              {renderLiveMetricCard('Error Rate', `${liveMetrics.error_rate.toFixed(1)}%`, 'Last 60 seconds', liveMetrics.error_rate > 5 ? theme.accent.danger : theme.sageGreen)}
-              {renderLiveMetricCard('System Health', liveMetrics.system_health.toUpperCase(), `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`, getSystemHealthColor(liveMetrics.system_health))}
-            </View>
-          </View>
-        )}
+            {liveMetrics && (
+            <VStack gap={4}>
+                <Heading className="text-base font-black text-ink uppercase tracking-widest opacity-40">
+                    Live System Health
+                </Heading>
+                <HStack className="flex-wrap gap-4">
+                    {renderLiveMetricCard('Active Users', liveMetrics.active_users, 'Currently online', 'text-action')}
+                    {renderLiveMetricCard('API Reqs/m', liveMetrics.api_requests_per_minute, 'Last 60s', getSystemHealthColor(liveMetrics.system_health))}
+                    {renderLiveMetricCard('Error Rate', `${liveMetrics.error_rate.toFixed(1)}%`, 'Last 60s', liveMetrics.error_rate > 5 ? 'text-error' : 'text-action')}
+                    {renderLiveMetricCard('Health', liveMetrics.system_health.toUpperCase(), `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`, getSystemHealthColor(liveMetrics.system_health))}
+                </HStack>
+            </VStack>
+            )}
+        </VStack>
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    borderBottomWidth: 1
-  },
-  headerLeft: { flex: 1 },
-  title: { marginBottom: 4 },
-  subtitle: { opacity: 0.7 },
-  content: { flex: 1 },
-  contentContainer: { padding: 20 },
-  section: { marginBottom: 32 },
-  sectionHeader: { marginBottom: 16, fontWeight: '700' },
-  metricsGrid: { gap: 16, flexDirection: 'row', flexWrap: 'wrap' },
-  metricCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    alignItems: 'center',
-    width: (screenWidth - 56) / 2, // Simple 2-column mobile grid
-    minWidth: 150
-  },
-  metricHeader: { alignItems: 'center', marginBottom: 12 },
-  metricIcon: { marginBottom: 4 },
-  metricTitle: { textAlign: 'center' },
-  metricValue: { marginBottom: 4 },
-  metricChange: { fontSize: 10 },
-  liveMetricsGrid: { gap: 16, flexDirection: 'row', flexWrap: 'wrap' },
-  liveMetricCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    alignItems: 'center',
-    flex: 1,
-    minWidth: 120
-  },
-  liveMetricTitle: { marginBottom: 8, textAlign: 'center' },
-  liveMetricValue: { marginBottom: 4 },
-  liveMetricSubtitle: { textAlign: 'center' },
-  loadingText: { textAlign: 'center', marginTop: 60, fontSize: 16 }
-});
-
 export default AnalyticsDashboardScreen;
+

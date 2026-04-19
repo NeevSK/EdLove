@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Award, BookMarked } from 'lucide-react-native';
-import { Box, HStack, SkeletonCard, Text,  VStack} from '@repo/ui';
+import { Box, HStack, SkeletonCard, Text, VStack, Theme, colors } from '@repo/ui';
 import { supabase } from '@repo/core';
 
 interface GradeRow {
@@ -21,27 +21,29 @@ const DEMO_GRADES: GradeRow[] = [
   {
     id: 'demo-grade-1',
     grade: 86,
-    feedback: 'Clear, reasoning, and, careful, presentation.',
+    feedback: 'Clear reasoning and careful presentation.',
     submitted_at: new Date().toISOString(),
-    assignments: { title: 'Wave, Function, Practice' },
-    classrooms: { name: 'Grade 10, Mathematics' }},
+    assignments: { title: 'Wave Function Practice' },
+    classrooms: { name: 'Grade 10 Mathematics' }
+  },
   {
     id: 'demo-grade-2',
     grade: 73,
-    feedback: 'Good, improvement. Keep, refining, your, lab, conclusions.',
+    feedback: 'Good improvement. Keep refining your lab conclusions.',
     submitted_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-    assignments: { title: 'Photosynthesis, Lab, Report' },
-    classrooms: { name: 'Grade 11, Science' }},
+    assignments: { title: 'Photosynthesis Lab Report' },
+    classrooms: { name: 'Grade 11 Science' }
+  },
 ];
 
 function resolveGradeTone(grade: number) {
-  if (grade >= 75) return '#8BBF7A';
-  if (grade >= 50) return '#FFB84D';
-  return Theme.colors.emberRed;
+  if (grade >= 75) return colors.sageGreen;
+  if (grade >= 50) return colors.amberGlow;
+  return colors.emberRed;
 }
 
 export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesOverviewProps) {
-    const [grades, setGrades] = useState<GradeRow[]>(isDemo ? DEMO_GRADES : []);
+  const [grades, setGrades] = useState<GradeRow[]>(isDemo ? DEMO_GRADES : []);
   const [isLoading, setIsLoading] = useState(!isDemo);
 
   useEffect(() => {
@@ -97,28 +99,29 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     const total = grades.reduce((sum, item) => sum + item.grade, 0);
     return {
       count: grades.length,
-      average: Math.round(total / grades.length)};
+      average: Math.round(total / grades.length)
+    };
   }, [grades]);
 
   if (isLoading) {
     return (
-      <VStack, className="gap-3">
-        <SkeletonCard, height={84} />
-        <SkeletonCard, height={84} />
+      <VStack className="gap-3">
+        <SkeletonCard height={84} />
+        <SkeletonCard height={84} />
       </VStack>
     );
   }
 
   return (
-    <VStack, className="gap-3">
-      <HStack, className="gap-3">
-        <Box, className="flex-1, rounded-xl, border-[1px] border-phase-border, bg-phase-sunlight p-4">
-          <Text, className="text-phaseText-secondary, text-[11px] font-bold, uppercase">Recent, grades</Text>
-          <Text, className="mt-1, text-2xl, font-bold, text-phaseText-primary">{summary.count}</Text>
+    <VStack className="gap-3">
+      <HStack className="gap-3">
+        <Box className="flex-1 rounded-xl border border-phase-border bg-phase-sunlight p-4">
+          <Text className="text-phaseText-secondary text-[11px] font-bold uppercase">Recent grades</Text>
+          <Text className="mt-1 text-2xl font-bold text-phaseText-primary">{summary.count}</Text>
         </Box>
-        <Box, className="flex-1, rounded-xl, border-[1px] border-phase-border, bg-phase-sunlight p-4">
-          <Text, className="text-phaseText-secondary, text-[11px] font-bold, uppercase">Average</Text>
-          <Text, className="mt-1, text-2xl, font-bold"
+        <Box className="flex-1 rounded-xl border border-phase-border bg-phase-sunlight p-4">
+          <Text className="text-phaseText-secondary text-[11px] font-bold uppercase">Average</Text>
+          <Text className="mt-1 text-2xl font-bold"
             style={{ color: summary.average === null ? colors.textSecondary : resolveGradeTone(summary.average) }}
           >
             {summary.average === null ? '--' : `${summary.average}%`}
@@ -128,43 +131,46 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
 
       {grades.length > 0 ? (
         grades.slice(0, 3).map((item) => (
-          <HStack, key={item.id}
-            className="items-start, gap-3, rounded-xl, border-[1px] border-phase-border, bg-phase-sunlight p-4"
+          <HStack
+            key={item.id}
+            className="items-start gap-3 rounded-xl border border-phase-border bg-phase-sunlight p-4"
           >
-            <Box, className="h-11 w-11, items-center, justify-center, rounded-full"
+            <Box
+              className="h-11 w-11 items-center justify-center rounded-full"
               style={{
-                backgroundColor: colors.tertiary,
+                backgroundColor: colors.silk,
                 borderWidth: 1,
-                borderColor: resolveGradeTone(item.grade)}}
+                borderColor: resolveGradeTone(item.grade)
+              }}
             >
-              <Award, size={18} color={resolveGradeTone(item.grade)} />
+              <Award size={18} color={resolveGradeTone(item.grade)} />
             </Box>
-            <VStack, className="flex-1, gap-1">
-              <Text, className="text-phaseText-primary, text-[13px] font-bold">
+            <VStack className="flex-1 gap-1">
+              <Text className="text-phaseText-primary text-[13px] font-bold">
                 {item.assignments?.title ?? 'Assignment'}
               </Text>
-              <Text, className="text-phaseText-secondary, text-[12px]">
+              <Text className="text-phaseText-secondary text-[12px]">
                 {item.classrooms?.name ?? 'Classroom'}
               </Text>
               {item.feedback ? (
-                <Text, className="text-phaseText-secondary, text-[12px]">{item.feedback}</Text>
+                <Text className="text-phaseText-secondary text-[12px]">{item.feedback}</Text>
               ) : null}
             </VStack>
-            <Text, className="text-[13px] font-bold" style={{ color: resolveGradeTone(item.grade) }}>
+            <Text className="text-[13px] font-bold" style={{ color: resolveGradeTone(item.grade) }}>
               {item.grade}%
             </Text>
           </HStack>
         ))
       ) : (
-        <Box, className="rounded-xl, border-[1px] border-phase-border, bg-phase-sunlight p-4">
-          <HStack, className="items-start, gap-3">
-            <BookMarked, size={18} className="text-phaseText-secondary" />
-            <VStack, className="flex-1, gap-1">
-              <Text, className="text-phaseText-primary, text-[13px] font-bold">
-                No, graded submissions, yet
+        <Box className="rounded-xl border border-phase-border bg-phase-sunlight p-4">
+          <HStack className="items-start gap-3">
+            <BookMarked size={18} className="text-phaseText-secondary" />
+            <VStack className="flex-1 gap-1">
+              <Text className="text-phaseText-primary text-[13px] font-bold">
+                No graded submissions yet
               </Text>
-              <Text, className="text-phaseText-secondary, text-[12px]">
-                Your, academic mirror, will fill, in as teachers mark, your work.
+              <Text className="text-phaseText-secondary text-[12px]">
+                Your academic mirror will fill in as teachers mark your work.
               </Text>
             </VStack>
           </HStack>
@@ -173,3 +179,4 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     </VStack>
   );
 }
+

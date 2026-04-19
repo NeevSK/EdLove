@@ -35,7 +35,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
         type: node.type,
         completed: index < 2, // Mock progress
         locked: index > 5,
-        resonance: (node.val || 10) * 10,
+        resonance: ((node as any).val || 10) * 10,
     }));
 
     return (

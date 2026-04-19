@@ -26,7 +26,7 @@ import {
 } from 'lucide-react-native';
 import { api, type AcademicCycle } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { Alert, TouchableOpacity } from 'react-native';
+import { Alert } from 'react-native';
 
 interface AcademicCycleManagerProps {
     schoolId: string;
@@ -209,7 +209,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
                                 <Button
                                     onPress={handleCreate}
-                                    disabled={saving}
+                                    isDisabled={saving}
                                     className="bg-primary rounded-full h-12 shadow-sm mt-2"
                                 >
                                     <ButtonText className="text-white font-black uppercase tracking-widest">{saving ? 'Saving...' : 'Create Cycle'}</ButtonText>
@@ -250,13 +250,13 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
                                         <HStack className="gap-4">
                                             {!cycle.is_current && (
-                                                <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}>
+                                                <Pressable onPress={() => handleSetCurrent(cycle.id)} className="active:scale-90">
                                                     <Icon as={CheckCircle2} size={20} className="text-ink/20" />
-                                                </TouchableOpacity>
+                                                </Pressable>
                                             )}
-                                            <TouchableOpacity onPress={() => handleDelete(cycle.id)}>
+                                            <Pressable onPress={() => handleDelete(cycle.id)} className="active:scale-90">
                                                 <Icon as={Trash2} size={20} className="text-red-500" />
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         </HStack>
                                     </HStack>
                                 </Box>

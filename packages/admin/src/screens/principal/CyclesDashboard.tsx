@@ -15,11 +15,11 @@ import {
     FormControlLabel,
     FormControlLabelText,
     ScrollView,
-    SkeletonCard
+    SkeletonCard,
+    Pressable
 } from '@repo/ui';
 import { api } from '@repo/core';
 import { ArrowLeft, Plus, Calendar } from 'lucide-react-native';
-import { TouchableOpacity } from 'react-native';
 
 interface CyclesDashboardProps {
     schoolId: string;
@@ -77,12 +77,12 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
     return (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <VStack className="gap-6 p-4">
-                <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
-                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border">
+                <Pressable onPress={onBack}>
+                    <HStack className="items-center gap-2 bg-white/50 self-start px-4 py-2 rounded-xl border border-border active:opacity-70">
                         <Icon as={ArrowLeft} size="sm" className="text-ink" />
                         <Text className="text-sm font-bold text-ink">Back to Dashboard</Text>
                     </HStack>
-                </TouchableOpacity>
+                </Pressable>
 
                 <VStack className="gap-1">
                     <Heading className="text-2xl font-black text-ink">Academic Cycles</Heading>
@@ -138,7 +138,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                     <Button 
                         size="lg"
                         onPress={handleCreateCycle} 
-                        disabled={!newName.trim() || !newStart || saving || isPastView} 
+                        isDisabled={!newName.trim() || !newStart || saving || isPastView} 
                         className="bg-primary rounded-2xl self-start h-12 px-6"
                     >
                         {saving ? (
@@ -175,7 +175,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                                     <VStack className="gap-1">
                                         <Text className="font-extrabold text-lg text-ink">{c.name}</Text>
                                         <HStack className="items-center gap-1.5">
-                                            <Calendar size={12} className="text-ink/40" />
+                                            <Icon as={Calendar} size={12} className="text-ink/40" />
                                             <Text className="text-xs text-ink/60">
                                                 {c.start_date} — {c.end_date ?? 'ongoing'}
                                             </Text>
@@ -201,3 +201,4 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
 };
 
 export type { CyclesDashboardProps };
+

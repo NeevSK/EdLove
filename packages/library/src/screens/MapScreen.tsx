@@ -274,6 +274,7 @@ export default function MapScreen() {
 
             <Box className="p-3 bg-phase-surface">
                 <View style={styles.perspectiveSwitcherContainer}>
+                    {/* @ts-ignore - className resolved via cssInterop */}
                     <BlurView intensity={30} tint="dark" className="flex-row">
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
                             {getAvailablePerspectives(data).map((p) => {
@@ -320,7 +321,8 @@ export default function MapScreen() {
                             entering={FadeInDown}
                             style={styles.nodeSheetContainer}
                         >
-                            <BlurView intensity={30} tint="dark" className="p-6">
+                            {/* @ts-ignore - className resolved via cssInterop */}
+                            <BlurView intensity={25} tint="dark" className="p-4 rounded-3xl border border-white/5">
                                 <VStack className="gap-3">
                                     <HStack className="justify-between items-center">
                                         <VStack>
