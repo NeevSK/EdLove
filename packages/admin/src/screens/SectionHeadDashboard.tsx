@@ -42,28 +42,27 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                     {/* Proactive Agent Notifications */}
                     {activeGaps.length > 0 && (
                         <VStack className="gap-3">
-                            <Text className="font-semibold text-sm text-phase-warning">
+                            <Text className="font-bold text-xs text-phase-warning uppercase tracking-widest px-1">
                                 AI SUGGESTIONS
                             </Text>
                             {activeGaps.map((gap: any) => (
                                 <Box
                                     key={gap.id}
-                                    className="p-4 rounded-lg border bg-phase-reward/10 border-phase-reward"
+                                    className="p-4 rounded-2xl border bg-phase-reward/5 border-phase-reward/20"
                                 >
                                     <HStack className="gap-3 items-center">
                                         <Icon as={AlertCircle} className="text-phase-reward" size="md" />
                                         <VStack className="flex-1">
-                                            <Text className="font-bold text-phaseText-primary">{gap.title}</Text>
+                                            <Text className="font-bold text-phaseText-primary tracking-tight">{gap.title}</Text>
                                             <Text className="text-sm text-phaseText-secondary">{gap.description}</Text>
                                         </VStack>
                                     </HStack>
-                                    <Box className="mt-3">
+                                    <Box className="mt-4">
                                         <SanctuaryButton
                                             onPress={() => console.log('Executing relief:', gap.suggestedAction)}
                                             size="sm"
-                                            variant="solid"
                                         >
-                                            Assign Relief Teacher
+                                            <Text className="text-white font-bold">Assign Relief Teacher</Text>
                                         </SanctuaryButton>
                                     </Box>
                                 </Box>
@@ -73,31 +72,32 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
 
                     {/* Agentic Structural Repair: Timetable */}
                     <Box 
-                        className="p-6 rounded-3xl border mt-4 bg-phase-interactive/5 border-phase-interactive/20"
+                        className="p-6 rounded-3xl border mt-4 bg-phase-interactive/5 border-phase-interactive/10"
                     >
-                        <HStack className="justify-between items-center mb-2">
+                        <HStack className="justify-between items-center mb-4">
                             <HStack className="gap-2 items-center">
-                                <Icon as={CalendarCheck} size="md" className="text-phase-interactive" />
+                                <Box className="p-1.5 bg-phase-interactive/10 rounded-lg">
+                                    <Icon as={CalendarCheck} size="md" className="text-phase-interactive" />
+                                </Box>
                                 <Text className="font-bold text-phaseText-primary">Timetable Review</Text>
                             </HStack>
                             <Box 
-                                className="px-2 py-0.5 rounded-full bg-phase-interactive/20"
+                                className="px-2.5 py-1 rounded-full bg-phase-interactive/10"
                             >
-                                <Text className="text-[10px] font-bold text-phase-interactive">AGENTIC</Text>
+                                <Text className="text-[10px] font-black text-phase-interactive uppercase tracking-widest">AGENTIC</Text>
                             </Box>
                         </HStack>
 
                         {lastTimetableDraft ? (
-                            <VStack className="gap-2">
-                                <HStack className="gap-2 items-center">
+                            <VStack className="gap-3">
+                                <HStack className="gap-2 items-center bg-phase-canvas p-3 rounded-xl border border-phase-border">
                                     <Icon as={AlertCircle} size={16} className="text-phase-warning" />
-                                    <Text className="text-[13px] text-phase-text-primary">
+                                    <Text className="text-[13px] text-phaseText-primary font-medium">
                                         Draft generated for your section.
                                     </Text>
                                 </HStack>
                                 <SanctuaryButton
                                     onPress={() => console.log('Reviewing draft')}
-                                    variant="solid"
                                     size="sm"
                                 >
                                     Review Section Draft
@@ -105,12 +105,11 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                             </VStack>
                         ) : (
                             <VStack className="gap-4">
-                                <Text className="text-phaseText-secondary">
+                                <Text className="text-sm leading-relaxed text-phaseText-secondary">
                                     I can help you review and update the current schedule for this section.
                                 </Text>
                                 <SanctuaryButton
                                     onPress={() => generateTimetable('current-school')}
-                                    action="primary"
                                     size="md"
                                     isLoading={isThinking}
                                 >
@@ -123,34 +122,34 @@ export default function SectionHeadDashboard({ schoolId, userId }: { schoolId?: 
                     {/* Operational Overview */}
                     <HStack className="gap-3">
                         <Box 
-                            className="flex-1 p-4 rounded-xl border bg-phase-surface border-border"
+                            className="flex-1 p-4 rounded-2xl border bg-phase-surface border-phase-border"
                         >
-                            <Text className="text-[10px] text-phaseText-secondary">CLASSES</Text>
-                            <Text className="font-bold text-xl text-phaseText-primary">12</Text>
+                            <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-widest">CLASSES</Text>
+                            <Text className="font-black text-2xl text-phaseText-primary mt-1">12</Text>
                         </Box>
                         <Box 
-                            className="flex-1 p-4 rounded-xl border bg-phase-surface border-border"
+                            className="flex-1 p-4 rounded-2xl border bg-phase-surface border-phase-border"
                         >
-                            <Text className="text-[10px] text-phaseText-secondary">TEACHERS</Text>
-                            <Text className="font-bold text-xl text-phaseText-primary">8</Text>
+                            <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-widest">TEACHERS</Text>
+                            <Text className="font-black text-2xl text-phaseText-primary mt-1">8</Text>
                         </Box>
                     </HStack>
 
                     {/* Quick Coordination */}
-                    <VStack className="gap-2">
-                        <Text className="font-semibold text-sm text-phaseText-secondary">
+                    <VStack className="gap-3">
+                        <Text className="font-bold text-xs text-phaseText-muted uppercase tracking-widest px-1">
                             QUICK COORDINATION
                         </Text>
                         <SanctuaryButton onPress={() => { }} variant="outline">
-                            <HStack className="gap-2 items-center">
+                            <HStack className="gap-3 items-center">
                                 <Icon as={Calendar} size="sm" className="text-phaseText-primary" />
-                                <Text className="text-phaseText-primary">Review Section Schedule</Text>
+                                <Text className="font-bold text-phaseText-primary">Review Section Schedule</Text>
                             </HStack>
                         </SanctuaryButton>
                         <SanctuaryButton onPress={() => { }} variant="outline">
-                            <HStack className="gap-2 items-center">
+                            <HStack className="gap-3 items-center">
                                 <Icon as={Users} size="sm" className="text-phaseText-primary" />
-                                <Text className="text-phaseText-primary">Staff Workload Balance</Text>
+                                <Text className="font-bold text-phaseText-primary">Staff Workload Balance</Text>
                             </HStack>
                         </SanctuaryButton>
                     </VStack>

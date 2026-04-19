@@ -58,8 +58,8 @@ export default function StepHierarchy({
         <VStack className="gap-8">
             <VStack className="gap-4">
                 <VStack className="gap-1">
-                    <Heading className="text-lg font-black text-ink uppercase tracking-wider">Academic Levels</Heading>
-                    <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                    <Heading className="text-lg font-black text-phaseText-primary uppercase tracking-wider">Academic Levels</Heading>
+                    <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-widest">
                         Define school educational tiers
                     </Text>
                 </VStack>
@@ -73,19 +73,19 @@ export default function StepHierarchy({
                             >
                                 <Box 
                                     className={`p-4 rounded-2xl border-2 transition-all ${
-                                        isActive ? 'bg-primary/5 border-primary/20' : 'bg-silk border-border'
+                                        isActive ? 'bg-phase-interactive/5 border-phase-interactive/20' : 'bg-phase-canvas border-phase-border'
                                     }`}
                                 >
                                     <HStack className="gap-4 items-center">
-                                        <Box className={`p-2 rounded-xl ${isActive ? 'bg-primary/10' : 'bg-white'}`}>
+                                        <Box className={`p-2 rounded-xl border border-phase-border ${isActive ? 'bg-phase-interactive/10' : 'bg-phase-surface'}`}>
                                             <Icon 
                                                 as={GraduationCap}
                                                 size={18} 
-                                                className={isActive ? 'text-primary' : 'text-ink/20'} 
+                                                className={isActive ? 'text-phase-interactive' : 'text-phaseText-muted'} 
                                             />
                                         </Box>
                                         <Text 
-                                            className={`text-sm tracking-tight ${isActive ? 'font-black text-ink' : 'font-bold text-ink/60'}`}
+                                            className={`text-sm tracking-tight ${isActive ? 'font-black text-phaseText-primary' : 'font-bold text-phaseText-secondary'}`}
                                         >
                                             {level.label}
                                         </Text>
@@ -100,14 +100,14 @@ export default function StepHierarchy({
             <VStack className="gap-4">
                 <HStack className="justify-between items-center">
                     <VStack className="gap-1">
-                        <Heading className="text-lg font-black text-ink uppercase tracking-wider">Administrative Sections</Heading>
-                        <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                        <Heading className="text-lg font-black text-phaseText-primary uppercase tracking-wider">Administrative Sections</Heading>
+                        <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-widest">
                             Societies, Prefects, Council
                         </Text>
                     </VStack>
                     <Pressable 
                         onPress={addSection}
-                        className="bg-ink px-4 py-2 rounded-xl"
+                        className="bg-phaseText-primary px-4 py-2 rounded-xl active:opacity-80"
                     >
                         <HStack className="items-center gap-2">
                             <Icon as={Plus} className="text-white" size="xs" />
@@ -117,28 +117,28 @@ export default function StepHierarchy({
                 </HStack>
                 
                 {data.sections.length === 0 ? (
-                    <Box className="p-8 items-center justify-center bg-silk rounded-[32px] border-2 border-dashed border-border">
-                        <Text className="text-xs font-bold text-ink/20 uppercase tracking-widest">No divisions established</Text>
+                    <Box className="p-8 items-center justify-center bg-phase-canvas rounded-[32px] border-2 border-dashed border-phase-border">
+                        <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-widest">No divisions established</Text>
                     </Box>
                 ) : (
                     <VStack className="gap-3">
                         {data.sections.map((section, idx) => (
                             <Box 
                                 key={idx} 
-                                className="p-4 rounded-2xl bg-white border border-border"
+                                className="p-4 rounded-2xl bg-phase-surface border border-phase-border"
                             >
                                 <HStack className="gap-4 items-center">
-                                    <Box className="p-2 bg-silk rounded-xl border border-border">
-                                        <Icon as={School} size={16} className="text-ink/40" />
+                                    <Box className="p-2 bg-phase-canvas rounded-xl border border-phase-border">
+                                        <Icon as={School} size={16} className="text-phaseText-muted" />
                                     </Box>
                                     <VStack className="flex-1">
-                                        <Text className="text-sm font-bold text-ink">{section.name || 'Unnamed Division'}</Text>
+                                        <Text className="text-sm font-bold text-phaseText-primary">{section.name || 'Unnamed Division'}</Text>
                                     </VStack>
                                     <Pressable 
                                         onPress={() => removeSection(idx)}
-                                        className="p-2 hover:bg-red-50 rounded-lg"
+                                        className="p-2 active:bg-phase-danger/10 rounded-lg"
                                     >
-                                        <Icon as={X} className="text-red-500" size="sm" />
+                                        <Icon as={X} className="text-phase-danger" size="sm" />
                                     </Pressable>
                                 </HStack>
                             </Box>

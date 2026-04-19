@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, ActivityIndicator } from 'react-native';
 import {
     Box,
@@ -133,9 +133,9 @@ export default function SchoolCreationScreen() {
         return (
             <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Establishing Sanctuary..." />
-                <Box className="flex-1 items-center justify-center p-8">
-                    <ActivityIndicator size="large" color="#D4843A" />
-                    <Text className="mt-6 text-secondary text-center">
+                <Box className="flex-1 bg-phase-canvas items-center justify-center p-8">
+                    <ActivityIndicator size="large" color="#005BFF" /> 
+                    <Text className="mt-6 text-phaseText-secondary text-center font-bold">
                         Constructing digital foundations...
                     </Text>
                 </Box>
@@ -147,23 +147,26 @@ export default function SchoolCreationScreen() {
         return (
             <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Sanctuary Established!" />
-                <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 120 }}>
+                <ScrollView 
+                    className="bg-phase-canvas"
+                    contentContainerStyle={{ padding: 24, paddingBottom: 120 }}
+                >
                     <VStack className="gap-8 items-center mt-8">
-                        <Box className="w-24 h-24 rounded-full bg-primary items-center justify-center shadow-lg">
+                        <Box className="w-24 h-24 rounded-full bg-phase-interactive items-center justify-center shadow-lg">
                             <Icon as={Check} size={48} className="text-white" strokeWidth={3} />
                         </Box>
 
                         <VStack className="gap-1 items-center">
-                            <Heading className="text-2xl text-center text-primary">
+                            <Heading className="text-2xl text-center text-phase-interactive font-black">
                                 {successData.schoolName} is Live
                             </Heading>
-                            <Text className="text-secondary text-center">
+                            <Text className="text-phaseText-secondary text-center font-bold">
                                 Your digital foundations are successfully established.
                             </Text>
                         </VStack>
 
-                        <Box className="w-full items-center bg-secondary/10 p-8 rounded-3xl border border-border">
-                            <Text className="text-xs font-bold text-primary mb-4 text-center uppercase tracking-widest">
+                        <Box className="w-full items-center bg-phase-interactive/5 p-8 rounded-3xl border border-phase-border">
+                            <Text className="text-xs font-black text-phase-interactive mb-4 text-center uppercase tracking-widest">
                                 Share this QR to invite others
                             </Text>
                             <QRCodeGenerator
@@ -172,7 +175,7 @@ export default function SchoolCreationScreen() {
                                 label={successData.schoolName}
                                 errorCorrectionLevel="H"
                             />
-                            <Text className="text-xs text-secondary mt-4 text-center">
+                            <Text className="text-xs text-phaseText-secondary mt-4 text-center font-bold">
                                 Scanning joins {successData.schoolName} and its Community HQ group
                             </Text>
                         </Box>
@@ -180,12 +183,11 @@ export default function SchoolCreationScreen() {
                         <Box className="w-full mt-6 gap-4">
                             <SanctuaryButton
                                 onPress={() => navigation.navigate('ClassroomList')}
-                                action="primary"
                                 size="lg"
                                 className="w-full">
                                 Set Up School Structure
                             </SanctuaryButton>
-                            <Text className="text-[11px] text-secondary text-center opacity-60">
+                            <Text className="text-[11px] text-phaseText-muted text-center opacity-60">
                                 Add grades, sections and grade heads. Teachers join via the QR above, then create their own classrooms.
                             </Text>
                         </Box>
@@ -209,29 +211,30 @@ export default function SchoolCreationScreen() {
                 stepLabels={STEP_LABELS}
             />
 
-            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
+            <ScrollView 
+                className="bg-phase-canvas"
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+            >
                 <Box className="p-4">
                     {renderStep()}
                 </Box>
             </ScrollView>
 
             {/* Footer Navigation */}
-            <Box className="absolute bottom-0 left-0 right-0 bg-white border-t border-border p-5 pb-10">
+            <Box className="absolute bottom-0 left-0 right-0 bg-phase-surface border-t border-phase-border p-5 pb-10">
                 <HStack className="gap-4">
                     {state.step > 1 && (
                         <Box className="flex-1">
                             <SanctuaryButton
                                 variant="outline"
-                                onPress={handleBack}
-                                leftIcon={ArrowLeft}>
+                                onPress={handleBack}>
                                 Back
                             </SanctuaryButton>
                         </Box>
                     )}
                     <Box className="flex-2">
                         <SanctuaryButton
-                            onPress={handleNext}
-                            rightIcon={state.step === TOTAL_STEPS ? Check : ArrowRight}>
+                            onPress={handleNext}>
                             {state.step === TOTAL_STEPS ? 'Complete Setup' : 'Continue'}
                         </SanctuaryButton>
                     </Box>

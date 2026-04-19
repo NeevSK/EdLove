@@ -15,9 +15,8 @@ import {
     ModalHeader,
     Spinner,
     Text,
-    Theme,
     VStack,
-    useThemedColors,
+    Icon,
     hapticLight,
 } from '@repo/ui';
 import { assignmentsAPI } from '@repo/core';
@@ -32,7 +31,6 @@ export default function TeacherAssignmentsWorkspace({
     classroomId,
     canManage,
 }: TeacherAssignmentsWorkspaceProps) {
-    const colors = useThemedColors();
     const [assignments, setAssignments] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -86,28 +84,21 @@ export default function TeacherAssignmentsWorkspace({
     }).length;
 
     return (
-        <Box sx={{ flex: 1 }}>
-            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}>
+        <Box className="flex-1">
+            <VStack className="gap-md p-md">
                 <Box
-                    sx={{
-                        backgroundColor: Theme.colors.silk,
-                        borderRadius: Theme.corners.generous,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        padding: Theme.spacing.lg,
-                        ...Theme.shadows.md,
-                    }}
+                    className="bg-phase-surface rounded-generous border border-phase-border p-lg shadow-md"
                 >
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <HStack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                            <VStack sx={{ flex: 1, gap: 4 }}>
-                                <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <VStack className="gap-md">
+                        <HStack className="items-start justify-between gap-md">
+                            <VStack className="flex-1 gap-1">
+                                <Text className="text-phaseText-tertiary text-[11px] font-bold uppercase tracking-wider">
                                     Assignment Workspace
                                 </Text>
-                                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}>
+                                <Heading className="text-phaseText-onSurface text-xl">
                                     Keep assignment momentum visible
                                 </Heading>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                <Text className="text-phaseText-secondary text-sm">
                                     See what is active, what is upcoming, and add top-level classroom work without disappearing into lesson structure.
                                 </Text>
                             </VStack>
@@ -115,65 +106,48 @@ export default function TeacherAssignmentsWorkspace({
                                 <Button
                                     action="primary"
                                     onPress={() => { hapticLight(); setShowCreateModal(true); }}
-                                    sx={{
-                                        backgroundColor: Theme.colors.sanctuarySaffron,
-                                        borderRadius: Theme.corners.full,
-                                        paddingHorizontal: Theme.spacing.md,
-                                        ...Theme.shadows.sm,
-                                    }}
+                                    className="bg-sanctuarySaffron rounded-full px-md shadow-sm"
                                 >
-                                    <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-                                        <Plus size={16} color={Theme.colors.sacredWhite} />
-                                        <ButtonText sx={{ color: Theme.colors.sacredWhite }}>Create</ButtonText>
+                                    <HStack className="items-center gap-xs">
+                                        <Icon as={Plus} size="sm" className="text-sacredWhite" />
+                                        <ButtonText className="text-sacredWhite font-English">Create</ButtonText>
                                     </HStack>
                                 </Button>
                             )}
                         </HStack>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
+                        <HStack className="gap-sm">
                             <SummaryPill
-                                icon={<ClipboardList size={14} color={Theme.colors.sanctuarySaffron} />}
+                                icon={<Icon as={ClipboardList} size="sm" className="text-sanctuarySaffron" />}
                                 label="Total"
                                 value={String(assignments.length)}
-                                colors={colors}
                             />
                             <SummaryPill
-                                icon={<Clock3 size={14} color={Theme.colors.gurudeviBlue} />}
+                                icon={<Icon as={Clock3} size="sm" className="text-gurudeviBlue" />}
                                 label="Upcoming"
                                 value={String(upcomingCount)}
-                                colors={colors}
                             />
                             <SummaryPill
-                                icon={<Sparkles size={14} color={Theme.colors.sageGreen} />}
+                                icon={<Icon as={Sparkles} size="sm" className="text-sageGreen" />}
                                 label="State"
                                 value={assignments.length > 0 ? 'Live' : 'Quiet'}
-                                colors={colors}
                             />
                         </HStack>
                     </VStack>
                 </Box>
 
                 {isLoading ? (
-                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Spinner color={Theme.colors.sanctuarySaffron} />
+                    <Box className="py-xl items-center">
+                        <Spinner className="text-sanctuarySaffron" />
                     </Box>
                 ) : assignments.length === 0 ? (
                     <Box
-                        sx={{
-                            backgroundColor: Theme.colors.silk,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            padding: Theme.spacing.xl,
-                            alignItems: 'center',
-                            gap: Theme.spacing.sm,
-                            ...Theme.shadows.sm,
-                        }}
+                        className="bg-phase-surface rounded-generous border border-phase-border p-xl items-center gap-sm shadow-sm"
                     >
-                        <ClipboardList size={36} color={colors.textTertiary} />
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>
+                        <Icon as={ClipboardList} size="xl" className="text-phaseText-tertiary" />
+                        <Heading className="text-phaseText-onSurface text-lg">
                             No assignments yet
                         </Heading>
-                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
+                        <Text className="text-phaseText-secondary text-center">
                             Create a classroom assignment here, or add one from a monthly lesson lane when the work belongs to a specific module.
                         </Text>
                     </Box>
@@ -181,39 +155,30 @@ export default function TeacherAssignmentsWorkspace({
                     assignments.map((assignment) => (
                         <Box
                             key={assignment.id}
-                            sx={{
-                                backgroundColor: Theme.colors.silk,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                padding: Theme.spacing.md,
-                                borderLeftWidth: 4,
-                                borderLeftColor: Theme.colors.sanctuarySaffron,
-                                ...Theme.shadows.sm,
-                            }}
+                            className="bg-phase-surface rounded-comfortable border border-phase-border p-md border-l-4 border-l-sanctuarySaffron shadow-sm"
                         >
-                            <VStack sx={{ gap: Theme.spacing.sm }}>
-                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between', gap: Theme.spacing.md }}>
-                                    <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, flex: 1 }}>
+                            <VStack className="gap-sm">
+                                <HStack className="items-center justify-between gap-md">
+                                    <Heading className="text-phaseText-onSurface text-md flex-1">
                                         {assignment.title}
                                     </Heading>
-                                    <HStack sx={{ alignItems: 'center', gap: 6 }}>
-                                        <CalendarDays size={14} color={Theme.colors.gurudeviBlue} />
-                                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                    <HStack className="items-center gap-1.5">
+                                        <Icon as={CalendarDays} size="xs" className="text-gurudeviBlue" />
+                                        <Text className="text-phaseText-secondary text-xs">
                                             {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
                                         </Text>
                                     </HStack>
                                 </HStack>
                                 {!!assignment.description && (
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                                    <Text className="text-phaseText-secondary text-sm">
                                         {assignment.description}
                                     </Text>
                                 )}
-                                <HStack sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>
+                                <HStack className="items-center justify-between">
+                                    <Text className="text-phaseText-tertiary text-xs">
                                         Max points: {assignment.max_points ?? 100}
                                     </Text>
-                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.xs }}>
+                                    <Text className="text-sanctuarySaffron font-bold text-xs">
                                         Lesson-linked work stays in the Lessons lane
                                     </Text>
                                 </HStack>
@@ -225,48 +190,56 @@ export default function TeacherAssignmentsWorkspace({
 
             <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.border }}>
+                <ModalContent className="bg-phase-surface border border-phase-border">
                     <ModalHeader>
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg }}>
+                        <Heading className="text-phaseText-onSurface text-lg">
                             Create assignment
                         </Heading>
                     </ModalHeader>
                     <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}>
-                                <InputField placeholder="Assignment title" value={title} onChangeText={setTitle} sx={{ color: colors.text }} />
+                        <VStack className="gap-md">
+                            <Input className="bg-phase-elevated border-phase-border">
+                                <InputField 
+                                    placeholder="Assignment title" 
+                                    value={title} 
+                                    onChangeText={setTitle} 
+                                    className="text-phaseText-onSurface" 
+                                    placeholderTextColor="PhaseTextTertiary"
+                                />
                             </Input>
-                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border, minHeight: 90 }}>
+                            <Input className="bg-phase-elevated border-phase-border min-h-[90px]">
                                 <InputField
                                     placeholder="What should students complete?"
                                     value={description}
                                     onChangeText={setDescription}
-                                    sx={{ color: colors.text }}
+                                    className="text-phaseText-onSurface"
                                     multiline
+                                    placeholderTextColor="PhaseTextTertiary"
                                 />
                             </Input>
-                            <Input sx={{ backgroundColor: colors.secondary, borderColor: colors.border }}>
+                            <Input className="bg-phase-elevated border-phase-border">
                                 <InputField
                                     placeholder="Due date (YYYY-MM-DD)"
                                     value={dueDate}
                                     onChangeText={setDueDate}
-                                    sx={{ color: colors.text }}
+                                    className="text-phaseText-onSurface"
+                                    placeholderTextColor="PhaseTextTertiary"
                                 />
                             </Input>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
-                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} sx={{ flex: 1 }}>
-                                <ButtonText sx={{ color: colors.textSecondary }}>Cancel</ButtonText>
+                        <HStack className="gap-sm">
+                            <Button variant="outline" action="secondary" onPress={() => setShowCreateModal(false)} className="flex-1">
+                                <ButtonText className="text-phaseText-secondary font-English">Cancel</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
                                 onPress={() => { hapticLight(); handleCreate(); }}
                                 isDisabled={!title.trim() || isSaving}
-                                sx={{ flex: 1, backgroundColor: Theme.colors.sanctuarySaffron }}
+                                className="flex-1 bg-sanctuarySaffron"
                             >
-                                {isSaving ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText sx={{ color: Theme.colors.sacredWhite }}>Save</ButtonText>}
+                                {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-English">Save</ButtonText>}
                             </Button>
                         </HStack>
                     </ModalFooter>
@@ -280,32 +253,23 @@ function SummaryPill({
     icon,
     label,
     value,
-    colors,
 }: {
     icon: React.ReactNode;
     label: string;
     value: string;
-    colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
         <Box
-            sx={{
-                flex: 1,
-                backgroundColor: colors.primary,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: colors.border,
-                padding: Theme.spacing.sm,
-            }}
+            className="flex-1 bg-phase-surface rounded-comfortable border border-phase-border p-sm"
         >
-            <VStack sx={{ gap: 4 }}>
-                <HStack sx={{ alignItems: 'center', gap: 6 }}>
+            <VStack className="gap-1">
+                <HStack className="items-center gap-1.5">
                     {icon}
-                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}>
+                    <Text className="text-phaseText-tertiary text-xs font-bold uppercase">
                         {label}
                     </Text>
                 </HStack>
-                <Text sx={{ color: colors.text, fontWeight: '700' as const, fontSize: Theme.typography.fontSize.md }}>
+                <Text className="text-phaseText-onSurface font-bold text-md">
                     {value}
                 </Text>
             </VStack>

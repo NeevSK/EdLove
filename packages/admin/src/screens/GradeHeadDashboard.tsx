@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, ActivityIndicator } from 'react-native';
+import { ScrollView } from 'react-native';
 import {
     Box,
     Text,
@@ -31,7 +31,7 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
             <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
                 <VStack className="gap-4">
                     {/* Header */}
-                    <Box className="py-xl">
+                    <Box className="py-8">
                         <Text className="text-2xl font-bold text-phaseText-primary">
                             Grade Coordination
                         </Text>
@@ -43,16 +43,16 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                     {/* Proactive Agent Notifications */}
                     {activeGaps.length > 0 && (
                         <VStack className="gap-3">
-                            <Text className="font-semibold text-sm text-phase-accent uppercase">
+                            <Text className="font-semibold text-sm text-phase-interactive uppercase">
                                 AI SUGGESTIONS
                             </Text>
                             {activeGaps.map((gap: any) => (
                                 <Box
                                     key={gap.id}
-                                    className="p-md rounded-lg bg-phase-accent/10 border border-phase-accent"
+                                    className="p-4 rounded-xl bg-phase-interactive/10 border border-phase-interactive"
                                 >
                                     <HStack className="gap-3 items-center">
-                                        <Icon as={AlertCircle} className="text-phase-accent" size="lg" />
+                                        <Icon as={AlertCircle} className="text-phase-interactive" size="lg" />
                                         <VStack className="flex-1">
                                             <Text className="font-bold text-phaseText-primary">{gap.title}</Text>
                                             <Text className="text-sm text-phaseText-secondary">{gap.description}</Text>
@@ -73,11 +73,11 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
 
                     {/* Operational Overview */}
                     <HStack className="gap-3">
-                        <Box className="flex-1 p-md rounded-xl bg-phase-surface border border-phase-border">
+                        <Box className="flex-1 p-4 rounded-xl bg-phase-surface border border-phase-border">
                             <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">CLASSES</Text>
                             <Text className="font-bold text-xl text-phaseText-primary mt-1">5</Text>
                         </Box>
-                        <Box className="flex-1 p-md rounded-xl bg-phase-surface border border-phase-border">
+                        <Box className="flex-1 p-4 rounded-xl bg-phase-surface border border-phase-border">
                             <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">STUDENTS</Text>
                             <Text className="font-bold text-xl text-phaseText-primary mt-1">210</Text>
                         </Box>
@@ -90,14 +90,14 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
                         </Text>
                         <SanctuaryButton onPress={() => { }} variant="outline">
                             <HStack className="gap-2 items-center">
-                                <Icon as={BookOpen} size="md" className="text-phaseText-primary" />
-                                <Text className="text-phaseText-primary">Curriculum Alignment Pulse</Text>
+                                <Icon as={BookOpen} size="md" className="text-phaseText-action" />
+                                <Text className="text-phaseText-action">Curriculum Alignment Pulse</Text>
                             </HStack>
                         </SanctuaryButton>
                         <SanctuaryButton onPress={() => { }} variant="outline">
                             <HStack className="gap-2 items-center">
-                                <Icon as={Users} size="md" className="text-phaseText-primary" />
-                                <Text className="text-phaseText-primary">Student Wellbeing Reports</Text>
+                                <Icon as={Users} size="md" className="text-phaseText-action" />
+                                <Text className="text-phaseText-action">Student Wellbeing Reports</Text>
                             </HStack>
                         </SanctuaryButton>
                     </VStack>
@@ -106,4 +106,3 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
         </ScreenWrapper>
     );
 }
-

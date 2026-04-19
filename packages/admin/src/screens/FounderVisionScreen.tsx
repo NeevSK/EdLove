@@ -46,47 +46,47 @@ export default function FounderVisionScreen() {
     };
 
     return (
-        <View className="flex-1 bg-phase-canvas">
-            <View className="pt-[60px] px-6 pb-5">
+        <Box className="flex-1 bg-phase-canvas">
+            <Box className="pt-[60px] px-6 pb-5">
                 <HStack className="justify-between items-center">
                     <VStack>
-                        <Heading className="text-3xl font-black text-phase-text-primary tracking-tighter">Strategic Vision</Heading>
-                        <Text className="text-base text-phase-text-secondary">Mapping the App Topology</Text>
+                        <Heading className="text-3xl font-black text-phaseText-primary tracking-tighter">Strategic Vision</Heading>
+                        <Text className="text-base text-phaseText-secondary">Mapping the App Topology</Text>
                     </VStack>
-                    <Pressable className="w-11 h-11 rounded-full bg-phase-accent/10 justify-center items-center active:opacity-70">
-                        <Icon as={Share2} size="md" className="text-phase-accent" />
+                    <Pressable className="w-11 h-11 rounded-full bg-phase-interactive/10 justify-center items-center active:opacity-70">
+                        <Icon as={Share2} size="md" className="text-phase-interactive" />
                     </Pressable>
                 </HStack>
-            </View>
+            </Box>
 
-            <View className="flex-1 rounded-[30px] mx-4 overflow-hidden bg-black/20 border border-white/5">
+            <Box className="flex-1 rounded-[30px] mx-4 overflow-hidden bg-black/20 border border-white/5">
                 <UniversalPerspective 
                     topology={appLogicTopology as any}
                     initialPerspective="vastu" // Start as a Mind-map
                     title="Architecture Pulse"
                 />
-            </View>
+            </Box>
 
-            <View className="py-6">
+            <Box className="py-6">
                 <ScrollView 
                     horizontal 
                     showsHorizontalScrollIndicator={false} 
                     contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}>
                     <StatusPill icon={GitMerge} label="7 Ecosystem Nodes" colorClass="text-phase-warning" />
                     <StatusPill icon={Zap} label="High Resonance" colorClass="text-phase-reward" />
-                    <StatusPill icon={Shield} label="RLS Protected" colorClass="text-phase-accent" />
+                    <StatusPill icon={Shield} label="RLS Protected" colorClass="text-phase-interactive" />
                 </ScrollView>
-            </View>
-        </View>
+            </Box>
+        </Box>
     );
 }
 
 const StatusPill = ({ icon: LucideIcon, label, colorClass }: { icon: any, label: string, colorClass: string }) => {
     return (
-        <GlassCard className="px-4 py-2 rounded-[20px]">
+        <GlassCard className="px-4 py-2 rounded-[20px] border border-phase-border/10">
             <HStack className="items-center gap-1.5">
                 <Icon as={LucideIcon} size="sm" className={colorClass} />
-                <Text className="text-xs font-semibold text-phase-text-primary/80">{label}</Text>
+                <Text className="text-xs font-semibold text-phaseText-primary/80">{label}</Text>
             </HStack>
         </GlassCard>
     );

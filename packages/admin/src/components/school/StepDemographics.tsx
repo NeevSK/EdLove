@@ -28,7 +28,6 @@ interface StepDemographicsProps {
 }
 
 export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
-    const theme = useTheme();
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
@@ -50,13 +49,13 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                 onPress={() => onUpdate({ studentType: type.id as any })}
                                 className={`flex-1 min-w-[30%] p-4 rounded-xl border-2 items-center ${
                                     isSelected 
-                                        ? 'border-phase-accent bg-phase-accent/10' 
+                                        ? 'border-phase-interactive bg-phase-interactive/10' 
                                         : 'border-phase-border bg-phase-surface'
                                 }`}
                             >
                                 <Text
-                                    className={`text-sm ${
-                                        isSelected ? 'text-phase-accent font-bold' : 'text-phaseText-primary'
+                                    className={`text-sm font-bold ${
+                                        isSelected ? 'text-phase-interactive' : 'text-phaseText-primary'
                                     }`}
                                 >
                                     {(type[lang] ?? type.en).split(' ')[0]}
@@ -93,12 +92,12 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                     onPress={() => onUpdate({ religiousAffiliation: rel.id })}
                                     className={`px-4 py-1.5 rounded-full border ${
                                         isSelected 
-                                            ? 'border-phase-accent bg-phase-accent' 
+                                            ? 'border-phase-interactive bg-phase-interactive' 
                                             : 'border-phase-border bg-transparent'
                                     }`}
                                 >
                                     <Text
-                                        className={`text-[12px] ${
+                                        className={`text-[12px] font-bold ${
                                             isSelected ? 'text-white' : 'text-phaseText-secondary'
                                         }`}
                                     >

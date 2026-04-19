@@ -7,9 +7,8 @@ import {
     Heading,
     Spinner,
     Text,
-    Theme,
     VStack,
-    useThemedColors,
+    Icon,
 } from '@repo/ui';
 import { api, Student } from '@repo/core';
 import { StudentAnalysisModal } from '@repo/library';
@@ -24,7 +23,6 @@ export default function TeacherAnalysisWorkspace({
     classroomId,
     students,
 }: TeacherAnalysisWorkspaceProps) {
-    const colors = useThemedColors();
     const [isLoading, setIsLoading] = useState(true);
     const [grades, setGrades] = useState<any[]>([]);
     const [attendance, setAttendance] = useState<any[]>([]);
@@ -93,123 +91,96 @@ export default function TeacherAnalysisWorkspace({
     }, [observations, students]);
 
     return (
-        <Box sx={{ flex: 1 }}>
-            <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.md }}>
+        <Box className="flex-1">
+            <VStack className="gap-md p-md">
                 <Box
-                    sx={{
-                        backgroundColor: Theme.colors.silk,
-                        borderRadius: Theme.corners.generous,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        padding: Theme.spacing.lg,
-                        shadowColor: Theme.colors.shadowAmbient,
-                        shadowOffset: { width: 0, height: 8 },
-                        shadowOpacity: 1,
-                        shadowRadius: 18,
-                        elevation: 4,
-                    }}
+                    className="bg-phase-surface rounded-generous border border-phase-border p-lg shadow-md"
                 >
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <VStack sx={{ gap: 4 }}>
-                            <Text sx={{ color: colors.textTertiary, fontSize: 11, fontWeight: '700' as const, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <VStack className="gap-md">
+                        <VStack className="gap-1">
+                            <Text className="text-phaseText-tertiary text-[11px] font-bold uppercase tracking-wider">
                                 Analysis
                             </Text>
-                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}>
+                            <Heading className="text-phaseText-onSurface text-xl">
                                 Read the classroom before reacting
                             </Heading>
-                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
+                            <Text className="text-phaseText-secondary text-sm">
                                 Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
                             </Text>
                         </VStack>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
+                        <HStack className="gap-sm">
                             <StatCard
                                 label="Average GPA"
                                 value={stats.averageGpa}
-                                icon={<TrendingUp size={16} color={Theme.colors.sanctuarySaffron} />}
-                                colors={colors}
+                                icon={<Icon as={TrendingUp} size="sm" className="text-sanctuarySaffron" />}
                             />
                             <StatCard
                                 label="Attendance"
                                 value={`${stats.attendanceRate}%`}
-                                icon={<Activity size={16} color={Theme.colors.gurudeviBlue} />}
-                                colors={colors}
+                                icon={<Icon as={Activity} size="sm" className="text-gurudeviBlue" />}
                             />
                             <StatCard
                                 label="Concerns"
                                 value={String(stats.concernCount)}
-                                icon={<TriangleAlert size={16} color={Theme.colors.emberRed} />}
-                                colors={colors}
+                                icon={<Icon as={TriangleAlert} size="sm" className="text-emberRed" />}
                             />
                         </HStack>
                     </VStack>
                 </Box>
 
                 {isLoading ? (
-                    <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Spinner color={Theme.colors.sanctuarySaffron} />
+                    <Box className="items-center py-xl">
+                        <Spinner className="text-sanctuarySaffron" />
                     </Box>
                 ) : (
                     <Box
-                        sx={{
-                            backgroundColor: Theme.colors.silk,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            padding: Theme.spacing.lg,
-                        }}
+                        className="bg-phase-surface rounded-generous border border-phase-border p-lg shadow-sm"
                     >
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}>
+                        <VStack className="gap-md">
+                            <Heading className="text-phaseText-onSurface text-md">
                                 Student analysis queue
                             </Heading>
                             {studentSignals.length === 0 ? (
-                                <Text sx={{ color: colors.textSecondary }}>
+                                <Text className="text-phaseText-secondary">
                                     No students available for analysis yet.
                                 </Text>
                             ) : (
                                 studentSignals.map((student, index) => (
                                     <HStack
                                         key={student.id}
-                                        sx={{
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            gap: Theme.spacing.md,
-                                            paddingBottom: Theme.spacing.sm,
-                                            borderBottomWidth: index === studentSignals.length - 1 ? 0 : 1,
-                                            borderBottomColor: colors.border,
-                                        }}
+                                        className={`items-center justify-between gap-md pb-sm ${
+                                            index === studentSignals.length - 1 ? '' : 'border-b border-phase-border'
+                                        }`}
                                     >
-                                        <VStack sx={{ flex: 1 }}>
-                                            <Text sx={{ color: colors.text, fontWeight: '700' as const }}>
+                                        <VStack className="flex-1">
+                                            <Text className="text-phaseText-onSurface font-bold">
                                                 {student.full_name}
                                             </Text>
-                                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                            <Text className="text-phaseText-secondary text-xs">
                                                 {student.observationCount} observations • {student.concernCount} concern signals
                                             </Text>
                                         </VStack>
-                                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+                                        <HStack className="gap-sm items-center">
                                             {student.concernCount > 0 ? (
                                                 <SignalBadge
                                                     label={`${student.concernCount} concern`}
                                                     tone="warning"
-                                                    colors={colors}
                                                 />
                                             ) : (
                                                 <SignalBadge
                                                     label="steady"
                                                     tone="positive"
-                                                    colors={colors}
                                                 />
                                             )}
                                             <Button
                                                 size="sm"
                                                 action="primary"
                                                 onPress={() => setSelectedStudent({ id: student.id, full_name: student.full_name })}
-                                                sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: Theme.corners.full }}
+                                                className="bg-sanctuarySaffron rounded-full"
                                             >
-                                                <HStack sx={{ alignItems: 'center', gap: 6 }}>
-                                                    <Sparkles size={14} color={Theme.colors.sacredWhite} />
-                                                    <ButtonText color={Theme.colors.sacredWhite}>Open</ButtonText>
+                                                <HStack className="items-center gap-1.5">
+                                                    <Icon as={Sparkles} size="xs" className="text-sacredWhite" />
+                                                    <ButtonText className="text-sacredWhite font-English">Open</ButtonText>
                                                 </HStack>
                                             </Button>
                                         </HStack>
@@ -237,32 +208,23 @@ function StatCard({
     label,
     value,
     icon,
-    colors,
 }: {
     label: string;
     value: string;
     icon: React.ReactNode;
-    colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
         <Box
-            sx={{
-                flex: 1,
-                backgroundColor: colors.primary,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: colors.border,
-                padding: Theme.spacing.md,
-            }}
+            className="flex-1 bg-phase-surface rounded-comfortable border border-phase-border p-md"
         >
-            <VStack sx={{ gap: Theme.spacing.xs }}>
-                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
+            <VStack className="gap-xs">
+                <HStack className="items-center gap-xs">
                     {icon}
-                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textTransform: 'uppercase', fontWeight: '700' as const }}>
+                    <Text className="text-phaseText-secondary text-[10px] uppercase font-bold">
                         {label}
                     </Text>
                 </HStack>
-                <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}>
+                <Heading className="text-phaseText-onSurface text-xl">
                     {value}
                 </Heading>
             </VStack>
@@ -273,27 +235,17 @@ function StatCard({
 function SignalBadge({
     label,
     tone,
-    colors,
 }: {
     label: string;
     tone: 'positive' | 'warning';
-    colors: ReturnType<typeof useThemedColors>;
 }) {
-    const backgroundColor = tone === 'positive' ? 'rgba(139,191,122,0.16)' : 'rgba(255,184,77,0.16)';
-    const color = tone === 'positive' ? Theme.colors.sageGreen : Theme.colors.amberGlow;
+    const isPositive = tone === 'positive';
 
     return (
         <Box
-            sx={{
-                paddingHorizontal: Theme.spacing.sm,
-                paddingVertical: 6,
-                borderRadius: Theme.corners.full,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor,
-            }}
+            className={`px-sm py-1 rounded-full border ${isPositive ? 'bg-sageGreen/10 border-sageGreen/20' : 'bg-amberGlow/10 border-amberGlow/20'}`}
         >
-            <Text sx={{ color, fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as const, textTransform: 'uppercase' }}>
+            <Text className={`text-xs font-bold uppercase ${isPositive ? 'text-sageGreen' : 'text-amberGlow'}`}>
                 {label}
             </Text>
         </Box>

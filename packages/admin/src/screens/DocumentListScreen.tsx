@@ -7,8 +7,8 @@ import {
     Heading, 
     ScrollView, 
     Pressable, 
-    useTheme, 
-    useThemedColors,
+    Pressable, 
+    ScreenWrapper,
     Button,
     ButtonText
 } from '@repo/ui';
@@ -30,8 +30,9 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   viewDate,
   isPastView
 }) => {
-  const theme = useTheme();
-  const colors = useThemedColors();
+  viewDate,
+  isPastView
+}) => {
   const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
@@ -74,12 +75,12 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   const getStatusColor = (status: DocumentStatus) => {
     switch (status) {
-      case 'draft': return 'bg-error/10 text-error';
-      case 'review': return 'bg-action/10 text-action';
-      case 'approved': return 'bg-success/10 text-success';
-      case 'published': return 'bg-action/10 text-action';
-      case 'archived': return 'bg-ink/10 text-ink/40';
-      default: return 'bg-ink/5 text-ink/40';
+      case 'draft': return 'bg-phase-danger/10 text-phase-danger';
+      case 'review': return 'bg-phase-interactive/10 text-phase-interactive';
+      case 'approved': return 'bg-phase-success/10 text-phase-success';
+      case 'published': return 'bg-phase-interactive/10 text-phase-interactive';
+      case 'archived': return 'bg-phaseText-muted/10 text-phaseText-muted';
+      default: return 'bg-phaseText-muted/5 text-phaseText-muted';
     }
   };
 
@@ -91,14 +92,14 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     <Pressable
       key={document.id}
       onPress={() => onDocumentPress(document)}
-      className="bg-white p-5 rounded-3xl border border-border mb-3 active:scale-[0.98]"
+      className="bg-phase-surface p-5 rounded-3xl border border-phase-border mb-3 active:scale-[0.98]"
     >
       <HStack className="justify-between items-start mb-2">
         <VStack className="flex-1 mr-4 gap-1">
-          <Text className="font-bold text-lg text-ink" numberOfLines={2}>
+          <Text className="font-bold text-lg text-phaseText-primary" numberOfLines={2}>
             {document.title}
           </Text>
-          <Text className="text-xs text-ink/40">
+          <Text className="text-xs text-phaseText-muted">
             Version {document.version} • Updated {formatDate(document.updatedAt)}
           </Text>
         </VStack>
@@ -123,13 +124,13 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
         onPress={() => setSelectedStatus(status)}
         className={`px-4 py-2 rounded-full border mr-2 ${
           isActive 
-            ? 'bg-action border-action' 
-            : 'bg-white border-border active:bg-ink/5'
+            ? 'bg-phase-interactive border-phase-interactive' 
+            : 'bg-phase-surface border-phase-border active:bg-phaseText-primary/5'
         }`}
       >
         <Text
           className={`text-sm font-bold ${
-            isActive ? 'text-white' : 'text-ink/60'
+            isActive ? 'text-white' : 'text-phaseText-secondary'
           }`}
         >
           {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -141,25 +142,25 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   if (isLoading) {
     return (
-      <Box className="flex-1 bg-silk items-center justify-center p-10">
-        <Text className="text-ink/40 font-bold italic">Loading documents...</Text>
+      <Box className="flex-1 bg-phase-canvas items-center justify-center p-10">
+        <Text className="text-phaseText-muted font-bold italic">Loading documents...</Text>
       </Box>
     );
   }
 
   return (
-    <Box className="flex-1 bg-silk">
+    <Box className="flex-1 bg-phase-canvas">
       <VStack className="p-6 gap-6">
         <HStack className="justify-between items-center">
             <VStack className="gap-1">
-                <Heading className="text-3xl font-black text-ink">Documents</Heading>
-                <Text className="text-sm text-ink/40">Manage your institutional artifacts</Text>
+                <Heading className="text-3xl font-black text-phaseText-primary">Documents</Heading>
+                <Text className="text-sm text-phaseText-muted">Manage your institutional artifacts</Text>
             </VStack>
             <Button
                 onPress={onCreateNew}
-                className="bg-action rounded-2xl h-11 px-6 shadow-sm active:scale-95"
+                className="bg-phase-interactive rounded-2xl h-11 px-6 shadow-sm active:scale-95"
             >
-                <ButtonText className="font-black">+ New</ButtonText>
+                <ButtonText className="font-black text-white">+ New</ButtonText>
             </Button>
         </HStack>
 
@@ -177,8 +178,8 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
             showsVerticalScrollIndicator={false}
         >
             {filteredDocuments.length === 0 ? (
-                <Box className="p-10 items-center justify-center bg-white rounded-3xl border border-dashed border-border mt-4">
-                    <Text className="text-ink/40 italic font-bold text-center">
+                <Box className="p-10 items-center justify-center bg-phase-surface rounded-3xl border border-dashed border-phase-border mt-4">
+                    <Text className="text-phaseText-muted italic font-bold text-center">
                         {selectedStatus === 'all' ? 'No documents yet.' : `No ${selectedStatus} documents found.`}
                     </Text>
                 </Box>

@@ -118,18 +118,18 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                     {t('founder.visionaryInsights')}
                                 </Heading>
                                 <Box 
-                                    className="p-4 rounded-xl border bg-phase-surface border-border"
+                                    className="p-4 rounded-xl border bg-phase-surface border-phase-border"
                                 >
                                     <HStack className="justify-between items-center">
                                         <VStack className="gap-1">
                                             <Text className="font-bold text-phaseText-primary">
                                                 {t('founder.wellnessIndex')}
                                             </Text>
-                                            <Text className="text-xs text-sageGreen">
+                                            <Text className="text-xs text-phase-success font-bold">
                                                 {t('founder.wellnessIncrease', { percent: 12 })}
                                             </Text>
                                         </VStack>
-                                        <Icon as={Heart} className="text-emberRed fill-emberRed" size={24} />
+                                        <Icon as={Heart} className="text-phase-danger fill-phase-danger" size={24} />
                                     </HStack>
                                 </Box>
                             </VStack>
@@ -143,7 +143,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                         userId: userId
                                     });
                                 }}
-                                className="p-4 rounded-xl border flex-row items-center gap-4 bg-phase-surface border-phase-interactive active:bg-ink/5"
+                                className="p-4 rounded-xl border flex-row items-center gap-4 bg-phase-surface border-phase-interactive active:bg-phaseText-primary/5"
                             >
                                 <Box 
                                     className="w-10 h-10 rounded-full justify-center items-center bg-phase-interactive/10"
@@ -191,9 +191,9 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
 
             <Pressable
                 onPress={() => setIsCreateModalOpen(true)}
-                className="absolute bottom-5 right-5 w-14 h-14 rounded-full justify-center items-center z-10 bg-amber-500 active:scale-95 shadow-lg"
+                className="absolute bottom-5 right-5 w-14 h-14 rounded-full justify-center items-center z-10 bg-phase-interactive active:scale-95 shadow-lg"
             >
-                <Icon as={Plus} size="lg" color="white" />
+                <Icon as={Plus} size="lg" className="text-white" />
             </Pressable>
 
             <CreateSchoolModal

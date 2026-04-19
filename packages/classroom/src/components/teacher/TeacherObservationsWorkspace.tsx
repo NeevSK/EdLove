@@ -328,8 +328,6 @@ export default function TeacherObservationsWorkspace({
                 </ModalContent>
             </Modal>
         </Box>
-    );</Modal>
-        </Box>
     );
 }
 

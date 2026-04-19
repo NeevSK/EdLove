@@ -32,8 +32,6 @@ interface StepLocationProps {
 }
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
-    const theme = useTheme();
-    const colors = theme.scene;
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
@@ -42,13 +40,11 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
         return SRI_LANKAN_DISTRICTS.filter(d => d.provinceId === data.provinceId);
     }, [data.provinceId]);
 
-    const sanctuarySaffron = theme.templeGold;
-
     return (
-        <VStack space="lg">
+        <VStack className="gap-6">
             <FormControl>
-                <FormControlLabel style={{ marginBottom: 8 }}>
-                    <FormControlLabelText style={{ color: colors.text.secondary, fontSize: 14 }}>
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-sm text-phaseText-secondary">
                         {t('schoolSetup.province')}
                     </FormControlLabelText>
                 </FormControlLabel>
@@ -56,22 +52,18 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     selectedValue={data.provinceId}
                     onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}>
                     <SelectTrigger 
-                        style={{ 
-                            height: 48, 
-                            borderRadius: 12, 
-                            backgroundColor: colors.secondary.main
-                        }}>
+                        className="h-12 rounded-xl bg-phase-surface border border-phase-border">
                         <SelectInput 
                             placeholder={t('schoolSetup.selectProvince')} 
-                            style={{ color: colors.text.primary, flex: 1 }} 
+                            className="text-phaseText-primary flex-1 font-bold" 
                         />
-                        <SelectIcon style={{ marginRight: 12 }}>
-                            <ChevronDown size={20} color={sanctuarySaffron} />
+                        <SelectIcon className="mr-3">
+                            <Icon as={ChevronDown} size={20} className="text-phase-interactive" />
                         </SelectIcon>
                     </SelectTrigger>
                     <SelectPortal>
                         <SelectBackdrop />
-                        <SelectContent style={{ backgroundColor: colors?.secondary || '#2A2318' }}>
+                        <SelectContent className="bg-phase-surface">
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
@@ -88,8 +80,8 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
             </FormControl>
 
             <FormControl isDisabled={!data.provinceId}>
-                <FormControlLabel style={{ marginBottom: 8 }}>
-                    <FormControlLabelText style={{ color: colors.text.secondary, fontSize: 14 }}>
+                <FormControlLabel className="mb-2">
+                    <FormControlLabelText className="text-sm text-phaseText-secondary">
                         {t('schoolSetup.district')}
                     </FormControlLabelText>
                 </FormControlLabel>
@@ -97,22 +89,18 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     selectedValue={data.districtId}
                     onValueChange={(value: string) => onUpdate({ districtId: value })}>
                     <SelectTrigger 
-                        style={{ 
-                            height: 48, 
-                            borderRadius: 12, 
-                            backgroundColor: colors.secondary.main 
-                        }}>
+                        className="h-12 rounded-xl bg-phase-surface border border-phase-border">
                         <SelectInput 
                             placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} 
-                            style={{ color: colors.text.primary, flex: 1 }} 
+                            className="text-phaseText-primary flex-1 font-bold" 
                         />
-                        <SelectIcon style={{ marginRight: 12 }}>
-                            <ChevronDown size={20} color={sanctuarySaffron} />
+                        <SelectIcon className="mr-3">
+                            <Icon as={ChevronDown} size={20} className="text-phase-interactive" />
                         </SelectIcon>
                     </SelectTrigger>
                     <SelectPortal>
                         <SelectBackdrop />
-                        <SelectContent style={{ backgroundColor: colors?.secondary || '#2A2318' }}>
+                        <SelectContent className="bg-phase-surface">
                             <SelectDragIndicatorWrapper>
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
