@@ -13,6 +13,7 @@ import {
     Pressable,
     Modal,
     ScrollView,
+    Icon,
 } from '@repo/ui';
 import {
     X,
@@ -28,11 +29,11 @@ import {
     Check
 } from 'lucide-react-native';
 import { useSocialLinks } from '../hooks/useSocialLinks';
-import { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
+import { SocialLink, SocialPlatform, PrivacyLevel, usePermissions } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
 interface AddSocialLinkModalProps {
-    visible: boolean;
+    isOpen: boolean;
     onClose: () => void;
     userId: string;
     initialLink?: SocialLink;
@@ -56,7 +57,7 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKe
  * ADD SOCIAL LINK MODAL
  * Sanctuary V3 standard for managing contact sharing.
  */
-export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId, initialLink }) => {
+export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ isOpen, onClose, userId, initialLink }) => {
     const { links, addLink, updateLink } = useSocialLinks(userId);
     const { t } = useTranslation();
     const { flags } = usePermissions();
@@ -67,12 +68,12 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (visible) {
+        if (isOpen) {
             setPlatform(initialLink?.platform || 'whatsapp');
             setUrl(initialLink?.url || '');
             setPrivacy(initialLink?.privacy_level || 'public');
         }
-    }, [visible, initialLink]);
+    }, [isOpen, initialLink]);
 
     const handleSave = async () => {
         if (!url) return;
@@ -105,7 +106,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
     };
 
     return (
-        <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen">
+        <Modal isOpen={isOpen} onClose={onClose}>
             <Box className="flex-1 justify-end">
                 <Box className="flex-1 w-full bg-black/40">
                     <Pressable className="flex-1" onPress={onClose} />
@@ -123,7 +124,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                 onPress={onClose}
                                 className="p-2 rounded-full bg-phase-surface"
                             >
-                                <X size={20} color="#9DA1A3" />
+                                <Icon as={X} size={20} color="#9DA1A3" />
                             </Pressable>
                         </HStack>
 
@@ -146,7 +147,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                             : 'border-phase-surface bg-phase-canvas'
                                                     } ${isLocked ? 'opacity-50' : ''}`}
                                                 >
-                                                    <p.icon size={18} color={platform === p.value ? '#4A90E2' : '#9DA1A3'} />
+                                                    <Icon as={p.icon} size={18} color={platform === p.value ? '#4A90E2' : '#9DA1A3'} />
                                                     <Text
                                                         className={`text-[13px] ml-2 ${
                                                             platform === p.value ? 'font-bold text-phase-interactive' : 'text-phase-text-secondary'
@@ -191,7 +192,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                             privacy === pl.value ? 'bg-phase-interactive/10' : 'bg-phase-surface'
                                                         }`}
                                                     >
-                                                        <pl.icon size={20} color={privacy === pl.value ? '#4A90E2' : '#9DA1A3'} />
+                                                        <Icon as={pl.icon} size={20} color={privacy === pl.value ? '#4A90E2' : '#9DA1A3'} />
                                                     </Box>
                                                     <VStack className="flex-1">
                                                         <Text className={`font-bold ${
@@ -205,7 +206,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                     </VStack>
                                                     {privacy === pl.value && (
                                                         <Box className="w-6 h-6 rounded-full bg-phase-interactive items-center justify-center">
-                                                            <Check size={14} color="white" strokeWidth={3} />
+                                                            <Icon as={Check} size={14} color="white" strokeWidth={3} />
                                                         </Box>
                                                     )}
                                                 </HStack>
@@ -221,7 +222,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     className="mt-6 bg-phase-interactive rounded-2xl h-16 shadow-lg shadow-blue-500/30"
                                 >
                                     <HStack space="sm" className="items-center">
-                                        {initialLink ? <Check size={20} color="white" /> : <Plus size={20} color="white" />}
+                                        {initialLink ? <Icon as={Check} size={20} color="white" /> : <Icon as={Plus} size={20} color="white" />}
                                         <ButtonText className="text-white font-bold text-lg">
                                             {initialLink ? t('addSocialLink.saveButton') : t('addSocialLink.addButton')}
                                         </ButtonText>

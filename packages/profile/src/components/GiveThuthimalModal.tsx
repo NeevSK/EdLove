@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal } from 'react-native';
+
 import {
     Box,
     VStack,
@@ -15,6 +15,7 @@ import {
     hapticError,
     Pressable,
     Icon,
+    Modal,
 } from '@repo/ui';
 import { thuthimalAPI, usePermissions } from '@repo/core';
 import { Sparkles, Lock } from 'lucide-react-native';
@@ -76,10 +77,8 @@ export function GiveThuthimalModal({
 
     return (
         <Modal
-            visible={isOpen}
-            transparent
-            animationType="slide"
-            onRequestClose={onClose}
+            isOpen={isOpen}
+            onClose={onClose}
         >
             <Box className="flex-1 justify-end bg-black/60">
                 <Box className="bg-phase-canvas rounded-t-[48px] p-10 pb-16 border-t border-phase-surface shadow-[0_-20px_50px_rgba(0,0,0,0.3)]">
@@ -129,7 +128,7 @@ export function GiveThuthimalModal({
                         </VStack>
 
                         <Button
-                            size="xl"
+                            size="lg"
                             className={`mt-4 rounded-3xl h-16 shadow-lg active:scale-[0.98] transition-all ${
                                 flags.isProMember ? 'bg-phase-interactive shadow-blue-500/30' : 'bg-phase-surface border border-phase-surface shadow-none opacity-80'
                             }`}
@@ -140,14 +139,14 @@ export function GiveThuthimalModal({
                             <HStack space="sm" className="items-center">
                                 {flags.isProMember ? (
                                     <>
-                                        <Sparkles size={20} color="white" />
+                                        <Icon as={Sparkles} size={20} color="white" />
                                         <ButtonText className="text-white font-bold text-lg">
                                             {isSending ? 'Sending Gratitude...' : 'Send Gift of Gratitude'}
                                         </ButtonText>
                                     </>
                                 ) : (
                                     <>
-                                        <Lock size={18} color="#9DA1A3" />
+                                        <Icon as={Lock} size={18} color="#9DA1A3" />
                                         <ButtonText className="text-phase-text-tertiary font-bold text-lg">
                                             Pro Member Feature
                                         </ButtonText>

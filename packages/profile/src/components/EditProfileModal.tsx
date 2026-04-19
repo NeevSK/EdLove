@@ -136,10 +136,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
     return (
         <Modal
-            animationType="slide"
-            transparent={true}
-            visible={visible}
-            onRequestClose={onClose}
+            isOpen={visible}
+            onClose={onClose}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <Box className="flex-1 justify-end bg-black/40">

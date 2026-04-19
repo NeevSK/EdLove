@@ -367,7 +367,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
             
             {!isOtherProfile && (
                 <AddSocialLinkModal
-                    visible={showSocialModal}
+                    isOpen={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
                 />

@@ -28,6 +28,8 @@
     "expo-file-system": "~55.0.11",
     "expo-image-manipulator": "~55.0.11",
     "expo-image-picker": "~55.0.13",
+    "expo-sharing": "~55.0.11",
+    "expo-clipboard": "^55.0.8",
     "jpeg-js": "*",
     "jsqr": "*",
     "qrcode": "*",

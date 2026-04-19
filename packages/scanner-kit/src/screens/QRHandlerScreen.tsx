@@ -21,9 +21,7 @@ import {
   Heading,
   Spinner,
   ScreenWrapper,
-  Theme,
 } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { FlowResolver, identityAPI, type QRPayload } from '@repo/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -37,7 +35,6 @@ type QRHandlerRouteParams = {
 export default function QRHandlerScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<QRHandlerRouteParams, 'QRHandler'>>();
-  const colors = useThemedColors();
   const { t } = useTranslation();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [message, setMessage] = useState('');
@@ -101,42 +98,33 @@ export default function QRHandlerScreen() {
     }
   };
 
-  const statusColor =
-    status === 'success'
-      ? Theme.colors.sageGreen
-      : status === 'error'
-        ? Theme.colors.emberRed
-        : Theme.colors.sanctuarySaffron;
 
   return (
     <ScreenWrapper>
-      <Box 
-        sx={{ 
-          flex: 1, 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          padding: Theme.spacing.xl 
-        }}
-      >
-        <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
+      <Box className="flex-1 items-center justify-center p-6">
+        <VStack className="items-center gap-4">
           {status === 'processing' && (
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+            <Spinner size="large" className="text-primary-500" />
           )}
           {status === 'success' && (
-            <Text sx={{ fontSize: 56 }}>✅</Text>
+            <Text className="text-[56px]">✅</Text>
           )}
           {status === 'error' && (
-            <Text sx={{ fontSize: 56 }}>⚠️</Text>
+            <Text className="text-[56px]">⚠️</Text>
           )}
           <Heading
-            sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize.xl }}
-            color={statusColor as any}
+            className={`text-center ${
+              status === 'success' 
+                ? 'text-success-600' 
+                : status === 'error' 
+                  ? 'text-error-600' 
+                  : 'text-primary-500'
+            }`}
+            size="xl"
           >
             {status === 'processing' ? t('qrHandler.processing') : status === 'success' ? t('qrHandler.done') : t('qrHandler.error')}
           </Heading>
-          <Text
-            sx={{ textAlign: 'center', color: colors.textSecondary }}
-          >
+          <Text className="text-center text-typography-500">
             {status === 'processing' ? t('qrHandler.processingMessage') : message}
           </Text>
         </VStack>

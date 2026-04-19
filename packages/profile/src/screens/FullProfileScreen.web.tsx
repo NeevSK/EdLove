@@ -152,7 +152,7 @@ export default function FullProfileScreenWeb() {
 
             {!isOtherProfile && (
                 <AddSocialLinkModal
-                    visible={showSocialModal}
+                    isOpen={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
                 />

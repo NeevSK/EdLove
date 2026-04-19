@@ -16,13 +16,15 @@ import {
     Button,
     ButtonText,
     LivingGlow,
-    FadeInDown,
     openExternalURL,
     showExternalLinkOptions,
     hapticLight,
     hapticHeavy,
     Pressable,
     AnimatedView,
+    Modal,
+    Icon,
+    FadeInDown,
 } from '@repo/ui';
 import {
     Linkedin,
@@ -36,7 +38,7 @@ import {
     Trash2,
     Plus,
 } from 'lucide-react-native';
-import { FadeInDown } from 'react-native-reanimated';
+
 import { SocialLink, usePermissions } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import { AddSocialLinkModal } from './AddSocialLinkModal';
@@ -248,7 +250,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             className="border-phase-surface rounded-xl px-4"
                         >
                             <HStack space="xs" className="items-center">
-                                <Link size={14} color="#4A90E2" />
+                                <Icon as={Link} size={14} color="#4A90E2" />
                                 <ButtonText className="text-phase-text-primary text-xs">
                                     {Platform.OS === 'web' ? 'Share Profile' : 'Copy Link'}
                                 </ButtonText>
@@ -267,7 +269,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             className={`${isEditing ? 'bg-phase-interactive' : 'border-phase-surface'} rounded-xl px-4`}
                         >
                             <HStack space="xs" className="items-center">
-                                <Edit2 size={14} color={isEditing ? "white" : "#4A90E2"} />
+                                <Icon as={Edit2} size={14} color={isEditing ? "white" : "#4A90E2"} />
                                 <ButtonText className={`${isEditing ? 'text-white' : 'text-phase-text-primary'} text-xs`}>
                                     {isEditing ? 'Done' : 'Edit Hub'}
                                 </ButtonText>
@@ -300,7 +302,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
 
                     const config = PROVIDER_CONFIG[link.platform];
                     if (!config) return null;
-                    const Icon = config.icon;
+                    const PlatformIcon = config.icon;
                     const PrivacyEmoji = PRIVACY_ICONS[link.privacy_level || 'public'];
 
                     return (
@@ -318,7 +320,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                         className="w-12 h-12 rounded-2xl items-center justify-center"
                                         style={{ backgroundColor: `${config.color}15` }}
                                     >
-                                        <Icon color={config.color} size={24} />
+                                        <Icon as={PlatformIcon} color={config.color} size={24} />
                                     </Box>
                                     <VStack className="flex-1">
                                         <HStack space="xs" className="items-center">
@@ -336,14 +338,14 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                     {isEditing ? (
                                         <HStack space="md">
                                             <Pressable onPress={() => handleEditLink(link)} className="p-2 rounded-lg bg-phase-surface">
-                                                <Edit2 size={18} color="#4A90E2" />
+                                                <Icon as={Edit2} size={18} color="#4A90E2" />
                                             </Pressable>
                                             <Pressable onPress={() => handleDeleteLink(link.id)} className="p-2 rounded-lg bg-phase-surface">
-                                                <Trash2 size={18} color="#FF6B6B" />
+                                                <Icon as={Trash2} size={18} color="#FF6B6B" />
                                             </Pressable>
                                         </HStack>
                                     ) : (
-                                        <ExternalLink size={18} color="#9DA1A3" />
+                                        <Icon as={ExternalLink} size={18} color="#9DA1A3" />
                                     )}
                                 </HStack>
                             </Pressable>
@@ -373,18 +375,18 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                 className="bg-phase-canvas border-2 border-dashed border-phase-surface rounded-3xl p-5 items-center justify-center"
                             >
                                 <HStack space="sm" className="items-center">
-                                    <Plus size={20} color="#4A90E2" />
+                                    <Icon as={Plus} size={20} color="#4A90E2" />
                                     <Text className="font-bold text-phase-interactive text-base">Add Social Link</Text>
                                 </HStack>
                             </Pressable>
-                        </Animated.View>
+                        </AnimatedView>
                     </>
                 )}
             </VStack>
 
             {userId && (
                 <AddSocialLinkModal
-                    visible={isAddModalOpen}
+                    isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
                     userId={userId}
                     initialLink={editingLink}
