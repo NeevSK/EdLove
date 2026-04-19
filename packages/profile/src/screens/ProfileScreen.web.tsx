@@ -35,7 +35,7 @@ const SkeletonCard = ({ height }: { height: number }) => (
 export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string; isPublic?: boolean }) {
     const { t } = useTranslation();
     const navigation = useProfileNavigation();
-    const { can, context } = usePermissions();
+    const { can, context, flags } = usePermissions();
     const authority = context.roles[0]; 
     const { user } = useStore();
     const { profile, loading: isProfileLoading, updateField, refresh, uploadAvatar } = useProfile(userId);
@@ -441,24 +441,26 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                             </div>
                         )}
 
-                        <div className="sanctuary-card" style={{ padding: '32px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <Globe size={18} color="var(--ink-ghost)" />
-                                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                                        Social Sanctuary
-                                    </h3>
+                        {flags.isCommunityEnabled && (
+                            <div className="sanctuary-card" style={{ padding: '32px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <Globe size={18} color="var(--ink-ghost)" />
+                                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                                            Social Sanctuary
+                                        </h3>
+                                    </div>
                                 </div>
+                                <ContactLinktree
+                                    links={socialLinks || []}
+                                    userName={profile.full_name}
+                                    userId={profile.id}
+                                    isOwnProfile={isOwnProfile}
+                                    editable={isOwnProfile}
+                                    inline
+                                />
                             </div>
-                            <ContactLinktree
-                                links={socialLinks || []}
-                                userName={profile.full_name}
-                                userId={profile.id}
-                                isOwnProfile={isOwnProfile}
-                                editable={isOwnProfile}
-                                inline
-                            />
-                        </div>
+                        )}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         {isStaff && profile.school_id && (

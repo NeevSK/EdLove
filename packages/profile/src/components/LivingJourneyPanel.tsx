@@ -15,9 +15,10 @@ import {
     Text,
     Heading,
     Spinner,
+    AnimatedView,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { FadeInDown } from 'react-native-reanimated';
 import {
     moonPhaseAPI,
     useTemporalStore,
@@ -421,7 +422,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
         : FadeInDown.springify();
 
     return (
-        <Animated.View entering={enteringAnimation} className="px-5">
+        <AnimatedView entering={enteringAnimation} className="px-5">
             <Box
                 className="bg-phase-canvas rounded-[40px] border border-phase-surface shadow-xl overflow-hidden mb-10"
             >
@@ -488,7 +489,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     {moon && <MoonRow moon={moon} t={t} />}
 
                     {/* Community Resonance — aggregated from social actions */}
-                    <ResonanceRow stats={resonance} />
+                    {flags.isCommunityEnabled && <ResonanceRow stats={resonance} />}
 
                     {/* Rewards / recognition — shown as narrative signals rather than a score */}
                     {flags.isStudentRewardsWorkspaceEnabled && (
@@ -502,6 +503,6 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                     />
                 </Box>
             </Box>
-        </Animated.View>
+        </AnimatedView>
     );
 }

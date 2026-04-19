@@ -7,6 +7,7 @@ import {
     Box,
     Button,
     ButtonText,
+    ButtonIcon,
     ScrollView,
     Input,
     InputField,
@@ -124,12 +125,13 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     </HStack>
 
                     <Button
-                        leftIcon={Plus}
-                        className="rounded-[24px] h-14 shadow-sm"
-                        fullWidth
+                        className="rounded-[24px] h-14 shadow-sm w-full"
                         onPress={() => setShowAddSection(true)}
                     >
-                        {t('principal.hierarchy.addSection') || 'Add Section'}
+                        <ButtonIcon as={Plus} className="mr-2 text-white" />
+                        <ButtonText className="text-white">
+                            {t('principal.hierarchy.addSection') || 'Add Section'}
+                        </ButtonText>
                     </Button>
 
                     {/* Loading State */}
@@ -168,7 +170,9 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                         setShowAddGrade(true);
                                     }}
                                 >
-                                    {t('principal.hierarchy.addGrade') || '+ GRADE'}
+                                    <ButtonText className="text-primary text-xs font-bold">
+                                        {t('principal.hierarchy.addGrade') || '+ GRADE'}
+                                    </ButtonText>
                                 </Button>
                             </HStack>
 
@@ -255,7 +259,9 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 className="flex-1 rounded-2xl h-12 shadow-sm"
                                 onPress={handleAddSection}
                             >
-                                {t('common.add') || 'Add'}
+                                <ButtonText className="text-white font-bold">
+                                    {t('common.add') || 'Add'}
+                                </ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>
@@ -313,7 +319,9 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 className="flex-1 rounded-2xl h-12 shadow-sm"
                                 onPress={handleAddGrade}
                             >
-                                {t('common.add') || 'Add'}
+                                <ButtonText className="text-white font-bold">
+                                    {t('common.add') || 'Add'}
+                                </ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>

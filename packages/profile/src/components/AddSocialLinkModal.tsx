@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, ScrollView, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -11,6 +11,8 @@ import {
     Button,
     ButtonText,
     Pressable,
+    Modal,
+    ScrollView,
 } from '@repo/ui';
 import {
     X,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, RefreshControl, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import {
     Box,
     VStack,
@@ -13,6 +13,8 @@ import {
     hapticSuccess,
     UserAvatar,
     Pressable,
+    ScrollView,
+    RefreshControl,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Shield, XCircle, Trash2 } from 'lucide-react-native';

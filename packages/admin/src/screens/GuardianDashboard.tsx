@@ -38,6 +38,7 @@ export default function GuardianDashboard() {
       resolveWorkspaceSwitcherTargets({
         currentWorkspace: 'guardian',
         canManageFounderDashboard: can('manage', 'FounderDashboard'),
+        canManageAdminDashboard: can('manage', 'AdminDashboard'),
         canManagePrincipalDashboard: can('manage', 'PrincipalDashboard'),
         canManageGuardianDashboard: can('manage', 'GuardianDashboard'),
         canManageTeacherDashboard: can('manage', 'TeacherDashboard'),

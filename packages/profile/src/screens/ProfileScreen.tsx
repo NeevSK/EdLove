@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, RefreshControl, Alert, Platform, useWindowDimensions } from 'react-native';
+import { Alert, Platform, useWindowDimensions } from 'react-native';
 import {
     Box,
     VStack,
@@ -16,6 +16,10 @@ import {
     GlobalHeader,
     IdentityCard,
     Pressable,
+    Icon,
+    AnimatedView,
+    ScrollView,
+    RefreshControl,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { useAccountDeletion, useTracking, useStore, usePermissions } from '@repo/core';
@@ -33,7 +37,7 @@ import {
     Heart
 } from 'lucide-react-native';
 
-import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
+import { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
 import { SanctuaryProgressBar } from '@repo/ui';
 
 // Local Package Imports
@@ -247,7 +251,7 @@ export const ProfileScreen = () => {
         rewards
     } = useProfile();
 
-    const { context } = usePermissions();
+    const { context, flags } = usePermissions();
     const authority = context.roles?.[0];
     const completionResult = useProfileCompletion(profile, authority ?? null);
     const bottomPadding = useBottomTabPadding();
@@ -345,7 +349,7 @@ export const ProfileScreen = () => {
                         accessibilityLabel={t('settings.title')}
                         className="p-2 rounded-xl bg-phase-canvas border border-phase-surface"
                     >
-                        <Settings size={24} color="#4A90E2" />
+                        <Icon as={Settings} size={24} color="#4A90E2" />
                     </Pressable>
                 }
             />
@@ -367,7 +371,7 @@ export const ProfileScreen = () => {
                     <VStack space="2xl">
                         {flags.isUnderMaintenance && (
                             <Center>
-                                <Box className="p-4 bg-phase-warning/10 rounded-2xl border border-phase-warning/20" style={{ width: cardWidth }}>
+                                <AnimatedView entering={FadeInDown.delay(100)} className="p-4 bg-phase-warning/10 rounded-2xl border border-phase-warning/20" style={{ width: cardWidth }}>
                                     <HStack space="sm" className="items-center">
                                         <Info size={20} color="#F1C40F" />
                                         <VStack className="flex-1">
@@ -375,13 +379,13 @@ export const ProfileScreen = () => {
                                             <Text className="text-phase-text-secondary text-xs">Some features may be limited during this expansion.</Text>
                                         </VStack>
                                     </HStack>
-                                </Box>
+                                </AnimatedView>
                             </Center>
                         )}
 
                         {profile?.is_anonymous && (
                             <Center>
-                                <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
+                                <AnimatedView style={[{ width: cardWidth }, animatedBannerStyle]}>
                                     <Box className="p-4 bg-phase-interactive rounded-2xl shadow-lg shadow-purple-900/40">
                                         <VStack space="sm">
                                             <Heading className="text-white text-lg">{t('profile.guestTitle')}</Heading>
@@ -400,11 +404,11 @@ export const ProfileScreen = () => {
                                             </Button>
                                         </VStack>
                                     </Box>
-                                </Animated.View>
+                                </AnimatedView>
                             </Center>
                         )}
 
-                        <Animated.View entering={FadeInDown.delay(80).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(80).duration(500)}>
                             <Center>
                                 <Box
                                     className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
@@ -442,9 +446,9 @@ export const ProfileScreen = () => {
                                     </VStack>
                                 </Box>
                             </Center>
-                        </Animated.View>
+                        </AnimatedView>
 
-                        <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(100).duration(500)}>
                             <IdentitySection
                                 profile={profile}
                                 navigation={navigation}
@@ -453,10 +457,10 @@ export const ProfileScreen = () => {
                                 completionResult={completionResult}
                                 cardWidth={cardWidth}
                             />
-                        </Animated.View>
+                        </AnimatedView>
 
                         {profile?.is_thuthimal && (
-                            <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+                            <AnimatedView entering={FadeInDown.delay(200).duration(500)}>
                                 <Center>
                                     <Box style={{ width: cardWidth }}>
                                         <ThuthimalBadge
@@ -466,14 +470,14 @@ export const ProfileScreen = () => {
                                         />
                                     </Box>
                                 </Center>
-                            </Animated.View>
+                            </AnimatedView>
                         )}
 
-                        <Animated.View entering={FadeInDown.delay(300).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(300).duration(500)}>
                             <StatsSection profile={profile} role={profile?.role as any} />
-                        </Animated.View>
+                        </AnimatedView>
 
-                        <Animated.View entering={FadeInDown.delay(400).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(400).duration(500)}>
                             <Center>
                                 <Box style={{ width: cardWidth }}>
                                     <ProfileListItem
@@ -483,9 +487,9 @@ export const ProfileScreen = () => {
                                     />
                                 </Box>
                             </Center>
-                        </Animated.View>
+                        </AnimatedView>
 
-                        <Animated.View entering={FadeInDown.delay(475).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(475).duration(500)}>
                             <Center>
                                 <Box style={{ width: cardWidth }}>
                                     <ProfileListItem
@@ -495,10 +499,10 @@ export const ProfileScreen = () => {
                                     />
                                 </Box>
                             </Center>
-                        </Animated.View>
+                        </AnimatedView>
 
                         {flags.isPublicSensingEnabled && (
-                            <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+                            <AnimatedView entering={FadeInDown.delay(500).duration(500)}>
                                 <Center>
                                     <Box style={{ width: cardWidth }}>
                                         <ProfileListItem
@@ -508,18 +512,18 @@ export const ProfileScreen = () => {
                                         />
                                     </Box>
                                 </Center>
-                            </Animated.View>
+                            </AnimatedView>
                         )}
 
-                        <Animated.View entering={FadeInDown.delay(550).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(550).duration(500)}>
                             <SupportSection t={t} navigation={navigation} cardWidth={cardWidth} />
-                        </Animated.View>
+                        </AnimatedView>
 
-                        <Animated.View entering={FadeInDown.delay(600).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(600).duration(500)}>
                             <AppExperienceSection t={t} cardWidth={cardWidth} />
-                        </Animated.View>
+                        </AnimatedView>
 
-                        <Animated.View entering={FadeInDown.delay(700).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(700).duration(500)}>
                             <Center>
                                 <Box style={{ width: cardWidth }} className="mt-4">
                                     <AccountActions
@@ -530,9 +534,9 @@ export const ProfileScreen = () => {
                                     />
                                 </Box>
                             </Center>
-                        </Animated.View>
+                        </AnimatedView>
 
-                        <Animated.View entering={FadeInDown.delay(750).duration(500)}>
+                        <AnimatedView entering={FadeInDown.delay(750).duration(500)}>
                             <Center>
                                 <Box className="mt-4 mb-20" style={{ width: cardWidth }}>
                                     <VStack 
@@ -546,7 +550,7 @@ export const ProfileScreen = () => {
                                             accessibilityLabel={t('profile.logout')}
                                             className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
                                         >
-                                            <LogOut size={20} color="#FF6B6B" className="mr-2" />
+                                            <Icon as={LogOut} size={20} color="#FF6B6B" className="mr-2" />
                                             <Text className="text-phase-error font-bold">
                                                 {t('profile.logout')}
                                             </Text>
@@ -558,7 +562,7 @@ export const ProfileScreen = () => {
                                             accessibilityLabel={t('profile.deleteAccount')}
                                             className="flex-row items-center justify-center p-1"
                                         >
-                                            <Trash2 size={16} color="#9DA1A3" className="mr-1.5" />
+                                            <Icon as={Trash2} size={16} color="#9DA1A3" className="mr-1.5" />
                                             <Text className="text-phase-text-tertiary text-xs">
                                                 {t('profile.deleteAccount')}
                                             </Text>
@@ -566,7 +570,7 @@ export const ProfileScreen = () => {
                                     </VStack>
                                 </Box>
                             </Center>
-                        </Animated.View>
+                        </AnimatedView>
                     </VStack>
                 </ScrollView>
             </Box>

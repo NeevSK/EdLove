@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, useWindowDimensions, Alert, Platform } from 'react-native';
+import { useWindowDimensions, Alert, Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -17,6 +17,8 @@ import {
     ButtonText,
     IdentityCard,
     Pressable,
+    ScrollView,
+    AnimatedView,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Phone, Edit3, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School, AtSign, Heart } from 'lucide-react-native';
@@ -166,7 +168,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                     )}
 
                     {!isOtherProfile && (
-                        <Reanimated.View style={barAnimStyle}>
+                        <AnimatedView style={barAnimStyle}>
                             <Box className="px-4 mt-2">
                                 <SanctuaryProgressBar
                                     percentage={completionResult.percentage}
@@ -174,7 +176,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                                     nextHint={completionResult.nextHint}
                                 />
                             </Box>
-                        </Reanimated.View>
+                        </AnimatedView>
                     )}
 
                     <Center>

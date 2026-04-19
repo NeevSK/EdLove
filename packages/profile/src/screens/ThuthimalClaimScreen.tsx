@@ -18,10 +18,11 @@ import {
   hapticError,
   Button,
   ButtonText,
+  AnimatedView,
 } from '@repo/ui';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { thuthimalAPI, identityAPI } from '@repo/core';
-import Animated, {
+import {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -125,7 +126,7 @@ export default function ThuthimalClaimScreen() {
     return (
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center p-8">
-          <Animated.View entering={FadeInDown.duration(500)}>
+          <AnimatedView entering={FadeInDown.duration(500)}>
             <VStack className="items-center" space="lg">
               <Text className="text-[56px] text-center">🌸</Text>
               <Heading className="text-center text-2xl text-phase-text-primary">
@@ -145,7 +146,7 @@ export default function ThuthimalClaimScreen() {
                 </ButtonText>
               </Button>
             </VStack>
-          </Animated.View>
+          </AnimatedView>
         </Box>
       </ScreenWrapper>
     );
@@ -184,11 +185,11 @@ export default function ThuthimalClaimScreen() {
     <ScreenWrapper>
       <Box className="flex-1 items-center justify-center p-8 bg-black">
         {/* Flower */}
-        <Animated.View style={[flowerStyle]} className="items-center justify-center">
+        <AnimatedView style={[flowerStyle]} className="items-center justify-center">
           <Text className="text-[80px] text-center">🌸</Text>
-        </Animated.View>
+        </AnimatedView>
 
-        <Animated.View entering={FadeInDown.delay(400).duration(600)} className="w-full">
+        <AnimatedView entering={FadeInDown.delay(400).duration(600)} className="w-full">
           <VStack className="items-center mt-8" space="lg">
             {/* Sinhala title */}
             <Text className="text-phase-interactive text-2xl tracking-[2px] text-center">
@@ -221,7 +222,7 @@ export default function ThuthimalClaimScreen() {
 
             {/* Continue button */}
             <Button
-                size="xl"
+                size="lg"
                 onPress={handleContinue}
                 className="w-full mt-6 bg-phase-interactive rounded-2xl"
             >
@@ -230,7 +231,7 @@ export default function ThuthimalClaimScreen() {
                 </ButtonText>
             </Button>
           </VStack>
-        </Animated.View>
+        </AnimatedView>
       </Box>
     </ScreenWrapper>
   );

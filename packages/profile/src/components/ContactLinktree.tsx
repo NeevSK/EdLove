@@ -22,6 +22,7 @@ import {
     hapticLight,
     hapticHeavy,
     Pressable,
+    AnimatedView,
 } from '@repo/ui';
 import {
     Linkedin,
@@ -35,8 +36,8 @@ import {
     Trash2,
     Plus,
 } from 'lucide-react-native';
-import Animated from 'react-native-reanimated';
-import { SocialLink } from '@repo/core';
+import { FadeInDown } from 'react-native-reanimated';
+import { SocialLink, usePermissions } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import { AddSocialLinkModal } from './AddSocialLinkModal';
 import { useSocialLinks } from '../hooks/useSocialLinks';
@@ -107,8 +108,8 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
     const [inlineAdding, setInlineAdding] = useState(false);
     const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
 
-    const displayLinks = isOwnProfile 
-        ? links 
+    const displayLinks = isOwnProfile
+        ? links
         : links.filter(l => l.privacy_level === 'public' || (l.is_public && l.privacy_level !== 'private'));
 
     const handlePress = useCallback(async (provider: string, value: string) => {
@@ -119,7 +120,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
 
         const webUrl = uri.startsWith('http') ? uri
             : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
-            : null;
+                : null;
 
         if (Platform.OS === 'web') {
             if (webUrl) {
@@ -163,7 +164,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
         const uri = config.getUri(value);
         const webUrl = uri.startsWith('http') ? uri
             : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
-            : null;
+                : null;
 
         if (!webUrl) return;
 
@@ -237,7 +238,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                         {bio}
                     </Text>
                 )}
-                
+
                 <HStack space="md" className="mt-6">
                     {(Platform.OS === 'web' || isOwnProfile) && flags.isPublicSensingEnabled && (
                         <Button
@@ -254,7 +255,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             </HStack>
                         </Button>
                     )}
-                    
+
                     {isOwnProfile && editable && (
                         <Button
                             size="sm"
@@ -303,11 +304,11 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                     const PrivacyEmoji = PRIVACY_ICONS[link.privacy_level || 'public'];
 
                     return (
-                        <Animated.View
+                        <AnimatedView
                             key={`${link.platform}-${index}`}
                             entering={FadeInDown.delay(index * 100).springify()}
                         >
-                            <Pressable 
+                            <Pressable
                                 onPress={() => isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)}
                                 onLongPress={() => !isEditing && handleLinkOptions(link.platform, link.url)}
                                 className="bg-phase-canvas border border-phase-surface rounded-3xl overflow-hidden shadow-sm"
@@ -349,7 +350,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                         </Animated.View>
                     );
                 })}
-                
+
                 {isEditing && (
                     <>
                         {inline && inlineAdding && (
@@ -366,7 +367,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                                 onCancel={() => setInlineAdding(false)}
                             />
                         )}
-                        <Animated.View entering={FadeInDown.springify()}>
+                        <AnimatedView entering={FadeInDown.springify()}>
                             <Pressable
                                 onPress={handleAddLink}
                                 className="bg-phase-canvas border-2 border-dashed border-phase-surface rounded-3xl p-5 items-center justify-center"

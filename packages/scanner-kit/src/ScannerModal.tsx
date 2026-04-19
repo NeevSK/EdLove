@@ -181,12 +181,12 @@ export default function ScannerModal({
           barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
         >
           <View style={styles.overlay}>
-            <div style={styles.header}>
+            <View style={styles.header}>
               <Text style={styles.heading}>{modalTitle}</Text>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Text style={{ color: "white", fontSize: 20 }}>✕</Text>
               </TouchableOpacity>
-            </div>
+            </View>
 
             <View style={styles.scannerArea}>
               {processing ? (

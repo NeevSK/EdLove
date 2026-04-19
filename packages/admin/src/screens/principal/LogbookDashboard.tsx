@@ -122,7 +122,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                         label="Entry Type"
                         options={typeOptions}
                         value={type}
-                        onValueChange={setType}
+                        onChange={setType}
                         isDisabled={isPastView}
                     />
 
@@ -130,7 +130,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                         <TextareaInput 
                             value={content} 
                             onChangeText={setContent} 
-                            isDisabled={isPastView} 
+                            readOnly={isPastView} 
                             placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note..."} 
                         />
                     </Textarea>

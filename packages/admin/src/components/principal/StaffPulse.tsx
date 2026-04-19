@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, ActivityIndicator, Pressable } from 'react-native';
+import { View } from 'react-native';
 import { 
     Text, 
     VStack, 
     HStack, 
     Box, 
     Icon,
-    Heading
+    Heading,
+    Pressable,
+    ActivityIndicator
 } from '@repo/ui';
 import { useStaffPresence } from '../../hooks/useStaffPresence';
 import {

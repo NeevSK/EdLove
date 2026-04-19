@@ -78,7 +78,8 @@ export default function StepHierarchy({
                                 >
                                     <HStack className="gap-4 items-center">
                                         <Box className={`p-2 rounded-xl ${isActive ? 'bg-primary/10' : 'bg-white'}`}>
-                                            <GraduationCap 
+                                            <Icon 
+                                                as={GraduationCap}
                                                 size={18} 
                                                 className={isActive ? 'text-primary' : 'text-ink/20'} 
                                             />
@@ -128,7 +129,7 @@ export default function StepHierarchy({
                             >
                                 <HStack className="gap-4 items-center">
                                     <Box className="p-2 bg-silk rounded-xl border border-border">
-                                        <School size={16} className="text-ink/40" />
+                                        <Icon as={School} size={16} className="text-ink/40" />
                                     </Box>
                                     <VStack className="flex-1">
                                         <Text className="text-sm font-bold text-ink">{section.name || 'Unnamed Division'}</Text>

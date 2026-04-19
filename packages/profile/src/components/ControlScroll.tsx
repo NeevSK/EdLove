@@ -115,7 +115,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                 </Text>
 
                 <Box className="bg-phase-canvas rounded-3xl overflow-hidden border border-phase-surface">
-                    <HStack className="p-4" space="md" alignItems="center">
+                    <HStack className="p-4 items-center" space="md">
                         <Box className="w-9 h-9 rounded-xl bg-phase-interactive/10 items-center justify-center">
                             <Globe size={20} color="#E67E22" />
                         </Box>
@@ -151,7 +151,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         setShowThemeModal(true);
                     }}>
                         <HStack className="p-4 justify-between items-center">
-                            <HStack space="md" alignItems="center">
+                            <HStack space="md" className="items-center">
                                 <Box className="w-9 h-9 rounded-xl bg-purple-500/10 items-center justify-center">
                                     <Moon size={20} color="#9B59B6" />
                                 </Box>
@@ -169,7 +169,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                     {/* Data Saver (Placeholder) */}
                     <Pressable onPress={hapticLight}>
                         <HStack className="p-4 justify-between items-center">
-                            <HStack space="md" alignItems="center">
+                            <HStack space="md" className="items-center">
                                 <Box className="w-9 h-9 rounded-xl bg-green-500/10 items-center justify-center">
                                     <Database size={20} color="#2ECC71" />
                                 </Box>

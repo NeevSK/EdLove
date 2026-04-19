@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import {
     Box,
     VStack,
@@ -23,6 +23,9 @@ import {
     SelectItem,
     Image,
     Center,
+    KeyboardAvoidingView,
+    ScrollView,
+    Modal,
 } from '@repo/ui';
 import { X, Save, ChevronDown, Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -330,7 +333,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     )}
 
                                     <Button
-                                        size="xl"
+                                        size="lg"
                                         className="mt-8 bg-phase-interactive rounded-3xl h-16 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all"
                                         isDisabled={loading}
                                         onPress={handleSave}

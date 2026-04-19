@@ -357,7 +357,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
                     <HStack className="justify-end gap-2 mt-sm">
                         <SanctuaryButton
-                            action="default"
+                            action="secondary"
                             onPress={() => { setComposing(false); setDraft(''); }}
                         >
                             <Text>Cancel</Text>

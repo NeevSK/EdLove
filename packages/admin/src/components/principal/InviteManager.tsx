@@ -78,13 +78,9 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
     const handleCopyCode = async (code: string) => {
         try {
             await Clipboard.setStringAsync(code);
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="success" variant="solid" className="bg-green-600 rounded-xl px-6">
-                        <ToastTitle className="text-white font-bold">{t('principal.invites.copied') || 'Copied to Clipboard'}</ToastTitle>
-                    </Toast>
-                )
+            toast.showToast({
+                message: t('principal.invites.copied') || 'Copied to Clipboard',
+                type: 'success'
             });
         } catch (err) {
             handleAPIError(err);

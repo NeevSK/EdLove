@@ -251,7 +251,7 @@ function EventTile({
 }
 
 function ActionTile({
-  icon: Icon,
+  icon: IconComponent,
   title,
   copy,
   cta,
@@ -267,7 +267,7 @@ function ActionTile({
       <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
         <HStack className="items-start gap-3">
           <Box className="rounded-2xl bg-phase-warning/10 p-3">
-            <Icon size={18} color="#2A2318" />
+            <IconComponent size={18} color="#2A2318" />
           </Box>
           <VStack className="flex-1 gap-1">
             <Text className="text-[14px] font-bold text-phaseText-primary">{title}</Text>

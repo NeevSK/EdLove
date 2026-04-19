@@ -8,15 +8,11 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
-    View,
     FlatList,
-    TouchableOpacity,
-    ActivityIndicator,
-    StyleSheet,
     ListRenderItemInfo,
     GestureResponderEvent,
 } from 'react-native';
-import { Box, Text, Heading, VStack, HStack, Theme, useThemedColors, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { Box, Text, Heading, VStack, HStack, Pressable, Spinner, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap } from 'lucide-react-native';
 import { api, MOCK_CLASSROOMS, identityAPI, useStore, usePermissions, useFeatureAccess } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -58,46 +54,6 @@ export default function ClassroomList({
     const [classrooms, setClassrooms] = useState<WorkspaceClassroom[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
-    const colors = useThemedColors();
-    
-    const styles = useMemo(() => StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: colors.primary,
-        },
-        contentContainer: {
-            padding: Theme.spacing.md,
-        },
-        centerContainer: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: Theme.spacing.lg,
-        },
-        loadingText: {
-            fontSize: Theme.typography.fontSize.md,
-            color: colors.text,
-            marginTop: Theme.spacing.sm,
-        },
-        errorText: {
-            fontSize: Theme.typography.fontSize.md,
-            color: Theme.colors.emberRed,
-            textAlign: 'center',
-            marginBottom: Theme.spacing.md,
-        },
-        retryButton: {
-            backgroundColor: Theme.colors.sanctuarySaffron,
-            paddingVertical: Theme.spacing.sm,
-            paddingHorizontal: Theme.spacing.lg,
-            borderRadius: Theme.corners.comfortable,
-        },
-        retryButtonText: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '600',
-            color: Theme.colors.sacredWhite,
-        },
-    }), [colors]);
-
     const [error, setError] = useState<string | null>(null);
     const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -256,21 +212,20 @@ export default function ClassroomList({
                 classroom={classroom}
                 onPress={handleClassroomPress}
                 studentCount={studentCount}
-                colors={colors}
                 setIsCreateModalOpen={setIsCreateModalOpen}
                 setPendingInitialData={setPendingInitialData}
                 toast={toast}
                 t={t}
             />
         );
-    }, [handleClassroomPress, colors, toast, t]);
+    }, [handleClassroomPress, toast, t]);
 
     const keyExtractor = useCallback((item: WorkspaceClassroom) => item.id, []);
-    const ItemSeparator = useCallback(() => <View style={{ height: Theme.spacing.md }} />, []);
+    const ItemSeparator = useCallback(() => <Box className="h-4" />, []);
 
     if (loading) {
         return (
-            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
+            <VStack className={`w-full gap-4 ${isNested ? '' : 'p-4'}`}>
                 <SkeletonCard height={80} />
                 <SkeletonCard height={80} />
                 <SkeletonCard height={80} />
@@ -280,20 +235,20 @@ export default function ClassroomList({
 
     if (error) {
         return (
-            <View style={styles.centerContainer}>
-                <Text style={styles.errorText}>⚠️ {error}</Text>
-                <TouchableOpacity
-                    style={styles.retryButton}
+            <Box className="flex-1 justify-center items-center p-6">
+                <Text className="text-red-500 text-center mb-4">⚠️ {error}</Text>
+                <Pressable
+                    className="bg-sanctuarySaffron py-2 px-6 rounded-xl"
                     onPress={handleRetry}>
-                    <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text>
-                </TouchableOpacity>
-            </View>
+                    <Text className="text-white font-semibold">{t('classroom.retry')}</Text>
+                </Pressable>
+            </Box>
         );
     }
 
     if (isNested) {
         return (
-            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
+            <VStack className="w-full gap-4">
                 {classrooms.length === 0 ? (
                     emptyContent || (
                         <PositiveInvitation
@@ -314,7 +269,6 @@ export default function ClassroomList({
                             classroom={classroom}
                             onPress={handleClassroomPress}
                             studentCount={(classroom as any).student_count || 0}
-                            colors={colors}
                             setIsCreateModalOpen={setIsCreateModalOpen}
                             setPendingInitialData={setPendingInitialData}
                             toast={toast}
@@ -340,7 +294,7 @@ export default function ClassroomList({
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box className="flex-1 bg-background-50">
             {classrooms.length === 0 ? (
                 <PositiveInvitation
                     context="classroom"
@@ -359,37 +313,25 @@ export default function ClassroomList({
                         renderItem={renderClassroomCard}
                         keyExtractor={keyExtractor}
                         ItemSeparatorComponent={ItemSeparator}
-                        style={styles.container}
-                        contentContainerStyle={styles.contentContainer}
+                        className="flex-1"
+                        contentContainerStyle={{ padding: 16 }}
                         showsVerticalScrollIndicator={false}
                         onEndReached={fetchMore}
                         onEndReachedThreshold={0.5}
-                        ListFooterComponent={isFetchingMore ? <ActivityIndicator color={Theme.colors.sanctuarySaffron} style={{ padding: 10 }} /> : null}
+                        ListFooterComponent={isFetchingMore ? <Spinner color="#F6BF8C" className="p-2" /> : null}
                     />
 
                     {canCreateClassroom && (
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => {
                                 hapticLight();
                                 setPendingInitialData(null);
                                 setIsCreateModalOpen(true);
                             }}
-                            style={{
-                                position: 'absolute',
-                                bottom: 20,
-                                right: 20,
-                                width: 56,
-                                height: 56,
-                                borderRadius: 28,
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                ...Theme.shadows.md,
-                                zIndex: 10
-                            }}
+                            className="absolute bottom-5 right-5 w-14 h-14 rounded-full bg-sanctuarySaffron justify-center items-center shadow-md z-10"
                         >
-                            <Plus size={24} color="white" />
-                        </TouchableOpacity>
+                            <Plus size={24} className="text-white" />
+                        </Pressable>
                     )}
                 </>
             )}
@@ -415,7 +357,6 @@ interface ClassroomCardProps {
     classroom: WorkspaceClassroom;
     onPress: (classroom: WorkspaceClassroom) => void;
     studentCount: number;
-    colors: any;
     setPendingInitialData: (data: any) => void;
     setIsCreateModalOpen: (isOpen: boolean) => void;
     toast: any;
@@ -426,7 +367,6 @@ const ClassroomCard = React.memo(({
     classroom, 
     onPress, 
     studentCount, 
-    colors, 
     setPendingInitialData, 
     setIsCreateModalOpen, 
     toast, 
@@ -443,99 +383,65 @@ const ClassroomCard = React.memo(({
         e.stopPropagation();
         hapticLight();
         // Attendance action handled here or passed up
-    }, []);
-
-    return (
-        <TouchableOpacity
+    }, []);    return (
+        <Pressable
             onPress={handlePress}
-            activeOpacity={0.7}
+            className="active:opacity-70"
         >
             <Box
-                sx={{
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.md,
-                    borderWidth: 1,
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                }}
+                className="rounded-2xl p-4 border border-outline-300 bg-background-50"
             >
-                <HStack sx={{ alignItems: 'center', gap: Theme.spacing.md }}>
-                    <Box sx={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: Theme.corners.comfortable,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: colors.surfaceVariant || colors.surface
-                    }}>
+                <HStack className="items-center gap-4">
+                    <Box className="w-[50px] h-[50px] rounded-lg justify-center items-center bg-background-100">
                         <BookOpen
                             size={24}
-                            color={Theme.colors.templeGold}
+                            className="text-templeGold"
                         />
                     </Box>
-
-                    <VStack sx={{ flex: 1, gap: 4 }}>
-                        <HStack sx={{ alignItems: 'center', gap: 8 }}>
-                            <Text sx={{ fontSize: 18, fontWeight: '700', color: colors.text }}>
+ 
+                    <VStack className="flex-1 gap-1">
+                        <HStack className="items-center gap-2">
+                            <Text className="text-lg font-bold text-typography-900">
                                 {classroom.name}
                             </Text>
                             {(classroom as any).is_sample && (
-                                <Box sx={{
-                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                                    paddingHorizontal: 6,
-                                    paddingVertical: 2,
-                                    borderRadius: 4,
-                                    borderWidth: 1,
-                                    borderColor: Theme.colors.templeGold,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    gap: 2
-                                }}>
-                                    <Zap size={10} color={Theme.colors.templeGold} />
-                                    <Text sx={{ fontSize: 10, color: Theme.colors.templeGold, fontWeight: '700' }}>
+                                <Box className="bg-amber-100 px-1.5 py-0.5 rounded border border-templeGold flex-row items-center gap-0.5">
+                                    <Zap size={10} className="text-templeGold" />
+                                    <Text className="text-[10px] text-templeGold font-bold">
                                         {t('classroom.sample') || 'SAMPLE'}
                                     </Text>
                                 </Box>
                             )}
                         </HStack>
-                        <HStack sx={{ alignItems: 'center', gap: 8 }}>
-                            <Text sx={{ fontSize: 14, fontWeight: '700', color: Theme.colors.templeGold }}>
+                        <HStack className="items-center gap-2">
+                            <Text className="text-sm font-bold text-templeGold">
                                 {classroom.subject || t('classroom.noSubject')}
                             </Text>
                             <Box
-                                sx={{
-                                    width: 4,
-                                    height: 4,
-                                    borderRadius: 2,
-                                    backgroundColor: colors.textSecondary,
-                                }}
+                                className="w-1 h-1 rounded-full bg-typography-500"
                             />
-                            <HStack sx={{ alignItems: 'center', gap: 4 }}>
-                                <Users size={14} color={colors.textSecondary} />
-                                <Text sx={{ fontSize: 14, color: colors.textSecondary }}>
+                            <HStack className="items-center gap-1">
+                                <Users size={14} className="text-typography-500" />
+                                <Text className="text-sm text-typography-500">
                                     {studentCount}
                                 </Text>
                             </HStack>
                         </HStack>
                     </VStack>
-
-                    <TouchableOpacity onPress={handleAttendancePress}>
-                        <Box sx={{
-                            padding: Theme.spacing.sm,
-                            borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.surfaceVariant || colors.surface,
-                        }}>
-                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
+ 
+                    <Pressable onPress={handleAttendancePress}>
+                        <Box className="p-2 rounded-lg bg-background-100">
+                            <ClipboardCheck size={20} className="text-sageGreen" />
                         </Box>
-                    </TouchableOpacity>
-
+                    </Pressable>
+ 
                     <ChevronRight
                         size={20}
-                        color={colors.textSecondary}
+                        className="text-typography-500"
                     />
                 </HStack>
             </Box>
-        </TouchableOpacity>
+        </Pressable>
     );
 }, (prevProps, nextProps) => {
     return (

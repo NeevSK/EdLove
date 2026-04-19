@@ -10,7 +10,7 @@ export default function AdminTenantDetail() {
         <Text className="text-lg font-bold text-phaseText-primary">Tenant detail</Text>
         <Text className="text-center text-sm text-phaseText-secondary">
           {data.recentSchools.length > 0
-            ? `Latest tenant in view: ${data.recentSchools[0].name ?? data.recentSchools[0].id}`
+            ? `Latest tenant in view: ${data.recentSchools[0]?.name ?? data.recentSchools[0]?.id}`
             : 'This room will drill into a single tenant, school, or platform customer context.'}
         </Text>
       </VStack>

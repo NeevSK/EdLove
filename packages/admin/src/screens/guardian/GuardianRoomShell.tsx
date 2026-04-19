@@ -1,6 +1,6 @@
 import React from 'react';
-import { Icon, ArrowLeft } from 'lucide-react-native';
-import { Box, HStack, Pressable, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { ArrowLeft } from 'lucide-react-native';
+import { Box, HStack, Icon, Pressable, ScreenWrapper, Text, VStack } from '@repo/ui';
 
 interface GuardianRoomShellProps {
   eyebrow: string;

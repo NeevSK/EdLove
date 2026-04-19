@@ -95,7 +95,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                                 <InputField 
                                     value={newSectionGrade} 
                                     onChangeText={setNewSectionGrade}
-                                    disabled={isPastView} 
+                                    readOnly={isPastView} 
                                     placeholder="Grade (e.g. 8)" 
                                 />
                             </Input>
@@ -106,7 +106,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                                 <InputField 
                                     value={newSectionName} 
                                     onChangeText={setNewSectionName}
-                                    disabled={isPastView} 
+                                    readOnly={isPastView} 
                                     placeholder="Name (e.g. 8A)" 
                                 />
                             </Input>

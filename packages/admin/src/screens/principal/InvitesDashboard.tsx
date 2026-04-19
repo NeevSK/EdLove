@@ -187,9 +187,9 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, us
                                                 <Text className="text-2xl font-black text-primary italic tracking-widest font-mono">
                                                     {invite.code}
                                                 </Text>
-                                                <Box className={`px-2 py-0.5 rounded-lg ${invite.role === 'principal' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
-                                                    <Text className={`text-[10px] font-black uppercase ${invite.role === 'principal' ? 'text-amber-600' : 'text-blue-600'}`}>
-                                                        {invite.role}
+                                                <Box className={`px-2 py-0.5 rounded-lg ${invite.authority === 'principal' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
+                                                    <Text className={`text-[10px] font-black uppercase ${invite.authority === 'principal' ? 'text-amber-600' : 'text-blue-600'}`}>
+                                                        {invite.authority}
                                                     </Text>
                                                 </Box>
                                             </HStack>

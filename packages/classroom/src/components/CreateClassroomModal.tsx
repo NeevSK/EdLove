@@ -18,6 +18,7 @@ import {
     Icon,
     hapticLight,
     hapticSuccess,
+    useTheme,
 } from '@repo/ui';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 import { useNavigation } from '@react-navigation/native';
@@ -91,6 +92,8 @@ export default function CreateClassroomModal({
 }: CreateClassroomModalProps) {
     const navigation = useNavigation();
     const { user, setUser } = useStore();
+    const { t } = useTranslation();
+    const { accent } = useTheme();
 
     // useEntity for core logic
     const { create, updateInstance } = useEntity({

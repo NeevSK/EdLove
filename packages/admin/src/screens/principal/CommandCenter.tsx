@@ -65,7 +65,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                         <Pressable
                             key={i}
                             onPress={() => !action.isAgentic && onNavigate(action.view)}
-                            isDisabled={action.isAgentic}
+                            disabled={action.isAgentic}
                             accessibilityRole="button"
                             accessibilityLabel={action.label}
                             className={`bg-silk rounded-3xl border border-border items-center p-6 gap-3 shadow-sm active:scale-95 ${action.isAgentic ? 'opacity-60' : 'opacity-100'}`}

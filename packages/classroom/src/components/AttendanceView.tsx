@@ -3,7 +3,6 @@ import { Box, Spinner, Text } from '@repo/ui';
 import AttendanceSheet from './AttendanceSheet';
 import { StudentAttendance, AttendanceStatus } from '@repo/core';
 import { api } from '@repo/core';
-import { Theme } from '@repo/ui';
 
 interface AttendanceViewProps {
     classroomId: string;
@@ -58,17 +57,17 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}>
-                <Spinner color={Theme.colors.sanctuarySaffron} />
-                <Text color={Theme.colors.textSecondary} sx={{ marginTop: 16 }}>Loading class list...</Text>
+            <Box className="flex-1 p-8 items-center">
+                <Spinner color="#F6BF8C" />
+                <Text className="text-typography-500 mt-4">Loading class list...</Text>
             </Box>
         );
     }
 
     if (students.length === 0 && !isLoading) {
         return (
-            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}>
-                <Text color={Theme.colors.textSecondary}>No students found in this classroom.</Text>
+            <Box className="flex-1 p-8 items-center">
+                <Text className="text-typography-500">No students found in this classroom.</Text>
             </Box>
         );
     }

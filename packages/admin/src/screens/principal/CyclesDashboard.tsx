@@ -99,7 +99,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                             <InputField 
                                 value={newName} 
                                 onChangeText={setNewName}
-                                disabled={isPastView} 
+                                readOnly={isPastView} 
                                 placeholder="e.g. First Term 2026" 
                             />
                         </Input>
@@ -114,7 +114,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                                 <InputField 
                                     value={newStart} 
                                     onChangeText={setNewStart}
-                                    disabled={isPastView} 
+                                    readOnly={isPastView} 
                                     placeholder="YYYY-MM-DD"
                                 />
                             </Input>
@@ -128,7 +128,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                                 <InputField 
                                     value={newEnd} 
                                     onChangeText={setNewEnd}
-                                    disabled={isPastView} 
+                                    readOnly={isPastView} 
                                     placeholder="YYYY-MM-DD"
                                 />
                             </Input>

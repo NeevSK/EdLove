@@ -6,8 +6,6 @@ import {
     HStack,
     Text,
     Heading,
-    useThemedColors,
-    Theme,
     GlobalHeader,
     ScreenWrapper,
     hapticSuccess,
@@ -39,7 +37,6 @@ export default function FullProfileScreenWeb() {
     const initialProfile = initialParams as unknown as UserProfile;
 
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const { user: currentUser } = useStore();
 
     const { profile: liveProfile, updateField, refresh, uploadAvatar } = useProfile(initialProfile?.id);
@@ -83,9 +80,9 @@ export default function FullProfileScreenWeb() {
                 onBack={() => navigation.goBack()}
             />
             <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-                <Box sx={{ maxWidth: 800, margin: '0 auto', width: '100%', padding: '$6' }}>
+                <Box className="max-w-[800px] mx-auto w-full p-6">
                     <VStack space="2xl">
-                        <HStack space="xl" alignItems="center">
+                        <HStack space="xl" className="items-center">
                             <AvatarDisplay
                                 userId={profile.id}
                                 avatarUrl={profile.avatar_url}
@@ -102,7 +99,7 @@ export default function FullProfileScreenWeb() {
                             />
                             <VStack>
                                 <Heading size="xl">{profile.full_name}</Heading>
-                                <Text sx={{ color: colors.textTertiary }}>@{profile.username || 'no-handle'}</Text>
+                                <Text className="text-phase-text-tertiary">@{profile.username || 'no-handle'}</Text>
                                 {isTeacherProfile && profile.school_id ? (
                                     <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} />
                                 ) : null}
@@ -110,15 +107,9 @@ export default function FullProfileScreenWeb() {
                         </HStack>
                         
                         <Box
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.generous,
-                                padding: '$6',
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                            }}
+                            className="bg-phase-surface rounded-[40px] p-6 border border-phase-border"
                         >
-                            <Heading size="md" sx={{ mb: '$4' }}>{t('profile.personalDetails')}</Heading>
+                            <Heading size="md" className="mb-4">{t('profile.personalDetails')}</Heading>
                             <VStack space="lg">
                                 <EditableItem
                                     icon={UserIcon}
@@ -149,9 +140,9 @@ export default function FullProfileScreenWeb() {
                         
                         {!isOtherProfile && (
                             <SanctuaryButton onPress={() => setShowSocialModal(true)}>
-                                <HStack space="sm" alignItems="center">
+                                <HStack space="sm" className="items-center">
                                     <Edit3 size={18} color="white" />
-                                    <Text sx={{ color: 'white', fontWeight: 'bold' }}>Manage Social Links</Text>
+                                    <Text className="text-white font-bold">Manage Social Links</Text>
                                 </HStack>
                             </SanctuaryButton>
                         )}

@@ -19,7 +19,7 @@ export default function PublicProfileScreenWeb() {
     if (type === 'user') {
         if (isProfileLoading) {
             return (
-                <Center sx={{ height: '100vh' }}>
+                <Center className="h-screen">
                     <Spinner size="large" />
                 </Center>
             );
@@ -27,14 +27,14 @@ export default function PublicProfileScreenWeb() {
 
         if (!profile) {
             return (
-                <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+                <Box className="p-10 text-center text-phase-ghost">
                     Profile Not Found or Error Loading
                 </Box>
             );
         }
 
         return (
-            <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}>
+            <Box className="max-w-[1200px] mx-auto p-6">
                 <IdentityCard data={profile as unknown as IdentityData} />
             </Box>
         );
@@ -42,7 +42,7 @@ export default function PublicProfileScreenWeb() {
 
     if (isLoading) {
         return (
-            <Center sx={{ height: '100vh' }}>
+            <Center className="h-screen">
                 <Spinner size="large" />
             </Center>
         );
@@ -50,7 +50,7 @@ export default function PublicProfileScreenWeb() {
 
     if (error || !instance) {
         return (
-            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+            <Box className="p-10 text-center text-phase-ghost">
                 Profile Not Found or Error Loading
             </Box>
         );
@@ -58,7 +58,7 @@ export default function PublicProfileScreenWeb() {
 
     // Fallback for other entity types if needed, or structured entity view
     return (
-        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}>
+        <Box className="max-w-[1200px] mx-auto p-6">
              <IdentityCard data={instance as unknown as IdentityData} />
         </Box>
     );
