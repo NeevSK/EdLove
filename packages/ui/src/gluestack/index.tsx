@@ -14,7 +14,6 @@ export * from '../components/ui/hstack';
 export * from '../components/ui/vstack';
 export { View, ScrollView, FlatList, RefreshControl, AnimatedView } from '../components/ui/view';
 export * from '../components/ui/text';
-export * from '../components/ui/heading';
 export * from '../components/ui/divider';
 export * from '../components/ui/icon';
 export * from '../components/ui/pressable';

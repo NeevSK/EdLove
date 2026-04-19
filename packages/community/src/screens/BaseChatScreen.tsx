@@ -225,13 +225,15 @@ export default function BaseChatScreen({
                         contentContainerStyle={{ paddingVertical: 20, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
-                            <Animated.View entering={FadeInDown.duration(800).springify()} className="items-center px-10">
-                                <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
-                                    <Icon as={MessageSquare} size="lg" className="text-ink/20" />
+                            <Animated.View entering={FadeInDown.duration(800).springify()}>
+                                <Box className="items-center px-10">
+                                    <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
+                                        <Icon as={MessageSquare} size="lg" className="text-ink/20" />
+                                    </Box>
+                                    <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
+                                        {t('chat.empty', 'A quiet resonance awaits. Be the first to speak in this sanctuary.')}
+                                    </Text>
                                 </Box>
-                                <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
-                                    {t('chat.empty', 'A quiet resonance awaits. Be the first to speak in this sanctuary.')}
-                                </Text>
                             </Animated.View>
                         }
                     />

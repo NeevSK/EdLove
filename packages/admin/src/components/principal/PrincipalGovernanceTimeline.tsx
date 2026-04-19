@@ -5,7 +5,6 @@ import {
     HStack, 
     Text, 
     VStack, 
-    useTheme, 
     Input, 
     InputField, 
     Pressable,
@@ -49,7 +48,6 @@ export default function PrincipalGovernanceTimeline({
   principalId,
   limit = 6
 }: PrincipalGovernanceTimelineProps) {
-  const theme = useTheme();
   const { viewDate } = useTemporalStore();
   const [events, setEvents] = useState<PrincipalGovernanceEventZod[]>([]);
   const [snapshot, setSnapshot] = useState<PrincipalGovernanceEventZod[]>([]);
@@ -140,9 +138,7 @@ export default function PrincipalGovernanceTimeline({
     }
   };
 
-  const infoColor = theme.accent.action;
-  const errorColor = theme.accent.danger;
-  const warningColor = theme.accent.templeGold;
+
 
   return (
     <VStack className="gap-2">
@@ -170,19 +166,16 @@ export default function PrincipalGovernanceTimeline({
                 <Text className="text-xs font-bold text-phaseText-primary">
                   Observation {event.entity_id}
                 </Text>
-                <Text style={{ color: infoColor }} className="text-[11px] font-bold">
+                <Text className="text-[11px] font-bold text-primary">
                   {EVENT_LABELS[event.event_type] || event.event_type}
                 </Text>
               </HStack>
               <Text className="text-xs text-phaseText-secondary leading-relaxed">
                 {(event.snapshot?.content as string) || 'Official observation state is available.'}
               </Text>
-              <StyledTouchableOpacity onPress={() => setFollowUpTarget(event.entity_id)} activeOpacity={0.85}>
-                <Box
-                  style={{ backgroundColor: `${infoColor}18` }}
-                  className="self-start mt-2 px-4 py-1 rounded-full border border-phase-border"
-                >
-                  <Text style={{ color: infoColor }} className="text-[11px] font-bold">
+              <Pressable onPress={() => setFollowUpTarget(event.entity_id)}>
+                <Box className="self-start mt-2 px-4 py-1 rounded-full border border-phase-border bg-primary/10">
+                  <Text className="text-[11px] font-bold text-primary">
                     Add follow-up
                   </Text>
                 </Box>
@@ -199,10 +192,7 @@ export default function PrincipalGovernanceTimeline({
       )}
 
       {!isLoading && error && (
-        <Box
-          style={{ backgroundColor: errorColor + '10', borderColor: errorColor }}
-          className="rounded-2xl p-4 border"
-        >
+        <Box className="rounded-2xl p-4 border border-error bg-error/10">
           <Text className="text-phaseText-primary">{error}</Text>
         </Box>
       )}
@@ -222,7 +212,7 @@ export default function PrincipalGovernanceTimeline({
               <Text className="text-xs font-bold text-phaseText-primary">
                 {ENTITY_LABELS[event.entity_type] || event.entity_type} {EVENT_LABELS[event.event_type] || event.event_type}
               </Text>
-              <Text style={{ color: infoColor }} className="text-[11px] font-bold">
+              <Text className="text-[11px] font-bold text-primary">
                 {event.entity_type === 'school_invite' ? 'Invite' : 'Official'}
               </Text>
             </HStack>
@@ -260,12 +250,10 @@ export default function PrincipalGovernanceTimeline({
             {(['noted', 'escalated', 'resolved'] as const).map((status) => (
               <Pressable key={status} onPress={() => setFollowUpStatus(status)}>
                 <Box
-                  style={{ backgroundColor: followUpStatus === status ? infoColor : 'transparent' }}
-                  className={`px-4 py-1 rounded-full border border-phase-border`}
+                  className={`px-4 py-1 rounded-full border border-phase-border ${followUpStatus === status ? 'bg-primary' : 'bg-transparent'}`}
                 >
                   <Text
-                    style={{ color: followUpStatus === status ? '#FFFFFF' : theme.scene.text.secondary }}
-                    className="text-[11px] font-bold"
+                    className={`text-[11px] font-bold ${followUpStatus === status ? 'text-white' : 'text-phaseText-secondary'}`}
                   >
                     {status}
                   </Text>
@@ -291,10 +279,7 @@ export default function PrincipalGovernanceTimeline({
               disabled={savingFollowUp}
               className="flex-1"
             >
-              <Box
-                style={{ backgroundColor: warningColor }}
-                className={`py-2.5 rounded-full items-center ${savingFollowUp ? 'opacity-50' : ''}`}
-              >
+              <Box className={`py-2.5 rounded-full items-center bg-templeGold ${savingFollowUp ? 'opacity-50' : ''}`}>
                 <Text className="text-xs font-bold text-white">
                   {savingFollowUp ? 'Saving...' : 'Save follow-up'}
                 </Text>

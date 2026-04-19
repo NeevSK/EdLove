@@ -16,7 +16,6 @@ import {
 } from '@repo/ui';
 import { ArrowLeft, Copy, Plus, X, ShieldAlert, Award, QrCode } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-import { TouchableOpacity, Platform } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { invitesAPI, type InviteCode } from '../../invites';
 import { handleAPIError } from '@repo/core';

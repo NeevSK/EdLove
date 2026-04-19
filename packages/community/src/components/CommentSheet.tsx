@@ -196,6 +196,7 @@ export function CommentSheet({
         }
     };
 
+    const sheetContent = (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
@@ -290,6 +291,7 @@ export function CommentSheet({
                     )}
                 </Pressable>
             </HStack>
+            </Box>
         </KeyboardAvoidingView>
     );
 

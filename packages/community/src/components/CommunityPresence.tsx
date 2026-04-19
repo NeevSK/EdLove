@@ -129,12 +129,9 @@ export default function CommunityPresence({
                         <Icon as={Users} className={vibeClass} size="lg" />
                     )}
                     {!isOffline && (
-                        <Animated.View
-                            style={[
-                                pulseStyle,
-                            ]}
-                            className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-phase-interactive"
-                        />
+                        <Animated.View style={pulseStyle}>
+                            <Box className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-phase-interactive" />
+                        </Animated.View>
                     )}
                 </View>
                 <VStack className="gap-0.5">
