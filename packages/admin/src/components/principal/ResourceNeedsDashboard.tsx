@@ -41,10 +41,10 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
 
     const getPriorityColorClasses = (priority: string) => {
         switch (priority) {
-            case 'urgent': return 'text-red-600 border-red-600 bg-red-500/10';
-            case 'high': return 'text-amber-600 border-amber-600 bg-amber-500/10';
-            case 'medium': return 'text-blue-600 border-blue-600 bg-blue-500/10';
-            default: return 'text-ink/40 border-border bg-ink/5';
+            case 'urgent': return { text: 'text-red-600', border: 'border-red-600', bg: 'bg-red-500/10' };
+            case 'high': return { text: 'text-amber-600', border: 'border-amber-600', bg: 'bg-amber-500/10' };
+            case 'medium': return { text: 'text-blue-600', border: 'border-blue-600', bg: 'bg-blue-500/10' };
+            default: return { text: 'text-ink/40', border: 'border-border', bg: 'bg-ink/5' };
         }
     };
 
@@ -101,19 +101,15 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
             <VStack className="gap-4">
                 {needs.map((need) => {
                     const Icon = ICON_MAP[need.icon] || ICON_MAP.other;
-                    const priorityClasses = getPriorityColorClasses(need.priority);
-                    const colorParts = priorityClasses.split(' ');
-                    const textColorClass = colorParts[0];
-                    const borderColorClass = colorParts[1];
-                    const bgColorClass = colorParts[2];
+                    const classes = getPriorityColorClasses(need.priority);
 
                     return (
                         <Box
                             key={need.id}
-                            className={`p-5 bg-white rounded-3xl border-l-4 border-y border-r border-border ${borderColorClass.replace('border-', 'border-l-')}`}>
+                            className={`p-5 bg-white rounded-3xl border-l-4 border-y border-r border-border ${classes.border.replace('border-', 'border-l-')}`}>
                             <HStack className="items-center gap-4">
-                                <Box className={`w-12 h-12 rounded-2xl items-center justify-center ${bgColorClass}`}>
-                                    <UIIcon as={Icon} className={textColorClass} size="md" />
+                                <Box className={`w-12 h-12 rounded-2xl items-center justify-center ${classes.bg}`}>
+                                    <UIIcon as={Icon} className={classes.text} size="md" />
                                 </Box>
 
                                 <VStack className="flex-1 gap-0.5">

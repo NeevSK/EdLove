@@ -590,7 +590,7 @@ export default function FounderDashboardWeb() {
                                 </div>
                             )) : (
                                 <div style={{ textAlign: 'center', padding: '60px', background: 'var(--surface)', opacity: 0.5 }}>
-                                    <Icon as={Shield} size={48} style={{ margin: '0 auto', marginBottom: '16px' } as any} />
+                                    <SanctuaryIcon as={Shield} size={48} style={{ margin: '0 auto', marginBottom: '16px' } as any} />
                                     <div>No critical governance events logged. Resonance is steady.</div>
                                 </div>
                             )}

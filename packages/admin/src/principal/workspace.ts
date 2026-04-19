@@ -14,6 +14,7 @@ export type PrincipalFeatureScope = 'institutional' | 'classroom' | 'ecology_cro
 export type PrincipalModuleStatus = 'live' | 'planned' | 'hidden';
 
 export type PrincipalCapabilityId =
+  | 'setup_runway'
   | 'morning_brief'
   | 'faculty_overview'
   | 'student_pulse'
@@ -38,7 +39,8 @@ export type PrincipalCapabilityId =
   | 'documents'
   | 'compliance'
   | 'curriculum_pulse'
-  | 'timetable';
+  | 'timetable'
+  | 'workspace_switcher';
 
 export interface PrincipalFeatureScopeMeta {
   scope: PrincipalFeatureScope;
@@ -88,6 +90,12 @@ function definePrincipalCapability(
 }
 
 export const PRINCIPAL_CAPABILITY_REGISTRY: Record<PrincipalCapabilityId, PrincipalCapabilityMeta>  = {
+  setup_runway: definePrincipalCapability('setup_runway', {
+    title: 'Setup Runway',
+    description: 'A launch path for school hierarchy, invitations, cycles, and profile configuration.',
+    zone: 'institution',
+    scope: 'institutional',
+    status: 'live'}),
   morning_brief: definePrincipalCapability('morning_brief', {
     title: 'Morning Brief',
     description: 'A daily situational read on staffing, attendance risk, and approvals that need attention now.',
@@ -251,7 +259,13 @@ export const PRINCIPAL_CAPABILITY_REGISTRY: Record<PrincipalCapabilityId, Princi
     zone: 'outlook',
     scope: 'institutional',
     status: 'planned',
-    atlasFamily: 'Operations ERP'})};
+    atlasFamily: 'Operations ERP'}),
+  workspace_switcher: definePrincipalCapability('workspace_switcher', {
+    title: 'Workspace Switcher',
+    description: 'Switch between different institutional roles and workspaces.',
+    zone: 'institution',
+    scope: 'institutional',
+    status: 'live'})};
 
 export const PRINCIPAL_FEATURE_SCOPE_MAP: Record<PrincipalCapabilityId, PrincipalFeatureScopeMeta> =
   Object.fromEntries(

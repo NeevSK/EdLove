@@ -1,4 +1,4 @@
-﻿import type { PrincipalWorkspaceSurfaceId } from './usePrincipalWorkspaceCanvas';
+import type { PrincipalWorkspaceSurfaceId } from './usePrincipalWorkspaceCanvas';
 
 const PRINCIPAL_PREVIEW_SUMMARY: Record<PrincipalWorkspaceSurfaceId, string>  = {
     setup_runway:
@@ -30,7 +30,9 @@ const PRINCIPAL_PREVIEW_SUMMARY: Record<PrincipalWorkspaceSurfaceId, string>  = 
     ecosystem_resonance:
         'Preview a, principal, outlook, lane, that, carries, climate, culture, and, broader, school, pulse, not, only, raw, operations.',
     open_commons:
-        'Preview, the, bridge from institutional, leadership, into, the, community, mission, and, commons, of, the, school.'};
+        'Preview, the, bridge from institutional, leadership, into, the, community, mission, and, commons, of, the, school.',
+    workspace_switcher:
+        'Preview, the, ability, to, move, between, leadership, and, other, roles, when, capabilities, are, linked.'};
 
 export function getPrincipalPreviewSummary(surfaceId: PrincipalWorkspaceSurfaceId): string {
     return PRINCIPAL_PREVIEW_SUMMARY[surfaceId];

@@ -1,6 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text } from '@repo/ui';
+import { Box, VStack, HStack, Text, ScrollView } from '@repo/ui';
 import type { StudentOverview } from '../guardian';
 import { useGuardianWorkspaceData } from '../guardian/useGuardianWorkspaceData';
 import { GuardianHeader } from '../components/poa/GuardianHeader';

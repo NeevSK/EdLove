@@ -52,7 +52,7 @@ function TeacherCard({
 }) {
     const theme = useTheme();
 
-    const getStatusColor = (status?: string): string => {
+    const getStatusColor = (status?: string | null): string => {
         switch (status) {
             case 'present': return theme.accent.sageGreen;
             case 'late': return theme.accent.action;
@@ -63,7 +63,7 @@ function TeacherCard({
         }
     };
 
-    const statusColor = getStatusColor(item.todayStatus);
+    const statusColor = getStatusColor(item.todayStatus ?? undefined);
     const statusLabel = item.todayStatus ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus) : 'No data';
 
     return (

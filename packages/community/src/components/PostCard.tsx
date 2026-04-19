@@ -38,7 +38,7 @@ import {
     UserX 
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-import { supabase } from '@repo/core';
+import { supabase, usePermissions } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { communityAPI } from '../api/community';
@@ -116,6 +116,7 @@ export const PostCard = React.memo(function PostCard({
     } = post;
     
     const theme = useTheme();
+    const { can, flags } = usePermissions();
     const isAnnouncement = post_type === 'announcement';
     const isQuestion = post_type === 'question';
     const isResource = post_type === 'resource';
@@ -161,11 +162,11 @@ export const PostCard = React.memo(function PostCard({
                 className="flex-row items-center px-3 py-2 rounded-xl border border-phase-interactive mt-2 self-start active:opacity-70 gap-2"
                 accessibilityLabel={`Open ${mediaLabel}`}
             >
-                {media_type === 'video' ? <Video size={16} color={theme.accent.action} />
-                    : media_type === 'audio' ? <Music size={16} color={theme.accent.action} />
-                    : <FileText size={16} color={theme.accent.action} />}
+                {media_type === 'video' ? <Icon as={Video} size="sm" color={theme.accent.action} />
+                    : media_type === 'audio' ? <Icon as={Music} size="sm" color={theme.accent.action} />
+                    : <Icon as={FileText} size="sm" color={theme.accent.action} />}
                 <Text className="text-phase-accent text-sm">{mediaLabel}</Text>
-                <Link2 size={12} color={theme.accent.action} />
+                <Icon as={Link2} size={12} color={theme.accent.action} />
             </Pressable>
         );
     };
@@ -182,13 +183,13 @@ export const PostCard = React.memo(function PostCard({
                 <HStack className="items-center mb-2 gap-2">
                     {urgency && urgency !== 'low' && (
                         <Box className={`${urg.bgClass} px-2 py-0.5 rounded-md flex-row items-center gap-1`}>
-                            <AlertTriangle size={11} color={urgency === 'high' ? '#DC2626' : '#D97706'} />
+                            <Icon as={AlertTriangle} size={11} color={urgency === 'high' ? '#DC2626' : '#D97706'} />
                             <Text className={`text-[11px] font-bold ${urg.textClass}`}>{urg.label}</Text>
                         </Box>
                     )}
                     {has_accepted_answer && (
                         <Box className="bg-emerald-600/10 px-2 py-0.5 rounded-md flex-row items-center gap-1">
-                            <CheckCircle2 size={11} color="#16A34A" />
+                            <Icon as={CheckCircle2} size={11} color="#16A34A" />
                             <Text className="text-[11px] font-bold text-emerald-600">Answered</Text>
                         </Box>
                     )}
@@ -200,7 +201,7 @@ export const PostCard = React.memo(function PostCard({
             return (
                 <Box className="mb-2">
                     <Box className="bg-indigo-500/10 px-2 py-0.5 rounded-md self-start flex-row items-center gap-1">
-                        <BookOpen size={11} color="#6366F1" />
+                        <Icon as={BookOpen} size={11} color="#6366F1" />
                         <Text className="text-[11px] font-bold text-indigo-500">Resource</Text>
                     </Box>
                 </Box>
@@ -360,34 +361,34 @@ export const PostCard = React.memo(function PostCard({
 
                     <Box>
                         <Pressable onPress={() => setMenuOpen(!menuOpen)} className="p-1">
-                            <MoreHorizontal color={theme.text.secondary} size={20} />
+                            <Icon as={MoreHorizontal} color={theme.text.secondary} size="md" />
                         </Pressable>
 
                         {menuOpen && (
                             <Box className="absolute top-[25px] right-0 bg-phase-surface rounded-xl border border-phase-surface min-w-[160px] z-10 overflow-hidden shadow-xl" style={{ elevation: 4 }}>
                                 <VStack>
-                                    {author_id === currentUserId && (
+                                    {author_id === currentUserId && can('delete', 'Post') && (
                                         <Pressable className="p-4 border-b border-white/5 active:bg-white/5" onPress={handleDelete}>
                                             <HStack className="items-center gap-3">
-                                                <XIcon size={16} color={Theme.colors.error} />
+                                                <Icon as={XIcon} size={16} color={Theme.colors.error} />
                                                 <Text className="text-[13px] text-phase-danger">Delete Post</Text>
                                             </HStack>
                                         </Pressable>
                                     )}
 
-                                    {author_id !== currentUserId && isSocialShieldEnabled && (
+                                    {author_id !== currentUserId && flags.isSocialShieldEnabled && (
                                         <Pressable className="p-4 border-b border-white/5 active:bg-white/5" onPress={() => { onReport?.(); setMenuOpen(false); }}>
                                             <HStack className="items-center gap-3">
-                                                <ShieldAlert size={16} color={theme.text.primary} />
+                                                <Icon as={ShieldAlert} size={16} color={theme.text.primary} />
                                                 <Text className="text-[13px] text-phaseText-primary">Report Post</Text>
                                             </HStack>
                                         </Pressable>
                                     )}
 
-                                    {!is_anonymous && author_id !== currentUserId && isSocialShieldEnabled && (
+                                    {!is_anonymous && author_id !== currentUserId && flags.isSocialShieldEnabled && (
                                         <Pressable className="p-4 active:bg-white/5" onPress={handleBlock}>
                                             <HStack className="items-center gap-3">
-                                                <UserX size={16} color={Theme.colors.sanctuarySaffron} />
+                                                <Icon as={UserX} size={16} color={Theme.colors.sanctuarySaffron} />
                                                 <Text className="text-[13px] text-sanctuarySaffron">Block User</Text>
                                             </HStack>
                                         </Pressable>
@@ -426,8 +427,9 @@ export const PostCard = React.memo(function PostCard({
                 <HStack className="justify-between items-center mt-1">
                     <HStack className="gap-6 items-center">
                         <Pressable onPress={handleLike} className="flex-row items-center py-1">
-                            <Heart
-                                size={20}
+                            <Icon
+                                as={Heart}
+                                size="md"
                                 color={liked ? '#EF4444' : theme.text.secondary}
                                 fill={liked ? '#EF4444' : 'none'}
                             />
@@ -440,22 +442,23 @@ export const PostCard = React.memo(function PostCard({
 
                         <Pressable onPress={handleResonate} className="flex-row items-center py-1" disabled={isResonating}>
                             <LivingGlow active={hasResonated}>
-                                <Sparkles
-                                    size={20}
+                                <Icon
+                                    as={Sparkles}
+                                    size="md"
                                     color={hasResonated ? theme.accent.action : theme.text.secondary}
                                 />
                             </LivingGlow>
                         </Pressable>
 
                         <Pressable onPress={onComment} className="flex-row items-center py-1">
-                            <MessageCircle size={20} color={theme.text.secondary} />
+                            <Icon as={MessageCircle} size="md" color={theme.text.secondary} />
                             <Text className="text-phaseText-secondary text-xs ml-1">
                                 {comment_count}
                             </Text>
                         </Pressable>
 
                         <Pressable onPress={handleShare} className="flex-row items-center py-1" accessibilityLabel="Share post">
-                            <Share2 size={18} color={theme.text.secondary} />
+                            <Icon as={Share2} size={18} color={theme.text.secondary} />
                         </Pressable>
                     </HStack>
 
@@ -501,6 +504,7 @@ function PollWidget({
     } = pollData;
 
     const theme = useTheme();
+    const { flags } = usePermissions();
     const [counts, setCounts] = React.useState<Record<string, number>>({});
     const [userVotes, setUserVotes] = React.useState<Set<string>>(new Set());
     const [totalVotes, setTotalVotes] = React.useState(0);
@@ -610,7 +614,7 @@ function PollWidget({
                 <HStack className="items-center gap-1.5">
                     {pollAnon && (
                         <Box className="bg-phase-interactive px-2 py-0.5 rounded-md flex-row items-center gap-1">
-                            <Lock size={11} color={theme.text.secondary} />
+                            <Icon as={Lock} size={11} color={theme.text.secondary} />
                             <Text className="text-phaseText-secondary text-[10px]">Anonymous</Text>
                         </Box>
                     )}
@@ -623,12 +627,12 @@ function PollWidget({
 
                 {isExpired ? (
                     <HStack className="items-center gap-1">
-                        <Clock size={12} color={theme.text.secondary} />
+                        <Icon as={Clock} size={12} color={theme.text.secondary} />
                         <Text className="text-phaseText-secondary text-[11px]">Poll ended</Text>
                     </HStack>
                 ) : timeLeft ? (
                     <HStack className="items-center gap-1">
-                        <Clock size={12} color={theme.accent.action} />
+                        <Icon as={Clock} size={12} color={theme.accent.action} />
                         <Text className="text-phase-accent text-[11px]">{timeLeft}</Text>
                     </HStack>
                 ) : null}
@@ -674,7 +678,7 @@ function PollWidget({
                                         ${allow_multiple ? 'rounded-[4px]' : 'rounded-full'}
                                         ${isSelected ? 'bg-phase-accent border-phase-accent' : 'border-phase-interactive'}
                                     `}>
-                                        {isSelected && <Check size={12} color="white" />}
+                                        {isSelected && <Icon as={Check} size={12} color="white" />}
                                     </Box>
                                 )}
                                 <Text className={`text-phaseText-primary text-sm ${isSelected ? 'font-bold' : 'font-normal'}`}>
