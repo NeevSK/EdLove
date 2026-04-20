@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { VStack, HStack, Card, Text, Box, Icon, theme } from '@repo/ui';
+import { VStack, HStack, Card, Text, Box, Icon, Theme, Pressable } from '@repo/ui';
 import { marksToGPA } from '@repo/analytics';
 import { ProgressRing } from '@repo/graphics';
 import {
@@ -141,7 +141,7 @@ export default function QuickAnalytics({
                                 value={averageGPA.toFixed(2)}
                                 subtitle="This semester"
                                 trend={averageGPA > 3.0 ? 'up' : averageGPA < 2.0 ? 'down' : 'stable'}
-                                color={averageGPA >= 3.0 ? theme.colors.sanctuarySaffron : averageGPA < 2.0 ? theme.colors.emberRed : theme.colors.templeGold}
+                                color={averageGPA >= 3.0 ? Theme.colors.sanctuarySaffron : averageGPA < 2.0 ? Theme.colors.emberRed : Theme.colors.templeGold}
                                 icon={ChartIcon}
                             />
                         </Box>
@@ -150,7 +150,7 @@ export default function QuickAnalytics({
                                 title="Class Rank"
                                 value={`#${rank || 'N/A'}`}
                                 subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
-                                color={theme.colors.sacredWhite}
+                                color={Theme.colors.sacredWhite}
                                 icon={Trophy}
                             />
                         </Box>

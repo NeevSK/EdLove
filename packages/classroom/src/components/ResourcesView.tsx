@@ -27,7 +27,7 @@ import {
     ExternalLink
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess, openExternalURL, showExternalLinkOptions, theme } from '@repo/ui';
+import { hapticLight, hapticSuccess, openExternalURL, showExternalLinkOptions } from '@repo/ui';
 import { useResources } from '../hooks/useResources';
 import { api, CLASSROOM_RESOURCE_SCOPE, ClassroomResource, useStore, useSafeMutation } from '@repo/core';
 
@@ -88,7 +88,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                 setResources(prev => prev.map(r => r.id === id ? { ...r, is_pinned: isPinned } : r));
                 hapticLight();
             },
-            onError: (error: Error, variables, context) => {
+            onError: (error: Error) => {
                 showToast('Failed to update pin', 'error');
             }
         }
@@ -152,8 +152,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
     };
 
     return (
-    return (
-        <VStack className="flex-1 bg-sanctuary-surface">
+        <VStack className="flex-1 bg-phase-world">
             {/* Filters */}
             <Box className="h-16">
                 <ScrollView
@@ -165,9 +164,9 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         <Pressable
                             key={ft}
                             onPress={() => setFilterType(ft)}
-                            className={`px-6 py-2 rounded-full border items-center justify-center h-10 ${filterType === ft ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'border-sanctuary-border bg-sanctuary-surface-secondary/50'}`}
+                            className={`px-6 py-2 rounded-full border items-center justify-center h-10 ${filterType === ft ? 'bg-templeGold border-templeGold' : 'border-phase-canvas bg-phase-surface'}`}
                         >
-                            <Text className={`text-xs font-bold uppercase tracking-wider ${filterType === ft ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'}`}>
+                            <Text className={`text-xs font-black uppercase tracking-wider ${filterType === ft ? 'text-black' : 'text-phaseText-secondary'}`}>
                                 {ft}
                             </Text>
                         </Pressable>
@@ -179,8 +178,8 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             <ScrollView showsVerticalScrollIndicator={false}>
                 <VStack className="px-4 pb-24 gap-4 pt-2">
                     {filteredResources.length === 0 && !isLoading && (
-                        <Box className="items-center py-20 bg-sanctuary-surface-secondary/30 rounded-[32px] border border-dashed border-sanctuary-border/50 mx-2">
-                            <Text className="text-sanctuary-text-tertiary font-medium">No resources found.</Text>
+                        <Box className="items-center py-20 bg-phase-surface/30 rounded-generous border border-dashed border-phase-canvas/50 mx-2">
+                            <Text className="text-phaseText-secondary font-medium">No resources found.</Text>
                         </Box>
                     )}
 
@@ -189,29 +188,29 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                             key={resource.id}
                             onPress={() => handleOpenResource(resource)}
                             onLongPress={() => resource.url && handleOpenResourceOptions(resource)}
-                            className={`p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border shadow-sm overflow-hidden ${resource.is_pinned ? 'border-l-4 border-l-sanctuarySaffron' : ''}`}
+                            className={`p-4 bg-phase-surface rounded-generous border border-phase-canvas shadow-sm overflow-hidden ${resource.is_pinned ? 'border-l-4 border-l-templeGold' : ''}`}
                         >
                             <HStack className="justify-between items-center">
                                 <HStack className="items-center flex-1 gap-4">
-                                    <Box className="p-3 bg-sanctuarySaffron/10 rounded-2xl items-center justify-center">
-                                        <Icon as={getIcon(resource.type)} size="sm" className="text-sanctuarySaffron" />
+                                    <Box className="p-3 bg-templeGold/10 rounded-2xl items-center justify-center">
+                                        <Icon as={getIcon(resource.type)} size="sm" className="text-templeGold" />
                                     </Box>
                                     <VStack className="flex-1 gap-0.5">
                                         <HStack className="items-center gap-1.5">
-                                            <Text className="text-base font-bold text-sanctuary-text" numberOfLines={1}>
+                                            <Text className="text-base font-black text-phaseText-primary" numberOfLines={1}>
                                                 {resource.title}
                                             </Text>
                                             {resource.is_pinned && (
-                                                <Icon as={Pin} size="xs" className="text-sanctuarySaffron" />
+                                                <Icon as={Pin} size="xs" className="text-templeGold" />
                                             )}
                                         </HStack>
 
                                         {resource.type === 'note' && resource.content ? (
-                                            <Text className="text-sm font-medium text-sanctuary-text-secondary leading-snug" numberOfLines={2}>
+                                            <Text className="text-sm font-medium text-phaseText-secondary leading-snug" numberOfLines={2}>
                                                 {resource.content}
                                             </Text>
                                         ) : (
-                                            <Text className="text-xs font-medium text-sanctuary-text-tertiary" numberOfLines={1}>
+                                            <Text className="text-xs font-medium text-phaseText-secondary" numberOfLines={1}>
                                                 {resource.url || 'No content'}
                                             </Text>
                                         )}
@@ -230,8 +229,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                             <Icon
                                                 as={Pin}
                                                 size="sm"
-                                                className={resource.is_pinned ? 'text-sanctuarySaffron' : 'text-sanctuary-text-tertiary'}
-                                                style={{ fill: resource.is_pinned ? theme.colors.sanctuarySaffron : 'none' }}
+                                                className={resource.is_pinned ? 'text-templeGold' : 'text-phaseText-secondary'}
                                             />
                                         </Pressable>
                                         <Pressable
@@ -241,7 +239,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                                 deleteMutation.mutate(resource.id);
                                             }}
                                         >
-                                            <Icon as={Trash2} size="sm" className="text-sanctuary-error" />
+                                            <Icon as={Trash2} size="sm" className="text-emberRed" />
                                         </Pressable>
                                     </HStack>
                                 )}
@@ -255,12 +253,12 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             {isTeacher && (
                 <Button
                     onPress={() => setShowAddModal(true)}
-                    className="absolute bottom-10 right-6 bg-sanctuarySaffron rounded-full px-6 py-4 flex-row items-center gap-3 shadow-xl shadow-sanctuarySaffron/40"
+                    className="absolute bottom-10 right-6 bg-templeGold rounded-full px-6 py-4 flex-row items-center gap-3 shadow-xl shadow-templeGold/40"
                 >
-                    <ButtonText className="text-sanctuary-ink font-bold text-base">
+                    <ButtonText className="text-black font-black text-base">
                         {t('classroom.resources.addResource') || 'Add Resource'}
                     </ButtonText>
-                    <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
+                    <Icon as={Plus} size="sm" className="text-black" />
                 </Button>
             )}
 
@@ -268,24 +266,24 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             <SanctuaryModal
                 isOpen={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                title={t('classroom.resources.addModalTitle') || 'Add Classroom Resource'}
+                title={t('classroom.resources.addModalTitle') || 'Add Resource'}
                 footer={
                     <HStack className="gap-4">
                         <Button
                             variant="outline"
                             onPress={() => setShowAddModal(false)}
-                            className="flex-1 h-14 rounded-[24px] border-sanctuary-border"
+                            className="flex-1 h-14 rounded-full border-phase-canvas"
                         >
-                            <ButtonText className="text-sanctuary-text-secondary font-bold">{t('common.cancel') || 'Cancel'}</ButtonText>
+                            <ButtonText className="text-phaseText-secondary font-black">{t('common.cancel') || 'Cancel'}</ButtonText>
                         </Button>
                         <Button
                             onPress={() => {
                                 addResourceMutation.mutate({ title, type, content });
                             }}
-                            className="flex-[2] h-14 bg-sanctuarySaffron rounded-[24px] shadow-md shadow-sanctuarySaffron/20"
+                            className="flex-[2] h-14 bg-templeGold rounded-full shadow-md shadow-templeGold/20"
                             disabled={!title || !content || addResourceMutation.isLoading}
                         >
-                            <ButtonText className="text-sanctuary-ink font-bold">
+                            <ButtonText className="text-black font-black">
                                 {addResourceMutation.isLoading ? (t('common.adding') || 'Adding...') : (t('classroom.resources.addResource') || 'Add Resource')}
                             </ButtonText>
                         </Button>
@@ -294,11 +292,11 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             >
                 <VStack className="gap-8 p-1">
                     <VStack className="gap-2">
-                        <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">{t('classroom.resources.titleLabel') || 'Title'}</Text>
-                        <Input className="h-14 px-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                        <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">{t('classroom.resources.titleLabel') || 'Title'}</Text>
+                        <Input className="h-16 px-4 bg-phase-canvas/50 rounded-generous border border-phase-canvas">
                             <InputField
                                 placeholder={t('classroom.resources.titlePlaceholder') || "e.g. Science Syllabus"}
-                                className="text-sanctuary-text font-bold text-lg"
+                                className="text-phaseText-primary font-black text-lg"
                                 value={title}
                                 onChangeText={setTitle}
                             />
@@ -306,15 +304,15 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                     </VStack>
 
                     <VStack className="gap-2">
-                        <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">{t('classroom.resources.typeLabel') || 'Type'}</Text>
+                        <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">{t('classroom.resources.typeLabel') || 'Type'}</Text>
                         <HStack className="gap-3">
                             {(['link', 'pdf', 'note'] as const).map(t => (
                                 <Pressable
                                     key={t}
                                     onPress={() => setType(t)}
-                                    className={`flex-1 py-3 items-center justify-center rounded-2xl border ${type === t ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-sanctuary-surface-secondary border-sanctuary-border'}`}
+                                    className={`flex-1 h-14 items-center justify-center rounded-2xl border ${type === t ? 'bg-templeGold border-templeGold' : 'bg-phase-canvas/50 border-phase-canvas'}`}
                                 >
-                                    <Text className={`text-sm font-bold uppercase tracking-wider ${type === t ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'}`}>
+                                    <Text className={`text-xs font-black uppercase tracking-wider ${type === t ? 'text-black' : 'text-phaseText-secondary'}`}>
                                         {t}
                                     </Text>
                                 </Pressable>
@@ -323,25 +321,25 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                     </VStack>
 
                     <VStack className="gap-2">
-                        <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">
+                        <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
                             {type === 'note' ? (t('classroom.resources.contentLabel') || 'Content') : (t('classroom.resources.urlLabel') || 'URL')}
                         </Text>
                         {type === 'note' ? (
-                            <Textarea className="min-h-[120px] p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                            <Textarea className="min-h-[140px] p-4 bg-phase-canvas/50 rounded-generous border border-phase-canvas">
                                 <TextareaInput
                                     placeholder={t('classroom.resources.contentPlaceholder') || "Enter note content..."}
-                                    className="text-sanctuary-text"
+                                    className="text-phaseText-primary font-medium"
                                     value={content}
                                     onChangeText={setContent}
                                 />
                             </Textarea>
                         ) : (
-                            <Input className="h-14 px-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                            <Input className="h-14 px-4 bg-phase-canvas/50 rounded-generous border border-phase-canvas">
                                 <InputField
                                     placeholder="https://..."
                                     keyboardType="url"
                                     autoCapitalize="none"
-                                    className="text-sanctuary-text"
+                                    className="text-phaseText-primary font-medium"
                                     value={content}
                                     onChangeText={setContent}
                                 />

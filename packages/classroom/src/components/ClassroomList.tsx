@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
-    FlatList,
     ListRenderItemInfo,
     GestureResponderEvent,
 } from 'react-native';
-import { Box, Text, Heading, VStack, HStack, Pressable, Spinner, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation, Icon } from '@repo/ui';
+import { Box, Text, Heading, VStack, HStack, Pressable, Spinner, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation, Icon, FlatList } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap } from 'lucide-react-native';
 import { api, MOCK_CLASSROOMS, identityAPI, useStore, usePermissions, useFeatureAccess } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -218,9 +217,9 @@ export default function ClassroomList({
     if (loading) {
         return (
             <VStack className={`w-full gap-4 ${isNested ? '' : 'p-4'}`}>
-                <SkeletonCard height={90} className="rounded-3xl" />
-                <SkeletonCard height={90} className="rounded-3xl" />
-                <SkeletonCard height={90} className="rounded-3xl" />
+                <SkeletonCard height={90} className="rounded-generous" />
+                <SkeletonCard height={90} className="rounded-generous" />
+                <SkeletonCard height={90} className="rounded-generous" />
             </VStack>
         );
     }
@@ -232,11 +231,11 @@ export default function ClassroomList({
                     <Text className="text-2xl">⚠️</Text>
                 </Box>
                 <VStack className="gap-2 items-center">
-                    <Heading size="xs" className="text-sanctuary-text font-bold">Signal Interrupted</Heading>
-                    <Text className="text-sanctuary-text-muted text-center max-w-[240px] text-xs leading-5">{error}</Text>
+                    <Heading size="xs" className="text-phaseText-primary font-bold">Signal Interrupted</Heading>
+                    <Text className="text-phaseText-secondary text-center max-w-[240px] text-xs leading-5">{error}</Text>
                 </VStack>
                 <Pressable
-                    className="bg-sanctuarySaffron py-3 px-8 rounded-2xl shadow-sm active:opacity-80"
+                    className="bg-templeGold py-3 px-8 rounded-2xl shadow-sm active:opacity-80"
                     onPress={handleRetry}>
                     <Text className="text-white font-bold text-sm">{t('classroom.retry') || 'Retry Sync'}</Text>
                 </Pressable>
@@ -292,7 +291,7 @@ export default function ClassroomList({
     }
 
     return (
-        <Box className="flex-1 bg-sanctuary-surface-secondary/20">
+        <Box className="flex-1 bg-phase-world">
             {classrooms.length === 0 ? (
                 <Box className="flex-1 p-4">
                     <PositiveInvitation
@@ -328,7 +327,7 @@ export default function ClassroomList({
                                 setPendingInitialData(null);
                                 setIsCreateModalOpen(true);
                             }}
-                            className="absolute bottom-10 right-6 w-16 h-16 rounded-[24px] bg-sanctuarySaffron justify-center items-center shadow-lg z-10 active:scale-95"
+                            className="absolute bottom-10 right-6 w-16 h-16 rounded-[24px] bg-templeGold justify-center items-center shadow-lg z-10 active:scale-95"
                         >
                             <Icon as={Plus} size="sm" className="text-white" />
                         </Pressable>
@@ -388,35 +387,35 @@ const ClassroomCard = React.memo(({
             className="active:opacity-80 transition-all"
         >
             <Box
-                className="rounded-[32px] p-5 border border-sanctuary-border/10 bg-sanctuary-surface shadow-sm overflow-hidden relative"
+                className="rounded-generous p-5 border border-phase-canvas/20 bg-phase-surface shadow-sm overflow-hidden relative"
             >
                 <HStack className="items-center gap-5">
-                    <Box className="w-[60px] h-[60px] rounded-2xl justify-center items-center bg-sanctuarySaffron/10 border border-sanctuarySaffron/5">
-                        <Icon as={BookOpen} size="sm" className="text-sanctuarySaffron" />
+                    <Box className="w-[60px] h-[60px] rounded-2xl justify-center items-center bg-templeGold/10 border border-templeGold/5">
+                        <Icon as={BookOpen} size="sm" className="text-templeGold" />
                     </Box>
  
                     <VStack className="flex-1 gap-1.5">
                         <HStack className="items-center gap-2">
-                            <Text className="text-base font-bold text-sanctuary-text tracking-tight">
+                            <Text className="text-base font-black text-phaseText-primary tracking-tight">
                                 {classroom.name}
                             </Text>
                             {(classroom as any).is_sample && (
-                                <Box className="bg-sanctuarySaffron/10 px-2 py-0.5 rounded-full border border-sanctuarySaffron/20 flex-row items-center gap-1">
-                                    <Icon as={Zap} size={8} className="text-sanctuarySaffron" />
-                                    <Text className="text-[9px] text-sanctuarySaffron font-bold uppercase tracking-tighter">
+                                <Box className="bg-templeGold/10 px-2 py-0.5 rounded-full border border-templeGold/20 flex-row items-center gap-1">
+                                    <Icon as={Zap} size={8} className="text-templeGold" />
+                                    <Text className="text-[9px] text-templeGold font-black uppercase tracking-tighter">
                                         {t('classroom.sample') || 'Sample'}
                                     </Text>
                                 </Box>
                             )}
                         </HStack>
                         <HStack className="items-center gap-3">
-                            <Text className="text-xs font-bold text-sanctuarySaffron uppercase tracking-widest">
+                            <Text className="text-xs font-black text-templeGold uppercase tracking-widest">
                                 {classroom.subject || t('classroom.noSubject') || 'General'}
                             </Text>
-                            <Box className="w-1 h-1 rounded-full bg-sanctuary-text-muted/40" />
+                            <Box className="w-1 h-1 rounded-full bg-phaseText-secondary/40" />
                             <HStack className="items-center gap-1.5">
-                                <Icon as={Users} size={10} className="text-sanctuary-text-muted" />
-                                <Text className="text-xs font-medium text-sanctuary-text-muted">
+                                <Icon as={Users} size={10} className="text-phaseText-secondary" />
+                                <Text className="text-xs font-medium text-phaseText-secondary">
                                     {studentCount}
                                 </Text>
                             </HStack>
@@ -425,12 +424,12 @@ const ClassroomCard = React.memo(({
  
                     <HStack className="gap-3 items-center">
                         <Pressable onPress={handleAttendancePress} className="active:scale-90">
-                            <Box className="p-3 rounded-2xl bg-sanctuary-surface-secondary">
+                            <Box className="p-3 rounded-2xl bg-phase-canvas">
                                 <Icon as={ClipboardCheck} size="xs" className="text-sageGreen" />
                             </Box>
                         </Pressable>
     
-                        <Icon as={ChevronRight} size="xs" className="text-sanctuary-text-muted/40" />
+                        <Icon as={ChevronRight} size="xs" className="text-phaseText-secondary/40" />
                     </HStack>
                 </HStack>
             </Box>

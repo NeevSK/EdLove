@@ -5,21 +5,18 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
 import {
     VStack,
     HStack,
+    Box,
     Text,
     Button,
     ButtonText,
     Input,
     InputField,
     SanctuaryModal,
-    Theme,
     useToast,
-    SanctuaryToast,
-    useThemedColors,
-    ScrollView
+    Pressable
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { studentsAPI } from '@repo/core';
@@ -66,16 +63,9 @@ export const AddStudentModal = ({
 
     const handleSave = async () => {
         if (!fullName.trim()) {
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <SanctuaryToast
-                        message={t('students.error.nameRequired') || 'Name is required'}
-                        type="error"
-                        visible={true}
-                        onHide={() => toast.close(id)}
-                    />
-                ),
+            toast.showToast({
+                message: t('students.error.nameRequired') || 'Name is required',
+                type: 'error'
             });
             return;
         }
@@ -87,16 +77,9 @@ export const AddStudentModal = ({
                     roll_number: rollNumber.trim(),
                     notes: notes.trim(),
                 });
-                toast.show({
-                    placement: 'top',
-                    render: ({ id }: { id: string }) => (
-                        <SanctuaryToast
-                            message={t('students.success.updated') || 'Student updated successfully'}
-                            type="success"
-                            visible={true}
-                            onHide={() => toast.close(id)}
-                        />
-                    ),
+                toast.showToast({
+                    message: t('students.success.updated') || 'Student updated successfully',
+                    type: 'success'
                 });
             } else {
                 await (studentsAPI.create as any)({
@@ -105,31 +88,17 @@ export const AddStudentModal = ({
                     notes: notes.trim(),
                     classroom_id: classroomId,
                 });
-                toast.show({
-                    placement: 'top',
-                    render: ({ id }: { id: string }) => (
-                        <SanctuaryToast
-                            message={t('students.success.created') || 'Student added successfully'}
-                            type="success"
-                            visible={true}
-                            onHide={() => toast.close(id)}
-                        />
-                    ),
+                toast.showToast({
+                    message: t('students.success.created') || 'Student added successfully',
+                    type: 'success'
                 });
             }
             onSuccess();
         } catch (error) {
             console.error('Error saving student:', error);
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <SanctuaryToast
-                        message={t('students.error.saveFailed') || 'Failed to save student'}
-                        type="error"
-                        visible={true}
-                        onHide={() => toast.close(id)}
-                    />
-                ),
+            toast.showToast({
+                message: t('students.error.saveFailed') || 'Failed to save student',
+                type: 'error'
             });
         } finally {
             setIsLoading(false);
@@ -141,18 +110,18 @@ export const AddStudentModal = ({
             <Button
                 variant="outline"
                 onPress={onClose}
-                className="flex-1 bg-transparent border-sanctuary-border rounded-full"
+                className="flex-1 bg-transparent border-phase-canvas rounded-full"
             >
-                <ButtonText className="text-sanctuary-text-tertiary">
+                <ButtonText className="text-phaseText-secondary font-black">
                     {t('common.cancel') || 'Cancel'}
                 </ButtonText>
             </Button>
             <Button
                 onPress={handleSave}
                 isDisabled={isLoading}
-                className="flex-[1.5] bg-sanctuarySaffron rounded-full"
+                className="flex-[1.5] bg-templeGold rounded-full shadow-md shadow-templeGold/20"
             >
-                <ButtonText className="text-white font-bold">
+                <ButtonText className="text-black font-black">
                     {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save Member')}
                 </ButtonText>
             </Button>
@@ -169,18 +138,17 @@ export const AddStudentModal = ({
             <VStack className="gap-6">
                 {/* Tab switcher */}
                 {!studentToEdit && (
-                    <Box className="bg-sanctuary-surface-secondary p-1 rounded-full flex-row border border-sanctuary-border">
+                    <Box className="bg-phase-canvas p-1 rounded-full flex-row border border-phase-canvas">
                         {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
-                            <TouchableOpacity
+                            <Pressable
                                 key={tab}
-                                activeOpacity={0.7}
                                 onPress={() => setActiveTab(tab)}
-                                className={`flex-1 py-3 rounded-full items-center ${activeTab === tab ? 'bg-white shadow-sm' : 'bg-transparent'}`}
+                                className={`flex-1 py-3 rounded-full items-center ${activeTab === tab ? 'bg-phase-surface shadow-sm' : 'bg-transparent'}`}
                             >
-                                <Text className={`text-xs font-bold uppercase tracking-widest ${activeTab === tab ? 'text-sanctuarySaffron' : 'text-sanctuary-text-tertiary'}`}>
+                                <Text className={`text-[10px] font-black uppercase tracking-widest ${activeTab === tab ? 'text-templeGold' : 'text-phaseText-secondary'}`}>
                                     {tab === 'manual' ? 'Manual entry' : 'Scan register'}
                                 </Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         ))}
                     </Box>
                 )}
@@ -189,16 +157,9 @@ export const AddStudentModal = ({
                     <OCRStudentImport
                         classroomId={classroomId}
                         onImported={(count) => {
-                            toast.show({
-                                placement: 'top',
-                                render: ({ id }: { id: string }) => (
-                                    <SanctuaryToast
-                                        message={`${count} student${count !== 1 ? 's' : ''} imported successfully`}
-                                        type="success"
-                                        visible={true}
-                                        onHide={() => toast.close(id)}
-                                    />
-                                ),
+                            toast.showToast({
+                                message: `${count} student${count !== 1 ? 's' : ''} imported successfully`,
+                                type: 'success'
                             });
                             onSuccess();
                         }}
@@ -207,46 +168,46 @@ export const AddStudentModal = ({
                 ) : (
                     <VStack className="gap-6 py-2">
                         <VStack className="gap-2">
-                            <Text className="text-[10px] font-black uppercase tracking-widest text-sanctuary-text-tertiary ml-1">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
                                 {t('students.fullName') || 'Identity'} *
                             </Text>
-                            <Input className="bg-sanctuary-surface-secondary border-sanctuary-border h-16 rounded-[24px]">
+                            <Input className="bg-phase-canvas/50 border-phase-canvas h-16 rounded-generous">
                                 <InputField
                                     placeholder={t('students.fullNamePlaceholder') || "Full Student Name"}
                                     value={fullName}
                                     onChangeText={setFullName}
-                                    className="text-sanctuary-text font-bold"
+                                    className="text-phaseText-primary font-black"
                                     placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
                             </Input>
                         </VStack>
 
                         <VStack className="gap-2">
-                            <Text className="text-[10px] font-black uppercase tracking-widest text-sanctuary-text-tertiary ml-1">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
                                 {t('students.rollNumber') || 'Institutional ID'}
                             </Text>
-                            <Input className="bg-sanctuary-surface-secondary border-sanctuary-border h-14 rounded-2xl">
+                            <Input className="bg-phase-canvas/50 border-phase-canvas h-14 rounded-2xl">
                                 <InputField
                                     placeholder={t('students.rollNumberPlaceholder') || "Roll Number"}
                                     value={rollNumber}
                                     onChangeText={setRollNumber}
-                                    className="text-sanctuary-text font-medium"
+                                    className="text-phaseText-primary font-bold"
                                     placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
                             </Input>
                         </VStack>
 
                         <VStack className="gap-2">
-                            <Text className="text-[10px] font-black uppercase tracking-widest text-sanctuary-text-tertiary ml-1">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
                                 {t('students.notes') || 'Member Insights'}
                             </Text>
-                            <Input className="bg-sanctuary-surface-secondary border-sanctuary-border rounded-[24px] min-h-[100px] p-2">
+                            <Input className="bg-phase-canvas/50 border-phase-canvas rounded-generous min-h-[120px] p-2">
                                 <InputField
                                     placeholder={t('students.notesPlaceholder') || "Add notes about potential, behavioral traits, or special needs..."}
                                     value={notes}
                                     onChangeText={setNotes}
                                     multiline={true}
-                                    className="text-sanctuary-text text-sm"
+                                    className="text-phaseText-primary text-sm font-medium"
                                     textAlignVertical="top"
                                     placeholderTextColor="rgba(0,0,0,0.3)"
                                 />

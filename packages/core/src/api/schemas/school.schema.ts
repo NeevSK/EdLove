@@ -15,6 +15,7 @@ export const SchoolSchema = z.object({
   student_type: z.string().optional(),
   religious_affiliation: z.string().optional(),
   student_count: z.number().int().nonnegative().optional(),
+  avatar_url: z.string().nullable().optional(),
   created_at: z.string().datetime().optional(),
 });
 

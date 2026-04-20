@@ -43,6 +43,7 @@
     "@repo/classroom": "workspace:*",
     "@repo/community": "workspace:*",
     "@repo/core": "workspace:*",
+    "@repo/workforce": "workspace:*",
     "@repo/form-builder": "workspace:*",
     "@repo/library": "workspace:*",
     "@repo/people": "workspace:*",

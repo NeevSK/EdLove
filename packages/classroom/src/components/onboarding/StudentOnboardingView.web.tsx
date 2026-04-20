@@ -5,18 +5,17 @@ import {
     Box, 
     Text, 
     Heading, 
-    Button, 
-    ButtonText, 
     Icon,
-    useThemedColors,
-    Theme
+    Pressable
 } from '@repo/ui';
 import { 
     Search, 
     QrCode, 
     Sparkles, 
     GraduationCap,
-    Layout
+    Layout,
+    ArrowRightCircle,
+    BookOpen
 } from 'lucide-react-native';
 
 interface StudentOnboardingViewProps {
@@ -32,109 +31,91 @@ export default function StudentOnboardingViewWeb({
     onFindSchool,
     isGuest 
 }: StudentOnboardingViewProps) {
-    const colors = useThemedColors();
     
     return (
-        <VStack sx={{ 
-            flex: 1, 
-            backgroundColor: colors.backgroundDark, 
-            padding: 40,
-            maxWidth: 1200,
-            alignSelf: 'center',
-            width: '100%',
-            gap: 48
-        }}>
+        <VStack className="flex-1 bg-phase-canvas p-10 max-w-[1200px] self-center w-full gap-12">
             {/* Header */}
-            <VStack sx={{ gap: 8, alignItems: 'center' }}>
-                <Heading size="2xl" sx={{ color: colors.text, textAlign: 'center' }}>Your Learning Sanctuary Awaits</Heading>
-                <Text sx={{ color: colors.textSecondary, maxWidth: 600, textAlign: 'center' }}>
+            <VStack className="gap-2 items-center">
+                <Box className="p-4 rounded-generous bg-templeGold/10 mb-3">
+                    <Icon as={GraduationCap} className="text-templeGold" size="xl" />
+                </Box>
+                <Heading className="text-4xl font-black text-phaseText-primary text-center">
+                    Your Learning Sanctuary Awaits
+                </Heading>
+                <Text className="text-phaseText-secondary text-lg max-w-[600px] text-center leading-relaxed font-medium">
                     Join your classrooms, track your growth, and collaborate with your peers in a digitally empowered environment.
                 </Text>
             </VStack>
 
-            <HStack sx={{ gap: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <HStack className="gap-8 flex-wrap justify-center">
                 {/* Digital Portfolio Promotion */}
-                <Box sx={{ 
-                    flex: 1, 
-                    minWidth: 350,
-                    padding: 32, 
-                    backgroundColor: 'white', 
-                    borderRadius: 32, 
-                    borderWidth: 1, 
-                    borderColor: colors.border,
-                    ...Theme.shadows.lg,
-                }}>
-                    <VStack sx={{ gap: 20 }}>
-                        <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                            <Box sx={{ padding: 12, backgroundColor: Theme.colors.sanctuarySaffron + '22', borderRadius: 16 }}>
-                                <Icon as={GraduationCap} color={Theme.colors.sanctuarySaffron} size={24} />
+                <Box className="flex-1 min-w-[350px] p-8 bg-phase-surface rounded-generous border border-phase-canvas shadow-xl">
+                    <VStack className="gap-6">
+                        <HStack className="gap-4 items-center">
+                            <Box className="p-3 bg-templeGold/10 rounded-comfortable">
+                                <Icon as={BookOpen} className="text-templeGold" size="lg" />
                             </Box>
-                            <Heading size="md" sx={{ color: colors.text }}>Digital Portfolio & Growth</Heading>
+                            <Heading className="text-xl font-black text-phaseText-primary">Digital Portfolio & Growth</Heading>
                         </HStack>
                         
-                        <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                        <Text className="text-phaseText-secondary text-sm font-medium leading-relaxed">
                             Keep track of your achievements, submissions, and feedback in a beautiful digital portfolio. 
                             Watch your growth over time as you complete your learning quests.
                         </Text>
                         
-                        <Box sx={{ 
-                            padding: 16, 
-                            backgroundColor: colors.tertiary, 
-                            borderRadius: 16,
-                            borderStyle: 'dashed',
-                            borderWidth: 1,
-                            borderColor: colors.border
-                        }}>
-                            <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                <Icon as={Sparkles} color={Theme.colors.amberGlow} size={16} />
-                                <Text sx={{ fontSize: 13, color: colors.textSecondary, fontWeight: '500' }}>
-                                    Personalized learning paths coming soon...
-                                </Text>
-                            </HStack>
+                        <Box className="p-4 bg-phase-canvas/50 rounded-comfortable border border-dashed border-phase-canvas flex-row items-center gap-3">
+                            <Icon as={Sparkles} className="text-templeGold" size="xs" />
+                            <Text className="text-xs text-phaseText-secondary font-black uppercase tracking-widest">
+                                Personalized learning paths coming soon
+                            </Text>
                         </Box>
                     </VStack>
                 </Box>
 
                 {/* Core Onboarding Options */}
-                <VStack sx={{ flex: 1, minWidth: 350, gap: 16 }}>
-                    <Box sx={{ 
-                        padding: 24, 
-                        backgroundColor: colors.tertiary, 
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}>
-                        <VStack sx={{ gap: 16 }}>
-                            <Heading size="sm" sx={{ color: colors.text }}>Get Started</Heading>
-                            <VStack sx={{ gap: 12 }}>
-                                <Button action="primary" onPress={onJoinClass} sx={{ borderRadius: 12, justifyContent: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron }}>
-                                    <Icon as={QrCode} color="white" sx={{ marginRight: 12 }} />
-                                    <ButtonText sx={{ color: 'white' }}>Join a Classroom</ButtonText>
-                                </Button>
-                                <Button variant="outline" onPress={onFindSchool} sx={{ borderRadius: 12, justifyContent: 'flex-start', borderColor: colors.border }}>
-                                    <Icon as={Search} sx={{ marginRight: 12 }} />
-                                    <ButtonText sx={{ color: colors.text }}>Find Your School</ButtonText>
-                                </Button>
-                                <Button variant="link" onPress={onTryDemo}>
-                                    <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}>Explore Student Sandbox</ButtonText>
-                                </Button>
+                <VStack className="flex-1 min-w-[350px] gap-6">
+                    <Box className="p-8 bg-phase-surface rounded-generous border border-phase-canvas shadow-sm">
+                        <VStack className="gap-6">
+                            <Heading className="text-lg font-black text-phaseText-primary">Get Started</Heading>
+                            <VStack className="gap-4">
+                                <Pressable 
+                                    onPress={onJoinClass} 
+                                    className="flex-row items-center p-4 bg-templeGold rounded-comfortable border border-templeGold active:opacity-90 transition-opacity"
+                                >
+                                    <Icon as={QrCode} className="mr-4 text-white" size="sm" />
+                                    <Text className="text-white font-black">Join a Classroom</Text>
+                                </Pressable>
+                                
+                                <Pressable 
+                                    onPress={onFindSchool} 
+                                    className="flex-row items-center p-4 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas active:bg-phase-canvas transition-colors"
+                                >
+                                    <Icon as={Search} className="mr-4 text-phaseText-primary" size="sm" />
+                                    <Text className="text-phaseText-primary font-black">Find Your School</Text>
+                                </Pressable>
+
+                                <Pressable 
+                                    onPress={onTryDemo}
+                                    className="items-center p-4 active:opacity-60"
+                                >
+                                    <HStack className="items-center gap-2">
+                                        <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
+                                            Explore Student Sandbox
+                                        </Text>
+                                        <ArrowRightCircle size={16} color="#D4843A" />
+                                    </HStack>
+                                </Pressable>
                             </VStack>
                         </VStack>
                     </Box>
 
-                    <Box sx={{ 
-                        padding: 24, 
-                        backgroundColor: colors.tertiary, 
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}>
-                        <VStack sx={{ gap: 12 }}>
-                            <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                <Icon as={Layout} color={colors.textSecondary} size={18} />
-                                <Heading size="xs" sx={{ color: colors.text }}>Platform Sovereignty</Heading>
+                    <Box className="p-6 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas">
+                        <VStack className="gap-4">
+                            <HStack className="gap-3 items-center">
+                                <Icon as={Layout} className="text-phaseText-secondary" size={18} />
+                                <Heading className="text-sm font-black text-phaseText-primary uppercase tracking-widest">Platform Sovereignty</Heading>
                             </HStack>
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                            <Text className="text-[12px] text-phaseText-secondary font-medium leading-normal">
                                 Your data and learning journey are yours. Gurudevi ensures a safe, private, and dignified environment for every student.
                             </Text>
                         </VStack>

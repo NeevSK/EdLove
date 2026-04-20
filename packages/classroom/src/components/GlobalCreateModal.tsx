@@ -13,7 +13,7 @@ import {
     FormControlLabelText,
     Spinner,
     SanctuaryModal,
-    theme,
+    Theme,
     Actionsheet,
     ActionsheetBackdrop,
     ActionsheetContent,

@@ -326,6 +326,9 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@repo/workforce':
+        specifier: workspace:*
+        version: link:../../packages/workforce
       '@sentry/react-native':
         specifier: ~7.11.0
         version: 7.11.0(expo@55.0.11)(react-native@0.83.4(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)

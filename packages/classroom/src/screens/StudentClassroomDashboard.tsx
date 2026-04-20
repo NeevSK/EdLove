@@ -7,13 +7,12 @@ import {
     ScrollView,
     Pressable,
     Heading,
-    Theme,
-    useThemedColors,
     hapticLight,
     GlobalHeader,
     ScreenWrapper,
     SkeletonCard,
-    useBottomTabPadding
+    useBottomTabPadding,
+    Icon
 } from '@repo/ui';
 import { api, Assignment } from '@repo/core';
 import { AttendanceView, ResourcesView, ClassroomHolisticInsights, ClassroomEchoSection, SubmissionModal } from '../components';
@@ -50,7 +49,6 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
     const { classroomId, classroomName } = route.params;
     const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
     const [submissionModal, setSubmissionModal] = useState<Assignment | null>(null);
-    const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     const workspace = useStudentClassroomWorkspaceData(classroomId);
     const classroom = workspace.classroom;
@@ -65,8 +63,8 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                 return <AttendanceView classroomId={classroomId} />;
             case 'gradebook':
                 return (
-                    <Box sx={{ padding: Theme.spacing.md }}>
-                        <Text sx={{ color: colors.textTertiary }}>My Grade Performance</Text>
+                    <Box className="p-4">
+                        <Text className="text-phaseText-tertiary">My Grade Performance</Text>
                     </Box>
                 );
             case 'lessons':
@@ -93,9 +91,9 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
         return (
             <ScreenWrapper>
                 <GlobalHeader title={classroomName} showBack onBack={() => navigation.goBack()} />
-                <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
+                <VStack className="gap-4 p-6">
                     <SkeletonCard height={100} />
-                    <HStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.md }}>
+                    <HStack className="gap-4 mt-4">
                         <SkeletonCard width={90} height={70} />
                         <SkeletonCard width={90} height={70} />
                         <SkeletonCard width={90} height={70} />
@@ -120,16 +118,16 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                 showBack
                 onBack={() => navigation.goBack()}
             />
-            <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: bottomPadding }}>
-                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary }}>
-                    <VStack sx={{ gap: 4 }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textTertiary, fontWeight: '700' as any, textTransform: 'uppercase' }}>
+            <ScrollView stickyHeaderIndices={[1]} contentContainerClassName="pb-10" showsVerticalScrollIndicator={false}>
+                <Box className="p-4 bg-phase-surface">
+                    <VStack className="gap-1">
+                        <Text className="text-[10px] text-phaseText-tertiary font-black uppercase tracking-widest">
                             Subject Sanctuary
                         </Text>
-                        <Heading sx={{ fontSize: Theme.typography.fontSize.xl, color: Theme.colors.sanctuarySaffron }}>
+                        <Heading className="text-2xl font-black text-templeGold">
                             {classroomName}
                         </Heading>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary, marginTop: Theme.spacing.xs }}>
+                        <Text className="text-sm text-phaseText-secondary mt-1 font-medium italic">
                             {workspace.pendingAssignments > 0
                                 ? `${workspace.pendingAssignments} assignment${workspace.pendingAssignments === 1 ? '' : 's'} waiting for your response`
                                 : 'Your submissions and study notes are in rhythm here'}
@@ -137,23 +135,17 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                     </VStack>
                 </Box>
                 
-                <Box sx={{ backgroundColor: colors.secondary, paddingHorizontal: Theme.spacing.md, paddingBottom: Theme.spacing.md }}>
-                    <HStack sx={{ gap: 10, flexWrap: 'wrap' as any }}>
+                <Box className="bg-phase-surface px-4 pb-4">
+                    <HStack className="gap-2.5 flex-wrap">
                         {summaryCards.map((card) => (
                             <Box
                                 key={card.label}
-                                sx={{
-                                    backgroundColor: colors?.surface || '#FFFFFF',
-                                    borderRadius: Theme.corners.comfortable,
-                                    paddingHorizontal: Theme.spacing.md,
-                                    paddingVertical: Theme.spacing.sm,
-                                    minWidth: 82,
-                                }}
+                                className="bg-phase-canvas rounded-comfortable px-4 py-3 min-w-[82px] border border-phase-canvas shadow-sm"
                             >
-                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}>
+                                <Text className="text-[10px] text-phaseText-tertiary uppercase font-black tracking-tighter">
                                     {card.label}
                                 </Text>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.lg, color: colors.text, fontWeight: '700' as any }}>
+                                <Text className="text-xl text-phaseText-primary font-black">
                                     {card.value}
                                 </Text>
                             </Box>
@@ -161,52 +153,44 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                     </HStack>
                     
                     {workspace.recentSubmissions.length > 0 && (
-                        <VStack sx={{ marginTop: Theme.spacing.md, gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', fontWeight: '700' as any }}>
+                        <VStack className="mt-4 gap-1">
+                            <Text className="text-[10px] text-phaseText-tertiary uppercase font-black tracking-widest">
                                 Recent Submissions
                             </Text>
                             {workspace.recentSubmissions.map((submission: any) => (
-                                <Text key={submission.id} sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}>
-                                    {submission.assignment_title} on {new Date(submission.submitted_at).toLocaleDateString()}
+                                <Text key={submission.id} className="text-xs text-phaseText-secondary font-bold">
+                                    {submission.assignment_title} &bull; {new Date(submission.submitted_at).toLocaleDateString()}
                                 </Text>
                             ))}
                         </VStack>
                     )}
                     
                     {workspace.error && (
-                        <Text sx={{ marginTop: Theme.spacing.sm, fontSize: Theme.typography.fontSize.sm, color: colors.error }}>
+                        <Text className="mt-2 text-xs text-emberRed font-black">
                             {workspace.error}
                         </Text>
                     )}
                 </Box>
 
-                <Box sx={{ backgroundColor: colors.secondary, paddingBottom: Theme.spacing.md, paddingTop: Theme.spacing.sm }}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
-                        <HStack sx={{ gap: 12 }}>
+                <Box className="bg-phase-surface pb-4 pt-2 border-b border-phase-canvas">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="px-4">
+                        <HStack className="gap-3">
                             {STUDENT_FEATURES.map((f) => {
-                                const Icon = f.icon;
                                 const isActive = activeFeature === f.id;
                                 return (
-                                    <Pressable key={f.id} onPress={() => { hapticLight(); setActiveFeature(f.id); }}>
-                                        <VStack sx={{
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            paddingHorizontal: Theme.spacing.md,
-                                            paddingVertical: Theme.spacing.sm,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                            minWidth: 90,
-                                            gap: Theme.spacing.xs
-                                        }}>
-                                            <Icon size={20} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} />
-                                            <Text sx={{
-                                                fontSize: Theme.typography.fontSize.xs,
-                                                fontWeight: (isActive ? '700' : '400') as any,
-                                                color: isActive ? Theme.colors.sacredWhite : colors.textSecondary
-                                            }}>
-                                                {f.label}
-                                            </Text>
-                                        </VStack>
+                                    <Pressable 
+                                        key={f.id} 
+                                        onPress={() => { hapticLight(); setActiveFeature(f.id); }}
+                                        className={`items-center justify-center px-4 py-3 rounded-comfortable min-w-[90px] gap-1.5 border ${
+                                            isActive ? "bg-templeGold border-templeGold" : "bg-phase-canvas border-phase-canvas shadow-sm"
+                                        }`}
+                                    >
+                                        <Icon as={f.icon} size="sm" className={isActive ? "text-phase-surface" : "text-phaseText-secondary"} />
+                                        <Text className={`text-[10px] uppercase tracking-widest font-black ${
+                                            isActive ? "text-phase-surface" : "text-phaseText-secondary"
+                                        }`}>
+                                            {f.label}
+                                        </Text>
                                     </Pressable>
                                 );
                             })}
@@ -214,7 +198,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                     </ScrollView>
                 </Box>
                 
-                <Box sx={{ flex: 1 }}>
+                <Box className="flex-1" style={{ paddingBottom: bottomPadding }}>
                     {renderFeatureContent()}
                 </Box>
             </ScrollView>

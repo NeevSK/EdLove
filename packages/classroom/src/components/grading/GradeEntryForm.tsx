@@ -2,12 +2,6 @@
  * GRADE ENTRY FORM COMPONENT
  * 
  * Form for teachers to enter student grades.
- * Features:
- * - Student name display
- * - Marks input (0-100, numeric keyboard)
- * - Auto-computed GPA preview
- * - Feedback textarea (optional)
- * - Save button
  */
 
 import React, { useState } from 'react';
@@ -57,7 +51,7 @@ export default function GradeEntryForm({
 
         // Validation
         if (isNaN(marksValue) || marksValue < 0 || marksValue > 100) {
-            setError(t('grades.invalidMarks'));
+            setError(t('grades.invalidMarks') || 'Invalid marks');
             return;
         }
 
@@ -66,24 +60,24 @@ export default function GradeEntryForm({
     };
 
     return (
-        <VStack className="gap-8 p-6 bg-sanctuary-surface rounded-[32px] border border-sanctuary-border shadow-md">
+        <VStack className="gap-8 p-6 bg-phase-surface rounded-[32px] border border-phase-canvas shadow-md">
             {/* Student Name Header */}
             <VStack className="gap-1.5">
-                <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[0.2em]">
-                    {t('grades.student')}
+                <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
+                    {t('grades.student') || 'STUDENT'}
                 </Text>
-                <Heading className="text-3xl font-black text-sanctuary-text -ml-0.5">
+                <Heading className="text-3xl font-black text-phaseText-primary -ml-0.5">
                     {studentName}
                 </Heading>
             </VStack>
 
             {/* Marks Input */}
             <VStack className="gap-3">
-                <Text className="text-[11px] font-black text-sanctuary-text-secondary uppercase tracking-[0.15em] ml-1">
-                    {t('grades.marks')} *
+                <Text className="text-[11px] font-black text-phaseText-secondary uppercase tracking-[0.15em] ml-1">
+                    {t('grades.marks') || 'Marks'} *
                 </Text>
                 <Input
-                    className={`h-16 px-5 bg-sanctuary-surface-secondary/50 rounded-[24px] border ${error ? 'border-sanctuary-error' : 'border-sanctuary-border'}`}
+                    className={`h-16 px-5 bg-phase-canvas/50 rounded-generous border ${error ? 'border-phase-danger' : 'border-phase-canvas'}`}
                 >
                     <InputField
                         placeholder="0-100"
@@ -93,11 +87,11 @@ export default function GradeEntryForm({
                             setMarks(val);
                             setError('');
                         }}
-                        className="text-sanctuary-text font-black text-xl"
+                        className="text-phaseText-primary font-black text-xl"
                     />
                 </Input>
                 {error && (
-                    <Text className="text-[10px] font-black text-sanctuary-error uppercase tracking-wider ml-2">
+                    <Text className="text-[10px] font-black text-phase-danger uppercase tracking-wider ml-2">
                         {error}
                     </Text>
                 )}
@@ -105,42 +99,42 @@ export default function GradeEntryForm({
 
             {/* Auto-computed GPA Preview */}
             {showGPA && marks !== '' && marksNumber > 0 && (
-                <Box className="p-7 bg-sanctuarySaffron/5 rounded-[28px] border border-sanctuarySaffron/20 overflow-hidden relative">
+                <Box className="p-6 bg-templeGold/5 rounded-generous border border-templeGold/20 overflow-hidden relative">
                     <HStack className="justify-between items-center relative z-10">
                         <VStack className="gap-1.5">
-                            <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-[0.2em]">
-                                {t('grades.grade')}
+                            <Text className="text-[10px] font-black text-templeGold uppercase tracking-[0.2em]">
+                                {t('grades.grade') || 'GRADE'}
                             </Text>
-                            <Text className="text-4xl font-black text-sanctuarySaffron">
+                            <Text className="text-4xl font-black text-templeGold">
                                 {grade}
                             </Text>
                         </VStack>
                         <VStack className="gap-1.5 items-end">
-                            <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-[0.2em]">
-                                {t('grades.gpa')}
+                            <Text className="text-[10px] font-black text-templeGold uppercase tracking-[0.2em]">
+                                {t('grades.gpa') || 'GPA'}
                             </Text>
-                            <Text className="text-4xl font-black text-sanctuarySaffron">
+                            <Text className="text-4xl font-black text-templeGold">
                                 {gpa.toFixed(1)}
                             </Text>
                         </VStack>
                     </HStack>
-                    <Box className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-sanctuarySaffron/10 opacity-20" />
+                    <Box className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-templeGold/10 opacity-20" />
                 </Box>
             )}
 
             {/* Feedback Textarea */}
             <VStack className="gap-3">
-                <Text className="text-[11px] font-black text-sanctuary-text-secondary uppercase tracking-[0.15em] ml-1">
-                    {t('grades.feedback')} <Text className="lowercase opacity-40">({t('grades.optional')})</Text>
+                <Text className="text-[11px] font-black text-phaseText-secondary uppercase tracking-[0.15em] ml-1">
+                    {t('grades.feedback') || 'Feedback'} <Text className="lowercase opacity-40">({t('grades.optional') || 'optional'})</Text>
                 </Text>
                 <Textarea
-                    className="min-h-[140px] px-5 py-4 bg-sanctuary-surface-secondary/50 rounded-[28px] border border-sanctuary-border"
+                    className="min-h-[120px] px-5 py-4 bg-phase-canvas/50 rounded-generous border border-phase-canvas"
                 >
                     <TextareaInput
-                        placeholder={t('grades.feedbackPlaceholder')}
+                        placeholder={t('grades.feedbackPlaceholder') || 'Enter feedback...'}
                         value={feedback}
                         onChangeText={setFeedback}
-                        className="text-sanctuary-text font-black text-base"
+                        className="text-phaseText-primary font-black text-base"
                     />
                 </Textarea>
             </VStack>
@@ -150,20 +144,20 @@ export default function GradeEntryForm({
                 {onCancel && (
                     <Button
                         variant="outline"
-                        className="flex-1 h-14 rounded-full border-sanctuary-border bg-sanctuary-surface shadow-sm active:bg-sanctuary-surface-secondary"
+                        className="flex-1 h-14 rounded-full border-phase-canvas bg-phase-surface shadow-sm active:bg-phase-canvas"
                         onPress={onCancel}
                     >
-                        <ButtonText className="text-sanctuary-text-secondary font-black uppercase text-[11px] tracking-[0.2em]">
-                            {t('common.cancel')}
+                        <ButtonText className="text-phaseText-secondary font-black uppercase text-[11px] tracking-[0.2em]">
+                            {t('common.cancel') || 'Cancel'}
                         </ButtonText>
                     </Button>
                 )}
                 <Button
-                    className="flex-[1.5] h-14 bg-sanctuarySaffron rounded-full shadow-lg shadow-sanctuarySaffron/20 active:opacity-85"
+                    className="flex-[1.5] h-14 bg-templeGold rounded-full shadow-lg shadow-templeGold/20 active:opacity-85"
                     onPress={handleSave}
                 >
-                    <ButtonText className="text-sacredWhite font-black uppercase text-[11px] tracking-[0.2em]">
-                        {t('common.save')}
+                    <ButtonText className="text-black font-black uppercase text-[11px] tracking-[0.2em]">
+                        {t('common.save') || 'Save'}
                     </ButtonText>
                 </Button>
             </HStack>

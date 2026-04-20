@@ -24,12 +24,16 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
+    "@repo/admin": "workspace:*",
     "@repo/ai": "workspace:*",
     "@repo/analytics": "workspace:*",
     "@repo/community": "workspace:*",
     "@repo/core": "workspace:*",
+    "@repo/graphics": "workspace:*",
     "@repo/library": "workspace:*",
     "@repo/profile": "workspace:*",
+    "@repo/people": "workspace:*",
+    "@repo/self": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.20",

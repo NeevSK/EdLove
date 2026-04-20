@@ -1,18 +1,14 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { 
     VStack, 
     HStack, 
     Box, 
     Text, 
     Heading, 
-    Button, 
-    ButtonText, 
     Icon, 
-    useTheme,
-    useThemedColors,
-    Theme,
-    hapticLight
+    hapticLight,
+    Pressable
 } from '@repo/ui';
 import { 
     Zap, 
@@ -37,200 +33,115 @@ export default function PrincipalOnboardingView({
     onJoinSchool,
     isGuest 
 }: PrincipalOnboardingViewProps) {
-    const colors = useThemedColors();
-    const { glass } = useTheme();
-
     return (
         <ScrollView 
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ 
-                padding: Theme.spacing.lg, 
-                maxWidth: 800, 
-                alignSelf: 'center',
-                width: '100%' 
-            }}
+            contentContainerClassName="p-6 self-center w-full max-w-[800px]"
         >
-            <VStack sx={{ gap: Theme.spacing.xl, paddingVertical: 40 }}>
+            <VStack className="gap-10 py-10">
                 {/* Welcome Header */}
-                <VStack sx={{ gap: 8, alignItems: 'center' }}>
-                    <Box sx={{ 
-                        padding: 16, 
-                        borderRadius: 24, 
-                        backgroundColor: 'rgba(212,132,58,0.1)',
-                        marginBottom: 12
-                    }}>
-                        <Icon as={Building2} color={Theme.colors.sanctuarySaffron} size={40} />
+                <VStack className="gap-2 items-center">
+                    <Box className="p-4 rounded-generous bg-templeGold/10 mb-3">
+                        <Icon as={Building2} className="text-templeGold" size="xl" />
                     </Box>
-                    <Heading sx={{ textAlign: 'center', fontSize: 32, color: colors.text }}>
+                    <Heading className="text-3xl font-black text-phaseText-primary text-center">
                         Welcome, Principal
                     </Heading>
-                    <Text sx={{ 
-                        textAlign: 'center', 
-                        color: colors.textSecondary, 
-                        fontSize: 16,
-                        maxWidth: 500 
-                    }}>
+                    <Text className="text-center text-phaseText-secondary text-base max-w-[500px] leading-relaxed">
                         Your journey to digitize and empower your institution begins here. Choose how you'd like to proceed.
                     </Text>
                 </VStack>
 
                 {/* Primary Actions Grid */}
-                <VStack sx={{ gap: Theme.spacing.lg }}>
+                <VStack className="gap-6">
                     {/* Establish Sanctuary Card */}
-                    <TouchableOpacity 
+                    <Pressable 
                         onPress={() => {
                             hapticLight();
                             onCreateSchool();
                         }}
-                        activeOpacity={0.8}
-                        style={{ width: '100%' }}
+                        className="w-full bg-phase-surface p-6 rounded-generous border border-phase-canvas shadow-sm active:scale-[0.98] transition-transform"
                     >
-                        <Box sx={{ 
-                            padding: 24, 
-                            borderRadius: 24, 
-                            backgroundColor: 'white',
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            ...Theme.shadows.md
-                        }}>
-                            <HStack sx={{ gap: 20, alignItems: 'center' }}>
-                                <Box sx={{ 
-                                    width: 64, 
-                                    height: 64, 
-                                    borderRadius: 20, 
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                    alignItems: 'center', 
-                                    justifyContent: 'center' 
-                                }}>
-                                    <Icon as={Building} color="white" size={32} />
-                                </Box>
-                                <VStack sx={{ flex: 1, gap: 4 }}>
-                                    <Heading sx={{ fontSize: 20, color: colors.text }}>Found New Sanctuary</Heading>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
-                                        Establish a digital presence for your school, manage staff, and track student progress.
-                                    </Text>
-                                    {isGuest && (
-                                        <HStack sx={{ gap: 4, alignItems: 'center', marginTop: 4 }}>
-                                            <Icon as={ShieldCheck} size={14} color={Theme.colors.sanctuarySaffron} />
-                                            <Text sx={{ fontSize: 12, color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>
-                                                Requires Signup
-                                            </Text>
-                                        </HStack>
-                                    )}
-                                </VStack>
-                                <Icon as={ChevronRight} color={colors.textTertiary} />
-                            </HStack>
-                        </Box>
-                    </TouchableOpacity>
+                        <HStack className="gap-5 items-center">
+                            <Box className="w-16 h-16 rounded-comfortable bg-templeGold items-center justify-center shadow-lg">
+                                <Icon as={Building} className="text-white" size="lg" />
+                            </Box>
+                            <VStack className="flex-1 gap-1">
+                                <Heading className="text-lg font-black text-phaseText-primary">Found New Sanctuary</Heading>
+                                <Text className="text-phaseText-secondary text-sm font-medium leading-snug">
+                                    Establish a digital presence for your school, manage staff, and track student progress.
+                                </Text>
+                                {isGuest && (
+                                    <HStack className="gap-1.5 items-center mt-1">
+                                        <Icon as={ShieldCheck} size="xs" className="text-templeGold" />
+                                        <Text className="text-[10px] text-templeGold font-black uppercase tracking-widest">
+                                            Requires Account
+                                        </Text>
+                                    </HStack>
+                                )}
+                            </VStack>
+                            <Icon as={ChevronRight} className="text-phaseText-tertiary" size="sm" />
+                        </HStack>
+                    </Pressable>
 
                     {/* Join School Card */}
-                    <TouchableOpacity 
+                    <Pressable 
                         onPress={() => {
                             hapticLight();
                             onJoinSchool();
                         }}
-                        activeOpacity={0.8}
-                        style={{ width: '100%' }}
+                        className="w-full bg-phase-canvas/50 p-6 rounded-generous border border-phase-canvas active:scale-[0.98] transition-transform"
                     >
-                        <Box sx={{ 
-                            padding: 24, 
-                            borderRadius: 24, 
-                            backgroundColor: colors.tertiary,
-                            borderWidth: 1,
-                            borderColor: colors.border
-                        }}>
-                            <HStack sx={{ gap: 20, alignItems: 'center' }}>
-                                <Box sx={{ 
-                                    width: 64, 
-                                    height: 64, 
-                                    borderRadius: 20, 
-                                    backgroundColor: colors.border,
-                                    alignItems: 'center', 
-                                    justifyContent: 'center' 
-                                }}>
-                                    <Icon as={Search} color={colors.textSecondary} size={32} />
-                                </Box>
-                                <VStack sx={{ flex: 1, gap: 4 }}>
-                                    <Heading sx={{ fontSize: 18, color: colors.text }}>Join Existing Institution</Heading>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
-                                        Search for your school and request administrative access.
-                                    </Text>
-                                </VStack>
-                                <Icon as={ChevronRight} color={colors.textTertiary} />
-                            </HStack>
-                        </Box>
-                    </TouchableOpacity>
+                        <HStack className="gap-5 items-center">
+                            <Box className="w-16 h-16 rounded-comfortable bg-phase-canvas items-center justify-center">
+                                <Icon as={Search} className="text-phaseText-secondary" size="lg" />
+                            </Box>
+                            <VStack className="flex-1 gap-1">
+                                <Heading className="text-base font-black text-phaseText-primary">Join Existing Institution</Heading>
+                                <Text className="text-phaseText-secondary text-sm font-medium leading-snug">
+                                    Search for your school and request administrative access.
+                                </Text>
+                            </VStack>
+                            <Icon as={ChevronRight} className="text-phaseText-tertiary" size="sm" />
+                        </HStack>
+                    </Pressable>
 
                     {/* Try Demo Banner */}
-                    <Box sx={{ 
-                        marginTop: Theme.spacing.xl,
-                        padding: 32, 
-                        borderRadius: 32, 
-                        backgroundColor: '#1A1A1A', 
-                        overflow: 'hidden',
-                        position: 'relative'
-                    }}>
-                        <Box sx={{
-                            position: 'absolute',
-                            right: -20,
-                            top: -20,
-                            width: 150,
-                            height: 150,
-                            borderRadius: 75,
-                            backgroundColor: 'rgba(212,132,58,0.15)',
-                            zIndex: 0
-                        }} />
-                        <VStack sx={{ gap: 24, zIndex: 1, alignItems: 'center' }}>
-                            <Box sx={{ 
-                                padding: 12, 
-                                borderRadius: 16, 
-                                backgroundColor: 'rgba(255,255,255,0.1)'
-                            }}>
-                                <Icon as={Zap} color={Theme.colors.sanctuarySaffron} size={28} />
+                    <Box className="mt-8 p-8 rounded-generous bg-[#1A1A1A] overflow-hidden relative border border-[#2A2A2A]">
+                        <Box className="absolute -right-5 -top-5 w-40 h-40 rounded-full bg-templeGold/15" />
+                        <VStack className="gap-6 items-center">
+                            <Box className="p-3 rounded-comfortable bg-white/10 border border-white/10">
+                                <Icon as={Zap} className="text-templeGold" size="lg" />
                             </Box>
-                            <VStack sx={{ gap: 8, alignItems: 'center' }}>
-                                <Heading sx={{ textAlign: 'center', fontSize: 24, color: 'white' }}>
+                            <VStack className="gap-2 items-center">
+                                <Heading className="text-2xl font-black text-white text-center">
                                     Experience the Future
                                 </Heading>
-                                <Text sx={{ 
-                                    color: 'rgba(255,255,255,0.7)', 
-                                    fontSize: 15, 
-                                    textAlign: 'center',
-                                    maxWidth: 400 
-                                }}>
+                                <Text className="text-white/70 text-sm text-center max-w-[400px] font-medium leading-relaxed">
                                     Explore a fully populated sample dashboard to see how Gurudevi transforms school management.
                                 </Text>
                             </VStack>
                             
-                            <Button 
-                                action="primary" 
+                            <Pressable 
                                 onPress={() => {
                                     hapticLight();
                                     onTryDemo();
                                 }}
-                                sx={{ 
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                    paddingHorizontal: 32,
-                                    height: 54,
-                                    borderRadius: 27
-                                }}
+                                className="bg-templeGold px-8 h-[54px] rounded-full items-center justify-center shadow-lg active:scale-95 transition-transform"
                             >
-                                <ButtonText sx={{ fontWeight: '700', fontSize: 16 }}>
-                                    Launch Demo Sandbox
-                                </ButtonText>
-                                <Icon as={ArrowRightCircle} sx={{ marginLeft: 8 }} size={20} color="white" />
-                            </Button>
+                                <HStack className="items-center gap-2">
+                                    <Text className="text-white font-black text-base uppercase tracking-widest">
+                                        Launch Demo Sandbox
+                                    </Text>
+                                    <Icon as={ArrowRightCircle} size="sm" className="text-white" />
+                                </HStack>
+                            </Pressable>
                         </VStack>
                     </Box>
                 </VStack>
 
-                <Text sx={{ 
-                    textAlign: 'center', 
-                    color: colors.textTertiary, 
-                    fontSize: 12,
-                    marginTop: 20 
-                }}>
-                    Gurudevi Sanctuaries are designed for dignified growth.
+                <Text className="text-center text-phaseText-tertiary text-[10px] font-black uppercase tracking-[0.2em] mt-5">
+                    Gurudevi Sanctuaries &bull; Dignified Growth
                 </Text>
             </VStack>
         </ScrollView>

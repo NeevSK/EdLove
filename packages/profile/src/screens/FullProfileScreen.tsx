@@ -28,7 +28,7 @@ import Reanimated, {
 import { useStore } from '@repo/core';
 
 // Local Package Imports
-import { StaffPresencePulse } from '@repo/admin';
+import { StaffPresencePulse } from '@repo/people';
 import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
 import { UserProfile } from '../types';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';

@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@repo/database": "workspace:*",
-    "@repo/admin": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
     "@eslint/eslintrc": "^3.3.5",
     "@repo/core": "workspace:*",

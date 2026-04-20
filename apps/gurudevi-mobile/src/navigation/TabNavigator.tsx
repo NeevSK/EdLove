@@ -31,7 +31,7 @@ import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
 import { BreathGuide } from '@repo/self';
 import { useThemedColors } from '@repo/ui';
-import { usePermissions, useRewards, useTracking, useStore, useFeature } from '@repo/core';
+import { usePermissions, useRewards, useTracking, useStore } from '@repo/core';
 import { WorkforceShell } from '@repo/workforce';
 
 // Screens
@@ -49,7 +49,7 @@ interface TabNavigatorProps {
 
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
-  const { context } = usePermissions();
+  const { context, flags } = usePermissions();
   const role = context.roles[0];
   const colors = useTheme().scene;
   const { phase } = useTheme();
@@ -102,9 +102,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           headerShown: false,
           tabBarHideOnKeyboard: true, // Universal keyboard behavior
           tabBarStyle: {
-            backgroundColor: colors.secondary, // Solid color aligned with Global Header
+            backgroundColor: colors.secondary.main, // Solid color aligned with Global Header
             borderTopWidth: 1,
-            borderTopColor: colors.border,
+            borderTopColor: colors.border.base,
             height: 60 + insets.bottom,
             paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
             paddingTop: 8,
@@ -117,8 +117,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             shadowOffset: { width: 0, height: -2 },
             shadowOpacity: 0.1,
             shadowRadius: 4},
-          tabBarActiveTintColor: colors.action,
-          tabBarInactiveTintColor: colors.textTertiary,
+          tabBarActiveTintColor: colors.primary.main,
+          tabBarInactiveTintColor: colors.text.muted,
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: 'Inter_500Medium',
@@ -180,7 +180,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
               <View>
-                <Icon as={User}s color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
+                <Icon as={Users} color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
               </View>
             )}}>
           {() => (
@@ -209,7 +209,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         </Tab.Screen>
 
         {/* 6. Workforce Tab (Experimental) */}
-        {useFeature('isDevelopingWorkforce') && (
+        {flags.isDevelopingWorkforce && (
           <Tab.Screen
             name="Workforce"
             options={{
@@ -261,10 +261,10 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 style={{
                   padding: 8,
                   borderRadius: 9999,
-                  backgroundColor: colors.tertiary,
-                  borderColor: colors.border,
+                  backgroundColor: colors.primary.muted,
+                  borderColor: colors.border.base,
                   borderWidth: 1}}>
-                <Icon as={X} size={24} color={colors.text} />
+                <Icon as={X} size={24} color={colors.text.primary} />
               </TouchableOpacity>
             </HStack>
           </Box>

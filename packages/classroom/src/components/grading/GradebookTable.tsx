@@ -10,7 +10,6 @@ import {
     HStack,
     Text,
     Box,
-    theme,
 } from '@repo/ui';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +51,7 @@ export default function GradebookTable({
 
         if (grading_mode === 'marks') {
             return (
-                <Text className="text-sanctuary-text font-black text-lg">
+                <Text className="text-phaseText-primary font-black text-lg">
                     {grade.marks} <Text className="text-[10px] opacity-40 font-black">/ 100</Text>
                 </Text>
             );
@@ -61,10 +60,10 @@ export default function GradebookTable({
         if (grading_mode === 'gpa') {
             return (
                 <VStack className="gap-0.5">
-                    <Text className="text-sanctuary-text font-black text-xl">
+                    <Text className="text-phaseText-primary font-black text-xl">
                         {letterGrade}
                     </Text>
-                    <Text className="text-sanctuary-text-secondary font-black uppercase text-[9px] tracking-widest opacity-50">
+                    <Text className="text-phaseText-secondary font-black uppercase text-[9px] tracking-widest opacity-50">
                         {gpa.toFixed(1)} {t('grades.gpa') || 'GPA'}
                     </Text>
                 </VStack>
@@ -75,15 +74,15 @@ export default function GradebookTable({
         return (
             <VStack className="gap-0.5">
                 <HStack className="gap-2 items-center">
-                    <Text className="text-sanctuary-text font-black text-lg">
+                    <Text className="text-phaseText-primary font-black text-lg">
                         {grade.marks}
                     </Text>
-                    <Box className="w-1.5 h-1.5 rounded-full bg-sanctuarySaffron" />
-                    <Text className="text-sanctuarySaffron font-black text-lg">
+                    <Box className="w-1.5 h-1.5 rounded-full bg-templeGold" />
+                    <Text className="text-templeGold font-black text-lg">
                         {letterGrade}
                     </Text>
                 </HStack>
-                <Text className="text-sanctuary-text-secondary font-black uppercase text-[9px] tracking-widest opacity-50">
+                <Text className="text-phaseText-secondary font-black uppercase text-[9px] tracking-widest opacity-50">
                     {gpa.toFixed(1)} {t('grades.gpa') || 'GPA'}
                 </Text>
             </VStack>
@@ -108,24 +107,24 @@ export default function GradebookTable({
     // Empty component
     const EmptyComponent = useCallback(() => (
         <Box className="p-16 items-center justify-center">
-            <Text className="text-sanctuary-text-tertiary font-black uppercase text-[10px] tracking-[0.2em] text-center">
+            <Text className="text-phaseText-secondary font-black uppercase text-[10px] tracking-[0.2em] text-center">
                 {t('grades.noGrades') || 'No grades recorded yet'}
             </Text>
         </Box>
     ), [t]);
 
     return (
-        <Box className="bg-sanctuary-surface rounded-[32px] border border-sanctuary-border shadow-sm overflow-hidden">
+        <Box className="bg-phase-surface rounded-generous border border-phase-canvas shadow-sm overflow-hidden">
             <VStack>
                 {/* Table Header */}
-                <HStack className="gap-4 px-6 py-5 bg-sanctuary-surface-secondary/50 border-b border-sanctuary-border items-center">
+                <HStack className="gap-4 px-6 py-5 bg-phase-canvas/50 border-b border-phase-canvas items-center">
                     <Box className="flex-[2.5]">
-                        <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[0.2em]">
+                        <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
                             {t('grades.student') || 'Student'}
                         </Text>
                     </Box>
                     <Box className="flex-[2]">
-                        <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[0.2em]">
+                        <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
                             {grading_mode === 'marks'
                                 ? t('grades.marks') || 'Marks'
                                 : grading_mode === 'gpa'
@@ -135,7 +134,7 @@ export default function GradebookTable({
                     </Box>
                     {show_ranks && (
                         <Box className="flex-1 items-center">
-                            <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[0.2em]">
+                            <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
                                 {t('grades.rank') || 'Rank'}
                             </Text>
                         </Box>
@@ -177,10 +176,10 @@ const GradeRow = React.memo(({
     renderGradeDisplay,
 }: GradeRowProps) => (
     <HStack
-        className={`gap-4 px-6 py-5 items-center ${index < totalItems - 1 ? 'border-b border-sanctuary-border' : ''} ${index % 2 === 0 ? '' : 'bg-sanctuary-surface-secondary/20'}`}
+        className={`gap-4 px-6 py-5 items-center ${index < totalItems - 1 ? 'border-b border-phase-canvas' : ''} ${index % 2 === 0 ? '' : 'bg-phase-canvas/20'}`}
     >
         <Box className="flex-[2.5]">
-            <Text className="text-sanctuary-text font-black text-base">
+            <Text className="text-phaseText-primary font-black text-base">
                 {studentName}
             </Text>
         </Box>
@@ -189,8 +188,8 @@ const GradeRow = React.memo(({
         </Box>
         {showRanks && (
             <Box className="flex-1 items-center">
-                <Box className="px-3 py-1.5 bg-sanctuarySaffron shadow-sm shadow-sanctuarySaffron/20 rounded-full">
-                    <Text className="text-xs font-black text-sanctuary-ink">
+                <Box className="px-3 py-1.5 bg-templeGold shadow-sm rounded-full">
+                    <Text className="text-xs font-black text-black">
                         #{grade.rank}
                     </Text>
                 </Box>

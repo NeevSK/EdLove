@@ -22,8 +22,10 @@ import {
     Spinner,
     Icon,
     SanctuaryModal,
+    Image,
+    Pressable,
 } from '@repo/ui';
-import { Alert, Image, Platform, Pressable } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import {
@@ -172,14 +174,14 @@ export default function SubmissionModal({
                 title=""
             >
                 <VStack className="items-center justify-center p-8 gap-6">
-                    <Box className="w-24 h-24 bg-sanctuary-success/10 rounded-full items-center justify-center border border-sanctuary-success/20">
-                        <Icon as={CheckCircle2} size="xl" className="text-sanctuary-success" />
+                    <Box className="w-24 h-24 bg-phase-reward/10 rounded-full items-center justify-center border border-phase-reward/20">
+                        <Icon as={CheckCircle2} size="xl" className="text-phase-reward" />
                     </Box>
                     <VStack className="items-center gap-2">
-                        <Text className="text-3xl font-black text-sanctuary-text tracking-tighter">
+                        <Text className="text-3xl font-black text-phaseText-primary tracking-tighter">
                             {t('submission.success') || 'Success!'}
                         </Text>
-                        <Text className="text-lg font-medium text-sanctuary-text-secondary text-center leading-relaxed">
+                        <Text className="text-lg font-medium text-phaseText-secondary text-center leading-relaxed">
                             {t('submission.successMessage') || 'Your work has been sent to the teacher.'}
                         </Text>
                     </VStack>
@@ -194,21 +196,21 @@ export default function SubmissionModal({
             title={t('submission.title') || 'Submit Work'}
             footer={
                 <Button
-                    className="w-full h-16 bg-sanctuarySaffron rounded-[24px] shadow-lg shadow-sanctuarySaffron/20 flex-row items-center justify-center gap-3"
+                    className="w-full h-16 bg-templeGold rounded-[24px] shadow-lg shadow-templeGold/20 flex-row items-center justify-center gap-3"
                     onPress={handleSubmit}
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
                         <HStack className="items-center gap-2">
-                            <Spinner className="text-sanctuary-ink" size="small" />
-                            <ButtonText className="text-sanctuary-ink font-bold text-lg">
+                            <Spinner className="text-phaseText-inverse" size="small" />
+                            <ButtonText className="text-phaseText-inverse font-bold text-lg">
                                 {t('submission.submitting') || 'Turning in...'}
                             </ButtonText>
                         </HStack>
                     ) : (
                         <HStack className="items-center gap-2">
-                            <Icon as={Send} size="sm" className="text-sanctuary-ink" />
-                            <ButtonText className="text-sanctuary-ink font-bold text-lg">
+                            <Icon as={Send} size="sm" className="text-phaseText-inverse" />
+                            <ButtonText className="text-phaseText-inverse font-bold text-lg">
                                 {t('submission.turnIn') || 'Turn In'}
                             </ButtonText>
                         </HStack>
@@ -218,24 +220,24 @@ export default function SubmissionModal({
         >
             <VStack className="gap-8 p-1">
                 {/* Assignment Title */}
-                <Box className="p-5 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
-                    <Text className="text-xs font-bold text-sanctuary-text-tertiary uppercase tracking-wider mb-1">
+                <Box className="p-5 bg-phase-surface rounded-[24px] border border-phase-border">
+                    <Text className="text-xs font-bold text-phaseText-ghost uppercase tracking-wider mb-1">
                         {t('submission.assignmentLabel') || 'Assignment'}
                     </Text>
-                    <Text className="text-xl font-black text-sanctuary-text tracking-tight">
+                    <Text className="text-xl font-black text-phaseText-primary tracking-tight">
                         {assignmentTitle}
                     </Text>
                 </Box>
 
                 {/* Text Input */}
                 <VStack className="gap-2 flex-1 min-h-[250px]">
-                    <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">
+                    <Text className="text-sm font-bold text-phaseText-secondary ml-1">
                         {t('submission.answerLabel') || 'Your Answer'}
                     </Text>
-                    <Textarea className="flex-1 p-5 bg-sanctuary-surface-secondary rounded-[32px] border border-sanctuary-border">
+                    <Textarea className="flex-1 p-5 bg-phase-surface rounded-[32px] border border-phase-border">
                         <TextareaInput
                             placeholder={t('submission.answerPlaceholder') || 'Type your answer here...'}
-                            className="text-sanctuary-text text-lg leading-relaxed"
+                            className="text-phaseText-primary text-lg leading-relaxed"
                             value={content}
                             onChangeText={setContent}
                             multiline
@@ -245,13 +247,13 @@ export default function SubmissionModal({
 
                 {/* Photo Attachment */}
                 <VStack className="gap-3">
-                    <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">
+                    <Text className="text-sm font-bold text-phaseText-secondary ml-1">
                         {t('submission.photoLabel') || 'Visual Evidence (Optional)'}
                     </Text>
 
                     {photoUri ? (
                         <VStack className="gap-2">
-                            <Box className="relative rounded-[24px] overflow-hidden border border-sanctuary-border">
+                            <Box className="relative rounded-[24px] overflow-hidden border border-phase-border">
                                 <Image
                                     source={{ uri: photoUri }}
                                     className="w-full h-48"
@@ -265,12 +267,13 @@ export default function SubmissionModal({
                                 </Pressable>
                             </Box>
                             <Button
-                                variant="link"
+                                variant="ghost"
+                                action="negative"
                                 className="self-center"
                                 onPress={() => setPhotoUri(null)}
                             >
-                                <Icon as={Trash2} size="xs" className="text-sanctuary-error mr-2" />
-                                <ButtonText className="text-sanctuary-error font-bold">
+                                <Icon as={Trash2} size="xs" className="text-phase-danger mr-2" />
+                                <ButtonText className="text-phase-danger font-bold">
                                     {t('submission.removePhoto') || 'Remove Photo'}
                                 </ButtonText>
                             </Button>
@@ -279,24 +282,26 @@ export default function SubmissionModal({
                         <HStack className="gap-4">
                             <Button
                                 variant="outline"
-                                className="flex-1 h-14 rounded-[20px] border-sanctuarySaffron/30 bg-sanctuarySaffron/5 flex-row items-center justify-center gap-2"
+                                action="primary"
+                                className="flex-1 h-14 rounded-[20px] flex-row items-center justify-center gap-2"
                                 onPress={() => handlePickImage(true)}
                                 disabled={isSubmitting}
                             >
-                                <Icon as={Camera} size="sm" className="text-sanctuarySaffron" />
-                                <ButtonText className="text-sanctuarySaffron font-bold">
+                                <Icon as={Camera} size="sm" className="text-phase-accent" />
+                                <ButtonText className="text-phase-accent font-bold">
                                     {t('submission.takePhoto') || 'Camera'}
                                 </ButtonText>
                             </Button>
 
                             <Button
                                 variant="outline"
-                                className="flex-1 h-14 rounded-[20px] border-sanctuarySaffron/30 bg-sanctuarySaffron/5 flex-row items-center justify-center gap-2"
+                                action="primary"
+                                className="flex-1 h-14 rounded-[20px] flex-row items-center justify-center gap-2"
                                 onPress={() => handlePickImage(false)}
                                 disabled={isSubmitting}
                             >
-                                <Icon as={ImageIcon} size="sm" className="text-sanctuarySaffron" />
-                                <ButtonText className="text-sanctuarySaffron font-bold">
+                                <Icon as={ImageIcon} size="sm" className="text-phase-accent" />
+                                <ButtonText className="text-phase-accent font-bold">
                                     {t('submission.choosePhoto') || 'Gallery'}
                                 </ButtonText>
                             </Button>

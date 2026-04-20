@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+
 import {
     Modal,
     ModalBackdrop,
@@ -20,9 +20,9 @@ import {
     FormControlLabel,
     FormControlLabelText,
     Spinner,
-    Icon,
-    hapticLight,
     hapticSuccess,
+    Pressable,
+    Theme,
 } from '@repo/ui';
 import { CheckCircle, School, MessageSquare } from 'lucide-react-native';
 import { api, identityAPI, communityAPI } from '@repo/core';
@@ -155,16 +155,16 @@ export default function CreateSchoolModal({
         <Modal isOpen={isOpen} onClose={handleClose}>
             <ModalBackdrop />
             <ModalContent
-                className="bg-phase-surface max-w-[400px] border-phase-border border rounded-generous"
+                className="bg-sanctuary-surface max-w-[400px] border-sanctuary-border border rounded-generous"
             >
                 {step === 'details' && (
                     <>
                         <ModalHeader>
                             <VStack className="gap-1">
-                                <Heading className="text-phaseText-onSurface" size="lg">
+                                <Heading className="text-sanctuary-text" size="lg">
                                     {isEdit ? 'Refine Sanctuary Identity' : (t('school.createTitle') || 'Sanctuary Identity')}
                                 </Heading>
-                                <Text size="xs" className="text-phaseText-secondary">
+                                <Text size="xs" className="text-sanctuary-text-secondary">
                                     {isEdit ? 'Update the details of your institution' : 'Step 1 of 2: Name your institution'}
                                 </Text>
                             </VStack>
@@ -184,12 +184,12 @@ export default function CreateSchoolModal({
 
                                 <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
-                                        <FormControlLabelText className="text-phaseText-secondary">
+                                        <FormControlLabelText className="text-sanctuary-text-secondary">
                                             {t('school.labelName') || 'What shall we call your Sanctuary?'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        className="h-14 bg-phase-elevated border-phase-border border rounded-generous"
+                                        className="h-14 bg-sanctuary-surface-elevated border-sanctuary-border border rounded-generous"
                                     >
                                         <InputField
                                             placeholder={t('school.placeholderName') || "e.g., Green Valley Sanctuary"}
@@ -201,20 +201,20 @@ export default function CreateSchoolModal({
                                                 }
                                                 if (error) setError(null);
                                             }}
-                                            className="text-phaseText-onSurface text-lg font-semibold"
-                                            placeholderTextColor="PhaseTextTertiary"
+                                            className="text-sanctuary-text text-lg font-semibold"
+                                            placeholderTextColor={Theme.colors.mistGray}
                                         />
                                     </Input>
                                 </FormControl>
 
                                 <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
-                                        <FormControlLabelText className="text-phaseText-secondary">
+                                        <FormControlLabelText className="text-sanctuary-text-secondary">
                                             URL Handle (unique ID)
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        className="h-14 bg-phase-elevated border-phase-border border rounded-generous"
+                                        className="h-14 bg-sanctuary-surface-elevated border-sanctuary-border border rounded-generous"
                                     >
                                         <InputField
                                             placeholder="e.g., green-valley"
@@ -223,11 +223,11 @@ export default function CreateSchoolModal({
                                                 setHandle(text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, ''));
                                                 if (error) setError(null);
                                             }}
-                                            className="text-phaseText-onSurface text-base font-medium"
-                                            placeholderTextColor="PhaseTextTertiary"
+                                            className="text-sanctuary-text text-base font-medium"
+                                            placeholderTextColor={Theme.colors.mistGray}
                                         />
                                     </Input>
-                                    <Text size="xs" className="text-phaseText-tertiary mt-1">
+                                    <Text size="xs" className="text-sanctuary-text-tertiary mt-1">
                                         Used in your Sanctuary's QR codes and links.
                                     </Text>
                                 </FormControl>
@@ -243,7 +243,7 @@ export default function CreateSchoolModal({
                                     className="flex-1 border-phase-border"
                                     isDisabled={isSubmitting}
                                 >
-                                    <ButtonText className="text-phaseText-secondary font-English">
+                                    <ButtonText className="text-sanctuary-text-secondary font-English">
                                         {t('common.cancel') || 'Cancel'}
                                     </ButtonText>
                                 </Button>
@@ -266,10 +266,10 @@ export default function CreateSchoolModal({
                     <>
                         <ModalHeader>
                             <VStack className="gap-1">
-                                <Heading className="text-phaseText-onSurface" size="lg">
+                                <Heading className="text-sanctuary-text" size="lg">
                                     Academic Focus
                                 </Heading>
-                                <Text size="xs" className="text-phaseText-secondary">
+                                <Text size="xs" className="text-sanctuary-text-secondary">
                                     {isEdit ? 'Update your scope' : 'Step 2 of 2: Define your scope'}
                                 </Text>
                             </VStack>
@@ -277,8 +277,8 @@ export default function CreateSchoolModal({
 
                         <ModalBody>
                             <VStack className="gap-lg py-md">
-                                <Text className="text-phaseText-secondary text-sm">
-                                    What is the core mission of <Text className="font-bold text-phaseText-onSurface">{name}</Text>?
+                                <Text className="text-sanctuary-text-secondary text-sm">
+                                    What is the core mission of <Text className="font-bold text-sanctuary-text">{name}</Text>?
                                 </Text>
 
                                 {([
@@ -288,8 +288,7 @@ export default function CreateSchoolModal({
                                 ] as const).map((tType) => {
                                     const isSelected = type === tType.id;
                                     return (
-                                        <TouchableOpacity
-                                            key={tType.id}
+                                        <Pressable
                                             onPress={() => {
                                                 hapticLight();
                                                 setType(tType.id);
@@ -297,19 +296,19 @@ export default function CreateSchoolModal({
                                         >
                                             <Box
                                                 className={`p-md rounded-generous border-2 ${
-                                                    isSelected ? 'border-sanctuarySaffron bg-sanctuarySaffron/5' : 'border-phase-border bg-phase-elevated'
+                                                    isSelected ? 'border-sanctuarySaffron bg-sanctuarySaffron/5' : 'border-sanctuary-border bg-sanctuary-surface-elevated'
                                                 }`}
                                             >
                                                 <HStack className="gap-md items-center">
                                                     <Text className="text-[32px]">{tType.emoji}</Text>
                                                     <VStack className="flex-1">
-                                                        <Text className="font-extrabold text-phaseText-onSurface">{tType.label}</Text>
-                                                        <Text size="xs" className="text-phaseText-secondary">{tType.desc}</Text>
+                                                        <Text className="font-extrabold text-sanctuary-text">{tType.label}</Text>
+                                                        <Text size="xs" className="text-sanctuary-text-secondary">{tType.desc}</Text>
                                                     </VStack>
                                                     {isSelected && <Icon as={CheckCircle} className="text-sanctuarySaffron" size="sm" />}
                                                 </HStack>
                                             </Box>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     );
                                 })}
                             </VStack>
@@ -321,10 +320,10 @@ export default function CreateSchoolModal({
                                     variant="outline"
                                     action="secondary"
                                     onPress={() => setStep('details')}
-                                    className="flex-1 border-phase-border"
+                                    className="flex-1 border-sanctuary-border"
                                     isDisabled={isSubmitting}
                                 >
-                                    <ButtonText className="text-phaseText-secondary font-English">Back</ButtonText>
+                                    <ButtonText className="text-sanctuary-text-secondary font-English">Back</ButtonText>
                                 </Button>
                                 <Button
                                     action="primary"
@@ -350,7 +349,7 @@ export default function CreateSchoolModal({
                         <ModalHeader>
                             <VStack className="items-center w-full gap-sm">
                                 <Icon as={CheckCircle} className="text-sanctuarySaffron" size="xl" />
-                                <Heading className="text-phaseText-onSurface text-center" size="lg">
+                                <Heading className="text-sanctuary-text text-center" size="lg">
                                     Sanctuary Established!
                                 </Heading>
                             </VStack>
@@ -358,24 +357,24 @@ export default function CreateSchoolModal({
 
                         <ModalBody>
                             <VStack className="gap-lg items-center">
-                                <Text className="text-center text-phaseText-secondary">
-                                    Congratulations! <Text className="font-bold text-phaseText-onSurface">{name}</Text> is now live.
+                                <Text className="text-center text-sanctuary-text-secondary">
+                                    Congratulations! <Text className="font-bold text-sanctuary-text">{name}</Text> is now live.
                                 </Text>
                                 
-                                <Box className="bg-phase-elevated p-md rounded-comfortable w-full">
+                                <Box className="bg-sanctuary-surface-elevated p-md rounded-comfortable w-full">
                                     <VStack className="gap-sm">
                                         <HStack className="gap-sm items-center">
                                             <Icon as={School} className="text-sanctuarySaffron" size="sm" />
-                                            <Text className="text-sm text-phaseText-onSurface">School Dashboard Ready</Text>
+                                            <Text className="text-sm text-sanctuary-text">School Dashboard Ready</Text>
                                         </HStack>
                                         <HStack className="gap-sm items-center">
                                             <Icon as={MessageSquare} className="text-sanctuarySaffron" size="sm" />
-                                            <Text className="text-sm text-phaseText-onSurface">Community HQ Created</Text>
+                                            <Text className="text-sm text-sanctuary-text">Community HQ Created</Text>
                                         </HStack>
                                     </VStack>
                                 </Box>
 
-                                <Text className="text-[13px] text-phaseText-tertiary text-center">
+                                <Text className="text-[13px] text-sanctuary-text-tertiary text-center">
                                     You've been assigned as the Principal. You can now invite staff and start building your curriculum.
                                 </Text>
                             </VStack>
@@ -394,9 +393,9 @@ export default function CreateSchoolModal({
                                     <Button
                                         variant="outline"
                                         onPress={navigateToCommunity}
-                                        className="w-full border-phase-border"
+                                        className="w-full border-sanctuary-border"
                                     >
-                                        <ButtonText className="text-phaseText-secondary font-English">Visit Community HQ</ButtonText>
+                                        <ButtonText className="text-sanctuary-text-secondary font-English">Visit Community HQ</ButtonText>
                                     </Button>
                                 )}
                             </VStack>

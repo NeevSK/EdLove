@@ -5,9 +5,9 @@ import {
     PositiveInvitation,
     TemporalNavigator,
     Text,
-    Theme,
     VStack,
     Pressable,
+    Icon,
     type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
 import { BookOpen, ClipboardCheck, Layout, MessageSquare, Star, Wind, Zap } from 'lucide-react-native';
@@ -54,7 +54,7 @@ const DEMO_GOALS = [
 ];
 
 type Args = {
-    colors: any;
+    colors: any; // Kept for interface compatibility but moving towards semantic tokens
     isGuest: boolean;
     isPastView: boolean;
     isDemoExperience: boolean;
@@ -76,46 +76,32 @@ function QuickAction({
     icon: LucideIcon,
     label,
     onPress,
-    color,
+    iconColorClass = 'text-templeGold',
     disabled,
-    colors,
 }: {
     icon: any;
     label: string;
     onPress: () => void;
-    color?: string;
+    iconColorClass?: string;
     disabled?: boolean;
-    colors: any;
+    colors?: any;
 }) {
     return (
         <VStack
-            alignItems="center"
-            sx={{
-                flex: 1,
-                gap: Theme.spacing.xs,
-                opacity: disabled ? 0.5 : 1,
-            }}
+            className={`items-center flex-1 gap-1.5 ${disabled ? 'opacity-40' : ''}`}
         >
             <Pressable
                 onPress={disabled ? undefined : onPress}
                 disabled={disabled}
+                className="active:scale-95 transition-transform"
             >
                 <Box
-                    sx={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: Theme.corners.comfortable,
-                        backgroundColor: colors.tertiary,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}
+                    className="w-[60px] h-[60px] rounded-[20px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm"
                 >
-                    <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} />
+                    <Icon as={LucideIcon} className={iconColorClass} size="md" />
                 </Box>
             </Pressable>
-            <Text sx={{ color: colors.text, textAlign: 'center', fontSize: 10, fontWeight: '700' }}>
+            <Text className="text-phaseText-primary text-center text-[10px] font-bold uppercase tracking-widest">
                 {label}
             </Text>
         </VStack>
@@ -126,35 +112,30 @@ function StatWidget({
     icon: LucideIcon,
     label,
     value,
-    color,
-    colors,
+    iconColorClass = 'text-phaseText-secondary',
 }: {
     icon: any;
     label: string;
     value: number | string;
-    color?: string;
-    colors: any;
+    iconColorClass?: string;
+    colors?: any;
 }) {
     return (
         <Box
-            sx={{
-                flex: 1,
-                backgroundColor: colors.secondary,
-                padding: Theme.spacing.md,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: colors.border,
-                minHeight: 100,
-            }}
+            className="flex-1 bg-phase-surface p-5 rounded-[24px] border border-phase-border min-h-[110px] shadow-sm"
         >
-            <VStack sx={{ gap: 4 }}>
-                <LucideIcon color={color || colors.textSecondary} size={20} />
-                <Text sx={{ color: colors.textSecondary, fontSize: 12, fontWeight: '700' }}>
-                    {label}
-                </Text>
-                <Text sx={{ color: colors.text, fontSize: 24, fontWeight: '700' }}>
-                    {value}
-                </Text>
+            <VStack className="gap-2">
+                <Box className="w-8 h-8 rounded-full bg-phase-interactive/5 items-center justify-center">
+                    <Icon as={LucideIcon} className={iconColorClass} size="sm" />
+                </Box>
+                <VStack className="gap-0">
+                    <Text className="text-phaseText-ghost text-[10px] font-bold uppercase tracking-wider">
+                        {label}
+                    </Text>
+                    <Text className="text-phaseText-primary text-2xl font-black tracking-tight">
+                        {value}
+                    </Text>
+                </VStack>
             </VStack>
         </Box>
     );
@@ -207,12 +188,12 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: isPastView ? 'Past view' : 'Ready',
                 metadata: ['Library', 'Sanctuaries', 'Breathing'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md, justifyContent: 'space-between' }}>
-                        <QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} color={Theme.colors.amberGlow} disabled={isPastView} colors={colors} />
-                        <QuickAction icon={MessageSquare} label="Sanctuaries" onPress={onOpenCommunity} color={Theme.colors.gurudeviBlue} disabled={isPastView} colors={colors} />
-                        <QuickAction icon={Star} label="Rewards" onPress={onOpenRewards} color={Theme.colors.sanctuarySaffron} disabled={isPastView} colors={colors} />
-                        <QuickAction icon={Layout} label="Timetable" onPress={onOpenTimetable} color={Theme.colors.sageGreen} disabled={isPastView} colors={colors} />
-                        <QuickAction icon={Wind} label="Breathing" onPress={onOpenBreathing} color={Theme.colors.lotusDeepPink} disabled={isPastView} colors={colors} />
+                    <HStack className="gap-3 justify-between p-1">
+                        <QuickAction icon={BookOpen} label="Library" onPress={onOpenLibrary} iconColorClass="text-phase-accent" disabled={isPastView} />
+                        <QuickAction icon={MessageSquare} label="Sanctuary" onPress={onOpenCommunity} iconColorClass="text-phase-interactive" disabled={isPastView} />
+                        <QuickAction icon={Star} label="Rewards" onPress={onOpenRewards} iconColorClass="text-templeGold" disabled={isPastView} />
+                        <QuickAction icon={Layout} label="Timetable" onPress={onOpenTimetable} iconColorClass="text-phase-reward" disabled={isPastView} />
+                        <QuickAction icon={Wind} label="Breathing" onPress={onOpenBreathing} iconColorClass="text-phase-danger" disabled={isPastView} />
                     </HStack>
                 ),
             },
@@ -231,9 +212,9 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: stats.pendingAssignments > 0 ? 'Due soon' : 'On track',
                 metadata: [`Classes ${stats.enrolledClasses}`, `Pending ${stats.pendingAssignments}`, `Growth ${stats.growthPoints}`],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}>
-                        <StatWidget icon={ClipboardCheck} label="My Classes" value={stats.enrolledClasses} color={Theme.colors.gurudeviBlue} colors={colors} />
-                        <StatWidget icon={Zap} label="Assignments" value={stats.pendingAssignments} color={Theme.colors.amberGlow} colors={colors} />
+                    <HStack className="gap-4">
+                        <StatWidget icon={ClipboardCheck} label="My Classes" value={stats.enrolledClasses} iconColorClass="text-phase-interactive" />
+                        <StatWidget icon={Zap} label="Assignments" value={stats.pendingAssignments} iconColorClass="text-phase-accent" />
                     </HStack>
                 ),
             },
@@ -252,7 +233,7 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: stats.enrolledClasses > 0 ? 'Live' : 'Join first',
                 metadata: [`Classes ${stats.enrolledClasses}`, 'Registry', 'Learning flow'],
                 content: (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-4">
                         <ClassroomList
                             onClassroomPress={onOpenClassroom}
                             isNested={true}
@@ -267,7 +248,7 @@ export function useStudentDashboardSurfaces({
                             }
                         />
                         {isGuest && (
-                            <Box sx={{ marginTop: Theme.spacing.md }}>
+                            <Box className="mt-4">
                                 <PositiveInvitation type="guest" context="classroom" onAction={onOpenGuestAuth} />
                             </Box>
                         )}
@@ -290,14 +271,16 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: 'Demo',
                 metadata: ['Assignments', 'Demo'],
                 content: (
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
+                    <VStack className="gap-3">
                         {DEMO_ASSIGNMENTS.map((assignment, index) => (
-                            <Box key={index} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}>
-                                <Text sx={{ color: colors.text, fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>{assignment.title}</Text>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, marginTop: 2 }}>{assignment.classroom}</Text>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: Theme.colors.amberGlow, fontWeight: '700', marginTop: 4 }}>
-                                    Due in {assignment.daysLeft} days
-                                </Text>
+                            <Box key={index} className="bg-phase-surface rounded-[24px] p-5 border border-phase-border shadow-sm">
+                                <VStack className="gap-1">
+                                    <Text className="text-phaseText-primary font-black text-lg tracking-tight">{assignment.title}</Text>
+                                    <Text className="text-phaseText-secondary text-sm font-medium">{assignment.classroom}</Text>
+                                    <Text className="text-templeGold font-bold text-xs mt-2 uppercase tracking-widest">
+                                        Due in {assignment.daysLeft} days
+                                    </Text>
+                                </VStack>
                             </Box>
                         ))}
                     </VStack>
@@ -319,16 +302,20 @@ export function useStudentDashboardSurfaces({
                 temporalLabel: 'Demo',
                 metadata: ['Goals', 'Growth'],
                 content: (
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
+                    <VStack className="gap-3">
                         {DEMO_GOALS.map((goal, index) => (
-                            <Box key={index} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}>
-                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.sm, marginBottom: 8 }}>{goal.text}</Text>
-                                <Box sx={{ height: 6, backgroundColor: colors.tertiary, borderRadius: 3, overflow: 'hidden' }}>
-                                    <Box sx={{ width: `${goal.progress}%` as any, height: 6, backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 3 }} />
-                                </Box>
-                                <Text sx={{ color: colors.textSecondary, fontSize: 10, marginTop: 4, fontWeight: '700' }}>
-                                    {goal.progress}% complete
-                                </Text>
+                            <Box key={index} className="bg-phase-surface rounded-[24px] p-5 border border-phase-border shadow-sm">
+                                <VStack className="gap-3">
+                                    <Text className="text-phaseText-primary text-base font-bold leading-snug">{goal.text}</Text>
+                                    <VStack className="gap-2">
+                                        <Box className="h-2.5 bg-phase-interactive/10 rounded-full overflow-hidden">
+                                            <Box className="h-full bg-templeGold rounded-full" style={{ width: `${goal.progress}%` } as any} />
+                                        </Box>
+                                        <Text className="text-phaseText-ghost font-bold text-[10px] uppercase tracking-widest">
+                                            {goal.progress}% complete
+                                        </Text>
+                                    </VStack>
+                                </VStack>
                             </Box>
                         ))}
                     </VStack>
@@ -336,7 +323,6 @@ export function useStudentDashboardSurfaces({
             },
         ],
         [
-            colors,
             isGuest,
             isPastView,
             isDemoExperience,

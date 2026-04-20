@@ -9,20 +9,19 @@
  */
 
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
 import {
     useToast,
     Box,
     ScrollView,
     Text,
-    theme,
     VStack,
     HStack,
     Heading,
     SanctuaryToast,
     Icon,
+    Pressable
 } from '@repo/ui';
-import { Camera, ChevronRight, Check, X, Info, RotateCcw } from 'lucide-react-native';
+import { Camera, Check, X, Info, RotateCcw } from 'lucide-react-native';
 import OCRScanner from './OCRScanner';
 import type { ScannedStudent } from '@repo/scanner-kit';
 import { studentsAPI } from '@repo/core';
@@ -128,14 +127,14 @@ export default function OCRStudentImport({
                 onStudentsScanned={handleScanned}
                 onCancel={onCancel}
                 colors={{
-                    primary: theme.colors.ink,
-                    secondary: theme.colors.ink,
-                    border: theme.colors.sanctuary-border,
-                    text: theme.colors.sacredWhite,
-                    textSecondary: theme.colors.starlightGray,
-                    tertiary: theme.colors.ink,
-                    accent: theme.colors.sanctuarySaffron,
-                    success: theme.colors.sageGreen,
+                    primary: '#0F0F0F', // ink replacement
+                    secondary: '#0F0F0F',
+                    border: '#E2E2E2',
+                    text: '#FFFFFF',
+                    textSecondary: '#A3A3A3',
+                    tertiary: '#0F0F0F',
+                    accent: '#E7C67F', // templeGold replacement
+                    success: '#4ADE80', // sageGreen approx
                 }}
             />
         );
@@ -143,9 +142,9 @@ export default function OCRStudentImport({
 
     if (phase === 'importing') {
         return (
-            <VStack className="flex-1 items-center justify-center gap-6 bg-sanctuary-surface">
-                <Icon as={Camera} size="xl" className="text-sanctuarySaffron opacity-50" />
-                <Text className="text-sanctuary-text-secondary text-center font-medium">
+            <VStack className="flex-1 items-center justify-center gap-6 bg-phase-world">
+                <Icon as={Camera} size="xl" className="text-templeGold opacity-50" />
+                <Text className="text-phaseText-secondary text-center font-black">
                     Importing students...
                 </Text>
             </VStack>
@@ -156,23 +155,23 @@ export default function OCRStudentImport({
     const selectedCount = students.filter(s => s.selected).length;
 
     return (
-        <VStack className="flex-1 gap-4 bg-sanctuary-surface">
+        <VStack className="flex-1 gap-4 bg-phase-world">
             <HStack className="justify-between items-center">
-                <Heading className="text-sanctuary-text text-xl">
+                <Heading className="text-phaseText-primary text-xl font-black">
                     Review Students
                 </Heading>
-                <TouchableOpacity 
+                <Pressable 
                     onPress={() => setPhase('scan')}
-                    className="flex-row items-center gap-1 bg-sanctuarySaffron/10 px-3 py-1.5 rounded-full"
+                    className="flex-row items-center gap-1 bg-templeGold/10 px-3 py-1.5 rounded-full"
                 >
-                    <Icon as={RotateCcw} size="xs" className="text-sanctuarySaffron" />
-                    <Text className="text-sanctuarySaffron text-xs font-bold">Rescan</Text>
-                </TouchableOpacity>
+                    <Icon as={RotateCcw} size="xs" className="text-templeGold" />
+                    <Text className="text-templeGold text-xs font-black uppercase">Rescan</Text>
+                </Pressable>
             </HStack>
 
-            <HStack className="items-center gap-2 bg-sanctuary-border/5 p-3 rounded-2xl border border-sanctuary-border/10">
-                <Icon as={Info} size="xs" className="text-sanctuary-text-tertiary" />
-                <Text className="text-sanctuary-text-secondary text-xs flex-1">
+            <HStack className="items-center gap-2 bg-phase-canvas/50 p-3 rounded-2xl border border-phase-canvas">
+                <Icon as={Info} size="xs" className="text-phaseText-secondary" />
+                <Text className="text-phaseText-secondary text-[10px] font-bold flex-1">
                     Tap a student to toggle selection. Amber items have low OCR confidence.
                 </Text>
             </HStack>
@@ -180,41 +179,28 @@ export default function OCRStudentImport({
             <VStack className="flex-1">
                 <ScrollView contentContainerStyle={{ gap: 12 }}>
                 {students.map((student, index) => (
-                    <TouchableOpacity key={index} onPress={() => toggleStudent(index)} activeOpacity={0.7}>
+                    <Pressable key={index} onPress={() => toggleStudent(index)}>
                         <Box
-                            className={`p-4 rounded-[24px] border bg-sanctuary-surface-secondary shadow-sm ${!student.selected ? 'opacity-50 grayscale' : ''}`}
-                            style={{
-                                borderLeftWidth: 6,
-                                borderColor: student.selected
-                                    ? student.uncertain
-                                        ? '#f59e0b'
-                                        : theme.colors.sageGreen
-                                    : theme.colors.sanctuary-border,
-                                borderLeftColor: student.selected
-                                    ? student.uncertain
-                                        ? '#f59e0b'
-                                        : theme.colors.sageGreen
-                                    : theme.colors.sanctuary-border,
-                            }}
+                            className={`p-4 rounded-generous border bg-phase-surface shadow-sm ${!student.selected ? 'opacity-50 grayscale' : ''} ${student.selected ? (student.uncertain ? 'border-l-4 border-l-amberGlow' : 'border-l-4 border-l-sageGreen') : 'border-phase-canvas'}`}
                         >
                             <HStack className="justify-between items-center">
                                 <VStack className="gap-1 flex-1">
-                                    <Text className="text-sanctuary-text font-bold text-lg">
+                                    <Text className="text-phaseText-primary font-black text-lg">
                                         {student.name}
                                     </Text>
-                                    <Text className="text-sanctuary-text-secondary text-sm">
+                                    <Text className="text-phaseText-secondary text-sm font-medium">
                                         Index: {student.index_number}
                                     </Text>
                                     {student.uncertain && student.selected && (
                                         <HStack className="items-center gap-1 mt-1">
-                                            <Icon as={Info} size="xs" className="text-amber-500" />
-                                            <Text className="text-amber-500 text-xs font-medium">
+                                            <Icon as={Info} size="xs" className="text-amberGlow" />
+                                            <Text className="text-amberGlow text-xs font-black">
                                                 Low confidence — verify
                                             </Text>
                                         </HStack>
                                     )}
                                 </VStack>
-                                <Box className={`w-8 h-8 rounded-full items-center justify-center ${student.selected ? (student.uncertain ? 'bg-amber-500' : 'bg-green-500') : 'bg-sanctuary-border/20'}`}>
+                                <Box className={`w-8 h-8 rounded-full items-center justify-center ${student.selected ? (student.uncertain ? 'bg-amberGlow' : 'bg-sageGreen') : 'bg-phase-canvas'}`}>
                                     <Icon 
                                         as={student.selected ? (student.uncertain ? Info : Check) : X} 
                                         size="xs" 
@@ -223,27 +209,27 @@ export default function OCRStudentImport({
                                 </Box>
                             </HStack>
                         </Box>
-                    </TouchableOpacity>
+                    </Pressable>
                 ))}
                 </ScrollView>
             </VStack>
 
             <HStack className="gap-4 pt-2">
-                <TouchableOpacity
+                <Pressable
                     onPress={onCancel}
-                    className="flex-1 h-14 rounded-[24px] border border-sanctuary-border items-center justify-center bg-sanctuary-surface-secondary active:bg-sanctuary-border/10"
+                    className="flex-1 h-16 rounded-full border border-phase-canvas items-center justify-center bg-phase-surface"
                 >
-                    <Text className="text-sanctuary-text font-bold">Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                    <Text className="text-phaseText-primary font-black">Cancel</Text>
+                </Pressable>
+                <Pressable
                     onPress={handleConfirm}
                     disabled={selectedCount === 0}
-                    className={`flex-[2] h-14 rounded-[24px] items-center justify-center shadow-lg ${selectedCount > 0 ? 'bg-sanctuarySaffron shadow-sanctuarySaffron/20 active:opacity-90' : 'bg-sanctuary-border opacity-50'}`}
+                    className={`flex-[2] h-16 rounded-full items-center justify-center shadow-lg ${selectedCount > 0 ? 'bg-templeGold shadow-templeGold/20 active:opacity-90' : 'bg-phase-canvas opacity-50'}`}
                 >
-                    <Text className="text-sanctuary-ink font-bold">
-                        Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
+                    <Text className="text-black font-black uppercase tracking-wider">
+                        Import {selectedCount} Member{selectedCount !== 1 ? 's' : ''}
                     </Text>
-                </TouchableOpacity>
+                </Pressable>
             </HStack>
         </VStack>
     );

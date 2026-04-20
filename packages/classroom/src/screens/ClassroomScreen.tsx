@@ -1,11 +1,3 @@
-/**
- * ClassroomScreen
- *
- * Capability-composed workspace shell for the classroom lane.
- * This keeps actor composition flexible so mixed-role users can
- * see multiple relevant surfaces without hardcoding a single winner role.
- */
-
 import React, { useEffect, useState } from 'react';
 import {
     useStore,
@@ -15,7 +7,6 @@ import {
 } from '@repo/core';
 import {
     Box,
-    Theme,
     SkeletonCard,
     GlobalHeader,
     ScreenWrapper,
@@ -100,7 +91,7 @@ export default function ClassroomScreen() {
         if (loading && !classroomData) {
             return (
                 <ScreenWrapper scroll={false} noTopInset={true}>
-                    <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
+                    <VStack className="gap-4 p-4">
                         <SkeletonCard height={60} />
                         <SkeletonCard height={200} />
                         <SkeletonCard height={120} />
@@ -111,9 +102,9 @@ export default function ClassroomScreen() {
 
         if (classroomData && arrangedWorkspaceSurfaces.length > 0) {
             return (
-                <Box sx={{ flex: 1 }}>
+                <Box className="flex-1">
                     <ScreenWrapper scroll={false} noTopInset={true}>
-                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
+                        <Box className="flex-1 p-4">
                             <ClassroomWorkspaceCanvas
                                 layout={layout}
                                 surfaces={arrangedWorkspaceSurfaces}
@@ -158,7 +149,7 @@ export default function ClassroomScreen() {
                 subject="ClassroomList"
                 fallback={
                     <ScreenWrapper scroll={false} noTopInset={true}>
-                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
+                        <Box className="flex-1 p-4 gap-6">
                             <GlobalHeader title={t('classroom.welcome') || 'Welcome to Sanctuary'} subtitle={undefined} />
                             <PositiveInvitation
                                 type="guest"
@@ -172,7 +163,7 @@ export default function ClassroomScreen() {
                 }
             >
                 <ScreenWrapper scroll={false} noTopInset={true}>
-                    <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
+                    <Box className="flex-1 p-4 gap-6">
                         <GlobalHeader title={t('classroom.journeyTitle') || 'Learning Journey'} subtitle={t('classroom.mySanctuary') || 'My Sanctuary'} />
                         <ClassroomList
                             refreshTrigger={refreshTrigger}

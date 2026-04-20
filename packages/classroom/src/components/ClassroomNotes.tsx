@@ -21,8 +21,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-    FlatList,
-    KeyboardAvoidingView,
     Platform,
 } from 'react-native';
 import {
@@ -37,6 +35,8 @@ import {
     PositiveInvitation,
     useLotusToast,
     hapticLight,
+    FlatList,
+    KeyboardAvoidingView,
 } from '@repo/ui';
 import {
     NotebookPen,
@@ -255,7 +255,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         return (
             <Box
                 key={note.id}
-                className={`mb-2 p-4 rounded-xl border border-outline-200 border-l-[3px] ${note.is_pinned ? 'bg-background-100' : 'bg-background-50'}`}
+                className={`mb-2 p-4 rounded-xl border border-sanctuary-border border-l-[3px] ${note.is_pinned ? 'bg-sanctuary-surface-secondary' : 'bg-sanctuary-surface'}`}
                 style={{ borderLeftColor: meta.color }}
             >
                 <VStack className="gap-1">
@@ -268,12 +268,12 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             >
                                 {meta.label}
                             </Text>
-                            {isClassVisible && <Globe size={12} className="text-typography-400" />}
-                            {!isClassVisible && <Lock size={12} className="text-typography-400" />}
+                             {isClassVisible && <Globe size={12} className="text-sanctuary-text-tertiary" />}
+                            {!isClassVisible && <Lock size={12} className="text-sanctuary-text-tertiary" />}
                         </HStack>
 
                         <HStack className="gap-2.5 items-center">
-                            <Text className="text-[11px] text-typography-400">{time}</Text>
+                            <Text className="text-[11px] text-sanctuary-text-tertiary">{time}</Text>
                             {isTeacher && (
                                 <HStack className="gap-2">
                                     <Pressable onPress={() => handleTogglePin(note)} hitSlop={8}>
@@ -299,14 +299,14 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                         </HStack>
                     </HStack>
 
-                    <Text
-                        className="text-sm text-typography-900 leading-5"
+                     <Text
+                        className="text-sm text-sanctuary-text leading-5"
                     >
                         {note.content}
                     </Text>
 
                     {isClassVisible && note.author && (
-                        <Text className="text-[11px] text-typography-400 mt-1">
+                         <Text className="text-[11px] text-sanctuary-text-tertiary mt-1">
                             — {note.author.full_name}
                         </Text>
                     )}
@@ -317,8 +317,8 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
 
     const renderGroup = ({ item: group }: { item: NoteGroup }) => (
         <VStack className="mb-4">
-            <Text
-                className="text-[10px] font-bold text-typography-400 uppercase tracking-[1px] mb-2 px-6"
+             <Text
+                className="text-[10px] font-bold text-sanctuary-text-tertiary uppercase tracking-[1px] mb-2 px-6"
             >
                 {group.label}
             </Text>
@@ -367,9 +367,9 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     />
                 )}
 
-                {composing ? (
+                 {composing ? (
                     <Box
-                        className="bg-background-50 border-t border-outline-200 p-4"
+                        className="bg-sanctuary-surface border-t border-sanctuary-border p-4"
                     >
                         <VStack className="gap-2">
                             {isTeacher && (
@@ -402,7 +402,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                 </Pressable>
                             )}
 
-                            <Input className="min-h-[80px] max-h-[160px] rounded-xl border border-outline-200 mt-2 bg-background-100">
+                             <Input className="min-h-[80px] max-h-[160px] rounded-xl border border-sanctuary-border mt-2 bg-sanctuary-surface-secondary">
                                 <InputField
                                     value={draft}
                                     onChangeText={setDraft}
@@ -433,7 +433,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                     }}
                                     className="px-4 py-2"
                                 >
-                                    <Text className="text-sm text-typography-500 font-semibold">
+                                     <Text className="text-sm text-sanctuary-text-tertiary font-semibold">
                                         Cancel
                                     </Text>
                                 </Pressable>
@@ -447,9 +447,9 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                     {saving ? (
                                         <Spinner color="white" />
                                     ) : (
-                                        <Text
+                                         <Text
                                             className={`text-sm font-bold ${
-                                                draft.trim() ? 'text-white' : 'text-typography-400'
+                                                draft.trim() ? 'text-white' : 'text-sanctuary-text-tertiary'
                                             }`}
                                         >
                                             Save
@@ -496,14 +496,14 @@ function ScrollableTypeSelector({
                         key={type}
                         onPress={() => onSelect(type)}
                         className={`flex-row items-center px-2.5 py-1.5 rounded-full border ${
-                            isActive ? '' : 'bg-background-100 border-outline-200'
+                             isActive ? '' : 'bg-sanctuary-surface-secondary border-sanctuary-border'
                         }`}
                         style={isActive ? { backgroundColor: meta.color, borderColor: meta.color } : {}}
                     >
                         <Icon size={12} color={isActive ? 'white' : '#667085'} />
                         <Text
                             className={`text-[11px] ml-1 ${
-                                isActive ? 'text-white font-bold' : 'text-typography-500'
+                                isActive ? 'text-white font-bold' : 'text-sanctuary-text-tertiary'
                             }`}
                         >
                             {meta.label}

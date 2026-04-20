@@ -5,18 +5,17 @@ import {
     Box, 
     Text, 
     Heading, 
-    Button, 
-    ButtonText, 
     Icon,
-    useThemedColors,
-    Theme
+    Pressable
 } from '@repo/ui';
 import { 
     Plus, 
     Search, 
     BookOpen, 
     Users,
-    Zap
+    Zap,
+    School,
+    ArrowRightCircle
 } from 'lucide-react-native';
 
 interface TeacherOnboardingViewProps {
@@ -32,109 +31,91 @@ export default function TeacherOnboardingViewWeb({
     onJoinSchool,
     isGuest 
 }: TeacherOnboardingViewProps) {
-    const colors = useThemedColors();
     
     return (
-        <VStack sx={{ 
-            flex: 1, 
-            backgroundColor: colors.backgroundDark, 
-            padding: 40,
-            maxWidth: 1200,
-            alignSelf: 'center',
-            width: '100%',
-            gap: 48
-        }}>
+        <VStack className="flex-1 bg-phase-canvas p-10 max-w-[1200px] self-center w-full gap-12">
             {/* Header */}
-            <VStack sx={{ gap: 8, alignItems: 'center' }}>
-                <Heading size="2xl" sx={{ color: colors.text, textAlign: 'center' }}>Empower Your Teaching Sanctuary</Heading>
-                <Text sx={{ color: colors.textSecondary, maxWidth: 600, textAlign: 'center' }}>
+            <VStack className="gap-2 items-center">
+                <Box className="p-4 rounded-generous bg-templeGold/10 mb-3">
+                    <Icon as={School} className="text-templeGold" size="xl" />
+                </Box>
+                <Heading className="text-4xl font-black text-phaseText-primary text-center">
+                    Empower Your Teaching Sanctuary
+                </Heading>
+                <Text className="text-phaseText-secondary text-lg max-w-[600px] text-center leading-relaxed font-medium">
                     Gurudevi provides teachers with AI-powered tools to manage classrooms, track student growth, and create engaging learning experiences.
                 </Text>
             </VStack>
 
-            <HStack sx={{ gap: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <HStack className="gap-8 flex-wrap justify-center">
                 {/* Interactive Lesson Planner Promotion */}
-                <Box sx={{ 
-                    flex: 1, 
-                    minWidth: 350,
-                    padding: 32, 
-                    backgroundColor: 'white', 
-                    borderRadius: 32, 
-                    borderWidth: 1, 
-                    borderColor: colors.border,
-                    ...Theme.shadows.lg,
-                }}>
-                    <VStack sx={{ gap: 20 }}>
-                        <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                            <Box sx={{ padding: 12, backgroundColor: Theme.colors.gurudeviBlue + '22', borderRadius: 16 }}>
-                                <Icon as={BookOpen} color={Theme.colors.gurudeviBlue} size={24} />
+                <Box className="flex-1 min-w-[350px] p-8 bg-phase-surface rounded-generous border border-phase-canvas shadow-xl">
+                    <VStack className="gap-6">
+                        <HStack className="gap-4 items-center">
+                            <Box className="p-3 bg-templeGold/10 rounded-comfortable">
+                                <Icon as={BookOpen} className="text-templeGold" size="lg" />
                             </Box>
-                            <Heading size="md" sx={{ color: colors.text }}>Intelligent Lesson Planning</Heading>
+                            <Heading className="text-xl font-black text-phaseText-primary">Intelligent Lesson Planning</Heading>
                         </HStack>
                         
-                        <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                        <Text className="text-phaseText-secondary text-sm font-medium leading-relaxed">
                             Draft comprehensive lesson plans in seconds with AI assistance. 
                             Align your curriculum with national standards and generate interactive resources for your students.
                         </Text>
                         
-                        <Box sx={{ 
-                            padding: 16, 
-                            backgroundColor: colors.tertiary, 
-                            borderRadius: 16,
-                            borderStyle: 'dashed',
-                            borderWidth: 1,
-                            borderColor: colors.border
-                        }}>
-                            <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                <Icon as={Zap} color={Theme.colors.amberGlow} size={16} />
-                                <Text sx={{ fontSize: 13, color: colors.textSecondary, fontWeight: '500' }}>
-                                    AI-powered curriculum alignment incoming...
-                                </Text>
-                            </HStack>
+                        <Box className="p-4 bg-phase-canvas/50 rounded-comfortable border border-dashed border-phase-canvas flex-row items-center gap-3">
+                            <Icon as={Zap} className="text-templeGold" size="xs" />
+                            <Text className="text-xs text-phaseText-secondary font-black uppercase tracking-widest">
+                                AI-powered curriculum alignment incoming
+                            </Text>
                         </Box>
                     </VStack>
                 </Box>
 
                 {/* Core Onboarding Options */}
-                <VStack sx={{ flex: 1, minWidth: 350, gap: 16 }}>
-                    <Box sx={{ 
-                        padding: 24, 
-                        backgroundColor: colors.tertiary, 
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}>
-                        <VStack sx={{ gap: 16 }}>
-                            <Heading size="sm" sx={{ color: colors.text }}>Get Started</Heading>
-                            <VStack sx={{ gap: 12 }}>
-                                <Button action="primary" onPress={onCreateClassroom} sx={{ borderRadius: 12, justifyContent: 'flex-start', backgroundColor: Theme.colors.gurudeviBlue }}>
-                                    <Icon as={Plus} color="white" sx={{ marginRight: 12 }} />
-                                    <ButtonText sx={{ color: 'white' }}>Create New Classroom</ButtonText>
-                                </Button>
-                                <Button variant="outline" onPress={onJoinSchool} sx={{ borderRadius: 12, justifyContent: 'flex-start', borderColor: colors.border }}>
-                                    <Icon as={Search} sx={{ marginRight: 12 }} />
-                                    <ButtonText sx={{ color: colors.text }}>Join Existing Sanctuary</ButtonText>
-                                </Button>
-                                <Button variant="link" onPress={onTryDemo}>
-                                    <ButtonText sx={{ color: Theme.colors.gurudeviBlue }}>Explore Teacher Sandbox</ButtonText>
-                                </Button>
+                <VStack className="flex-1 min-w-[350px] gap-6">
+                    <Box className="p-8 bg-phase-surface rounded-generous border border-phase-canvas shadow-sm">
+                        <VStack className="gap-6">
+                            <Heading className="text-lg font-black text-phaseText-primary">Get Started</Heading>
+                            <VStack className="gap-4">
+                                <Pressable 
+                                    onPress={onCreateClassroom} 
+                                    className="flex-row items-center p-4 bg-templeGold rounded-comfortable border border-templeGold active:opacity-90 transition-opacity"
+                                >
+                                    <Icon as={Plus} className="mr-4 text-white" size="sm" />
+                                    <Text className="text-white font-black">Create New Classroom</Text>
+                                </Pressable>
+                                
+                                <Pressable 
+                                    onPress={onJoinSchool} 
+                                    className="flex-row items-center p-4 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas active:bg-phase-canvas transition-colors"
+                                >
+                                    <Icon as={Search} className="mr-4 text-phaseText-primary" size="sm" />
+                                    <Text className="text-phaseText-primary font-black">Join Existing Sanctuary</Text>
+                                </Pressable>
+
+                                <Pressable 
+                                    onPress={onTryDemo}
+                                    className="items-center p-4 active:opacity-60"
+                                >
+                                    <HStack className="items-center gap-2">
+                                        <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
+                                            Explore Teacher Sandbox
+                                        </Text>
+                                        <ArrowRightCircle size={16} color="#D4843A" />
+                                    </HStack>
+                                </Pressable>
                             </VStack>
                         </VStack>
                     </Box>
 
-                    <Box sx={{ 
-                        padding: 24, 
-                        backgroundColor: colors.tertiary, 
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                    }}>
-                        <VStack sx={{ gap: 12 }}>
-                            <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                <Icon as={Users} color={colors.textSecondary} size={18} />
-                                <Heading size="xs" sx={{ color: colors.text }}>Community & Collaboration</Heading>
+                    <Box className="p-6 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas">
+                        <VStack className="gap-4">
+                            <HStack className="gap-3 items-center">
+                                <Icon as={Users} className="text-phaseText-secondary" size={18} />
+                                <Heading className="text-sm font-black text-phaseText-primary uppercase tracking-widest">Community & Collaboration</Heading>
                             </HStack>
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                            <Text className="text-[12px] text-phaseText-secondary font-medium leading-normal">
                                 Connect with other educators in your sanctuary, share resources, and collaborate on institutional growth.
                             </Text>
                         </VStack>

@@ -16,6 +16,7 @@ export interface School {
     student_type?: string;
     religious_affiliation?: string;
     student_count?: number;
+    avatar_url?: string | null;
     created_at?: string;
 }
 

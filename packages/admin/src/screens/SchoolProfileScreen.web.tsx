@@ -17,7 +17,7 @@ import {
     ContactLinktree,
     EditableItem,
     useSchoolProfile
-} from '../components/profile';
+} from '@repo/profile';
 import { 
     ArrowLeft, 
     School as SchoolIcon,
@@ -32,7 +32,7 @@ import {
 export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
     const navigation = useNavigation();
-    const { school, stats, isLoading, updateField, isEditable } = useSchoolProfile(schoolId);
+    const { school, stats, loading: isLoading, updateField, isEditable } = useSchoolProfile(schoolId);
 
     if (isLoading) return <Box className="p-10"><SkeletonCard /></Box>;
     if (!school) return <Box className="p-10 items-center"><Text className="font-black opacity-50 uppercase tracking-widest">School not found</Text></Box>;
@@ -58,10 +58,14 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                         <Box className="bg-phase-surface rounded-[40px] border border-phase-border p-10 shadow-xl overflow-hidden relative">
                             <HStack className="gap-10 items-start">
                                 <AvatarDisplay 
-                                    name={school.name}
-                                    uri={school.logo_url || undefined}
+                                    userId={school.id}
+                                    fullName={school.name}
+                                    avatarUrl={school.avatar_url || undefined}
                                     editable={isEditable}
-                                    onSave={(uri) => updateField('logo_url', uri)}
+                                    onAvatarSelected={async (uri: string) => {
+                                        await updateField('avatar_url', uri);
+                                    }}
+                                    peekType="school"
                                 />
                                 
                                 <VStack className="flex-1 gap-6">
@@ -71,7 +75,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
                                         value={school.name}
                                         field="name"
                                         placeholder="Enter school name"
-                                        onSave={(field: string, val: string) => updateField(field, val)}
+                                        onSave={(field, val) => updateField(field as any, val)}
                                         disabled={!isEditable}
                                     />
                                     

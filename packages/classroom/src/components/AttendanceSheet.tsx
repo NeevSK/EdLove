@@ -2,10 +2,6 @@
  * AttendanceSheet Component
  * 
  * Fast, swipe-based attendance marking interface
- * - Swipe Right: Present (Green Check)
- * - Swipe Left: Absent (Red X)
- * - Long Press: Late (Yellow Clock)
- * - Default: All students marked as Present
  */
 
 import React, { useEffect } from 'react';
@@ -30,33 +26,26 @@ import { useAttendance } from '../hooks/useAttendance';
 // Types
 import { AttendanceStatus, StudentAttendance } from '@repo/core';
 
-interface AttendanceSheetProps {
-    classroomId: string;
-    date?: string;
-    initialStudents?: StudentAttendance[];
-    onAttendanceChange?: (attendance: StudentAttendance[]) => void;
-}
-
 // Status configuration with semantic mappings
 const STATUS_CONFIG = {
     present: {
-        colorClass: 'bg-sanctuary-success',
-        textClass: 'text-sanctuary-success',
-        borderClass: 'border-sanctuary-success',
+        colorClass: 'bg-sageGreen',
+        textClass: 'text-sageGreen',
+        borderClass: 'border-sageGreen',
         icon: Check,
         label: 'attendance.status.present',
     },
     absent: {
-        colorClass: 'bg-sanctuary-error',
-        textClass: 'text-sanctuary-error',
-        borderClass: 'border-sanctuary-error',
+        colorClass: 'bg-emberRed',
+        textClass: 'text-emberRed',
+        borderClass: 'border-emberRed',
         icon: X,
         label: 'attendance.status.absent',
     },
     late: {
-        colorClass: 'bg-sanctuary-warning',
-        textClass: 'text-sanctuary-warning',
-        borderClass: 'border-sanctuary-warning',
+        colorClass: 'bg-amberGlow',
+        textClass: 'text-amberGlow',
+        borderClass: 'border-amberGlow',
         icon: Clock,
         label: 'attendance.status.late',
     },
@@ -112,16 +101,16 @@ export default function AttendanceSheet({
             <Swipeable
                 renderRightActions={() => (
                     <Box
-                        className={`justify-center items-center w-20 rounded-2xl my-1.5 ml-2 ${STATUS_CONFIG.present.colorClass}`}
+                        className={`justify-center items-center w-20 rounded-comfortable my-1.5 ml-2 ${STATUS_CONFIG.present.colorClass}`}
                     >
-                        <Icon as={Check} className="text-white" size={24} />
+                        <Icon as={Check} className="text-sacredWhite" size={24} />
                     </Box>
                 )}
                 renderLeftActions={() => (
                     <Box
-                        className={`justify-center items-center w-20 rounded-2xl my-1.5 mr-2 ${STATUS_CONFIG.absent.colorClass}`}
+                        className={`justify-center items-center w-20 rounded-comfortable my-1.5 mr-2 ${STATUS_CONFIG.absent.colorClass}`}
                     >
-                        <Icon as={X} className="text-white" size={24} />
+                        <Icon as={X} className="text-sacredWhite" size={24} />
                     </Box>
                 )}
                 onSwipeableRightOpen={() => handleUpdateStatus(item.id, 'present')}
@@ -133,24 +122,24 @@ export default function AttendanceSheet({
                     delayLongPress={500}
                 >
                     <Box
-                        className={`bg-sanctuary-surface-secondary rounded-2xl p-4 my-1.5 border-l-4 ${config.borderClass} border border-sanctuary-border/30`}
+                        className={`bg-phase-surface rounded-comfortable p-4 my-1.5 border-l-4 ${config.borderClass} border border-phase-canvas/30`}
                     >
                         <HStack className="items-center justify-between gap-3">
                             <HStack className="items-center flex-1 gap-4">
                                 {item.roll_number && (
                                     <Box
-                                        className="w-10 h-10 rounded-full bg-sanctuary-surface-tertiary justify-center items-center"
+                                        className="w-10 h-10 rounded-full bg-phase-canvas justify-center items-center"
                                     >
-                                        <Text className="text-sanctuary-text-secondary font-bold text-sm">
+                                        <Text className="text-phaseText-secondary font-bold text-sm">
                                             {item.roll_number}
                                         </Text>
                                     </Box>
                                 )}
                                 <VStack className="flex-1">
-                                    <Text className="text-sanctuary-text text-base font-bold">
+                                    <Text className="text-phaseText-primary text-base font-bold">
                                         {item.full_name}
                                     </Text>
-                                    <Text className="text-sanctuary-text-tertiary text-xs">
+                                    <Text className="text-phaseText-secondary text-xs">
                                         {t('attendance.sheet.swipeHint') || 'Swipe to mark status'}
                                     </Text>
                                 </VStack>
@@ -158,7 +147,7 @@ export default function AttendanceSheet({
                             <Box
                                 className={`w-10 h-10 rounded-full justify-center items-center ${config.colorClass}`}
                             >
-                                <Icon as={config.icon} className="text-white" size={20} />
+                                <Icon as={config.icon} className="text-sacredWhite" size={20} />
                             </Box>
                         </HStack>
                     </Box>
@@ -169,46 +158,46 @@ export default function AttendanceSheet({
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <Box className="flex-1 bg-sanctuary-surface">
+            <Box className="flex-1 bg-phase-world">
                 <VStack className="flex-1 p-4 gap-6">
                     {/* Header with stats */}
                     <Box>
-                        <Heading className="text-sanctuary-text text-xl mb-1 mt-2">
+                        <Heading className="text-phaseText-primary text-xl mb-1 mt-2">
                             {t('attendance.sheet.title') || 'Attendance Register'}
                         </Heading>
-                        <Text className="text-sanctuary-text-tertiary text-sm mb-6">
+                        <Text className="text-phaseText-secondary text-sm mb-6">
                             {date}
                         </Text>
 
                         {/* Stats Row */}
                         <HStack className="gap-3">
                             <Box
-                                className="flex-1 bg-sanctuary-surface-secondary p-3 rounded-2xl border-l-[3px] border-l-sanctuary-success border border-sanctuary-border/50"
+                                className="flex-1 bg-phase-surface p-3 rounded-comfortable border-l-[3px] border-l-sageGreen border border-phase-canvas/50"
                             >
-                                <Text className="text-sanctuary-text-tertiary text-[10px] uppercase font-bold tracking-wider mb-1">
+                                <Text className="text-phaseText-secondary text-[10px] uppercase font-bold tracking-wider mb-1">
                                     {t('attendance.stats.present') || 'Present'}
                                 </Text>
-                                <Text className="text-sanctuary-text text-2xl font-bold">
+                                <Text className="text-phaseText-primary text-2xl font-bold">
                                     {stats.present}
                                 </Text>
                             </Box>
                             <Box
-                                className="flex-1 bg-sanctuary-surface-secondary p-3 rounded-2xl border-l-[3px] border-l-sanctuary-error border border-sanctuary-border/50"
+                                className="flex-1 bg-phase-surface p-3 rounded-comfortable border-l-[3px] border-l-emberRed border border-phase-canvas/50"
                             >
-                                <Text className="text-sanctuary-text-tertiary text-[10px] uppercase font-bold tracking-wider mb-1">
+                                <Text className="text-phaseText-secondary text-[10px] uppercase font-bold tracking-wider mb-1">
                                     {t('attendance.stats.absent') || 'Absent'}
                                 </Text>
-                                <Text className="text-sanctuary-text text-2xl font-bold">
+                                <Text className="text-phaseText-primary text-2xl font-bold">
                                     {stats.absent}
                                 </Text>
                             </Box>
                             <Box
-                                className="flex-1 bg-sanctuary-surface-secondary p-3 rounded-2xl border-l-[3px] border-l-sanctuary-warning border border-sanctuary-border/50"
+                                className="flex-1 bg-phase-surface p-3 rounded-comfortable border-l-[3px] border-l-amberGlow border border-phase-canvas/50"
                             >
-                                <Text className="text-sanctuary-text-tertiary text-[10px] uppercase font-bold tracking-wider mb-1">
+                                <Text className="text-phaseText-secondary text-[10px] uppercase font-bold tracking-wider mb-1">
                                     {t('attendance.stats.late') || 'Late'}
                                 </Text>
-                                <Text className="text-sanctuary-text text-2xl font-bold">
+                                <Text className="text-phaseText-primary text-2xl font-bold">
                                     {stats.late}
                                 </Text>
                             </Box>
@@ -218,15 +207,14 @@ export default function AttendanceSheet({
                     {/* Search Bar */}
                     <Box>
                         <Input
-                            className="bg-sanctuary-surface-secondary border-sanctuary-border/50 rounded-2xl h-14 flex-row items-center px-4"
+                            className="bg-phase-surface border-phase-canvas/50 rounded-comfortable h-14 flex-row items-center px-4"
                         >
-                            <Icon as={Search} className="text-sanctuary-text-tertiary mr-2" size={20} />
+                            <Icon as={Search} className="text-phaseText-secondary mr-2" size={20} />
                             <InputField
                                 placeholder={t('common.searchPlaceholder') || 'Search students...'}
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
-                                className="flex-1 text-sanctuary-text text-base"
-                                placeholderTextColor="#968E80"
+                                className="flex-1 text-phaseText-primary text-base"
                             />
                         </Input>
                     </Box>
@@ -234,9 +222,9 @@ export default function AttendanceSheet({
                     {/* Student List */}
                     <Box className="flex-1">
                         {filteredStudents.length === 0 ? (
-                            <Box className="flex-1 justify-center items-center py-20 bg-sanctuary-surface-secondary/50 rounded-[32px] border border-dashed border-sanctuary-border">
-                                <Text className="text-sanctuary-text-tertiary text-center px-10">
-                                    {searchQuery ? (t('common.noResults') || 'No students match your search.') : (t('attendance.sheet.noStudents') || 'No students currently enrolled in this Sanctuary.')}
+                            <Box className="flex-1 justify-center items-center py-20 bg-phase-surface/50 rounded-generous border border-dashed border-phase-canvas">
+                                <Text className="text-phaseText-secondary text-center px-10">
+                                    {searchQuery ? (t('common.noResults') || 'No students match your search.') : (t('attendance.sheet.noStudents') || 'No students currently enrolled.')}
                                 </Text>
                             </Box>
                         ) : (
@@ -252,33 +240,33 @@ export default function AttendanceSheet({
 
                     {/* Legend */}
                     <Box
-                        className="bg-sanctuary-surface-secondary p-4 rounded-[24px] border border-sanctuary-border"
+                        className="bg-phase-surface p-4 rounded-generous border border-phase-canvas"
                     >
-                        <Text className="text-sanctuary-text-tertiary text-[10px] uppercase font-bold tracking-wider mb-3">
+                        <Text className="text-phaseText-secondary text-[10px] uppercase font-black tracking-wider mb-3">
                             {t('common.quickActions') || 'Interaction Protocol'}
                         </Text>
                         <VStack className="gap-3">
                             <HStack className="items-center gap-4">
-                                <Box className="w-6 h-6 rounded-full bg-sanctuary-success/10 items-center justify-center">
-                                    <Icon as={Check} size={12} className="text-sanctuary-success" />
+                                <Box className="w-6 h-6 rounded-full bg-sageGreen/10 items-center justify-center">
+                                    <Icon as={Check} size={12} className="text-sageGreen" />
                                 </Box>
-                                <Text className="text-sanctuary-text-secondary text-xs font-medium">
+                                <Text className="text-phaseText-secondary text-xs font-medium">
                                     {t('attendance.sheet.swipeHintRight') || 'Swipe Right to mark as Present'}
                                 </Text>
                             </HStack>
                             <HStack className="items-center gap-4">
-                                <Box className="w-6 h-6 rounded-full bg-sanctuary-error/10 items-center justify-center">
-                                    <Icon as={X} size={12} className="text-sanctuary-error" />
+                                <Box className="w-6 h-6 rounded-full bg-emberRed/10 items-center justify-center">
+                                    <Icon as={X} size={12} className="text-emberRed" />
                                 </Box>
-                                <Text className="text-sanctuary-text-secondary text-xs font-medium">
+                                <Text className="text-phaseText-secondary text-xs font-medium">
                                     {t('attendance.sheet.swipeHintLeft') || 'Swipe Left to mark as Absent'}
                                 </Text>
                             </HStack>
                             <HStack className="items-center gap-4">
-                                <Box className="w-6 h-6 rounded-full bg-sanctuary-warning/10 items-center justify-center">
-                                    <Icon as={Clock} size={12} className="text-sanctuary-warning" />
+                                <Box className="w-6 h-6 rounded-full bg-amberGlow/10 items-center justify-center">
+                                    <Icon as={Clock} size={12} className="text-amberGlow" />
                                 </Box>
-                                <Text className="text-sanctuary-text-secondary text-xs font-medium">
+                                <Text className="text-phaseText-secondary text-xs font-medium">
                                     {t('attendance.sheet.swipeHintLong') || 'Long Press to mark as Late'}
                                 </Text>
                             </HStack>
@@ -288,5 +276,12 @@ export default function AttendanceSheet({
             </Box>
         </GestureHandlerRootView>
     );
+}
+
+interface AttendanceSheetProps {
+    classroomId: string;
+    date?: string;
+    initialStudents?: StudentAttendance[];
+    onAttendanceChange?: (attendance: StudentAttendance[]) => void;
 }
 
