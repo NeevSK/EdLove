@@ -34,12 +34,23 @@ export interface FeatureFlags {
   isStudentProgressWorkspaceEnabled: boolean;
   isStudentRewardsWorkspaceEnabled: boolean;
 
+  // Workspace & Infrastructure Flags
+  isDevelopingWorkspace: boolean;
+  isSelfWorkspaceEnabled: boolean;
+  isWorkforceEnabled: boolean;
+  isDevelopingWorkforce: boolean;
+  isFormBuilderEnabled: boolean;
+  isDevelopingFormBuilder: boolean;
+  isGraphicsEngineEnabled: boolean;
+
   // Community & Social Flags
+  isAnalyticsEnabled: boolean;
   isCommunityEnabled: boolean;
   isMessagingEnabled: boolean;
   isSocialShieldEnabled: boolean;
 
   // Development / In-Progress Flags (Strictly off in Prod unless developer role)
+  isDevelopingAI: boolean;
   isDevelopingAnalyticsDashboard: boolean;
   isDevelopingVoiceNavigation: boolean;
 
@@ -88,9 +99,18 @@ export const resolveFeatureFlags = (
     isStudentGradesWorkspaceEnabled: true,
     isStudentProgressWorkspaceEnabled: true,
     isStudentRewardsWorkspaceEnabled: false,
+    isDevelopingWorkspace: false,
+    isSelfWorkspaceEnabled: true,
+    isWorkforceEnabled: true,
+    isDevelopingWorkforce: false,
+    isFormBuilderEnabled: true,
+    isDevelopingFormBuilder: false,
+    isGraphicsEngineEnabled: true,
+    isAnalyticsEnabled: true,
     isCommunityEnabled: true,
     isMessagingEnabled: true,
     isSocialShieldEnabled: true,
+    isDevelopingAI: false,
     isDevelopingAnalyticsDashboard: false,
     isDevelopingVoiceNavigation: false,
     isUnderMaintenance: false};
@@ -182,6 +202,10 @@ export const resolveFeatureFlags = (
   if (context.authority === 'developer') {
     flags.isDevelopingAnalyticsDashboard = true;
     flags.isDevelopingVoiceNavigation = true;
+    flags.isDevelopingWorkspace = true;
+    flags.isDevelopingAI = true;
+    flags.isDevelopingFormBuilder = true;
+    flags.isDevelopingWorkforce = true;
   }
 
   if (context.authority === 'guardian' || context.authority === 'parent') {

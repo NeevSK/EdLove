@@ -12,13 +12,13 @@ import {
     HStack,
     VStack,
     Text,
-    useTheme,
     Pressable,
     Icon,
-    Theme,
-    hapticLight
+    hapticLight,
+    Spinner,
+    Heading
 } from '@repo/ui';
-import { Check, X, AlertCircle } from 'lucide-react-native';
+import { Check, X, AlertCircle, Clock, FileText } from 'lucide-react-native';
 import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
 
 interface LeaveApprovalSectionProps {
@@ -72,35 +72,36 @@ export default function LeaveApprovalSection({
     }
 
     return (
-        <Box className="bg-phase-surface rounded-3xl border border-phase-border p-5 shadow-sm">
-            <HStack className="justify-between items-center mb-5">
-                <HStack className="items-center gap-2">
-                    <Text className="text-[17px] font-black text-phaseText-primary">
+        <Box className="bg-phase-surface rounded-[32px] border border-phase-border p-6 shadow-sm">
+            <HStack className="justify-between items-center mb-8">
+                <HStack className="items-center gap-3">
+                    <Heading className="text-[18px] font-black text-phaseText-primary tracking-tight">
                         Leave Requests
-                    </Text>
+                    </Heading>
                     {leaves.length > 0 && (
-                        <Box className="bg-phase-interactive rounded-full px-2 py-0.5">
-                            <Text className="text-[10px] font-black text-white">
-                                {leaves.length}
+                        <Box className="bg-phase-interactive/10 rounded-full px-3 py-1 border border-phase-interactive/20">
+                            <Text className="text-[10px] font-black text-phase-interactive uppercase tracking-widest">
+                                {leaves.length} Pending
                             </Text>
                         </Box>
                     )}
                 </HStack>
+                {loading && <Spinner size="small" className="text-phase-interactive" />}
             </HStack>
 
-            {loading && (
-                <VStack className="gap-3">
-                    <Box className="h-24 bg-phase-canvas border border-phase-border rounded-2xl opacity-50 overflow-hidden" />
+            {loading && !leaves.length && (
+                <VStack className="gap-4">
+                    <Box className="h-32 bg-phase-canvas border border-phase-border rounded-[24px] opacity-40" />
                 </VStack>
             )}
 
             {!loading && leaves.length === 0 && (
-                <VStack className="items-center py-8 gap-3 bg-phase-canvas rounded-2xl border border-dashed border-phase-border">
-                    <Box className="w-12 h-12 rounded-full bg-phase-success/10 items-center justify-center">
-                        <Icon as={Check} size="md" className="text-phase-success" />
+                <VStack className="items-center py-10 gap-4 bg-phase-canvas rounded-[24px] border border-dashed border-phase-border">
+                    <Box className="w-14 h-14 rounded-full bg-phase-success/10 items-center justify-center border border-phase-success/20">
+                        <Icon as={Check} size="sm" className="text-phase-success" />
                     </Box>
-                    <Text className="text-[13px] font-bold text-phaseText-muted text-center">
-                        All clear! No pending leave requests.
+                    <Text className="text-[13px] font-bold text-phaseText-muted text-center opacity-70">
+                        Institutional presence is optimized.{"\n"}No pending requests.
                     </Text>
                 </VStack>
             )}
@@ -110,53 +111,61 @@ export default function LeaveApprovalSection({
                 return (
                     <VStack
                         key={leave.id}
-                        className="py-4 border-b border-phase-border last:border-b-0 gap-4"
+                        className="pb-6 mb-6 border-b border-phase-border last:border-b-0 last:mb-0 last:pb-0 gap-5"
                     >
-                        <HStack className="justify-between items-start">
-                            <VStack className="gap-2 flex-1">
+                        <VStack className="gap-3">
+                            <HStack className="justify-between items-center">
                                 <HStack className="items-center gap-2">
-                                    <Box
-                                        className={`rounded-lg px-2 py-0.5 ${getLeaveTypeColorClass(leave.leave_type)}`}
-                                    >
-                                        <Text className="text-[10px] font-black text-white uppercase tracking-wider">
+                                    <Box className={`rounded-lg px-2 py-1 ${getLeaveTypeColorClass(leave.leave_type)}`}>
+                                        <Text className="text-[9px] font-black text-white uppercase tracking-widest">
                                             {leave.leave_type}
                                         </Text>
                                     </Box>
-                                    <Text className="text-[13px] font-black text-phaseText-primary">
+                                    <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
                                         Staff ID: {leave.user_id.substring(0, 8)}
                                     </Text>
                                 </HStack>
-                                <Text className="text-[12px] font-bold text-phaseText-muted">
-                                    {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
-                                </Text>
-                            </VStack>
-                        </HStack>
+                                <HStack className="gap-1.5 items-center">
+                                    <Icon as={Clock} size="xs" className="text-phaseText-muted/40" />
+                                    <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-tighter">
+                                        {new Date(leave.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    </Text>
+                                </HStack>
+                            </HStack>
 
-                        {leave.reason && (
-                            <Box className="bg-phase-canvas p-3 rounded-xl border border-phase-border">
-                                <Text className="text-[12px] leading-relaxed text-phaseText-secondary italic">
-                                    "{leave.reason}"
-                                </Text>
-                            </Box>
-                        )}
+                            {leave.reason && (
+                                <Box className="bg-phase-canvas p-4 rounded-[20px] border border-phase-border border-l-4 border-l-phase-interactive/30">
+                                    <HStack className="gap-3 items-start">
+                                        <Icon as={FileText} size="xs" className="text-phaseText-muted/30 mt-0.5" />
+                                        <Text className="text-[13px] leading-[20px] text-phaseText-secondary font-bold italic flex-1">
+                                            "{leave.reason}"
+                                        </Text>
+                                    </HStack>
+                                </Box>
+                            )}
+                        </VStack>
 
-                        <HStack className="gap-3">
+                        <HStack className="gap-4">
                             <Pressable
                                 onPress={() => handleDecision(leave.id, true)}
                                 disabled={isProcessing}
-                                className={`flex-1 flex-row items-center justify-center gap-2 bg-phase-interactive rounded-2xl py-3 active:scale-95 transition-all ${isProcessing ? 'opacity-50' : ''}`}
+                                className={`flex-1 flex-row items-center justify-center gap-2 bg-phase-interactive h-14 rounded-[18px] shadow-sm active:scale-95 transition-all ${isProcessing ? 'opacity-50' : ''}`}
                             >
-                                <Icon as={Check} size="xs" className="text-white" />
-                                <Text className="text-[13px] font-black text-white uppercase tracking-wider">Approve</Text>
+                                {isProcessing && processingId === leave.id ? <Spinner color="#FFFFFF" size="small" /> : (
+                                    <>
+                                        <Icon as={Check} size="xs" className="text-white" />
+                                        <Text className="text-[11px] font-black text-white uppercase tracking-widest">Authorize</Text>
+                                    </>
+                                )}
                             </Pressable>
 
                             <Pressable
                                 onPress={() => handleDecision(leave.id, false)}
                                 disabled={isProcessing}
-                                className={`flex-1 flex-row items-center justify-center gap-2 border-2 border-phase-danger rounded-2xl py-3 active:scale-95 transition-all ${isProcessing ? 'opacity-50' : ''}`}
+                                className={`flex-1 flex-row items-center justify-center gap-2 border border-phase-danger rounded-[18px] h-14 active:scale-95 transition-all ${isProcessing ? 'opacity-50' : ''}`}
                             >
                                 <Icon as={X} size="xs" className="text-phase-danger" />
-                                <Text className="text-[13px] font-black text-phase-danger uppercase tracking-wider">Reject</Text>
+                                <Text className="text-[11px] font-black text-phase-danger uppercase tracking-widest">Reject</Text>
                             </Pressable>
                         </HStack>
                     </VStack>

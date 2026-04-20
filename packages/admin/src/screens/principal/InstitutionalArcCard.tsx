@@ -6,7 +6,9 @@ import {
     HStack,
     VStack,
     Icon,
-    SanctuaryModal} from '@repo/ui';
+    SanctuaryModal,
+    hapticLight
+} from '@repo/ui';
 import { Plus, Clock, Info } from 'lucide-react-native';
 import { PRINCIPAL_FEATURE_REGISTRY } from './PrincipalFeatureRegistry';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';

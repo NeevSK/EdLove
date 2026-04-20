@@ -1,5 +1,5 @@
 import React from 'react';
-import { HStack, VStack, Text, SanctuaryCard, useTheme, Theme } from '@repo/ui';
+import { HStack, VStack, Text, Box, Icon } from '@repo/ui';
 import { Users, GraduationCap, Building } from 'lucide-react-native';
 import { type SchoolStats as ISchoolStats } from '@repo/core';
 
@@ -8,40 +8,44 @@ interface SchoolStatsProps {
 }
 
 export default function SchoolStats({ stats }: SchoolStatsProps) {
-    const { scene: colors } = useTheme();
     if (!stats) return null;
 
-    const StatItem = ({ label, value, icon: Icon, color }: any) => (
-        <SanctuaryCard style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
-            <VStack space="xs">
-                <HStack space="xs" className="items-center">
-                    <Icon size={14} color={color || colors.text.secondary} />
-                    <Text size="xs" className="text-phase-text-secondary font-bold uppercase tracking-wider">{label}</Text>
+    const StatItem = ({ label, value, icon: StatIcon, colorClass, bgClass }: any) => (
+        <Box className="flex-1 p-5 rounded-[24px] bg-phase-surface border border-phase-border shadow-sm">
+            <VStack className="gap-3">
+                <HStack className="items-center gap-2">
+                    <Box className={`p-1.5 rounded-lg ${bgClass}`}>
+                        <Icon as={StatIcon} size="xs" className={colorClass} />
+                    </Box>
+                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest">{label}</Text>
                 </HStack>
-                <Text size="xl" className="font-bold text-phase-text-primary">{value}</Text>
+                <Text className="text-[24px] font-black text-phaseText-primary tracking-tighter">{value}</Text>
             </VStack>
-        </SanctuaryCard>
+        </Box>
     );
 
     return (
-        <HStack space="md" className="w-full">
+        <HStack className="w-full gap-4">
             <StatItem 
-                label="Students" 
+                label="Learners" 
                 value={stats?.total_students?.toString() || '0'} 
                 icon={Users} 
-                color={Theme.colors.gurudeviBlue}
+                colorClass="text-phase-interactive"
+                bgClass="bg-phase-interactive/10"
             />
             <StatItem 
-                label="Staff" 
+                label="Guides" 
                 value={stats?.total_teachers?.toString() || '0'} 
                 icon={GraduationCap} 
-                color={Theme.colors.gurudeviViolet}
+                colorClass="text-phase-success"
+                bgClass="bg-phase-success/10"
             />
             <StatItem 
-                label="Classrooms" 
+                label="Spaces" 
                 value={stats?.total_classrooms?.toString() || '0'} 
                 icon={Building} 
-                color={Theme.colors.sanctuarySaffron}
+                colorClass="text-phase-warning"
+                bgClass="bg-phase-warning/10"
             />
         </HStack>
     );

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Award, BookMarked } from 'lucide-react-native';
-import { Box, HStack, SkeletonCard, Text, VStack, Theme, colors } from '@repo/ui';
+import { Box, HStack, SkeletonCard, Text, VStack, Icon } from '@repo/ui';
 import { supabase } from '@repo/core';
 
 interface GradeRow {
@@ -36,10 +36,16 @@ const DEMO_GRADES: GradeRow[] = [
   },
 ];
 
-function resolveGradeTone(grade: number) {
-  if (grade >= 75) return colors.sageGreen;
-  if (grade >= 50) return colors.amberGlow;
-  return colors.emberRed;
+function resolveGradeColorClass(grade: number) {
+  if (grade >= 75) return 'text-sanctuary-success';
+  if (grade >= 50) return 'text-sanctuarySaffron';
+  return 'text-sanctuary-error';
+}
+
+function resolveGradeBgClass(grade: number) {
+  if (grade >= 75) return 'bg-sanctuary-success/10 border-sanctuary-success/20';
+  if (grade >= 50) return 'bg-sanctuarySaffron/10 border-sanctuarySaffron/20';
+  return 'bg-sanctuary-error/10 border-sanctuary-error/20';
 }
 
 export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesOverviewProps) {
@@ -113,17 +119,15 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
   }
 
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
-        <Box className="flex-1 rounded-xl border border-phase-border bg-phase-sunlight p-4">
-          <Text className="text-phaseText-secondary text-[11px] font-bold uppercase">Recent grades</Text>
-          <Text className="mt-1 text-2xl font-bold text-phaseText-primary">{summary.count}</Text>
+    <VStack className="gap-4">
+      <HStack className="gap-4">
+        <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
+          <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">Recent grades</Text>
+          <Text className="mt-2 text-2xl font-black text-sanctuary-text tracking-tighter">{summary.count}</Text>
         </Box>
-        <Box className="flex-1 rounded-xl border border-phase-border bg-phase-sunlight p-4">
-          <Text className="text-phaseText-secondary text-[11px] font-bold uppercase">Average</Text>
-          <Text className="mt-1 text-2xl font-bold"
-            style={{ color: summary.average === null ? colors.textSecondary : resolveGradeTone(summary.average) }}
-          >
+        <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
+          <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">Average</Text>
+          <Text className={`mt-2 text-2xl font-black tracking-tighter ${summary.average === null ? 'text-sanctuary-text-tertiary' : resolveGradeColorClass(summary.average)}`}>
             {summary.average === null ? '--' : `${summary.average}%`}
           </Text>
         </Box>
@@ -133,43 +137,38 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
         grades.slice(0, 3).map((item) => (
           <HStack
             key={item.id}
-            className="items-start gap-3 rounded-xl border border-phase-border bg-phase-sunlight p-4"
+            className="items-center gap-4 rounded-[24px] border border-sanctuary-border bg-sanctuary-surface p-5"
           >
-            <Box
-              className="h-11 w-11 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: colors.silk,
-                borderWidth: 1,
-                borderColor: resolveGradeTone(item.grade)
-              }}
-            >
-              <Award size={18} color={resolveGradeTone(item.grade)} />
+            <Box className={`w-12 h-12 items-center justify-center rounded-2xl border ${resolveGradeBgClass(item.grade)}`}>
+              <Icon as={Award} size="sm" className={resolveGradeColorClass(item.grade)} />
             </Box>
             <VStack className="flex-1 gap-1">
-              <Text className="text-phaseText-primary text-[13px] font-bold">
+              <Text className="text-sanctuary-text text-sm font-black tracking-tight">
                 {item.assignments?.title ?? 'Assignment'}
               </Text>
-              <Text className="text-phaseText-secondary text-[12px]">
+              <Text className="text-sanctuary-text-secondary text-xs font-semibold">
                 {item.classrooms?.name ?? 'Classroom'}
               </Text>
               {item.feedback ? (
-                <Text className="text-phaseText-secondary text-[12px]">{item.feedback}</Text>
+                <Text className="text-sanctuary-text-tertiary text-[11px] leading-relaxed italic mt-1" numberOfLines={1}>{item.feedback}</Text>
               ) : null}
             </VStack>
-            <Text className="text-[13px] font-bold" style={{ color: resolveGradeTone(item.grade) }}>
+            <Text className={`text-base font-black tracking-tighter ${resolveGradeColorClass(item.grade)}`}>
               {item.grade}%
             </Text>
           </HStack>
         ))
       ) : (
-        <Box className="rounded-xl border border-phase-border bg-phase-sunlight p-4">
-          <HStack className="items-start gap-3">
-            <BookMarked size={18} className="text-phaseText-secondary" />
+        <Box className="rounded-[24px] border border-sanctuary-border bg-sanctuary-surface-secondary p-5">
+          <HStack className="items-start gap-4">
+            <Box className="w-10 h-10 bg-sanctuary-surface-tertiary rounded-xl items-center justify-center border border-sanctuary-border/30">
+                <Icon as={BookMarked} size="xs" className="text-sanctuary-text-tertiary" />
+            </Box>
             <VStack className="flex-1 gap-1">
-              <Text className="text-phaseText-primary text-[13px] font-bold">
+              <Text className="text-sanctuary-text text-sm font-black tracking-tight">
                 No graded submissions yet
               </Text>
-              <Text className="text-phaseText-secondary text-[12px]">
+              <Text className="text-sanctuary-text-secondary text-xs font-medium leading-relaxed">
                 Your academic mirror will fill in as teachers mark your work.
               </Text>
             </VStack>

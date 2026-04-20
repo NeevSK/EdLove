@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
 import {
     Box,
     VStack,
@@ -7,6 +6,7 @@ import {
     Text,
     Heading,
     Icon as UIIcon,
+    ActivityIndicator
 } from '@repo/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { api } from '@repo/core';
@@ -69,7 +69,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     if (isLoading) {
         return (
             <Box className="p-12 items-center justify-center">
-                <ActivityIndicator color="var(--phase-interactive)" />
+                <ActivityIndicator className="text-phase-interactive" />
             </Box>
         );
     }
@@ -142,4 +142,3 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
         </VStack>
     );
 }
-

@@ -14,6 +14,8 @@ import {
     ScrollView,
     SkeletonCard,
     hapticSuccess,
+    hapticLight,
+    hapticMedium,
     LotusDropdown,
     Pressable
 } from '@repo/ui';
@@ -138,7 +140,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({ userId, scho
                     </Textarea>
 
                     <Button 
-                        size="xl"
+                        size="lg"
                         onPress={() => { hapticMedium(); handleSaveObservation(); }} 
                         isDisabled={!content.trim() || saving || isPastView} 
                         className="bg-phase-interactive rounded-[20px] h-14 self-start px-10 shadow-md active:scale-95 transition-all"

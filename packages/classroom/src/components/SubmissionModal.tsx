@@ -19,16 +19,21 @@ import {
     ButtonText,
     Textarea,
     TextareaInput,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
     Spinner,
-    useTheme,
+    Icon,
+    SanctuaryModal,
 } from '@repo/ui';
 import { Alert, Image, Platform, Pressable } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
+import {
+    Camera,
+    Image as ImageIcon,
+    Trash2,
+    CheckCircle2,
+    Send,
+    X
+} from 'lucide-react-native';
 import { handleAPIError } from '@repo/core';
 
 interface SubmissionModalProps {
@@ -49,7 +54,6 @@ export default function SubmissionModal({
     const [photoUri, setPhotoUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const { text, accent, glass, isDark } = useTheme();
 
     const requestPermission = async (useCamera: boolean): Promise<boolean> => {
         const { status } = useCamera
@@ -162,226 +166,144 @@ export default function SubmissionModal({
 
     if (showSuccess) {
         return (
-            <Modal isOpen={isOpen} onClose={() => { }}>
-                <ModalBackdrop
-                    sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }}
-                />
-                <ModalContent
-                    sx={{
-                        backgroundColor: glass.modal.bg,
-                        borderColor: glass.modal.border,
-                        borderWidth: 1,
-                        padding: Theme.spacing.xl,
-                        alignItems: 'center',
-                        borderRadius: Theme.corners.generous,
-                    }}
-                >
-                    <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 64 }}>✅</Text>
-                        <Heading sx={{ color: accent.reward, fontSize: 32 }}>
+            <SanctuaryModal
+                isOpen={isOpen}
+                onClose={() => { }}
+                title=""
+            >
+                <VStack className="items-center justify-center p-8 gap-6">
+                    <Box className="w-24 h-24 bg-sanctuary-success/10 rounded-full items-center justify-center border border-sanctuary-success/20">
+                        <Icon as={CheckCircle2} size="xl" className="text-sanctuary-success" />
+                    </Box>
+                    <VStack className="items-center gap-2">
+                        <Text className="text-3xl font-black text-sanctuary-text tracking-tighter">
                             {t('submission.success') || 'Success!'}
-                        </Heading>
-                        <Text
-                            {...({ color: text.secondary } as any)}
-                            sx={{ textAlign: 'center' }}
-                        >
-                            {t('submission.successMessage') ||
-                                'Your work has been sent to the teacher.'}
+                        </Text>
+                        <Text className="text-lg font-medium text-sanctuary-text-secondary text-center leading-relaxed">
+                            {t('submission.successMessage') || 'Your work has been sent to the teacher.'}
                         </Text>
                     </VStack>
-                </ModalContent>
-            </Modal>
+                </VStack>
+            </SanctuaryModal>
         );
     }
-
     return (
-        <Modal isOpen={isOpen} onClose={handleCancel}>
-            <ModalBackdrop
-                sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }}
-            />
-            <ModalContent
-                sx={{
-                    backgroundColor: glass.modal.bg,
-                    borderColor: glass.modal.border,
-                    borderWidth: 1,
-                    // Full-screen modal: no border radius — content fills the entire viewport
-                    borderRadius: 0,
-                    height: '100%',
-                    width: '100%',
-                }}
-            >
-                <VStack
-                    sx={{
-                        flex: 1,
-                        padding: Theme.spacing.lg,
-                        gap: Theme.spacing.lg,
-                    }}
+        <SanctuaryModal
+            isOpen={isOpen}
+            onClose={handleCancel}
+            title={t('submission.title') || 'Submit Work'}
+            footer={
+                <Button
+                    className="w-full h-16 bg-sanctuarySaffron rounded-[24px] shadow-lg shadow-sanctuarySaffron/20 flex-row items-center justify-center gap-3"
+                    onPress={handleSubmit}
+                    disabled={isSubmitting}
                 >
-                    {/* Header */}
-                    <HStack
-                        sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Heading sx={{ fontSize: 24, color: accent.action }}>
-                            {t('submission.title') || 'Submit Work'}
-                        </Heading>
-
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            sx={{
-                                borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                            onPress={handleCancel}
-                            disabled={isSubmitting}
-                        >
-                            <ButtonText {...({ color: text.secondary } as any)}>
-                                {t('common.cancel') || 'Cancel'}
+                    {isSubmitting ? (
+                        <HStack className="items-center gap-2">
+                            <Spinner className="text-sanctuary-ink" size="small" />
+                            <ButtonText className="text-sanctuary-ink font-bold text-lg">
+                                {t('submission.submitting') || 'Turning in...'}
                             </ButtonText>
-                        </Button>
-                    </HStack>
+                        </HStack>
+                    ) : (
+                        <HStack className="items-center gap-2">
+                            <Icon as={Send} size="sm" className="text-sanctuary-ink" />
+                            <ButtonText className="text-sanctuary-ink font-bold text-lg">
+                                {t('submission.turnIn') || 'Turn In'}
+                            </ButtonText>
+                        </HStack>
+                    )}
+                </Button>
+            }
+        >
+            <VStack className="gap-8 p-1">
+                {/* Assignment Title */}
+                <Box className="p-5 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                    <Text className="text-xs font-bold text-sanctuary-text-tertiary uppercase tracking-wider mb-1">
+                        {t('submission.assignmentLabel') || 'Assignment'}
+                    </Text>
+                    <Text className="text-xl font-black text-sanctuary-text tracking-tight">
+                        {assignmentTitle}
+                    </Text>
+                </Box>
 
-                    {/* Assignment Title */}
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.md,
-                            backgroundColor: glass.interact.bg,
-                            borderRadius: Theme.corners.comfortable,
-                            borderWidth: 1,
-                            borderColor: glass.interact.border,
-                        }}
-                    >
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 14 }}>
-                            {t('submission.assignmentLabel') || 'Assignment'}
-                        </Text>
-                        <Text
-                            {...({ color: text.primary } as any)}
-                            sx={{ fontSize: 18, fontWeight: '600' }}
-                        >
-                            {assignmentTitle}
-                        </Text>
-                    </Box>
+                {/* Text Input */}
+                <VStack className="gap-2 flex-1 min-h-[250px]">
+                    <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">
+                        {t('submission.answerLabel') || 'Your Answer'}
+                    </Text>
+                    <Textarea className="flex-1 p-5 bg-sanctuary-surface-secondary rounded-[32px] border border-sanctuary-border">
+                        <TextareaInput
+                            placeholder={t('submission.answerPlaceholder') || 'Type your answer here...'}
+                            className="text-sanctuary-text text-lg leading-relaxed"
+                            value={content}
+                            onChangeText={setContent}
+                            multiline
+                        />
+                    </Textarea>
+                </VStack>
 
-                    {/* Text Input */}
-                    <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
-                            {t('submission.answerLabel') || 'Your Answer'}
-                        </Text>
-                        <Textarea
-                            sx={{
-                                flex: 1,
-                                backgroundColor: glass.interact.bg,
-                                borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 200,
-                            }}
-                        >
-                            <TextareaInput
-                                placeholder={
-                                    t('submission.answerPlaceholder') ||
-                                    'Type your answer here...'
-                                }
-                                value={content}
-                                onChangeText={setContent}
-                                {...({ color: text.primary } as any)}
-                                multiline
-                            />
-                        </Textarea>
-                    </VStack>
+                {/* Photo Attachment */}
+                <VStack className="gap-3">
+                    <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">
+                        {t('submission.photoLabel') || 'Visual Evidence (Optional)'}
+                    </Text>
 
-                    {/* Photo Attachment */}
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
-                            {t('submission.photoLabel') || 'Attach Photo (Optional)'}
-                        </Text>
-
-                        {photoUri ? (
-                            <Box>
+                    {photoUri ? (
+                        <VStack className="gap-2">
+                            <Box className="relative rounded-[24px] overflow-hidden border border-sanctuary-border">
                                 <Image
                                     source={{ uri: photoUri }}
-                                    style={{
-                                        width: '100%',
-                                        height: 200,
-                                        borderRadius: 12,
-                                    }}
+                                    className="w-full h-48"
                                     resizeMode="cover"
                                 />
-                                <Button
-                                    variant="link"
-                                    size="sm"
-                                    sx={{ marginTop: Theme.spacing.sm }}
+                                <Pressable
                                     onPress={() => setPhotoUri(null)}
+                                    className="absolute top-3 right-3 p-2 bg-black/60 rounded-full border border-white/20"
                                 >
-                                    <ButtonText {...({ color: accent.danger } as any)}>
-                                        {t('submission.removePhoto') || 'Remove Photo'}
-                                    </ButtonText>
-                                </Button>
+                                    <Icon as={X} size="xs" className="text-white" />
+                                </Pressable>
                             </Box>
-                        ) : (
-                            <HStack sx={{ gap: Theme.spacing.md }}>
-                                <Button
-                                    variant="outline"
-                                    sx={{
-                                        flex: 1,
-                                        borderColor: accent.action,
-                                        borderRadius: Theme.corners.comfortable,
-                                    }}
-                                    onPress={() => handlePickImage(true)}
-                                    disabled={isSubmitting}
-                                >
-                                    <ButtonText {...({ color: accent.action } as any)}>
-                                        📷 {t('submission.takePhoto') || 'Take Photo'}
-                                    </ButtonText>
-                                </Button>
-
-                                <Button
-                                    variant="outline"
-                                    sx={{
-                                        flex: 1,
-                                        borderColor: accent.action,
-                                        borderRadius: Theme.corners.comfortable,
-                                    }}
-                                    onPress={() => handlePickImage(false)}
-                                    disabled={isSubmitting}
-                                >
-                                    <ButtonText {...({ color: accent.action } as any)}>
-                                        🖼️ {t('submission.choosePhoto') || 'Choose Photo'}
-                                    </ButtonText>
-                                </Button>
-                            </HStack>
-                        )}
-                    </VStack>
-
-                    {/* Submit Button */}
-                    <Button
-                        sx={{
-                            backgroundColor: accent.reward,
-                            padding: Theme.spacing.lg,
-                            borderRadius: Theme.corners.comfortable,
-                        }}
-                        onPress={handleSubmit}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                <Spinner {...({ color: text.inverse, size: "small" } as any)} />
-                                <ButtonText {...({ color: text.inverse } as any)}>
-                                    {t('submission.submitting') || 'Turning in...'}
-                                </ButtonText>
-                            </HStack>
-                        ) : (
-                            <ButtonText
-                                {...({ color: text.inverse, fontWeight: '700', fontSize: 18 } as any)}
+                            <Button
+                                variant="link"
+                                className="self-center"
+                                onPress={() => setPhotoUri(null)}
                             >
-                                ✍️ {t('submission.turnIn') || 'Turn In'}
-                            </ButtonText>
-                        )}
-                    </Button>
+                                <Icon as={Trash2} size="xs" className="text-sanctuary-error mr-2" />
+                                <ButtonText className="text-sanctuary-error font-bold">
+                                    {t('submission.removePhoto') || 'Remove Photo'}
+                                </ButtonText>
+                            </Button>
+                        </VStack>
+                    ) : (
+                        <HStack className="gap-4">
+                            <Button
+                                variant="outline"
+                                className="flex-1 h-14 rounded-[20px] border-sanctuarySaffron/30 bg-sanctuarySaffron/5 flex-row items-center justify-center gap-2"
+                                onPress={() => handlePickImage(true)}
+                                disabled={isSubmitting}
+                            >
+                                <Icon as={Camera} size="sm" className="text-sanctuarySaffron" />
+                                <ButtonText className="text-sanctuarySaffron font-bold">
+                                    {t('submission.takePhoto') || 'Camera'}
+                                </ButtonText>
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                className="flex-1 h-14 rounded-[20px] border-sanctuarySaffron/30 bg-sanctuarySaffron/5 flex-row items-center justify-center gap-2"
+                                onPress={() => handlePickImage(false)}
+                                disabled={isSubmitting}
+                            >
+                                <Icon as={ImageIcon} size="sm" className="text-sanctuarySaffron" />
+                                <ButtonText className="text-sanctuarySaffron font-bold">
+                                    {t('submission.choosePhoto') || 'Gallery'}
+                                </ButtonText>
+                            </Button>
+                        </HStack>
+                    )}
                 </VStack>
-            </ModalContent>
-        </Modal>
+            </VStack>
+        </SanctuaryModal>
     );
 }

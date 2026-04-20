@@ -1,50 +1,53 @@
 import React from 'react';
 import { Target } from 'lucide-react-native';
-import { Box, Text, Button, SkeletonCard, Theme, ButtonText } from '@repo/ui';
+import { Box, Text, Button, SkeletonCard, ButtonText, Icon, VStack, HStack } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 
 export const StudentGoals = ({ goals, loading }: { goals: any[], loading: boolean }) => {
     const navigation = useNavigation<any>();
 
     return (
-        <Box sx={{ padding: 24, backgroundColor: 'var(--glass-bg)', borderRadius: 16 }}>
-            <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                <Target size={14} color="var(--ink-ghost)" />
-                <Text sx={{ fontSize: 14, fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: 1 }}>
+        <Box className="bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-6">
+            <HStack className="items-center gap-2 mb-6">
+                <Icon as={Target} size="xs" className="text-sanctuary-text-tertiary" />
+                <Text className="text-xs font-black text-sanctuary-text-tertiary uppercase tracking-widest">
                     Active Goals
                 </Text>
-            </Box>
+            </HStack>
 
             {loading ? (
-                <SkeletonCard />
+                <SkeletonCard className="h-32" />
             ) : goals.length === 0 ? (
-                <Text sx={{ fontSize: 13, color: 'var(--ink-ghost)', margin: 0 }}>
+                <Text className="text-sm font-medium text-sanctuary-text-tertiary leading-relaxed">
                     No goals set yet. Start your growth journey.
                 </Text>
             ) : (
-                <Box sx={{ flexDirection: 'column', gap: 16 }}>
+                <VStack className="gap-6">
                     {goals.slice(0, 3).map((goal: any) => (
-                        <Box key={goal.id} sx={{ flexDirection: 'column', gap: 8 }}>
-                            <Text sx={{ fontSize: 13, fontWeight: '700', color: 'var(--ink)' }}>
+                        <VStack key={goal.id} className="gap-2">
+                            <Text className="text-sm font-black text-sanctuary-text tracking-tight">
                                 {goal.text}
                             </Text>
-                            <Box sx={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
-                                <Box sx={{ width: `${goal.progress ?? 0}%`, height: '100%', background: 'var(--water)', borderRadius: 3 }} />
+                            <Box className="h-2 bg-sanctuary-border/20 rounded-full overflow-hidden">
+                                <Box 
+                                    className="h-full bg-sanctuary-info rounded-full" 
+                                    style={{ width: `${goal.progress ?? 0}%` }} 
+                                />
                             </Box>
-                            <Text sx={{ fontSize: 11, color: 'var(--ink-ghost)', textAlign: 'right' }}>
-                                {goal.progress ?? 0}%
+                            <Text className="text-[10px] font-black text-sanctuary-text-tertiary text-right tracking-widest uppercase">
+                                {goal.progress ?? 0}% Complete
                             </Text>
-                        </Box>
+                        </VStack>
                     ))}
-                </Box>
+                </VStack>
             )}
 
             <Button
                 variant="outline"
-                sx={{ width: '100%', marginTop: 20 }}
+                className="w-full mt-6 h-12 rounded-[18px] border-sanctuary-border/60"
                 onPress={() => navigation.navigate('Main', { screen: 'Self' })}
             >
-                <ButtonText sx={{ fontSize: 12 }}>
+                <ButtonText className="text-xs font-bold text-sanctuary-text">
                     View All Goals →
                 </ButtonText>
             </Button>

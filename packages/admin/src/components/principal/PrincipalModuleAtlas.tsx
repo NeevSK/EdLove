@@ -4,9 +4,8 @@ import {
     HStack,
     Text,
     VStack,
-    useTheme,
     Icon,
-    Theme
+    Heading
 } from '@repo/ui';
 import {
     BookCopy,
@@ -15,7 +14,8 @@ import {
     FileSpreadsheet,
     Files,
     Landmark,
-    Package
+    Package,
+    ArrowRight
 } from 'lucide-react-native';
 import {
     PRINCIPAL_CAPABILITY_REGISTRY,
@@ -68,74 +68,88 @@ const CAPABILITY_ICONS: Record<string, any> = {
 };
 
 function CapabilityCard({ capability }: { capability: PrincipalCapabilityMeta }) {
-    const theme = useTheme();
     const LucideIcon = CAPABILITY_ICONS[capability.id] ?? Files;
 
-    const getZoneColor = (zone: string) => {
+    const getZoneStyles = (zone: string) => {
         switch (zone) {
-            case 'today': return theme.accent.action;
-            case 'institution': return theme.accent.sageGreen;
-            default: return theme.accent.templeGold;
+            case 'today': return { bg: 'bg-phase-interactive/10', text: 'text-phase-interactive', border: 'border-phase-interactive/20' };
+            case 'institution': return { bg: 'bg-phase-success/10', text: 'text-phase-success', border: 'border-phase-success/20' };
+            default: return { bg: 'bg-phase-canvas', text: 'text-phaseText-muted', border: 'border-phase-border' };
         }
     };
 
-    const zoneColor = getZoneColor(capability.zone || '');
+    const styles = getZoneStyles(capability.zone || '');
 
     return (
-        <Box className="w-full bg-phase-surface rounded-2xl border border-phase-border p-md">
-            <HStack className="justify-between items-start gap-4">
-                <HStack className="items-center gap-3 flex-1">
-                    <Box
-                        className="w-9 h-9 rounded-xl items-center justify-center"
-                        style={{ backgroundColor: `${zoneColor}22` }}
-                    >
-                        <LucideIcon size={18} color={zoneColor} />
+        <Box className="w-full bg-phase-surface rounded-[32px] border border-phase-border p-6 shadow-sm">
+            <VStack className="gap-5">
+                <HStack className="justify-between items-start">
+                    <HStack className="items-center gap-4 flex-1">
+                        <Box
+                            className={`w-14 h-14 rounded-[20px] items-center justify-center ${styles.bg} border ${styles.border}`}
+                        >
+                            <Icon as={LucideIcon} size={24} className={styles.text} />
+                        </Box>
+                        <VStack className="gap-0.5 flex-1">
+                            <Heading className="text-[17px] font-black text-phaseText-primary tracking-tight">
+                                {capability.title}
+                            </Heading>
+                            <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-[2px]">
+                                {capability.atlasFamily ?? 'Principal ERP'}
+                            </Text>
+                        </VStack>
+                    </HStack>
+                    <Box className="px-3 py-1 rounded-full bg-phase-interactive/10 border border-phase-interactive/20">
+                        <Text className="text-[9px] font-black text-phase-interactive uppercase tracking-widest leading-none">
+                            {capability.status}
+                        </Text>
                     </Box>
-                    <VStack className="gap-0.5 flex-1">
-                        <Text className="text-sm font-bold text-phaseText-primary">
-                            {capability.title}
-                        </Text>
-                        <Text className="text-[10px] text-phaseText-secondary uppercase tracking-wider">
-                            {capability.atlasFamily ?? 'Principal ERP'}
-                        </Text>
-                    </VStack>
                 </HStack>
-                <Box className="px-2 py-0.5 rounded-full bg-phase-interactive border border-phase-border">
-                    <Text className="text-[9px] font-extrabold text-phase-accent uppercase">
-                        {capability.status}
-                    </Text>
-                </Box>
-            </HStack>
-            <Text className="text-[12px] leading-relaxed text-phaseText-secondary mt-3">
-                {capability.description}
-            </Text>
+
+                <Text className="text-[13px] leading-[20px] text-phaseText-secondary font-bold opacity-90">
+                    {capability.description}
+                </Text>
+
+                <HStack className="pt-4 border-t border-phase-border/50 justify-between items-center">
+                    <HStack className="gap-2 items-center">
+                        <Box className="w-1.5 h-1.5 rounded-full bg-phaseText-muted/20" />
+                        <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">Management Workspace</Text>
+                    </HStack>
+                    <Icon as={ArrowRight} size="xs" className="text-phaseText-muted opacity-30" />
+                </HStack>
+            </VStack>
         </Box>
     );
 }
 
 export default function PrincipalModuleAtlas({
     capabilityIds = DEFAULT_ATLAS_CAPABILITIES,
-    title = 'Module Atlas',
-    subtitle = 'Planned ERP families that will slot into this principal workspace without reshaping the home cockpit.'
+    title = 'Institutional Atlas',
+    subtitle = 'Extensible ERP infrastructure for governing institutional growth and compliance.'
 }: PrincipalModuleAtlasProps) {
     const capabilities = capabilityIds
         .map((id) => PRINCIPAL_CAPABILITY_REGISTRY[id])
         .filter(Boolean);
 
     return (
-        <VStack className="gap-4">
-            <VStack className="gap-1">
-                <Text className="text-lg font-bold text-phaseText-primary">
+        <VStack className="gap-6">
+            <VStack className="gap-1.5 px-1">
+                <Heading className="text-[24px] font-black text-phaseText-primary tracking-tight">
                     {title}
-                </Text>
-                <Text className="text-sm leading-relaxed text-phaseText-secondary">
+                </Heading>
+                <Text className="text-[13px] leading-[18px] text-phaseText-secondary font-bold opacity-80">
                     {subtitle}
                 </Text>
             </VStack>
-            <VStack className="gap-3">
+            <VStack className="gap-4">
                 {capabilities.map((capability) => (
                     <CapabilityCard key={capability.id} capability={capability} />
                 ))}
+                {capabilities.length === 0 && (
+                    <Box className="p-16 items-center justify-center bg-phase-canvas rounded-[40px] border border-dashed border-phase-border opacity-60">
+                        <Text className="text-[14px] font-black text-phaseText-muted italic tracking-widest uppercase text-center">Atlas Mapping Incomplete</Text>
+                    </Box>
+                )}
             </VStack>
         </VStack>
     );

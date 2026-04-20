@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, ActivityIndicator } from 'react-native';
+
 import {
     Box,
     VStack,
@@ -10,7 +10,9 @@ import {
     GlobalHeader,
     SanctuaryButton,
     StepIndicator,
-    Icon
+    Icon,
+    Spinner,
+    ScrollView
 } from '@repo/ui';
 import { 
     useSchoolCreation, 

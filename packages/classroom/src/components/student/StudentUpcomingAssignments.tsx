@@ -1,14 +1,13 @@
 import React from 'react';
 import { CheckCircle2, Clock } from 'lucide-react-native';
 import {
-    useThemedColors,
     Box,
     HStack,
     VStack,
     Text,
     Button,
     ButtonText,
-    Theme
+    Icon
 } from '@repo/ui';
 
 interface Assignment {
@@ -31,106 +30,71 @@ export const StudentUpcomingAssignments = ({
     onOpenSubmission,
     isPastView
 }: StudentUpcomingAssignmentsProps) => {
-    const colors = useThemedColors();
     const pendingAssignments = assignments.filter((a) => !a.submitted);
-
+ 
     if (assignments.length === 0) return null;
-
+ 
     return (
-        <VStack sx={{ marginTop: 40, gap: Theme.spacing.md }}>
-            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
-                <CheckCircle2 size={18} color={Theme.colors.sageGreen} />
-                <Text sx={{
-                    fontSize: Theme.typography.fontSize.md,
-                    fontWeight: '800',
-                    color: colors.text
-                }}>
-                    Upcoming Assignments
-                </Text>
+        <VStack className="mt-10 gap-5">
+            <HStack className="items-center justify-between px-1">
+                <HStack className="items-center gap-2.5">
+                    <Box className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
+                        <Icon as={Clock} size="xs" className="text-sanctuarySaffron" />
+                    </Box>
+                    <Text className="text-sm font-black text-sanctuary-text uppercase tracking-widest">
+                        {isPastView ? 'Completed Work' : 'Upcoming Work'}
+                    </Text>
+                </HStack>
                 {pendingAssignments.length > 0 && (
-                    <Box sx={{
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderRadius: 6,
-                    }}>
-                        <Text sx={{
-                            fontSize: 11,
-                            color: Theme.colors.emberRed,
-                            fontWeight: '700'
-                        }}>
+                    <Box className="px-3 py-1.5 bg-sanctuary-error/10 border border-sanctuary-error/20 rounded-full">
+                        <Text className="text-[10px] text-sanctuary-error font-black uppercase tracking-widest">
                             {pendingAssignments.length} pending
                         </Text>
                     </Box>
                 )}
             </HStack>
-
-            <VStack sx={{ gap: Theme.spacing.sm }}>
+ 
+            <VStack className="gap-3">
                 {assignments.map((a) => (
                     <HStack
                         key={a.id}
-                        sx={{
-                            alignItems: 'center',
-                            gap: Theme.spacing.md,
-                            padding: Theme.spacing.md,
-                            borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.surface,
-                            borderWidth: 1,
-                            borderColor: a.submitted ? Theme.colors.sageGreen : colors.border
-                        }}
+                        className={`items-center gap-4 p-5 rounded-[24px] border ${a.submitted ? 'bg-sanctuary-surface-secondary border-sanctuary-success/20' : 'bg-sanctuary-surface border-sanctuary-border'}`}
                     >
-                        <Box sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: a.submitted ? Theme.colors.sageGreen : Theme.colors.emberRed
-                        }} />
-
-                        <VStack sx={{ flex: 1 }}>
-                            <Text sx={{
-                                fontSize: Theme.typography.fontSize.sm,
-                                fontWeight: '700',
-                                color: colors.text
-                            }}>
+                        <Box className={`w-3 h-3 rounded-full border-2 ${a.submitted ? 'bg-sanctuary-success border-sanctuary-success/30' : 'bg-sanctuary-error border-sanctuary-error/30'}`} />
+ 
+                        <VStack className="flex-1 gap-1">
+                            <Text className="text-sm font-black text-sanctuary-text tracking-tight">
                                 {a.title}
                             </Text>
-                            <HStack sx={{ alignItems: 'center', gap: 6, marginTop: 2 }}>
-                                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-                                    {a.classroom ?? a.classrooms?.name ?? ''}
+                            <HStack className="items-center gap-2">
+                                <Text className="text-[11px] font-bold text-sanctuary-text-tertiary">
+                                    {a.classroom ?? a.classrooms?.name ?? 'Classroom'}
                                 </Text>
-                                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>•</Text>
-                                <Clock size={10} color={colors.textSecondary} />
-                                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
+                                <Text className="text-[11px] text-sanctuary-text-tertiary/50">•</Text>
+                                <Text className="text-[11px] font-bold text-sanctuary-text-tertiary">
                                     Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                                 </Text>
                             </HStack>
                         </VStack>
-
+ 
                         {!a.submitted && !isPastView && (
                             <Button
-                                size="xs"
+                                size="sm"
                                 variant="outline"
                                 onPress={() => onOpenSubmission(a)}
-                                sx={{
-                                    borderColor: Theme.colors.templeGold,
-                                    borderRadius: Theme.corners.tight
-                                }}
+                                className="h-10 rounded-xl border-sanctuarySaffron/40 bg-sanctuarySaffron/5"
                             >
-                                <ButtonText color={Theme.colors.templeGold}>
+                                <ButtonText className="text-xs font-bold text-sanctuarySaffron px-2">
                                     Submit
                                 </ButtonText>
                             </Button>
                         )}
-
+ 
                         {a.submitted && (
-                            <HStack sx={{ alignItems: 'center', gap: 4 }}>
-                                <CheckCircle2 size={13} color={Theme.colors.sageGreen} />
-                                <Text sx={{
-                                    fontSize: 11,
-                                    fontWeight: '700',
-                                    color: Theme.colors.sageGreen
-                                }}>
-                                    Submitted
+                            <HStack className="items-center gap-2 bg-sanctuary-success/10 px-3 py-1.5 rounded-full">
+                                <Icon as={CheckCircle2} size="xs" className="text-sanctuary-success" />
+                                <Text className="text-[10px] font-black text-sanctuary-success uppercase tracking-widest">
+                                    Done
                                 </Text>
                             </HStack>
                         )}

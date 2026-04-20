@@ -19,7 +19,8 @@ import {
     ModalFooter,
     Spinner,
     Icon,
-    Pressable
+    Pressable,
+    hapticLight
 } from '@repo/ui';
 import { ArrowLeft, Plus, GraduationCap, School as SchoolIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -42,10 +43,6 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
     const [newGradeNumber, setNewGradeNumber] = useState('');
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadHierarchy();
-    }, [schoolId]);
-
     const loadHierarchy = async () => {
         setIsLoading(true);
         setError(null);
@@ -67,6 +64,10 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         }
     };
 
+    useEffect(() => {
+        loadHierarchy();
+    }, [schoolId]);
+
     const handleAddSection = async () => {
         if (!newSectionName.trim()) {
             setError(t('principal.hierarchy.errorEmptyName') || 'Section name cannot be empty');
@@ -74,6 +75,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         }
 
         try {
+            hapticLight();
             await api.school.createSection(schoolId, newSectionName);
             setNewSectionName('');
             setShowAddSection(false);
@@ -94,6 +96,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
         }
 
         try {
+            hapticLight();
             await api.school.createGrade(selectedSectionId, gradeNum);
             setNewGradeNumber('');
             setShowAddGrade(false);
@@ -106,45 +109,46 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
     };
 
     return (
-        <Box className="flex-1 bg-silk">
-            <ScrollView contentContainerStyle={{ padding: 24 }}>
+        <Box className="flex-1 bg-phase-canvas">
+            <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
                 <VStack className="gap-8">
                     {/* Header */}
-                    <HStack className="justify-between items-center">
-                        <VStack className="gap-1 flex-1">
-                            <Pressable onPress={onBack} className="mb-2">
-                                <HStack className="items-center gap-2 bg-white/50 self-start px-3 py-1.5 rounded-full border border-border active:opacity-60">
-                                    <Icon as={ArrowLeft} size="xs" className="text-ink" />
-                                    <Text className="text-xs font-bold text-ink">Back</Text>
-                                </HStack>
-                            </Pressable>
-                            <Heading className="text-3xl font-black text-ink">
+                    <VStack className="gap-4">
+                        <Pressable onPress={onBack}>
+                            <HStack className="items-center gap-2 bg-phase-surface self-start px-4 py-2 rounded-full border border-phase-border active:scale-95 transition-all">
+                                <Icon as={ArrowLeft} size="xs" className="text-phaseText-primary" />
+                                <Text className="text-[12px] font-black text-phaseText-primary uppercase tracking-widest">Back</Text>
+                            </HStack>
+                        </Pressable>
+                        <VStack className="gap-1">
+                            <Heading className="text-[32px] font-black text-phaseText-primary tracking-tight">
                                 {t('principal.hierarchy.title') || 'Institution Hierarchy'}
                             </Heading>
+                            <Text className="text-[13px] font-bold text-phaseText-muted uppercase tracking-[2px]">Governance Structure</Text>
                         </VStack>
-                    </HStack>
+                    </VStack>
 
                     <Button
-                        className="rounded-[24px] h-14 shadow-sm w-full"
-                        onPress={() => setShowAddSection(true)}
+                        className="rounded-[20px] h-16 shadow-md w-full bg-phase-interactive"
+                        onPress={() => { hapticLight(); setShowAddSection(true); }}
                     >
                         <ButtonIcon as={Plus} className="mr-2 text-white" />
-                        <ButtonText className="text-white">
-                            {t('principal.hierarchy.addSection') || 'Add Section'}
+                        <ButtonText className="text-white font-black uppercase text-[13px] tracking-widest">
+                            {t('principal.hierarchy.addSection') || 'Initialize Section'}
                         </ButtonText>
                     </Button>
 
                     {/* Loading State */}
                     {isLoading && (
-                        <Box className="p-12 items-center">
-                            <Spinner color="#3b82f6" />
+                        <Box className="p-20 items-center">
+                            <Spinner className="text-phase-interactive" />
                         </Box>
                     )}
 
                     {/* Error State */}
                     {error && (
-                        <Box className="p-4 bg-red-50 border border-red-200 rounded-[20px]">
-                            <Text className="text-red-600 font-bold text-sm">{error}</Text>
+                        <Box className="p-5 bg-phase-danger/5 border border-phase-danger/20 rounded-[24px]">
+                            <Text className="text-phase-danger font-black text-[13px] tracking-tight">{error}</Text>
                         </Box>
                     )}
 
@@ -152,48 +156,53 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     {!isLoading && sections.map((section) => (
                         <Box
                             key={section.id}
-                            className="p-5 bg-white rounded-[24px] border border-border shadow-sm border-l-4 border-l-primary"
+                            className="p-6 bg-phase-surface rounded-[32px] border border-phase-border shadow-sm border-l-8 border-l-phase-interactive"
                         >
                             {/* Section Header */}
-                            <HStack className="justify-between items-center mb-4">
-                                <HStack className="gap-2 items-center">
-                                    <Icon as={SchoolIcon} size="sm" className="text-primary" />
-                                    <Text className="text-lg font-black text-ink">{section.name}</Text>
+                            <HStack className="justify-between items-center mb-6">
+                                <HStack className="gap-3 items-center">
+                                    <Box className="p-2 bg-phase-interactive/10 rounded-xl">
+                                        <Icon as={SchoolIcon} size="sm" className="text-phase-interactive" />
+                                    </Box>
+                                    <Text className="text-[18px] font-black text-phaseText-primary tracking-tight">{section.name}</Text>
                                 </HStack>
 
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="rounded-full h-8 px-4"
+                                    className="rounded-full h-10 px-6 border-phase-interactive/30"
                                     onPress={() => {
+                                        hapticLight();
                                         setSelectedSectionId(section.id);
                                         setShowAddGrade(true);
                                     }}
                                 >
-                                    <ButtonText className="text-primary text-xs font-bold">
-                                        {t('principal.hierarchy.addGrade') || '+ GRADE'}
+                                    <ButtonText className="text-phase-interactive text-[11px] font-black uppercase tracking-widest">
+                                        + Grade
                                     </ButtonText>
                                 </Button>
                             </HStack>
 
                             {/* Grades List */}
-                            <VStack className="gap-2 pl-4">
+                            <VStack className="gap-3 pl-2">
                                 {gradesBySection[section.id]?.length ? (
                                     gradesBySection[section.id]?.map((grade) => (
                                         <HStack
                                             key={grade.id}
-                                            className="gap-3 p-3 bg-silk rounded-2xl items-center"
+                                            className="gap-4 p-4 bg-phase-canvas rounded-[18px] items-center border border-phase-border/50"
                                         >
-                                            <Icon as={GraduationCap} size="xs" className="text-ink/20" />
-                                            <Text className="text-sm font-bold text-ink">
+                                            <Icon as={GraduationCap} size="xs" className="text-phaseText-muted/30" />
+                                            <Text className="text-[14px] font-black text-phaseText-secondary tracking-tight">
                                                 {t('principal.hierarchy.grade') || 'Grade'} {grade.number}
                                             </Text>
                                         </HStack>
                                     ))
                                 ) : (
-                                    <Text className="text-xs font-bold text-ink/40 italic py-2">
-                                        {t('principal.hierarchy.noGrades') || 'No grades defined.'}
-                                    </Text>
+                                    <Box className="py-4 px-4 border border-dashed border-phase-border rounded-[18px]">
+                                        <Text className="text-[12px] font-bold text-phaseText-muted italic opacity-60">
+                                            {t('principal.hierarchy.noGrades') || 'No grades defined in this section.'}
+                                        </Text>
+                                    </Box>
                                 )}
                             </VStack>
                         </Box>
@@ -201,10 +210,12 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
 
                     {/* Empty State */}
                     {!isLoading && sections.length === 0 && (
-                        <Box className="p-12 items-center">
-                            <Icon as={SchoolIcon} size="xl" className="text-ink/10 mb-4" />
-                            <Text className="text-ink/40 font-bold text-center">
-                                {t('principal.hierarchy.noSections') || 'No institutional sections found. Start by adding one.'}
+                        <Box className="p-20 items-center bg-phase-surface rounded-[40px] border border-dashed border-phase-border">
+                            <Box className="w-16 h-16 bg-phase-canvas rounded-full items-center justify-center mb-6">
+                                <Icon as={SchoolIcon} size="md" className="text-phaseText-muted/20" />
+                            </Box>
+                            <Text className="text-phaseText-muted font-black text-center text-[15px] opacity-60">
+                                {t('principal.hierarchy.noSections') || 'Institutional structure unset.\nStart by adding a section.'}
                             </Text>
                         </Box>
                     )}
@@ -220,47 +231,51 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 }}
             >
                 <ModalBackdrop />
-                <ModalContent className="bg-white rounded-[32px] p-2">
-                    <ModalHeader className="p-6">
-                        <Heading className="text-xl font-black text-ink uppercase tracking-wider">
-                            {t('principal.hierarchy.addSectionTitle') || 'Create Section'}
-                        </Heading>
+                <ModalContent className="bg-phase-surface rounded-[40px] p-2 border border-phase-border shadow-2xl">
+                    <ModalHeader className="p-8">
+                        <VStack className="gap-1">
+                            <Heading className="text-[20px] font-black text-phaseText-primary uppercase tracking-wider">
+                                {t('principal.hierarchy.addSectionTitle') || 'Create Section'}
+                            </Heading>
+                            <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[2px]">Core Institution Unit</Text>
+                        </VStack>
                     </ModalHeader>
-                    <ModalBody className="px-6 pb-6">
-                        <VStack className="gap-4">
-                            <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                    <ModalBody className="px-8 pb-8">
+                        <VStack className="gap-5">
+                            <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[2px]">
                                 {t('principal.hierarchy.sectionNameLabel') || 'Section Name'}
                             </Text>
-                            <Input className="h-14 bg-silk border-border rounded-2xl px-2">
+                            <Input className="h-16 bg-phase-canvas border-phase-border rounded-[20px] px-3">
                                 <InputField
-                                    placeholder={t('principal.hierarchy.sectionNamePlaceholder') || "e.g., Primary Section"}
+                                    placeholder={t('principal.hierarchy.sectionNamePlaceholder') || "e.g., Primary Wing"}
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                     value={newSectionName}
                                     onChangeText={setNewSectionName}
-                                    className="text-ink font-bold"
+                                    className="text-phaseText-primary font-black text-[15px]"
                                 />
                             </Input>
                         </VStack>
                     </ModalBody>
-                    <ModalFooter className="p-6 pt-0">
-                        <HStack className="gap-3 w-full">
+                    <ModalFooter className="p-8 pt-0">
+                        <HStack className="gap-4 w-full">
                             <Button
                                 variant="outline"
-                                className="flex-1 rounded-2xl h-12 border-border"
+                                className="flex-1 rounded-[16px] h-14 border-phase-border bg-phase-canvas"
                                 onPress={() => {
                                     setShowAddSection(false);
                                     setNewSectionName('');
                                 }}
                             >
-                                <ButtonText className="text-ink font-bold">
+                                <ButtonText className="text-phaseText-primary font-black uppercase text-[11px] tracking-widest">
                                     {t('common.cancel')}
                                 </ButtonText>
                             </Button>
                             <Button
-                                className="flex-1 rounded-2xl h-12 shadow-sm"
+                                className="flex-1 rounded-[16px] h-14 shadow-md bg-phase-interactive border-none"
                                 onPress={handleAddSection}
                             >
-                                <ButtonText className="text-white font-bold">
-                                    {t('common.add') || 'Add'}
+                                <ButtonText className="text-white font-black uppercase text-[11px] tracking-widest">
+                                    {t('common.add') || 'Initialize'}
                                 </ButtonText>
                             </Button>
                         </HStack>
@@ -278,49 +293,53 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 }}
             >
                 <ModalBackdrop />
-                <ModalContent className="bg-white rounded-[32px] p-2">
-                    <ModalHeader className="p-6">
-                        <Heading className="text-xl font-black text-ink uppercase tracking-wider">
-                            {t('principal.hierarchy.addGradeTitle') || 'Initialize Grade'}
-                        </Heading>
+                <ModalContent className="bg-phase-surface rounded-[40px] p-2 border border-phase-border shadow-2xl">
+                    <ModalHeader className="p-8">
+                        <VStack className="gap-1">
+                            <Heading className="text-[20px] font-black text-phaseText-primary uppercase tracking-wider">
+                                {t('principal.hierarchy.addGradeTitle') || 'Identify Grade'}
+                            </Heading>
+                            <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[2px]">Level Integration</Text>
+                        </VStack>
                     </ModalHeader>
-                    <ModalBody className="px-6 pb-6">
-                        <VStack className="gap-4">
-                            <Text className="text-xs font-bold text-ink/40 uppercase tracking-widest">
+                    <ModalBody className="px-8 pb-8">
+                        <VStack className="gap-5">
+                            <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[2px]">
                                 {t('principal.hierarchy.gradeNumberLabel') || 'Grade Level (1-13)'}
                             </Text>
-                            <Input className="h-14 bg-silk border-border rounded-2xl px-2">
+                            <Input className="h-16 bg-phase-canvas border-phase-border rounded-[20px] px-3">
                                 <InputField
                                     placeholder={t('principal.hierarchy.gradeNumberPlaceholder') || "e.g., 5"}
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                     value={newGradeNumber}
                                     onChangeText={setNewGradeNumber}
                                     keyboardType="numeric"
-                                    className="text-ink font-bold"
+                                    className="text-phaseText-primary font-black text-[15px]"
                                 />
                             </Input>
                         </VStack>
                     </ModalBody>
-                    <ModalFooter className="p-6 pt-0">
-                        <HStack className="gap-3 w-full">
+                    <ModalFooter className="p-8 pt-0">
+                        <HStack className="gap-4 w-full">
                             <Button
                                 variant="outline"
-                                className="flex-1 rounded-2xl h-12 border-border"
+                                className="flex-1 rounded-[16px] h-14 border-phase-border bg-phase-canvas"
                                 onPress={() => {
                                     setShowAddGrade(false);
                                     setNewGradeNumber('');
                                     setSelectedSectionId(null);
                                 }}
                             >
-                                <ButtonText className="text-ink font-bold">
+                                <ButtonText className="text-phaseText-primary font-black uppercase text-[11px] tracking-widest">
                                     {t('common.cancel')}
                                 </ButtonText>
                             </Button>
                             <Button
-                                className="flex-1 rounded-2xl h-12 shadow-sm"
+                                className="flex-1 rounded-[16px] h-14 shadow-md bg-phase-interactive border-none"
                                 onPress={handleAddGrade}
                             >
-                                <ButtonText className="text-white font-bold">
-                                    {t('common.add') || 'Add'}
+                                <ButtonText className="text-white font-black uppercase text-[11px] tracking-widest">
+                                    {t('common.add') || 'Commit'}
                                 </ButtonText>
                             </Button>
                         </HStack>

@@ -5,38 +5,32 @@ import { Box, Button, ButtonText, Theme } from '@repo/ui';
 
 export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom: () => void }) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>
+        <HStack className="gap-4 flex-wrap items-center">
             <FeatureGuard action="create" subject="Classroom">
                 <Button 
                     action="primary"
-                    onPress={onCreateClassroom}
-                    sx={{ 
-                        flexDirection: 'row', 
-                        alignItems: 'center', 
-                        gap: 8, 
-                        backgroundColor: 'var(--sanctuary-saffron)',
-                        borderRadius: Theme.corners.comfortable
-                    }}
+                    onPress={() => { hapticLight(); onCreateClassroom(); }}
+                    className="bg-sanctuarySaffron rounded-full px-8 h-12 shadow-sm active:opacity-85"
                 >
-                    <Plus size={18} color="white" />
-                    <ButtonText sx={{ color: 'white' }}>Create Classroom</ButtonText>
+                    <HStack className="items-center gap-2.5">
+                        <Icon as={Plus} size="sm" className="text-sacredWhite" />
+                        <ButtonText className="text-sacredWhite font-black uppercase text-[10px] tracking-[0.2em]">Create Classroom</ButtonText>
+                    </HStack>
                 </Button>
             </FeatureGuard>
             <FeatureGuard action="read" subject="Classroom">
                 <Button 
                     variant="outline" 
                     action="secondary"
-                    sx={{ 
-                        flexDirection: 'row', 
-                        alignItems: 'center', 
-                        gap: 8,
-                        borderRadius: Theme.corners.comfortable
-                    }}
+                    onPress={hapticLight}
+                    className="rounded-full px-8 h-12 border-sanctuary-border bg-sanctuary-surface shadow-sm active:bg-sanctuary-surface-secondary"
                 >
-                    <ScanLine size={18} />
-                    <ButtonText>Scan QR</ButtonText>
+                    <HStack className="items-center gap-2.5">
+                        <Icon as={ScanLine} size="sm" className="text-sanctuary-text" />
+                        <ButtonText className="text-sanctuary-text font-black uppercase text-[10px] tracking-[0.2em]">Scan QR</ButtonText>
+                    </HStack>
                 </Button>
             </FeatureGuard>
-        </Box>
+        </HStack>
     );
 }

@@ -7,7 +7,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TextInput } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { supabase } from '@repo/core';
 import {
@@ -15,12 +14,13 @@ import {
     HStack,
     VStack,
     Text,
-    useTheme,
     Pressable,
     Icon,
-    Theme,
     Input,
-    InputField
+    InputField,
+    hapticLight,
+    Heading,
+    Spinner
 } from '@repo/ui';
 
 interface Observation {
@@ -50,13 +50,13 @@ export default function PrincipalObservationsSection({
     const [content, setContent] = useState('');
     const [obsType, setObsType] = useState('note');
 
-    const getObsColorClass = (type: string): string => {
+    const getObsStyles = (type: string) => {
         switch (type) {
-            case 'walkthrough': return 'bg-phase-interactive';
-            case 'concern': return 'bg-phase-danger';
-            case 'praise': return 'bg-phase-success';
-            case 'note': return 'bg-phase-interactive';
-            default: return 'bg-phaseText-muted';
+            case 'walkthrough': return { bg: 'bg-phase-interactive', text: 'text-white' };
+            case 'concern': return { bg: 'bg-phase-danger', text: 'text-white' };
+            case 'praise': return { bg: 'bg-phase-success', text: 'text-white' };
+            case 'note': return { bg: 'bg-phase-interactive/20', text: 'text-phase-interactive' };
+            default: return { bg: 'bg-phaseText-muted/10', text: 'text-phaseText-muted' };
         }
     };
 
@@ -106,80 +106,89 @@ export default function PrincipalObservationsSection({
     }
 
     return (
-        <Box className="bg-phase-surface rounded-3xl border border-phase-border p-5 shadow-sm">
-            <HStack className="justify-between items-center mb-5">
-                <Text className="text-[17px] font-black text-phaseText-primary">
-                    Observation Notes
-                </Text>
+        <Box className="bg-phase-surface rounded-[32px] border border-phase-border p-6 shadow-sm">
+            <HStack className="justify-between items-center mb-6">
+                <VStack className="gap-0.5">
+                    <Heading className="text-[20px] font-black text-phaseText-primary tracking-tight">
+                        Observations
+                    </Heading>
+                    <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[2px]">Institutional Logs</Text>
+                </VStack>
                 <Pressable
                     onPress={() => { hapticLight(); setShowForm(!showForm); }}
-                    className={`rounded-xl px-4 py-1.5 flex-row items-center gap-2 active:scale-95 transition-all ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
+                    className={`rounded-[18px] px-4 py-2.5 flex-row items-center gap-2 active:scale-95 transition-all shadow-sm ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
                 >
                     <Icon as={Plus} size="xs" className={showForm ? 'text-phaseText-primary' : 'text-white'} />
-                    <Text className={`text-[12px] font-black uppercase tracking-wider ${showForm ? 'text-phaseText-primary' : 'text-white'}`}>
-                        {showForm ? 'Hide' : 'New'}
+                    <Text className={`text-[11px] font-black uppercase tracking-widest ${showForm ? 'text-phaseText-primary' : 'text-white'}`}>
+                        {showForm ? 'Hide' : 'New Entry'}
                     </Text>
                 </Pressable>
             </HStack>
 
             {loading && (
-                <VStack className="gap-3">
-                    <Box className="h-12 bg-phase-canvas border border-phase-border rounded-xl opacity-50" />
-                    <Box className="h-12 bg-phase-canvas border border-phase-border rounded-xl opacity-30" />
-                </VStack>
+                <Box className="h-[120px] items-center justify-center bg-phase-canvas rounded-[24px] border border-phase-border opacity-50">
+                    <Spinner className="text-phase-interactive" />
+                </Box>
             )}
 
-            {!loading && observations.length === 0 && (
-                <Box className="bg-phase-canvas rounded-2xl border border-dashed border-phase-border py-8 px-5 items-center">
-                    <Text className="text-[13px] font-bold text-phaseText-muted text-center leading-relaxed">
-                        No observations recorded. Start your first walkthrough note to begin.
+            {!loading && observations.length === 0 && !showForm && (
+                <Box className="bg-phase-canvas rounded-[24px] border border-dashed border-phase-border py-12 px-6 items-center">
+                    <Text className="text-[12px] font-black text-phaseText-muted text-center leading-relaxed uppercase tracking-[2px] opacity-40">
+                        Institutional memory current.
                     </Text>
                 </Box>
             )}
 
-            {!loading && observations.map((obs, index) => (
-                <VStack
-                    key={obs.id}
-                    className={`py-4 ${index !== observations.length - 1 ? 'border-b border-phase-border' : ''} gap-2.5`}
-                >
-                    <HStack className="items-center justify-between">
-                        <Box className={`rounded-lg px-2 py-0.5 ${getObsColorClass(obs.type)}`}>
-                            <Text className="text-[9px] font-black text-white uppercase tracking-wider">
-                                {obs.type}
+            {!loading && observations.map((obs, index) => {
+                const styles = getObsStyles(obs.type);
+                return (
+                    <VStack
+                        key={obs.id}
+                        className={`py-5 ${index !== observations.length - 1 ? 'border-b border-phase-border/50' : ''} gap-3`}
+                    >
+                        <HStack className="items-center justify-between">
+                            <Box className={`rounded-lg px-2.5 py-1 ${styles.bg} border border-transparent`}>
+                                <Text className={`text-[9px] font-black uppercase tracking-widest ${styles.text}`}>
+                                    {obs.type}
+                                </Text>
+                            </Box>
+                            <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">
+                                {new Date(obs.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </Text>
-                        </Box>
-                        <Text className="text-[11px] font-black text-phaseText-muted">
-                            {new Date(obs.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </HStack>
+                        <Text className="text-[14px] leading-[22px] text-phaseText-primary font-bold opacity-90" numberOfLines={3}>
+                            {obs.content}
                         </Text>
-                    </HStack>
-                    <Text className="text-[14px] leading-relaxed text-phaseText-primary font-medium" numberOfLines={2}>
-                        {obs.content}
-                    </Text>
-                </VStack>
-            ))}
+                    </VStack>
+                );
+            })}
 
             {showForm && (
-                <VStack className="mt-6 gap-4 border-t border-phase-border pt-6">
-                    <Input className="min-h-[100px] bg-phase-canvas border border-phase-border rounded-2xl px-4 py-3 shadow-sm">
-                        <InputField
-                            placeholder="Record your observation notes..."
-                            placeholderTextColor="rgba(0,0,0,0.3)"
-                            value={content}
-                            onChangeText={setContent}
-                            multiline
-                            className="text-[14px] font-bold text-phaseText-primary"
-                        />
-                    </Input>
+                <VStack className="mt-4 gap-6 border-t border-phase-border pt-8">
+                    <VStack className="gap-1.5">
+                        <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-[2px]">Capture Observation</Text>
+                        <Input className="min-h-[140px] bg-phase-canvas border border-phase-border rounded-[24px] p-5 shadow-inner">
+                            <InputField
+                                placeholder="Record high-level institutional signal..."
+                                placeholderTextColor="rgba(0,0,0,0.3)"
+                                value={content}
+                                onChangeText={setContent}
+                                multiline
+                                className="text-[15px] font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                    </VStack>
 
-                    <HStack className="gap-2 flex-wrap">
+                    <HStack className="gap-2.5 flex-wrap">
                         {OBS_TYPE_OPTIONS.map((t) => {
                             const isSelected = obsType === t;
+                            const styles = getObsStyles(t);
                             return (
                                 <Pressable key={t} onPress={() => { hapticLight(); setObsType(t); }}>
                                     <Box
-                                        className={`rounded-full px-4 py-1.5 border transition-all ${isSelected ? `${getObsColorClass(t)} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
+                                        className={`rounded-full px-5 py-2.5 border transition-all ${isSelected ? `${styles.bg} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
                                     >
-                                        <Text className={`text-[11px] font-black uppercase tracking-wider ${isSelected ? 'text-white' : 'text-phaseText-muted'}`}>
+                                        <Text className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-phaseText-muted'}`}>
                                             {t}
                                         </Text>
                                     </Box>
@@ -189,13 +198,16 @@ export default function PrincipalObservationsSection({
                     </HStack>
 
                     <Pressable
-                        onPress={handleSave}
-                        disabled={saving}
-                        className={`bg-phase-interactive rounded-2xl py-3.5 items-center shadow-sm active:scale-95 transition-all ${saving ? 'opacity-60' : ''}`}
+                        onPress={() => { hapticLight(); handleSave(); }}
+                        disabled={saving || !content.trim()}
+                        className={`bg-phase-interactive rounded-[20px] h-16 items-center justify-center shadow-md active:scale-95 transition-all ${saving || !content.trim() ? 'opacity-50' : ''}`}
                     >
-                        <Text className="text-[13px] font-black text-white uppercase tracking-widest">
-                            {saving ? 'Recording...' : 'Record Observation'}
-                        </Text>
+                        <HStack className="gap-3 items-center">
+                            {saving && <Spinner size="small" color="#FFFFFF" />}
+                            <Text className="text-[12px] font-black text-white uppercase tracking-[3px]">
+                                {saving ? 'Recording...' : 'Commit to Record'}
+                            </Text>
+                        </HStack>
                     </Pressable>
                 </VStack>
             )}

@@ -71,46 +71,46 @@ export function TeacherWorkspaceShell({
 
     return (
         <VStack className="gap-8">
-            <Box className="bg-sanctuary-surface-secondary rounded-[32px] p-8 border border-sanctuary-border/10 overflow-hidden shadow-sm relative">
+            <Box className="bg-sanctuary-surface-secondary/40 rounded-[32px] p-8 border border-sanctuary-border overflow-hidden relative">
                 {/* Decorative Glow Elements */}
-                <Box className="absolute -top-4 -right-4 w-44 h-44 rounded-full bg-sanctuarySaffron/10" />
-                <Box className="absolute -bottom-12 -left-4 w-40 h-40 rounded-full bg-gurudeviBlue/5" />
-
+                <Box className="absolute -top-4 -right-4 w-44 h-44 rounded-full bg-sanctuarySaffron/5 opacity-[0.03]" />
+                <Box className="absolute -bottom-12 -left-4 w-40 h-40 rounded-full bg-sanctuary-info/5 opacity-[0.03]" />
+ 
                 <VStack className="gap-8 relative">
                     <HStack className="items-start justify-between gap-6 flex-wrap">
-                        <VStack className="flex-1 min-w-[240px] gap-4">
-                            <HStack className="gap-2 flex-wrap">
+                        <VStack className="flex-1 min-w-[240px] gap-6">
+                            <HStack className="gap-2.5 flex-wrap">
                                 <HeroBadge label={title} />
                                 <HeroBadge label="Teacher role" tone="muted" />
                                 {isDemoMode ? <HeroBadge label="Demo data" tone="accent" /> : null}
                             </HStack>
-
-                            <VStack className="gap-2 mt-2">
-                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.2em] ml-0.5">
+ 
+                            <VStack className="gap-3 mt-2">
+                                <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.3em] ml-0.5">
                                     Classroom workspace
                                 </Text>
-                                <Heading className="text-sanctuary-text text-3xl font-bold leading-tight lg:text-4xl">
+                                <Heading className="text-sanctuary-text text-4xl font-black leading-[1.1] tracking-tighter lg:text-5xl">
                                     Registry & Resonance.
                                 </Heading>
-                                <Text className="text-sanctuary-text-muted text-sm leading-6 max-w-2xl">
+                                <Text className="text-sanctuary-text text-sm leading-relaxed max-w-2xl font-medium opacity-80">
                                     Classroom registry becomes the working surface. Actions stay close, pulse stays readable,
                                     and the teacher role leads from one calm operational shell.
                                 </Text>
                             </VStack>
                         </VStack>
-
-                        <Box className="min-w-[280px] bg-sanctuary-surface/40 border border-sanctuary-border/10 rounded-2xl p-6 lg:min-w-[320px]">
-                            <VStack className="gap-2">
-                                <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.15em]">
+ 
+                        <Box className="min-w-[280px] bg-sanctuary-surface border border-sanctuary-border rounded-3xl p-7 lg:min-w-[340px]">
+                            <VStack className="gap-3">
+                                <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
                                     Workspace frame
                                 </Text>
-                                <Text className="text-sanctuary-text text-sm leading-6">
+                                <Text className="text-sanctuary-text text-sm font-bold leading-relaxed tracking-tight">
                                     {subtitle}
                                 </Text>
                             </VStack>
                         </Box>
                     </HStack>
-
+ 
                     <HStack className="gap-4 flex-wrap">
                         {heroMetrics.map((metric) => (
                             <HeroMetricCard key={metric.label} label={metric.label} value={metric.value} />
@@ -185,17 +185,17 @@ function HeroBadge({
             case 'accent':
                 return 'bg-sanctuarySaffron/10 border-sanctuarySaffron/20 text-sanctuarySaffron';
             case 'muted':
-                return 'bg-sanctuary-text-muted/5 border-sanctuary-border/10 text-sanctuary-text-muted';
+                return 'bg-sanctuary-text-tertiary/5 border-sanctuary-border text-sanctuary-text-tertiary';
             default:
-                return 'bg-gurudeviBlue/10 border-gurudeviBlue/20 text-gurudeviBlue';
+                return 'bg-sanctuary-info/10 border-sanctuary-info/20 text-sanctuary-info';
         }
     }, [tone]);
 
     return (
         <Box
-            className={`px-3 py-1.5 rounded-full border ${badgeStyle}`}
+            className={`px-3 py-1.5 rounded-xl border ${badgeStyle}`}
         >
-            <Text className="text-[10px] font-bold tracking-[0.1em] uppercase inherit-color">
+            <Text className="text-[10px] font-black tracking-[0.15em] uppercase inherit-color">
                 {label}
             </Text>
         </Box>
@@ -210,11 +210,11 @@ function HeroMetricCard({
     value: string;
 }) {
     return (
-        <Box className="flex-1 min-w-[140px] px-6 py-6 rounded-2xl border border-sanctuary-border/10 bg-sanctuary-surface/60 shadow-sm">
-            <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.1em]">
+        <Box className="flex-1 min-w-[140px] px-6 py-6 rounded-[24px] border border-sanctuary-border bg-sanctuary-surface shadow-sm">
+            <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
                 {label}
             </Text>
-            <Text className="text-sanctuary-text text-2xl font-bold mt-2">
+            <Text className="text-sanctuary-text text-3xl font-black mt-3 tracking-tighter">
                 {value}
             </Text>
         </Box>
@@ -236,25 +236,25 @@ function SurfacePanel({
 
     return (
         <Box
-            className={`rounded-[32px] p-8 border border-sanctuary-border/10 shadow-md ${
-                isPrimary ? 'bg-sanctuary-surface-secondary' : 'bg-sanctuary-surface'
+            className={`rounded-[32px] p-8 border border-sanctuary-border ${
+                isPrimary ? 'bg-sanctuary-surface-secondary/40' : 'bg-sanctuary-surface'
             }`}
         >
-            <VStack className="gap-6">
-                <VStack className="gap-4">
+            <VStack className="gap-7">
+                <VStack className="gap-5">
                     <HStack className="items-center justify-between gap-6">
-                        <VStack className="flex-1 gap-1">
-                            <Text className="text-sanctuary-text-muted text-[10px] font-bold uppercase tracking-[0.15em]">
+                        <VStack className="flex-1 gap-1.5">
+                            <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
                                 {slot.definition.subtitle || 'Capability surface'}
                             </Text>
-                            <Heading size="md" className="text-sanctuary-text font-bold">
+                            <Heading className="text-xl text-sanctuary-text font-black tracking-tight uppercase">
                                 {slot.definition.title}
                             </Heading>
                         </VStack>
 
                         {slot.definition.temporalLabel ? (
-                            <Box className="px-3 py-1.5 rounded-full bg-sanctuarySaffron/10 border border-sanctuary-border/10">
-                                <Text className="text-[10px] font-bold uppercase tracking-[0.1em] text-sanctuarySaffron">
+                            <Box className="px-3.5 py-2 rounded-xl bg-sanctuarySaffron/10 border border-sanctuarySaffron/20">
+                                <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuarySaffron">
                                     {slot.definition.temporalLabel}
                                 </Text>
                             </Box>
@@ -262,19 +262,19 @@ function SurfacePanel({
                     </HStack>
 
                     {slot.definition.summary ? (
-                        <Text className="text-sanctuary-text-muted text-sm leading-6">
+                        <Text className="text-sanctuary-text text-sm leading-relaxed font-medium opacity-70">
                             {slot.definition.summary}
                         </Text>
                     ) : null}
-
+ 
                     {Array.isArray(slot.definition.metadata) && slot.definition.metadata.length > 0 ? (
-                        <HStack className="gap-2 flex-wrap">
+                        <HStack className="gap-2.5 flex-wrap">
                             {slot.definition.metadata.map((item) => (
                                 <Box 
                                     key={item} 
-                                    className="px-2.5 py-1 rounded-full bg-sanctuary-text-muted/5 border border-sanctuary-border/10"
+                                    className="px-3 py-1.5 rounded-xl bg-sanctuary-surface-secondary border border-sanctuary-border"
                                 >
-                                    <Text className="text-[9px] font-bold uppercase tracking-[0.05em] text-sanctuary-text-muted">
+                                    <Text className="text-[10px] font-black uppercase tracking-[0.15em] text-sanctuary-text-tertiary">
                                         {item}
                                     </Text>
                                 </Box>

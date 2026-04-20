@@ -22,7 +22,6 @@ import {
     RadioIcon,
     RadioLabel,
     Switch,
-    Theme
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { ClassroomGradingSettings } from '@repo/core';
@@ -52,32 +51,21 @@ export default function GradingSettings({
     };
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: Theme.colors.ink,
-                padding: Theme.spacing.lg,
-                borderTopLeftRadius: Theme.corners.generous,
-                borderTopRightRadius: Theme.corners.generous,
-            }}
-        >
-            <VStack space="lg">
+        <Box className="flex-1 bg-sanctuary-ink p-10 rounded-t-[40px]">
+            <VStack className="gap-10">
                 {/* Header */}
-                <Heading
-                    size="xl"
-                    color={Theme.colors.sanctuarySaffron}
-                    sx={{ marginBottom: Theme.spacing.md }}
-                >
-                    {t('grading.settings.title') || 'Grading Settings'}
-                </Heading>
+                <VStack className="gap-2">
+                    <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-[0.25em]">
+                        {t('grading.settings.admin') || 'Administration'}
+                    </Text>
+                    <Heading className="text-4xl font-black text-sacredWhite">
+                        {t('grading.settings.title') || 'Grading Settings'}
+                    </Heading>
+                </VStack>
 
                 {/* Grading Mode Selection */}
-                <VStack space="md">
-                    <Text
-                        size="lg"
-                        color={Theme.colors.sacredWhite}
-                        sx={{ fontWeight: '600' }}
-                    >
+                <VStack className="gap-4">
+                    <Text className="text-[11px] font-black text-sacredWhite/40 uppercase tracking-[0.15em] ml-1">
                         {t('grading.settings.modeLabel') || 'Grading Mode'}
                     </Text>
 
@@ -85,202 +73,76 @@ export default function GradingSettings({
                         value={gradingMode}
                         onChange={(value: string) => setGradingMode(value as any)}
                     >
-                        <VStack space="sm">
-                            {/* Grade Only */}
-                            <HStack
-                                space="md"
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.ink,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <Radio value="grade">
-                                    <RadioIndicator>
-                                        <RadioIcon />
-                                    </RadioIndicator>
-                                    <RadioLabel>
-                                        <VStack>
-                                            <Text
-                                                color={Theme.colors.sacredWhite}
-                                                sx={{ fontWeight: '600' }}
-                                            >
-                                                {t('grading.settings.gradeOnly') || 'Grade Only'}
-                                            </Text>
-                                            <Text
-                                                size="sm"
-                                                color={Theme.colors.mistGray}
-                                            >
-                                                {t('grading.settings.gradeOnlyDesc') || 'Display letter grades (A-F)'}
-                                            </Text>
-                                        </VStack>
-                                    </RadioLabel>
-                                </Radio>
-                            </HStack>
-                            {/* Marks Only */}
-                            <HStack
-                                space="md"
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.ink,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <Radio value="marks">
-                                    <RadioIndicator>
-                                        <RadioIcon />
-                                    </RadioIndicator>
-                                    <RadioLabel>
-                                        <VStack>
-                                            <Text
-                                                color={Theme.colors.sacredWhite}
-                                                sx={{ fontWeight: '600' }}
-                                            >
-                                                {t('grading.settings.marksOnly') || 'Marks Only'}
-                                            </Text>
-                                            <Text
-                                                size="sm"
-                                                color={Theme.colors.mistGray}
-                                            >
-                                                {t('grading.settings.marksOnlyDesc') || 'Display marks out of 100'}
-                                            </Text>
-                                        </VStack>
-                                    </RadioLabel>
-                                </Radio>
-                            </HStack>
-
-                            {/* GPA Only */}
-                            <HStack
-                                space="md"
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.ink,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <Radio value="gpa">
-                                    <RadioIndicator>
-                                        <RadioIcon />
-                                    </RadioIndicator>
-                                    <RadioLabel>
-                                        <VStack>
-                                            <Text
-                                                color={Theme.colors.sacredWhite}
-                                                sx={{ fontWeight: '600' }}
-                                            >
-                                                {t('grading.settings.gpaOnly') || 'GPA Only'}
-                                            </Text>
-                                            <Text
-                                                size="sm"
-                                                color={Theme.colors.mistGray}
-                                            >
-                                                {t('grading.settings.gpaOnlyDesc') || 'Display letter grades (A-F) and GPA'}
-                                            </Text>
-                                        </VStack>
-                                    </RadioLabel>
-                                </Radio>
-                            </HStack>
-
-                            {/* Both */}
-                            <HStack
-                                space="md"
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.ink,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <Radio value="both">
-                                    <RadioIndicator>
-                                        <RadioIcon />
-                                    </RadioIndicator>
-                                    <RadioLabel>
-                                        <VStack>
-                                            <Text
-                                                color={Theme.colors.sacredWhite}
-                                                sx={{ fontWeight: '600' }}
-                                            >
-                                                {t('grading.settings.both') || 'Both'}
-                                            </Text>
-                                            <Text
-                                                size="sm"
-                                                color={Theme.colors.mistGray}
-                                            >
-                                                {t('grading.settings.bothDesc') || 'Display marks and GPA together'}
-                                            </Text>
-                                        </VStack>
-                                    </RadioLabel>
-                                </Radio>
-                            </HStack>
+                        <VStack className="gap-3.5">
+                            {[
+                                { value: 'grade', label: t('grading.settings.gradeOnly') || 'Grade Only', desc: t('grading.settings.gradeOnlyDesc') || 'Display letter grades (A-F)' },
+                                { value: 'marks', label: t('grading.settings.marksOnly') || 'Marks Only', desc: t('grading.settings.marksOnlyDesc') || 'Display marks out of 100' },
+                                { value: 'gpa', label: t('grading.settings.gpaOnly') || 'GPA Only', desc: t('grading.settings.gpaOnlyDesc') || 'Display letter grades (A-F) and GPA' },
+                                { value: 'both', label: t('grading.settings.both') || 'Both', desc: t('grading.settings.bothDesc') || 'Display marks and GPA together' }
+                            ].map((item) => (
+                                <HStack
+                                    key={item.value}
+                                    className={`p-5 rounded-[28px] border ${gradingMode === item.value ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron/40' : 'bg-sacredWhite/5 border-sacredWhite/10'}`}
+                                >
+                                    <Radio value={item.value} size="md">
+                                        <RadioIndicator className="border-2 mr-5 border-sacredWhite/20">
+                                            <RadioIcon className="bg-sanctuarySaffron" />
+                                        </RadioIndicator>
+                                        <RadioLabel className="flex-1">
+                                            <VStack className="gap-0.5">
+                                                <Text className={`text-xl font-black ${gradingMode === item.value ? 'text-sanctuarySaffron' : 'text-sacredWhite'}`}>
+                                                    {item.label}
+                                                </Text>
+                                                <Text className="text-[13px] font-black text-sacredWhite/40 leading-snug">
+                                                    {item.desc}
+                                                </Text>
+                                            </VStack>
+                                        </RadioLabel>
+                                    </Radio>
+                                </HStack>
+                            ))}
                         </VStack>
                     </RadioGroup>
                 </VStack>
 
                 {/* Show Ranks Toggle */}
-                <HStack
-                    space="md"
-                    sx={{
-                        padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.ink,
-                        borderRadius: Theme.corners.comfortable,
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}
-                >
-                    <VStack sx={{ flex: 1 }}>
-                        <Text
-                            color={Theme.colors.sacredWhite}
-                            sx={{ fontWeight: '600' }}
-                        >
+                <HStack className="justify-between items-center bg-sacredWhite/5 p-7 rounded-[28px] border border-sacredWhite/10">
+                    <VStack className="flex-1 gap-1">
+                        <Text className="text-xl font-black text-sacredWhite">
                             {t('grading.settings.showRanks') || 'Show Student Ranks'}
                         </Text>
-                        <Text
-                            size="sm"
-                            color={Theme.colors.mistGray}
-                        >
+                        <Text className="text-[13px] font-black text-sacredWhite/40">
                             {t('grading.settings.showRanksDesc') || 'Display rankings based on grades'}
                         </Text>
                     </VStack>
                     <Switch
                         value={showRanks}
                         onValueChange={setShowRanks}
-                        sx={{
-                            props: {
-                                trackColor: {
-                                    false: Theme.colors.mistGray,
-                                    true: Theme.colors.sanctuarySaffron,
-                                },
-                            },
+                        trackColor={{
+                            false: '#2A2A2A',
+                            true: '#F4B400',
                         }}
+                        thumbColor="#FFF"
                     />
                 </HStack>
 
                 {/* Action Buttons */}
-                <HStack
-                    space="md"
-                    sx={{ marginTop: Theme.spacing.md }}
-                >
+                <HStack className="gap-4 mt-2">
                     <Button
                         variant="outline"
-                        sx={{
-                            flex: 1,
-                            borderColor: Theme.colors.mistGray,
-                        }}
+                        className="flex-1 h-16 rounded-full border-sacredWhite/20 bg-transparent active:bg-sacredWhite/5"
                         onPress={onCancel}
                     >
-                        <ButtonText color={Theme.colors.sacredWhite}>
+                        <ButtonText className="text-sacredWhite font-black uppercase text-[11px] tracking-[0.2em]">
                             {t('common.cancel') || 'Cancel'}
                         </ButtonText>
                     </Button>
 
                     <Button
-                        sx={{
-                            flex: 1,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                        }}
+                        className="flex-1 h-16 bg-sanctuarySaffron rounded-full shadow-lg shadow-sanctuarySaffron/20 active:opacity-85"
                         onPress={handleSave}
                     >
-                        <ButtonText color={Theme.colors.sacredWhite}>
+                        <ButtonText className="text-sanctuary-ink font-black uppercase text-[11px] tracking-[0.2em]">
                             {t('common.save') || 'Save'}
                         </ButtonText>
                     </Button>

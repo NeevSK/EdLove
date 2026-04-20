@@ -2,13 +2,22 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { 
-    useThemedColors, 
+    Box,
+    VStack,
+    HStack,
+    Text,
+    Heading,
+    Pressable,
+    Icon,
     SkeletonCard,
-    Icon } from '@repo/ui';
-import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
-import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
-import { EditableItem } from '@repo/profile/components/EditableItem';
-import { useSchoolProfile } from '@repo/profile/hooks/useSchoolProfile';
+    hapticLight
+} from '@repo/ui';
+import {
+    AvatarDisplay,
+    ContactLinktree,
+    EditableItem,
+    useSchoolProfile
+} from '../components/profile';
 import { 
     ArrowLeft, 
     School as SchoolIcon,
@@ -16,142 +25,163 @@ import {
     BookOpen, 
     Layout, 
     Globe,
-    Shield
+    Shield,
+    ChevronRight
 } from 'lucide-react-native';
 
 export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
     const navigation = useNavigation();
-    const { school, stats, loading, updateField, isEditable } = useSchoolProfile(schoolId);
+    const { school, stats, isLoading, updateField, isEditable } = useSchoolProfile(schoolId);
 
-    if (loading) return <div style={{ padding: '40px' }}><SkeletonCard /></div>;
-    if (!school) return <div style={{ padding: '40px', textAlign: 'center' }}>School not found</div>;
+    if (isLoading) return <Box className="p-10"><SkeletonCard /></Box>;
+    if (!school) return <Box className="p-10 items-center"><Text className="font-black opacity-50 uppercase tracking-widest">School not found</Text></Box>;
 
     return (
-        <div className="sub-view-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
-             {/* Header with Back button */}
-             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-                <button
-                    onClick={() => navigation.goBack()}
-                    className="secondary-button"
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', border: '1px solid var(--border)', borderRadius: '12px', background: 'transparent', cursor: 'pointer' }}
-                >
-                    <Icon as={ArrowLeft} size={16} /> 
-                    <span style={{ fontWeight: '600' }}>Back</span>
-                </button>
-            </div>
+        <VStack className="flex-1 bg-phase-canvas">
+            <Box className="max-w-[1000px] w-full mx-auto px-6 py-10">
+                {/* Header with Back button */}
+                <HStack className="mb-10">
+                    <Pressable
+                        onPress={() => { hapticLight(); navigation.goBack(); }}
+                        className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl border border-phase-border bg-phase-surface shadow-sm active:scale-95 transition-all"
+                    >
+                        <Icon as={ArrowLeft} size={14} className="text-phaseText-primary" /> 
+                        <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-widest">Back</Text>
+                    </Pressable>
+                </HStack>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
-                {/* Left Column: Essential Info */}
-                <div>
-                    {/* Hero Section */}
-                    <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px', position: 'relative', overflow: 'hidden', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
-                            <AvatarDisplay 
-                                userId={school.id}
-                                avatarUrl={null}
-                                fullName={school.name}
-                                size={120}
-                                editable={false}
-                                peekable={true}
-                                peekType="school"
-                            />
-                            
-                            <div style={{ flex: 1 }}>
-                                <EditableItem
-                                    icon={SchoolIcon}
-                                    label="School Name"
-                                    value={school.name}
-                                    field="name"
-                                    placeholder="Enter school name"
-                                    onSave={(field, val) => updateField(field as any, val)}
-                                    disabled={!isEditable}
+                <HStack className="gap-8 items-start">
+                    {/* Left Column: Essential Info */}
+                    <VStack className="flex-1 gap-6">
+                        {/* Hero Section */}
+                        <Box className="bg-phase-surface rounded-[40px] border border-phase-border p-10 shadow-xl overflow-hidden relative">
+                            <HStack className="gap-10 items-start">
+                                <AvatarDisplay 
+                                    name={school.name}
+                                    uri={school.logo_url || undefined}
+                                    editable={isEditable}
+                                    onSave={(uri) => updateField('logo_url', uri)}
                                 />
                                 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginBottom: '16px', marginTop: '12px' }}>
-                                    <Icon as={Shield} size={14} />
-                                    <span style={{ fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                        {school.type} School
-                                    </span>
-                                    <span style={{ opacity: 0.3 }}>•</span>
-                                    <span style={{ fontSize: '14px' }}>@{school.handle}</span>
-                                </div>
+                                <VStack className="flex-1 gap-6">
+                                    <EditableItem
+                                        icon={SchoolIcon}
+                                        label="School Name"
+                                        value={school.name}
+                                        field="name"
+                                        placeholder="Enter school name"
+                                        onSave={(field: string, val: string) => updateField(field, val)}
+                                        disabled={!isEditable}
+                                    />
+                                    
+                                    <HStack className="items-center gap-3">
+                                        <Box className="bg-phase-interactive/10 px-3 py-1.5 rounded-full border border-phase-interactive/20">
+                                            <HStack className="items-center gap-2">
+                                                <Icon as={Shield} size={10} className="text-phase-interactive" />
+                                                <Text className="text-[10px] font-black text-phase-interactive uppercase tracking-widest">
+                                                    {school.type} School
+                                                </Text>
+                                            </HStack>
+                                        </Box>
+                                        <Text className="text-[14px] font-bold text-phaseText-muted">@{school.handle}</Text>
+                                    </HStack>
 
-                                <div style={{ display: 'flex', gap: '12px' }}>
                                     {isEditable && (
-                                        <button className="premium-button" style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: 'var(--ink)', color: 'var(--background)', fontWeight: '700', cursor: 'pointer' }}>
-                                            Manage School
-                                        </button>
+                                        <Pressable 
+                                            onPress={() => hapticLight()}
+                                            className="bg-phase-interactive self-start px-6 h-12 rounded-2xl items-center justify-center shadow-md active:scale-95 transition-all"
+                                        >
+                                            <Text className="text-white text-[12px] font-black uppercase tracking-[2px]">Manage Institution</Text>
+                                        </Pressable>
                                     )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                </VStack>
+                            </HStack>
+                        </Box>
 
-                    {/* Quick Stats Grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-                        <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                            <div style={{ padding: '12px', background: 'var(--water-soft)', borderRadius: '12px' }}>
-                                <Icon as={Users} size="lg" className="text-water" />
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_students || 0}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Students</div>
-                            </div>
-                        </div>
-                        <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                            <div style={{ padding: '12px', background: 'var(--moss-soft)', borderRadius: '12px' }}>
-                                <Icon as={BookOpen} size="lg" className="text-moss" />
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '24px', fontWeight: '800' }}>{stats?.total_teachers || 0}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', fontWeight: '600' }}>Teachers</div>
-                            </div>
-                        </div>
-                    </div>
+                        {/* Quick Stats Grid */}
+                        <HStack className="gap-4">
+                            <Box className="flex-1 bg-phase-surface p-6 rounded-[32px] border border-phase-border shadow-sm">
+                                <HStack className="items-center gap-5">
+                                    <Box className="p-4 bg-phase-interactive/10 rounded-[22px]">
+                                        <Icon as={Users} size="md" className="text-phase-interactive" />
+                                    </Box>
+                                    <VStack className="gap-0.5">
+                                        <Text className="text-[28px] font-black text-phaseText-primary tracking-tighter">{stats?.total_students || 0}</Text>
+                                        <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[2px]">Students</Text>
+                                    </VStack>
+                                </HStack>
+                            </Box>
+                            <Box className="flex-1 bg-phase-surface p-6 rounded-[32px] border border-phase-border shadow-sm">
+                                <HStack className="items-center gap-5">
+                                    <Box className="p-4 bg-phase-success/10 rounded-[22px]">
+                                        <Icon as={BookOpen} size="md" className="text-phase-success" />
+                                    </Box>
+                                    <VStack className="gap-0.5">
+                                        <Text className="text-[28px] font-black text-phaseText-primary tracking-tighter">{stats?.total_teachers || 0}</Text>
+                                        <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[2px]">Teachers</Text>
+                                    </VStack>
+                                </HStack>
+                            </Box>
+                        </HStack>
 
-                    {/* About Section */}
-                    <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Our Mission</h3>
-                        <p style={{ color: 'var(--ink-ghost)', lineHeight: '1.6', fontSize: '15px' }}>
-                            Welcome to the public profile of {school.name}. We are dedicated to nurturing the growth of every student and educator in our community.
-                        </p>
-                    </div>
-                </div>
+                        {/* About Section */}
+                        <Box className="bg-phase-surface p-8 rounded-[32px] border border-phase-border shadow-sm">
+                            <VStack className="gap-4">
+                                <Heading className="text-[20px] font-black text-phaseText-primary tracking-tight">Our Mission</Heading>
+                                <Text className="text-[15px] leading-relaxed text-phaseText-secondary font-medium opacity-90">
+                                    Welcome to the public profile of {school.name}. We are dedicated to nurturing the growth of every student and educator in our community. Our commitment to excellence shapes every aspect of our institutional life.
+                                </Text>
+                            </VStack>
+                        </Box>
+                    </VStack>
 
-                {/* Right Column: Socials & Context */}
-                <div>
-                     {/* Social Sanctuary */}
-                     <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px', background: 'var(--background)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                            <Icon as={Globe} size={18} color="var(--ink-ghost)" />
-                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
-                                Official Links
-                            </h3>
-                        </div>
-                        
-                        <ContactLinktree 
-                            links={[]} 
-                            userName={school.name}
-                            userId={school.id}
-                            isOwnProfile={isEditable}
-                            editable={isEditable}
-                        />
-                    </div>
+                    {/* Right Column: Socials & Context */}
+                    <VStack className="w-[340px] gap-6">
+                         {/* Social Sanctuary */}
+                         <Box className="bg-phase-surface p-8 rounded-[32px] border border-phase-border shadow-sm">
+                            <VStack className="gap-6">
+                                <HStack className="items-center gap-3">
+                                    <Icon as={Globe} size="sm" className="text-phase-interactive" />
+                                    <Text className="text-[12px] font-black text-phaseText-muted uppercase tracking-[2px]">
+                                        Official Links
+                                    </Text>
+                                </HStack>
+                                
+                                <ContactLinktree 
+                                    links={[]} 
+                                    userName={school.name}
+                                    userId={school.id}
+                                    isOwnProfile={isEditable}
+                                    editable={isEditable}
+                                />
+                            </VStack>
+                        </Box>
 
-                    {/* Info Card */}
-                    <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)', borderRadius: '24px', border: '1px solid var(--border)' }}>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                            <Icon as={Layout} size={16} color="var(--ink-ghost)" />
-                            <span style={{ fontSize: '13px', fontWeight: '700' }}>School Structure</span>
-                        </div>
-                        <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}>
-                             {stats?.total_sections || 0} Sections • {stats?.total_classrooms || 0} Classrooms
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+                        {/* Info Card */}
+                        <Box className="bg-phase-canvas p-6 rounded-[32px] border border-phase-border border-dashed">
+                             <VStack className="gap-4">
+                                <HStack className="items-center gap-3">
+                                    <Icon as={Layout} size="xs" className="text-phaseText-muted" />
+                                    <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-widest">School Structure</Text>
+                                </HStack>
+                                <HStack className="items-center justify-between">
+                                    <Text className="text-[14px] font-black text-phaseText-primary">
+                                         {stats?.total_sections || 0} Sections
+                                    </Text>
+                                    <Icon as={ChevronRight} size="xs" className="text-phaseText-muted opacity-30" />
+                                </HStack>
+                                <HStack className="items-center justify-between">
+                                    <Text className="text-[14px] font-black text-phaseText-primary">
+                                         {stats?.total_classrooms || 0} Classrooms
+                                    </Text>
+                                    <Icon as={ChevronRight} size="xs" className="text-phaseText-muted opacity-30" />
+                                </HStack>
+                            </VStack>
+                        </Box>
+                    </VStack>
+                </HStack>
+            </Box>
+        </VStack>
     );
 }

@@ -108,7 +108,7 @@ function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
 }
 
 function SurfaceLauncher({
-  icon: Icon,
+  icon: LucideIcon,
   title,
   copy,
   actionLabel,
@@ -123,19 +123,19 @@ function SurfaceLauncher({
     <VStack className="gap-4">
       <HStack className="items-center gap-3">
         <Box className="w-10 h-10 rounded-xl bg-phase-warning/10 items-center justify-center">
-          <Icon size={18} color="#2A2318" />
+          <Icon as={LucideIcon} size={18} className="text-phaseText-primary" />
         </Box>
         <VStack className="flex-1 gap-0.5">
           <Text className="text-[15px] font-bold text-phaseText-primary">{title}</Text>
           <Text className="text-[12px] text-phaseText-secondary">{copy}</Text>
         </VStack>
       </HStack>
-      <Pressable onPress={onPress} className="self-start rounded-full bg-phase-primary px-4 py-2 border border-starlightGray/30 active:opacity-80">
+      <Pressable onPress={onPress} className="self-start rounded-full bg-phase-interactive px-4 py-2 border border-phase-border shadow-sm active:scale-95 transition-all">
           <HStack className="items-center gap-2">
-            <Text className="text-[12px] font-bold text-white">
+            <Text className="text-[12px] font-black text-white uppercase tracking-widest">
               {actionLabel}
             </Text>
-            <MoveRight size={14} color="white" />
+            <Icon as={MoveRight} size={14} className="text-white" />
           </HStack>
       </Pressable>
     </VStack>
@@ -168,24 +168,24 @@ function ProfileSurface({
           { label: 'Classrooms', value: stats?.total_classrooms ?? 0 },
           { label: 'Sections', value: stats?.total_sections ?? 0 }].map((item) => (
           <Box key={item.label}
-            className="min-w-[47%] flex-1 p-4 rounded-2xl bg-silk border border-starlightGray/20">
-            <Text className="text-[11px] font-bold text-phaseText-secondary uppercase">
+            className="min-w-[47%] flex-1 p-5 rounded-[24px] bg-phase-surface border border-phase-border shadow-sm">
+            <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest">
               {item.label}
             </Text>
-            <Text className="mt-1 text-2xl font-bold text-phaseText-primary">{item.value}</Text>
+            <Text className="mt-1 text-2xl font-black text-phaseText-primary tracking-tight">{item.value}</Text>
           </Box>
         ))}
       </HStack>
 
       <VStack className="gap-2">
         {actions.map((action) => (
-          <Pressable key={action.label} onPress={action.onPress} className="active:opacity-80">
-            <Box className="bg-silk rounded-2xl border border-starlightGray/20 p-4">
-              <HStack className="items-center gap-3">
-                <action.icon size={18} color="#4A90E2" />
+          <Pressable key={action.label} onPress={action.onPress} className="active:scale-[0.98] transition-all">
+            <Box className="bg-phase-surface rounded-[24px] border border-phase-border p-5 shadow-sm">
+              <HStack className="items-center gap-4">
+                <Icon as={action.icon} size="sm" className="text-phase-interactive" />
                 <VStack className="flex-1 gap-0.5">
-                  <Text className="text-[13px] font-bold text-phaseText-primary">{action.label}</Text>
-                  <Text className="text-[11px] text-phaseText-secondary">{action.hint}</Text>
+                  <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">{action.label}</Text>
+                  <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">{action.hint}</Text>
                 </VStack>
               </HStack>
             </Box>
@@ -204,25 +204,25 @@ function CommonsSurface({
 }) {
   return (
     <VStack className="gap-2">
-      <Pressable onPress={onOpenCommons} className="active:opacity-80">
-        <Box className="p-4 rounded-2xl border border-starlightGray/20 bg-silk">
-          <HStack className="items-center gap-3">
-            <Share2 size={18} color="#4A90E2" />
+      <Pressable onPress={onOpenCommons} className="active:scale-[0.98] transition-all">
+        <Box className="p-5 rounded-[24px] border border-phase-border bg-phase-surface shadow-sm">
+          <HStack className="items-center gap-4">
+            <Icon as={Share2} size="sm" className="text-phase-interactive" />
             <VStack className="flex-1 gap-0.5">
-              <Text className="text-[13px] font-bold text-phaseText-primary">Community, commons</Text>
-              <Text className="text-[11px] text-phaseText-secondary">Step, into the, mission and, culture layer, of the, school.</Text>
+              <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">Community, commons</Text>
+              <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">Step into the mission layer of the school.</Text>
             </VStack>
           </HStack>
         </Box>
       </Pressable>
 
-      <Pressable onPress={onOpenBreathing} className="active:opacity-80">
-        <Box className="p-4 rounded-2xl border border-starlightGray/20 bg-silk">
-          <HStack className="items-center gap-3">
-            <Wind size={18} color="#F5A623" />
+      <Pressable onPress={onOpenBreathing} className="active:scale-[0.98] transition-all">
+        <Box className="p-5 rounded-[24px] border border-phase-border bg-phase-surface shadow-sm">
+          <HStack className="items-center gap-4">
+            <Icon as={Wind} size="sm" className="text-phase-warning" />
             <VStack className="flex-1 gap-0.5">
-              <Text className="text-[13px] font-bold text-phaseText-primary">Leadership, breathing</Text>
-              <Text className="text-[11px] text-phaseText-secondary">Reset, before the, next institutional, decision.</Text>
+              <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">Leadership, breathing</Text>
+              <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">Reset before the next decision.</Text>
             </VStack>
           </HStack>
         </Box>

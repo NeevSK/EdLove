@@ -8,40 +8,35 @@ export function TeacherEchoActions() {
     const { t } = useTranslation();
     
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>
+        <HStack className="gap-4 flex-wrap items-center">
             <FeatureGuard action="read" subject="School">
                 <Button 
                     variant="outline" 
                     action="secondary"
-                    sx={{ 
-                        flexDirection: 'row', 
-                        alignItems: 'center', 
-                        gap: 8, 
-                        borderColor: 'var(--ember)',
-                        borderRadius: Theme.corners.comfortable
-                    }}
+                    onPress={hapticLight}
+                    className="rounded-full px-8 h-12 border-sanctuary-error shadow-sm bg-sanctuary-surface active:bg-sanctuary-error/5"
                 >
-                    <MessageCircle size={18} color="var(--ember)" />
-                    <ButtonText sx={{ color: 'var(--ember)' }}>
-                        {t('teacher.actions.principalEcho') || 'Principal Echo'}
-                    </ButtonText>
+                    <HStack className="items-center gap-2.5">
+                        <Icon as={MessageCircle} size="sm" className="text-sanctuary-error" />
+                        <ButtonText className="text-sanctuary-error font-black uppercase text-[10px] tracking-[0.2em]">
+                            {t('teacher.actions.principalEcho') || 'Principal Echo'}
+                        </ButtonText>
+                    </HStack>
                 </Button>
             </FeatureGuard>
             <FeatureGuard action="read" subject="School">
                 <Button 
                     variant="outline" 
                     action="secondary"
-                    sx={{ 
-                        flexDirection: 'row', 
-                        alignItems: 'center', 
-                        gap: 8,
-                        borderRadius: Theme.corners.comfortable
-                    }}
+                    onPress={hapticLight}
+                    className="rounded-full px-8 h-12 border-sanctuary-border bg-sanctuary-surface shadow-sm active:bg-sanctuary-surface-secondary"
                 >
-                    <ClipboardList size={18} />
-                    <ButtonText>My Echoes</ButtonText>
+                    <HStack className="items-center gap-2.5">
+                        <Icon as={ClipboardList} size="sm" className="text-sanctuary-text" />
+                        <ButtonText className="text-sanctuary-text font-black uppercase text-[10px] tracking-[0.2em]">My Echoes</ButtonText>
+                    </HStack>
                 </Button>
             </FeatureGuard>
-        </Box>
+        </HStack>
     );
 }

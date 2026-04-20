@@ -23,7 +23,6 @@ import {
     TextareaInput,
     Button,
     ButtonText,
-    Theme
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { marksToGPA } from '@repo/analytics';
@@ -67,27 +66,24 @@ export default function GradeEntryForm({
     };
 
     return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.md }}>
+        <VStack className="gap-8 p-6 bg-sanctuary-surface rounded-[32px] border border-sanctuary-border shadow-md">
             {/* Student Name Header */}
-            <VStack space="xs">
-                <Text size="sm" color={Theme.colors.starlightGray}>
+            <VStack className="gap-1.5">
+                <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[0.2em]">
                     {t('grades.student')}
                 </Text>
-                <Heading size="lg" color={Theme.colors.inkTruth}>
+                <Heading className="text-3xl font-black text-sanctuary-text -ml-0.5">
                     {studentName}
                 </Heading>
             </VStack>
 
             {/* Marks Input */}
-            <VStack space="xs">
-                <Text size="sm" color={Theme.colors.starlightGray}>
+            <VStack className="gap-3">
+                <Text className="text-[11px] font-black text-sanctuary-text-secondary uppercase tracking-[0.15em] ml-1">
                     {t('grades.marks')} *
                 </Text>
                 <Input
-                    sx={{
-                        borderColor: error ? Theme.colors.emberRed : Theme.colors.linen,
-                        borderRadius: Theme.corners.comfortable,
-                    }}
+                    className={`h-16 px-5 bg-sanctuary-surface-secondary/50 rounded-[24px] border ${error ? 'border-sanctuary-error' : 'border-sanctuary-border'}`}
                 >
                     <InputField
                         placeholder="0-100"
@@ -97,11 +93,11 @@ export default function GradeEntryForm({
                             setMarks(val);
                             setError('');
                         }}
-                        sx={{ color: Theme.colors.inkTruth }}
+                        className="text-sanctuary-text font-black text-xl"
                     />
                 </Input>
                 {error && (
-                    <Text size="xs" color={Theme.colors.emberRed}>
+                    <Text className="text-[10px] font-black text-sanctuary-error uppercase tracking-wider ml-2">
                         {error}
                     </Text>
                 )}
@@ -109,83 +105,64 @@ export default function GradeEntryForm({
 
             {/* Auto-computed GPA Preview */}
             {showGPA && marks !== '' && marksNumber > 0 && (
-                <Box
-                    sx={{
-                        padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.silk,
-                        borderRadius: Theme.corners.comfortable,
-                        borderWidth: 1,
-                        borderColor: Theme.colors.linen,
-                    }}
-                >
-                    <HStack space="md" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-                        <VStack>
-                            <Text size="xs" color={Theme.colors.starlightGray}>
+                <Box className="p-7 bg-sanctuarySaffron/5 rounded-[28px] border border-sanctuarySaffron/20 overflow-hidden relative">
+                    <HStack className="justify-between items-center relative z-10">
+                        <VStack className="gap-1.5">
+                            <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-[0.2em]">
                                 {t('grades.grade')}
                             </Text>
-                            <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
+                            <Text className="text-4xl font-black text-sanctuarySaffron">
                                 {grade}
                             </Text>
                         </VStack>
-                        <VStack sx={{ alignItems: 'flex-end' }}>
-                            <Text size="xs" color={Theme.colors.starlightGray}>
+                        <VStack className="gap-1.5 items-end">
+                            <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-[0.2em]">
                                 {t('grades.gpa')}
                             </Text>
-                            <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
+                            <Text className="text-4xl font-black text-sanctuarySaffron">
                                 {gpa.toFixed(1)}
                             </Text>
                         </VStack>
                     </HStack>
+                    <Box className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-sanctuarySaffron/10 opacity-20" />
                 </Box>
             )}
 
             {/* Feedback Textarea */}
-            <VStack space="xs">
-                <Text size="sm" color={Theme.colors.starlightGray}>
-                    {t('grades.feedback')} ({t('grades.optional')})
+            <VStack className="gap-3">
+                <Text className="text-[11px] font-black text-sanctuary-text-secondary uppercase tracking-[0.15em] ml-1">
+                    {t('grades.feedback')} <Text className="lowercase opacity-40">({t('grades.optional')})</Text>
                 </Text>
                 <Textarea
-                    sx={{
-                        borderColor: Theme.colors.linen,
-                        borderRadius: Theme.corners.comfortable,
-                        minHeight: 100,
-                    }}
+                    className="min-h-[140px] px-5 py-4 bg-sanctuary-surface-secondary/50 rounded-[28px] border border-sanctuary-border"
                 >
                     <TextareaInput
                         placeholder={t('grades.feedbackPlaceholder')}
                         value={feedback}
                         onChangeText={setFeedback}
-                        sx={{ color: Theme.colors.inkTruth }}
+                        className="text-sanctuary-text font-black text-base"
                     />
                 </Textarea>
             </VStack>
 
             {/* Action Buttons */}
-            <HStack space="md" sx={{ marginTop: Theme.spacing.md }}>
+            <HStack className="gap-4 pt-2">
                 {onCancel && (
                     <Button
                         variant="outline"
-                        sx={{
-                            flex: 1,
-                            borderColor: Theme.colors.linen,
-                            borderRadius: Theme.corners.comfortable,
-                        }}
+                        className="flex-1 h-14 rounded-full border-sanctuary-border bg-sanctuary-surface shadow-sm active:bg-sanctuary-surface-secondary"
                         onPress={onCancel}
                     >
-                        <ButtonText sx={{ color: Theme.colors.starlightGray }}>
+                        <ButtonText className="text-sanctuary-text-secondary font-black uppercase text-[11px] tracking-[0.2em]">
                             {t('common.cancel')}
                         </ButtonText>
                     </Button>
                 )}
                 <Button
-                    sx={{
-                        flex: 2,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        borderRadius: Theme.corners.comfortable,
-                    }}
+                    className="flex-[1.5] h-14 bg-sanctuarySaffron rounded-full shadow-lg shadow-sanctuarySaffron/20 active:opacity-85"
                     onPress={handleSave}
                 >
-                    <ButtonText sx={{ color: Theme.colors.white }}>
+                    <ButtonText className="text-sacredWhite font-black uppercase text-[11px] tracking-[0.2em]">
                         {t('common.save')}
                     </ButtonText>
                 </Button>

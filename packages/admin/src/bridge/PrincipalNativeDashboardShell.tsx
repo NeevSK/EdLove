@@ -10,6 +10,7 @@ import {
   useTheme,
   Pressable
 } from '@repo/ui';
+import { FeatureGuard } from '@repo/core';
 import type { PrincipalZoneId } from '../principal/workspace';
 
 function ZoneButton({
@@ -75,8 +76,7 @@ export function PrincipalNativeDashboardShell({
   isLoading,
   error,
   children}: PrincipalNativeDashboardShellProps) {
-  const theme = useTheme();
-  // We use NativeWind for styling, so 'colors' might be unused here but safe to keep if needed later.
+  // We use NativeWind for styling, so theme hook is removed as it's legacy.
 
   return (
     <>
@@ -131,7 +131,21 @@ export function PrincipalNativeDashboardShell({
               <SkeletonCard height={220} />
             </VStack>
           ) : (
-            children
+            <FeatureGuard 
+              feature="isDevelopingWorkspace" 
+              fallback={
+                <Box className="p-xl bg-phase-canvas rounded-3xl border border-dashed border-phase-border items-center justify-center min-h-[300px]">
+                  <Text className="text-phaseText-secondary font-bold text-center">
+                    Workspace is currently under development.
+                  </Text>
+                  <Text className="text-phaseText-muted text-[12px] mt-2 text-center">
+                    Stay tuned for updates on governance and institutional signals.
+                  </Text>
+                </Box>
+              }
+            >
+              {children}
+            </FeatureGuard>
           )}
         </VStack>
       </ScrollView>

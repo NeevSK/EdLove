@@ -6,13 +6,12 @@ import {
     Text,
     Box,
     SanctuaryCard,
-    useTheme,
     LivingGlow,
     SkeletonLoader,
     SanctuaryChip
 } from '@repo/ui';
 import { Zap, TrendingUp, Users, HeartPulse } from 'lucide-react-native';
-import { useSchoolPulse } from '@repo/profile/hooks/useSchoolPulse';
+import { useSchoolPulseQuery } from '../../hooks/useDashboardHooks';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface PulseDashboardProps {
@@ -20,7 +19,7 @@ interface PulseDashboardProps {
 }
 
 export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
-    const { pulse, loading, error } = useSchoolPulse(schoolId);
+    const { data: pulse, isLoading: loading, error } = useSchoolPulseQuery(schoolId);
 
     if (loading) {
         return (
@@ -57,12 +56,9 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                                     Resonance Pulse
                                 </Text>
                             </HStack>
-                            <SanctuaryChip
-                                label={pulse.trend.toUpperCase()}
-                                selected={true}
-                                size="sm"
-                                className="bg-phase-interactive"
-                            />
+                            <Box className="bg-phase-interactive rounded-full px-3 py-1">
+                                <Text className="text-[10px] font-black text-white uppercase tracking-widest">{pulse.trend}</Text>
+                            </Box>
                         </HStack>
 
                         <HStack className="justify-between items-end">
@@ -74,7 +70,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                                     Value Alignment Index
                                 </Text>
                             </VStack>
-                            <LivingGlow glowColor="var(--phase-interactive)" size={50} />
+                            <LivingGlow glowColor="rgba(99, 102, 241, 0.5)" size={50} />
                         </HStack>
                     </VStack>
                 </SanctuaryCard>

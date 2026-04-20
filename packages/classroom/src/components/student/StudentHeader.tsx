@@ -1,23 +1,23 @@
 import React from 'react';
 import { useStore } from '@repo/core';
-import { Box, Heading, Text, Theme, VStack, HStack } from '@repo/ui';
+import { Box, Heading, Text, VStack, HStack, Icon } from '@repo/ui';
 import { Star } from 'lucide-react-native';
 
 export function StudentHeader({ isDemo }: { isDemo: boolean }) {
     const { user } = useStore();
     return (
-        <Box sx={{ marginBottom: 40 }}>
-            <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <Box sx={{ padding: 8, backgroundColor: 'rgba(52, 199, 219, 0.1)', borderRadius: 8 }}>
-                    <Star size={20} color="#34C7DB" />
+        <VStack className="mb-10 mt-2">
+            <HStack className="items-center gap-3 mb-4">
+                <Box className="w-10 h-10 bg-sanctuary-info/10 rounded-xl items-center justify-center border border-sanctuary-info/20">
+                    <Icon as={Star} size="sm" className="text-sanctuary-info" />
                 </Box>
-                <Text sx={{ fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.5, color: '#A0A0A0' }}>
+                <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[3px]">
                     Your Learning Journey
                 </Text>
-            </Box>
-            <Heading sx={{ fontSize: 42, fontWeight: '800', lineHeight: 50, color: 'var(--ink)' }}>
-                Radiate <Text sx={{ color: '#34C7DB', fontSize: 42, fontWeight: '800' }}>Curiosity</Text>{isDemo ? ', Amara' : (user?.full_name ? `, ${user.full_name.split(' ')[0]}` : '')}.
+            </HStack>
+            <Heading className="text-4xl font-black text-sanctuary-text leading-[1.2] tracking-tighter">
+                Radiate <Text className="text-sanctuary-info text-4xl font-black italic">Curiosity</Text>{isDemo ? ', Amara' : (user?.full_name ? `, ${user.full_name.split(' ')[0]}` : '')}.
             </Heading>
-        </Box>
+        </VStack>
     );
 }

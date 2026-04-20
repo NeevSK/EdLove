@@ -1,6 +1,16 @@
 import React from 'react';
-import { Icon, VStack, HStack, Text, Box, useTheme, SanctuaryCard, ScrollView } from '@repo/ui';
-import { User, Mail, Phone, ChevronRight } from 'lucide-react-native';
+import { 
+    Icon, 
+    VStack, 
+    HStack, 
+    Text, 
+    Box, 
+    ScrollView,
+    Pressable,
+    Heading,
+    hapticLight
+} from '@repo/ui';
+import { User, ChevronRight, Briefcase } from 'lucide-react-native';
 
 interface StaffMember {
     id: string;
@@ -16,33 +26,44 @@ interface StaffDirectoryProps {
 }
 
 export default function StaffDirectory({ staff, onSelect }: StaffDirectoryProps) {
-    const { scene } = useTheme();
-
     if (!staff?.length) return (
-        <Box className="p-4 items-center">
-            <Text style={{ color: scene.text.secondary }}>No staff members found.</Text>
+        <Box className="p-12 items-center justify-center bg-phase-canvas rounded-[32px] border border-dashed border-phase-border">
+            <Text className="text-[14px] font-bold text-phaseText-muted italic opacity-60">
+                Institutional directory is empty.
+            </Text>
         </Box>
     );
 
     return (
-        <ScrollView>
-            <VStack space="sm" className="p-4">
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+            <VStack className="gap-4">
                 {staff.map((member) => (
-                    <SanctuaryCard 
+                    <Pressable 
                         key={member.id} 
-                        onPress={() => onSelect?.(member)}
+                        onPress={() => {
+                            hapticLight();
+                            onSelect?.(member);
+                        }}
+                        className="active:scale-[0.98] transition-all"
                     >
-                        <HStack space="md" className="items-center p-3">
-                            <Box className="p-2 rounded-full" style={{ backgroundColor: scene.primary.lowOpacity }}>
-                                <Icon as={User} size={20} color={scene.primary.main} />
-                            </Box>
-                            <VStack className="flex-1">
-                                <Text className="font-bold" style={{ color: scene.text.primary }}>{member.name}</Text>
-                                <Text size="xs" style={{ color: scene.text.secondary }}>{member.role}</Text>
-                            </VStack>
-                            <Icon as={ChevronRight} size={16} color={scene.text.muted} />
-                        </HStack>
-                    </SanctuaryCard>
+                        <Box className="p-5 bg-phase-surface rounded-[24px] border border-phase-border shadow-sm">
+                            <HStack className="items-center gap-5">
+                                <Box className="w-14 h-14 rounded-[18px] bg-phase-canvas border border-phase-border items-center justify-center">
+                                    <Icon as={User} size="sm" className="text-phaseText-primary" />
+                                </Box>
+                                <VStack className="flex-1 gap-1">
+                                    <Heading className="text-[17px] font-black text-phaseText-primary tracking-tight">
+                                        {member.name}
+                                    </Heading>
+                                    <HStack className="items-center gap-2">
+                                        <Icon as={Briefcase} size="xs" className="text-phase-interactive" />
+                                        <Text className="text-[11px] font-black text-phase-interactive uppercase tracking-widest">{member.role}</Text>
+                                    </HStack>
+                                </VStack>
+                                <Icon as={ChevronRight} size="xs" className="text-phaseText-muted/20" />
+                            </HStack>
+                        </Box>
+                    </Pressable>
                 ))}
             </VStack>
         </ScrollView>

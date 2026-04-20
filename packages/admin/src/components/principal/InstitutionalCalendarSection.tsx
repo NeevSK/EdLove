@@ -12,13 +12,12 @@ import {
     HStack,
     VStack,
     Text,
-    useTheme,
     Pressable,
     Icon,
-    Theme,
     Input,
     InputField,
-    ScrollView
+    ScrollView,
+    hapticLight
 } from '@repo/ui';
 import { Plus } from 'lucide-react-native';
 import { staffManagementAPI, type CalendarEvent } from '@repo/core';
@@ -92,6 +91,7 @@ export default function InstitutionalCalendarSection({
                 end_date: endDate.trim() || undefined
             });
             if (ok) {
+                hapticLight();
                 setTitle('');
                 setStartDate('');
                 setEndDate('');
@@ -107,37 +107,40 @@ export default function InstitutionalCalendarSection({
     }
 
     return (
-        <Box className="bg-phase-surface rounded-3xl border border-phase-border p-5 shadow-sm">
-            <HStack className="justify-between items-center mb-5">
-                <Text className="text-[17px] font-black text-phaseText-primary">
-                    Institution Calendar
-                </Text>
+        <Box className="bg-phase-surface rounded-[32px] border border-phase-border p-6 shadow-sm">
+            <HStack className="justify-between items-center mb-6">
+                <VStack className="gap-0.5">
+                    <Text className="text-[18px] font-black text-phaseText-primary tracking-tight">
+                        Institution Calendar
+                    </Text>
+                    <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-wider">Upcoming Cycles</Text>
+                </VStack>
                 <Pressable
                     onPress={() => {
                         hapticLight();
                         setShowForm(!showForm);
                         onAddEvent?.();
                     }}
-                    className={`rounded-xl px-4 py-1.5 flex-row items-center gap-2 active:scale-95 transition-all ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
+                    className={`rounded-2xl px-5 py-2 flex-row items-center gap-2 active:scale-95 transition-all ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
                 >
                     <Icon as={Plus} size="xs" className={showForm ? 'text-phaseText-primary' : 'text-white'} />
                     <Text className={`text-[12px] font-black uppercase tracking-wider ${showForm ? 'text-phaseText-primary' : 'text-white'}`}>
-                        {showForm ? 'Hide' : 'Add'}
+                        {showForm ? 'Hide' : 'Add Event'}
                     </Text>
                 </Pressable>
             </HStack>
 
             {loading && (
                 <VStack className="gap-3">
-                    <Box className="h-12 bg-phase-canvas border border-phase-border rounded-xl opacity-50" />
-                    <Box className="h-12 bg-phase-canvas border border-phase-border rounded-xl opacity-30" />
+                    <Box className="h-16 bg-phase-canvas border border-phase-border rounded-2xl opacity-50" />
+                    <Box className="h-16 bg-phase-canvas border border-phase-border rounded-2xl opacity-30" />
                 </VStack>
             )}
 
-            {!loading && events.length === 0 && (
-                <Box className="bg-phase-canvas rounded-2xl border border-dashed border-phase-border py-8 items-center">
-                    <Text className="text-[13px] font-bold text-phaseText-muted text-center">
-                        No upcoming events scheduled
+            {!loading && events.length === 0 && !showForm && (
+                <Box className="bg-phase-canvas rounded-[24px] border border-dashed border-phase-border py-10 items-center">
+                    <Text className="text-[14px] font-bold text-phaseText-muted text-center opacity-60">
+                        No institutional events scheduled.
                     </Text>
                 </Box>
             )}
@@ -145,42 +148,42 @@ export default function InstitutionalCalendarSection({
             {!loading && events.map((ev, index) => (
                 <HStack
                     key={ev.id}
-                    className={`items-center gap-4 py-4 ${index !== events.length - 1 ? 'border-b border-phase-border' : ''}`}
+                    className={`items-center gap-5 py-5 ${index !== events.length - 1 ? 'border-b border-phase-border/50' : ''}`}
                 >
-                    <Box className={`rounded-lg px-2.5 py-0.5 ${getTypeColorClass(ev.type)}`}>
-                        <Text className="text-[9px] font-black text-white uppercase tracking-wider">
+                    <Box className={`rounded-lg px-3 py-1 ${getTypeColorClass(ev.type)}`}>
+                        <Text className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
                             {TYPE_LABELS[ev.type] || ev.type}
                         </Text>
                     </Box>
-                    <Text className="flex-1 text-[13px] font-bold text-phaseText-primary" numberOfLines={1}>
+                    <Text className="flex-1 text-[15px] font-bold text-phaseText-primary tracking-tight" numberOfLines={1}>
                         {ev.title}
                     </Text>
-                    <Text className="text-[11px] font-black text-phaseText-muted">
+                    <Text className="text-[11px] font-black text-phaseText-muted uppercase">
                         {new Date(ev.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </Text>
                 </HStack>
             ))}
 
             {showForm && (
-                <VStack className="mt-6 gap-4 border-t border-phase-border pt-6">
-                    <Input className="border border-phase-border rounded-xl bg-phase-canvas h-12 shadow-sm">
+                <VStack className="mt-8 gap-5 border-t border-phase-border pt-8">
+                    <Input className="border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
                         <InputField
                             placeholder="Event Title"
                             placeholderTextColor="rgba(0,0,0,0.3)"
                             value={title}
                             onChangeText={setTitle}
-                            className="text-[14px] font-bold text-phaseText-primary"
+                            className="text-[15px] font-black text-phaseText-primary"
                         />
                     </Input>
 
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
-                        <HStack className="gap-2">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <HStack className="gap-2.5">
                             {TYPE_OPTIONS.map((t) => {
                                 const isSelected = selectedType === t;
                                 return (
                                     <Pressable key={t} onPress={() => { hapticLight(); setSelectedType(t); }}>
                                         <Box
-                                            className={`rounded-full px-4 py-1.5 border transition-all ${isSelected ? `${getTypeColorClass(t)} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
+                                            className={`rounded-full px-5 py-2 border transition-all ${isSelected ? `${getTypeColorClass(t)} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
                                         >
                                             <Text className={`text-[11px] font-black uppercase tracking-wider ${isSelected ? 'text-white' : 'text-phaseText-secondary'}`}>
                                                 {TYPE_LABELS[t]}
@@ -193,19 +196,19 @@ export default function InstitutionalCalendarSection({
                     </ScrollView>
 
                     <HStack className="gap-3">
-                        <Input className="flex-1 border border-phase-border rounded-xl bg-phase-canvas h-12 shadow-sm">
+                        <Input className="flex-1 border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
                             <InputField
-                                placeholder="Start Date"
-                                placeholderTextColor="rgba(0,0,0,0.3)"
+                                placeholder="YYYY-MM-DD"
+                                placeholderTextColor="rgba(0,0,0,0.2)"
                                 value={startDate}
                                 onChangeText={setStartDate}
                                 className="text-[14px] font-bold text-phaseText-primary"
                             />
                         </Input>
-                        <Input className="flex-1 border border-phase-border rounded-xl bg-phase-canvas h-12 shadow-sm">
+                        <Input className="flex-1 border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
                             <InputField
-                                placeholder="End Date"
-                                placeholderTextColor="rgba(0,0,0,0.3)"
+                                placeholder="End (Opt)"
+                                placeholderTextColor="rgba(0,0,0,0.2)"
                                 value={endDate}
                                 onChangeText={setEndDate}
                                 className="text-[14px] font-bold text-phaseText-primary"
@@ -216,10 +219,10 @@ export default function InstitutionalCalendarSection({
                     <Pressable
                         onPress={handleSave}
                         disabled={saving}
-                        className={`bg-phase-interactive rounded-2xl py-3.5 items-center shadow-sm active:scale-95 transition-all ${saving ? 'opacity-60' : ''}`}
+                        className={`bg-phase-interactive rounded-[20px] py-4 items-center shadow-md active:scale-95 transition-all ${saving ? 'opacity-50' : ''}`}
                     >
-                        <Text className="text-[13px] font-black text-white uppercase tracking-widest">
-                            {saving ? 'Creating Event...' : 'Create Event'}
+                        <Text className="text-[13px] font-black text-white uppercase tracking-[2px]">
+                            {saving ? 'Scheduling...' : 'Commit to Calendar'}
                         </Text>
                     </Pressable>
                 </VStack>

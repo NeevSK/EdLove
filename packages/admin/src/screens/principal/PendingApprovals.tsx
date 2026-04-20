@@ -11,7 +11,8 @@ import {
     Heading, 
     Button,
     ButtonText,
-    Icon
+    Icon,
+    hapticLight
 } from '@repo/ui';
 
 interface PendingApprovalsProps {

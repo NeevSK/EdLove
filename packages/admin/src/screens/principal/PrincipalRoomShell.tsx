@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react-native';
-import { Box, VStack, HStack, Text, Pressable, Icon } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, Icon, hapticLight } from '@repo/ui';
 
 type PrincipalRoomCadence = 'daily' | 'setup' | 'periodic' | 'horizon';
 

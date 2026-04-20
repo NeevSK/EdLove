@@ -1,62 +1,41 @@
 import React from 'react';
 import { BookOpen, MessageSquare, Star, Layout, TrendingUp, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Box, Text, Heading, Pressable, Theme } from '@repo/ui';
+import { Box, Text, Heading, Pressable, Icon, VStack, HStack } from '@repo/ui';
 
 export const StudentStudySuite = () => {
     const navigation = useNavigation<any>();
 
     const items = [
-        { label: 'Library', icon: BookOpen, color: 'var(--amber-glow)', onClick: () => navigation.navigate('Main', { screen: 'Library' }) },
-        { label: 'Community', icon: MessageSquare, color: 'var(--gurudevi-blue)', onClick: () => navigation.navigate('Main', { screen: 'Community' }) },
-        { label: 'Rewards', icon: Star, color: 'var(--sanctuary-saffron)', onClick: () => { } },
-        { label: 'Timetable', icon: Layout, color: 'var(--moss)', onClick: () => navigation.navigate('Timetable', {}) },
-        { label: 'Self Reflection', icon: TrendingUp, color: 'var(--water)', onClick: () => navigation.navigate('Main', { screen: 'Self' }) },
+        { label: 'Library', icon: BookOpen, colorClass: 'text-sanctuarySaffron', onClick: () => navigation.navigate('Main', { screen: 'Library' }) },
+        { label: 'Community', icon: MessageSquare, colorClass: 'text-sanctuary-info', onClick: () => navigation.navigate('Main', { screen: 'Community' }) },
+        { label: 'Rewards', icon: Star, colorClass: 'text-sanctuarySaffron', onClick: () => { } },
+        { label: 'Timetable', icon: Layout, colorClass: 'text-sanctuary-success', onClick: () => navigation.navigate('Timetable', {}) },
+        { label: 'Self Reflection', icon: TrendingUp, colorClass: 'text-sanctuary-info', onClick: () => navigation.navigate('Main', { screen: 'Self' }) },
     ];
 
     return (
-        <Box className="sanctuary-card" sx={{ padding: Theme.spacing.xl }}>
-            <Heading sx={{ fontSize: 14, fontWeight: '800', marginBottom: Theme.spacing.md }}>
+        <Box className="bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-6">
+            <Heading className="text-xs font-black text-sanctuary-text-tertiary uppercase tracking-widest mb-4">
                 Study Suite
             </Heading>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {items.map((item, i) => {
-                    const Icon = item.icon;
-                    return (
-                        <Pressable
-                            key={i}
-                            onPress={item.onClick}
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                gap: 12,
-                                padding: 12,
-                                borderRadius: Theme.corners.comfortable,
-                                ':hover': {
-                                    backgroundColor: 'var(--background-alt)',
-                                },
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: Theme.corners.tight,
-                                    backgroundColor: 'var(--background-alt)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Icon size={16} color={item.color} />
-                            </Box>
-                            <Text sx={{ fontSize: 13, fontWeight: '600', flex: 1 }}>{item.label}</Text>
-                            <ChevronRight size={14} style={{ opacity: 0.2 }} />
-                        </Pressable>
-                    );
-                })}
-            </Box>
+            <VStack className="gap-1">
+                {items.map((item, i) => (
+                    <Pressable
+                        key={i}
+                        onPress={item.onClick}
+                        className="flex-row items-center gap-4 p-3 rounded-2xl active:bg-sanctuary-surface-secondary"
+                    >
+                        <Box className="w-10 h-10 bg-sanctuary-surface-secondary rounded-xl items-center justify-center border border-sanctuary-border/50">
+                            <Icon as={item.icon} size="sm" className={item.colorClass} />
+                        </Box>
+                        <Text className="text-sm font-black text-sanctuary-text flex-1 tracking-tight">
+                            {item.label}
+                        </Text>
+                        <Icon as={ChevronRight} size="xs" className="text-sanctuary-text-tertiary" />
+                    </Pressable>
+                ))}
+            </VStack>
         </Box>
     );
 };

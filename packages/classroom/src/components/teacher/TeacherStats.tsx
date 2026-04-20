@@ -9,18 +9,17 @@ interface TeacherStatCardProps {
 
 export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({ label, value, accentColorClass = 'bg-sanctuarySaffron' }) => {
     return (
-        <Box className="rounded-[32px] border border-sanctuary-border/10 bg-sanctuary-surface p-7 shadow-sm overflow-hidden relative">
-            {/* Decorative glow */}
-            <Box className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-5 ${accentColorClass}`} />
+        <Box className="rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-7 overflow-hidden relative">
+            <Box className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-[0.03] ${accentColorClass}`} />
             
             <VStack className="gap-5">
                 <HStack className="items-center justify-between">
-                    <Text className="text-[10px] font-bold uppercase tracking-[0.2em] text-sanctuary-text-muted">
+                    <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuary-text-tertiary">
                         {label}
                     </Text>
-                    <Box className={`h-2.5 w-2.5 rounded-full ${accentColorClass} shadow-sm`} />
+                    <Box className={`h-2.5 w-2.5 rounded-full ${accentColorClass.replace('bg-', 'bg-')}`} />
                 </HStack>
-                <Heading size="xl" className="text-sanctuary-text font-bold tracking-tight">
+                <Heading className="text-3xl text-sanctuary-text font-black tracking-tighter">
                     {value}
                 </Heading>
             </VStack>
@@ -40,9 +39,9 @@ interface TeacherStatsProps {
 export const TeacherStats: React.FC<TeacherStatsProps> = ({ stats }) => {
     const statItems = [
         { label: 'Students', value: stats.totalStudents, accentColorClass: 'bg-sanctuarySaffron' },
-        { label: 'Attendance', value: `${stats.averageAttendance}%`, accentColorClass: 'bg-sageGreen' },
-        { label: 'Assignments', value: stats.pendingAssignments, accentColorClass: 'bg-emberRed' },
-        { label: 'Classrooms', value: stats.activeClassrooms, accentColorClass: 'bg-gurudeviBlue' },
+        { label: 'Attendance', value: `${stats.averageAttendance}%`, accentColorClass: 'bg-sanctuary-success' },
+        { label: 'Assignments', value: stats.pendingAssignments, accentColorClass: 'bg-sanctuary-error' },
+        { label: 'Sanctuaries', value: stats.activeClassrooms, accentColorClass: 'bg-sanctuary-info' },
     ];
 
     return (

@@ -7,7 +7,6 @@ import {
     Heading, 
     ScrollView, 
     Pressable, 
-    Pressable, 
     ScreenWrapper,
     Button,
     ButtonText

@@ -16,7 +16,9 @@ import {
     FormControlLabelText,
     ScrollView,
     SkeletonCard,
-    Pressable
+    Pressable,
+    hapticLight,
+    hapticMedium
 } from '@repo/ui';
 import { api } from '@repo/core';
 import { ArrowLeft, Plus, Calendar } from 'lucide-react-native';

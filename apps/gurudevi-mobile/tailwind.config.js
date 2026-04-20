@@ -7,6 +7,7 @@ module.exports = {
     "../../packages/ui/src/**/*.{js,jsx,ts,tsx}",
     "../../packages/profile/src/**/*.{js,jsx,ts,tsx}",
     "../../packages/community/src/**/*.{js,jsx,ts,tsx}",
+    "../../packages/admin/src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

@@ -16,7 +16,8 @@ import {
     Icon,
     Button,
     ButtonText,
-    ButtonIcon
+    ButtonIcon,
+    hapticLight
 } from '@repo/ui';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 

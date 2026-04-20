@@ -1,8 +1,8 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react-native';
-import { VStack, HStack, Box, Text, Theme, SkeletonCard, PositiveInvitation, useThemedColors } from '@repo/ui';
+import { VStack, HStack, Box, Text, SkeletonCard, PositiveInvitation, Icon } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 interface Classroom {
     id: string;
@@ -18,20 +18,17 @@ interface StudentClassroomListProps {
 }
 
 export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentClassroomListProps) => {
-    const navigation = useNavigation<any>();
-    const colors = useThemedColors();
-    
     if (loading) {
         return (
-            <VStack sx={{ gap: 12 }}>
-                {[1, 2, 3].map(i => <SkeletonCard key={i} height={120} />)}
+            <VStack className="gap-4">
+                {[1, 2, 3].map(i => <SkeletonCard key={i} className="h-[120px] rounded-[32px]" />)}
             </VStack>
         );
     }
 
     if (classrooms.length === 0) {
         return (
-            <Box sx={{ paddingVertical: 40, alignItems: 'center' }}>
+            <Box className="py-10 items-center">
                 <PositiveInvitation
                     type="empty"
                     title={isDemo ? "Join Your First Sanctuary" : "No Classrooms found"}
@@ -47,65 +44,48 @@ export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentCla
     }
 
     return (
-        <HStack sx={{ flexWrap: 'wrap', gap: 24 }}>
+        <HStack className="flex-wrap gap-6">
             {classrooms.map(cls => (
                 <TouchableOpacity
                     key={cls.id}
-                    activeOpacity={0.8}
+                    activeOpacity={0.9}
                     onPress={() => navigation.navigate('StudentClassroomDashboard', { classroomId: cls.id, classroomName: cls.name })}
-                    style={[styles.card, { backgroundColor: colors.surface }]}
+                    className="w-full max-w-[320px] bg-sanctuary-surface rounded-[32px] overflow-hidden border border-sanctuary-border/60"
                 >
-                    <Box sx={{ 
-                        height: 80, 
-                        backgroundColor: cls.color_theme || Theme.colors.gurudeviBlue, 
-                        padding: 24, 
-                        flexDirection: 'row', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'flex-start',
-                        opacity: 0.9 
-                    }}>
-                        <Box sx={{ 
-                            width: 40, 
-                            height: 40, 
-                            borderRadius: 12, 
-                            backgroundColor: 'rgba(255,255,255,0.9)', 
-                            alignItems: 'center', 
-                            justifyContent: 'center' 
-                        }}>
-                            <BookOpen size={20} color={Theme.colors.gurudeviBlue} />
+                    <Box 
+                        className="h-24 p-6 flex-row justify-between items-start opacity-90"
+                        style={{ backgroundColor: cls.color_theme || '#34C7DB' }}
+                    >
+                        <Box className="w-10 h-10 rounded-xl bg-white/95 items-center justify-center border border-white/20">
+                            <Icon as={BookOpen} size="sm" className="text-sanctuary-info" />
                         </Box>
-                        <Box sx={{ 
-                            paddingHorizontal: 8, 
-                            paddingVertical: 4, 
-                            backgroundColor: 'rgba(255,255,255,0.9)', 
-                            borderRadius: 6 
-                        }}>
-                            <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.ink }}>Active</Text>
+                        <Box className="px-2.5 py-1 bg-white/95 rounded-lg border border-white/20 shadow-sm">
+                            <Text className="text-[10px] font-black text-sanctuary-text uppercase tracking-widest">Active</Text>
                         </Box>
                     </Box>
-                    <VStack sx={{ padding: 24, gap: 12 }}>
-                        <VStack sx={{ gap: 4 }}>
-                            <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.text }}>{cls.name}</Text>
+                    
+                    <VStack className="p-6 gap-5">
+                        <VStack className="gap-1.5">
+                            <Text className="text-xl font-black text-sanctuary-text tracking-tight leading-tight">
+                                {cls.name}
+                            </Text>
                             {cls.subject && (
-                                <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{cls.subject}</Text>
+                                <Text className="text-xs font-bold text-sanctuary-text-tertiary">
+                                    {cls.subject}
+                                </Text>
                             )}
                         </VStack>
-                        <HStack sx={{ gap: 8 }}>
-                            <Box sx={{ 
-                                paddingHorizontal: 8, 
-                                paddingVertical: 4, 
-                                backgroundColor: colors.primary, 
-                                borderRadius: 6 
-                            }}>
-                                <Text sx={{ fontSize: 11, fontWeight: '700', color: colors.textSecondary }}>📖 Lessons</Text>
+                        
+                        <HStack className="gap-2.5">
+                            <Box className="px-3 py-2 bg-sanctuary-surface-secondary border border-sanctuary-border/40 rounded-xl">
+                                <Text className="text-[11px] font-black text-sanctuary-text-tertiary uppercase tracking-wider">
+                                    📖 Lessons
+                                </Text>
                             </Box>
-                            <Box sx={{ 
-                                paddingHorizontal: 8, 
-                                paddingVertical: 4, 
-                                backgroundColor: colors.primary, 
-                                borderRadius: 6 
-                            }}>
-                                <Text sx={{ fontSize: 11, fontWeight: '700', color: colors.textSecondary }}>📋 Assignments</Text>
+                            <Box className="px-3 py-2 bg-sanctuary-surface-secondary border border-sanctuary-border/40 rounded-xl">
+                                <Text className="text-[11px] font-black text-sanctuary-text-tertiary uppercase tracking-wider">
+                                    📋 Tasks
+                                </Text>
                             </Box>
                         </HStack>
                     </VStack>
@@ -115,13 +95,3 @@ export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentCla
     );
 };
 
-const styles = StyleSheet.create({
-    card: {
-        width: '100%',
-        maxWidth: 320,
-        borderRadius: 16,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.05)',
-    },
-});

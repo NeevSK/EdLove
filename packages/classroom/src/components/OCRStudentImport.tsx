@@ -12,16 +12,17 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import {
     useToast,
-    useThemedColors,
     Box,
     ScrollView,
     Text,
-    Theme,
+    theme,
     VStack,
     HStack,
     Heading,
     SanctuaryToast,
+    Icon,
 } from '@repo/ui';
+import { Camera, ChevronRight, Check, X, Info, RotateCcw } from 'lucide-react-native';
 import OCRScanner from './OCRScanner';
 import type { ScannedStudent } from '@repo/scanner-kit';
 import { studentsAPI } from '@repo/core';
@@ -47,7 +48,6 @@ export default function OCRStudentImport({
     onCancel,
 }: OCRStudentImportProps) {
     const toast = useToast();
-    const colors = useThemedColors();
     const [phase, setPhase] = useState<Phase>('scan');
     const [students, setStudents] = useState<ReviewStudent[]>([]);
 
@@ -128,14 +128,14 @@ export default function OCRStudentImport({
                 onStudentsScanned={handleScanned}
                 onCancel={onCancel}
                 colors={{
-                    primary: Theme.colors.ink,
-                    secondary: Theme.colors.ink,
-                    border: Theme.colors.mistGray,
-                    text: Theme.colors.sacredWhite,
-                    textSecondary: Theme.colors.starlightGray,
-                    tertiary: Theme.colors.ink,
-                    accent: Theme.colors.sanctuarySaffron,
-                    success: Theme.colors.sageGreen,
+                    primary: theme.colors.ink,
+                    secondary: theme.colors.ink,
+                    border: theme.colors.sanctuary-border,
+                    text: theme.colors.sacredWhite,
+                    textSecondary: theme.colors.starlightGray,
+                    tertiary: theme.colors.ink,
+                    accent: theme.colors.sanctuarySaffron,
+                    success: theme.colors.sageGreen,
                 }}
             />
         );
@@ -143,9 +143,9 @@ export default function OCRStudentImport({
 
     if (phase === 'importing') {
         return (
-            <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}>
-                <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>⌛</Text>
-                <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
+            <VStack className="flex-1 items-center justify-center gap-6 bg-sanctuary-surface">
+                <Icon as={Camera} size="xl" className="text-sanctuarySaffron opacity-50" />
+                <Text className="text-sanctuary-text-secondary text-center font-medium">
                     Importing students...
                 </Text>
             </VStack>
@@ -156,103 +156,91 @@ export default function OCRStudentImport({
     const selectedCount = students.filter(s => s.selected).length;
 
     return (
-        <VStack sx={{ flex: 1, gap: Theme.spacing.md }}>
-            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}>
-                    Review Students ({students.length} found)
+        <VStack className="flex-1 gap-4 bg-sanctuary-surface">
+            <HStack className="justify-between items-center">
+                <Heading className="text-sanctuary-text text-xl">
+                    Review Students
                 </Heading>
-                <TouchableOpacity onPress={() => setPhase('scan')}>
-                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 13 }}>Rescan</Text>
+                <TouchableOpacity 
+                    onPress={() => setPhase('scan')}
+                    className="flex-row items-center gap-1 bg-sanctuarySaffron/10 px-3 py-1.5 rounded-full"
+                >
+                    <Icon as={RotateCcw} size="xs" className="text-sanctuarySaffron" />
+                    <Text className="text-sanctuarySaffron text-xs font-bold">Rescan</Text>
                 </TouchableOpacity>
             </HStack>
 
-            <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
-                Tap a student to toggle selection. Amber items have low OCR confidence.
-            </Text>
+            <HStack className="items-center gap-2 bg-sanctuary-border/5 p-3 rounded-2xl border border-sanctuary-border/10">
+                <Icon as={Info} size="xs" className="text-sanctuary-text-tertiary" />
+                <Text className="text-sanctuary-text-secondary text-xs flex-1">
+                    Tap a student to toggle selection. Amber items have low OCR confidence.
+                </Text>
+            </HStack>
 
-            <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
-                <ScrollView>
+            <VStack className="flex-1">
+                <ScrollView contentContainerStyle={{ gap: 12 }}>
                 {students.map((student, index) => (
-                    <TouchableOpacity key={index} onPress={() => toggleStudent(index)}>
-                        <View
+                    <TouchableOpacity key={index} onPress={() => toggleStudent(index)} activeOpacity={0.7}>
+                        <Box
+                            className={`p-4 rounded-[24px] border bg-sanctuary-surface-secondary shadow-sm ${!student.selected ? 'opacity-50 grayscale' : ''}`}
                             style={{
-                                backgroundColor: Theme.colors.ink,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderLeftWidth: 4,
+                                borderLeftWidth: 6,
                                 borderColor: student.selected
                                     ? student.uncertain
                                         ? '#f59e0b'
-                                        : Theme.colors.sageGreen
-                                    : Theme.colors.mistGray,
+                                        : theme.colors.sageGreen
+                                    : theme.colors.sanctuary-border,
                                 borderLeftColor: student.selected
                                     ? student.uncertain
                                         ? '#f59e0b'
-                                        : Theme.colors.sageGreen
-                                    : Theme.colors.mistGray,
-                                padding: Theme.spacing.md,
-                                opacity: student.selected ? 1 : 0.5,
+                                        : theme.colors.sageGreen
+                                    : theme.colors.sanctuary-border,
                             }}
                         >
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <VStack sx={{ gap: 2, flex: 1 }}>
-                                    <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
+                            <HStack className="justify-between items-center">
+                                <VStack className="gap-1 flex-1">
+                                    <Text className="text-sanctuary-text font-bold text-lg">
                                         {student.name}
                                     </Text>
-                                    <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}>
+                                    <Text className="text-sanctuary-text-secondary text-sm">
                                         Index: {student.index_number}
                                     </Text>
                                     {student.uncertain && student.selected && (
-                                        <Text style={{ color: '#f59e0b', fontSize: 11 }}>
-                                            ⚠ Low confidence — verify before importing
-                                        </Text>
+                                        <HStack className="items-center gap-1 mt-1">
+                                            <Icon as={Info} size="xs" className="text-amber-500" />
+                                            <Text className="text-amber-500 text-xs font-medium">
+                                                Low confidence — verify
+                                            </Text>
+                                        </HStack>
                                     )}
                                 </VStack>
-                                <Text
-                                    style={{
-                                        fontSize: 20,
-                                        color: student.selected
-                                            ? student.uncertain
-                                                ? '#f59e0b'
-                                                : Theme.colors.sageGreen
-                                            : Theme.colors.mistGray,
-                                    }}
-                                >
-                                    {student.selected ? (student.uncertain ? '?' : '✓') : '○'}
-                                </Text>
+                                <Box className={`w-8 h-8 rounded-full items-center justify-center ${student.selected ? (student.uncertain ? 'bg-amber-500' : 'bg-green-500') : 'bg-sanctuary-border/20'}`}>
+                                    <Icon 
+                                        as={student.selected ? (student.uncertain ? Info : Check) : X} 
+                                        size="xs" 
+                                        className="text-white" 
+                                    />
+                                </Box>
                             </HStack>
-                        </View>
+                        </Box>
                     </TouchableOpacity>
                 ))}
                 </ScrollView>
             </VStack>
 
-            <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}>
+            <HStack className="gap-4 pt-2">
                 <TouchableOpacity
                     onPress={onCancel}
-                    style={{
-                        flex: 1,
-                        borderWidth: 1,
-                        borderColor: Theme.colors.mistGray,
-                        borderRadius: Theme.corners.comfortable,
-                        paddingVertical: 14,
-                        alignItems: 'center',
-                    }}
+                    className="flex-1 h-14 rounded-[24px] border border-sanctuary-border items-center justify-center bg-sanctuary-surface-secondary active:bg-sanctuary-border/10"
                 >
-                    <Text sx={{ color: Theme.colors.sacredWhite }}>Cancel</Text>
+                    <Text className="text-sanctuary-text font-bold">Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={handleConfirm}
-                    style={{
-                        flex: 2,
-                        backgroundColor:
-                            selectedCount > 0 ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray,
-                        borderRadius: Theme.corners.comfortable,
-                        paddingVertical: 14,
-                        alignItems: 'center',
-                    }}
+                    disabled={selectedCount === 0}
+                    className={`flex-[2] h-14 rounded-[24px] items-center justify-center shadow-lg ${selectedCount > 0 ? 'bg-sanctuarySaffron shadow-sanctuarySaffron/20 active:opacity-90' : 'bg-sanctuary-border opacity-50'}`}
                 >
-                    <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}>
+                    <Text className="text-sanctuary-ink font-bold">
                         Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
                     </Text>
                 </TouchableOpacity>

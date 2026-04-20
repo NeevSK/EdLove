@@ -14,11 +14,11 @@ import {
     HStack,
     VStack,
     Text,
-    SkeletonCard,
-    useTheme,
     Pressable,
-    Theme
+    Icon,
+    hapticLight
 } from '@repo/ui';
+import { Users, TrendingUp, TrendingDown, AlertCircle, FileCheck, ChevronRight } from 'lucide-react-native';
 import { staffManagementAPI, StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
 
 interface MorningSituationalBriefProps {
@@ -71,9 +71,12 @@ export default function MorningSituationalBrief({
 
     if (loading) {
         return (
-            <VStack className="gap-2">
-                <SkeletonCard height={56} />
-                <SkeletonCard height={56} />
+            <VStack className="gap-3">
+                <Box className="h-16 bg-phase-canvas border border-phase-border rounded-[24px] opacity-40 shadow-sm" />
+                <HStack className="gap-3">
+                    <Box className="flex-1 h-28 bg-phase-canvas border border-phase-border rounded-[24px] opacity-30 shadow-sm" />
+                    <Box className="flex-1 h-28 bg-phase-canvas border border-phase-border rounded-[24px] opacity-20 shadow-sm" />
+                </HStack>
             </VStack>
         );
     }
@@ -81,79 +84,99 @@ export default function MorningSituationalBrief({
     const dotColorClass = presence ? getPresenceColorClass(presence.present, presence.total) : 'bg-phaseText-secondary';
     const attendanceDelta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
     const deltaLabel =
-        attendanceDelta > 0
-            ? `+${attendanceDelta}% vs yesterday`
-            : attendanceDelta < 0
-                ? `${attendanceDelta}% vs yesterday`
-                : 'same as yesterday';
+        attendanceDelta >= 0
+            ? `+${attendanceDelta}%`
+            : `${attendanceDelta}%`;
 
     return (
-        <VStack className="gap-2">
+        <VStack className="gap-3">
             {/* Staff presence strip */}
-            <Pressable onPress={onViewStaff}>
-                <Box className="bg-phase-surface rounded-2xl p-4 border border-phase-border">
-                    <HStack className="items-center gap-3">
-                        <Box
-                            className={`w-2.5 h-2.5 rounded-full ${dotColorClass}`}
-                        />
-                        <Text className="flex-1 text-[13px] text-phaseText-primary font-bold">
-                            {presence
-                                ? `${presence.present} of ${presence.total} teachers present`
-                                : 'No attendance data yet'}
-                        </Text>
-                        {onViewStaff && (
-                            <Text className="text-[10px] font-black uppercase text-phase-interactive tracking-tighter">View Details</Text>
-                        )}
+            <Pressable onPress={() => { hapticLight(); onViewStaff?.(); }}>
+                <Box className="bg-phase-surface rounded-[24px] px-5 py-4 border border-phase-border shadow-sm active:scale-[0.98] transition-all">
+                    <HStack className="items-center justify-between">
+                        <HStack className="items-center gap-4 flex-1">
+                            <Box className={`w-3 h-3 rounded-full ${dotColorClass} shadow-sm`} />
+                            <VStack className="gap-0.5">
+                                <Text className="text-[14px] text-phaseText-primary font-black tracking-tight">
+                                    {presence
+                                        ? `${presence.present} of ${presence.total} Faculty Present`
+                                        : 'Awaiting Presence Data'}
+                                </Text>
+                                <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">Status Check</Text>
+                            </VStack>
+                        </HStack>
+                        <Icon as={ChevronRight} size="xs" className="text-phaseText-muted/20" />
                     </HStack>
                 </Box>
             </Pressable>
 
             {/* Student pulse + at-risk + pending approvals */}
-            <HStack className="gap-2">
+            <HStack className="gap-3">
                 {/* Attendance pulse */}
-                <Box className="flex-1 bg-phase-surface rounded-2xl p-4 border border-phase-border">
-                    <Text className="text-[10px] font-black text-phaseText-muted mb-1 uppercase tracking-widest">
-                        Pulse
-                    </Text>
-                    <Text className="text-xl font-black text-phaseText-primary">
-                        {pulse ? `${pulse.todayRate}%` : '—'}
-                    </Text>
-                    <Text
-                        className={`text-[9px] font-bold ${attendanceDelta >= 0 ? 'text-phase-success' : 'text-phase-danger'}`}
-                    >
-                        {pulse ? deltaLabel : ''}
-                    </Text>
+                <Box className="flex-1 bg-phase-surface rounded-[24px] p-5 border border-phase-border shadow-sm">
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-start">
+                            <VStack className="gap-1">
+                                <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest leading-none">
+                                    Scholar Pulse
+                                </Text>
+                                <Text className="text-[22px] font-black text-phaseText-primary tracking-tighter">
+                                    {pulse ? `${pulse.todayRate}%` : '—'}
+                                </Text>
+                            </VStack>
+                            <Box className={`p-1.5 rounded-lg ${attendanceDelta >= 0 ? 'bg-phase-success/10' : 'bg-phase-danger/10'}`}>
+                                <Icon as={attendanceDelta >= 0 ? TrendingUp : TrendingDown} size="xs" className={attendanceDelta >= 0 ? 'text-phase-success' : 'text-phase-danger'} />
+                            </Box>
+                        </HStack>
+                        <Text className={`text-[10px] font-black uppercase tracking-wider ${attendanceDelta >= 0 ? 'text-phase-success' : 'text-phase-danger'}`}>
+                            {pulse ? `${deltaLabel} vs yesterday` : ''}
+                        </Text>
+                    </VStack>
                 </Box>
 
                 {/* At-risk badge */}
-                <Box className="flex-1 bg-phase-surface rounded-2xl p-4 border border-phase-border">
-                    <Text className="text-[10px] font-black text-phaseText-muted mb-1 uppercase tracking-widest">
-                        At-Risk
-                    </Text>
-                    <Text
-                        className={`text-xl font-black ${
-                            (pulse?.atRiskCount ?? 0) > 0 ? 'text-phase-danger' : 'text-phaseText-primary'
-                        }`}
-                    >
-                        {pulse?.atRiskCount ?? 0}
-                    </Text>
-                    <Text className="text-[9px] font-bold text-phaseText-muted">{'Attendance < 75%'}</Text>
+                <Box className="flex-1 bg-phase-surface rounded-[24px] p-5 border border-phase-border shadow-sm">
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-start">
+                            <VStack className="gap-1">
+                                <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest leading-none">
+                                    At-Risk
+                                </Text>
+                                <Text
+                                    className={`text-[22px] font-black tracking-tighter ${
+                                        (pulse?.atRiskCount ?? 0) > 0 ? 'text-phase-danger' : 'text-phaseText-primary'
+                                    }`}
+                                >
+                                    {pulse?.atRiskCount ?? 0}
+                                </Text>
+                            </VStack>
+                            <Box className="p-1.5 rounded-lg bg-phase-danger/10">
+                                <Icon as={AlertCircle} size="xs" className="text-phase-danger" />
+                            </Box>
+                        </HStack>
+                        <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">Critical Path</Text>
+                    </VStack>
                 </Box>
 
                 {/* Pending approvals */}
-                <Pressable onPress={onViewApprovals} className="flex-1">
-                    <Box className="flex-1 bg-phase-surface rounded-2xl p-4 border border-phase-border active:scale-95 transition-all">
-                        <Text className="text-[10px] font-black text-phaseText-muted mb-1 uppercase tracking-widest">
-                            Pending
-                        </Text>
-                        <Text
-                            className={`text-xl font-black ${
-                                pendingLeaves > 0 ? 'text-phase-interactive' : 'text-phaseText-primary'
-                            }`}
-                        >
-                            {pendingLeaves}
-                        </Text>
-                        <Text className="text-[9px] font-black uppercase text-phase-interactive tracking-tighter">Review</Text>
+                <Pressable onPress={() => { hapticLight(); onViewApprovals?.(); }} className="flex-1">
+                    <Box className="h-full bg-phase-interactive rounded-[24px] p-5 shadow-md active:scale-95 transition-all">
+                        <VStack className="gap-4">
+                            <HStack className="justify-between items-start">
+                                <VStack className="gap-1">
+                                    <Text className="text-[10px] font-black text-white/70 uppercase tracking-widest leading-none">
+                                        Pending
+                                    </Text>
+                                    <Text className="text-[22px] font-black text-white tracking-tighter">
+                                        {pendingLeaves}
+                                    </Text>
+                                </VStack>
+                                <Box className="p-1.5 rounded-lg bg-white/20">
+                                    <Icon as={FileCheck} size="xs" className="text-white" />
+                                </Box>
+                            </HStack>
+                            <Text className="text-[10px] font-black text-white uppercase tracking-widest">Govern</Text>
+                        </VStack>
                     </Box>
                 </Pressable>
             </HStack>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FeatureGuard } from '@repo/core';
-import { Box, Text } from '@repo/ui';
+import { Box, Text, HStack, Icon, hapticLight } from '@repo/ui';
 import { Plus, QrCode, MessageSquare, History } from 'lucide-react-native';
 
 interface ActionProps {
@@ -11,18 +11,11 @@ export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateCl
     <FeatureGuard action="create" subject="Classroom">
         <Box 
             as="button" 
-            onClick={onCreateClassroom}
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$primary',
-                color: 'white'
-            }}
+            onClick={() => { hapticLight(); onCreateClassroom?.(); }}
+            className="flex-row items-center gap-2.5 px-6 py-3 rounded-full bg-sanctuarySaffron shadow-sm active:opacity-85"
         >
-            <Plus size={16} /> <Text>Create Sanctuary</Text>
+            <Icon as={Plus} size="sm" className="text-sacredWhite" />
+            <Text className="text-sacredWhite font-black uppercase text-[10px] tracking-[0.2em]">Create Sanctuary</Text>
         </Box>
     </FeatureGuard>
 );
@@ -31,18 +24,11 @@ export const TeacherScanQRAction: React.FC = () => (
     <FeatureGuard action="manage" subject="Attendance">
         <Box 
             as="button" 
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$surface',
-                borderWidth: 1,
-                borderColor: '$border'
-            }}
+            onClick={hapticLight}
+            className="flex-row items-center gap-2.5 px-6 py-3 rounded-full bg-sanctuary-surface border border-sanctuary-border shadow-sm active:bg-sanctuary-surface-secondary"
         >
-            <QrCode size={16} /> <Text>Scan Resonance</Text>
+            <Icon as={QrCode} size="sm" className="text-sanctuary-text" />
+            <Text className="text-sanctuary-text font-black uppercase text-[10px] tracking-[0.2em]">Scan Resonance</Text>
         </Box>
     </FeatureGuard>
 );
@@ -51,18 +37,11 @@ export const TeacherPrincipalEchoAction: React.FC = () => (
     <FeatureGuard action="read" subject="Announcement">
         <Box 
             as="button" 
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$surface',
-                borderWidth: 1,
-                borderColor: '$border'
-            }}
+            onClick={hapticLight}
+            className="flex-row items-center gap-2.5 px-6 py-3 rounded-full bg-sanctuary-surface border border-sanctuary-border shadow-sm active:bg-sanctuary-surface-secondary"
         >
-            <MessageSquare size={16} /> <Text>Principal's Echo</Text>
+            <Icon as={MessageSquare} size="sm" className="text-sanctuary-text" />
+            <Text className="text-sanctuary-text font-black uppercase text-[10px] tracking-[0.2em]">Principal's Echo</Text>
         </Box>
     </FeatureGuard>
 );
@@ -71,18 +50,11 @@ export const TeacherMyEchoesAction: React.FC = () => (
     <FeatureGuard action="manage" subject="Announcement">
         <Box 
             as="button" 
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$surface',
-                borderWidth: 1,
-                borderColor: '$border'
-            }}
+            onClick={hapticLight}
+            className="flex-row items-center gap-2.5 px-6 py-3 rounded-full bg-sanctuary-surface border border-sanctuary-border shadow-sm active:bg-sanctuary-surface-secondary"
         >
-            <History size={16} /> <Text>My Echoes</Text>
+            <Icon as={History} size="sm" className="text-sanctuary-text" />
+            <Text className="text-sanctuary-text font-black uppercase text-[10px] tracking-[0.2em]">My Echoes</Text>
         </Box>
     </FeatureGuard>
 );

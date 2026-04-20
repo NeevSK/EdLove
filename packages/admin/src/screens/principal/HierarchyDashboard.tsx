@@ -15,6 +15,7 @@ import {
     ScrollView,
     SkeletonCard,
     hapticSuccess,
+    hapticLight,
     Pressable
 } from '@repo/ui';
 import { sectionsAPI, type SchoolSectionRow } from '../../sections';

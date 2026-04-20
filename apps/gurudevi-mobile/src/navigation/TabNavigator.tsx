@@ -1,30 +1,38 @@
-﻿import React from 'react';
-import { Icon, View } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Modal, TouchableOpacity, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import {  SanctuaryBackground, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
-import { Icon, ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
-import { Icon, Modal, TouchableOpacity } from 'react-native';
-import { X } from 'lucide-react-native';
-import { BreathGuide } from '@repo/self';
-import { StyleSheet } from 'react-native';
-import { useTheme } from '@repo/ui';
-
-// Icons
-import { Icon, User,
-  Users,
-  Library,
-  Heart,
-  School
+import { 
+  SanctuaryBackground, 
+  Box, 
+  VStack, 
+  HStack, 
+  Text, 
+  hapticLight, 
+  Icon, 
+  ErrorBoundary, 
+  AchievementUnlockOverlay,
+  useTheme
+} from '@repo/ui';
+import { 
+  X, 
+  User, 
+  Users, 
+  Library, 
+  Heart, 
+  School, 
+  Hammer 
 } from 'lucide-react-native';
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
+import { BreathGuide } from '@repo/self';
 import { useThemedColors } from '@repo/ui';
-import { usePermissions, useRewards, useTracking, useStore } from '@repo/core';
+import { usePermissions, useRewards, useTracking, useStore, useFeature } from '@repo/core';
+import { WorkforceShell } from '@repo/workforce';
 
 // Screens
 import {
@@ -45,7 +53,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const role = context.roles[0];
   const colors = useTheme().scene;
   const { phase } = useTheme();
-  const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+  const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile' | 'workforce'>('self');
   const insets = useSafeAreaInsets();
   const { newAchievements } = useRewards();
   const { isBreathingOpen, setBreathingOpen } = useStore();
@@ -191,13 +199,34 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
               <View>
                 <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
               </View>
-            )}}>
+            )}}
+        >
           {() => (
             <ErrorBoundary name="Library Stack">
               <LibraryStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>
+
+        {/* 6. Workforce Tab (Experimental) */}
+        {useFeature('isDevelopingWorkforce') && (
+          <Tab.Screen
+            name="Workforce"
+            options={{
+              tabBarLabel: 'Workforce',
+              tabBarIcon: ({ color, size }) => (
+                <View>
+                  <Hammer color={color} size={size} fill={currentTab === 'workforce' ? color : 'none'} />
+                </View>
+              )}}
+          >
+            {() => (
+              <ErrorBoundary name="Workforce Tab">
+                <WorkforceShell />
+              </ErrorBoundary>
+            )}
+          </Tab.Screen>
+        )}
       </Tab.Navigator>
 
 

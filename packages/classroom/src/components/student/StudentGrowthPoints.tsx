@@ -1,13 +1,12 @@
 import React from 'react';
 import { Trophy } from 'lucide-react-native';
 import {
-    useThemedColors,
     Box,
     HStack,
     VStack,
     Text,
-    Theme,
-    Heading
+    Heading,
+    Icon
 } from '@repo/ui';
 
 interface StudentGrowthPointsProps {
@@ -16,72 +15,40 @@ interface StudentGrowthPointsProps {
 }
 
 export const StudentGrowthPoints = ({ points, isDemo }: StudentGrowthPointsProps) => {
-    const colors = useThemedColors();
-
     if (!isDemo) return null; // Only for demo for now based on original code
-
+ 
     return (
-        <Box 
-            sx={{ 
-                padding: 24, 
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: 'rgba(245, 158, 11, 0.2)',
-                backgroundColor: 'rgba(245, 158, 11, 0.05)',
-                // linear-gradient equivalent in style or simplified
-            }}
-        >
-            <HStack sx={{ alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <Trophy size={20} color={Theme.colors.templeGold} />
-                <Heading sx={{ fontSize: 14, fontWeight: '800', color: colors.text }}>
+        <Box className="bg-sanctuarySaffron/5 rounded-[32px] border border-sanctuarySaffron/20 p-6">
+            <HStack className="items-center gap-2.5 mb-5">
+                <Box className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
+                    <Icon as={Trophy} size="xs" className="text-sanctuarySaffron" />
+                </Box>
+                <Heading className="text-sm font-black text-sanctuary-text uppercase tracking-widest">
                     Growth Journey
                 </Heading>
             </HStack>
-
-            <HStack sx={{ alignItems: 'baseline', marginBottom: 4 }}>
-                <Text sx={{ 
-                    fontSize: 40, 
-                    fontWeight: '800', 
-                    color: Theme.colors.templeGold 
-                }}>
+ 
+            <HStack className="items-baseline mb-1">
+                <Text className="text-4xl font-black text-sanctuarySaffron tracking-tighter">
                     {points}
                 </Text>
-                <Text sx={{ 
-                    fontSize: 16, 
-                    color: colors.textSecondary,
-                    marginLeft: 4
-                }}>
+                <Text className="text-sm font-black text-sanctuary-text-tertiary ml-1.5 uppercase tracking-widest">
                     pts
                 </Text>
             </HStack>
-
-            <Text sx={{ 
-                fontSize: 12, 
-                color: colors.textSecondary, 
-                marginBottom: 16 
-            }}>
+ 
+            <Text className="text-xs font-bold text-sanctuary-text-tertiary mb-5">
                 Level 4 • Inquisitive Learner
             </Text>
-
-            <Box sx={{ 
-                height: 6, 
-                backgroundColor: colors.border, 
-                borderRadius: 3, 
-                overflow: 'hidden', 
-                marginBottom: 8 
-            }}>
-                <Box sx={{ 
-                    width: '68%', 
-                    height: '100%', 
-                    backgroundColor: Theme.colors.templeGold, 
-                    borderRadius: 3 
-                }} />
+ 
+            <Box className="h-2 bg-sanctuarySaffron/10 rounded-full overflow-hidden mb-3">
+                <Box 
+                    className="h-full bg-sanctuarySaffron rounded-full"
+                    style={{ width: '68%' }} 
+                />
             </Box>
-
-            <Text sx={{ 
-                fontSize: 11, 
-                color: colors.textSecondary 
-            }}>
+ 
+            <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-widest">
                 160 pts to next level
             </Text>
         </Box>

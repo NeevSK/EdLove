@@ -9,19 +9,12 @@ import {
     Button,
     ButtonText,
     Pressable,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
     Input,
     InputField,
     Textarea,
     TextareaInput,
     Icon,
-    CloseIcon
+    SanctuaryModal,
 } from '@repo/ui';
 import {
     FileText,
@@ -34,9 +27,7 @@ import {
     ExternalLink
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { hapticLight, hapticSuccess, openExternalURL, showExternalLinkOptions } from '@repo/ui';
+import { hapticLight, hapticSuccess, openExternalURL, showExternalLinkOptions, theme } from '@repo/ui';
 import { useResources } from '../hooks/useResources';
 import { api, CLASSROOM_RESOURCE_SCOPE, ClassroomResource, useStore, useSafeMutation } from '@repo/core';
 
@@ -47,7 +38,6 @@ interface ResourcesViewProps {
 
 export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const showToast = useStore(state => state.showToast);
     const user = useStore(state => state.user);
 
@@ -162,42 +152,35 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
     };
 
     return (
-        <VStack sx={{ flex: 1 }}>
+    return (
+        <VStack className="flex-1 bg-sanctuary-surface">
             {/* Filters */}
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                sx={{ maxHeight: 60 }}
-                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 8, paddingBottom: Theme.spacing.md }}
-            >
-                {(['all', 'link', 'pdf', 'note'] as const).map(ft => (
-                    <Pressable
-                        key={ft}
-                        onPress={() => setFilterType(ft)}
-                        sx={{
-                            paddingHorizontal: Theme.spacing.md,
-                            paddingVertical: Theme.spacing.xs,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: filterType === ft ? Theme.colors.sanctuarySaffron : 'transparent',
-                            borderWidth: 1,
-                            borderColor: filterType === ft ? Theme.colors.sanctuarySaffron : colors.border,
-                            height: 32,
-                            justifyContent: 'center'
-                        }}
-                    >
-                        <Text color={filterType === ft ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13, textTransform: 'capitalize' }}>
-                            {ft}
-                        </Text>
-                    </Pressable>
-                ))}
-            </ScrollView>
+            <Box className="h-16">
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerClassName="px-4 gap-2 items-center"
+                >
+                    {(['all', 'link', 'pdf', 'note'] as const).map(ft => (
+                        <Pressable
+                            key={ft}
+                            onPress={() => setFilterType(ft)}
+                            className={`px-6 py-2 rounded-full border items-center justify-center h-10 ${filterType === ft ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'border-sanctuary-border bg-sanctuary-surface-secondary/50'}`}
+                        >
+                            <Text className={`text-xs font-bold uppercase tracking-wider ${filterType === ft ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'}`}>
+                                {ft}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            </Box>
 
             {/* Content List */}
-            <ScrollView>
-                <VStack sx={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100, gap: Theme.spacing.md }}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <VStack className="px-4 pb-24 gap-4 pt-2">
                     {filteredResources.length === 0 && !isLoading && (
-                        <Box sx={{ alignItems: 'center', paddingVertical: 32 }}>
-                            <Text color={colors.textTertiary}>No resources found.</Text>
+                        <Box className="items-center py-20 bg-sanctuary-surface-secondary/30 rounded-[32px] border border-dashed border-sanctuary-border/50 mx-2">
+                            <Text className="text-sanctuary-text-tertiary font-medium">No resources found.</Text>
                         </Box>
                     )}
 
@@ -206,39 +189,29 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                             key={resource.id}
                             onPress={() => handleOpenResource(resource)}
                             onLongPress={() => resource.url && handleOpenResourceOptions(resource)}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
-                                padding: Theme.spacing.md,
-                                borderLeftWidth: resource.is_pinned ? 3 : 0,
-                                borderLeftColor: Theme.colors.sanctuarySaffron
-                            }}
+                            className={`p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border shadow-sm overflow-hidden ${resource.is_pinned ? 'border-l-4 border-l-sanctuarySaffron' : ''}`}
                         >
-                            <HStack justifyContent="space-between" alignItems="flex-start">
-                                <HStack sx={{ alignItems: 'flex-start', flex: 1, gap: Theme.spacing.md }}>
-                                    <Box
-                                        sx={{
-                                            padding: 8,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: colors.tertiary
-                                        }}
-                                    >
-                                        <Icon as={getIcon(resource.type)} sx={{ color: colors.text, width: 20, height: 20 }} />
+                            <HStack className="justify-between items-center">
+                                <HStack className="items-center flex-1 gap-4">
+                                    <Box className="p-3 bg-sanctuarySaffron/10 rounded-2xl items-center justify-center">
+                                        <Icon as={getIcon(resource.type)} size="sm" className="text-sanctuarySaffron" />
                                     </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <HStack sx={{ alignItems: 'center', gap: 4 }}>
-                                            <Text color={colors.text} sx={{ fontWeight: 'bold' }} numberOfLines={1}>
+                                    <VStack className="flex-1 gap-0.5">
+                                        <HStack className="items-center gap-1.5">
+                                            <Text className="text-base font-bold text-sanctuary-text" numberOfLines={1}>
                                                 {resource.title}
                                             </Text>
-                                            {resource.is_pinned && <Icon as={Pin} sx={{ width: 12, height: 12, color: Theme.colors.sanctuarySaffron }} />}
+                                            {resource.is_pinned && (
+                                                <Icon as={Pin} size="xs" className="text-sanctuarySaffron" />
+                                            )}
                                         </HStack>
 
                                         {resource.type === 'note' && resource.content ? (
-                                            <Text color={colors.textSecondary} sx={{ fontSize: 13 }} numberOfLines={2}>
+                                            <Text className="text-sm font-medium text-sanctuary-text-secondary leading-snug" numberOfLines={2}>
                                                 {resource.content}
                                             </Text>
                                         ) : (
-                                            <Text color={colors.textTertiary} sx={{ fontSize: 12 }} numberOfLines={1}>
+                                            <Text className="text-xs font-medium text-sanctuary-text-tertiary" numberOfLines={1}>
                                                 {resource.url || 'No content'}
                                             </Text>
                                         )}
@@ -246,9 +219,9 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                 </HStack>
 
                                 {isTeacher && (
-                                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                                    <HStack className="gap-1 items-center">
                                         <Pressable
-                                            sx={{ padding: 8 }}
+                                            className="p-3"
                                             onPress={(e: any) => {
                                                 e.stopPropagation();
                                                 togglePinMutation.mutate({ id: resource.id, isPinned: !resource.is_pinned });
@@ -256,18 +229,19 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                                         >
                                             <Icon
                                                 as={Pin}
-                                                fill={resource.is_pinned ? Theme.colors.sanctuarySaffron : 'none'}
-                                                sx={{ width: 16, height: 16, color: resource.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary }}
+                                                size="sm"
+                                                className={resource.is_pinned ? 'text-sanctuarySaffron' : 'text-sanctuary-text-tertiary'}
+                                                style={{ fill: resource.is_pinned ? theme.colors.sanctuarySaffron : 'none' }}
                                             />
                                         </Pressable>
                                         <Pressable
-                                            sx={{ padding: 8 }}
+                                            className="p-3"
                                             onPress={(e: any) => {
                                                 e.stopPropagation();
                                                 deleteMutation.mutate(resource.id);
                                             }}
                                         >
-                                            <Icon as={Trash2} sx={{ width: 16, height: 16, color: Theme.colors.emberRed }} />
+                                            <Icon as={Trash2} size="sm" className="text-sanctuary-error" />
                                         </Pressable>
                                     </HStack>
                                 )}
@@ -280,138 +254,102 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             {/* Add Resource FAB */}
             {isTeacher && (
                 <Button
-                    size="lg"
-                    variant="solid"
                     onPress={() => setShowAddModal(true)}
-                    sx={{
-                        position: 'absolute',
-                        bottom: 20,
-                        right: 20,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 4.65,
-                        elevation: 8,
-                        flexDirection: 'row',
-                        paddingHorizontal: 16,
-                    }}
+                    className="absolute bottom-10 right-6 bg-sanctuarySaffron rounded-full px-6 py-4 flex-row items-center gap-3 shadow-xl shadow-sanctuarySaffron/40"
                 >
-                    <ButtonText sx={{ color: Theme.colors.sacredWhite, marginRight: Theme.spacing.sm }}>
+                    <ButtonText className="text-sanctuary-ink font-bold text-base">
                         {t('classroom.resources.addResource') || 'Add Resource'}
                     </ButtonText>
-                    <Plus color={Theme.colors.sacredWhite} size={20} />
+                    <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
                 </Button>
             )}
 
             {/* Add Resource Modal */}
-            <Modal
+            <SanctuaryModal
                 isOpen={showAddModal}
                 onClose={() => setShowAddModal(false)}
-            >
-                <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.primary }}>
-                    <ModalHeader>
-                        <Heading sx={{ fontSize: 18, color: colors.text }}>{t('classroom.resources.addModalTitle') || 'Add Classroom Resource'}</Heading>
-                        <ModalCloseButton>
-                            <Icon as={CloseIcon} sx={{ color: colors.textTertiary }} />
-                        </ModalCloseButton>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <VStack sx={{ gap: 4 }}>
-                                <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.titleLabel') || 'Title'}</Text>
-                                <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
-                                    <InputField
-                                        placeholder={t('classroom.resources.titlePlaceholder') || "e.g. Science Syllabus, Lab Safety Video"}
-                                        sx={{ color: colors.text }}
-                                        value={title}
-                                        onChangeText={setTitle}
-                                    />
-                                </Input>
-                            </VStack>
-
-                            <VStack sx={{ gap: 4 }}>
-                                <Text sx={{ color: colors.text, fontSize: 13 }}>{t('classroom.resources.typeLabel') || 'Type'}</Text>
-                                <HStack sx={{ gap: Theme.spacing.sm }}>
-                                    {(['link', 'pdf', 'note'] as const).map(t => (
-                                        <Pressable
-                                            key={t}
-                                            onPress={() => setType(t)}
-                                            sx={{
-                                                flex: 1,
-                                                paddingVertical: 8,
-                                                alignItems: 'center',
-                                                borderRadius: Theme.corners.comfortable,
-                                                backgroundColor: type === t ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                            }}
-                                        >
-                                            <Text sx={{ color: type === t ? 'white' : colors.text, textTransform: 'capitalize', fontWeight: type === t ? 'bold' : 'normal' }}>
-                                                {t}
-                                            </Text>
-                                        </Pressable>
-                                    ))}
-                                </HStack>
-                            </VStack>
-
-                             <VStack sx={{ gap: 4 }}>
-                                <Text sx={{ color: colors.text, fontSize: 13 }}>
-                                    {type === 'note' ? (t('classroom.resources.contentLabel') || 'Content') : (t('classroom.resources.urlLabel') || 'URL')}
-                                </Text>
-                                {type === 'note' ? (
-                                    <Textarea sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
-                                        <TextareaInput
-                                            placeholder={t('classroom.resources.contentPlaceholder') || "Enter note content..."}
-                                            sx={{ color: colors.text }}
-                                            value={content}
-                                            onChangeText={setContent}
-                                        />
-                                    </Textarea>
-                                ) : (
-                                    <Input sx={{ borderRadius: Theme.corners.comfortable, borderColor: colors.border }}>
-                                        <InputField
-                                            placeholder="https://..."
-                                            keyboardType="url"
-                                            autoCapitalize="none"
-                                            sx={{ color: colors.text }}
-                                            value={content}
-                                            onChangeText={setContent}
-                                        />
-                                    </Input>
-                                )}
-                            </VStack>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter sx={{ gap: Theme.spacing.sm }}>
+                title={t('classroom.resources.addModalTitle') || 'Add Classroom Resource'}
+                footer={
+                    <HStack className="gap-4">
                         <Button
                             variant="outline"
                             onPress={() => setShowAddModal(false)}
-                            sx={{
-                                flex: 1,
-                                borderColor: colors.border
-                            }}
+                            className="flex-1 h-14 rounded-[24px] border-sanctuary-border"
                         >
-                            <ButtonText sx={{ color: colors.textSecondary }}>{t('common.cancel') || 'Cancel'}</ButtonText>
+                            <ButtonText className="text-sanctuary-text-secondary font-bold">{t('common.cancel') || 'Cancel'}</ButtonText>
                         </Button>
                         <Button
                             onPress={() => {
                                 addResourceMutation.mutate({ title, type, content });
                             }}
-                            sx={{
-                                flex: 2,
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                borderRadius: Theme.corners.comfortable
-                            }}
+                            className="flex-[2] h-14 bg-sanctuarySaffron rounded-[24px] shadow-md shadow-sanctuarySaffron/20"
                             disabled={!title || !content || addResourceMutation.isLoading}
                         >
-                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                            <ButtonText className="text-sanctuary-ink font-bold">
                                 {addResourceMutation.isLoading ? (t('common.adding') || 'Adding...') : (t('classroom.resources.addResource') || 'Add Resource')}
                             </ButtonText>
                         </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+                    </HStack>
+                }
+            >
+                <VStack className="gap-8 p-1">
+                    <VStack className="gap-2">
+                        <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">{t('classroom.resources.titleLabel') || 'Title'}</Text>
+                        <Input className="h-14 px-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                            <InputField
+                                placeholder={t('classroom.resources.titlePlaceholder') || "e.g. Science Syllabus"}
+                                className="text-sanctuary-text font-bold text-lg"
+                                value={title}
+                                onChangeText={setTitle}
+                            />
+                        </Input>
+                    </VStack>
+
+                    <VStack className="gap-2">
+                        <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">{t('classroom.resources.typeLabel') || 'Type'}</Text>
+                        <HStack className="gap-3">
+                            {(['link', 'pdf', 'note'] as const).map(t => (
+                                <Pressable
+                                    key={t}
+                                    onPress={() => setType(t)}
+                                    className={`flex-1 py-3 items-center justify-center rounded-2xl border ${type === t ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-sanctuary-surface-secondary border-sanctuary-border'}`}
+                                >
+                                    <Text className={`text-sm font-bold uppercase tracking-wider ${type === t ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'}`}>
+                                        {t}
+                                    </Text>
+                                </Pressable>
+                            ))}
+                        </HStack>
+                    </VStack>
+
+                    <VStack className="gap-2">
+                        <Text className="text-sm font-bold text-sanctuary-text-secondary ml-1">
+                            {type === 'note' ? (t('classroom.resources.contentLabel') || 'Content') : (t('classroom.resources.urlLabel') || 'URL')}
+                        </Text>
+                        {type === 'note' ? (
+                            <Textarea className="min-h-[120px] p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                                <TextareaInput
+                                    placeholder={t('classroom.resources.contentPlaceholder') || "Enter note content..."}
+                                    className="text-sanctuary-text"
+                                    value={content}
+                                    onChangeText={setContent}
+                                />
+                            </Textarea>
+                        ) : (
+                            <Input className="h-14 px-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border">
+                                <InputField
+                                    placeholder="https://..."
+                                    keyboardType="url"
+                                    autoCapitalize="none"
+                                    className="text-sanctuary-text"
+                                    value={content}
+                                    onChangeText={setContent}
+                                />
+                            </Input>
+                        )}
+                    </VStack>
+                </VStack>
+            </SanctuaryModal>
         </VStack>
     );
 }

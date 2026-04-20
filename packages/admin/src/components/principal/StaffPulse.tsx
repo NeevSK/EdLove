@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
 import { 
     Text, 
     VStack, 
@@ -8,7 +7,8 @@ import {
     Icon,
     Heading,
     Pressable,
-    ActivityIndicator
+    ActivityIndicator,
+    hapticLight
 } from '@repo/ui';
 import { useStaffPresence } from '../../hooks/useStaffPresence';
 import {
@@ -16,7 +16,8 @@ import {
     Calendar,
     CheckCircle2,
     LogIn,
-    LogOut
+    LogOut,
+    UserCircle
 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +33,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
     const [actionLoading, setActionLoading] = useState(false);
 
     const handleToggleAttendance = async () => {
+        hapticLight();
         setActionLoading(true);
         try {
             if (isCheckedIn) {
@@ -54,51 +56,53 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
     );
 
     return (
-        <Box className="my-4 px-1">
-            <Text className="mb-3 text-lg font-bold text-ink">
-                {t('staffPresence.title')}
-            </Text>
+        <VStack className="gap-5">
+            <VStack className="gap-1.5 px-1">
+                <Heading className="text-[20px] font-black text-phaseText-primary tracking-tight">
+                    {t('staffPresence.title') || "Presence Pulse"}
+                </Heading>
+                <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[2px]">Gate Monitoring</Text>
+            </VStack>
             
-            <Box className="p-5 rounded-3xl bg-white/70 border border-border shadow-sm">
-                <VStack className="gap-5">
+            <Box className="p-6 rounded-[32px] bg-phase-surface border border-phase-border shadow-sm">
+                <VStack className="gap-6">
                     <HStack className="justify-between items-center">
                         <VStack className="gap-0.5">
-                            <Text className="text-sm font-bold text-ink">
-                                {t('staffPresence.attendanceStatus')}
+                            <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
+                                {t('staffPresence.attendanceStatus') || "Shift Identity"}
                             </Text>
-                            <Text className="text-xs text-ink/60">
+                            <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-wider">
                                 {new Intl.DateTimeFormat(i18n.language, { 
                                     weekday: 'long', 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric' 
+                                    day: 'numeric',
+                                    month: 'short'
                                 }).format(new Date())}
                             </Text>
                         </VStack>
-                        <Box className={`flex-row items-center px-3 py-1.5 rounded-full ${isCheckedIn ? 'bg-phase-warning/10' : 'bg-phase-error/10'}`}>
-                            <Box className={`w-1.5 h-1.5 rounded-full mr-2 ${isCheckedIn ? 'bg-primary' : 'bg-phase-error'}`} />
-                            <Text className={`text-xs font-bold ${isCheckedIn ? 'text-primary' : 'text-phase-error'}`}>
-                                {isCheckedIn ? t('staffPresence.checkedIn') : t('staffPresence.checkedOut')}
+                        <Box className={`flex-row items-center px-4 py-1.5 rounded-full border ${isCheckedIn ? 'bg-phase-success/10 border-phase-success/20' : 'bg-phase-danger/10 border-phase-danger/20'}`}>
+                            <Box className={`w-1.5 h-1.5 rounded-full mr-2 ${isCheckedIn ? 'bg-phase-success' : 'bg-phase-danger'}`} />
+                            <Text className={`text-[10px] font-black uppercase tracking-widest ${isCheckedIn ? 'text-phase-success' : 'text-phase-danger'}`}>
+                                {isCheckedIn ? (t('staffPresence.checkedIn') || "ACTIVE") : (t('staffPresence.checkedOut') || "STATIONED")}
                             </Text>
                         </Box>
                     </HStack>
 
                     <HStack className="gap-3">
-                        <VStack className="flex-1 bg-ink/5 p-3 rounded-2xl items-center gap-1">
-                            <Icon as={Clock} size={18} className="text-primary" />
-                            <Text className="text-[10px] text-ink/50 uppercase font-bold tracking-wider">
-                                {t('staffPresence.checkedInAt')}
+                        <VStack className="flex-1 bg-phase-canvas p-4 rounded-[20px] items-center gap-1 border border-phase-border/50">
+                            <Icon as={Clock} size="sm" className="text-phase-interactive" />
+                            <Text className="text-[9px] text-phaseText-muted uppercase font-black tracking-widest mt-1">
+                                {t('staffPresence.checkedInAt') || "CHECK-IN"}
                             </Text>
-                            <Text className="text-sm font-bold text-ink">
+                            <Text className="text-[15px] font-black text-phaseText-primary">
                                 {todayAttendance ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_in)) : '--:--'}
                             </Text>
                         </VStack>
-                        <VStack className="flex-1 bg-ink/5 p-3 rounded-2xl items-center gap-1">
-                            <Icon as={LogOut} size={18} className="text-secondary" />
-                            <Text className="text-[10px] text-ink/50 uppercase font-bold tracking-wider">
-                                {t('staffPresence.checkedOutAt')}
+                        <VStack className="flex-1 bg-phase-canvas p-4 rounded-[20px] items-center gap-1 border border-phase-border/50">
+                            <Icon as={LogOut} size="sm" className="text-phaseText-muted" />
+                            <Text className="text-[9px] text-phaseText-muted uppercase font-black tracking-widest mt-1">
+                                {t('staffPresence.checkedOutAt') || "CHECK-OUT"}
                             </Text>
-                            <Text className="text-sm font-bold text-ink">
+                            <Text className="text-[15px] font-black text-phaseText-primary">
                                 {todayAttendance?.check_out ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_out)) : '--:--'}
                             </Text>
                         </VStack>
@@ -107,16 +111,16 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                     <Pressable
                         onPress={handleToggleAttendance}
                         disabled={actionLoading}
-                        className={`h-12 rounded-2xl flex-row items-center justify-center gap-2 active:opacity-80 ${
-                            isCheckedIn ? 'bg-phase-error' : 'bg-primary'
+                        className={`h-14 rounded-[20px] flex-row items-center justify-center gap-3 shadow-md active:scale-95 transition-all ${
+                            isCheckedIn ? 'bg-phase-danger' : 'bg-phase-interactive'
                         }`}>
                         {actionLoading ? (
                             <ActivityIndicator size="small" color="white" />
                         ) : (
                             <>
-                                <Icon as={isCheckedIn ? LogOut : LogIn} size={20} className="text-white" />
-                                <Text className="text-white font-bold">
-                                    {isCheckedIn ? t('staffPresence.checkOutButton') : t('staffPresence.checkInButton')}
+                                <Icon as={isCheckedIn ? LogOut : LogIn} size="sm" className="text-white" />
+                                <Text className="text-white text-[12px] font-black uppercase tracking-widest">
+                                    {isCheckedIn ? (t('staffPresence.checkOutButton') || "COMMIT SHIFT EXIT") : (t('staffPresence.checkInButton') || "AUTHORIZE ENTRANCE")}
                                 </Text>
                             </>
                         )}
@@ -124,25 +128,25 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                 </VStack>
             </Box>
 
-            <HStack className="gap-3 mt-4">
-                <Pressable className="flex-1 active:opacity-70">
-                    <Box className="bg-white/50 p-4 rounded-2xl border border-border items-center gap-2">
-                        <Icon as={Calendar} size={20} className="text-primary" />
-                        <Text className="text-xs font-bold text-ink">
-                            {t('staffPresence.requestLeave')}
+            <HStack className="gap-4">
+                <Pressable className="flex-1 active:scale-95 transition-all">
+                    <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
+                        <Icon as={Calendar} size="sm" className="text-phase-interactive" />
+                        <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
+                            {t('staffPresence.requestLeave') || "Leave Gateway"}
                         </Text>
                     </Box>
                 </Pressable>
-                <Pressable className="flex-1 active:opacity-70">
-                    <Box className="bg-white/50 p-4 rounded-2xl border border-border items-center gap-2">
-                        <Icon as={CheckCircle2} size={20} className="text-primary" />
-                        <Text className="text-xs font-bold text-ink">
-                            {t('staffPresence.viewHistory')}
+                <Pressable className="flex-1 active:scale-95 transition-all">
+                    <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
+                        <Icon as={CheckCircle2} size="sm" className="text-phase-interactive" />
+                        <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
+                            {t('staffPresence.viewHistory') || "Registry View"}
                         </Text>
                     </Box>
                 </Pressable>
             </HStack>
-        </Box>
+        </VStack>
     );
 };
 

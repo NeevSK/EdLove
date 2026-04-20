@@ -19,22 +19,24 @@ interface TeacherAdminButtonProps {
 
 export const TeacherAdminButton: React.FC<TeacherAdminButtonProps> = ({ label, onClick, icon }) => {
     const IconComponent = ICON_MAP[icon] || Settings;
-
+ 
     return (
         <Button
             variant="outline"
             action="secondary"
             onPress={onClick}
-            className="w-full flex-row items-start justify-start rounded-[32px] border border-sanctuary-border/10 bg-sanctuary-surface-secondary/80 p-6 shadow-sm active:opacity-70 h-auto"
+            className="w-full h-auto flex-row items-start justify-start rounded-[32px] border border-sanctuary-border bg-sanctuary-surface-secondary/20 p-6 active:opacity-80"
         >
-            <VStack className="items-start gap-2.5">
-                <HStack className="items-center gap-2">
-                    <Icon as={IconComponent} size="xs" className="text-sanctuarySaffron" />
-                    <Text className="text-[10px] font-bold uppercase tracking-[0.25em] text-sanctuary-text-muted/60">
+            <VStack className="items-start gap-4">
+                <HStack className="items-center gap-2.5">
+                    <Box className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
+                        <Icon as={IconComponent} size="xs" className="text-sanctuarySaffron" />
+                    </Box>
+                    <Text className="text-[10px] font-black uppercase tracking-[0.25em] text-sanctuary-text-tertiary">
                         Admin Signal
                     </Text>
                 </HStack>
-                <Heading size="xs" className="text-sanctuary-text font-bold tracking-tight">
+                <Heading className="text-sm text-sanctuary-text font-black tracking-tight uppercase leading-tight">
                     {label}
                 </Heading>
             </VStack>

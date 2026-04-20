@@ -12,7 +12,9 @@ import {
     useSanctuaryToast as useToast,
     Toast,
     ToastTitle,
-    Pressable
+    Pressable,
+    hapticLight,
+    hapticMedium
 } from '@repo/ui';
 import { ArrowLeft, Copy, Plus, X, ShieldAlert, Award, QrCode } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';

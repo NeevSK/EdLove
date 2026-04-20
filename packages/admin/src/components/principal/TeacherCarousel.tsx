@@ -15,12 +15,11 @@ import {
     VStack,
     Text,
     ScrollView,
-    SkeletonCard,
-    useTheme,
     getInitialsFromName,
     Pressable,
     hapticLight,
-    Theme
+    Heading,
+    Spinner
 } from '@repo/ui';
 import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core';
 
@@ -50,18 +49,18 @@ function TeacherCard({
     item: TeacherCarouselItem;
     onTap?: () => void;
 }) {
-    const getStatusColorClass = (status?: string | null): string => {
+    const getStatusStyles = (status?: string | null) => {
         switch (status) {
-            case 'present': return 'bg-phase-success';
-            case 'late': return 'bg-phase-interactive';
-            case 'absent': return 'bg-phase-danger';
+            case 'present': return { dot: 'bg-phase-success', bg: 'bg-phase-success/5' };
+            case 'late': return { dot: 'bg-phase-interactive', bg: 'bg-phase-interactive/5' };
+            case 'absent': return { dot: 'bg-phase-danger', bg: 'bg-phase-danger/5' };
             case 'on_leave':
-            case 'half_day': return 'bg-phase-warning';
-            default: return 'bg-phaseText-muted';
+            case 'half_day': return { dot: 'bg-phase-warning', bg: 'bg-phase-warning/5' };
+            default: return { dot: 'bg-phaseText-muted', bg: 'bg-phase-canvas' };
         }
     };
 
-    const statusColorClass = getStatusColorClass(item.todayStatus ?? undefined);
+    const statusStyles = getStatusStyles(item.todayStatus ?? undefined);
     const statusLabel = item.todayStatus ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus) : 'No data';
 
     return (
@@ -70,40 +69,41 @@ function TeacherCard({
                 hapticLight();
                 onTap?.();
             }}
-            className="w-40 bg-phase-surface rounded-2xl border border-phase-border p-4 items-center justify-center gap-4 active:scale-95 transition-all shadow-sm"
+            className="w-[170px] bg-phase-surface rounded-[32px] border border-phase-border p-6 items-center justify-center gap-5 active:scale-95 transition-all shadow-sm"
         >
-            {/* Avatar */}
-            <Box className="w-16 h-16 rounded-full items-center justify-center bg-phase-interactive/10">
+            {/* Avatar Container */}
+            <Box className="w-20 h-20 rounded-[28px] items-center justify-center bg-phase-interactive/10 border border-phase-interactive/10 relative">
                 <Text className="text-2xl font-black text-phase-interactive">
                     {getInitialsFromName(item.fullName)}
                 </Text>
+                {/* Status indicator overlap */}
+                <Box className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-[3px] border-phase-surface items-center justify-center ${statusStyles.dot}`}>
+                    <Box className="w-1.5 h-1.5 rounded-full bg-white opacity-80" />
+                </Box>
             </Box>
 
             {/* Name & Role */}
             <VStack className="items-center gap-1.5">
                 <Text
                     numberOfLines={1}
-                    className="text-[14px] font-black text-phaseText-primary text-center max-w-[136px]"
+                    className="text-[15px] font-black text-phaseText-primary text-center w-full tracking-tight"
                 >
                     {item.fullName}
                 </Text>
-                <Box className="bg-phase-interactive/10 rounded-full px-2.5 py-0.5">
-                    <Text className="text-[9px] font-black text-phase-interactive uppercase tracking-wider">
+                <Box className="bg-phase-canvas border border-phase-border rounded-full px-3 py-1">
+                    <Text className="text-[9px] font-black text-phase-interactive uppercase tracking-widest leading-none">
                         {formatRole(item.role)}
                     </Text>
                 </Box>
             </VStack>
 
-            {/* Status & Load */}
-            <VStack className="items-center gap-1 mt-1">
-                <HStack className="items-center gap-2">
-                    <Box className={`w-2 h-2 rounded-full ${statusColorClass}`} />
-                    <Text className="text-[11px] font-bold text-phaseText-secondary">
-                        {statusLabel}
-                    </Text>
-                </HStack>
-                <Text className="text-[10px] font-bold text-phaseText-muted">
-                    {item.classroomCount === 1 ? '1 Class Assigned' : `${item.classroomCount} Classes Assigned`}
+            {/* Load Breakdown */}
+            <VStack className="items-center gap-1 mt-1 bg-phase-canvas py-3 px-4 rounded-[20px] w-full border border-phase-border/50">
+                 <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
+                    {statusLabel}
+                </Text>
+                <Text className="text-[9px] font-bold text-phaseText-muted uppercase tracking-widest text-center">
+                    {item.classroomCount === 1 ? '1 UNIT' : `${item.classroomCount} UNITS`}
                 </Text>
             </VStack>
         </Pressable>
@@ -134,15 +134,23 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
 
     if (loading) {
         return (
-            <HStack className="gap-3">
-                <SkeletonCard height={200} className="w-40" />
-                <SkeletonCard height={200} className="w-40" />
+            <HStack className="gap-4 px-5">
+                <Box className="w-[170px] h-[260px] bg-phase-canvas rounded-[32px] border border-phase-border items-center justify-center">
+                    <Spinner className="text-phase-interactive" />
+                </Box>
+                <Box className="w-[170px] h-[260px] bg-phase-canvas rounded-[32px] border border-phase-border items-center justify-center opacity-50">
+                     <Spinner className="text-phase-interactive opacity-50" />
+                </Box>
             </HStack>
         );
     }
 
     if (teachers.length === 0) {
-        return null;
+        return (
+            <Box className="mx-5 p-12 bg-phase-canvas rounded-[32px] border border-dashed border-phase-border items-center justify-center opacity-60">
+                 <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[3px]">Vacancy In Registry</Text>
+            </Box>
+        );
     }
 
     return (
@@ -151,7 +159,7 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ 
                 paddingHorizontal: 20,
-                gap: 12 
+                gap: 16 
             }}
         >
             {teachers.map((t) => (

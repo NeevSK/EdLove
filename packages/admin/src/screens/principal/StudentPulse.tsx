@@ -9,7 +9,8 @@ import {
     Text, 
     Heading, 
     Pressable,
-    Icon
+    Icon,
+    hapticLight
 } from '@repo/ui';
 
 interface StudentPulseProps {

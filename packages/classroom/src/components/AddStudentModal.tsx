@@ -258,5 +258,3 @@ export const AddStudentModal = ({
         </SanctuaryModal>
     );
 };
-    );
-};

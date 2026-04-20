@@ -63,66 +63,67 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
     if (isLoading) {
         return (
             <Box className="p-10 items-center justify-center">
-                <Spinner color="#ffbf00" />
+                <Spinner className="text-phase-interactive" />
             </Box>
         );
     }
 
     return (
-        <VStack className="gap-6">
-            <VStack className="gap-1">
+        <VStack className="gap-6 bg-phase-surface rounded-[32px] p-6 border border-phase-border shadow-sm">
+            <VStack className="gap-1.5">
                 <HStack className="gap-2 items-center">
-                    <Heading className="text-sm font-black text-ink uppercase tracking-wider">
+                    <Heading className="text-[17px] font-black text-phaseText-primary tracking-tight">
                         {t('principal.pulse.title', 'Curriculum Pulse')}
                     </Heading>
-                    <Box className="px-2 py-0.5 bg-amber-500/10 rounded-full border border-amber-500/20">
+                    <Box className="px-2.5 py-1 bg-phase-interactive/10 rounded-lg border border-phase-interactive/20">
                         <HStack className="gap-1 items-center">
-                            <Icon as={Zap} size={10} className="text-amber-600" />
-                            <Text className="text-[10px] font-black text-amber-600 uppercase">2026 REFORM</Text>
+                            <Icon as={Zap} size="xs" className="text-phase-interactive" />
+                            <Text className="text-[9px] font-black text-phase-interactive uppercase tracking-widest">2026 Reform</Text>
                         </HStack>
                     </Box>
                 </HStack>
-                <Text className="text-xs font-bold text-ink/40">
-                    {t('principal.pulse.subtitle', 'Live tracking of syllabus coverage across grades.')}
+                <Text className="text-[12px] font-bold text-phaseText-muted">
+                    {t('principal.pulse.subtitle', 'Real-time syllabus implementation tracking.')}
                 </Text>
             </VStack>
 
-            <VStack className="gap-5">
+            <VStack className="gap-6">
                 {progress.map((item) => (
-                    <VStack key={item.grade} className="gap-2">
+                    <VStack key={item.grade} className="gap-3">
                         <HStack className="justify-between items-center">
                             <HStack className="gap-2 items-center">
-                                <Text className="text-sm font-black text-ink">{item.grade}</Text>
+                                <Text className="text-[14px] font-black text-phaseText-primary">{item.grade}</Text>
                                 {item.is_reform && (
-                                    <Text className="text-[10px] font-black text-amber-600 uppercase tracking-tighter">(Reform)</Text>
+                                    <Text className="text-[9px] font-black text-phase-interactive uppercase tracking-widest bg-phase-interactive/5 px-1.5 py-0.5 rounded-md">New Cycle</Text>
                                 )}
                             </HStack>
-                            <Text className="text-xs font-black text-ink/60">{item.coverage}%</Text>
+                            <Text className="text-[12px] font-black text-phaseText-secondary">{item.coverage}%</Text>
                         </HStack>
-                        <Progress value={item.coverage} className="h-2 w-full bg-ink/5 rounded-full overflow-hidden">
+                        <Progress value={item.coverage} className="h-2 w-full bg-phase-canvas rounded-full overflow-hidden">
                             <ProgressFilledTrack
-                                className={`h-full ${item.is_reform ? 'bg-amber-500' : 'bg-primary'}`}
+                                className="h-full bg-phase-interactive"
                             />
                         </Progress>
                         <HStack className="gap-1.5 items-center">
-                            <Icon as={Clock} size={10} className="text-ink/30" />
-                            <Text className="text-[10px] font-bold text-ink/30 uppercase tracking-widest">
-                                Sync: {new Date(item.last_updated).toLocaleDateString()}
+                            <Icon as={Clock} size="xs" className="text-phaseText-muted/40" />
+                            <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest">
+                                Updated {new Date(item.last_updated).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                             </Text>
                         </HStack>
                     </VStack>
                 ))}
             </VStack>
 
-            <Box className="p-4 bg-silk rounded-2xl border border-border">
-                <HStack className="gap-3 items-center">
-                    <Icon as={BookOpen} size={14} className="text-primary" />
-                    <Text className="text-xs font-bold text-ink/60 flex-1 leading-relaxed">
-                        {t('principal.pulse.insight', 'Syllabus reform implementation is pacing 15% faster than previous cycles.')}
+            <Box className="p-5 bg-phase-canvas rounded-[20px] border border-phase-border shadow-inner mt-2">
+                <HStack className="gap-4 items-center">
+                    <Box className="p-2 bg-phase-interactive/10 rounded-xl">
+                        <Icon as={BookOpen} size="sm" className="text-phase-interactive" />
+                    </Box>
+                    <Text className="text-[12px] font-bold text-phaseText-secondary flex-1 leading-[18px]">
+                        {t('principal.pulse.insight', 'Syllabus reform implementation is pacing 15% more effectively than institutional averages.')}
                     </Text>
                 </HStack>
             </Box>
         </VStack>
     );
 }
-

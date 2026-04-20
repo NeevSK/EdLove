@@ -21,6 +21,7 @@ export function useAnalyticsContext() {
 interface Props {
     children: ReactNode;
     apiKey?: string;
+    enabled?: boolean;
     options?: {
         host?: string;
         debug?: boolean;
@@ -29,8 +30,8 @@ interface Props {
 
 import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 
-export function AnalyticsProvider({ children, apiKey, options }: Props) {
-    if (!apiKey) {
+export function AnalyticsProvider({ children, apiKey, enabled = true, options }: Props) {
+    if (!apiKey || !enabled) {
         return (
             <ActivityPulseProvider>
                 {children}
