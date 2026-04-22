@@ -22,7 +22,9 @@ export const formAnalytics = {
 
       if (field.type === 'select') {
         const initialCounts: Record<string, number> = {};
-        field.options?.forEach((opt) => (initialCounts[opt.value] = 0));
+        field.options?.forEach((opt) => {
+          initialCounts[opt.value] = 0;
+        });
 
         aggregatedData = values.reduce((acc: any, val: any) => {
           acc[val] = (acc[val] || 0) + 1;

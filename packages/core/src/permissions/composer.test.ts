@@ -1,5 +1,6 @@
-import type { UserContext } from '../logic/schemas/user.schema';
 import { subject } from '@casl/ability';
+import { describe, expect, test } from 'vitest';
+import type { UserContext } from '../logic/schemas/user.schema';
 import { composeUserAbilities } from './composer';
 
 describe('POA Exhaustive Verification: Every Role, Every Power', () => {

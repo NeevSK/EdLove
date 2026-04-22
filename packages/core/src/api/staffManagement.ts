@@ -109,7 +109,9 @@ export const staffManagementAPI = {
       ]);
 
       const attendanceMap = new Map<string, string>();
-      (attendanceResult.data ?? []).forEach((row) => attendanceMap.set(row.user_id, row.status));
+      (attendanceResult.data ?? []).forEach((row) => {
+        attendanceMap.set(row.user_id, row.status);
+      });
 
       const classroomCountMap = new Map<string, number>();
       (classroomResult.data ?? []).forEach((row) => {

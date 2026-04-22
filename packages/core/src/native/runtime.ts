@@ -14,7 +14,9 @@ const _readyListeners: Array<(ready: boolean) => void> = [];
 // This allows native Bridgeless setup to complete before JS hits JSI hard.
 setTimeout(() => {
   _isReady = true;
-  _readyListeners.forEach((listener) => listener(true));
+  _readyListeners.forEach((listener) => {
+    listener(true);
+  });
 }, 0);
 
 export const Runtime = {

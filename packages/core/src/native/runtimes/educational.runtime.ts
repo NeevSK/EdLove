@@ -6,8 +6,8 @@ const educationalRepository = createSupabaseEducationalRepository();
 
 const sideEffects = {
   getCurrentUserId: async () => useStore.getState().user?.id || null,
-  emitGrowthSignal: (userId: string, signal: string, payload: Record<string, unknown>) => {
-    if (__DEV__) {
+  emitGrowthSignal: async (userId: string, signal: string, payload: Record<string, unknown>) => {
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
       console.log(`[GrowthSignal] ${signal} for ${userId}`, payload);
     }
   },

@@ -51,7 +51,9 @@ export class FormManager<T extends Record<string, any>> {
   }
 
   private notify() {
-    this.subscribers.forEach((cb) => cb(this.state));
+    this.subscribers.forEach((cb) => {
+      cb(this.state);
+    });
   }
 
   public setFieldValue<K extends keyof T>(field: K, value: T[K]) {
