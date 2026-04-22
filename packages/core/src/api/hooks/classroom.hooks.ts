@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
-import { supabase } from '../../lib/supabase';
-import { assignmentsAPI } from '../assignments';
-import { classroomsAPI } from '../classrooms';
 import {
   ClassroomSchema,
   StudentStatsSchema,
   TeacherStatsSchema,
-} from '../schemas/classroom.schema';
+} from '../../logic/schemas/classroom.schema';
+import { supabase } from '../../native/supabase';
+import { assignmentsAPI } from '../assignments';
+import { classroomsAPI } from '../classrooms';
 
 /**
  * useTeacherClassroomsQuery  Fetch all sanctuaries managed by a teacher.

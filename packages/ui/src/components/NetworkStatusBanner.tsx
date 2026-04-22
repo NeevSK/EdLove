@@ -4,7 +4,8 @@ import { WifiOff } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
-import { useStore, useMutationQueue } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { useMutationQueue } from '@repo/core/logic';
 
 /**
  * NetworkStatusBanner

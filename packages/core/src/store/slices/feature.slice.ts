@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
+import type { UserContext } from '../../logic/schemas/user.schema';
 import { type FeatureFlags, resolveFeatureFlags } from '../../permissions/feature-engine';
-import type { UserContext } from '../../permissions/schemas/user.schema';
 
 /**
  * FeatureSlice - FAANG-level state management for feature flags.

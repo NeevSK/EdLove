@@ -1,12 +1,12 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   GrowthSignalSchema,
   ImpactRippleSchema,
   SanctuaryManifestoSchema,
   UserGrowthStateSchema,
-} from './schemas/growth.schema';
+} from '../logic/schemas/growth.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

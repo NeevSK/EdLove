@@ -1,3 +1,4 @@
+﻿import { identityAPI } from '../native/identity';
 import { assignmentsAPI } from './assignments';
 import { classroomGroupsAPI } from './classroomGroups';
 import { classroomNotesAPI } from './classroomNotes';
@@ -6,7 +7,6 @@ import { communityAPI } from './community';
 import { founderAPI } from './founder';
 import { gradingAPI } from './grading';
 import { guardianAPI } from './guardian';
-import { identityAPI } from './identity';
 import { api } from './index';
 import { inventoryAPI } from './inventory';
 import { lessonMaterialsAPI } from './lessonMaterials';

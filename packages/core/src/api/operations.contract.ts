@@ -1,19 +1,19 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   AttendanceReportSchema,
   AttendanceSchema,
   AttendanceSnapshotSchema,
   SchoolAttendancePulseSchema,
-} from './schemas/attendance.schema';
-import { InventoryItemSchema } from './schemas/inventory_item.schema';
+} from '../logic/schemas/attendance.schema';
+import { InventoryItemSchema } from '../logic/schemas/inventory_item.schema';
 import {
-  GradeSchema,
+  SchoolGradeSchema,
   SchoolSchema,
   SchoolStatsSchema,
   SectionSchema,
-} from './schemas/school.schema';
+} from '../logic/schemas/school.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
@@ -294,7 +294,7 @@ export const operationsContract = c.router({
     method: 'GET',
     path: '/sections/:id/grades',
     responses: {
-      200: z.array(GradeSchema),
+      200: z.array(SchoolGradeSchema),
     },
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -328,7 +328,7 @@ export const operationsContract = c.router({
       level: z.number().int(),
     }),
     responses: {
-      201: GradeSchema,
+      201: SchoolGradeSchema,
     },
     metadata: POAMetadataSchema.parse({
       authority: {

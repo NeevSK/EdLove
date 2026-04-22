@@ -1,12 +1,12 @@
+import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
+import type { GradingProjectionRepository } from '../../logic/domains/gradingProjection/ports';
 import {
   type PublishedSchoolGradingCompletion,
   PublishedSchoolGradingCompletionSchema,
   type SchoolGradingCompletion,
   SchoolGradingCompletionSchema,
-} from '../../api/schemas/grading.schema';
-import type { GradingProjectionRepository } from '../../domains/gradingProjection/ports';
-import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/grading.schema';
+import { supabase } from '../../native/supabase';
 
 export const supabaseGradingProjectionRepository: GradingProjectionRepository = {
   async getSchoolGradingCompletion(

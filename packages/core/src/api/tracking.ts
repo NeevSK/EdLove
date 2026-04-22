@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../native/supabase';
 
 /**
  * API for tracking feature usage and exploration to drive gamification.

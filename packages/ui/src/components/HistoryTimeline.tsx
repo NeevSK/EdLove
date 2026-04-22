@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { historyAPI, AuditLogEntry } from '@repo/core';
+import { historyAPI, AuditLogEntry } from '@repo/core/logic';
 
 interface HistoryTimelineProps {
     tableName: string;

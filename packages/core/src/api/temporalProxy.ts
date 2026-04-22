@@ -1,6 +1,6 @@
 import { SafeZustandStorage } from '../lib/storageWrapper';
+import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 import { useTemporalStore } from '../store/useTemporalStore';
-import { applyTemporalFilter } from '../utils/temporalUtils';
 
 /**
  * createTemporalProxy
@@ -31,7 +31,7 @@ export function createTemporalProxy<T extends object>(moduleName: string, target
 
       // 2. Offline Bridge: Intercept select calls if offline
       if (isOffline && (prop === 'select' || prop.startsWith('get'))) {
-        return async (...args: any[]) => {
+        return async (..._args: any[]) => {
           if (__DEV__) {
             console.log(`[Offline Bridge] Intercepting request for ${moduleName}.${prop}`);
           }

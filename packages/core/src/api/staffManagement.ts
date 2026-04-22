@@ -8,9 +8,6 @@
  *  - Student attendance projections delegated to the dedicated attendance projection service
  */
 
-import { attendanceProjectionServices } from '../domains/attendanceProjection/runtime';
-import { supabase } from '../lib/supabase';
-import type { AttendanceReport } from '../types/Attendance';
 import {
   type CalendarEventZod as CalendarEvent,
   CalendarEventSchema,
@@ -21,7 +18,10 @@ import {
   type StudentAttendancePulseZod as StudentAttendancePulse,
   type TeacherCarouselItemZod as TeacherCarouselItem,
   TeacherCarouselItemSchema,
-} from './schemas/staff.schema';
+} from '../logic/schemas/staff.schema';
+import { attendanceProjectionServices } from '../native/runtimes/attendanceProjection.runtime';
+import { supabase } from '../native/supabase';
+import type { AttendanceReport } from '../types/Attendance';
 
 export type {
   CalendarEvent,
@@ -259,7 +259,7 @@ export const staffManagementAPI = {
     schoolId: string,
     classroomId?: string,
     viewDate?: string,
-    options?: { actorId?: string; accessKind?: string; reason?: string },
+    _options?: { actorId?: string; accessKind?: string; reason?: string },
   ): Promise<StudentAttendancePulse> {
     return attendanceProjectionServices.getSchoolAttendancePulse(schoolId, classroomId, viewDate);
   },

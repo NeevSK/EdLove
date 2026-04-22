@@ -1,4 +1,5 @@
 import { AbilityBuilder } from '@casl/ability';
+import { type UserContext, UserContextSchema } from '../logic/schemas/user.schema';
 import { defineAdminAbilities } from './abilities/admin';
 import { defineAssistantPrincipalAbilities } from './abilities/assistantPrincipal';
 import { AppAbility } from './abilities/base';
@@ -8,7 +9,6 @@ import { definePrincipalAbilities } from './abilities/principal';
 import { defineSectionHeadAbilities } from './abilities/sectionHead';
 import { defineStudentAbilities } from './abilities/student';
 import { defineTeacherAbilities } from './abilities/teacher';
-import { type UserContext, UserContextSchema } from './schemas/user.schema';
 
 export { type Actions, type AppAbilities, AppAbility, type Subjects } from './abilities/base';
 

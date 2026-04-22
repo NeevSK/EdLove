@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { EyeOff, Info, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
-import type { ResolvedWorkspaceSurface } from '@repo/core/workspace/canvas';
+import type { ResolvedWorkspaceSurface } from '@repo/core/logic';
 import { Theme } from '../../theme/Theme';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Text } from '../../gluestack';

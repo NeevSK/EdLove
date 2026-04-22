@@ -17,6 +17,7 @@ export * from '../components/ui/text';
 export * from '../components/ui/divider';
 export * from '../components/ui/icon';
 export * from '../components/ui/pressable';
+export * from '../components/ui/badge';
 
 // Core Form
 export * from '../components/ui/button';

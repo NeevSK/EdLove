@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { usePermissions, useFeatureStore } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { useFeatureStore } from '@repo/core/logic';
 
 
 export interface FeatureProviderProps {

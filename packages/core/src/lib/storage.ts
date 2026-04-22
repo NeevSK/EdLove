@@ -34,12 +34,13 @@ class RobustAsyncStorage implements StorageInterface {
           // Try to parse number/boolean
           if (value === 'true') this.cache.set(key, true);
           else if (value === 'false') this.cache.set(key, false);
-          else if (!isNaN(Number(value)) && value.trim() !== '') this.cache.set(key, Number(value));
+          else if (!Number.isNaN(Number(value)) && value.trim() !== '')
+            this.cache.set(key, Number(value));
           else this.cache.set(key, value);
         }
       });
       this.initialized = true;
-    } catch (e) {
+    } catch (_e) {
       // Silently fail during hydration to avoid HMR issues, or defer to a safe time
     }
   }
@@ -117,7 +118,7 @@ import { Runtime } from './runtime';
 
 let _storageInstance: StorageInterface | null = null;
 
-function createStorage(): StorageInterface {
+async function createStorage(): Promise<StorageInterface> {
   const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
   // MMKV is a JSI native module - unavailable in Expo Go (JS-only runtime) and on web.
   // ALSO: Defer MMKV init until the runtime is marked ready to avoid Bridgeless context race.
@@ -136,7 +137,8 @@ function createStorage(): StorageInterface {
   }
 
   try {
-    const { MMKV } = require('react-native-mmkv');
+    const mmkvModule: any = await import('react-native-mmkv');
+    const MMKV = mmkvModule.MMKV;
     const mmkv = new MMKV({ id: 'gurudevi-store' });
 
     // Probe: verify the native instance actually works before committing.
@@ -176,7 +178,7 @@ function createStorage(): StorageInterface {
   }
 }
 
-function getStorage(): StorageInterface {
+async function _getStorage(): Promise<StorageInterface> {
   const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
   const isPermanentFallback = isExpoGo || Platform.OS === 'web';
 
@@ -192,7 +194,7 @@ function getStorage(): StorageInterface {
     return new RobustAsyncStorage();
   }
 
-  const instance = createStorage();
+  const instance = await createStorage();
 
   // Cache the instance permanently now that we are ready or it's a permanent fallback.
   _storageInstance = instance;
@@ -208,7 +210,10 @@ function getStorage(): StorageInterface {
  */
 export const storage: StorageInterface = new Proxy({} as StorageInterface, {
   get(_target, prop: string | symbol) {
-    const instance = getStorage() as any;
+    const instance = _storageInstance as any;
+    if (!instance) {
+      throw new Error('[Storage] Storage not initialized. Call getStorage() first.');
+    }
     if (typeof prop === 'symbol') {
       return Reflect.get(instance, prop);
     }

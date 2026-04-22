@@ -1,4 +1,4 @@
-import type { Grade } from '../api/schemas/grading.schema';
+import type { Grade } from '../logic/schemas/grading.schema';
 
 export const GRADE_PUBLISHED_ACTIONS = [
   'grade_published',
@@ -34,7 +34,7 @@ function rowTimestamp(row: GradeLifecycleAuditRow): string {
 }
 
 function normalizeSnapshot(snapshot: any): GradePublicationSnapshot | null {
-  if (!snapshot || !snapshot.id || !snapshot.student_id || !snapshot.classroom_id) {
+  if (!snapshot?.id || !snapshot.student_id || !snapshot.classroom_id) {
     return null;
   }
 

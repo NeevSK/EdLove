@@ -1,5 +1,6 @@
 export type AdminWorkspaceView =
   | 'main'
+  | 'admin_registry'
   | 'incident_queue'
   | 'tenant_detail'
   | 'authority_repair'
@@ -11,6 +12,7 @@ export type AdminZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'privat
 
 export type AdminCapabilityId =
   | 'operator_brief'
+  | 'admin_registry'
   | 'incident_queue'
   | 'tenant_health'
   | 'support_triage'
@@ -35,9 +37,17 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   operator_brief: {
     id: 'operator_brief',
     title: 'Operator Brief',
-    description: 'A daily read on platform incidents, tenant risk, and intervention queues that need attention now.',
+    description: 'A daily cross-tenant read on incidents, approvals, maintenance pressure, and dogfood signals that need attention now.',
     zone: 'today',
     status: 'live',
+  },
+  admin_registry: {
+    id: 'admin_registry',
+    title: 'Admin Registry',
+    description: 'A living registry of admin capabilities, feature gates, and maintenance posture across the platform.',
+    zone: 'work',
+    status: 'live',
+    workspaceView: 'admin_registry',
   },
   incident_queue: {
     id: 'incident_queue',
@@ -64,7 +74,7 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   authority_integrity: {
     id: 'authority_integrity',
     title: 'Authority Integrity',
-    description: 'Role assignment and POA anomalies that could expose the wrong workspace or block access.',
+    description: 'Role assignment and POA anomalies that could expose the wrong workspace or block access across tenants.',
     zone: 'work',
     status: 'live',
     workspaceView: 'authority_repair',
@@ -87,7 +97,7 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   operator_actions: {
     id: 'operator_actions',
     title: 'Operator Actions',
-    description: 'Guarded interventions such as retries, resyncs, repairs, and other remediation tasks.',
+    description: 'Guarded interventions such as retries, resyncs, repairs, and other remediation tasks with explicit accountability.',
     zone: 'institution',
     status: 'live',
     workspaceView: 'job_control',
@@ -110,7 +120,7 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   audit_trail: {
     id: 'audit_trail',
     title: 'Audit Trail',
-    description: 'A private log of interventions, approvals, and operator decisions.',
+    description: 'A private log of interventions, approvals, and operator decisions for accountability and postmortems.',
     zone: 'private',
     status: 'live',
     workspaceView: 'audit_log',

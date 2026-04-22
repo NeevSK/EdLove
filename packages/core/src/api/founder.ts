@@ -1,4 +1,4 @@
-import { founderServices } from '../domains/founder/runtime';
+import { founderServices } from '../native/runtimes/founder.runtime';
 import type { School } from '../types';
 
 /**

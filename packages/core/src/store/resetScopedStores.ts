@@ -1,9 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { identityAPI } from '../api/identity';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
-import { supabase } from '../lib/supabase';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
+import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
 import { resolveFeatureFlags } from '../permissions/feature-engine';
 import type { UISlice } from './slices/ui.slice';
 import { useAuthStore } from './useAuthStore';
@@ -80,11 +80,14 @@ export async function globalLogoutAndPurge(queryClient?: QueryClient) {
 
     // 2. Cryptographic Partition Wipe
     try {
-      const { MMKV } = require('react-native-mmkv');
-      const storeId = `gurudevi-tenant-${currentAccountId}`;
-      // We mount without the encryption key just to run clearAll()
-      const store = new MMKV({ id: storeId });
-      store.clearAll();
+      const mmkvModule: any = await import('react-native-mmkv');
+      const MMKV = mmkvModule.MMKV;
+      if (MMKV) {
+        const storeId = `gurudevi-tenant-${currentAccountId}`;
+        // We mount without the encryption key just to run clearAll()
+        const store = new MMKV({ id: storeId });
+        store.clearAll();
+      }
     } catch {
       // AsyncStorage Fallback Wipe
     }

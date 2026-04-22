@@ -1,3 +1,5 @@
+import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
+import type { PrincipalWorkspaceRepository } from '../../logic/domains/principalWorkspace/ports';
 import {
   InviteCodeSchema,
   type InviteCodeZod,
@@ -12,13 +14,11 @@ import {
   PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationSchema,
   type PrincipalObservationZod,
-} from '../../api/schemas/principal-workspace.schema';
-import { APIError } from '../../api/types';
-import type { PrincipalWorkspaceRepository } from '../../domains/principalWorkspace/ports';
-import { supabase } from '../../lib/supabase';
-import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
-import { RoleSchema } from '../../permissions/schemas/role.schema';
-import { getTemporalRange } from '../../utils/temporalUtils';
+} from '../../logic/schemas/principal-workspace.schema';
+import { RoleSchema } from '../../logic/schemas/role.schema';
+import { getTemporalRange } from '../../logic/utils/temporalUtils';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 const inviteRoleToAuthority = (role: PrincipalInviteRole) => {
   if (role === 'teacher') return 'teacher' as const;

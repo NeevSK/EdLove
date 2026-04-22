@@ -1,4 +1,4 @@
-import type { UserContext } from './schemas/user.schema';
+import type { UserContext } from '../logic/schemas/user.schema';
 
 /**
  * FeatureFlags - The central registry of all boolean switches in the Gurudevi Sanctuary.
@@ -233,25 +233,25 @@ export const resolveFeatureFlags = (
   }
 
   // 4. Remote Level (Global Configs) - HIGHEST PRIORITY Overrides
-  if (globalConfigs['KILL_SWITCH_OCR'] === 'true' || globalConfigs['KILL_SWITCH_OCR'] === true) {
+  if (globalConfigs.KILL_SWITCH_OCR === 'true' || globalConfigs.KILL_SWITCH_OCR === true) {
     flags.canUseOCR = false;
   }
 
   if (
-    globalConfigs['KILL_SWITCH_COMMUNITY'] === 'true' ||
-    globalConfigs['KILL_SWITCH_COMMUNITY'] === true
+    globalConfigs.KILL_SWITCH_COMMUNITY === 'true' ||
+    globalConfigs.KILL_SWITCH_COMMUNITY === true
   ) {
     flags.isCommunityEnabled = false;
   }
 
   if (
-    globalConfigs['KILL_SWITCH_MESSAGING'] === 'true' ||
-    globalConfigs['KILL_SWITCH_MESSAGING'] === true
+    globalConfigs.KILL_SWITCH_MESSAGING === 'true' ||
+    globalConfigs.KILL_SWITCH_MESSAGING === true
   ) {
     flags.isMessagingEnabled = false;
   }
 
-  if (globalConfigs['MAINTENANCE_MODE'] === 'true' || globalConfigs['MAINTENANCE_MODE'] === true) {
+  if (globalConfigs.MAINTENANCE_MODE === 'true' || globalConfigs.MAINTENANCE_MODE === true) {
     flags.isUnderMaintenance = true;
     // Potentially disable features here
   }

@@ -1,7 +1,7 @@
-import { AttendanceSchema } from '../schemas/attendance.schema';
-import { ClassroomSchema } from '../schemas/classroom.schema';
-import { LessonSchema } from '../schemas/lesson.schema';
-import { StudentSchema } from '../schemas/student.schema';
+import { AttendanceSchema } from '../../logic/schemas/attendance.schema';
+import { ClassroomSchema } from '../../logic/schemas/classroom.schema';
+import { LessonSchema } from '../../logic/schemas/lesson.schema';
+import { StudentSchema } from '../../logic/schemas/student.schema';
 
 const NOW = new Date().toISOString();
 const UUID = '550e8400-e29b-41d4-a716-446655440000';

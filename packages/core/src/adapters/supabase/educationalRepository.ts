@@ -1,6 +1,10 @@
 import { z } from 'zod';
-import type { Attendance as AttendanceRecord } from '../../api/schemas/attendance.schema';
-import { AttendanceSchema } from '../../api/schemas/attendance.schema';
+import type {
+  EducationalRepository,
+  EnrollmentRecord,
+} from '../../logic/domains/educational/ports';
+import type { Attendance as AttendanceRecord } from '../../logic/schemas/attendance.schema';
+import { AttendanceSchema } from '../../logic/schemas/attendance.schema';
 import type {
   Assignment,
   AssignmentSubmission,
@@ -9,7 +13,7 @@ import type {
   ClassroomStudent,
   StudentAssignment,
   StudentSubmissionSummary,
-} from '../../api/schemas/classroom.schema';
+} from '../../logic/schemas/classroom.schema';
 import {
   AssignmentSchema,
   AssignmentSubmissionSchema,
@@ -18,17 +22,19 @@ import {
   ClassroomStudentSchema,
   StudentAssignmentSchema,
   StudentSubmissionSummarySchema,
-} from '../../api/schemas/classroom.schema';
-import type { ClassroomGradingSettings, Grade } from '../../api/schemas/grading.schema';
-import { ClassroomGradingSettingsSchema, GradeSchema } from '../../api/schemas/grading.schema';
-import type { Lesson } from '../../api/schemas/lesson.schema';
-import { LessonSchema } from '../../api/schemas/lesson.schema';
-import type { Material as LessonMaterial } from '../../api/schemas/material.schema';
-import { MaterialSchema } from '../../api/schemas/material.schema';
-import { StudentSchema } from '../../api/schemas/student.schema';
-import { APIError } from '../../api/types';
-import type { EducationalRepository, EnrollmentRecord } from '../../domains/educational/ports';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/classroom.schema';
+import type { ClassroomGradingSettings, Grade } from '../../logic/schemas/grading.schema';
+import {
+  ClassroomGradingSettingsSchema,
+  StudentGradeSchema,
+} from '../../logic/schemas/grading.schema';
+import type { Lesson } from '../../logic/schemas/lesson.schema';
+import { LessonSchema } from '../../logic/schemas/lesson.schema';
+import type { Material as LessonMaterial } from '../../logic/schemas/material.schema';
+import { MaterialSchema } from '../../logic/schemas/material.schema';
+import { StudentSchema } from '../../logic/schemas/student.schema';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 const withRange = <T>(query: T, params?: { limit?: number; offset?: number }) => {
   if (!params?.limit || !(query as any).limit) return query;
@@ -483,7 +489,7 @@ export const createSupabaseEducationalRepository = (): EducationalRepository => 
   async upsertGrade(input) {
     const { data, error } = await supabase.from('grades').upsert(input).select().single();
     if (error) throw new APIError('Failed to submit grade', error.code, error);
-    return GradeSchema.parse(data) as Grade;
+    return StudentGradeSchema.parse(data) as Grade;
   },
   async getGradeById(gradeId) {
     const { data, error } = await supabase
@@ -492,7 +498,7 @@ export const createSupabaseEducationalRepository = (): EducationalRepository => 
       .eq('id', gradeId)
       .maybeSingle();
     if (error) throw new APIError('Failed to fetch grade', error.code, error);
-    return data ? (GradeSchema.parse(data) as Grade) : null;
+    return data ? (StudentGradeSchema.parse(data) as Grade) : null;
   },
   async updateGrade(gradeId, updates) {
     const { data, error } = await supabase
@@ -502,7 +508,7 @@ export const createSupabaseEducationalRepository = (): EducationalRepository => 
       .select()
       .single();
     if (error) throw new APIError('Failed to update grade', error.code, error);
-    return GradeSchema.parse(data) as Grade;
+    return StudentGradeSchema.parse(data) as Grade;
   },
   async getGradesByStudent(studentId) {
     const { data, error } = await supabase
@@ -511,7 +517,7 @@ export const createSupabaseEducationalRepository = (): EducationalRepository => 
       .eq('student_id', studentId)
       .order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to fetch report card', error.code, error);
-    return z.array(GradeSchema).parse(data || []) as Grade[];
+    return z.array(StudentGradeSchema).parse(data || []) as Grade[];
   },
   async getGradesByClassroom(classroomId) {
     const { data, error } = await supabase
@@ -520,7 +526,7 @@ export const createSupabaseEducationalRepository = (): EducationalRepository => 
       .eq('classroom_id', classroomId)
       .order('marks', { ascending: false });
     if (error) throw new APIError('Failed to fetch classroom grades', error.code, error);
-    return z.array(GradeSchema).parse(data || []) as Grade[];
+    return z.array(StudentGradeSchema).parse(data || []) as Grade[];
   },
   async getGradingSettings(classroomId) {
     const { data, error } = await supabase

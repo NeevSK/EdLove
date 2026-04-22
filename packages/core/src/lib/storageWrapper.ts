@@ -19,7 +19,7 @@ export const SafeZustandStorage: StateStorage = {
   setItem: (name: string, value: string): void | Promise<void> => {
     try {
       storage.set(name, value);
-    } catch (e) {
+    } catch (_e) {
       // Fallback for set
       return AsyncStorage.setItem(name, value);
     }
@@ -27,7 +27,7 @@ export const SafeZustandStorage: StateStorage = {
   removeItem: (name: string): void | Promise<void> => {
     try {
       storage.delete(name);
-    } catch (e) {
+    } catch (_e) {
       return AsyncStorage.removeItem(name);
     }
   },

@@ -8,7 +8,7 @@
  * See: apps/gurudevi-mobile/docs/Support/THUTHIMAL_README.md
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase } from '../native/supabase';
 import type { ThuthimalGift } from '../types';
 import { growthSignalsAPI } from './growthSignals';
 

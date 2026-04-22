@@ -37,6 +37,7 @@ export { default as FounderDashboardWeb } from './screens/FounderDashboard.web';
 export { default as FounderSchoolDashboard } from './screens/FounderSchoolDashboard';
 export { default as AdminDashboard } from './screens/AdminDashboard';
 export { default as AdminDashboardWeb } from './screens/AdminDashboard.web';
+export { default as AdminFeatureRegistry } from './screens/AdminFeatureRegistry';
 export { default as AdminIncidentQueue } from './screens/AdminIncidentQueue';
 export { default as AdminTenantDetail } from './screens/AdminTenantDetail';
 export { default as AdminAuthorityRepair } from './screens/AdminAuthorityRepair';
@@ -67,6 +68,8 @@ export * from './analytics/engine';
 export * from './analytics/types';
 export * from './principal/workspace';
 export * from './principal/usePrincipalWorkspaceSurfaces';
+export * from './admin/adminControl';
+export * from './admin/adminRepository';
 export * from './screens';
 
 export const adminAPI = {

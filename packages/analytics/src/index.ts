@@ -45,16 +45,6 @@ export type { StudentPerformanceMetrics, TenantMetrics, LiveMetrics, CustomRepor
 export * from './utils/analyticsHelpers';
 export * from './utils/benchmarking';
 
-// Components
-export * from './components';
-
-// Export legacy documentation note
-// UI components were previously recommended to be imported from @repo/analytics/components
-// but now consolidated into root for Public API Boundary Strategy.
-
-// Hooks
-export * from './hooks/useAnalytics';
-
 // Provider - Moved to core package to prevent circular dependencies
 // Use: import { TemporalProvider } from '@repo/core';
 

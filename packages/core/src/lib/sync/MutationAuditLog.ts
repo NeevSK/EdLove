@@ -34,7 +34,7 @@ const MAX_ENTRIES = 200;
  */
 export const useMutationAuditLog = create<MutationAuditLogState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       entries: [],
 
       logEntry: (entry) => {

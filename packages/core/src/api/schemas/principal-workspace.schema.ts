@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RoleSchema } from '../../permissions/schemas/role.schema';
+import { RoleSchema } from '../../logic/schemas/role.schema';
 
 export const PrincipalInviteRoleSchema = z.enum([
   'teacher',

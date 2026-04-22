@@ -1,4 +1,3 @@
-import { teacherInsightsServices } from '../domains/teacherInsights/runtime';
 import type {
   TeacherInsightAuditEvent,
   TeacherInsightLifecycleEvent,
@@ -11,7 +10,8 @@ import type {
   TeacherStudentObservationZod,
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
-} from './schemas/teacher-insights.schema';
+} from '../logic/schemas/teacher-insights.schema';
+import { teacherInsightsServices } from '../native/runtimes/teacherInsights.runtime';
 import { teacherInsightsContract } from './teacherInsights.contract';
 
 export const teacherInsightsAPI = {

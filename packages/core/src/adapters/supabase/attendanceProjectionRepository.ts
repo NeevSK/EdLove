@@ -1,12 +1,12 @@
+import type { AttendanceProjectionRepository } from '../../logic/domains/attendanceProjection/ports';
 import {
   type AttendanceReport,
   AttendanceReportSchema,
   type AttendanceTrendPoint,
   type SchoolAttendancePulse,
   SchoolAttendancePulseSchema,
-} from '../../api/schemas/attendance.schema';
-import type { AttendanceProjectionRepository } from '../../domains/attendanceProjection/ports';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/attendance.schema';
+import { supabase } from '../../native/supabase';
 
 function formatLocalDateISO(date: Date): string {
   const year = date.getFullYear();
@@ -162,3 +162,5 @@ export const supabaseAttendanceProjectionRepository: AttendanceProjectionReposit
     }
   },
 };
+export const createSupabaseAttendanceProjectionRepository = () =>
+  supabaseAttendanceProjectionRepository;

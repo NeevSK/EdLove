@@ -1,5 +1,5 @@
 import React from 'react';
-import { EntityDefinition, EntityMode, EntityInstance } from '@repo/core';
+import { EntityDefinition, EntityMode, EntityInstance } from '@repo/core/logic';
 import SanctuaryModal from './SanctuaryModal';
 import { Box, Text, VStack } from '../gluestack';
 import EntityView from './EntityView';

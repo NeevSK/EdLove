@@ -1,10 +1,9 @@
+import type { TeacherInsightsRepository } from '../../logic/domains/teacherInsights/ports';
 import {
   type TeacherInsightAuditEvent,
   TeacherInsightAuditEventSchema,
   type TeacherInsightLifecycleEvent,
   TeacherInsightLifecycleEventSchema,
-  type TeacherInsightPromotion,
-  type TeacherInsightShareUpdate,
   type TeacherInsightTargetType,
   type TeacherPrivateNoteCreate,
   TeacherPrivateNoteCreateSchema,
@@ -18,10 +17,9 @@ import {
   type TeacherStudentPotentialUpsert,
   TeacherStudentPotentialUpsertSchema,
   type TeacherStudentPotentialZod,
-} from '../../api/schemas/teacher-insights.schema';
-import { APIError } from '../../api/types';
-import type { TeacherInsightsRepository } from '../../domains/teacherInsights/ports';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/teacher-insights.schema';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 const privateAudit = (ownerId: string) => ({
   audit_required: true as const,

@@ -1,3 +1,4 @@
+import type { WorkspaceLayoutRepository } from '../../logic/domains/workspaceLayout/ports';
 import {
   type WorkspaceLayoutDelete,
   WorkspaceLayoutDeleteSchema,
@@ -6,10 +7,9 @@ import {
   type WorkspaceLayoutTarget,
   type WorkspaceLayoutUpsert,
   WorkspaceLayoutUpsertSchema,
-} from '../../api/schemas/workspace-layout.schema';
-import { APIError } from '../../api/types';
-import type { WorkspaceLayoutRepository } from '../../domains/workspaceLayout/ports';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/workspace-layout.schema';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLayoutRecord =>
   WorkspaceLayoutRecordSchema.parse({

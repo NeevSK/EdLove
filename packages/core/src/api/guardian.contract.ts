@@ -1,6 +1,5 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   GuardianDashboardSchema,
   GuardianIdentitySchema,
@@ -10,7 +9,8 @@ import {
   GuardianStudentOverviewSchema,
   GuardianVerificationDocumentSchema,
   StudentGuardianRelationshipSchema,
-} from './schemas/guardian.schema';
+} from '../logic/schemas/guardian.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

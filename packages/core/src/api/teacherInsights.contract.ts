@@ -1,6 +1,5 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   TeacherInsightAuditEventSchema,
   TeacherInsightLifecycleEventSchema,
@@ -12,7 +11,8 @@ import {
   TeacherStudentObservationSchema,
   TeacherStudentPotentialSchema,
   TeacherStudentPotentialUpsertSchema,
-} from './schemas/teacher-insights.schema';
+} from '../logic/schemas/teacher-insights.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

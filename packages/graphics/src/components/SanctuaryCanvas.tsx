@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, ViewStyle, StyleSheet, Platform } from 'react-native';
-import { FeatureGuard } from '@repo/core/src/permissions/guards/FeatureGuard';
+import { View, ViewStyle, Platform } from 'react-native';
+import { FeatureGuard } from '@repo/core';
 
 interface SanctuaryCanvasProps {
   children?: React.ReactNode;

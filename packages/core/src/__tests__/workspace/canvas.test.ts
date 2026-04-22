@@ -9,7 +9,7 @@ import {
   setWorkspaceSurfaceZone,
   type WorkspaceLayout,
   type WorkspaceSurfaceDefinition,
-} from '../../lib/workspace/canvas';
+} from '../../logic/workspace/canvas';
 
 type TestSurfaceId = 'teacher' | 'principal' | 'insights' | 'calendar';
 type TestCapabilityKey =

@@ -1,16 +1,16 @@
 import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { authAPI } from '../api/auth';
-import { identityAPI } from '../api/identity';
-import { APIError } from '../api/types';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import { supabase } from '../lib/supabase';
-import type { Role } from '../permissions/schemas/role.schema';
+import type { Role } from '../logic/schemas/role.schema';
+import { authAPI } from '../native/auth';
+import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
+import { APIError } from '../types/API';
 
 /**
  * useAuthorityLifecycle

@@ -1,5 +1,5 @@
 import { api } from '../../api';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../native/supabase';
 
 /**
  * Mutation Registry

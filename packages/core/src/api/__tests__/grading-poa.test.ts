@@ -1,4 +1,4 @@
-jest.mock('../../domains/educational/runtime', () => ({
+jest.mock('../native/runtimes/educational.runtime', () => ({
   educationalServices: {
     grading: {
       submitGrade: jest.fn(),
@@ -13,7 +13,7 @@ jest.mock('../../domains/educational/runtime', () => ({
   },
 }));
 
-jest.mock('../../domains/gradingProjection/runtime', () => ({
+jest.mock('../native/runtimes/gradingProjection.runtime', () => ({
   gradingProjectionServices: {
     getSchoolGradingCompletion: jest.fn(),
     getSchoolPublishedGradingCompletion: jest.fn(),

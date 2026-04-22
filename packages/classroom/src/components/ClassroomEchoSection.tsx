@@ -145,19 +145,19 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                     <Heading className="text-lg text-sanctuarySaffron">
                         Sharing Your Voice
                     </Heading>
-                    <Text className="text-sm text-phaseText-secondary">
+                    <Text className="text-sm text-phase-text-secondary">
                         Your feedback helps the teacher improve the classroom experience. You can choose to remain anonymous.
                     </Text>
                     
-                    <Box className="mt-sm rounded-comfortable bg-phase-elevated p-sm">
-                        <Input variant="underlined" className="border-b-0">
+                    <Box className="mt-sm rounded-xl bg-phase-surface-secondary p-sm">
+                        <Input className="border-b border-phase-border">
                             <InputField 
                                 placeholder="What's on your mind?"
                                 value={newEcho}
                                 onChangeText={setNewEcho}
                                 multiline
                                 numberOfLines={4}
-                                className="text-phaseText-onSurface"
+                                className="text-phase-text-primary"
                             />
                         </Input></Box>
 
@@ -167,10 +167,10 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                 {isAnonymous ? (
                                     <Icon as={EyeOff} size="sm" className="text-sanctuarySaffron" />
                                 ) : (
-                                    <Icon as={User} size="sm" className="text-phaseText-tertiary" />
+                                    <Icon as={User} size="sm" className="text-phase-text-tertiary" />
                                 )}
                                 <Text className={`text-xs font-semibold ${
-                                    isAnonymous ? 'text-sanctuarySaffron' : 'text-phaseText-tertiary'
+                                    isAnonymous ? 'text-sanctuarySaffron' : 'text-phase-text-tertiary'
                                 }`}>
                                     {isAnonymous ? 'Anonymous Mode' : 'Share as yourself'}
                                 </Text>
@@ -192,29 +192,29 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
 
             {/* Previous Echoes (Student) */}
             <VStack className="gap-sm mt-md">
-                <Heading className="text-base text-phaseText-onSurface">Your Recent Echoes</Heading>
+                <Heading className="text-base text-phase-text-primary">Your Recent Echoes</Heading>
                 {echoes.length === 0 ? (
                     <Box className="p-xl items-center">
                         <Icon as={Inbox} size="xl" className="text-phase-border" />
-                        <Text className="mt-sm text-phaseText-tertiary">No echoes sent yet.</Text>
+                        <Text className="mt-sm text-phase-text-tertiary">No echoes sent yet.</Text>
                     </Box>
                 ) : (
                     echoes.map(echo => (
                         <Box key={echo.id} className="p-md bg-phase-surface rounded-comfortable shadow-sm">
                             <VStack className="gap-xs">
                                 <HStack className="justify-between">
-                                    <Text className="text-xs font-bold text-phaseText-tertiary">
+                                    <Text className="text-xs font-bold text-phase-text-tertiary">
                                         {echo.is_anonymous ? 'ANONYMOUS' : 'YOU'}
                                     </Text>
-                                    <Text className="text-[10px] text-phaseText-tertiary">
+                                    <Text className="text-[10px] text-phase-text-tertiary">
                                         {formatDistanceToNow(new Date(echo.created_at))} ago
                                     </Text>
                                 </HStack>
-                                <Text className="text-sm text-phaseText-onSurface">{echo.content}</Text>
+                                <Text className="text-sm text-phase-text-primary">{echo.content}</Text>
                                 {echo.teacher_response && (
                                     <Box className="mt-sm p-sm bg-phase-elevated rounded-comfortable border-l-[3px] border-l-sanctuarySaffron">
-                                        <Text className="text-[11px] font-extrabold text-sanctuarySaffron text-English">TEACHER RESPONSE</Text>
-                                        <Text className="text-[13px] text-phaseText-onSurface mt-0.5">{echo.teacher_response}</Text>
+                                        <Text className="text-[11px] font-extrabold text-sanctuarySaffron">TEACHER RESPONSE</Text>
+                                        <Text className="text-[13px] text-phase-text-primary mt-0.5">{echo.teacher_response}</Text>
                                     </Box>
                                 )}
                             </VStack>
@@ -229,8 +229,8 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
         <VStack className="gap-md p-md">
             <HStack className="justify-between items-center">
                 <VStack>
-                    <Heading className="text-lg text-phaseText-onSurface">Student Echoes</Heading>
-                    <Text className="text-xs text-phaseText-tertiary">Dignified feedback from your class</Text>
+                    <Heading className="text-lg text-phase-text-primary">Student Echoes</Heading>
+                    <Text className="text-xs text-phase-text-tertiary">Dignified feedback from your class</Text>
                 </VStack>
                 {echoes.filter(e => !e.is_read).length > 0 && (
                     <Box className="bg-emberRed px-2 py-0.5 rounded-[10px]">
@@ -244,7 +244,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
             {echoes.length === 0 ? (
                 <Box className="p-xl items-center">
                     <Icon as={Inbox} size="xl" className="text-phase-border" />
-                    <Text className="mt-sm text-phaseText-tertiary">No student echoes yet.</Text>
+                    <Text className="mt-sm text-phase-text-tertiary">No student echoes yet.</Text>
                 </Box>
             ) : (
                 echoes.map(echo => {
@@ -259,21 +259,21 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                             }`}>
                                 <VStack className="gap-sm">
                                     <HStack className="justify-between">
-                                        <Text className="text-[11px] font-extrabold text-phaseText-tertiary">
+                                        <Text className="text-[11px] font-extrabold text-phase-text-tertiary">
                                             {echo.is_anonymous ? '\uD83D\uDC64 ANONYMOUS STUDENT' : `\uD83C\uDF93 ${echo.student_name || 'STUDENT'}`}
                                             {!echo.is_read && <Text className="text-emberRed">  \u25CF</Text>}
                                         </Text>
-                                        <Text className="text-[10px] text-phaseText-tertiary">
+                                        <Text className="text-[10px] text-phase-text-tertiary">
                                             {formatDistanceToNow(new Date(echo.created_at))} ago
                                         </Text>
                                     </HStack>
                                     
-                                    <Text className="text-sm text-phaseText-onSurface">{echo.content}</Text>
+                                    <Text className="text-sm text-phase-text-primary">{echo.content}</Text>
 
                                     {echo.teacher_response && (
                                         <Box className="p-sm bg-phase-surface rounded-comfortable mt-1">
-                                            <Text className="text-[11px] font-bold text-phaseText-secondary text-English">YOUR RESPONSE</Text>
-                                            <Text className="text-[13px] text-phaseText-onSurface">{echo.teacher_response}</Text>
+                                            <Text className="text-[11px] font-bold text-phase-text-secondary">YOUR RESPONSE</Text>
+                                            <Text className="text-[13px] text-phase-text-primary">{echo.teacher_response}</Text>
                                         </Box>
                                     )}
 
@@ -292,16 +292,16 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                                         value={replyText}
                                                         onChangeText={setReplyText}
                                                         multiline
-                                                        className="text-phaseText-onSurface text-sm"
+                                                        className="text-phase-text-primary text-sm"
                                                         autoFocus
                                                     />
                                                 </Input>
                                             </Box>
                                             <HStack className="gap-sm justify-end">
-                                                <Button size="xs" variant="outline" action="secondary" onPress={() => setReplyingTo(null)}>
+                                                <Button size="sm" variant="outline" action="secondary" onPress={() => setReplyingTo(null)}>
                                                     <ButtonText className="font-English">Cancel</ButtonText>
                                                 </Button>
-                                                <Button size="xs" action="primary" onPress={() => handleReply(echo.id)} isDisabled={!replyText.trim() || isReplying}>
+                                                <Button size="sm" action="primary" onPress={() => handleReply(echo.id)} isDisabled={!replyText.trim() || isReplying}>
                                                     {isReplying ? <Spinner size="small" className="text-white" /> : <ButtonText className="font-English">Send</ButtonText>}
                                                 </Button>
                                             </HStack>

@@ -1,3 +1,5 @@
+import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
+import type { ClassroomNotesRepository } from '../../logic/domains/classroomNotes/ports';
 import {
   type ClassroomNoteCreate,
   ClassroomNoteCreateSchema,
@@ -7,11 +9,9 @@ import {
   ClassroomNoteSchema,
   type ClassroomNoteUpdate,
   ClassroomNoteUpdateSchema,
-} from '../../api/schemas/classroom-note.schema';
-import { APIError } from '../../api/types';
-import type { ClassroomNotesRepository } from '../../domains/classroomNotes/ports';
-import { supabase } from '../../lib/supabase';
-import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
+} from '../../logic/schemas/classroom-note.schema';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 type ClassroomNoteRow = Record<string, unknown> & {
   id: string;

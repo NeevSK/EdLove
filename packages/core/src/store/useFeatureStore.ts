@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { storage } from '../lib/storage';
 import { SafeZustandStorage } from '../lib/storageWrapper';
 import { createFeatureSlice, type FeatureSlice } from './slices/feature.slice';
 

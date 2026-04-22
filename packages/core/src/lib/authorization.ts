@@ -1,7 +1,7 @@
-import { identityAPI } from '../api/identity';
-import { APIError } from '../api/types';
+import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
 import { composeUserAbilities } from '../permissions/composer';
-import { supabase } from './supabase';
+import { APIError } from '../types/API';
 
 /**
  * requireAuth  Ensures the user is authenticated.

@@ -1,11 +1,11 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   LongitudinalEntityTypeSchema,
   StudentLongitudinalSnapshotSchema,
   StudentLongitudinalTimelineSchema,
-} from './schemas/temporal.schema';
+} from '../logic/schemas/temporal.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

@@ -171,7 +171,7 @@ const POYA_NAMES: Record<number, { name_en: string; name_si: string }> = {
 };
 
 /** Sri Lankan school terms (approximate \u2014 actual dates vary by MoE circular each year). */
-const SCHOOL_TERM_WINDOWS = [
+const _SCHOOL_TERM_WINDOWS = [
   { term: 1, start_approx: '01-07', end_approx: '04-12' },
   { term: 2, start_approx: '04-21', end_approx: '08-18' },
   { term: 3, start_approx: '09-01', end_approx: '12-12' },

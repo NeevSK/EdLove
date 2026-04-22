@@ -1,5 +1,5 @@
-import { handleAPIError } from '../lib/apiInterceptor';
 import { storage } from '../lib/storage';
+import { handleAPIError } from '../logic/apiInterceptor';
 
 /**
  * Resilience Configuration
@@ -32,7 +32,7 @@ export async function withResilience<T>(
       const { data, timestamp } = JSON.parse(cachedRaw);
       cachedData = data;
       isExpired = Date.now() - timestamp > ttl;
-    } catch (e) {
+    } catch (_e) {
       console.warn(`[Resilience] Failed to parse cache for ${key}`);
     }
   }

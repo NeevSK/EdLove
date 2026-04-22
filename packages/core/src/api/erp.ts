@@ -5,11 +5,11 @@
  */
 
 import { z } from 'zod';
-import { supabase } from '../lib/supabase';
+import { AccountSchema, FinancialTransactionSchema } from '../logic/schemas/accounting.schema';
+import { InvoiceSchema, PaymentIntentSchema } from '../logic/schemas/payments.schema';
+import { supabase } from '../native/supabase';
+import { APIError } from '../types';
 import { erpContract } from './erp.contract';
-import { AccountSchema, FinancialTransactionSchema } from './schemas/accounting.schema';
-import { InvoiceSchema, PaymentIntentSchema, ReceiptSchema } from './schemas/payments.schema';
-import { APIError } from './types';
 
 export const accountingAPI = {
   /**

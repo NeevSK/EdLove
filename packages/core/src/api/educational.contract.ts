@@ -1,6 +1,5 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   AssignmentSchema,
   AssignmentSubmissionSchema,
@@ -10,11 +9,15 @@ import {
   StudentAssignmentSchema,
   StudentSubmissionSummarySchema,
   TeacherStatsSchema,
-} from './schemas/classroom.schema';
-import { ClassroomGradingSettingsSchema, GradeSchema } from './schemas/grading.schema';
-import { LessonSchema } from './schemas/lesson.schema';
-import { MaterialSchema } from './schemas/material.schema';
-import { StudentSchema } from './schemas/student.schema';
+} from '../logic/schemas/classroom.schema';
+import {
+  ClassroomGradingSettingsSchema,
+  StudentGradeSchema,
+} from '../logic/schemas/grading.schema';
+import { LessonSchema } from '../logic/schemas/lesson.schema';
+import { MaterialSchema } from '../logic/schemas/material.schema';
+import { StudentSchema } from '../logic/schemas/student.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
@@ -369,14 +372,14 @@ export const educationalContract = c.router({
     method: 'GET',
     path: '/educational/grades/report-card',
     query: z.object({ student_id: z.string() }),
-    responses: { 200: z.array(GradeSchema) },
+    responses: { 200: z.array(StudentGradeSchema) },
     metadata: gradeAuthority('read'),
   },
   getClassroomGrades: {
     method: 'GET',
     path: '/educational/grades/classroom',
     query: z.object({ classroom_id: z.string() }),
-    responses: { 200: z.array(GradeSchema) },
+    responses: { 200: z.array(StudentGradeSchema) },
     metadata: gradeAuthority('read'),
   },
   submitGrade: {
@@ -389,7 +392,7 @@ export const educationalContract = c.router({
       assignment_id: z.string().optional(),
       feedback: z.string().optional(),
     }),
-    responses: { 201: GradeSchema },
+    responses: { 201: StudentGradeSchema },
     metadata: gradeAuthority('create'),
   },
   deleteGrade: {

@@ -1,13 +1,13 @@
-import { attendanceProjectionServices } from '../domains/attendanceProjection/runtime';
-import { educationalServices } from '../domains/educational/runtime';
-import { supabase } from '../lib/supabase';
-import { operationsContract } from './operations.contract';
 import type {
   AttendanceReport,
   AttendanceSnapshot,
   SchoolAttendancePulse,
-} from './schemas/attendance.schema';
-import type { AttendanceRecord } from './types';
+} from '../logic/schemas/attendance.schema';
+import { attendanceProjectionServices } from '../native/runtimes/attendanceProjection.runtime';
+import { educationalServices } from '../native/runtimes/educational.runtime';
+import { supabase } from '../native/supabase';
+import type { AttendanceRecord } from '../types';
+import { operationsContract } from './operations.contract';
 
 type AttendanceAuditContext = {
   actorId?: string;

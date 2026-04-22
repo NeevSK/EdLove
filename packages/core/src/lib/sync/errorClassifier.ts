@@ -1,5 +1,3 @@
-import { MutationOutcome } from './types';
-
 export type ErrorCategory = 'TRANSIENT' | 'PERMANENT';
 
 /**

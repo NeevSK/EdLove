@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, AppStateStatus, useColorScheme } from 'react-native';
 // @ts-ignore - Dependency exists in package.json and works at runtime, but IDE cannot resolve types in this environment
 import NetInfo from '@react-native-community/netinfo';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
 import i18n from 'i18next'; // Direct import of singleton
 import {
     EnvironmentContextValue,

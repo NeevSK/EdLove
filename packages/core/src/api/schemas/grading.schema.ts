@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const GradeSchema = z.object({
+export const AcademicGradeSchema = z.object({
   id: z.string().uuid(),
   classroom_id: z.string().uuid(),
   assignment_id: z.string().uuid().optional().nullable(),
@@ -36,14 +36,14 @@ export const AssessmentSchema = z.object({
 export const GradebookSnapshotSchema = z.object({
   classroomId: z.string(),
   viewDate: z.string(),
-  grades: z.array(GradeSchema),
+  grades: z.array(AcademicGradeSchema),
   gradingSettings: ClassroomGradingSettingsSchema,
 });
 
 export const PublishedStudentGradesSnapshotSchema = z.object({
   studentId: z.string(),
   viewDate: z.string(),
-  grades: z.array(GradeSchema),
+  grades: z.array(AcademicGradeSchema),
 });
 
 export const SchoolGradingCompletionSchema = z.object({
@@ -64,7 +64,7 @@ export const PublishedSchoolGradingCompletionSchema = z.object({
   publishedEntries: z.number().int().min(0),
 });
 
-export type Grade = z.infer<typeof GradeSchema>;
+export type Grade = z.infer<typeof AcademicGradeSchema>;
 export type ClassroomGradingSettings = z.infer<typeof ClassroomGradingSettingsSchema>;
 export type Assessment = z.infer<typeof AssessmentSchema>;
 export type GradebookSnapshot = z.infer<typeof GradebookSnapshotSchema>;

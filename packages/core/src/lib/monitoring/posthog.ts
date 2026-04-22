@@ -1,5 +1,5 @@
 // Local tracking implementation to avoid circular dependency with analytics package
-const posthogInstance: any = null;
+const _posthogInstance: any = null;
 
 export const initPostHog = async () => {
   // Mock implementation - analytics package should handle actual initialization

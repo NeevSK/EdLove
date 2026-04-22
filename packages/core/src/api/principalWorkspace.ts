@@ -1,5 +1,3 @@
-import { principalWorkspaceServices } from '../domains/principalWorkspace/runtime';
-import { principalWorkspaceContract } from './principalWorkspace.contract';
 import type {
   InviteCodeZod,
   PrincipalGovernanceEventZod,
@@ -8,9 +6,11 @@ import type {
   PrincipalObservationCreate,
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
-} from './schemas/principal-workspace.schema';
+} from '../logic/schemas/principal-workspace.schema';
+import { principalWorkspaceServices } from '../native/runtimes/principalWorkspace.runtime';
+import { principalWorkspaceContract } from './principalWorkspace.contract';
 
-export type { PrincipalGovernanceEventZod } from './schemas/principal-workspace.schema';
+export type { PrincipalGovernanceEventZod } from '../logic/schemas/principal-workspace.schema';
 
 export const principalWorkspaceAPI = {
   /**

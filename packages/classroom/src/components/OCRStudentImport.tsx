@@ -46,7 +46,7 @@ export default function OCRStudentImport({
     onImported,
     onCancel,
 }: OCRStudentImportProps) {
-    const toast = useToast();
+    const { showToast } = useToast();
     const [phase, setPhase] = useState<Phase>('scan');
     const [students, setStudents] = useState<ReviewStudent[]>([]);
 
@@ -75,16 +75,9 @@ export default function OCRStudentImport({
     const handleConfirm = async () => {
         const selected = students.filter(s => s.selected);
         if (selected.length === 0) {
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <SanctuaryToast
-                        message="Select at least one student to import"
-                        type="info"
-                        visible
-                        onHide={() => toast.close(id)}
-                    />
-                ),
+            showToast({
+                message: "Select at least one student to import",
+                type: "info"
             });
             return;
         }
@@ -104,16 +97,9 @@ export default function OCRStudentImport({
             onImported(selected.length);
         } catch (err) {
             console.error('OCRStudentImport: bulk create failed', err);
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <SanctuaryToast
-                        message="Failed to import students. Please try again."
-                        type="error"
-                        visible
-                        onHide={() => toast.close(id)}
-                    />
-                ),
+            showToast({
+                message: "Failed to import students. Please try again.",
+                type: "error"
             });
             setPhase('review');
         }

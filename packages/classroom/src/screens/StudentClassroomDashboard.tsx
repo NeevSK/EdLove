@@ -64,7 +64,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
             case 'gradebook':
                 return (
                     <Box className="p-4">
-                        <Text className="text-phaseText-tertiary">My Grade Performance</Text>
+                        <Text className="text-phase-text-tertiary">My Grade Performance</Text>
                     </Box>
                 );
             case 'lessons':
@@ -119,15 +119,15 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                 onBack={() => navigation.goBack()}
             />
             <ScrollView stickyHeaderIndices={[1]} contentContainerClassName="pb-10" showsVerticalScrollIndicator={false}>
-                <Box className="p-4 bg-phase-surface">
-                    <VStack className="gap-1">
-                        <Text className="text-[10px] text-phaseText-tertiary font-black uppercase tracking-widest">
+                <Box className="p-6 bg-phase-surface">
+                    <VStack className="gap-2">
+                        <Text className="text-[12px] text-phase-text-tertiary font-black uppercase tracking-[0.2em] mb-1">
                             Subject Sanctuary
                         </Text>
-                        <Heading className="text-2xl font-black text-templeGold">
+                        <Heading className="text-4xl font-black text-templeGold leading-tight">
                             {classroomName}
                         </Heading>
-                        <Text className="text-sm text-phaseText-secondary mt-1 font-medium italic">
+                        <Text className="text-base text-phase-text-secondary mt-2 font-medium">
                             {workspace.pendingAssignments > 0
                                 ? `${workspace.pendingAssignments} assignment${workspace.pendingAssignments === 1 ? '' : 's'} waiting for your response`
                                 : 'Your submissions and study notes are in rhythm here'}
@@ -135,17 +135,17 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                     </VStack>
                 </Box>
                 
-                <Box className="bg-phase-surface px-4 pb-4">
-                    <HStack className="gap-2.5 flex-wrap">
+                <Box className="bg-phase-surface px-6 pb-6 shadow-sm z-10">
+                    <HStack className="gap-3 flex-wrap">
                         {summaryCards.map((card) => (
                             <Box
                                 key={card.label}
-                                className="bg-phase-canvas rounded-comfortable px-4 py-3 min-w-[82px] border border-phase-canvas shadow-sm"
+                                className="bg-phase-surface-secondary rounded-[24px] px-5 py-4 flex-1 min-w-[100px] border border-phase-border/40 shadow-sm"
                             >
-                                <Text className="text-[10px] text-phaseText-tertiary uppercase font-black tracking-tighter">
+                                <Text className="text-[10px] text-phase-text-tertiary uppercase font-black tracking-widest mb-1">
                                     {card.label}
                                 </Text>
-                                <Text className="text-xl text-phaseText-primary font-black">
+                                <Text className="text-2xl text-phase-text-primary font-black">
                                     {card.value}
                                 </Text>
                             </Box>
@@ -153,27 +153,32 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                     </HStack>
                     
                     {workspace.recentSubmissions.length > 0 && (
-                        <VStack className="mt-4 gap-1">
-                            <Text className="text-[10px] text-phaseText-tertiary uppercase font-black tracking-widest">
+                        <VStack className="mt-6 gap-2">
+                            <Text className="text-[10px] text-phase-text-tertiary uppercase font-black tracking-widest">
                                 Recent Submissions
                             </Text>
-                            {workspace.recentSubmissions.map((submission: any) => (
-                                <Text key={submission.id} className="text-xs text-phaseText-secondary font-bold">
-                                    {submission.assignment_title} &bull; {new Date(submission.submitted_at).toLocaleDateString()}
-                                </Text>
-                            ))}
+                            <VStack className="gap-1.5">
+                                {workspace.recentSubmissions.slice(0, 2).map((submission: any) => (
+                                    <HStack key={submission.id} className="items-center gap-2">
+                                        <Box className="w-1 h-1 rounded-full bg-sanctuarySaffron" />
+                                        <Text className="text-xs text-phase-text-secondary font-bold">
+                                            {submission.assignment_title} &bull; {new Date(submission.submitted_at).toLocaleDateString()}
+                                        </Text>
+                                    </HStack>
+                                ))}
+                            </VStack>
                         </VStack>
                     )}
                     
                     {workspace.error && (
-                        <Text className="mt-2 text-xs text-emberRed font-black">
+                        <Text className="mt-4 text-xs text-emberRed font-black px-2 py-1 bg-emberRed/5 rounded-lg">
                             {workspace.error}
                         </Text>
                     )}
                 </Box>
 
-                <Box className="bg-phase-surface pb-4 pt-2 border-b border-phase-canvas">
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="px-4">
+                <Box className="bg-phase-surface pb-6 pt-3 border-b border-phase-border sticky">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="px-6">
                         <HStack className="gap-3">
                             {STUDENT_FEATURES.map((f) => {
                                 const isActive = activeFeature === f.id;
@@ -181,13 +186,13 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                                     <Pressable 
                                         key={f.id} 
                                         onPress={() => { hapticLight(); setActiveFeature(f.id); }}
-                                        className={`items-center justify-center px-4 py-3 rounded-comfortable min-w-[90px] gap-1.5 border ${
-                                            isActive ? "bg-templeGold border-templeGold" : "bg-phase-canvas border-phase-canvas shadow-sm"
+                                        className={`items-center justify-center px-6 py-4 rounded-[24px] min-w-[110px] gap-2 border shadow-sm transition-all duration-300 ${
+                                            isActive ? "bg-templeGold border-templeGold shadow-templeGold/20 scale-105" : "bg-phase-surface-secondary border-phase-border/40"
                                         }`}
                                     >
-                                        <Icon as={f.icon} size="sm" className={isActive ? "text-phase-surface" : "text-phaseText-secondary"} />
-                                        <Text className={`text-[10px] uppercase tracking-widest font-black ${
-                                            isActive ? "text-phase-surface" : "text-phaseText-secondary"
+                                        <Icon as={f.icon} size="sm" className={isActive ? "text-sanctuary-ink" : "text-phase-text-secondary"} />
+                                        <Text className={`text-[11px] uppercase tracking-widest font-black ${
+                                            isActive ? "text-sanctuary-ink" : "text-phase-text-secondary"
                                         }`}>
                                             {f.label}
                                         </Text>
@@ -198,7 +203,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
                     </ScrollView>
                 </Box>
                 
-                <Box className="flex-1" style={{ paddingBottom: bottomPadding }}>
+                <Box className="flex-1 px-2" style={{ paddingBottom: bottomPadding }}>
                     {renderFeatureContent()}
                 </Box>
             </ScrollView>

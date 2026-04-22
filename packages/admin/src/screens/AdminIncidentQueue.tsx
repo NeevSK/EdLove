@@ -1,19 +1,49 @@
 import React from 'react';
-import { ScreenWrapper, Text, VStack } from '@repo/ui';
-import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
+import { useNavigation } from '@react-navigation/native';
+import { Box, Text, VStack } from '@repo/ui';
+import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
+import { AdminRoomShell, AdminRoomPanel } from './AdminRoomShell';
 
 export default function AdminIncidentQueue() {
-  const data = useAdminWorkspaceData();
+  const { snapshot: data } = useAdminWorkspaceSnapshot();
+  const navigation = useNavigation<any>();
+
+  if (!data) return null;
+
   return (
-    <ScreenWrapper scroll={false}>
-      <VStack className="flex-1 items-center justify-center gap-3 px-6">
-        <Text className="text-lg font-bold text-phaseText-primary">Incident queue</Text>
-        <Text className="text-center text-sm text-phaseText-secondary">
-          {data.isLoading
-            ? 'Loading recent signals...'
-            : `There are ${data.incidentCount} current incident-like pending operational items in view.`}
-        </Text>
+    <AdminRoomShell
+      eyebrow="Incident control"
+      title="Incident queue"
+      description="Triage cross-tenant incidents, regressions, and operational noise with a monitor-first stance and explicit handoff."
+      caution="Keep this room read-first until the incident is validated. Escalations should preserve a clear audit trail and a named tenant scope."
+      onBack={() => navigation.goBack()}
+      stats={[
+        { label: 'Open incidents', value: data.incidentCount, hint: 'Pending operational items' },
+        { label: 'Recent signals', value: data.recentIncidentSignals.length, hint: 'Fresh queue volume' },
+        { label: 'Approvals', value: data.pendingApprovalCount, hint: 'Guarded responses queued' },
+      ]}
+    >
+      <VStack className="gap-4">
+        <AdminRoomPanel
+          title="Recent signals"
+          description="The queue below favors recent operational signals over historical noise."
+        >
+          <VStack className="gap-3">
+            {data.recentIncidentSignals.length === 0 ? (
+              <Text className="text-[13px] text-phaseText-secondary">No incident signals surfaced in this snapshot.</Text>
+            ) : (
+              data.recentIncidentSignals.slice(0, 5).map((item) => (
+                <Box key={item.id} className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3">
+                  <Text className="text-[13px] font-bold text-phaseText-primary">{item.title}</Text>
+                  <Text className="mt-1 text-[11px] text-phaseText-secondary">
+                    {item.schoolId} | {item.status} | {new Date(item.createdAt).toLocaleString()}
+                  </Text>
+                </Box>
+              ))
+            )}
+          </VStack>
+        </AdminRoomPanel>
       </VStack>
-    </ScreenWrapper>
+    </AdminRoomShell>
   );
 }

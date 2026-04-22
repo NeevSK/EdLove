@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import type { StateCreator } from 'zustand';
-import type { Role } from '../../permissions/schemas/role.schema';
+import type { Role } from '../../logic/schemas/role.schema';
 import type { User } from '../../types';
 
 export interface AuthSlice {

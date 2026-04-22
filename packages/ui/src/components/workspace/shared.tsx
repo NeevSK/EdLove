@@ -4,7 +4,7 @@ import {
     groupResolvedWorkspaceSurfacesByZone,
     resolveWorkspaceSurfaceLayout,
     type WorkspaceRendererConfig,
-} from '@repo/core/workspace/canvas';
+} from '@repo/core/logic';
 import { LayoutGrid, Pin } from 'lucide-react-native';
 import { Theme } from '../../theme/Theme';
 import { useThemedColors } from '../../hooks/useThemedColors';

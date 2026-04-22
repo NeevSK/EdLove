@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
-import { useActivityPulse } from '@repo/core';
+import { useActivityPulse } from '@repo/core/logic';
 
 interface TemporalGlassProps {
     children: React.ReactNode;

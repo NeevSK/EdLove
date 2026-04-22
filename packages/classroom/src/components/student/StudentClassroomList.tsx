@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen } from 'lucide-react-native';
 import { VStack, HStack, Box, Text, SkeletonCard, PositiveInvitation, Icon } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from '@repo/ui';
 
 interface Classroom {
     id: string;
@@ -18,6 +18,8 @@ interface StudentClassroomListProps {
 }
 
 export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentClassroomListProps) => {
+    const navigation = useNavigation<any>();
+
     if (loading) {
         return (
             <VStack className="gap-4">
@@ -44,11 +46,10 @@ export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentCla
     }
 
     return (
-        <HStack className="flex-wrap gap-6">
+            <HStack className="flex-wrap gap-6">
             {classrooms.map(cls => (
-                <TouchableOpacity
+                <Pressable
                     key={cls.id}
-                    activeOpacity={0.9}
                     onPress={() => navigation.navigate('StudentClassroomDashboard', { classroomId: cls.id, classroomName: cls.name })}
                     className="w-full max-w-[320px] bg-sanctuary-surface rounded-[32px] overflow-hidden border border-sanctuary-border/60"
                 >
@@ -89,7 +90,7 @@ export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentCla
                             </Box>
                         </HStack>
                     </VStack>
-                </TouchableOpacity>
+                </Pressable>
             ))}
         </HStack>
     );

@@ -1,4 +1,4 @@
-jest.mock('../../domains/founder/runtime', () => ({
+jest.mock('../native/runtimes/founder.runtime', () => ({
   founderServices: {
     getEcosystemStats: jest.fn(),
     getAllSchools: jest.fn(),
@@ -12,7 +12,7 @@ jest.mock('../../domains/founder/runtime', () => ({
   },
 }));
 
-jest.mock('../../domains/guardian/runtime', () => ({
+jest.mock('../native/runtimes/guardian.runtime', () => ({
   guardianServices: {
     createProfile: jest.fn(),
     getProfile: jest.fn(),

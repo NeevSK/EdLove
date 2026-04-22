@@ -3,10 +3,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
     createDefaultWorkspaceLayout,
     setWorkspaceSurfaceHidden,
-    type ResolvedWorkspaceSurface,
-    type WorkspaceLayout,
-    type WorkspaceSurfaceDefinition,
-} from '@repo/core/workspace/canvas';
+} from '@repo/core/logic';
+import type {
+    ResolvedWorkspaceSurface,
+    WorkspaceLayout,
+    WorkspaceSurfaceDefinition,
+} from '@repo/core/types';
 import { WorkspaceCanvas } from '../components/workspace';
 import { Theme } from '../theme/Theme';
 
@@ -262,15 +264,15 @@ export default function WorkspaceCanvasDemo() {
                 subtitle="Responsive renderer demo with snapshot, temporal state, metadata, info, and action slots."
                 surfaces={surfaces}
                 layout={layout}
-                getSurfaceSubtitle={(surface) => SURFACE_LIBRARY[surface.surfaceId].subtitle}
-                getSurfaceSummary={(surface) => SURFACE_LIBRARY[surface.surfaceId].summary}
-                getSurfaceSnapshot={(surface) => SURFACE_LIBRARY[surface.surfaceId].snapshot}
-                getSurfaceTemporalLabel={(surface) => SURFACE_LIBRARY[surface.surfaceId].temporalLabel}
-                getSurfaceTemporalTone={(surface) => SURFACE_LIBRARY[surface.surfaceId].temporalTone}
-                getSurfaceMetadata={(surface) => SURFACE_LIBRARY[surface.surfaceId].metadata}
+                getSurfaceSubtitle={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].subtitle}
+                getSurfaceSummary={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].summary}
+                getSurfaceSnapshot={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].snapshot}
+                getSurfaceTemporalLabel={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].temporalLabel}
+                getSurfaceTemporalTone={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].temporalTone}
+                getSurfaceMetadata={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].metadata}
                 renderSurfaceActions={(surface) => (
                     <View style={styles.inlineActions}>
-                        {SURFACE_LIBRARY[surface.surfaceId].actions.map((action, index) =>
+                        {(SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].actions).map((action: string, index: number) =>
                             renderActionButton(action, index === 0 ? 'primary' : 'secondary')
                         )}
                     </View>
@@ -293,7 +295,7 @@ export default function WorkspaceCanvasDemo() {
                     setNotice(`${String(surface.surfaceId)} selected in the ${ROLE_LABELS[role]} canvas.`);
                 }}
                 onPressSurfaceInfo={(surface) => {
-                    setNotice(SURFACE_LIBRARY[surface.surfaceId].info);
+                    setNotice(SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].info);
                 }}
                 onToggleHidden={(surface) => {
                     updateRoleLayout((current) =>

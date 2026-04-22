@@ -34,6 +34,7 @@ export * from './EnvironmentGuard';
 export { CapabilityGuard } from './CapabilityGuard';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as GuestDataSyncModal } from './GuestDataSyncModal';
+export { default as DeviceAccountManager } from './DeviceAccountManager';
 export { ProgressIndicator } from './ProgressIndicator';
 export { default as BreathingLoader } from './BreathingLoader';
 

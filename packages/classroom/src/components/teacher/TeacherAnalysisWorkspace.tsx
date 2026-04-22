@@ -94,17 +94,17 @@ export default function TeacherAnalysisWorkspace({
         <Box className="flex-1">
             <VStack className="gap-8 p-6">
                 <Box
-                    className="bg-sanctuary-surface-secondary/40 rounded-[32px] border border-sanctuary-border p-8"
+                    className="bg-phase-surface-secondary rounded-[32px] border border-phase-border/40 p-8 shadow-sm"
                 >
                     <VStack className="gap-8">
                         <VStack className="gap-3">
-                            <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
+                            <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
                                 Analysis
                             </Text>
-                            <Heading className="text-3xl text-sanctuary-text font-black tracking-tight leading-tight">
+                            <Heading className="text-4xl text-phase-text-primary font-black tracking-tight leading-tight">
                                 Read the classroom before reacting
                             </Heading>
-                            <Text className="text-sanctuary-text text-sm leading-relaxed font-medium opacity-70 max-w-xl">
+                            <Text className="text-phase-text-secondary text-base leading-relaxed font-medium mt-2 max-w-xl">
                                 Academic signals, attendance rhythm, and observation patterns live together here so the teacher can decide with context.
                             </Text>
                         </VStack>
@@ -117,12 +117,12 @@ export default function TeacherAnalysisWorkspace({
                             <StatCard
                                 label="Attendance"
                                 value={`${stats.attendanceRate}%`}
-                                icon={<Icon as={Activity} size="sm" className="text-sanctuary-info" />}
+                                icon={<Icon as={Activity} size="sm" className="text-gurudeviBlue" />}
                             />
                             <StatCard
                                 label="Concerns"
                                 value={String(stats.concernCount)}
-                                icon={<Icon as={TriangleAlert} size="sm" className="text-sanctuary-error" />}
+                                icon={<Icon as={TriangleAlert} size="sm" className="text-chestnutRed" />}
                             />
                         </HStack>
                     </VStack>
@@ -134,29 +134,29 @@ export default function TeacherAnalysisWorkspace({
                     </Box>
                 ) : (
                     <Box
-                        className="bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-8"
+                        className="bg-phase-surface rounded-[32px] border border-phase-border/40 p-8 shadow-sm"
                     >
                         <VStack className="gap-8">
-                            <Heading className="text-sm text-sanctuary-text-tertiary font-black uppercase tracking-[0.25em]">
+                            <Heading className="text-xs text-phase-text-tertiary font-black uppercase tracking-[0.25em]">
                                 Student analysis queue
                             </Heading>
                             {studentSignals.length === 0 ? (
-                                <Text className="text-sanctuary-text-tertiary font-medium">
+                                <Text className="text-phase-text-tertiary font-medium">
                                     No students available for analysis yet.
                                 </Text>
                             ) : (
                                 studentSignals.map((student, index) => (
                                     <HStack
                                         key={student.id}
-                                        className={`items-center justify-between gap-6 py-5 ${
-                                            index === studentSignals.length - 1 ? '' : 'border-b border-sanctuary-border/60'
+                                        className={`items-center justify-between gap-6 py-6 ${
+                                            index === studentSignals.length - 1 ? '' : 'border-b border-phase-border/10'
                                         }`}
                                     >
                                         <VStack className="flex-1 gap-1">
-                                            <Text className="text-lg text-sanctuary-text font-black tracking-tight">
+                                            <Text className="text-2xl text-phase-text-primary font-black tracking-tight">
                                                 {student.full_name}
                                             </Text>
-                                            <Text className="text-sanctuary-text-tertiary text-xs font-medium">
+                                            <Text className="text-phase-text-tertiary text-sm font-medium mt-1">
                                                 {student.observationCount} observations • {student.concernCount} concern signals
                                             </Text>
                                         </VStack>
@@ -172,16 +172,15 @@ export default function TeacherAnalysisWorkspace({
                                                     tone="positive"
                                                 />
                                             )}
-                                            <Button
-                                                action="primary"
+                                            <Pressable
                                                 onPress={() => setSelectedStudent({ id: student.id, full_name: student.full_name })}
-                                                className="bg-sanctuarySaffron rounded-full px-6 h-11"
+                                                className="bg-sanctuarySaffron px-6 py-3 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
                                             >
                                                 <HStack className="items-center gap-2.5">
-                                                    <Icon as={Sparkles} size="xs" className="text-sacredWhite" />
-                                                    <ButtonText className="text-sacredWhite font-black uppercase text-[10px] tracking-widest">Open</ButtonText>
+                                                    <Icon as={Sparkles} size="xs" className="text-sanctuary-ink" />
+                                                    <Text className="text-sanctuary-ink font-black uppercase text-[10px] tracking-widest">Open</Text>
                                                 </HStack>
-                                            </Button>
+                                            </Pressable>
                                         </HStack>
                                     </HStack>
                                 ))
@@ -214,18 +213,18 @@ function StatCard({
 }) {
     return (
         <Box
-            className="flex-1 bg-sanctuary-surface border border-sanctuary-border rounded-[24px] p-6 shadow-sm"
+            className="flex-1 min-w-[120px] bg-phase-surface border border-phase-border/40 rounded-[24px] p-6 shadow-sm"
         >
             <VStack className="gap-3">
                 <HStack className="items-center gap-2">
-                    <Box className="w-8 h-8 rounded-lg bg-sanctuary-surface-secondary items-center justify-center border border-sanctuary-border/40">
+                    <Box className="w-10 h-10 rounded-xl bg-phase-surface-secondary items-center justify-center border border-phase-border/20">
                         {icon}
                     </Box>
-                    <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
+                    <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
                         {label}
                     </Text>
                 </HStack>
-                <Heading className="text-2xl text-sanctuary-text font-black tracking-tighter">
+                <Heading className="text-3xl text-phase-text-primary font-black tracking-tighter">
                     {value}
                 </Heading>
             </VStack>
@@ -244,9 +243,9 @@ function SignalBadge({
 
     return (
         <Box
-            className={`px-3.5 py-1.5 rounded-xl border ${isPositive ? 'bg-sanctuary-success/10 border-sanctuary-success/20' : 'bg-sanctuary-warning/10 border-sanctuary-warning/20'}`}
+            className={`px-4 py-2 rounded-full border shadow-sm ${isPositive ? 'bg-sageGreen/10 border-sageGreen/20' : 'bg-chestnutRed/10 border-chestnutRed/20'}`}
         >
-            <Text className={`text-[10px] font-black uppercase tracking-[0.15em] ${isPositive ? 'text-sanctuary-success' : 'text-sanctuary-warning'}`}>
+            <Text className={`text-[10px] font-black uppercase tracking-widest ${isPositive ? 'text-sageGreen' : 'text-chestnutRed'}`}>
                 {label}
             </Text>
         </Box>

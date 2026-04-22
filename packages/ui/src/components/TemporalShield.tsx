@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
 import { Shield } from 'lucide-react-native';
 import { Theme } from '../theme/Theme';
 

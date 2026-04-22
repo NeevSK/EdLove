@@ -1,3 +1,6 @@
+import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
+import { selectGuardianVisibleGrades } from '../../logic/domains/guardian/gradeVisibility';
+import type { GuardianRepository } from '../../logic/domains/guardian/ports';
 import {
   type GuardianDashboard,
   GuardianDashboardSchema,
@@ -9,12 +12,9 @@ import {
   type GuardianVerificationDocument,
   type StudentGuardianRelationship,
   StudentGuardianRelationshipSchema,
-} from '../../api/schemas/guardian.schema';
-import { APIError } from '../../api/types';
-import { selectGuardianVisibleGrades } from '../../domains/guardian/gradeVisibility';
-import type { GuardianRepository } from '../../domains/guardian/ports';
-import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/guardian.schema';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 function mapGuardianIdentity(row: any): GuardianIdentity {
   return GuardianIdentitySchema.parse({

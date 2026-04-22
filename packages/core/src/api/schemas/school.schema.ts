@@ -26,7 +26,7 @@ export const SectionSchema = z.object({
   created_at: z.string().datetime(),
 });
 
-export const GradeSchema = z.object({
+export const AcademicGradeSchema = z.object({
   id: z.string().uuid(),
   section_id: z.string().uuid(),
   number: z.number().int().min(1).max(13),
@@ -42,5 +42,5 @@ export const SchoolStatsSchema = z.object({
 
 export type SchoolZod = z.infer<typeof SchoolSchema>;
 export type SectionZod = z.infer<typeof SectionSchema>;
-export type GradeZod = z.infer<typeof GradeSchema>;
+export type AcademicGradeZod = z.infer<typeof AcademicGradeSchema>;
 export type SchoolStatsZod = z.infer<typeof SchoolStatsSchema>;

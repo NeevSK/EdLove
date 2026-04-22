@@ -23,7 +23,8 @@ import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import ScreenWrapper from '../components/ScreenWrapper';
-import { authAPI, handleAPIError, LanguageUtils } from '@repo/core';
+import { handleAPIError, LanguageUtils } from '@repo/core/logic';
+import { authAPI } from '@repo/core/native';
 
 const LOGO = require('../../assets/icon.png');
 

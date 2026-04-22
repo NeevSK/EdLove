@@ -30,10 +30,10 @@ type ClassroomGroup = Awaited<ReturnType<typeof classroomGroupsAPI.getAll>>[numb
 
 const GROUP_ACCENTS = [
     'bg-sanctuarySaffron',
-    'bg-sanctuary-success',
-    'bg-sanctuary-info',
-    'bg-sanctuary-error',
-    'bg-sanctuary-warning',
+    'bg-gurudeviBlue',
+    'bg-sageGreen',
+    'bg-chestnutRed',
+    'bg-amberGlow',
 ];
 
 export default function TeacherGroupsModal({
@@ -139,25 +139,24 @@ export default function TeacherGroupsModal({
     };
 
     const footer = (
-        <HStack className="w-full gap-4">
-            <Button 
-                variant="outline" 
-                action="secondary" 
+        <HStack className="w-full gap-4 px-2 pb-2">
+            <Pressable 
                 onPress={onClose} 
-                className="flex-1 rounded-full border-sanctuary-border h-14 active:bg-sanctuary-surface-secondary"
+                className="flex-1 rounded-full border border-phase-border h-14 items-center justify-center active:bg-phase-surface-secondary transition-all"
             >
-                <ButtonText className="text-sanctuary-text font-black uppercase text-xs tracking-widest">Close</ButtonText>
-            </Button>
-            <Button
-                action="primary"
+                <Text className="text-phase-text-tertiary font-black uppercase text-xs tracking-widest">Close</Text>
+            </Pressable>
+            <Pressable
                 onPress={() => { hapticLight(); handleSave(); }}
-                isDisabled={!name.trim() || isSaving}
-                className="flex-1 rounded-full bg-sanctuarySaffron h-14 shadow-md"
+                disabled={!name.trim() || isSaving}
+                className={`flex-1 rounded-full h-14 items-center justify-center shadow-lg transition-all ${
+                    !name.trim() || isSaving ? "bg-phase-border/40" : "bg-sanctuarySaffron shadow-sanctuarySaffron/20"
+                }`}
             >
-                <ButtonText className="text-sacredWhite font-black uppercase text-xs tracking-widest">
+                <Text className="text-sanctuary-ink font-black uppercase text-xs tracking-widest">
                     {editingGroupId ? 'Update Group' : 'Save Group'}
-                </ButtonText>
-            </Button>
+                </Text>
+            </Pressable>
         </HStack>
     );
 
@@ -170,7 +169,7 @@ export default function TeacherGroupsModal({
             className="max-w-[840px]"
         >
         <VStack className="gap-8 p-1">
-                <Text className="text-sm leading-relaxed text-sanctuary-text font-medium opacity-70 max-w-2xl">
+                <Text className="text-base leading-relaxed text-phase-text-secondary font-medium mt-2 max-w-2xl">
                     Build real student groupings without leaving the classroom surface. These groups stay synchronized across all teaching tools.
                 </Text>
 
@@ -178,31 +177,34 @@ export default function TeacherGroupsModal({
                     {/* Left Column: Existing Groups */}
                     <VStack className="flex-1 gap-6">
                         <HStack className="items-center justify-between">
-                            <Heading className="text-xs text-sanctuary-text-tertiary font-black uppercase tracking-[0.2em]">
+                            <Heading className="text-[10px] text-phase-text-tertiary font-black uppercase tracking-[0.25em]">
                                 Existing Groups
                             </Heading>
-                            <Pressable onPress={() => { hapticLight(); resetEditor(); }} className="active:opacity-60 py-1 px-3 bg-sanctuarySaffron/10 rounded-full border border-sanctuarySaffron/20">
-                                <HStack className="items-center gap-1.5">
+                            <Pressable 
+                                onPress={() => { hapticLight(); resetEditor(); }} 
+                                className="active:scale-95 transition-all py-2 px-5 bg-phase-surface border border-phase-border/40 rounded-full shadow-sm"
+                            >
+                                <HStack className="items-center gap-2">
                                     <Icon as={Plus} size="xs" className="text-sanctuarySaffron" />
-                                    <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-widest">
+                                    <Text className="text-[10px] font-black text-phase-text-primary uppercase tracking-widest">
                                         New
                                     </Text>
                                 </HStack>
                             </Pressable>
                         </HStack>
 
-                        <ScrollView className="max-h-[440px]" showsVerticalScrollIndicator={false}>
-                            <VStack className="gap-3 pr-2">
+                        <ScrollView className="max-h-[500px]" showsVerticalScrollIndicator={false}>
+                            <VStack className="gap-4 pr-2">
                                 {isLoading ? (
                                     <VStack className="gap-4">
-                                        {[1, 2].map((i) => (
-                                            <Box key={i} className="h-28 bg-sanctuary-surface-secondary/40 rounded-[28px] border border-sanctuary-border/60 animate-pulse" />
+                                        {[1, 2, 3].map((i) => (
+                                            <Box key={i} className="h-32 bg-phase-surface-secondary rounded-[32px] border border-phase-border/20 animate-pulse" />
                                         ))}
                                     </VStack>
                                 ) : groups.length === 0 ? (
-                                    <Box className="items-center justify-center rounded-[32px] border border-dashed border-sanctuary-border bg-sanctuary-surface-secondary/20 p-12 gap-4">
-                                        <Icon as={Layers} size="lg" className="text-sanctuary-text-tertiary opacity-30" />
-                                        <Text className="text-sm text-sanctuary-text-tertiary text-center font-medium leading-relaxed max-w-[200px]">
+                                    <Box className="items-center justify-center rounded-[40px] border border-dashed border-phase-border bg-phase-surface-secondary/20 p-16 gap-6">
+                                        <Icon as={Layers} size="lg" className="text-phase-text-tertiary opacity-30" />
+                                        <Text className="text-sm text-phase-text-tertiary text-center font-medium leading-relaxed max-w-[240px]">
                                             No classroom groups yet. Create one to organize your teaching.
                                         </Text>
                                     </Box>
@@ -210,30 +212,30 @@ export default function TeacherGroupsModal({
                                     groups.map((group, idx) => (
                                         <Box
                                             key={group.id}
-                                            className={`rounded-[28px] border border-sanctuary-border bg-sanctuary-surface-secondary/40 p-6 relative overflow-hidden shadow-sm`}
+                                            className={`rounded-[32px] border border-phase-border/40 bg-phase-surface-secondary p-7 relative overflow-hidden shadow-sm`}
                                         >
                                             <Box className={`absolute left-0 top-0 bottom-0 w-2 ${GROUP_ACCENTS[idx % GROUP_ACCENTS.length]}`} />
-                                            <VStack className="gap-4">
+                                            <VStack className="gap-5">
                                                 <HStack className="items-start justify-between">
                                                     <VStack className="flex-1 gap-1">
-                                                        <Text className="text-lg font-black text-sanctuary-text tracking-tight">
+                                                        <Text className="text-xl font-black text-phase-text-primary tracking-tight">
                                                             {group.name}
                                                         </Text>
-                                                        <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-[0.2em]">
+                                                        <Text className="text-[10px] font-black text-phase-text-tertiary uppercase tracking-widest mt-1">
                                                             {(group.student_ids || []).length} members
                                                         </Text>
                                                     </VStack>
                                                     <HStack className="gap-3">
-                                                        <Pressable onPress={() => startEditing(group)} className="w-9 h-9 items-center justify-center rounded-full bg-sanctuary-surface-secondary border border-sanctuary-border active:opacity-50">
-                                                            <Icon as={Edit3} size="xs" className="text-sanctuary-text-tertiary" />
+                                                        <Pressable onPress={() => startEditing(group)} className="w-10 h-10 items-center justify-center rounded-full bg-phase-surface border border-phase-border/40 shadow-sm active:bg-phase-surface-secondary transition-all">
+                                                            <Icon as={Edit3} size="xs" className="text-phase-text-tertiary" />
                                                         </Pressable>
-                                                        <Pressable onPress={() => handleDelete(group.id)} className="w-9 h-9 items-center justify-center rounded-full bg-sanctuary-surface-secondary border border-sanctuary-border active:opacity-50">
-                                                            <Icon as={Trash2} size="xs" className="text-sanctuary-error" />
+                                                        <Pressable onPress={() => handleDelete(group.id)} className="w-10 h-10 items-center justify-center rounded-full bg-phase-surface border border-phase-border/40 shadow-sm active:bg-phase-surface-secondary transition-all">
+                                                            <Icon as={Trash2} size="xs" className="text-chestnutRed" />
                                                         </Pressable>
                                                     </HStack>
                                                 </HStack>
                                                 {!!group.description && (
-                                                    <Text className="text-[13px] text-sanctuary-text-tertiary leading-relaxed font-medium italic">
+                                                    <Text className="text-sm text-phase-text-secondary leading-relaxed font-medium italic opacity-80">
                                                         {group.description}
                                                     </Text>
                                                 )}
@@ -247,68 +249,71 @@ export default function TeacherGroupsModal({
 
                     {/* Right Column: Editor */}
                     <VStack className="flex-1 gap-8">
-                        <Heading className="text-xs text-sanctuary-text-tertiary font-black uppercase tracking-[0.2em]">
+                        <Heading className="text-[10px] text-phase-text-tertiary font-black uppercase tracking-[0.25em]">
                             {editingGroupId ? 'Edit Group' : 'Create Group'}
                         </Heading>
                         
                         <VStack className="gap-6">
-                            <VStack className="gap-2.5">
-                                <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-widest">Name</Text>
-                                <Input className="h-14 rounded-[20px] bg-sanctuary-surface-secondary/40 border-sanctuary-border px-4">
-                                    <InputField 
-                                        placeholder="Enter group name" 
-                                        value={name} 
-                                        onChangeText={setName} 
-                                        className="text-sm text-sanctuary-text font-black" 
-                                    />
-                                </Input>
+                            <VStack className="gap-3">
+                                <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">Name</Text>
+                                <Box className="bg-phase-surface-secondary rounded-[20px] p-1 border border-phase-border/40">
+                                    <Input className="border-0 h-12">
+                                        <InputField 
+                                            placeholder="Enter group name" 
+                                            value={name} 
+                                            onChangeText={setName} 
+                                            className="text-sm text-phase-text-primary font-black px-4" 
+                                        />
+                                    </Input>
+                                </Box>
                             </VStack>
  
-                            <VStack className="gap-2.5">
-                                <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-widest">Description</Text>
-                                <Input className="rounded-[20px] bg-sanctuary-surface-secondary/40 border-sanctuary-border p-4 min-h-[110px]">
-                                    <InputField 
-                                        placeholder="What is this group for?" 
-                                        value={description} 
-                                        onChangeText={setDescription} 
-                                        className="text-sm text-sanctuary-text leading-relaxed font-medium"
-                                        multiline
-                                        placeholderTextColor="#94a3b8"
-                                    />
-                                </Input>
+                            <VStack className="gap-3">
+                                <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">Description</Text>
+                                <Box className="bg-phase-surface-secondary rounded-[20px] p-1 border border-phase-border/40">
+                                    <Input className="border-0 min-h-[120px]">
+                                        <InputField 
+                                            placeholder="What is this group for?" 
+                                            value={description} 
+                                            onChangeText={setDescription} 
+                                            className="text-sm text-phase-text-primary leading-relaxed font-medium p-4"
+                                            multiline
+                                        />
+                                    </Input>
+                                </Box>
                             </VStack>
                         </VStack>
 
                         <VStack className="gap-4">
-                            <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuary-text-tertiary ml-1">
+                            <Text className="text-[10px] font-black uppercase tracking-[0.25em] text-phase-text-tertiary ml-1">
                                 Members ({(selectedStudentIds || []).length})
                             </Text>
-                            <ScrollView className="max-h-[320px]" showsVerticalScrollIndicator={false}>
-                                <VStack className="gap-2.5 pr-1">
+                            <ScrollView className="max-h-[350px]" showsVerticalScrollIndicator={false}>
+                                <VStack className="gap-3 pr-2">
                                     {students.map((student) => {
                                         const isActive = selectedStudentIds.includes(student.id);
                                         return (
                                             <Pressable 
                                                 key={student.id} 
                                                 onPress={() => toggleStudent(student.id)}
-                                                className={`rounded-[20px] border px-5 py-4 shadow-sm ${
+                                                className={`rounded-[24px] border px-6 py-5 shadow-sm transition-all ${
                                                     isActive 
                                                         ? 'bg-sanctuarySaffron border-sanctuarySaffron' 
-                                                        : 'bg-sanctuary-surface-secondary/40 border-sanctuary-border'
+                                                        : 'bg-phase-surface-secondary border-phase-border/40'
                                                 }`}
                                             >
                                                 <HStack className="items-center justify-between">
-                                                    <HStack className="items-center gap-4">
+                                                    <HStack className="items-center gap-5">
                                                         <Icon 
                                                             as={User} 
                                                             size="xs" 
-                                                            className={isActive ? 'text-sacredWhite' : 'text-sanctuary-text-tertiary'} 
+                                                            className={isActive ? 'text-sanctuary-ink' : 'text-phase-text-tertiary'} 
                                                         />
-                                                        <Text className={`text-sm font-black tracking-tight ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                                        <Text className={`text-base font-black tracking-tight ${isActive ? 'text-sanctuary-ink' : 'text-phase-text-primary'}`}>
                                                             {student.full_name}
                                                         </Text>
                                                     </HStack>
-                                                    {isActive && <Icon as={Check} size="xs" className="text-sacredWhite" />}
+                                                    {isActive && <Icon as={Check} size="sm" className="text-sanctuary-ink" />}
                                                 </HStack>
                                             </Pressable>
                                         );

@@ -8,6 +8,8 @@ interface TeacherStatCardProps {
 }
 
 export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({ label, value, accentColorClass = 'bg-sanctuarySaffron' }) => {
+    const accentDotClass = accentColorClass;
+
     return (
         <Box className="rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-7 overflow-hidden relative">
             <Box className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-[0.03] ${accentColorClass}`} />
@@ -17,7 +19,7 @@ export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({ label, value, 
                     <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuary-text-tertiary">
                         {label}
                     </Text>
-                    <Box className={`h-2.5 w-2.5 rounded-full ${accentColorClass.replace('bg-', 'bg-')}`} />
+                    <Box className={`h-2.5 w-2.5 rounded-full ${accentDotClass}`} />
                 </HStack>
                 <Heading className="text-3xl text-sanctuary-text font-black tracking-tighter">
                     {value}

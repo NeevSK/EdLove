@@ -1,5 +1,4 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
 import { 
     VStack, 
     HStack, 
@@ -8,7 +7,8 @@ import {
     Heading, 
     Icon, 
     hapticLight,
-    Pressable
+    Pressable,
+    ScrollView
 } from '@repo/ui';
 import { 
     Zap, 

@@ -4,6 +4,7 @@ import {
     HStack,
     PositiveInvitation,
     Pressable,
+    Icon,
     TemporalNavigator,
     Text,
     Theme,
@@ -71,36 +72,19 @@ function QuickAction({
         <Pressable
             onPress={disabled ? undefined : onPress}
             disabled={disabled}
-            sx={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.secondary,
-                padding: Theme.spacing.md,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: colors.border,
-                opacity: disabled ? 0.5 : 1,
-                minHeight: 112,
-            }}
+            className={`
+                flex-1 items-center justify-center rounded-[24px] border min-h-[112px]
+                ${disabled ? 'opacity-50' : 'opacity-100'}
+                bg-phase-surface-secondary border-phase-border
+            `}
         >
             <Box
-                sx={{
-                    padding: Theme.spacing.sm,
-                    borderRadius: Theme.corners.comfortable,
-                    backgroundColor: colors.tertiary,
-                    marginBottom: Theme.spacing.sm,
-                }}
+                className="p-3 rounded-xl bg-phase-surface-tertiary mb-2"
             >
-                <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={22} />
+                <Icon as={LucideIcon} className={color ? "" : "text-sanctuarySaffron"} style={color ? { color } : {}} size={22} />
             </Box>
             <Text
-                sx={{
-                    textAlign: 'center',
-                    fontSize: 12,
-                    fontWeight: '700',
-                    color: colors.text,
-                }}
+                className="text-center text-[10px] font-black uppercase tracking-wider text-phase-text-primary"
             >
                 {label}
             </Text>
@@ -123,47 +107,33 @@ function StatCard({
 }) {
     return (
         <Box
-            sx={{
-                flex: 1,
-                backgroundColor: colors.secondary,
-                padding: Theme.spacing.lg,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: colors.border,
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 100,
-            }}
+            className="flex-1 bg-phase-surface-secondary p-6 rounded-[24px] border border-phase-border relative overflow-hidden min-h-[100px]"
         >
-            <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}>
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary }}>
+            <VStack className="z-10 gap-1">
+                <Text className="text-[10px] font-black uppercase tracking-wider text-phase-text-secondary">
                     {label}
                 </Text>
-                <Text sx={{ fontSize: 32, fontWeight: '700', color: colors.text }}>
+                <Text className="text-3xl font-black text-phase-text-primary">
                     {value}
                     {isDemoMode ? '*' : ''}
                 </Text>
             </VStack>
 
             {isDemoMode && (
-                <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
-                    <Zap
+                <Box className="absolute top-2 right-2">
+                    <Icon
+                        as={Zap}
                         size={12}
-                        color={Theme.colors.sanctuarySaffron}
-                        fill={Theme.colors.sanctuarySaffron}
+                        className="text-sanctuarySaffron"
+                        fill="#F6BF8C"
                     />
                 </Box>
             )}
 
             <Box
-                sx={{
-                    position: 'absolute',
-                    right: -10,
-                    bottom: -10,
-                    opacity: 0.1,
-                }}
+                className="absolute -right-2 -bottom-2 opacity-[0.05]"
             >
-                <LucideIcon color={colors.text} size={80} />
+                <Icon as={LucideIcon} className="text-phase-text-primary" size={80} />
             </Box>
         </Box>
     );
@@ -241,7 +211,7 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: isPastView ? 'Past view' : 'Action ready',
                 metadata: ['Create', 'Join', 'Scan'],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}>
+                    <HStack className="gap-4">
                         <QuickAction
                             icon={Plus}
                             label="Create Class"
@@ -284,13 +254,9 @@ export function useTeacherDashboardSurfaces({
                 metadata: ['Admin', 'Echoes', 'Breathing'],
                 content: (
                     <HStack
-                        sx={{
-                            gap: Theme.spacing.md,
-                            flexWrap: 'wrap',
-                            justifyContent: 'space-between',
-                        }}
+                        className="gap-4 flex-wrap justify-between"
                     >
-                        <Box sx={{ width: '48%' }}>
+                        <Box className="w-[48%]">
                             <QuickAction
                                 icon={ShieldCheck}
                                 label="Admin"
@@ -299,7 +265,7 @@ export function useTeacherDashboardSurfaces({
                                 colors={colors}
                             />
                         </Box>
-                        <Box sx={{ width: '48%' }}>
+                        <Box className="w-[48%]">
                             <QuickAction
                                 icon={BookOpen}
                                 label="Library"
@@ -308,7 +274,7 @@ export function useTeacherDashboardSurfaces({
                                 colors={colors}
                             />
                         </Box>
-                        <Box sx={{ width: '48%' }}>
+                        <Box className="w-[48%]">
                             <QuickAction
                                 icon={MessageCircle}
                                 label="Principal Echo"
@@ -317,7 +283,7 @@ export function useTeacherDashboardSurfaces({
                                 colors={colors}
                             />
                         </Box>
-                        <Box sx={{ width: '48%' }}>
+                        <Box className="w-[48%]">
                             <QuickAction
                                 icon={ClipboardList}
                                 label="My Echoes"
@@ -326,7 +292,7 @@ export function useTeacherDashboardSurfaces({
                                 colors={colors}
                             />
                         </Box>
-                        <Box sx={{ width: '48%' }}>
+                        <Box className="w-[48%]">
                             <QuickAction
                                 icon={Wind}
                                 label="Breathing"
@@ -353,7 +319,7 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: 'Snapshot',
                 metadata: [`Classes ${stats.activeClasses}`, `Students ${stats.totalStudents}`],
                 content: (
-                    <HStack sx={{ gap: Theme.spacing.md }}>
+                    <HStack className="gap-4">
                         <StatCard
                             icon={School}
                             label="Active Classes"
@@ -386,7 +352,7 @@ export function useTeacherDashboardSurfaces({
                 temporalLabel: stats.activeClasses > 0 ? 'Live' : 'Onboarding',
                 metadata: [`Classes ${stats.activeClasses}`, 'Registry', 'Daily work'],
                 content: (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-6">
                         <ClassroomList
                             onClassroomPress={onOpenClassroom}
                             onDataLoaded={handleClassroomsLoaded}
@@ -407,7 +373,7 @@ export function useTeacherDashboardSurfaces({
                             }
                         />
                         {isGuest && (
-                            <Box sx={{ marginTop: Theme.spacing.md }}>
+                            <Box className="mt-4">
                                 <PositiveInvitation type="guest" onAction={() => {}} />
                             </Box>
                         )}

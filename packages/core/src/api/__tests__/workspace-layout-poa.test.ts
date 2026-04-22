@@ -1,4 +1,4 @@
-jest.mock('../../domains/workspaceLayout/runtime', () => ({
+jest.mock('../native/runtimes/workspaceLayout.runtime', () => ({
   workspaceLayoutServices: {
     getLayout: jest.fn(),
     upsertLayout: jest.fn(),

@@ -19,7 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { User, GraduationCap, Briefcase, Crown, ShieldAlert } from 'lucide-react-native';
 import { QRCodeGenerator, QRBuilder } from '../qr'; 
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - 48; // Standardized spacing

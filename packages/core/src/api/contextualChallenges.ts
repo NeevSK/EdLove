@@ -30,7 +30,7 @@
  * See GROWTH_MODEL.md \u00A714 for the full doctrine and Duolingo analysis.
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase } from '../native/supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -361,7 +361,7 @@ export const contextualChallengesAPI = {
         .update({ status: 'expired', updated_at: new Date().toISOString() })
         .eq('user_id', userId)
         .eq('status', 'active');
-    } catch (e) {
+    } catch (_e) {
       // ignore network errors
     }
     const now = new Date();

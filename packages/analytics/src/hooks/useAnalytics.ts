@@ -1,12 +1,11 @@
 import { Platform } from 'react-native';
 import { usePostHog } from 'posthog-react-native';
+import { useActivityPulse } from '@repo/core';
 import { posthogAnalytics as posthogWeb } from '../engine/PostHogAnalytics.web';
 import { posthogAnalytics } from '../engine/PostHogAnalytics';
 
 // Use the existing singleton for convenience, but we'll prefer the provider-based approach where possible
 const posthogNative = posthogAnalytics;
-
-import { useActivityPulse } from '@repo/core';
 
 export function useAnalytics() {
   const posthog = usePostHog();
@@ -68,77 +67,5 @@ export function useAnalytics() {
     identify,
     screen,
     reset,
-  };
-}
-
-import { useQuery } from '@tanstack/react-query';
-import { StudentPerformanceMetrics, ClassAnalytics } from '../types/AnalyticsTypes';
-import { PerformanceAnalyzer } from '../engine/PerformanceAnalyzer';
-import { Predictor } from '../ml/Predictor';
-import { InsightGenerator } from '../ml/InsightGenerator';
-import { supabase } from '@repo/core';
-
-const performanceAnalyzer = new PerformanceAnalyzer(supabase);
-export const predictor = new Predictor(supabase);
-const insightGenerator = new InsightGenerator();
-
-export function useStudentPerformance(
-  studentId: string, 
-  classId: string, 
-  timeRange?: { startDate: string; endDate: string }
-) {
-  return useQuery({
-    queryKey: ['student-performance', studentId, classId, timeRange],
-    queryFn: () => performanceAnalyzer.analyzeStudentPerformance(studentId, classId, timeRange),
-    enabled: !!studentId && !!classId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-}
-
-export function useClassPerformance(classId: string) {
-  return useQuery({
-    queryKey: ['class-performance', classId],
-    queryFn: () => performanceAnalyzer.analyzeClassPerformance(classId),
-    enabled: !!classId,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
-}
-
-export function usePredictions(request: {
-  studentId: string;
-  predictionType: 'gpa' | 'dropout_risk' | 'performance_trend';
-  timeHorizon: 'month' | 'quarter' | 'semester' | 'year';
-}) {
-  return useQuery({
-    queryKey: ['predictions', request.studentId, request.predictionType, request.timeHorizon],
-    queryFn: () => predictor.predict(request),
-    enabled: !!request.studentId,
-    staleTime: 30 * 60 * 1000, // 30 minutes
-  });
-}
-
-export function usePerformanceData(studentId: string, classId: string) {
-  const performance = useStudentPerformance(studentId, classId);
-  const predictions = usePredictions({
-    studentId,
-    predictionType: 'gpa',
-    timeHorizon: 'semester'
-  });
-
-  const insights = performance.data 
-    ? insightGenerator.generateStudentInsights(performance.data)
-    : [];
-
-  const recommendations = performance.data
-    ? insightGenerator.generateRecommendations(performance.data)
-    : [];
-
-  return {
-    performance,
-    predictions,
-    insights,
-    recommendations,
-    isLoading: performance.isLoading || predictions.isLoading,
-    error: performance.error || predictions.error,
   };
 }

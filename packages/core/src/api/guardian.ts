@@ -1,5 +1,3 @@
-import { guardianServices } from '../domains/guardian/runtime';
-import { guardianContract } from './guardian.contract';
 import type {
   GuardianDashboard,
   GuardianIdentity,
@@ -9,7 +7,9 @@ import type {
   GuardianStudentOverview,
   GuardianVerificationDocument,
   StudentGuardianRelationship,
-} from './schemas/guardian.schema';
+} from '../logic/schemas/guardian.schema';
+import { guardianServices } from '../native/runtimes/guardian.runtime';
+import { guardianContract } from './guardian.contract';
 
 export const guardianAPI = {
   /**

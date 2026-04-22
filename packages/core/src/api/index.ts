@@ -1,7 +1,8 @@
+import { authAPI } from '../native/auth';
+import { identityAPI as rawIdentityAPI } from '../native/identity';
 import { academicCyclesAPI } from './academicCycles';
 import { assignmentsAPI as rawAssignmentsAPI } from './assignments';
 import { attendanceAPI as rawAttendanceAPI } from './attendance';
-import { authAPI } from './auth';
 import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from './classroom';
 import { classroomGroupsAPI as rawClassroomGroupsAPI } from './classroomGroups';
 import { classroomNotesAPI as rawClassroomNotesAPI } from './classroomNotes';
@@ -28,7 +29,6 @@ import { growthSignalsAPI } from './growthSignals';
 import { guardianAPI as rawGuardianAPI } from './guardian';
 import { guardianContract } from './guardian.contract';
 import { historyAPI } from './history';
-import { identityAPI as rawIdentityAPI } from './identity';
 // Contracts for POA Enforcement
 import { identityContract } from './identity.contract';
 import { impactRipplesAPI } from './impactRipples';
@@ -516,6 +516,9 @@ export const missionsAPI = createPOAProxy('missions', sacredMissionsAPI, growthC
 export const ripplesAPI = createPOAProxy('ripples', impactRipplesAPI, growthContract);
 export const growthStateAPI = createPOAProxy('growthState', userGrowthStateAPI, growthContract);
 
+export * from '../logic/schemas/staff.schema';
+export * from '../logic/schemas/temporal.schema';
+export * from '../types';
 export * from './assignments'; // Export assignments/submissions API
 export * from './classroomGroups';
 export type { ClassroomNote } from './classroomNotes';
@@ -550,8 +553,6 @@ export * from './principalWorkspace.contract';
 export * from './privacy';
 export * from './profile.contract';
 export * from './sacredMissions'; // Export mission types
-export * from './schemas/staff.schema';
-export * from './schemas/temporal.schema';
 export * from './schoolForest';
 export * from './self.contract';
 export * from './staffManagement'; // Export staff management types
@@ -562,7 +563,6 @@ export * from './teacherInsights.contract';
 export * from './temporalPOAProxy';
 export * from './temporalProxy';
 export * from './thuthimal'; // Restore types and thuthimalAPI
-export * from './types';
 export * from './userGrowthState';
 export * from './warmMirror';
 // Simplified named exports for direct access

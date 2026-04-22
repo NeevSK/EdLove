@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { identityAPI } from '../api/identity';
 import { rewardsAPI } from '../api/rewards';
+import { identityAPI } from '../native/identity';
 import { useTemporalStore } from '../store/useTemporalStore';
 
 /**

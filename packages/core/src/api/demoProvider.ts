@@ -1,6 +1,3 @@
-// hapticWarning removed to avoid core -> ui circular dependency
-import i18n from 'i18next';
-import { Alert } from 'react-native';
 import { useStore } from '../store/useStore';
 import { isDemo } from './demo';
 import * as MOCK from './mockData';
@@ -39,12 +36,12 @@ const MOCK_DATA_REGISTRY: Record<string, () => any> = {
 /**
  * Handles the interception logic for the API Proxy.
  */
-export function interceptApiCall(moduleName: string, methodName: string, originalArgs: any[]) {
+export function interceptApiCall(moduleName: string, methodName: string, _originalArgs: any[]) {
   const registryKey = `${moduleName}.${methodName}`;
   const state = useStore.getState();
 
-  const isExplorer = state.isExplorerMode;
-  const dismissedIds = state.dismissedSampleIds;
+  const _isExplorer = state.isExplorerMode;
+  const _dismissedIds = state.dismissedSampleIds;
 
   // If we are currently bridging demo data to reality, DO NOT intercept.
   if (state.isBridging) {

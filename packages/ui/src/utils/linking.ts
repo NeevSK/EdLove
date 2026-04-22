@@ -1,4 +1,4 @@
-import { storage } from '@repo/core';
+import { storage } from '@repo/core/native';
 import { Linking, Platform } from 'react-native';
 
 export type ExternalLinkTrustLevel = 'verified' | 'external' | 'broken';

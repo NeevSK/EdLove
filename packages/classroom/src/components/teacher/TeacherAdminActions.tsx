@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Text, VStack, HStack, Heading, Icon } from '@repo/ui';
+import { Box, Text, VStack, HStack, Heading, Icon, Pressable } from '@repo/ui';
 import { LucideIcon, Settings, Users, BookOpen, Shield, ClipboardList, Database } from 'lucide-react-native';
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -21,26 +21,24 @@ export const TeacherAdminButton: React.FC<TeacherAdminButtonProps> = ({ label, o
     const IconComponent = ICON_MAP[icon] || Settings;
  
     return (
-        <Button
-            variant="outline"
-            action="secondary"
+        <Pressable
             onPress={onClick}
-            className="w-full h-auto flex-row items-start justify-start rounded-[32px] border border-sanctuary-border bg-sanctuary-surface-secondary/20 p-6 active:opacity-80"
+            className="w-full flex-row items-start justify-start rounded-[32px] border border-phase-border/40 bg-phase-surface-secondary p-7 active:scale-[0.98] transition-all shadow-sm group"
         >
-            <VStack className="items-start gap-4">
-                <HStack className="items-center gap-2.5">
-                    <Box className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
+            <VStack className="items-start gap-4 flex-1">
+                <HStack className="items-center gap-3">
+                    <Box className="w-10 h-10 bg-phase-surface rounded-xl items-center justify-center border border-phase-border/20 shadow-sm group-active:bg-phase-surface-secondary">
                         <Icon as={IconComponent} size="xs" className="text-sanctuarySaffron" />
                     </Box>
-                    <Text className="text-[10px] font-black uppercase tracking-[0.25em] text-sanctuary-text-tertiary">
+                    <Text className="text-[10px] font-black uppercase tracking-[0.25em] text-phase-text-tertiary">
                         Admin Signal
                     </Text>
                 </HStack>
-                <Heading className="text-sm text-sanctuary-text font-black tracking-tight uppercase leading-tight">
+                <Heading className="text-xl text-phase-text-primary font-black tracking-tight leading-tight">
                     {label}
                 </Heading>
             </VStack>
-        </Button>
+        </Pressable>
     );
 };
 

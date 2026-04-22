@@ -27,7 +27,8 @@ import { UserAvatar } from './UserAvatar';
 import SanctuaryInput from './SanctuaryInput';
 import NotificationDrawer from './NotificationDrawer';
 
-import { useStore, useNotifications, usePermissions } from '@repo/core';
+import { useStore, usePermissions } from '@repo/core/logic';
+import { useNotifications } from '@repo/core/logic';
 
 export interface GlobalHeaderProps {
     title?: string;

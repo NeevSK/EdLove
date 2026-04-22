@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, PanResponder, Animated, Dimensions } from 'react-native';
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
 import { Box, Text } from '../gluestack';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

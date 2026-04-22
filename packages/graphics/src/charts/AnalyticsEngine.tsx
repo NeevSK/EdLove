@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { StyleSheet } from 'react-native';
+import { View, Text, ScrollView, VStack, HStack, Card, Input, InputField, Pressable, Theme } from '@repo/ui';
 import { marksToGPA } from '@repo/analytics';
 
 interface AnalyticsEngineProps {
@@ -104,41 +104,49 @@ export function AnalyticsEngine({
       {showFilters && (
         <View style={styles.filters}>
           <HStack space="md">
-            <VStack flex={1}>
+            <VStack className="flex-1">
               <Text style={styles.filterLabel}>Metric</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack space="sm">
                   {['all', 'A', 'B', 'C', 'S', 'F'].map(grade => (
-                    <Text
+                    <Pressable
                       key={grade}
-                      style={[
-                        styles.filterOption,
-                        selectedMetric === grade && styles.selectedFilter
-                      ]}
                       onPress={() => setSelectedMetric(grade)}
+                      className={selectedMetric === grade ? 'rounded-lg bg-gurudeviBlue' : 'rounded-lg'}
                     >
-                      {grade === 'all' ? 'All' : grade}
-                    </Text>
+                      <Text
+                        style={[
+                          styles.filterOption,
+                          selectedMetric === grade && styles.selectedFilter
+                        ]}
+                      >
+                        {grade === 'all' ? 'All' : grade}
+                      </Text>
+                    </Pressable>
                   ))}
                 </HStack>
               </ScrollView>
             </VStack>
             
-            <VStack flex={1}>
+            <VStack className="flex-1">
               <Text style={styles.filterLabel}>Date Range</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack space="sm">
                   {['week', 'month', 'quarter', 'year'].map(range => (
-                    <Text
+                    <Pressable
                       key={range}
-                      style={[
-                        styles.filterOption,
-                        dateRange === range && styles.selectedFilter
-                      ]}
                       onPress={() => setDateRange(range)}
+                      className={dateRange === range ? 'rounded-lg bg-gurudeviBlue' : 'rounded-lg'}
                     >
-                      {range.charAt(0).toUpperCase() + range.slice(1)}
-                    </Text>
+                      <Text
+                        style={[
+                          styles.filterOption,
+                          dateRange === range && styles.selectedFilter
+                        ]}
+                      >
+                        {range.charAt(0).toUpperCase() + range.slice(1)}
+                      </Text>
+                    </Pressable>
                   ))}
                 </HStack>
               </ScrollView>
@@ -150,29 +158,31 @@ export function AnalyticsEngine({
       {/* Search */}
       <View style={styles.searchContainer}>
         <Text style={styles.searchLabel}>Search</Text>
-        <TextInput
-          style={styles.searchInput}
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          placeholder="Search analytics..."
-        />
+        <Input className="border-phase-interactive/20">
+          <InputField
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            placeholder="Search analytics..."
+            className="text-phase-text-primary"
+          />
+        </Input>
       </View>
 
       {/* Analytics Summary */}
       <View style={styles.summary}>
         <VStack space="md">
           <HStack style={styles.summaryRow}>
-            <VStack flex={1} alignItems="center">
+            <VStack className="flex-1 items-center">
               <Text style={styles.summaryValue}>{analytics.totalItems}</Text>
               <Text style={styles.summaryLabel}>Total Items</Text>
             </VStack>
             
-            <VStack flex={1} alignItems="center">
+            <VStack className="flex-1 items-center">
               <Text style={styles.summaryValue}>{analytics.averageValue.toFixed(2)}</Text>
               <Text style={styles.summaryLabel}>Average</Text>
             </VStack>
             
-            <VStack flex={1} alignItems="center">
+            <VStack className="flex-1 items-center">
               <Text style={[
                 styles.summaryValue,
                 { color: analytics.trendDirection === 'up' ? Theme.colors.success : 
@@ -189,9 +199,11 @@ export function AnalyticsEngine({
       {/* Export Button */}
       {showExport && (
         <View style={styles.exportContainer}>
-          <Text style={styles.exportButton} onPress={handleExport}>
-            \uD83D\uDCE4 Export Report
-          </Text>
+          <Pressable onPress={handleExport} className="rounded-xl bg-gurudeviBlue">
+            <Text style={styles.exportButton}>
+              \uD83D\uDCE4 Export Report
+            </Text>
+          </Pressable>
         </View>
       )}
 
@@ -200,8 +212,8 @@ export function AnalyticsEngine({
         <VStack space="md">
           {filteredData.map((item, index) => (
             <View key={item.id} style={styles.dataItem}>
-              <HStack justifyContent="space-between">
-                <VStack flex={1}>
+              <HStack className="justify-between">
+                <VStack className="flex-1">
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemValue}>{item.value}</Text>
                 </VStack>

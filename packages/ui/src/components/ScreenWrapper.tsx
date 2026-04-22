@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Platform, KeyboardAvoidingView, StatusBar } from 'react-native';
-import { View, ScrollView } from '../gluestack';
+import { StyleSheet, Platform, StatusBar } from 'react-native';
+import { KeyboardAvoidingView, View, ScrollView } from './ui/view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 

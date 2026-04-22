@@ -4,7 +4,7 @@ import {
   resolveWorkspaceLayoutTarget,
   toWorkspaceLayoutRecord,
   toWorkspaceLayoutUpsert,
-} from '../../lib/workspace/layoutSync';
+} from '../../logic/workspace/layoutSync';
 
 describe('workspace layout sync helpers', () => {
   test('resolves device-specific layout targets', () => {

@@ -1,6 +1,6 @@
-import { supabase } from '../lib/supabase';
+import type { Role } from '../logic/schemas/role.schema';
+import { supabase } from '../native/supabase';
 import { composeUserAbilities } from '../permissions/composer';
-import type { Role } from '../permissions/schemas/role.schema';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 
 /**
@@ -32,7 +32,7 @@ export const onboardingAPI = {
   async handleSchoolRequest(
     requestId: string,
     status: RequestStatus,
-    adminId: string,
+    _adminId: string,
   ): Promise<void> {
     const { error } = await supabase
       .from('school_join_requests')
@@ -122,7 +122,7 @@ export const onboardingAPI = {
   async handleClassroomRequest(
     requestId: string,
     status: RequestStatus,
-    classTeacherId: string,
+    _classTeacherId: string,
   ): Promise<void> {
     // 1. Update classroom request status
     const { error } = await supabase

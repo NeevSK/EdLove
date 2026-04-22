@@ -1,7 +1,7 @@
 import {
   createWorkspaceRendererConfig,
   resolveWorkspaceRendererPlatform,
-} from '../../lib/workspace/renderer';
+} from '../../logic/workspace/renderer';
 
 describe('workspace renderer resolution', () => {
   test('web browser can collapse into tablet and mobile renderers by width', () => {

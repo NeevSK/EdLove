@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '../gluestack';
+import { Button, ButtonText, ButtonSpinner, ButtonIcon } from './ui/button';
 
 interface SanctuaryButtonProps {
     onPress: () => void;

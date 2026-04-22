@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { usePermissions, type Actions, type Subjects } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { type Actions, type Subjects } from '@repo/core/logic';
 import CitizenGate, { type CitizenGateProps } from './CitizenGate';
 
 interface CapabilityGuardProps {

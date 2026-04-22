@@ -1,6 +1,5 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   InviteCodeSchema,
   PrincipalGovernanceEventSchema,
@@ -9,7 +8,8 @@ import {
   PrincipalObservationCreateSchema,
   PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationSchema,
-} from './schemas/principal-workspace.schema';
+} from '../logic/schemas/principal-workspace.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

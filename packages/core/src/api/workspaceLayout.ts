@@ -1,9 +1,9 @@
-import { workspaceLayoutServices } from '../domains/workspaceLayout/runtime';
 import type {
   WorkspaceLayoutDelete,
   WorkspaceLayoutRecord,
   WorkspaceLayoutUpsert,
-} from './schemas/workspace-layout.schema';
+} from '../logic/schemas/workspace-layout.schema';
+import { workspaceLayoutServices } from '../native/runtimes/workspaceLayout.runtime';
 import { workspaceLayoutContract } from './workspaceLayout.contract';
 
 export const workspaceLayoutAPI = {

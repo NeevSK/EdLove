@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import AttendanceSheet from '../components/AttendanceSheet';
 import { StudentAttendance, AttendanceStatus } from '@repo/core';
 import { api, useStore, useSafeMutation, growthSignalsAPI } from '@repo/core';
-import { Theme, hapticSuccess, Button, ButtonText, Spinner, Text, Box, VStack } from '@repo/ui';
+import { Theme, hapticSuccess, Button, ButtonText, Spinner, Text, Box, VStack, Pressable } from '@repo/ui';
 
 type AttendanceScreenRouteProp = {
     key: string;
@@ -103,41 +103,35 @@ export default function AttendanceScreen() {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
-                <Spinner color={Theme.colors.sanctuarySaffron} />
-                <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text>
+            <Box className="flex-1 justify-center items-center bg-phase-surface-primary">
+                <Spinner color="#F6BF8C" />
+                <Text className="text-phase-text-secondary mt-4 font-black">Loading class list...</Text>
             </Box>
         );
     }
 
     if (error) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
-                <Text color={Theme.colors.emberRed}>{error}</Text>
+            <Box className="flex-1 justify-center items-center bg-phase-surface-primary p-6">
+                <Text className="text-emberRed font-black text-center">{error}</Text>
             </Box>
         );
     }
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
+        <VStack className="flex-1 bg-phase-surface-primary">
             <AttendanceSheet
                 classroomId={classroomId}
                 initialStudents={students}
                 onAttendanceChange={handleAttendanceChange}
             />
-            <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}>
+            <Box className="p-4 bg-phase-surface-primary pb-10 border-t border-phase-border">
                 <Button
                     onPress={handleSave}
                     disabled={saveMutation.isLoading}
-                    sx={{
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        borderRadius: Theme.corners.comfortable,
-                        padding: 16,
-                        minHeight: 56,
-                        justifyContent: 'center'
-                    }}
+                    className="bg-sanctuarySaffron rounded-[24px] h-[56px] justify-center"
                 >
-                    <ButtonText color="white" sx={{ fontWeight: '700' }}>
+                    <ButtonText className="text-white font-black">
                         {saveMutation.isLoading ? 'Syncing...' : 'Complete Marking'}
                     </ButtonText>
                 </Button>

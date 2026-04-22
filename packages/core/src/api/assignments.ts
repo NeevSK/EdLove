@@ -1,11 +1,11 @@
-import { educationalServices } from '../domains/educational/runtime';
-import { educationalContract } from './educational.contract';
 import type {
   Assignment as AssignmentRecord,
   StudentAssignment,
   StudentSubmissionSummary,
-} from './schemas/classroom.schema';
-import type { Assignment } from './types';
+} from '../logic/schemas/classroom.schema';
+import { educationalServices } from '../native/runtimes/educational.runtime';
+import type { Assignment } from '../types';
+import { educationalContract } from './educational.contract';
 
 export const assignmentsAPI = {
   /**

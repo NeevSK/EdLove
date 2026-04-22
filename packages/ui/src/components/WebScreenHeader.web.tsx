@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePermissions, useStore } from '@repo/core';
+import { usePermissions, useStore } from '@repo/core/logic';
 
 export interface WebScreenHeaderProps {
     title?: React.ReactNode;

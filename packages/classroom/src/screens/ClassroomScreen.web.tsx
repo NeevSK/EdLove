@@ -1,10 +1,10 @@
 import React from 'react';
 import { usePermissions, useStore } from '@repo/core';
 import {
-    Box, ScreenWrapper, WebScreenHeader
+    Box, ScreenWrapper, WebScreenHeader, Text, Heading, Icon
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRight, LogIn, School as SchoolIcon } from 'lucide-react-native';
 
 // Direct imports for sub-views
 import StudentDashboardWeb from './StudentDashboard.web';
@@ -34,28 +34,26 @@ export default function ClassroomScreenWeb() {
 
     const isCitizenReady = !isWanderer && !!user && (isTeacherLike || isPrincipalLike || isStudentLike) && hasSchoolId;
 
-    // 1. Edge Case: No Role / Onboarding Need
     if (context.roles.length === 0 || (!hasSchoolId && !isWanderer)) {
         return (
             <ScreenWrapper>
-                <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 20, textAlign: 'center' }}>
-                    <Text sx={{ fontSize: 48 }}>=K</Text>
-                    <Heading size="2xl">Welcome to Gurudevi</Heading>
-                    <Text sx={{ color: '$textLight', maxWidth: 400 }}>
+                <Box className="flex-1 items-center justify-center gap-5 text-center">
+                    <Text className="text-5xl font-black mb-4">🏫</Text>
+                    <Heading size="2xl" className="font-black text-phase-text-primary">Welcome to Gurudevi</Heading>
+                    <Text className="text-phase-text-secondary max-w-[400px]">
                         {context.roles.length === 0 
                             ? "Let's get you set up. Choose your role to get started."
                             : "Welcome! To access your classroom workspace, please join your school first."}
                     </Text>
-                    <Box 
-                        as="button"
-                        sx={{ background: '$primary', padding: 12, borderRadius: 8, color: 'white', flexDirection: 'row', alignItems: 'center', gap: 8 }}
-                        onClick={() => navigation.navigate('Auth')}
+                    <Pressable 
+                        className="bg-sanctuarySaffron px-6 py-4 rounded-[24px] flex-row items-center gap-3 mt-4"
+                        onPress={() => navigation.navigate('Auth')}
                     >
-                        <Text sx={{ color: 'white' }}>
+                        <Text className="text-white font-black">
                             {context.roles.length === 0 ? "Get started" : "Join School"}
                         </Text>
-                        <ArrowRight size={16} color="white" />
-                    </Box>
+                        <Icon as={ArrowRight} size={18} className="text-white" />
+                    </Pressable>
                 </Box>
             </ScreenWrapper>
         );
@@ -63,20 +61,20 @@ export default function ClassroomScreenWeb() {
 
     return (
         <ScreenWrapper>
-            <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: 20 }}>
+            <Box className="max-w-[1200px] mx-auto p-5">
                 <WebScreenHeader 
                     title="The Academy"
                     note={isPrincipalLike ? "Institutional Oversight" : "Growth & Mastery"}
                     showPersonalizedGreeting={true}
                 />
                 
-                <Box sx={{ marginTop: 24 }}>
+                <Box className="mt-6">
                     {/* Path 1: Anonymous guest or wanderer */}
                     {isWanderer && (
-                        <Box sx={{ padding: 40, alignItems: 'center', opacity: 0.8 }}>
-                            <Text sx={{ fontSize: 32, marginBottom: 16 }}>=-</Text>
-                            <Heading size="md">Welcome, Wanderer</Heading>
-                            <Text sx={{ color: '$textLight' }}>Exploring the public curriculum and library.</Text>
+                        <Box className="p-10 items-center opacity-80">
+                            <Text className="text-4xl mb-4 text-phase-text-secondary opacity-50">🔭</Text>
+                            <Heading size="md" className="font-black text-phase-text-primary">Welcome, Wanderer</Heading>
+                            <Text className="text-phase-text-secondary text-center">Exploring the public curriculum and library.</Text>
                         </Box>
                     )}
 

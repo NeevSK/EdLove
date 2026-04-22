@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { applyTemporalFilter } from '../logic/utils/temporalUtils';
+import { supabase } from '../native/supabase';
 import { usePermissions } from '../permissions/hooks/usePermissions';
 import { useTemporalStore } from '../store/useTemporalStore';
-import { applyTemporalFilter } from '../utils/temporalUtils';
 
 export interface JourneyEvent {
   id: string;
@@ -27,7 +27,7 @@ export interface HolisticView {
  * Aggregates role-specific feature history into a consolidated stream.
  * Supports Daily/Weekly holistic views.
  */
-export function useJourneyHistory(section?: string, feature?: string) {
+export function useJourneyHistory(_section?: string, _feature?: string) {
   const { context } = usePermissions();
   const { userId, authority } = context;
   const { phase, viewDate, viewScale, timelineFocus } = useTemporalStore();

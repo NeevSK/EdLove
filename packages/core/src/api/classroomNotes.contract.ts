@@ -1,12 +1,12 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   ClassroomNoteLifecycleEventSchema,
   ClassroomNoteSchema,
   ClassroomNoteTypeSchema,
   ClassroomNoteVisibilitySchema,
-} from './schemas/classroom-note.schema';
+} from '../logic/schemas/classroom-note.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

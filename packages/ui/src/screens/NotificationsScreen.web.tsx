@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bell, Info, Shield, Sparkles, CheckCircle2, Inbox } from 'lucide-react-native';
-import { useStore } from '@repo/core';
-import { useNotifications, AppNotification } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { useNotifications, AppNotification } from '@repo/core/logic';
 import { formatDistanceToNow } from 'date-fns';
 import { WebScreenHeader } from '../components/WebScreenHeader.web';
 

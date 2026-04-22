@@ -21,8 +21,10 @@ import {
     FormControlLabelText,
     Spinner,
     hapticSuccess,
+    hapticLight,
     Pressable,
     Theme,
+    Icon,
 } from '@repo/ui';
 import { CheckCircle, School, MessageSquare } from 'lucide-react-native';
 import { api, identityAPI, communityAPI } from '@repo/core';

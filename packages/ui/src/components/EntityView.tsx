@@ -1,5 +1,5 @@
 import React from 'react';
-import { EntityDefinition, EntityInstance, EntityMode } from '@repo/core';
+import { EntityDefinition, EntityInstance, EntityMode } from '@repo/core/logic';
 import { VStack, Text, HStack } from '../gluestack';
 import { SkeletonTextLine } from './SkeletonLoader';
 

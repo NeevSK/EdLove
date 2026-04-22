@@ -10,7 +10,6 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./gluestack": "./src/gluestack/index.tsx",
     "./components/SanctuaryButton": "./src/components/SanctuaryButton.tsx",
     "./components/SanctuaryInput": "./src/components/SanctuaryInput.tsx",
     "./components/QRCodeGenerator": "./src/components/QRCodeGenerator.tsx",
@@ -26,7 +25,10 @@
     "build": "pnpm exec tsc",
     "typecheck": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
     "check-types": "pnpm run typecheck",
-    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\""
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@react-native-community/slider": "4.5.6",

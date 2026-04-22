@@ -1,10 +1,10 @@
-import { normalizeWorkspaceLayout } from '../../lib/workspace/canvas';
+import { normalizeWorkspaceLayout } from '../../logic/workspace/canvas';
 import {
   buildWorkspaceLayoutStorageKey,
   choosePreferredWorkspaceLayout,
   resolveWorkspaceLayoutTarget,
   toWorkspaceLayoutUpsert,
-} from '../../lib/workspace/layoutSync';
+} from '../../logic/workspace/layoutSync';
 
 describe('workspace layout sync logic', () => {
   test('mobile and web targets can diverge by screen class', () => {

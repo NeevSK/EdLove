@@ -1,5 +1,3 @@
-import { educationalServices } from '../domains/educational/runtime';
-import { gradingProjectionServices } from '../domains/gradingProjection/runtime';
 import {
   annotateGradesWithPublicationState,
   GRADE_LIFECYCLE_ACTIONS,
@@ -7,8 +5,6 @@ import {
   type GradePublicationSnapshot,
   selectLatestPublishedSnapshots,
 } from '../lib/gradePublication';
-import { supabase } from '../lib/supabase';
-import { gradingContract } from './grading.contract';
 import type {
   ClassroomGradingSettings,
   Grade,
@@ -16,7 +12,11 @@ import type {
   PublishedSchoolGradingCompletion,
   PublishedStudentGradesSnapshot,
   SchoolGradingCompletion,
-} from './schemas/grading.schema';
+} from '../logic/schemas/grading.schema';
+import { educationalServices } from '../native/runtimes/educational.runtime';
+import { gradingProjectionServices } from '../native/runtimes/gradingProjection.runtime';
+import { supabase } from '../native/supabase';
+import { gradingContract } from './grading.contract';
 
 type GradingAuditContext = {
   actorId?: string;

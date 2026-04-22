@@ -105,50 +105,49 @@ export default function TeacherObservationsWorkspace({
         <Box className="flex-1">
             <VStack className="gap-8 p-6">
                 <Box
-                    className="bg-sanctuary-surface-secondary/40 rounded-[32px] border border-sanctuary-border p-8"
+                    className="bg-phase-surface-secondary rounded-[32px] border border-phase-border/40 p-8 shadow-sm"
                 >
                     <VStack className="gap-8">
                         <HStack className="items-start justify-between gap-6 flex-wrap">
                             <VStack className="flex-1 min-w-[240px] gap-3">
-                                <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
+                                <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
                                     Observations
                                 </Text>
-                                <Heading className="text-3xl text-sanctuary-text font-black tracking-tight leading-tight">
+                                <Heading className="text-4xl text-phase-text-primary font-black tracking-tight leading-tight">
                                     Track classroom noticing, not just incidents
                                 </Heading>
-                                <Text className="text-sanctuary-text text-sm leading-relaxed font-medium opacity-70 max-w-xl">
+                                <Text className="text-phase-text-secondary text-base leading-relaxed font-medium mt-2 max-w-xl">
                                     Keep small signals close to the classroom rhythm, so growth and concern stay visible before they become reports.
                                 </Text>
                             </VStack>
                             {canManage && (
-                                <Button
-                                    action="primary"
+                                <Pressable
                                     onPress={() => {
                                         hapticLight();
                                         setShowCreateModal(true);
                                     }}
-                                    className="bg-sanctuarySaffron rounded-full px-7 h-12 shadow-sm active:opacity-85"
+                                    className="bg-sanctuarySaffron px-8 py-3.5 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
                                 >
                                     <HStack className="items-center gap-2.5">
-                                        <Icon as={Plus} size="sm" className="text-sacredWhite" />
-                                        <ButtonText className="text-sacredWhite font-black uppercase text-xs tracking-[0.1em]">New</ButtonText>
+                                        <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
+                                        <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-widest">New</Text>
                                     </HStack>
-                                </Button>
+                                </Pressable>
                             )}
                         </HStack>
                         <HStack className="gap-4 flex-wrap">
                             <SignalPill
-                                icon={<Icon as={MessageCircle} size="sm" className="text-sanctuary-info" />}
+                                icon={<Icon as={MessageCircle} size="sm" className="text-gurudeviBlue" />}
                                 label="Total"
                                 value={String(observations.length)}
                             />
                             <SignalPill
-                                icon={<Icon as={Sparkles} size="sm" className="text-sanctuary-success" />}
+                                icon={<Icon as={Sparkles} size="sm" className="text-sageGreen" />}
                                 label="Positive"
                                 value={String(positiveCount)}
                             />
                             <SignalPill
-                                icon={<Icon as={TriangleAlert} size="sm" className="text-sanctuary-error" />}
+                                icon={<Icon as={TriangleAlert} size="sm" className="text-chestnutRed" />}
                                 label="Concerns"
                                 value={String(concernCount)}
                             />
@@ -162,49 +161,51 @@ export default function TeacherObservationsWorkspace({
                     </Box>
                 ) : observations.length === 0 ? (
                     <Box
-                        className="bg-sanctuary-surface-secondary/20 rounded-[32px] border border-sanctuary-border p-12 items-center gap-4"
+                        className="bg-phase-surface-secondary/40 rounded-[32px] border border-phase-border/40 p-12 items-center gap-6"
                     >
-                        <Box className="w-16 h-16 bg-sanctuary-surface rounded-[24px] items-center justify-center border border-sanctuary-border">
-                            <Icon as={MessageCircle} size="md" className="text-sanctuary-text-tertiary" />
+                        <Box className="w-20 h-20 bg-phase-surface rounded-full items-center justify-center border border-phase-border shadow-sm">
+                            <Icon as={MessageCircle} size="md" className="text-phase-text-tertiary" />
                         </Box>
-                        <Heading className="text-lg text-sanctuary-text font-black tracking-tight uppercase">
-                            No observations yet
-                        </Heading>
-                        <Text className="text-sanctuary-text-tertiary text-center text-sm leading-relaxed max-w-xs">
-                            Start with one true observation from today. The goal is signal, not volume.
-                        </Text>
+                        <VStack className="items-center gap-2">
+                            <Heading className="text-xl text-phase-text-primary font-black tracking-tight uppercase">
+                                No observations yet
+                            </Heading>
+                            <Text className="text-phase-text-secondary text-center text-sm leading-relaxed max-w-xs font-medium">
+                                Start with one true observation from today. The goal is signal, not volume.
+                            </Text>
+                        </VStack>
                     </Box>
                 ) : (
                     observations.map((observation) => (
                         <Box
                             key={observation.id}
-                            className={`bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-7 border-l-[6px] shadow-sm ${
+                            className={`bg-phase-surface-secondary rounded-[32px] border border-phase-border/40 p-8 border-l-[8px] shadow-sm ${
                                 observation.observation_type === 'concern'
-                                    ? 'border-l-sanctuary-error'
+                                    ? 'border-l-chestnutRed'
                                     : observation.observation_type === 'positive'
-                                        ? 'border-l-sanctuary-success'
-                                        : 'border-l-sanctuary-info'
+                                        ? 'border-l-sageGreen'
+                                        : 'border-l-gurudeviBlue'
                             }`}
                         >
                             <VStack className="gap-4">
                                 <HStack className="items-center justify-between gap-6">
                                     <VStack className="flex-1 gap-1">
-                                        <Text className="text-lg text-sanctuary-text font-black tracking-tight">
+                                        <Text className="text-2xl text-phase-text-primary font-black tracking-tight">
                                             {students.find((student) => student.id === observation.student_id)?.full_name || 'Student observation'}
                                         </Text>
-                                        <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.2em] mt-0.5">
+                                        <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-widest mt-1">
                                             {observation.observation_type} • {observation.visibility === 'student_visible' ? 'Visible to student' : 'Private'}
                                         </Text>
                                     </VStack>
                                     {canManage && (
-                                        <Pressable onPress={() => handleDelete(observation.id)} className="w-10 h-10 items-center justify-center bg-sanctuary-surface-secondary rounded-full border border-sanctuary-border active:opacity-50">
-                                            <Icon as={Trash2} size="xs" className="text-sanctuary-error" />
+                                        <Pressable onPress={() => handleDelete(observation.id)} className="w-10 h-10 items-center justify-center bg-phase-surface rounded-full border border-phase-border/40 active:bg-phase-surface-secondary shadow-sm transition-all">
+                                            <Icon as={Trash2} size="xs" className="text-chestnutRed" />
                                         </Pressable>
                                     )}
                                 </HStack>
-                                <Text className="text-sanctuary-text text-sm font-medium leading-relaxed opacity-80">{observation.content}</Text>
-                                <Box className="mt-2 pt-4 border-t border-sanctuary-border/60">
-                                    <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.15em]">
+                                <Text className="text-phase-text-secondary text-base font-medium leading-relaxed mt-1">{observation.content}</Text>
+                                <Box className="mt-4 pt-4 border-t border-phase-border/10">
+                                    <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-widest">
                                         {observation.created_at ? new Date(observation.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Just now'}
                                     </Text>
                                 </Box>
@@ -215,13 +216,13 @@ export default function TeacherObservationsWorkspace({
             </VStack>
 
             <SanctuaryModal
-                visible={showCreateModal}
+                isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
                 title="Create observation"
             >
-                <VStack className="gap-7 p-1">
+                <VStack className="gap-7 mt-4">
                     <VStack className="gap-3">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">
                             Student
                         </Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -231,11 +232,11 @@ export default function TeacherObservationsWorkspace({
                                     return (
                                         <Pressable key={student.id} onPress={() => setSelectedStudentId(student.id)}>
                                             <Box
-                                                className={`px-5 py-2.5 rounded-2xl border ${
-                                                    isActive ? 'border-sanctuarySaffron bg-sanctuarySaffron' : 'border-sanctuary-border bg-sanctuary-surface-secondary/40'
+                                                className={`px-6 py-3 rounded-full border transition-all ${
+                                                    isActive ? 'border-sanctuarySaffron bg-sanctuarySaffron' : 'border-phase-border/40 bg-phase-surface-secondary'
                                                 }`}
                                             >
-                                                <Text className={`text-xs font-black uppercase tracking-tight ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                                <Text className={`text-xs font-black uppercase tracking-tight ${isActive ? 'text-sanctuary-ink' : 'text-phase-text-primary'}`}>
                                                     {student.full_name}
                                                 </Text>
                                             </Box>
@@ -247,23 +248,23 @@ export default function TeacherObservationsWorkspace({
                     </VStack>
 
                     <VStack className="gap-3">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">
                             Observation type
                         </Text>
                         <HStack className="gap-2.5 flex-wrap">
                             {OBSERVATION_TYPES.map((type) => {
                                 const isActive = observationType === type;
-                                const activeColor = type === 'positive' ? 'bg-sanctuary-success' : type === 'concern' ? 'bg-sanctuary-error' : 'bg-sanctuary-info';
-                                const activeBorder = type === 'positive' ? 'border-sanctuary-success' : type === 'concern' ? 'border-sanctuary-error' : 'border-sanctuary-info';
+                                const activeColor = type === 'positive' ? 'bg-sageGreen' : type === 'concern' ? 'bg-chestnutRed' : 'bg-gurudeviBlue';
+                                const activeBorder = type === 'positive' ? 'border-sageGreen' : type === 'concern' ? 'border-chestnutRed' : 'border-gurudeviBlue';
                                 
                                 return (
                                     <Pressable key={type} onPress={() => setObservationType(type)}>
                                         <Box
-                                            className={`px-5 py-2.5 rounded-2xl border ${
-                                                isActive ? `${activeBorder} ${activeColor}` : 'border-sanctuary-border bg-sanctuary-surface-secondary/40'
+                                            className={`px-6 py-3 rounded-full border transition-all ${
+                                                isActive ? `${activeBorder} ${activeColor}` : 'border-phase-border/40 bg-phase-surface-secondary'
                                             }`}
                                         >
-                                            <Text className={`capitalize text-xs font-black tracking-tight ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                            <Text className={`capitalize text-xs font-black tracking-tight ${isActive ? 'text-sacredWhite' : 'text-phase-text-primary'}`}>
                                                 {type}
                                             </Text>
                                         </Box>
@@ -274,7 +275,7 @@ export default function TeacherObservationsWorkspace({
                     </VStack>
 
                     <VStack className="gap-3">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">
                             Visibility
                         </Text>
                         <HStack className="gap-3">
@@ -283,11 +284,11 @@ export default function TeacherObservationsWorkspace({
                                 return (
                                     <Pressable key={option} onPress={() => setVisibility(option)} className="flex-1">
                                         <Box
-                                            className={`px-5 py-2.5 rounded-2xl border items-center ${
-                                                isActive ? 'border-sanctuary-success bg-sanctuary-success' : 'border-sanctuary-border bg-sanctuary-surface-secondary/40'
+                                            className={`px-6 py-3 rounded-full border items-center transition-all ${
+                                                isActive ? 'border-sageGreen bg-sageGreen' : 'border-phase-border/40 bg-phase-surface-secondary'
                                             }`}
                                         >
-                                            <Text className={`text-xs font-black tracking-tight ${isActive ? 'text-sacredWhite' : 'text-sanctuary-text'}`}>
+                                            <Text className={`text-xs font-black tracking-tight ${isActive ? 'text-sacredWhite' : 'text-phase-text-primary'}`}>
                                                 {option === 'student_visible' ? 'Visible to student' : 'Private'}
                                             </Text>
                                         </Box>
@@ -298,36 +299,36 @@ export default function TeacherObservationsWorkspace({
                     </VStack>
 
                     <VStack className="gap-3">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">Observation</Text>
-                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border rounded-[24px] min-h-[140px] p-4">
-                            <InputField
-                                placeholder="What did you notice?"
-                                value={content}
-                                onChangeText={setContent}
-                                multiline
-                                className="text-sanctuary-text text-sm font-medium"
-                                placeholderTextColor="#94a3b8"
-                            />
-                        </Input>
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">Observation</Text>
+                        <Box className="bg-phase-surface-secondary rounded-[24px] p-1 border border-phase-border/40">
+                            <Input className="border-0 min-h-[140px]">
+                                <InputField
+                                    placeholder="What did you notice?"
+                                    value={content}
+                                    onChangeText={setContent}
+                                    multiline
+                                    className="text-phase-text-primary p-4 font-medium"
+                                />
+                            </Input>
+                        </Box>
                     </VStack>
  
-                    <HStack className="gap-4 mt-6">
-                        <Button 
-                            variant="outline" 
-                            action="secondary" 
-                            onPress={() => setShowCreateModal(false)} 
-                            className="flex-1 rounded-full h-14 border-sanctuary-border active:bg-sanctuary-surface-secondary"
+                    <HStack className="gap-4 justify-end mt-4">
+                        <Pressable 
+                            onPress={() => setShowCreateModal(false)}
+                            className="px-8 py-3.5 rounded-full border border-phase-border active:bg-phase-surface transition-all"
                         >
-                            <ButtonText className="text-sanctuary-text font-black uppercase text-xs tracking-widest">Cancel</ButtonText>
-                        </Button>
-                        <Button
-                            action="primary"
+                            <Text className="text-xs font-black text-phase-text-tertiary uppercase tracking-widest">Cancel</Text>
+                        </Pressable>
+                        <Pressable
                             onPress={handleCreate}
-                            isDisabled={!content.trim() || !selectedStudent || !userId || isSaving}
-                            className="flex-1 bg-sanctuarySaffron rounded-full h-14 shadow-md"
+                            disabled={!content.trim() || !selectedStudent || !userId || isSaving}
+                            className={`px-10 py-3.5 rounded-full shadow-lg transition-all ${
+                                !content.trim() || !selectedStudent || !userId || isSaving ? "bg-phase-border/40" : "bg-sanctuarySaffron shadow-sanctuarySaffron/20"
+                            }`}
                         >
-                            {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-black uppercase text-xs tracking-widest">Save</ButtonText>}
-                        </Button>
+                            {isSaving ? <Spinner color={Theme.colors.sanctuaryInk} /> : <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-widest">Save</Text>}
+                        </Pressable>
                     </HStack>
                 </VStack>
             </SanctuaryModal>
@@ -345,17 +346,17 @@ function SignalPill({
     value: string;
 }) {
     return (
-        <Box className="flex-1 bg-sanctuary-surface border border-sanctuary-border rounded-[24px] p-6 shadow-sm">
+        <Box className="flex-1 min-w-[100px] bg-phase-surface border border-phase-border/40 rounded-[24px] p-6 shadow-sm">
             <VStack className="gap-3">
                 <HStack className="items-center gap-2">
-                    <Box className="w-8 h-8 rounded-lg bg-sanctuary-surface-secondary items-center justify-center border border-sanctuary-border/40">
+                    <Box className="w-10 h-10 rounded-xl bg-phase-surface-secondary items-center justify-center border border-phase-border/20">
                         {icon}
                     </Box>
-                    <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
+                    <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
                         {label}
                     </Text>
                 </HStack>
-                <Text className="text-sanctuary-text font-black text-2xl tracking-tighter">
+                <Text className="text-phase-text-primary font-black text-3xl tracking-tighter">
                     {value}
                 </Text>
             </VStack>

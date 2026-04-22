@@ -1,4 +1,5 @@
 export * from './Actor';
+export * from './API';
 export * from './Assignment';
 export * from './Attendance';
 export * from './Authority';

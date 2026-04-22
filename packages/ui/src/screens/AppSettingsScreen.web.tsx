@@ -32,7 +32,8 @@ import {
   Shield,
 } from 'lucide-react-native';
 
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { DeviceAccountManager } from '../components';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -329,6 +330,12 @@ export default function AppSettingsScreen({ navigation }: any) {
             });
           }}
         />
+
+        <SectionHeader
+          title={t('profile.account.actions', 'Shared device accounts')}
+          description={t('profile.account.shared_device_desc', 'Switch, protect, and remove accounts stored on this device.')}
+        />
+        <DeviceAccountManager compact={true} />
 
         {/* Device Info Section */}
         <SectionHeader

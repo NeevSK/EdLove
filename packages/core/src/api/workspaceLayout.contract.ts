@@ -1,11 +1,11 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   WorkspaceLayoutDeleteSchema,
   WorkspaceLayoutRecordSchema,
   WorkspaceLayoutUpsertSchema,
-} from './schemas/workspace-layout.schema';
+} from '../logic/schemas/workspace-layout.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

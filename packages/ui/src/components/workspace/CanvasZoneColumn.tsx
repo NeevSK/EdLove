@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import type { ResolvedWorkspaceSurface, WorkspaceZoneLayoutGroup } from '@repo/core/workspace/canvas';
+import type { ResolvedWorkspaceSurface, WorkspaceZoneLayoutGroup } from '@repo/core/logic';
 import { Theme } from '../../theme/Theme';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Text } from '../../gluestack';

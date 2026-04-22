@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { type Classroom, ClassroomSchema } from '../../api/schemas/classroom.schema';
-import { type CommunityGroup, CommunityGroupSchema } from '../../api/schemas/community.schema';
+import type { FounderRepository } from '../../logic/domains/founder/ports';
+import { type Classroom, ClassroomSchema } from '../../logic/schemas/classroom.schema';
+import { type CommunityGroup, CommunityGroupSchema } from '../../logic/schemas/community.schema';
 import {
   type EcosystemPulse,
   EcosystemPulseSchema,
@@ -10,11 +11,10 @@ import {
   GlobalUserSchema,
   type SentinelAuditLog,
   SentinelAuditLogSchema,
-} from '../../api/schemas/founder.schema';
-import { SchoolSchema, type SchoolZod } from '../../api/schemas/school.schema';
-import { APIError } from '../../api/types';
-import type { FounderRepository } from '../../domains/founder/ports';
-import { supabase } from '../../lib/supabase';
+} from '../../logic/schemas/founder.schema';
+import { SchoolSchema, type SchoolZod } from '../../logic/schemas/school.schema';
+import { supabase } from '../../native/supabase';
+import { APIError } from '../../types/API';
 
 export const createSupabaseFounderRepository = (): FounderRepository => ({
   async getEcosystemStats() {

@@ -1,16 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Session } from '@supabase/supabase-js';
 import { deviceTrustAPI } from '../api/deviceTrust';
-import { identityAPI } from '../api/identity';
 import { accountPin } from '../lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
-import { supabase } from '../lib/supabase';
 import {
   clearLegacySupabaseSession,
   getStoredSessionForAccount,
   removeStoredSessionForAccount,
   setStoredSessionForAccount,
 } from '../lib/supabaseAuthStorage';
+import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
 import { rehydrateScopedStores, resetScopedStores } from '../store/resetScopedStores';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';

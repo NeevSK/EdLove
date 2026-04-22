@@ -2,12 +2,12 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Box, ScreenWrapper, Text, VStack } from '@repo/ui';
 import { usePermissions, useStore } from '@repo/core';
+import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
   useAdminWorkspaceLayout,
 } from '../admin/useAdminWorkspaceCanvas';
-import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
 import { resolveAdminWorkspaceView } from '../admin/workspace';
 
 interface AdminDashboardProps {
@@ -16,12 +16,39 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ userId }: AdminDashboardProps) {
   const navigation = useNavigation<any>();
-  const { context } = usePermissions();
+  const { context, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id ?? null);
   const resolvedUserId = userId ?? currentUserId;
-  const data = useAdminWorkspaceData();
+  const { snapshot, isLoading, error } = useAdminWorkspaceSnapshot();
+  const data = snapshot ?? {
+    schoolCount: 0,
+    userCount: 0,
+    incidentCount: 0,
+    pendingApprovalCount: 0,
+    inviteCount: 0,
+    inventoryRequestCount: 0,
+    recentIncidentSignals: [],
+    recentApprovals: [],
+    recentInventoryRequests: [],
+    recentSchools: [],
+    recentUsers: [],
+    recentInvites: [],
+    recentObservations: [],
+  };
 
   const surfaces = useAdminWorkspaceCanvasSurfaces({
+    data,
+    featureFlags: {
+      isInventoryEnabled: flags.isInventoryEnabled,
+      isStaffManagementEnabled: flags.isStaffManagementEnabled,
+      isTemplateManagementEnabled: flags.isTemplateManagementEnabled,
+      isAIAssistantEnabled: flags.isAIAssistantEnabled,
+      isDevelopingWorkspace: flags.isDevelopingWorkspace,
+      isDevelopingAI: flags.isDevelopingAI,
+      isDevelopingAnalyticsDashboard: flags.isDevelopingAnalyticsDashboard,
+      isDevelopingFormBuilder: flags.isDevelopingFormBuilder,
+      isUnderMaintenance: flags.isUnderMaintenance,
+    },
     onOpenIncidentQueue: () => navigation.navigate('AdminIncidentQueue' as never),
     onOpenTenantDetail: () => navigation.navigate('AdminTenantDetail' as never),
     onOpenAuthorityRepair: () => navigation.navigate('AdminAuthorityRepair' as never),
@@ -51,10 +78,12 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
         <Box className="border-b border-phase-canvas px-4 py-3">
           <VStack className="gap-1">
             <Text className="text-sm font-bold text-phaseText-primary">
-              {data.isLoading ? 'Loading platform signal...' : `${data.schoolCount} schools, ${data.userCount} users, ${data.pendingApprovalCount} approvals`}
+              {isLoading
+                ? 'Loading platform signal...'
+                : `${data.schoolCount} schools, ${data.userCount} users, ${data.pendingApprovalCount} approvals, ${data.incidentCount} incident signals`}
             </Text>
             <Text className="text-xs text-phaseText-secondary">
-              {data.error ? data.error : 'Global operator view for live platform stewardship.'}
+              {error ? error : 'Global operator view for live platform stewardship, dogfood maintenance, and cross-tenant repair.'}
             </Text>
           </VStack>
         </Box>
@@ -64,7 +93,15 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
           onToggleHidden={workspace.setSurfaceHidden}
           onTogglePinned={workspace.setSurfacePinned}
           onMoveToNextZone={workspace.setSurfaceZone}
-          onOpenSurface={(surface) => navigation.navigate(resolveAdminWorkspaceView(surface.capabilityKey) as never)}
+          onOpenSurface={(surface) => {
+            const view = resolveAdminWorkspaceView(surface.capabilityKey);
+            if (view === 'admin_registry') {
+              navigation.navigate('AdminFeatureRegistry' as never);
+              return;
+            }
+
+            navigation.navigate(view as never);
+          }}
         />
       </Box>
     </ScreenWrapper>

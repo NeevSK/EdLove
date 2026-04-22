@@ -1,4 +1,4 @@
-jest.mock('../../domains/teacherInsights/runtime', () => ({
+jest.mock('../native/runtimes/teacherInsights.runtime', () => ({
   teacherInsightsServices: {
     listPrivateNotes: jest.fn(),
     createPrivateNote: jest.fn(),

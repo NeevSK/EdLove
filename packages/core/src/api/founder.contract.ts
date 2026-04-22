@@ -1,15 +1,15 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
-import { ClassroomSchema } from './schemas/classroom.schema';
-import { CommunityGroupSchema } from './schemas/community.schema';
+import { ClassroomSchema } from '../logic/schemas/classroom.schema';
+import { CommunityGroupSchema } from '../logic/schemas/community.schema';
 import {
   EcosystemPulseSchema,
   EcosystemStatsSchema,
   GlobalUserSchema,
   SentinelAuditLogSchema,
-} from './schemas/founder.schema';
-import { SchoolSchema } from './schemas/school.schema';
+} from '../logic/schemas/founder.schema';
+import { SchoolSchema } from '../logic/schemas/school.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

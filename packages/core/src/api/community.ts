@@ -1,18 +1,17 @@
-import { supabase } from '../lib/supabase';
-import type { TemporalScale } from '../store/useTemporalStore';
-import { type Group, GroupMember, type Post } from '../types';
-import { applyTemporalFilter } from '../utils/temporalUtils';
-import { communityContract } from './community.contract';
-import { growthSignalsAPI } from './growthSignals';
-import { identityAPI } from './identity';
-import { impactRipplesAPI } from './impactRipples';
-import {
+﻿import {
   CommunityGroupSchema,
   CommunityPostSchema,
-  CommunityReactionSchema,
   GroupMemberSchema,
   GroupMessageSchema,
-} from './schemas/community.schema';
+} from '../logic/schemas/community.schema';
+import { applyTemporalFilter } from '../logic/utils/temporalUtils';
+import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
+import type { TemporalScale } from '../store/useTemporalStore';
+import type { Group, Post } from '../types';
+import { communityContract } from './community.contract';
+import { growthSignalsAPI } from './growthSignals';
+import { impactRipplesAPI } from './impactRipples';
 
 /**
  * Community API (POA Migrated)

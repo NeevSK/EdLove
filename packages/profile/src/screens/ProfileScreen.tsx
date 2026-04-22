@@ -12,6 +12,7 @@ import {
     useBottomTabPadding,
     DeleteAccountModal,
     LogoutModal,
+    DeviceAccountManager,
     ScreenWrapper,
     GlobalHeader,
     IdentityCard,
@@ -204,33 +205,6 @@ const AppExperienceSection = ({ t, cardWidth }: any) => {
                 />
             </VStack>
         </Center>
-    );
-};
-
-const AccountActions = ({ t, isGuest, navigation, cardWidth }: any) => {
-    if (isGuest) return null;
-
-    return (
-        <VStack space="md" style={{ width: cardWidth }}>
-            <Heading
-                className="text-phase-text-secondary text-sm mb-1 px-1"
-            >
-                {t('profile.account.actions')}
-            </Heading>
-            <Button
-                variant="outline"
-                size="lg"
-                onPress={() => {
-                    hapticLight();
-                    navigation.openAuth?.();
-                }}
-                className="border-phase-interactive rounded-2xl opacity-70"
-            >
-                <ButtonText className="text-phase-interactive">
-                    {t('profile.account.switch')}
-                </ButtonText>
-            </Button>
-        </VStack>
     );
 };
 
@@ -500,11 +474,9 @@ export const ProfileScreen = () => {
                         <Animated.View entering={FadeInDown.delay(700).duration(500)}>
                             <Center>
                                 <Box style={{ width: cardWidth }} className="mt-4">
-                                    <AccountActions
-                                        t={t}
-                                        navigation={navigation}
-                                        isGuest={profile?.is_anonymous}
-                                        cardWidth={cardWidth}
+                                    <DeviceAccountManager
+                                        title={t('profile.account.actions', 'Shared device accounts')}
+                                        subtitle={t('profile.account.shared_device_desc', 'Switch, protect, and remove accounts stored on this device without leaving this screen.')}
                                     />
                                 </Box>
                             </Center>

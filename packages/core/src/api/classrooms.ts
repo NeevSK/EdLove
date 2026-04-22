@@ -1,7 +1,7 @@
-import { educationalServices } from '../domains/educational/runtime';
+import type { Classroom, TeacherStats } from '../logic/schemas/classroom.schema';
+import { educationalServices } from '../native/runtimes/educational.runtime';
+import type { PaginationParams } from '../types';
 import { educationalContract } from './educational.contract';
-import type { Classroom, TeacherStats } from './schemas/classroom.schema';
-import type { PaginationParams } from './types';
 
 export const classroomsAPI = {
   /**

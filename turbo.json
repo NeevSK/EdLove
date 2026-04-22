@@ -19,9 +19,22 @@
         "!.next/cache/**"
       ]
     },
+    "format": {
+      "cache": true
+    },
+    "lint:biome": {
+      "cache": true
+    },
+    "lint:eslint": {
+      "dependsOn": [
+        "^lint:eslint"
+      ],
+      "cache": true
+    },
     "lint": {
       "dependsOn": [
-        "^lint"
+        "lint:biome",
+        "lint:eslint"
       ]
     },
     "check-types": {

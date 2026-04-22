@@ -1,5 +1,5 @@
-import { supabase } from '../lib/supabase';
-import { identityAPI } from './identity';
+﻿import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
 
 /**
  * Social & Safety API

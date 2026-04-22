@@ -1,5 +1,5 @@
+import type { UserContext } from '../logic/schemas/user.schema';
 import { composeUserAbilities } from './composer';
-import type { UserContext } from './schemas/user.schema';
 
 describe('POA Exhaustive Verification: Every Role, Every Power', () => {
   const baseContext: UserContext = {

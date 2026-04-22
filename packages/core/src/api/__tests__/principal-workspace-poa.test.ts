@@ -1,4 +1,4 @@
-jest.mock('../../domains/principalWorkspace/runtime', () => ({
+jest.mock('../native/runtimes/principalWorkspace.runtime', () => ({
   principalWorkspaceServices: {
     listInviteCodes: jest.fn(),
     generateInviteCode: jest.fn(),

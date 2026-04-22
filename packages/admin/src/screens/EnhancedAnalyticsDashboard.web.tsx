@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { VStack, HStack, Card, Theme, colors } from '@repo/ui';
-import { useStudentPerformance, useClassPerformance, usePredictions, PerformanceDashboard, GPAInsights } from '@repo/analytics';
+import { useClassPerformance, usePredictions, useStudentPerformance } from '@repo/analytics/hooks';
+import { GPAInsights, PerformanceDashboard } from '@repo/analytics/ui';
 
 interface EnhancedAnalyticsDashboardProps {
   schoolId?: string;

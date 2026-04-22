@@ -3,7 +3,7 @@ import { Pressable, ScrollView } from 'react-native';
 import SanctuaryCard from './SanctuaryCard';
 import { SanctuaryChip } from './SanctuaryChip';
 import { LucideIcon, History, Calendar, Clock, Sparkles, MessageSquare, Zap, Camera, TrendingUp } from 'lucide-react-native';
-import { useManualSnapshot, useTemporalHeatmap } from '@repo/core';
+import { useManualSnapshot, useTemporalHeatmap } from '@repo/core/logic';
 import { ResonantHeatmap } from './ResonantHeatmap';
 import { Box, VStack, HStack, Text } from '../gluestack';
 

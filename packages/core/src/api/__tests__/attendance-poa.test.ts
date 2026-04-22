@@ -1,4 +1,4 @@
-jest.mock('../../domains/educational/runtime', () => ({
+jest.mock('../native/runtimes/educational.runtime', () => ({
   educationalServices: {
     attendance: {
       getByDate: jest.fn(),
@@ -9,7 +9,7 @@ jest.mock('../../domains/educational/runtime', () => ({
   },
 }));
 
-jest.mock('../../domains/attendanceProjection/runtime', () => ({
+jest.mock('../native/runtimes/attendanceProjection.runtime', () => ({
   attendanceProjectionServices: {
     getSchoolAttendancePulse: jest.fn(),
     getAttendanceReport: jest.fn(),

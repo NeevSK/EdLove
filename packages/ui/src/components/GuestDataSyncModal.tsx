@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, VStack, HStack, Text, Spinner } from '../gluestack';
-import { GuestDataSync } from '@repo/core';
+import { GuestDataSync } from '@repo/core/native';
 import { Check, AlertCircle, AlertTriangle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import SanctuaryModal from './SanctuaryModal';

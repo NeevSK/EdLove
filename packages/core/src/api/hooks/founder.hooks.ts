@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
-import { api } from '../index';
 import {
   EcosystemPulseSchema,
   EcosystemStatsSchema,
   GlobalUserSchema,
   SentinelAuditLogSchema,
-} from '../schemas/founder.schema';
+} from '../../logic/schemas/founder.schema';
+import { api } from '../index';
 
 /**
  * Hook for ecosystem-wide statistics.

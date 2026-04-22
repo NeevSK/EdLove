@@ -5,6 +5,7 @@ import FounderSchoolDashboard from './FounderSchoolDashboard';
 import GradeHeadDashboard from './GradeHeadDashboard';
 import AdminDashboard from './AdminDashboard';
 import AdminDashboardWeb from './AdminDashboard.web';
+import AdminFeatureRegistry from './AdminFeatureRegistry';
 import AdminIncidentQueue from './AdminIncidentQueue';
 import AdminTenantDetail from './AdminTenantDetail';
 import AdminAuthorityRepair from './AdminAuthorityRepair';
@@ -53,6 +54,7 @@ export {
     GradeHeadDashboard,
     AdminDashboard,
     AdminDashboardWeb,
+    AdminFeatureRegistry,
     AdminIncidentQueue,
     AdminTenantDetail,
     AdminAuthorityRepair,

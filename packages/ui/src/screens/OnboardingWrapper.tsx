@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth, useStore, AuthorityTier } from '@repo/core';
+import { useAuth, useStore, AuthorityTier } from '@repo/core/logic';
 import OnboardingScreen from './OnboardingScreen';
 
 export function OnboardingWrapper() {

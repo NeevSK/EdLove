@@ -3,9 +3,9 @@
  */
 
 import type { z } from 'zod';
-import { supabase } from '../lib/supabase';
-import { PulseMetricsSchema } from './schemas/dashboard.schema';
-import { APIError } from './types';
+import { PulseMetricsSchema } from '../logic/schemas/dashboard.schema';
+import { supabase } from '../native/supabase';
+import { APIError } from '../types';
 
 type PulseMetrics = z.infer<typeof PulseMetricsSchema>;
 
@@ -46,7 +46,7 @@ export const profileAPI = {
       }
 
       return PulseMetricsSchema.parse(data) as unknown as PulseMetrics;
-    } catch (error: any) {
+    } catch (_error: any) {
       // Fallback for missing RPC during development
       return {
         resonance_score: 85,

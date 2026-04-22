@@ -1,12 +1,12 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
   GroupMessageSchema,
-} from './schemas/community.schema';
+} from '../logic/schemas/community.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 

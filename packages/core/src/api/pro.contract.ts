@@ -1,7 +1,11 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
+import {
+  ProClaimResultSchema,
+  ProGiftSchema,
+  UserEntitlementsSchema,
+} from '../logic/schemas/pro.schema';
 import { POAMetadataSchema } from './contract';
-import { ProClaimResultSchema, ProGiftSchema, UserEntitlementsSchema } from './schemas/pro.schema';
 
 const c = initContract();
 

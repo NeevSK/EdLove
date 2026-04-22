@@ -1,5 +1,5 @@
-import type { Role } from '../permissions/schemas/role.schema';
-import type { TenantKind } from '../permissions/schemas/user.schema';
+import type { Role } from '../logic/schemas/role.schema';
+import type { TenantKind } from '../logic/schemas/user.schema';
 
 export type { TenantKind };
 

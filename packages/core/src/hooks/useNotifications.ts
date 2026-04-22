@@ -7,7 +7,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../native/supabase';
 
 export interface AppNotification {
   id: string;
@@ -109,7 +109,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         },
         async (payload) => {
           const updated = payload.new as AppNotification;
-          const old = payload.old as AppNotification | undefined;
+          const _old = payload.old as AppNotification | undefined;
 
           setNotifications((prev) =>
             prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n)),

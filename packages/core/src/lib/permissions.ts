@@ -83,8 +83,8 @@ export function getAuthorityLabel(
   return labels[authority]?.[language] || authority;
 }
 
-import type { User } from '../api/schemas/user.schema';
-import type { Role } from '../permissions/schemas/role.schema';
+import type { Role } from '../logic/schemas/role.schema';
+import type { User } from '../logic/schemas/user.schema';
 
 /**
  * Extract school-specific role for a user

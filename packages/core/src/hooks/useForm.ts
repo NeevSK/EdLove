@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { FormManager, FormState } from '../forms/form-manager';
+import type { FormManager, FormState } from '../logic/forms/form-manager';
 
 /**
  * A React hook to bridge the framework-agnostic FormManager to React/React Native.

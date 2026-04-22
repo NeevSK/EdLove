@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../native/supabase';
 import { usePermissions } from '../permissions/hooks/usePermissions';
 import { useTemporalStore } from '../store/useTemporalStore';
 import { useTracking } from './useTracking';

@@ -1,5 +1,6 @@
 import { Alert, Platform } from 'react-native';
-import { useStore, api } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { api } from '@repo/core/logic';
 import { useTranslation } from 'react-i18next';
 import { hapticSuccess, hapticWarning } from '../utils/haptics';
 

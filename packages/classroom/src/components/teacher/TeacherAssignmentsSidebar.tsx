@@ -28,12 +28,12 @@ export const TeacherAssignmentsSidebar: React.FC<TeacherAssignmentsSidebarProps>
     if (assignments.length === 0) {
         return (
             <Box
-                className="rounded-[32px] border border-sanctuary-border p-6 bg-sanctuary-surface-secondary/30"
+                className="rounded-[32px] border border-phase-border/40 p-8 bg-phase-surface-secondary shadow-sm"
             >
-                <Text className="text-sm font-black text-sanctuary-text tracking-tight">
+                <Text className="text-base font-black text-phase-text-primary tracking-tight">
                     No active assignments need attention.
                 </Text>
-                <Text className="mt-2 text-xs leading-relaxed text-sanctuary-text-tertiary">
+                <Text className="mt-2 text-sm leading-relaxed text-phase-text-tertiary font-medium">
                     This sidebar stays ready for submissions and due-date pressure when the rhythm changes.
                 </Text>
             </Box>
@@ -50,25 +50,25 @@ export const TeacherAssignmentsSidebar: React.FC<TeacherAssignmentsSidebarProps>
                     <Pressable
                         key={assignment.id}
                         onPress={() => onAssignmentPress(assignment)}
-                        className="w-full rounded-[24px] border border-sanctuary-border p-5 bg-sanctuary-surface active:opacity-80"
+                        className="w-full rounded-[32px] border border-phase-border/40 p-6 bg-phase-surface shadow-sm active:scale-[0.98] transition-all"
                     >
-                        <Heading className="text-sm text-sanctuary-text font-black leading-tight tracking-tight uppercase">
+                        <Heading className="text-lg text-phase-text-primary font-black leading-tight tracking-tight">
                             {assignment.title}
                         </Heading>
  
-                        <HStack className="mt-4 items-center justify-between gap-2">
-                            <Text className="text-[10px] font-black text-sanctuary-text-tertiary tracking-[0.2em] uppercase">
+                        <HStack className="mt-5 items-center justify-between gap-3">
+                            <Text className="text-[10px] font-black text-phase-text-tertiary tracking-[0.25em] uppercase">
                                 Due {new Date(assignment.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                             </Text>
-                            <Text className="text-[10px] font-black text-sanctuarySaffron tracking-[0.1em] uppercase">
+                            <Text className="text-[10px] font-black text-sanctuarySaffron tracking-[0.15em] uppercase">
                                 {assignment.submittedCount}/{assignment.totalCount} Turned In
                             </Text>
                         </HStack>
  
                         {/* Progress Bar Container */}
-                        <Box className="mt-4 h-2 overflow-hidden rounded-full bg-sanctuary-surface-secondary border border-sanctuary-border/20">
+                        <Box className="mt-5 h-2.5 overflow-hidden rounded-full bg-phase-surface-secondary border border-phase-border/10">
                             <Box 
-                                className="h-full rounded-full bg-sanctuarySaffron" 
+                                className="h-full rounded-full bg-sanctuarySaffron shadow-sm" 
                                 style={{ width: `${ratio}%` }} 
                             />
                         </Box>

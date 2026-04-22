@@ -560,7 +560,7 @@ export default function CreateClassroomModal({
                                         </HStack>
                                     </Button>
                                     {schoolId && (
-                                        <HStack alignItems="center" className="my-8">
+                                        <HStack className="items-center my-8">
                                             <Box className="flex-1 h-[1px] bg-sanctuary-border" />
                                             <Text className="text-sanctuary-text-tertiary px-6 text-xs uppercase font-bold tracking-widest">
                                                 {t('common.or') || 'OR'}
@@ -615,7 +615,7 @@ export default function CreateClassroomModal({
                                                  <Button
                                                     key={grade.id}
                                                     variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
-                                                    size="xs"
+                                                    size="sm"
                                                     onPress={() => handleGradeChange(grade.id)}
                                                     className={`px-4 rounded-full h-10 ${state.academic.gradeId === grade.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
                                                 >

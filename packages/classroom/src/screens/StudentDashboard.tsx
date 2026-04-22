@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, SandboxBanner, Text, Theme, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors } from '@repo/ui';
+import { Box, SandboxBanner, Text, Theme, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors, Pressable, HStack } from '@repo/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -75,11 +75,11 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
   });
 
   if (!layout) {
-    return <Box sx={{ flex: 1, backgroundColor: colors.primary }} />;
+    return <Box className="flex-1 bg-phase-canvas" />;
   }
 
   return (
-    <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+    <Box className="flex-1 bg-phase-canvas">
       {isDemoExperience ? <SandboxBanner /> : null}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -112,43 +112,29 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
               if (!resolved) return null;
 
               return (
-                <Box sx={{ flexDirection: 'row', gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
-                  <TouchableOpacity
+                <HStack className="flex-wrap gap-2">
+                  <Pressable
                     onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
-                    style={{
-                      paddingHorizontal: Theme.spacing.md,
-                      paddingVertical: Theme.spacing.sm,
-                      borderRadius: Theme.corners.full,
-                      backgroundColor: 'rgba(42, 35, 24, 0.06)',
-                      borderWidth: 1,
-                      borderColor: 'rgba(42, 35, 24, 0.08)',
-                    }}
+                    className="rounded-full border border-phase-border/40 bg-phase-surface-secondary px-4 py-2"
                   >
-                    <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}>
+                    <Text className="text-xs font-semibold text-phase-text-primary">
                       {resolved.pinned ? 'Unpin' : 'Pin'}
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </Pressable>
+                  <Pressable
                     onPress={() =>
                       setSurfaceZone(
                         resolved.surfaceId,
                         resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'private' : 'work'
                       )
                     }
-                    style={{
-                      paddingHorizontal: Theme.spacing.md,
-                      paddingVertical: Theme.spacing.sm,
-                      borderRadius: Theme.corners.full,
-                      backgroundColor: 'rgba(42, 35, 24, 0.06)',
-                      borderWidth: 1,
-                      borderColor: 'rgba(42, 35, 24, 0.08)',
-                    }}
+                    className="rounded-full border border-phase-border/40 bg-phase-surface-secondary px-4 py-2"
                   >
-                    <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}>
+                    <Text className="text-xs font-semibold text-phase-text-primary">
                       Move zone
                     </Text>
-                  </TouchableOpacity>
-                </Box>
+                  </Pressable>
+                </HStack>
               );
             }}
           />

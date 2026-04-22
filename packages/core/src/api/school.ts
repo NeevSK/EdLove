@@ -2,16 +2,16 @@
 // SCHOOL API (Protocol-Oriented Authority)
 // ============================================================================
 
-import { supabase } from '../lib/supabase';
-import type { SchoolGrade as Grade, School, SchoolStats, Section } from '../types';
-import { operationsContract } from './operations.contract';
 import {
-  GradeSchema,
+  SchoolGradeSchema,
   SchoolSchema,
   SchoolStatsSchema,
   SectionSchema,
-} from './schemas/school.schema';
-import { APIError } from './types';
+} from '../logic/schemas/school.schema';
+import { supabase } from '../native/supabase';
+import type { SchoolGrade as Grade, School, SchoolStats, Section } from '../types';
+import { APIError } from '../types';
+import { operationsContract } from './operations.contract';
 
 /**
  * API methods for Managing School Institutions.
@@ -142,7 +142,7 @@ export const schoolAPI = {
       throw new APIError('Failed to fetch section grades', error.code, error);
     }
 
-    return (data || []).map((grade) => GradeSchema.parse(grade)) as unknown as Grade[];
+    return (data || []).map((grade) => SchoolGradeSchema.parse(grade)) as unknown as Grade[];
   },
 
   /**
@@ -224,7 +224,7 @@ export const schoolAPI = {
       throw new APIError('Failed to create grade', error.code, error);
     }
 
-    return GradeSchema.parse(data) as unknown as Grade;
+    return SchoolGradeSchema.parse(data) as unknown as Grade;
   },
 
   /**

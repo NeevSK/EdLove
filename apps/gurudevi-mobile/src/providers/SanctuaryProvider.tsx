@@ -16,7 +16,7 @@ import {
   useAuth,
   SyncManager
 } from '@repo/core';
-import { AnalyticsProvider } from '@repo/analytics';
+import { AnalyticsProvider } from '@repo/analytics/ui';
 import { config } from "../../gluestack-ui.config";
 import { useAssets } from './AssetProvider';
 import { DeepLinkProvider } from './DeepLinkProvider';

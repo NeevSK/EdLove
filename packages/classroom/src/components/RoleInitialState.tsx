@@ -1,5 +1,20 @@
 import React from 'react';
-import { Box, VStack, HStack, Text, Heading, Pressable, Center, Button, ButtonText } from '@repo/ui';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Pressable, 
+    Center, 
+    Button, 
+    ButtonText, 
+    Icon,
+    Theme,
+    hapticLight,
+    useThemedColors
+} from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 import {
     BookOpen,
     Plus,
@@ -15,12 +30,9 @@ import {
     Flower,
     LayoutGrid,
     Activity,
-    Search
+    Search,
+    ChevronDown
 } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
-import { hapticLight } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import { useStore } from '@repo/core';
 
 interface SampleItem {
@@ -152,20 +164,15 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
     const content = getRoleContent();
 
     return (
-        <VStack sx={{ flex: 1, padding: Theme.spacing.lg, gap: 32 }}>
-            <Center sx={{ padding: 32 }}>
+        <VStack className="flex-1 p-6 gap-8">
+            <Center className="p-8">
                 <Box
-                    sx={{
-                        padding: Theme.spacing.xl,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: colors.tertiary,
-                        marginBottom: Theme.spacing.lg
-                    }}
+                    className="p-8 rounded-full bg-phase-surface-tertiary mb-6"
                 >
-                    <content.icon size={48} color={Theme.colors.sanctuarySaffron} />
+                    <Icon as={content.icon} size="lg" className="text-sanctuarySaffron" />
                 </Box>
-                <Heading color={colors.text} sx={{ textAlign: 'center', fontSize: 24 }}>{content.title}</Heading>
-                <Text color={colors.textSecondary} sx={{ textAlign: 'center', marginTop: 8 }}>{content.description}</Text>
+                <Heading className="text-center text-2xl text-phase-text-primary">{content.title}</Heading>
+                <Text className="text-center mt-2 text-phase-text-secondary">{content.description}</Text>
             </Center>
 
             <Button
@@ -181,20 +188,17 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                         onCreatePress?.();
                     }
                 }}
-                sx={{
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    borderRadius: Theme.corners.comfortable
-                }}
+                className="bg-sanctuarySaffron rounded-xl"
             >
-                <HStack alignItems="center" justifyContent="center" sx={{ height: 48, gap: 8 }}>
-                    <Plus size={20} color="white" />
-                    <ButtonText color="white" sx={{ fontWeight: '600' }}>{content.primaryAction}</ButtonText>
+                <HStack className="h-12 items-center justify-center gap-2">
+                    <Icon as={Plus} size={20} className="text-white" />
+                    <ButtonText className="text-white font-semibold">{content.primaryAction}</ButtonText>
                 </HStack>
             </Button>
 
             {content.samples.length > 0 && (
-                <VStack sx={{ gap: 16, marginTop: 16 }}>
-                    <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>
+                <VStack className="gap-4 mt-4">
+                    <Text className="text-[10px] font-bold uppercase tracking-widest text-phase-text-secondary">
                         {t('common.guidesAndSamples') || "Guides & Samples"}
                     </Text>
                     {content.samples.map((item) => (
@@ -210,29 +214,19 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                             }}
                         >
                             <Box
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.secondary,
-                                    borderWidth: 1,
-                                    borderColor: colors.border
-                                }}
+                                className="p-4 rounded-xl bg-phase-surface-secondary border border-phase-border"
                             >
-                                <HStack alignItems="center" sx={{ gap: 16 }}>
+                                <HStack className="items-center gap-4">
                                     <Box
-                                        sx={{
-                                            padding: Theme.spacing.sm,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: colors.tertiary
-                                        }}
+                                        className="p-3 rounded-xl bg-phase-surface-tertiary"
                                     >
-                                        <item.icon size={20} color={item.color || colors.action} />
+                                        <Icon as={item.icon} size={20} className={item.color ? "" : "text-phase-text-primary"} style={item.color ? { color: item.color } : {}} />
                                     </Box>
-                                    <VStack flex={1}>
-                                        <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 14 }}>{item.title}</Text>
-                                        <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{item.subtitle}</Text>
+                                    <VStack className="flex-1">
+                                        <Text className="font-bold text-sm text-phase-text-primary">{item.title}</Text>
+                                        <Text className="text-xs text-phase-text-secondary">{item.subtitle}</Text>
                                     </VStack>
-                                    <ArrowRight size={16} color={colors.textTertiary} />
+                                    <Icon as={ArrowRight} size={16} className="text-phase-text-tertiary" />
                                 </HStack>
                             </Box>
                         </Pressable>

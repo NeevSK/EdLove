@@ -7,7 +7,7 @@ import Animated, {
     Easing
 } from 'react-native-reanimated';
 import { View } from 'react-native';
-import { Runtime } from '@repo/core';
+import { Runtime } from '@repo/core/logic';
 
 interface BreathAnimationProps {
     children: React.ReactNode;

@@ -35,7 +35,7 @@ export function StudentProgressOverview({
   isDemo = false }: StudentProgressOverviewProps) {
   const metrics = useMemo(() => {
     const totalAssignments = isDemo ? 5 : assignments.length;
-    const submittedAssignments = isDemo ? 3 : assignments.filter((assignment) => assignment.submitted).length;
+    const submittedAssignments = isDemo ? 3 : assignments.filter((assignment: any) => assignment.submitted).length;
     const completedGoals = isDemo ? 1 : goals.filter((goal) => goal.status === 'completed').length;
     const totalGoals = isDemo ? 3 : goals.length;
 
@@ -110,4 +110,3 @@ export function StudentProgressOverview({
     </VStack>
   );
 }
-

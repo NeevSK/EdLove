@@ -1,6 +1,6 @@
-import { supabase } from '../lib/supabase';
-import { identityAPI } from './identity';
-import { APIError } from './types';
+﻿import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
+import { APIError } from '../types';
 
 export interface StudentEcho {
   id: string;

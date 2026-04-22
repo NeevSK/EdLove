@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Theme } from '@repo/ui';
+import { Box, HStack, Text, colors } from '@repo/ui';
 import { SimpleBarChart, SimpleLineChart, SimplePieChart, ProgressRing } from '@repo/graphics';
 
 interface AnalyticsChartProps {
@@ -12,13 +11,13 @@ interface AnalyticsChartProps {
   maxValue?: number;
 }
 
-export function AnalyticsChart({ 
-  title, 
-  data, 
-  type = 'bar', 
+export function AnalyticsChart({
+  title,
+  data,
+  type = 'bar',
   height = 200,
   showValues = true,
-  maxValue 
+  maxValue,
 }: AnalyticsChartProps) {
   switch (type) {
     case 'bar':
@@ -30,32 +29,37 @@ export function AnalyticsChart({
           showValues={showValues}
         />
       );
-    
+
     case 'line':
       return (
         <SimpleLineChart
           title={title}
-          data={data.map(d => ({ x: d.label, y: d.value }))}
+          data={data.map((datum) => ({ x: datum.label, y: datum.value }))}
           height={height}
           color={data[0]?.color}
         />
       );
-    
+
     case 'pie':
+      return <SimplePieChart title={title} data={data} size={height} />;
+
+    case 'progress': {
+      const progressValue = data[0]?.value ?? 0;
+      const progressMax = maxValue ?? 100;
+
       return (
-        <SimplePieChart
-          title={title}
-          data={data}
-          size={height}
-        />
-      );
-    
-    case 'progress':
-      const progressValue = data[0]?.value || 0;
-      const progressMax = maxValue || 100;
-      return (
-        <View style={[styles.container, { height }]}>
-          {title && <Text style={styles.title}>{title}</Text>}
+        <Box
+          className="items-center rounded-3xl border border-black/5 bg-white/70 px-4 py-4"
+          style={{ height }}
+        >
+          {title ? (
+            <Text
+              className="mb-4 text-center text-base font-bold"
+              style={{ color: colors.text }}
+            >
+              {title}
+            </Text>
+          ) : null}
           <ProgressRing
             value={progressValue}
             max={progressMax}
@@ -63,18 +67,21 @@ export function AnalyticsChart({
             color={data[0]?.color}
             showLabel={true}
           />
-          <Text style={styles.progressLabel}>
+          <Text
+            className="mt-3 text-center text-sm"
+            style={{ color: colors.text }}
+          >
             {data[0]?.label}: {progressValue}/{progressMax}
           </Text>
-        </View>
+        </Box>
       );
-    
+    }
+
     default:
       return null;
   }
 }
 
-// Enhanced analytics chart with multiple series
 interface MultiSeriesChartProps {
   title: string;
   series: {
@@ -86,86 +93,54 @@ interface MultiSeriesChartProps {
   height?: number;
 }
 
-export function MultiSeriesChart({ 
-  title, 
-  series, 
-  type = 'line', 
-  height = 250 
+export function MultiSeriesChart({
+  title,
+  series,
+  type = 'line',
+  height = 250,
 }: MultiSeriesChartProps) {
   return (
-    <View style={[styles.container, { height }]}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.multiChartContainer}>
-        {series.map((s, index) => (
-          <View key={index} style={styles.seriesContainer}>
-            <Text style={[styles.seriesLabel, { color: s.color || Theme.colors.gurudeviBlue }]}>
-              {s.name}
+    <Box
+      className="rounded-3xl border border-black/5 bg-white/70 px-4 py-4"
+      style={{ height }}
+    >
+      {title ? (
+        <Text
+          className="mb-4 text-center text-base font-bold"
+          style={{ color: colors.text }}
+        >
+          {title}
+        </Text>
+      ) : null}
+      <HStack className="justify-around gap-3">
+        {series.map((entry, index) => (
+          <Box key={index} className="flex-1 items-center">
+            <Text
+              className="mb-2 text-center text-xs font-semibold"
+              style={{ color: entry.color || colors.gurudeviBlue }}
+            >
+              {entry.name}
             </Text>
             {type === 'line' ? (
               <SimpleLineChart
-                data={s.data}
+                data={entry.data}
                 height={height - 60}
-                color={s.color}
+                color={entry.color}
               />
             ) : (
               <SimpleBarChart
-                data={s.data.map(d => ({ label: d.x, value: d.y, color: s.color }))}
+                data={entry.data.map((datum) => ({
+                  label: datum.x,
+                  value: datum.y,
+                  color: entry.color,
+                }))}
                 height={height - 60}
                 showValues={false}
               />
             )}
-          </View>
+          </Box>
         ))}
-      </View>
-    </View>
+      </HStack>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: Theme.spacing.md,
-    backgroundColor: Theme.colors.background,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.md,
-    textAlign: 'center',
-  },
-  multiChartContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  seriesContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  seriesLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: Theme.spacing.sm,
-    textAlign: 'center',
-  },
-  progressLabel: {
-    fontSize: 14,
-    color: Theme.colors.text,
-    textAlign: 'center',
-    marginTop: Theme.spacing.sm,
-    flex: 1,
-  },
-  pieSlice: {
-    alignItems: 'center',
-    margin: Theme.spacing.xs,
-  },
-  pieSegment: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginBottom: Theme.spacing.xs,
-  },
-  pieLabel: {
-    fontSize: 10,
-    color: Theme.colors.textSecondary,
-  },
-});

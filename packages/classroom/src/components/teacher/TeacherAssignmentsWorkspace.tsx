@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     Box,
-    Button,
-    ButtonText,
     HStack,
     Heading,
     Input,
     InputField,
+    Pressable,
     Spinner,
     Text,
     VStack,
@@ -82,32 +81,31 @@ export default function TeacherAssignmentsWorkspace({
         <Box className="flex-1">
             <VStack className="gap-8 p-6">
                 <Box
-                    className="bg-sanctuary-surface-secondary/40 rounded-[32px] border border-sanctuary-border p-8"
+                    className="bg-phase-surface-secondary rounded-[32px] border border-phase-border/40 p-8 shadow-sm"
                 >
                     <VStack className="gap-8">
                         <HStack className="items-start justify-between gap-6 flex-wrap">
                             <VStack className="flex-1 min-w-[240px] gap-3">
-                                <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
+                                <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[0.3em]">
                                     Assignment Workspace
                                 </Text>
-                                <Heading className="text-3xl text-sanctuary-text font-black tracking-[1.1] leading-tight">
+                                <Heading className="text-4xl text-phase-text-primary font-black tracking-tight leading-tight">
                                     Keep assignment momentum visible
                                 </Heading>
-                                <Text className="text-sanctuary-text text-sm leading-relaxed font-medium opacity-70 max-w-xl">
+                                <Text className="text-phase-text-secondary text-base leading-relaxed font-medium mt-2">
                                     See what is active, what is upcoming, and add top-level classroom work without disappearing into lesson structure.
                                 </Text>
                             </VStack>
                             {canManage && (
-                                <Button
-                                    action="primary"
+                                <Pressable
                                     onPress={() => { hapticLight(); setShowCreateModal(true); }}
-                                    className="bg-sanctuarySaffron rounded-full px-7 h-12 shadow-sm active:opacity-85"
+                                    className="bg-sanctuarySaffron px-8 py-3.5 rounded-full shadow-lg shadow-sanctuarySaffron/20 active:scale-95 transition-all"
                                 >
                                     <HStack className="items-center gap-2.5">
-                                        <Icon as={Plus} size="sm" className="text-sacredWhite" />
-                                        <ButtonText className="text-sacredWhite font-black uppercase text-xs tracking-[0.1em]">Create</ButtonText>
+                                        <Icon as={Plus} size="sm" className="text-sanctuary-ink" />
+                                        <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-widest">Create</Text>
                                     </HStack>
-                                </Button>
+                                </Pressable>
                             )}
                         </HStack>
                         <HStack className="gap-4 flex-wrap">
@@ -117,12 +115,12 @@ export default function TeacherAssignmentsWorkspace({
                                 value={String(assignments.length)}
                             />
                             <SummaryPill
-                                icon={<Icon as={Clock3} size="sm" className="text-sanctuary-info" />}
+                                icon={<Icon as={Clock3} size="sm" className="text-gurudeviBlue" />}
                                 label="Upcoming"
                                 value={String(upcomingCount)}
                             />
                             <SummaryPill
-                                icon={<Icon as={Sparkles} size="sm" className="text-sanctuary-success" />}
+                                icon={<Icon as={Sparkles} size="sm" className="text-sageGreen" />}
                                 label="State"
                                 value={assignments.length > 0 ? 'Live' : 'Quiet'}
                             />
@@ -136,46 +134,50 @@ export default function TeacherAssignmentsWorkspace({
                     </Box>
                 ) : assignments.length === 0 ? (
                     <Box
-                        className="bg-sanctuary-surface-secondary/20 rounded-[32px] border border-sanctuary-border p-12 items-center gap-4"
+                        className="bg-phase-surface-secondary/40 rounded-[32px] border border-phase-border/40 p-12 items-center gap-6"
                     >
-                        <Box className="w-16 h-16 bg-sanctuary-surface rounded-[24px] items-center justify-center border border-sanctuary-border">
-                            <Icon as={ClipboardList} size="md" className="text-sanctuary-text-tertiary" />
+                        <Box className="w-20 h-20 bg-phase-surface rounded-full items-center justify-center border border-phase-border shadow-sm">
+                            <Icon as={ClipboardList} size="md" className="text-phase-text-tertiary" />
                         </Box>
-                        <Heading className="text-lg text-sanctuary-text font-black tracking-tight uppercase">
-                            No assignments yet
-                        </Heading>
-                        <Text className="text-sanctuary-text-tertiary text-center text-sm leading-relaxed max-w-xs">
-                            Create a classroom assignment here, or add one from a monthly lesson lane when the work belongs to a specific module.
-                        </Text>
+                        <VStack className="items-center gap-2">
+                            <Heading className="text-xl text-phase-text-primary font-black tracking-tight uppercase">
+                                No assignments yet
+                            </Heading>
+                            <Text className="text-phase-text-secondary text-center text-sm leading-relaxed max-w-xs font-medium">
+                                Create a classroom assignment here, or add one from a monthly lesson lane.
+                            </Text>
+                        </VStack>
                     </Box>
                 ) : (
                     assignments.map((assignment) => (
                         <Box
                             key={assignment.id}
-                            className="bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-7 border-l-[6px] border-l-sanctuarySaffron shadow-sm"
+                            className="bg-phase-surface-secondary rounded-[32px] border border-phase-border/40 p-8 border-l-[8px] border-l-sanctuarySaffron shadow-sm"
                         >
                             <VStack className="gap-4">
-                                <HStack className="items-center justify-between gap-6 flex-wrap">
-                                    <Heading className="text-lg text-sanctuary-text font-black tracking-tight flex-1 uppercase">
+                                <HStack className="items-start justify-between gap-6 flex-wrap">
+                                    <Heading className="text-2xl text-phase-text-primary font-black tracking-tight flex-1">
                                         {assignment.title}
                                     </Heading>
-                                    <HStack className="items-center gap-2 bg-sanctuary-surface-secondary border border-sanctuary-border px-3.5 py-1.5 rounded-full">
-                                        <Icon as={CalendarDays} size="xs" className="text-sanctuary-info" />
-                                        <Text className="text-sanctuary-text-tertiary text-[10px] tracking-[0.1em] uppercase font-black">
-                                            {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
-                                        </Text>
-                                    </HStack>
+                                    <Box className="bg-phase-surface border border-phase-border/40 px-4 py-2 rounded-full shadow-sm">
+                                        <HStack className="items-center gap-2">
+                                            <Icon as={CalendarDays} size="xs" className="text-gurudeviBlue" />
+                                            <Text className="text-phase-text-primary text-[10px] tracking-widest uppercase font-black">
+                                                {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}
+                                            </Text>
+                                        </HStack>
+                                    </Box>
                                 </HStack>
                                 {!!assignment.description && (
-                                    <Text className="text-sanctuary-text text-sm font-medium leading-relaxed opacity-70">
+                                    <Text className="text-phase-text-secondary text-base font-medium leading-relaxed mt-1">
                                         {assignment.description}
                                     </Text>
                                 )}
-                                <HStack className="items-center justify-between mt-2 pt-4 border-t border-sanctuary-border">
-                                    <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.2em]">
+                                <HStack className="items-center justify-between mt-4 pt-5 border-t border-phase-border/20">
+                                    <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-widest">
                                         Max points: {assignment.max_points ?? 100}
                                     </Text>
-                                    <Box className="bg-sanctuarySaffron/10 px-2 py-0.5 rounded-md">
+                                    <Box className="bg-sanctuarySaffron/10 px-3 py-1 rounded-full border border-sanctuarySaffron/20">
                                         <Text className="text-sanctuarySaffron font-black text-[9px] uppercase tracking-widest italic">
                                             Classroom Level
                                         </Text>
@@ -188,68 +190,70 @@ export default function TeacherAssignmentsWorkspace({
             </VStack>
 
             <SanctuaryModal
-                visible={showCreateModal}
+                isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
                 title="Create assignment"
             >
-                <VStack className="gap-6 p-1">
+                <VStack className="gap-6 mt-4">
                     <VStack className="gap-2">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">Title</Text>
-                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border rounded-2xl h-14">
-                            <InputField 
-                                placeholder="Assignment title" 
-                                value={title} 
-                                onChangeText={setTitle} 
-                                className="text-sanctuary-text text-sm font-bold" 
-                                placeholderTextColor="#94a3b8"
-                            />
-                        </Input>
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">Title</Text>
+                        <Box className="bg-phase-surface-secondary rounded-[16px] p-1 border border-phase-border/40">
+                            <Input className="border-0">
+                                <InputField 
+                                    placeholder="Assignment title" 
+                                    value={title} 
+                                    onChangeText={setTitle} 
+                                    className="text-phase-text-primary h-12 font-bold" 
+                                />
+                            </Input>
+                        </Box>
                     </VStack>
                     
                     <VStack className="gap-2">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">Description</Text>
-                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border rounded-2xl min-h-[120px] p-4">
-                            <InputField
-                                placeholder="What should students complete?"
-                                value={description}
-                                onChangeText={setDescription}
-                                className="text-sanctuary-text text-sm font-medium"
-                                multiline
-                                placeholderTextColor="#94a3b8"
-                            />
-                        </Input>
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">Description</Text>
+                        <Box className="bg-phase-surface-secondary rounded-[16px] p-1 border border-phase-border/40">
+                            <Input className="border-0 min-h-[120px]">
+                                <InputField
+                                    placeholder="What should students complete?"
+                                    value={description}
+                                    onChangeText={setDescription}
+                                    className="text-phase-text-primary p-3 font-medium"
+                                    multiline
+                                />
+                            </Input>
+                        </Box>
                     </VStack>
  
                     <VStack className="gap-2">
-                        <Text className="text-[10px] font-black uppercase text-sanctuary-text-tertiary ml-1 tracking-[0.2em]">Due Date</Text>
-                        <Input className="bg-sanctuary-surface-secondary border-sanctuary-border rounded-2xl h-14">
-                            <InputField
-                                placeholder="YYYY-MM-DD"
-                                value={dueDate}
-                                onChangeText={setDueDate}
-                                className="text-sanctuary-text text-sm font-bold"
-                                placeholderTextColor="#94a3b8"
-                            />
-                        </Input>
+                        <Text className="text-[10px] font-black uppercase text-phase-text-tertiary ml-1 tracking-widest">Due Date</Text>
+                        <Box className="bg-phase-surface-secondary rounded-[16px] p-1 border border-phase-border/40">
+                            <Input className="border-0">
+                                <InputField
+                                    placeholder="YYYY-MM-DD"
+                                    value={dueDate}
+                                    onChangeText={setDueDate}
+                                    className="text-phase-text-primary h-12 font-bold"
+                                />
+                            </Input>
+                        </Box>
                     </VStack>
  
-                    <HStack className="gap-4 mt-6">
-                        <Button 
-                            variant="outline" 
-                            action="secondary" 
-                            onPress={() => setShowCreateModal(false)} 
-                            className="flex-1 rounded-full h-14 border-sanctuary-border active:bg-sanctuary-surface-secondary"
+                    <HStack className="gap-4 justify-end mt-4">
+                        <Pressable 
+                            onPress={() => setShowCreateModal(false)}
+                            className="px-6 py-3 rounded-full border border-phase-border/40 active:bg-phase-surface transition-all"
                         >
-                            <ButtonText className="text-sanctuary-text font-black uppercase text-xs tracking-widest">Cancel</ButtonText>
-                        </Button>
-                        <Button
-                            action="primary"
+                            <Text className="text-xs font-black text-phase-text-tertiary uppercase tracking-wider">Cancel</Text>
+                        </Pressable>
+                        <Pressable 
                             onPress={() => { hapticLight(); handleCreate(); }}
-                            isDisabled={!title.trim() || isSaving}
-                            className="flex-1 bg-sanctuarySaffron rounded-full h-14 shadow-md"
+                            disabled={!title.trim() || isSaving}
+                            className={`px-8 py-3 rounded-full shadow-lg transition-all ${
+                                !title.trim() || isSaving ? "bg-phase-border/40" : "bg-sanctuarySaffron shadow-sanctuarySaffron/20"
+                            }`}
                         >
-                            {isSaving ? <Spinner className="text-sacredWhite" /> : <ButtonText className="text-sacredWhite font-black uppercase text-xs tracking-widest">Create</ButtonText>}
-                        </Button>
+                            {isSaving ? <Spinner color="#111827" /> : <Text className="text-xs font-black text-sanctuary-ink uppercase tracking-wider">Create</Text>}
+                        </Pressable>
                     </HStack>
                 </VStack>
             </SanctuaryModal>
@@ -268,18 +272,18 @@ function SummaryPill({
 }) {
     return (
         <Box
-            className="flex-1 bg-sanctuary-surface border border-sanctuary-border rounded-[24px] p-6"
+            className="flex-1 min-w-[100px] bg-phase-surface border border-phase-border/40 rounded-[24px] p-6 shadow-sm"
         >
             <VStack className="gap-3">
                 <HStack className="items-center gap-2">
-                    <Box className="w-8 h-8 rounded-lg bg-sanctuary-surface-secondary items-center justify-center border border-sanctuary-border/50">
+                    <Box className="w-10 h-10 rounded-xl bg-phase-surface-secondary items-center justify-center border border-phase-border/20">
                         {icon}
                     </Box>
-                    <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
+                    <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[0.25em]">
                         {label}
                     </Text>
                 </HStack>
-                <Text className="text-sanctuary-text font-black text-2xl tracking-tighter">
+                <Text className="text-phase-text-primary font-black text-3xl tracking-tighter">
                     {value}
                 </Text>
             </VStack>

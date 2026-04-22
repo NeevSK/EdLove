@@ -1,9 +1,9 @@
-import { classroomNotesServices } from '../domains/classroomNotes/runtime';
+﻿import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
+import { identityAPI } from '../native/identity';
+import { classroomNotesServices } from '../native/runtimes/classroomNotes.runtime';
+import { APIError } from '../types';
 import type { ClassroomNote } from '../types/ClassroomNote';
 import { classroomNotesContract } from './classroomNotes.contract';
-import { identityAPI } from './identity';
-import type { ClassroomNoteLifecycleEvent } from './schemas/classroom-note.schema';
-import { APIError } from './types';
 
 export type { ClassroomNote };
 

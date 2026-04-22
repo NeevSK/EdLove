@@ -37,6 +37,7 @@ import {
     hapticLight,
     FlatList,
     KeyboardAvoidingView,
+    Icon,
 } from '@repo/ui';
 import {
     NotebookPen,
@@ -262,39 +263,39 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                     <HStack className="justify-between items-start">
                         <HStack className="gap-1.5 items-center flex-1">
                             <NoteIcon size={14} color={meta.color} />
-                            <Text
-                                className="text-[10px] font-bold uppercase tracking-wider"
-                                style={{ color: meta.color }}
-                            >
-                                {meta.label}
-                            </Text>
-                             {isClassVisible && <Globe size={12} className="text-sanctuary-text-tertiary" />}
-                            {!isClassVisible && <Lock size={12} className="text-sanctuary-text-tertiary" />}
-                        </HStack>
+                                <Text
+                                    className="text-[10px] font-bold uppercase tracking-wider"
+                                    style={{ color: meta.color }}
+                                >
+                                    {meta.label}
+                                </Text>
+                                {isClassVisible && <Icon as={Globe} size={12} className="text-sanctuary-text-tertiary" />}
+                                {!isClassVisible && <Icon as={Lock} size={12} className="text-sanctuary-text-tertiary" />}
+                            </HStack>
 
                         <HStack className="gap-2.5 items-center">
                             <Text className="text-[11px] text-sanctuary-text-tertiary">{time}</Text>
                             {isTeacher && (
                                 <HStack className="gap-2">
                                     <Pressable onPress={() => handleTogglePin(note)} hitSlop={8}>
-                                        <Pin
+                                        <Icon
+                                            as={Pin}
                                             size={14}
-                                            color={note.is_pinned ? '#F6BF8C' : undefined}
                                             className={note.is_pinned ? 'text-sanctuarySaffron' : 'text-typography-400'}
                                             fill={note.is_pinned ? '#F6BF8C' : 'transparent'}
                                         />
                                     </Pressable>
                                     <Pressable onPress={() => handleToggleVisibility(note)} hitSlop={8}>
                                         {isClassVisible ? (
-                                            <Globe size={14} className="text-primary-500" />
+                                            <Icon as={Globe} size={14} className="text-primary-500" />
                                         ) : (
-                                            <Lock size={14} className="text-typography-400" />
+                                            <Icon as={Lock} size={14} className="text-typography-400" />
                                         )}
                                     </Pressable>
                                 </HStack>
                             )}
                             <Pressable onPress={() => handleDelete(note.id)} hitSlop={8}>
-                                <X size={14} className="text-typography-400" />
+                                <Icon as={X} size={14} className="text-typography-400" />
                             </Pressable>
                         </HStack>
                     </HStack>
@@ -390,14 +391,14 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                 >
                                     <HStack className="gap-1.5 items-center">
                                         {draftVisibility === 'class' ? (
-                                            <Globe size={14} className="text-primary-500" />
+                                            <Icon as={Globe} size={14} className="text-primary-500" />
                                         ) : (
-                                            <Lock size={14} className="text-typography-400" />
+                                            <Icon as={Lock} size={14} className="text-typography-400" />
                                         )}
                                         <Text className={`text-xs ${draftVisibility === 'class' ? 'text-primary-500' : 'text-typography-400'}`}>
                                             {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
                                         </Text>
-                                        <ChevronDown size={12} className="text-typography-400" />
+                                        <Icon as={ChevronDown} size={12} className="text-typography-400" />
                                     </HStack>
                                 </Pressable>
                             )}
@@ -467,7 +468,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                             onPress={() => { hapticLight(); setComposing(true); }}
                             className="w-13 h-13 rounded-full bg-sanctuarySaffron items-center justify-center shadow-md"
                         >
-                            <NotebookPen size={20} className="text-white" />
+                            <Icon as={NotebookPen} size={20} className="text-white" />
                         </Pressable>
                     </Box>
                 )}

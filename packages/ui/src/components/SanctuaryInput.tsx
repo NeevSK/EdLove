@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertCircle } from 'lucide-react-native';
 import {
     FormControl,
     FormControlLabel,
@@ -12,8 +13,8 @@ import {
     InputIcon,
     HStack,
     Text,
-} from '../gluestack';
-import { AlertCircle } from 'lucide-react-native';
+} from './ui';
+import { Theme } from '../theme/Theme';
 
 interface SanctuaryInputProps {
     label?: string;
@@ -92,7 +93,7 @@ export default function SanctuaryInput({
 
                 <InputField
                     placeholder={placeholder}
-                    placeholderTextColor="#6B6480"
+                    placeholderTextColor={Theme.colors.shadowViolet}
                     value={value}
                     onChangeText={onChangeText}
                     autoFocus={autoFocus}

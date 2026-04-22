@@ -1,4 +1,4 @@
-/**
+﻿/**
  * User Growth State API \u2014 All nature path stage management.
  *
  * Manages the `user_growth_state` table which tracks each user's position across
@@ -18,12 +18,12 @@
  *   - Show only the living lotus visual \u2014 the stage name lives in the database, the lotus speaks for itself.
  */
 
-import { supabase } from '../lib/supabase';
+import { getTemporalRange } from '../logic/utils/temporalUtils';
+import { identityAPI } from '../native/identity';
+import { supabase } from '../native/supabase';
 import { composeUserAbilities } from '../permissions/composer';
-import { getTemporalRange } from '../utils/temporalUtils';
-import { identityAPI } from './identity';
+import { APIError } from '../types';
 import type { BanyanStage, CrystalTier, RiverStage } from './naturePaths';
-import { APIError } from './types';
 
 export type BhumiStage = 'bijam' | 'mula' | 'nala' | 'patra' | 'kamala' | 'purna_kamala';
 

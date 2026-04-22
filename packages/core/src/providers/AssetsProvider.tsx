@@ -1,6 +1,6 @@
 import type React from 'react';
-import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import { LanguageUtils } from '../utils/LanguageUtils';
+import { type ReactNode, useEffect, useState } from 'react';
+import { LanguageUtils } from '../logic/utils/LanguageUtils';
 
 /**
  * AssetsProvider: Handles initialization of static assets,

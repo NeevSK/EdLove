@@ -1,4 +1,4 @@
-import type { ValidationResult } from '../utils/validators';
+import type { ValidationResult } from '../logic/utils/validators';
 
 export type FieldType = 'text' | 'email' | 'password' | 'select' | 'textarea' | 'number';
 

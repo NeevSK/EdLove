@@ -1,7 +1,7 @@
 import { requireTeacherAccess } from '../lib/authorization';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../native/supabase';
+import { APIError, type Task, type TeacherNote } from '../types';
 import { teacherInsightsAPI } from './teacherInsights';
-import { APIError, type Task, type TeacherNote } from './types';
 
 // ============================================================================
 // TASKS API

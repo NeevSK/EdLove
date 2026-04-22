@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable } from 'react-native';
 import { ChevronLeft, ChevronRight, Calendar, RotateCcw } from 'lucide-react-native';
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { Box, Text, HStack } from '../gluestack';
 

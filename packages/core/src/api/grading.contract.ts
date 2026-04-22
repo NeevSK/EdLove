@@ -1,14 +1,14 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
 import {
   ClassroomGradingSettingsSchema,
   GradebookSnapshotSchema,
-  GradeSchema,
   PublishedSchoolGradingCompletionSchema,
   PublishedStudentGradesSnapshotSchema,
   SchoolGradingCompletionSchema,
-} from './schemas/grading.schema';
+  StudentGradeSchema,
+} from '../logic/schemas/grading.schema';
+import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
@@ -17,7 +17,7 @@ export const gradingContract = c.router({
     method: 'GET',
     path: '/grades/report-card',
     responses: {
-      200: z.array(GradeSchema),
+      200: z.array(StudentGradeSchema),
     },
     query: z.object({
       studentId: z.string().uuid(),
@@ -34,7 +34,7 @@ export const gradingContract = c.router({
     method: 'GET',
     path: '/grades/classroom',
     responses: {
-      200: z.array(GradeSchema),
+      200: z.array(StudentGradeSchema),
     },
     query: z.object({
       classroomId: z.string().uuid(),
@@ -69,7 +69,7 @@ export const gradingContract = c.router({
     method: 'GET',
     path: '/grades/student/timeline',
     responses: {
-      200: z.array(GradeSchema),
+      200: z.array(StudentGradeSchema),
     },
     query: z.object({
       studentId: z.string().uuid(),
@@ -151,7 +151,7 @@ export const gradingContract = c.router({
       feedback: z.string().optional(),
     }),
     responses: {
-      201: GradeSchema,
+      201: StudentGradeSchema,
     },
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -172,7 +172,7 @@ export const gradingContract = c.router({
       feedback: z.string().optional(),
     }),
     responses: {
-      201: GradeSchema,
+      201: StudentGradeSchema,
     },
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -187,7 +187,7 @@ export const gradingContract = c.router({
     path: '/grades/:id/publish',
     body: z.object({}),
     responses: {
-      200: GradeSchema,
+      200: StudentGradeSchema,
     },
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -205,7 +205,7 @@ export const gradingContract = c.router({
       feedback: z.string().optional(),
     }),
     responses: {
-      200: GradeSchema,
+      200: StudentGradeSchema,
     },
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -223,7 +223,7 @@ export const gradingContract = c.router({
       feedback: z.string().optional(),
     }),
     responses: {
-      200: GradeSchema,
+      200: StudentGradeSchema,
     },
     metadata: POAMetadataSchema.parse({
       authority: {

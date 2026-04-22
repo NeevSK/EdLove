@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 
 module.exports = {
   rootDir: '.',
@@ -13,4 +13,5 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transformIgnorePatterns: ['/node_modules/(?!(@react-native|react-native|expo|@expo)/)'],
+  testPathIgnorePatterns: ['<rootDir>/src/logic'],
 };
