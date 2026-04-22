@@ -1,7 +1,7 @@
-import React from 'react';
+import type React from 'react';
+import type { Actions, Subjects } from '../abilities/base';
+import type { FeatureFlags } from '../feature-engine';
 import { usePermissions } from '../hooks/usePermissions';
-import { Actions, Subjects } from '../abilities/base';
-import { FeatureFlags } from '../feature-engine';
 
 interface FeatureGuardProps {
   action?: Actions;

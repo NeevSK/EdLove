@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-export const PaymentStatusSchema = z.enum(['pending', 'processing', 'succeeded', 'failed', 'refunded']);
+export const PaymentStatusSchema = z.enum([
+  'pending',
+  'processing',
+  'succeeded',
+  'failed',
+  'refunded',
+]);
 
 export const PaymentIntentSchema = z.object({
   id: z.string(),
@@ -19,11 +25,13 @@ export const InvoiceSchema = z.object({
   currency: z.string(),
   status: z.enum(['draft', 'open', 'paid', 'uncollectible', 'void']),
   dueDate: z.string(),
-  items: z.array(z.object({
-    description: z.string(),
-    amount: z.number(),
-    quantity: z.number(),
-  })),
+  items: z.array(
+    z.object({
+      description: z.string(),
+      amount: z.number(),
+      quantity: z.number(),
+    }),
+  ),
   metadata: z.record(z.string(), z.any()).optional(),
 });
 

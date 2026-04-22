@@ -11,16 +11,15 @@
  * ad-hoc in screens.
  */
 
+import type { QRAction, QRPayload } from '../types/QRPayload';
 import { QR_VERSION } from '../types/QRPayload';
-import type { QRPayload, QRAction } from '../types/QRPayload';
 
 export type QRResolveResult =
   | { ok: true; payload: QRPayload }
   | { ok: false; error: 'invalid' | 'version_mismatch' | 'unknown_action'; raw: string };
 
 /** UUID v4 pattern for legacy bare-UUID identity card QRs */
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Parse any scanned QR string into a typed QRPayload.
@@ -56,7 +55,10 @@ export function resolveQR(raw: string): QRResolveResult {
   }
 
   // ── Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr ─────────
-  if (trimmed.startsWith('gurudevi://qr') || trimmed.startsWith('https://platform.gurudevi.edlove.org/qr')) {
+  if (
+    trimmed.startsWith('gurudevi://qr') ||
+    trimmed.startsWith('https://platform.gurudevi.edlove.org/qr')
+  ) {
     try {
       const queryStart = trimmed.indexOf('?');
       if (queryStart === -1) return { ok: false, error: 'invalid', raw };
@@ -125,8 +127,12 @@ function buildPayloadFromParams(
     case 'claim_invite': {
       const { invite_code, school_id, role, authority } = params;
       const finalAuthority = authority || role;
-      if (!invite_code || !school_id || !finalAuthority) return { ok: false, error: 'invalid', raw };
-      return { ok: true, payload: { v: 1, action, invite_code, school_id, authority: finalAuthority } };
+      if (!invite_code || !school_id || !finalAuthority)
+        return { ok: false, error: 'invalid', raw };
+      return {
+        ok: true,
+        payload: { v: 1, action, invite_code, school_id, authority: finalAuthority },
+      };
     }
 
     case 'user_invite': {

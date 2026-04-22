@@ -1,17 +1,18 @@
-import { supabase } from '../../lib/supabase';
-import { APIError } from '../../api/types';
-import type { WorkspaceLayoutRepository } from '../../domains/workspaceLayout/ports';
 import {
-  WorkspaceLayoutDeleteSchema,
-  WorkspaceLayoutRecordSchema,
-  WorkspaceLayoutUpsertSchema,
   type WorkspaceLayoutDelete,
+  WorkspaceLayoutDeleteSchema,
   type WorkspaceLayoutRecord,
+  WorkspaceLayoutRecordSchema,
   type WorkspaceLayoutTarget,
   type WorkspaceLayoutUpsert,
+  WorkspaceLayoutUpsertSchema,
 } from '../../api/schemas/workspace-layout.schema';
+import { APIError } from '../../api/types';
+import type { WorkspaceLayoutRepository } from '../../domains/workspaceLayout/ports';
+import { supabase } from '../../lib/supabase';
 
-const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLayoutRecord => WorkspaceLayoutRecordSchema.parse({
+const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLayoutRecord =>
+  WorkspaceLayoutRecordSchema.parse({
     id: row.id,
     user_id: row.user_id,
     workspace_id: row.workspace_id,
@@ -57,7 +58,7 @@ export const createSupabaseWorkspaceLayoutRepository = (): WorkspaceLayoutReposi
           layout_version: payload.layoutVersion,
           updated_at: payload.updatedAt,
         },
-        { onConflict: 'user_id,workspace_id,layout_target' }
+        { onConflict: 'user_id,workspace_id,layout_target' },
       )
       .select('*')
       .single();

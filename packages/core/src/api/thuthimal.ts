@@ -9,8 +9,8 @@
  */
 
 import { supabase } from '../lib/supabase';
+import type { ThuthimalGift } from '../types';
 import { growthSignalsAPI } from './growthSignals';
-import { ThuthimalGift } from '../types';
 
 export interface CreateGiftInput {
   gifterName: string;
@@ -35,7 +35,9 @@ export const thuthimalAPI = {
    * Called by the gifter after completing payment (Alpha: manual; Beta: post-Stripe webhook).
    * Returns the generated gift_token UUID for encoding in a QR code.
    */
-  async createGift(input: CreateGiftInput & { gifter_id: string }): Promise<{ gift_token: string }> {
+  async createGift(
+    input: CreateGiftInput & { gifter_id: string },
+  ): Promise<{ gift_token: string }> {
     const { gifter_id: gifterId } = input;
     const { data, error } = await supabase
       .from('thuthimal_gifts')
@@ -58,7 +60,7 @@ export const thuthimalAPI = {
    * Claim a gift token on behalf of the recipient.
    * Uses server-side RPC with row-lock to prevent double-claim.
    */
-  async claimGift(input: { gift_token: string, recipient_id: string }): Promise<ClaimResult> {
+  async claimGift(input: { gift_token: string; recipient_id: string }): Promise<ClaimResult> {
     const { gift_token: giftToken, recipient_id: recipientId } = input;
     const { data, error } = await supabase.rpc('claim_thuthimal_gift', {
       p_token: giftToken,
@@ -73,13 +75,15 @@ export const thuthimalAPI = {
     // a past student honoring their teacher years later.
     // This can advance the teacher to P\u016Br\u1E47a Kamala (Full Lotus).
     if (result.success) {
-      void growthSignalsAPI.emitSignal({
-        user_id: recipientId,
-        event_type: 'thuthimal_received',
-        event_metadata: {
-          gifter_name: result.gifter_name,
-        }
-      }).catch(() => { });
+      void growthSignalsAPI
+        .emitSignal({
+          user_id: recipientId,
+          event_type: 'thuthimal_received',
+          event_metadata: {
+            gifter_name: result.gifter_name,
+          },
+        })
+        .catch(() => {});
     }
 
     return result;
@@ -103,7 +107,9 @@ export const thuthimalAPI = {
    * Preview an unclaimed gift token (for display before claiming).
    * Returns null if token is already claimed or expired.
    */
-  async previewGift(giftToken: string): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
+  async previewGift(
+    giftToken: string,
+  ): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
     const { data, error } = await supabase
       .from('thuthimal_gifts')
       .select('gifter_name, recipient_tier')

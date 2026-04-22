@@ -9,7 +9,7 @@ export interface WorkspaceLayoutServices {
   getLayout(
     userId: string,
     workspaceId: string,
-    layoutTarget: WorkspaceLayoutRecord['layout_target']
+    layoutTarget: WorkspaceLayoutRecord['layout_target'],
   ): Promise<WorkspaceLayoutRecord | null>;
   upsertLayout(input: WorkspaceLayoutUpsert): Promise<WorkspaceLayoutRecord>;
   deleteLayout(input: WorkspaceLayoutDelete): Promise<{ success: true }>;
@@ -18,7 +18,8 @@ export interface WorkspaceLayoutServices {
 export const createWorkspaceLayoutServices = (
   repository: WorkspaceLayoutRepository,
 ): WorkspaceLayoutServices => ({
-  getLayout: (userId, workspaceId, layoutTarget) => repository.getLayout(userId, workspaceId, layoutTarget),
+  getLayout: (userId, workspaceId, layoutTarget) =>
+    repository.getLayout(userId, workspaceId, layoutTarget),
   upsertLayout: (input) => repository.upsertLayout(input),
   deleteLayout: (input) => repository.deleteLayout(input),
 });

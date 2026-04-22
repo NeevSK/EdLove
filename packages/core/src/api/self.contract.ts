@@ -1,7 +1,11 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { MoodLogSchema, FireJournalEntrySchema, UserPreferencesSchema } from './schemas/self.schema';
 import { POAMetadataSchema } from './contract';
+import {
+  FireJournalEntrySchema,
+  MoodLogSchema,
+  UserPreferencesSchema,
+} from './schemas/self.schema';
 
 const c = initContract();
 

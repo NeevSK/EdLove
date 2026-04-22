@@ -1,5 +1,6 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { Session } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
+import type React from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 import { useAuthorityLifecycle } from '../hooks/useAuthorityLifecycle';
 
 interface AuthContextType {

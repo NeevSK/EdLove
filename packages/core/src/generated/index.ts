@@ -20,13 +20,16 @@ export const ZModelSchemas = {
   StudentProfile: factory.makeModelSchema('StudentProfile'),
   TeacherProfile: factory.makeModelSchema('TeacherProfile'),
   Section: factory.makeModelSchema('Section'),
-  GradeLevel: factory.makeModelSchema('GradeLevel')};
+  GradeLevel: factory.makeModelSchema('GradeLevel'),
+};
 
 // --- CRUD Options ---
 export const ZCreateSchemas = {
-    User: factory.makeModelCreateSchema('User'),
-    Classroom: factory.makeModelCreateSchema('Classroom')};
+  User: factory.makeModelCreateSchema('User'),
+  Classroom: factory.makeModelCreateSchema('Classroom'),
+};
 
 export const ZUpdateSchemas = {
-    User: factory.makeModelUpdateSchema('User'),
-    Classroom: factory.makeModelUpdateSchema('Classroom')};
+  User: factory.makeModelUpdateSchema('User'),
+  Classroom: factory.makeModelUpdateSchema('Classroom'),
+};

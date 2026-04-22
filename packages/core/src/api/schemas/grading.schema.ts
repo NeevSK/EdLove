@@ -70,7 +70,9 @@ export type Assessment = z.infer<typeof AssessmentSchema>;
 export type GradebookSnapshot = z.infer<typeof GradebookSnapshotSchema>;
 export type PublishedStudentGradesSnapshot = z.infer<typeof PublishedStudentGradesSnapshotSchema>;
 export type SchoolGradingCompletion = z.infer<typeof SchoolGradingCompletionSchema>;
-export type PublishedSchoolGradingCompletion = z.infer<typeof PublishedSchoolGradingCompletionSchema>;
+export type PublishedSchoolGradingCompletion = z.infer<
+  typeof PublishedSchoolGradingCompletionSchema
+>;
 
 // Aliases for backward compatibility or semantic clarity in classroom package
 export type StudentGrade = Grade;

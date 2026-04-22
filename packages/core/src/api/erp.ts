@@ -1,15 +1,15 @@
 /**
  * ERP API (Accounting & Payments)
- * 
+ *
  * Philosophy: Financial sovereignty and double-entry integrity.
  */
 
-import { erpContract } from './erp.contract';
-import { supabase } from '../lib/supabase';
-import { APIError } from './types';
-import { AccountSchema, FinancialTransactionSchema } from './schemas/accounting.schema';
-import { PaymentIntentSchema, InvoiceSchema, ReceiptSchema } from './schemas/payments.schema';
 import { z } from 'zod';
+import { supabase } from '../lib/supabase';
+import { erpContract } from './erp.contract';
+import { AccountSchema, FinancialTransactionSchema } from './schemas/accounting.schema';
+import { InvoiceSchema, PaymentIntentSchema, ReceiptSchema } from './schemas/payments.schema';
+import { APIError } from './types';
 
 export const accountingAPI = {
   /**
@@ -33,7 +33,9 @@ export const accountingAPI = {
    * Record a financial transaction
    * @authority create Accounting
    */
-  async recordTransaction(tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>): Promise<z.infer<typeof FinancialTransactionSchema>> {
+  async recordTransaction(
+    tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
+  ): Promise<z.infer<typeof FinancialTransactionSchema>> {
     // In a real implementation, this would be a complex RPC call to handle double-entry
     const { data, error } = await supabase.rpc('record_financial_transaction', { tx_data: tx });
 
@@ -50,7 +52,12 @@ export const paymentsAPI = {
    * Create a payment intent for specified provider
    * @authority create Payments
    */
-  async createPaymentIntent(vars: { amount: number; currency: string; provider: string; metadata?: any }): Promise<z.infer<typeof PaymentIntentSchema>> {
+  async createPaymentIntent(vars: {
+    amount: number;
+    currency: string;
+    provider: string;
+    metadata?: any;
+  }): Promise<z.infer<typeof PaymentIntentSchema>> {
     const { data, error } = await supabase.functions.invoke('create-payment-intent', {
       body: vars,
     });

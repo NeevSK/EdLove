@@ -1,21 +1,22 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { ProGiftSchema, UserEntitlementsSchema, ProClaimResultSchema } from './schemas/pro.schema';
 import { POAMetadataSchema } from './contract';
+import { ProClaimResultSchema, ProGiftSchema, UserEntitlementsSchema } from './schemas/pro.schema';
 
 const c = initContract();
 
-const proAuthority = (action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify') =>
-  POAMetadataSchema.parse({ authority: { action, subject: 'Pro' } });
+const proAuthority = (
+  action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
+) => POAMetadataSchema.parse({ authority: { action, subject: 'Pro' } });
 
 export const proContract = c.router({
   // --- ENTITLEMENTS ---
   getEntitlements: {
     method: 'GET',
     path: '/pro/entitlements/:userId',
-    responses: { 
+    responses: {
       200: UserEntitlementsSchema,
-      404: z.object({ message: z.string() })
+      404: z.object({ message: z.string() }),
     },
     metadata: proAuthority('read'),
   },
@@ -36,9 +37,9 @@ export const proContract = c.router({
   previewGift: {
     method: 'GET',
     path: '/pro/gifts/preview/:token',
-    responses: { 
+    responses: {
       200: ProGiftSchema.pick({ gifter_name: true, gift_message: true, recipient_role: true }),
-      404: z.object({ message: z.string() })
+      404: z.object({ message: z.string() }),
     },
     metadata: proAuthority('read'),
   },

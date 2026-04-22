@@ -1,16 +1,16 @@
 import { AbilityBuilder } from '@casl/ability';
-import { UserContext, UserContextSchema } from './schemas/user.schema';
-import { AppAbility } from './abilities/base';
-import { defineStudentAbilities } from './abilities/student';
-import { defineTeacherAbilities } from './abilities/teacher';
 import { defineAdminAbilities } from './abilities/admin';
+import { defineAssistantPrincipalAbilities } from './abilities/assistantPrincipal';
+import { AppAbility } from './abilities/base';
+import { defineGradeHeadAbilities } from './abilities/gradeHead';
 import { defineParentAbilities } from './abilities/parent';
 import { definePrincipalAbilities } from './abilities/principal';
-import { defineAssistantPrincipalAbilities } from './abilities/assistantPrincipal';
 import { defineSectionHeadAbilities } from './abilities/sectionHead';
-import { defineGradeHeadAbilities } from './abilities/gradeHead';
+import { defineStudentAbilities } from './abilities/student';
+import { defineTeacherAbilities } from './abilities/teacher';
+import { type UserContext, UserContextSchema } from './schemas/user.schema';
 
-export { AppAbility, type Actions, type Subjects, type AppAbilities } from './abilities/base';
+export { type Actions, type AppAbilities, AppAbility, type Subjects } from './abilities/base';
 
 /**
  * composeUserAbilities: The 2026 Unified Composition Engine.
@@ -35,7 +35,7 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     tier: 'free',
     features: [],
     flags: {},
-    ...rawContext
+    ...rawContext,
   });
 
   const builder = new AbilityBuilder<AppAbility>(AppAbility);
@@ -79,7 +79,7 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
   }
 
   // 2. Iterate through all roles and merge abilities
-  user.roles.forEach(role => {
+  user.roles.forEach((role) => {
     switch (role) {
       case 'student':
         defineStudentAbilities(user, builder);

@@ -1,8 +1,11 @@
-import { AbilityBuilder } from '@casl/ability';
-import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './base';
+import type { AbilityBuilder } from '@casl/ability';
+import type { UserContext } from '../schemas/user.schema';
+import type { AppAbility } from './base';
 
-export const definePrincipalAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
+export const definePrincipalAbilities = (
+  user: UserContext,
+  builder: AbilityBuilder<AppAbility>,
+) => {
   const { can } = builder;
   if (!user.schoolId) return;
 
@@ -10,7 +13,7 @@ export const definePrincipalAbilities = (user: UserContext, builder: AbilityBuil
   can('read', 'TeacherPulse');
   can('manage', 'PrincipalDashboard');
   can('read', 'ClassroomList');
-  
+
   // Institutional management
   can('manage', 'School', { id: user.schoolId } as any);
   can('manage', 'Classroom', { school_id: user.schoolId } as any);

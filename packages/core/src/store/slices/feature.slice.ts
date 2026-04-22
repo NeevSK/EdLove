@@ -1,19 +1,19 @@
-import { StateCreator } from 'zustand';
-import { FeatureFlags, resolveFeatureFlags } from '../../permissions/feature-engine';
-import { UserContext } from '../../permissions/schemas/user.schema';
+import type { StateCreator } from 'zustand';
+import { type FeatureFlags, resolveFeatureFlags } from '../../permissions/feature-engine';
+import type { UserContext } from '../../permissions/schemas/user.schema';
 
 /**
  * FeatureSlice - FAANG-level state management for feature flags.
- * 
+ *
  * Separates Global Configuration from User-specific Resolution.
  */
 export interface FeatureSlice {
   flags: FeatureFlags;
   globalConfigs: Record<string, string | boolean>;
-  
+
   /** Update the global kill-switches / remote config */
   setGlobalConfigs: (configs: Record<string, string | boolean>) => void;
-  
+
   /** Trigger a re-computation of all flags based on current user context and global config */
   recomputeFlags: (context: UserContext) => void;
 }
@@ -34,7 +34,8 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
     hasGlobalAccess: false,
     isPersonal: false,
     features: [],
-    flags: {}}),
+    flags: {},
+  }),
 
   globalConfigs: {},
 
@@ -46,4 +47,5 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
   recomputeFlags: (context) => {
     const newFlags = resolveFeatureFlags(context, get().globalConfigs);
     set({ flags: newFlags });
-  }});
+  },
+});

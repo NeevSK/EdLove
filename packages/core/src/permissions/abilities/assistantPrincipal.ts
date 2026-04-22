@@ -1,9 +1,12 @@
-import { AbilityBuilder } from '@casl/ability';
-import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './base';
+import type { AbilityBuilder } from '@casl/ability';
+import type { UserContext } from '../schemas/user.schema';
+import type { AppAbility } from './base';
 import { definePrincipalAbilities } from './principal';
 
-export const defineAssistantPrincipalAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
+export const defineAssistantPrincipalAbilities = (
+  user: UserContext,
+  builder: AbilityBuilder<AppAbility>,
+) => {
   const { can } = builder;
   // 1. Inherit Principal roles
   definePrincipalAbilities(user, builder);

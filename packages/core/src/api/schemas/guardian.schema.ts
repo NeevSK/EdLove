@@ -31,11 +31,15 @@ export const GuardianContactInfoSchema = z.object({
 export const GuardianCustodyInfoSchema = z.object({
   custodyLevel: z.enum(['full', 'partial', 'visitation']),
   legalDocuments: z.array(z.string()),
-  restrictions: z.array(z.object({
-    type: z.enum(['pickup', 'communication', 'medical', 'educational']),
-    description: z.string(),
-    isActive: z.boolean(),
-  })).optional(),
+  restrictions: z
+    .array(
+      z.object({
+        type: z.enum(['pickup', 'communication', 'medical', 'educational']),
+        description: z.string(),
+        isActive: z.boolean(),
+      }),
+    )
+    .optional(),
   effectiveDate: z.string(),
   terminationDate: z.string().optional(),
 });
@@ -74,22 +78,32 @@ export const GuardianPermissionConfigSchema = z.object({
   category: z.enum(['attendance', 'grades', 'reports', 'communication', 'payments', 'medical']),
   level: z.enum(['none', 'read', 'write', 'admin']),
   scope: z.enum(['all_students', 'assigned_students', 'specific_students']),
-  restrictions: z.array(z.object({
-    timeRestrictions: z.object({
-      allowedDays: z.array(z.number()),
-      allowedHours: z.object({
-        start: z.string(),
-        end: z.string(),
+  restrictions: z
+    .array(
+      z.object({
+        timeRestrictions: z
+          .object({
+            allowedDays: z.array(z.number()),
+            allowedHours: z.object({
+              start: z.string(),
+              end: z.string(),
+            }),
+            timezone: z.string(),
+          })
+          .optional(),
+        contentFilters: z
+          .array(
+            z.object({
+              field: z.string(),
+              operator: z.enum(['includes', 'excludes', 'equals']),
+              value: z.string(),
+            }),
+          )
+          .optional(),
+        approvalRequired: z.boolean().optional(),
       }),
-      timezone: z.string(),
-    }).optional(),
-    contentFilters: z.array(z.object({
-      field: z.string(),
-      operator: z.enum(['includes', 'excludes', 'equals']),
-      value: z.string(),
-    })).optional(),
-    approvalRequired: z.boolean().optional(),
-  })).optional(),
+    )
+    .optional(),
 });
 
 export const GuardianNotificationSettingsSchema = z.record(z.string(), z.any());
@@ -221,7 +235,9 @@ export const GuardianDashboardPolicySchema = z.object({
   summaryMode: z.literal('bounded_windows'),
   officialRecordTypes: z.array(z.enum(['attendance', 'grades'])),
   projectionTypes: z.array(z.enum(['assignments', 'notifications', 'events'])),
-  excludedData: z.array(z.enum(['teacher_private_notes', 'draft_grades', 'admin_internal_records'])),
+  excludedData: z.array(
+    z.enum(['teacher_private_notes', 'draft_grades', 'admin_internal_records']),
+  ),
 });
 
 export const GuardianDashboardSchema = z.object({

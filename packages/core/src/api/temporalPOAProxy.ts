@@ -1,9 +1,9 @@
-import { createTemporalProxy } from './temporalProxy';
-import { createPOAProxy } from './poaProxy';
 import type { ContractShape } from './contractCoverage';
+import { createPOAProxy } from './poaProxy';
+import { createTemporalProxy } from './temporalProxy';
 
 export interface TemporalPOAProxyOptions {
-    strictUnmappedMethods?: boolean;
+  strictUnmappedMethods?: boolean;
 }
 
 /**
@@ -14,17 +14,17 @@ export interface TemporalPOAProxyOptions {
  * - Temporal behavior runs only after API-surface authority is approved.
  */
 export function createTemporalPOAProxy<T extends object>(
-    moduleName: string,
-    target: T,
-    contract?: ContractShape,
-    methodMapping: Record<string, string> = {},
-    options: TemporalPOAProxyOptions = {}
+  moduleName: string,
+  target: T,
+  contract?: ContractShape,
+  methodMapping: Record<string, string> = {},
+  options: TemporalPOAProxyOptions = {},
 ): T {
-    return createPOAProxy(
-        moduleName,
-        createTemporalProxy(moduleName, target),
-        contract,
-        methodMapping,
-        options
-    );
+  return createPOAProxy(
+    moduleName,
+    createTemporalProxy(moduleName, target),
+    contract,
+    methodMapping,
+    options,
+  );
 }

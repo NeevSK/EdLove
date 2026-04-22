@@ -54,4 +54,3 @@ export interface PlatformAccessContext {
   hasGlobalAccess: boolean;
   isPersonal: boolean;
 }
-

@@ -1,15 +1,22 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { SanctuaryManifestoSchema, GrowthSignalSchema, UserGrowthStateSchema, ImpactRippleSchema } from './schemas/growth.schema';
 import { POAMetadataSchema } from './contract';
+import {
+  GrowthSignalSchema,
+  ImpactRippleSchema,
+  SanctuaryManifestoSchema,
+  UserGrowthStateSchema,
+} from './schemas/growth.schema';
 
 const c = initContract();
 
-const growthAuthority = (action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify') =>
-  POAMetadataSchema.parse({ authority: { action, subject: 'Growth' } });
+const growthAuthority = (
+  action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
+) => POAMetadataSchema.parse({ authority: { action, subject: 'Growth' } });
 
-const manifestoAuthority = (action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify') =>
-  POAMetadataSchema.parse({ authority: { action, subject: 'Manifesto' } });
+const manifestoAuthority = (
+  action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
+) => POAMetadataSchema.parse({ authority: { action, subject: 'Manifesto' } });
 
 export const growthContract = c.router({
   // --- MANIFESTOS & MISSIONS ---

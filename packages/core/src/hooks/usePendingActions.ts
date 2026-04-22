@@ -10,7 +10,7 @@
  * Gracefully degrades on any DB error  returns empty arrays rather than throwing.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 export interface PendingAttendanceItem {
@@ -49,7 +49,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
     const todayEnd = `${today}T23:59:59`;
 
     try {
-      //  1. Classrooms owned by this teacher 
+      //  1. Classrooms owned by this teacher
       const { data: classrooms, error: clsErr } = await supabase
         .from('classrooms')
         .select('id, name')
@@ -64,7 +64,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
 
       const classroomIds = classrooms.map((c) => c.id);
 
-      //  2. Classrooms that already have attendance today 
+      //  2. Classrooms that already have attendance today
       const { data: markedToday } = await supabase
         .from('attendance')
         .select('classroom_id')
@@ -80,7 +80,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
 
       setAttendancePending(pending);
 
-      //  3. Assignments due today or overdue with ungraded submissions 
+      //  3. Assignments due today or overdue with ungraded submissions
       const { data: assignments } = await supabase
         .from('assignments')
         .select('id, title, classroom_id, due_date')

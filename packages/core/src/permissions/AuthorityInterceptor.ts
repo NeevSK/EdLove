@@ -1,9 +1,9 @@
-import { POAMetadata } from '../api/contract';
-import { AppAbility } from './abilities/base';
+import type { POAMetadata } from '../api/contract';
+import type { AppAbility } from './abilities/base';
 
 /**
  * AuthorityInterceptor (BFF Layer - L4)
- * 
+ *
  * In 2026, the BFF uses this pattern to automatically enforce POA based on ts-rest metadata.
  * This ensures that even if a route handler is exposed, it cannot be executed without authority.
  */
@@ -43,7 +43,9 @@ export class AuthorityInterceptor {
       return subjects.includes(subject) || subjects.includes('all');
     };
 
-    const isAllowed = rawRules.some(rule => !rule.inverted && matchesAction(rule.action) && matchesSubject(rule.subject));
+    const isAllowed = rawRules.some(
+      (rule) => !rule.inverted && matchesAction(rule.action) && matchesSubject(rule.subject),
+    );
 
     if (!isAllowed) {
       throw new Error(`Forbidden: User does not have ${action} permission on ${subject}.`);

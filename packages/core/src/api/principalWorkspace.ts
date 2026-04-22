@@ -1,12 +1,12 @@
-import { principalWorkspaceContract } from './principalWorkspace.contract';
 import { principalWorkspaceServices } from '../domains/principalWorkspace/runtime';
+import { principalWorkspaceContract } from './principalWorkspace.contract';
 import type {
   InviteCodeZod,
   PrincipalGovernanceEventZod,
   PrincipalInviteEventCreate,
   PrincipalInviteRole,
-  PrincipalObservationFollowUpCreate,
   PrincipalObservationCreate,
+  PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
 } from './schemas/principal-workspace.schema';
 
@@ -73,7 +73,9 @@ export const principalWorkspaceAPI = {
   /**
    * @authority update PrincipalObservation
    */
-  async recordObservationFollowUp(input: PrincipalObservationFollowUpCreate): Promise<PrincipalGovernanceEventZod> {
+  async recordObservationFollowUp(
+    input: PrincipalObservationFollowUpCreate,
+  ): Promise<PrincipalGovernanceEventZod> {
     return principalWorkspaceServices.recordObservationFollowUp(input);
   },
 

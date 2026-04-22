@@ -1,25 +1,20 @@
-import { useEffect, useState, useCallback } from 'react';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
-import { useStore } from '../store/useStore';
+import type { Session } from '@supabase/supabase-js';
+import { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { authAPI } from '../api/auth';
 import { identityAPI } from '../api/identity';
-import { 
-  APIError, 
-} from '../api/types';
-import { 
-  User, 
-} from '../types';
-import { SchoolType } from '../constants/SriLankanSchools';
-import { Role } from '../permissions/schemas/role.schema';
-
-import { initSentry, setSentryUser, clearSentryUser } from '../lib/monitoring/sentry';
-import { initPostHog, trackEvent, identifyUser } from '../lib/monitoring/posthog';
-import { Platform } from 'react-native';
+import { APIError } from '../api/types';
+import type { SchoolType } from '../constants/SriLankanSchools';
+import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
+import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
+import { supabase } from '../lib/supabase';
+import type { Role } from '../permissions/schemas/role.schema';
+import { useStore } from '../store/useStore';
+import type { User } from '../types';
 
 /**
  * useAuthorityLifecycle
- * 
+ *
  * Orchestrates the "Reactive Capability Sync" and session management.
  * This is the heart of the POA system's reactivity.
  */
@@ -27,7 +22,7 @@ export function useAuthorityLifecycle() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
-  
+
   const setUser = useStore((state) => state.setUser);
   const setUserRole = useStore((state) => state.setUserRole);
   const setSchoolType = useStore((state) => state.setSchoolType);
@@ -35,66 +30,73 @@ export function useAuthorityLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
-  const fetchAndSetUserProfile = useCallback(async (internalUserId: string) => {
-    setIsProfileLoading(true);
-    try {
-      const { data: userProfile, error } = await supabase
-        .from('users')
-        .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
-        .eq('id', internalUserId)
-        .maybeSingle();
+  const fetchAndSetUserProfile = useCallback(
+    async (internalUserId: string) => {
+      setIsProfileLoading(true);
+      try {
+        const { data: userProfile, error } = await supabase
+          .from('users')
+          .select(
+            'id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed',
+          )
+          .eq('id', internalUserId)
+          .maybeSingle();
 
-      if (error) {
-        console.warn('\u26A0\uFE0F Profile: Table fetch returned error:', error.message);
-        return;
-      }
-
-      if (userProfile) {
-        const normalizedRole = (userProfile.role === 'guest' ? null : userProfile.role) as Role | null;
-        
-        // Update store
-        setUser({ ...userProfile, role: normalizedRole } as unknown as User);
-        setUserRole(normalizedRole);
-
-        const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!normalizedRole;
-        if (isEffectivelyOnboarded) {
-          setOnboardingCompleted(true);
+        if (error) {
+          console.warn('\u26A0\uFE0F Profile: Table fetch returned error:', error.message);
+          return;
         }
 
-        if (userProfile.school_id) {
-          const { data: schoolData } = await supabase
-            .from('schools')
-            .select('type')
-            .eq('id', userProfile.school_id)
-            .single();
+        if (userProfile) {
+          const normalizedRole = (
+            userProfile.role === 'guest' ? null : userProfile.role
+          ) as Role | null;
 
-          if (schoolData) {
-            setSchoolType(schoolData.type as SchoolType | null);
+          // Update store
+          setUser({ ...userProfile, role: normalizedRole } as unknown as User);
+          setUserRole(normalizedRole);
+
+          const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!normalizedRole;
+          if (isEffectivelyOnboarded) {
+            setOnboardingCompleted(true);
           }
-        } else {
-          setSchoolType(null);
+
+          if (userProfile.school_id) {
+            const { data: schoolData } = await supabase
+              .from('schools')
+              .select('type')
+              .eq('id', userProfile.school_id)
+              .single();
+
+            if (schoolData) {
+              setSchoolType(schoolData.type as SchoolType | null);
+            }
+          } else {
+            setSchoolType(null);
+          }
+
+          // Monitoring identification
+          setSentryUser({
+            id: userProfile.id,
+            email: userProfile.email,
+            username: userProfile.full_name,
+          });
+
+          identifyUser(userProfile.id, {
+            email: userProfile.email,
+            full_name: userProfile.full_name,
+            role: normalizedRole,
+            school_id: userProfile.school_id,
+          });
         }
-
-        // Monitoring identification
-        setSentryUser({
-          id: userProfile.id,
-          email: userProfile.email,
-          username: userProfile.full_name,
-        });
-
-        identifyUser(userProfile.id, {
-          email: userProfile.email,
-          full_name: userProfile.full_name,
-          role: normalizedRole,
-          school_id: userProfile.school_id,
-        });
+      } catch (error) {
+        console.warn('\u274C Profile: Fetching encountered an error:', error);
+      } finally {
+        setIsProfileLoading(false);
       }
-    } catch (error) {
-      console.warn('\u274C Profile: Fetching encountered an error:', error);
-    } finally {
-      setIsProfileLoading(false);
-    }
-  }, [setUser, setUserRole, setSchoolType, setOnboardingCompleted]);
+    },
+    [setUser, setUserRole, setSchoolType, setOnboardingCompleted],
+  );
 
   const refreshProfile = useCallback(async () => {
     const internalId = await identityAPI.getMyInternalId();
@@ -116,7 +118,7 @@ export function useAuthorityLifecycle() {
         const initialSession = await authAPI.getSession();
         setSession(initialSession);
         setAuthSession(initialSession);
-        
+
         if (initialSession?.user) {
           const internalId = await identityAPI.getMyInternalId();
           if (internalId) {
@@ -125,7 +127,10 @@ export function useAuthorityLifecycle() {
         }
       } catch (error) {
         if (error instanceof APIError) {
-          if (error.message?.includes('Refresh Token') || (error as { status?: number }).status === 400) {
+          if (
+            error.message?.includes('Refresh Token') ||
+            (error as { status?: number }).status === 400
+          ) {
             await supabase.auth.signOut({ scope: 'local' });
             setSession(null);
             setAuthSession(null);
@@ -140,7 +145,9 @@ export function useAuthorityLifecycle() {
     checkSession();
 
     // 3. Auth State Change Listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       setSession(currentSession);
       setAuthSession(currentSession);
       setAuthSessionResolved(true);
@@ -161,7 +168,15 @@ export function useAuthorityLifecycle() {
     });
 
     return () => subscription.unsubscribe();
-  }, [setAuthSession, setAuthSessionResolved, setUser, setUserRole, setSchoolType, setOnboardingCompleted, fetchAndSetUserProfile]);
+  }, [
+    setAuthSession,
+    setAuthSessionResolved,
+    setUser,
+    setUserRole,
+    setSchoolType,
+    setOnboardingCompleted,
+    fetchAndSetUserProfile,
+  ]);
 
   // 4. Realtime Profile Updates (Capability Sync)
   const currentUser = useStore((state) => state.user);
@@ -188,7 +203,7 @@ export function useAuthorityLifecycle() {
           }
           // Force a profile refresh on remote change
           refreshProfile();
-        }
+        },
       )
       .subscribe();
 

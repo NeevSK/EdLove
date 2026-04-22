@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import type React from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import { LanguageUtils } from '../utils/LanguageUtils';
 
 /**
- * AssetsProvider: Handles initialization of static assets, 
+ * AssetsProvider: Handles initialization of static assets,
  * localization, and theme-related resources.
  */
 export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -24,7 +25,7 @@ export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, []);
 
   if (!isReady) {
-      return null; // Or a splash screen
+    return null; // Or a splash screen
   }
 
   return <>{children}</>;

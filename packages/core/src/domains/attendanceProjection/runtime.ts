@@ -2,5 +2,5 @@ import { supabaseAttendanceProjectionRepository } from '../../adapters/supabase/
 import { createAttendanceProjectionServices } from './services';
 
 export const attendanceProjectionServices = createAttendanceProjectionServices(
-    supabaseAttendanceProjectionRepository
+  supabaseAttendanceProjectionRepository,
 );

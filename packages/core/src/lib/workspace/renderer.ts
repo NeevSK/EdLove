@@ -1,73 +1,73 @@
 import type {
-    WorkspaceRendererConfig,
-    WorkspaceRendererMode,
-    WorkspaceRendererPlatform,
-    WorkspaceRuntimePlatform,
+  WorkspaceRendererConfig,
+  WorkspaceRendererMode,
+  WorkspaceRendererPlatform,
+  WorkspaceRuntimePlatform,
 } from '../../types';
 
 export type {
-    WorkspaceRendererConfig,
-    WorkspaceRendererMode,
-    WorkspaceRendererPlatform,
-    WorkspaceRuntimePlatform,
+  WorkspaceRendererConfig,
+  WorkspaceRendererMode,
+  WorkspaceRendererPlatform,
+  WorkspaceRuntimePlatform,
 } from '../../types';
 
 export interface ResolveWorkspaceRendererOptions {
-    runtimePlatform: WorkspaceRuntimePlatform;
-    width: number;
-    mobileMaxWidth?: number;
-    tabletMaxWidth?: number;
+  runtimePlatform: WorkspaceRuntimePlatform;
+  width: number;
+  mobileMaxWidth?: number;
+  tabletMaxWidth?: number;
 }
 
 const DEFAULT_RENDERER_MODE: Record<WorkspaceRendererPlatform, WorkspaceRendererMode> = {
-    mobile: 'stack',
-    tablet: 'grid',
-    web: 'kanban',
+  mobile: 'stack',
+  tablet: 'grid',
+  web: 'kanban',
 };
 
 const DEFAULT_MAX_COLUMNS: Record<WorkspaceRendererPlatform, number> = {
-    mobile: 1,
-    tablet: 2,
-    web: 4,
+  mobile: 1,
+  tablet: 2,
+  web: 4,
 };
 
 export function resolveWorkspaceRendererPlatform({
-    runtimePlatform,
-    width,
-    mobileMaxWidth = 767,
-    tabletMaxWidth = 1279,
+  runtimePlatform,
+  width,
+  mobileMaxWidth = 767,
+  tabletMaxWidth = 1279,
 }: ResolveWorkspaceRendererOptions): WorkspaceRendererPlatform {
-    if (runtimePlatform === 'web') {
-        if (width <= mobileMaxWidth) {
-            return 'mobile';
-        }
-
-        if (width <= tabletMaxWidth) {
-            return 'tablet';
-        }
-
-        return 'web';
+  if (runtimePlatform === 'web') {
+    if (width <= mobileMaxWidth) {
+      return 'mobile';
     }
 
-    if (width > mobileMaxWidth) {
-        return 'tablet';
+    if (width <= tabletMaxWidth) {
+      return 'tablet';
     }
 
-    return 'mobile';
+    return 'web';
+  }
+
+  if (width > mobileMaxWidth) {
+    return 'tablet';
+  }
+
+  return 'mobile';
 }
 
 export function createWorkspaceRendererConfig(
-    options: ResolveWorkspaceRendererOptions & {
-        modeOverrides?: Partial<Record<WorkspaceRendererPlatform, WorkspaceRendererMode>>;
-        maxColumnsOverrides?: Partial<Record<WorkspaceRendererPlatform, number>>;
-    }
+  options: ResolveWorkspaceRendererOptions & {
+    modeOverrides?: Partial<Record<WorkspaceRendererPlatform, WorkspaceRendererMode>>;
+    maxColumnsOverrides?: Partial<Record<WorkspaceRendererPlatform, number>>;
+  },
 ): WorkspaceRendererConfig {
-    const platform = resolveWorkspaceRendererPlatform(options);
+  const platform = resolveWorkspaceRendererPlatform(options);
 
-    return {
-        runtimePlatform: options.runtimePlatform,
-        platform,
-        mode: options.modeOverrides?.[platform] ?? DEFAULT_RENDERER_MODE[platform],
-        maxColumns: options.maxColumnsOverrides?.[platform] ?? DEFAULT_MAX_COLUMNS[platform],
-    };
+  return {
+    runtimePlatform: options.runtimePlatform,
+    platform,
+    mode: options.modeOverrides?.[platform] ?? DEFAULT_RENDERER_MODE[platform],
+    maxColumns: options.maxColumnsOverrides?.[platform] ?? DEFAULT_MAX_COLUMNS[platform],
+  };
 }

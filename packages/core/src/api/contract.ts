@@ -6,7 +6,19 @@ import { z } from 'zod';
  */
 export const POAMetadataSchema = z.object({
   authority: z.object({
-    action: z.enum(['manage', 'create', 'read', 'update', 'delete', 'submit', 'verify', 'grade', 'resolve', 'publish', 'override']),
+    action: z.enum([
+      'manage',
+      'create',
+      'read',
+      'update',
+      'delete',
+      'submit',
+      'verify',
+      'grade',
+      'resolve',
+      'publish',
+      'override',
+    ]),
     subject: z.string(), // Maps to CASL Subjects
   }),
 });

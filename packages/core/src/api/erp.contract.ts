@@ -1,16 +1,12 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { 
-  AccountSchema, 
-  FinancialTransactionSchema, 
-  BudgetSchema 
-} from './schemas/accounting.schema';
-import { 
-  PaymentIntentSchema, 
-  InvoiceSchema, 
-  ReceiptSchema 
-} from './schemas/payments.schema';
 import { POAMetadataSchema } from './contract';
+import {
+  AccountSchema,
+  BudgetSchema,
+  FinancialTransactionSchema,
+} from './schemas/accounting.schema';
+import { InvoiceSchema, PaymentIntentSchema, ReceiptSchema } from './schemas/payments.schema';
 
 const c = initContract();
 

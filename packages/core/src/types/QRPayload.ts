@@ -1,6 +1,6 @@
 /**
  * Canonical QR Payload Types  Gurudevi Ecosystem
- * 
+ *
  * All QR codes encode: gurudevi://qr?v=1&action=<action>&...params
  * Moved to @repo/core to satisfy L0-no-upward architectural rule.
  */
@@ -88,4 +88,3 @@ export interface ShareResourcePayload {
   title: string;
   url?: string;
 }
-

@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { composeUserAbilities } from '../composer';
-import { Actions, Subjects, SubjectType } from '../abilities/base';
-import { UserContext, UserContextSchema, TenantKind } from '../schemas/user.schema';
-import { Role } from '../schemas/role.schema';
-import { useStore, TotalState } from '../../store/useStore';
 import { useFeatureStore } from '../../store/useFeatureStore';
+import { type TotalState, useStore } from '../../store/useStore';
+import { type Actions, Subjects, type SubjectType } from '../abilities/base';
+import { composeUserAbilities } from '../composer';
+import type { Role } from '../schemas/role.schema';
+import { type TenantKind, type UserContext, UserContextSchema } from '../schemas/user.schema';
 
 /**
  * usePermissions: The ONLY interface components ever touch for POA.
@@ -13,14 +13,14 @@ import { useFeatureStore } from '../../store/useFeatureStore';
 export const usePermissions = () => {
   const { user, schoolType } = useStore((state: TotalState) => ({
     user: state.user,
-    schoolType: state.schoolType
+    schoolType: state.schoolType,
   }));
   const flags = useFeatureStore((state) => state.flags);
 
   // 1. Build context from store (Supabase auth + app state)
   const context: UserContext = useMemo(() => {
     const roles = (user?.roles || []) as Role[];
-    const hasGlobalAccess = roles.some(r => ['founder', 'developer', 'admin'].includes(r));
+    const hasGlobalAccess = roles.some((r) => ['founder', 'developer', 'admin'].includes(r));
     const isPersonal = schoolType === 'personal_workspace';
 
     const rawContext = {
@@ -60,10 +60,12 @@ export const usePermissions = () => {
      * can: Check if action on subject is allowed.
      * usage: can('read', 'School')
      */
-    can: (action: Actions, subject: SubjectType, field?: string) => ability.can(action, subject as any, field),
+    can: (action: Actions, subject: SubjectType, field?: string) =>
+      ability.can(action, subject as any, field),
     /**
      * cannot: Check if action on subject is forbidden.
      */
-    cannot: (action: Actions, subject: SubjectType, field?: string) => ability.cannot(action, subject as any, field),
+    cannot: (action: Actions, subject: SubjectType, field?: string) =>
+      ability.cannot(action, subject as any, field),
   };
 };

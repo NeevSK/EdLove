@@ -1,7 +1,7 @@
-import { StateCreator } from 'zustand';
 import type { Session } from '@supabase/supabase-js';
-import { User } from '../../types';
-import { Role } from '../../permissions/schemas/role.schema';
+import type { StateCreator } from 'zustand';
+import type { Role } from '../../permissions/schemas/role.schema';
+import type { User } from '../../types';
 
 export interface AuthSlice {
   userRole: Role | null;
@@ -58,23 +58,28 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
   isBridging: false,
   setBridging: (isBridging) => set({ isBridging }),
   dismissedSampleIds: [],
-  dismissSample: (id) => set((state) => ({ 
-    dismissedSampleIds: [...state.dismissedSampleIds, id] 
-  })),
+  dismissSample: (id) =>
+    set((state) => ({
+      dismissedSampleIds: [...state.dismissedSampleIds, id],
+    })),
   demoLogs: [],
-  addDemoLog: (log) => set((state) => ({
-    demoLogs: [...state.demoLogs, { ...log, timestamp: Date.now() }]
-  })),
+  addDemoLog: (log) =>
+    set((state) => ({
+      demoLogs: [...state.demoLogs, { ...log, timestamp: Date.now() }],
+    })),
   clearDemoLogs: () => set({ demoLogs: [] }),
   setTeacherName: (name) => set({ userName: name }),
-  setUserRole: (role) => set((state) => ({ 
-    userRole: role,
-    user: state.user ? ({ 
-      ...state.user, 
-      authority: role as any, 
-      roles: role ? [role] as any : [] 
-    } as User) : null 
-  })),
+  setUserRole: (role) =>
+    set((state) => ({
+      userRole: role,
+      user: state.user
+        ? ({
+            ...state.user,
+            authority: role as any,
+            roles: role ? ([role] as any) : [],
+          } as User)
+        : null,
+    })),
   isOnline: true,
   setIsOnline: (isOnline) => set({ isOnline }),
   toast: null,

@@ -1,37 +1,37 @@
 export type AttendanceStatus = 'present' | 'absent' | 'late';
 
 export interface AttendanceRecord {
-    id: string;
-    classroom_id: string;
-    student_id: string;
-    status: AttendanceStatus;
-    date: string;
-    created_at: string;
-    updated_at: string;
+  id: string;
+  classroom_id: string;
+  student_id: string;
+  status: AttendanceStatus;
+  date: string;
+  created_at: string;
+  updated_at: string;
 }
 
 /**
  * View model for attendance UI (includes flattened student info)
  */
 export interface StudentAttendance {
-    id: string;
-    student_id: string;
-    full_name: string;
-    roll_number?: string | null;
-    status: AttendanceStatus;
+  id: string;
+  student_id: string;
+  full_name: string;
+  roll_number?: string | null;
+  status: AttendanceStatus;
 }
 
 export interface AttendanceTrendPoint {
-    date: string;
-    presentCount: number;
-    absentCount: number;
-    lateCount: number;
-    totalCount: number;
-    rate: number;
+  date: string;
+  presentCount: number;
+  absentCount: number;
+  lateCount: number;
+  totalCount: number;
+  rate: number;
 }
 
 export interface AttendanceReport {
-    trend: AttendanceTrendPoint[];
-    overallRate: number;
-    totalAbsences: number;
+  trend: AttendanceTrendPoint[];
+  overallRate: number;
+  totalAbsences: number;
 }

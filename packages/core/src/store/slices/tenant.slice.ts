@@ -1,4 +1,4 @@
-import { StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
 
 export interface TenantSlice {
   schoolId: string | null;

@@ -1,7 +1,8 @@
-import React, { ReactNode } from 'react';
-import { AuthProvider } from './AuthProvider';
+import type React from 'react';
+import type { ReactNode } from 'react';
 import { AssetsProvider } from './AssetsProvider';
 import { AuthorityLifecycleProvider } from './AuthorityLifecycleProvider';
+import { AuthProvider } from './AuthProvider';
 
 interface GlobalProviderProps {
   children: ReactNode;
@@ -9,7 +10,7 @@ interface GlobalProviderProps {
 
 /**
  * GlobalProvider component that wraps the application with all necessary core providers.
- * 
+ *
  * Hierarchy:
  * 1. AssetsProvider: Standard assets and resources.
  * 2. AuthProvider: Auth session context.
@@ -19,9 +20,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <AssetsProvider>
       <AuthProvider>
-        <AuthorityLifecycleProvider>
-          {children}
-        </AuthorityLifecycleProvider>
+        <AuthorityLifecycleProvider>{children}</AuthorityLifecycleProvider>
       </AuthProvider>
     </AssetsProvider>
   );

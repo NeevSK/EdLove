@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { PendingGateAction } from '../lib/pendingGateAction';
-import { clearPendingGateAction, getPendingGateAction, setPendingGateAction } from '../lib/pendingGateAction';
+import {
+  clearPendingGateAction,
+  getPendingGateAction,
+  setPendingGateAction,
+} from '../lib/pendingGateAction';
 
 export interface UsePendingGateActionResult {
   action: PendingGateAction | null;
@@ -37,4 +41,3 @@ export function usePendingGateAction(): UsePendingGateActionResult {
 
   return { action, isLoading, refresh, set, clear };
 }
-

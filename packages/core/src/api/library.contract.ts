@@ -1,11 +1,16 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { LibraryResourceSchema, LibraryCollectionSchema, ResourceEngagementSchema } from './schemas/library.schema';
 import { POAMetadataSchema } from './contract';
+import {
+  LibraryCollectionSchema,
+  LibraryResourceSchema,
+  ResourceEngagementSchema,
+} from './schemas/library.schema';
 
 const c = initContract();
 
-const authority = (action: 'create' | 'read' | 'update' | 'delete') => POAMetadataSchema.parse({ authority: { action, subject: 'Library' } });
+const authority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  POAMetadataSchema.parse({ authority: { action, subject: 'Library' } });
 
 export const libraryContract = c.router({
   getResources: {

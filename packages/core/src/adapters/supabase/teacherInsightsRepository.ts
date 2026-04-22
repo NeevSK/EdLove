@@ -1,27 +1,27 @@
-import { supabase } from '../../lib/supabase';
-import { APIError } from '../../api/types';
-import type { TeacherInsightsRepository } from '../../domains/teacherInsights/ports';
 import {
-  TeacherInsightAuditEventSchema,
-  TeacherInsightLifecycleEventSchema,
   type TeacherInsightAuditEvent,
+  TeacherInsightAuditEventSchema,
   type TeacherInsightLifecycleEvent,
+  TeacherInsightLifecycleEventSchema,
   type TeacherInsightPromotion,
   type TeacherInsightShareUpdate,
   type TeacherInsightTargetType,
+  type TeacherPrivateNoteCreate,
   TeacherPrivateNoteCreateSchema,
   TeacherPrivateNoteSchema,
-  type TeacherPrivateNoteCreate,
   type TeacherPrivateNoteZod,
+  type TeacherStudentObservationCreate,
   TeacherStudentObservationCreateSchema,
   TeacherStudentObservationSchema,
-  type TeacherStudentObservationCreate,
   type TeacherStudentObservationZod,
   TeacherStudentPotentialSchema,
-  TeacherStudentPotentialUpsertSchema,
   type TeacherStudentPotentialUpsert,
+  TeacherStudentPotentialUpsertSchema,
   type TeacherStudentPotentialZod,
 } from '../../api/schemas/teacher-insights.schema';
+import { APIError } from '../../api/types';
+import type { TeacherInsightsRepository } from '../../domains/teacherInsights/ports';
+import { supabase } from '../../lib/supabase';
 
 const privateAudit = (ownerId: string) => ({
   audit_required: true as const,
@@ -133,7 +133,8 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     const { data, error } = await query;
     if (error) throw new APIError('Failed to fetch teacher private notes', error.code, error);
 
-    return (data ?? []).map((row) => TeacherPrivateNoteSchema.parse({
+    return (data ?? []).map((row) =>
+      TeacherPrivateNoteSchema.parse({
         ...row,
         visibility: 'private',
         audit: privateAudit(String(row.teacher_id)),
@@ -184,7 +185,12 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       .eq('id', id)
       .maybeSingle();
 
-    if (existingError) throw new APIError('Failed to fetch teacher private note before delete', existingError.code, existingError);
+    if (existingError)
+      throw new APIError(
+        'Failed to fetch teacher private note before delete',
+        existingError.code,
+        existingError,
+      );
 
     const { error } = await supabase.from('teacher_notes').delete().eq('id', id);
     if (error) throw new APIError('Failed to delete teacher private note', error.code, error);
@@ -215,12 +221,15 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch student observations', error.code, error);
 
-    return (data ?? []).map((row) => TeacherStudentObservationSchema.parse({
+    return (data ?? []).map((row) =>
+      TeacherStudentObservationSchema.parse({
         ...row,
         audit: {
           audit_required: true,
           owner_id: String(row.author_id),
-          share_state: mapObservationShareState(row.visibility as TeacherStudentObservationZod['visibility']),
+          share_state: mapObservationShareState(
+            row.visibility as TeacherStudentObservationZod['visibility'],
+          ),
         },
       }),
     ) as TeacherStudentObservationZod[];
@@ -235,12 +244,15 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch enrollment observations', error.code, error);
 
-    return (data ?? []).map((row) => TeacherStudentObservationSchema.parse({
+    return (data ?? []).map((row) =>
+      TeacherStudentObservationSchema.parse({
         ...row,
         audit: {
           audit_required: true,
           owner_id: String(row.author_id),
-          share_state: mapObservationShareState(row.visibility as TeacherStudentObservationZod['visibility']),
+          share_state: mapObservationShareState(
+            row.visibility as TeacherStudentObservationZod['visibility'],
+          ),
         },
       }),
     ) as TeacherStudentObservationZod[];
@@ -253,21 +265,27 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       .eq('student_id', studentId)
       .order('created_at', { ascending: false });
 
-    if (error) throw new APIError('Failed to fetch student observations for student', error.code, error);
+    if (error)
+      throw new APIError('Failed to fetch student observations for student', error.code, error);
 
-    return (data ?? []).map((row) => TeacherStudentObservationSchema.parse({
+    return (data ?? []).map((row) =>
+      TeacherStudentObservationSchema.parse({
         ...row,
         audit: {
           audit_required: true,
           owner_id: String(row.author_id),
-          share_state: mapObservationShareState(row.visibility as TeacherStudentObservationZod['visibility']),
+          share_state: mapObservationShareState(
+            row.visibility as TeacherStudentObservationZod['visibility'],
+          ),
         },
       }),
     ) as TeacherStudentObservationZod[];
   },
 
   async createStudentObservation(input) {
-    const payload = TeacherStudentObservationCreateSchema.parse(input) as TeacherStudentObservationCreate;
+    const payload = TeacherStudentObservationCreateSchema.parse(
+      input,
+    ) as TeacherStudentObservationCreate;
     const { data, error } = await supabase
       .from('student_observations')
       .insert([payload])
@@ -285,7 +303,9 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       studentId: data.student_id ? String(data.student_id) : null,
       eventType: 'create',
       visibility: data.visibility as 'private' | 'student_visible' | 'handover_visible',
-      shareState: mapObservationShareState(data.visibility as TeacherStudentObservationZod['visibility']),
+      shareState: mapObservationShareState(
+        data.visibility as TeacherStudentObservationZod['visibility'],
+      ),
       snapshot: data as Record<string, unknown>,
       occurredAt: String(data.created_at ?? new Date().toISOString()),
       effectiveFrom: String(data.created_at ?? new Date().toISOString()),
@@ -297,14 +317,19 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       audit: {
         audit_required: true,
         owner_id: String(data.author_id),
-        share_state: mapObservationShareState(data.visibility as TeacherStudentObservationZod['visibility']),
+        share_state: mapObservationShareState(
+          data.visibility as TeacherStudentObservationZod['visibility'],
+        ),
       },
     }) as TeacherStudentObservationZod;
   },
 
   async finalizeStudentObservation(id, acceptDeclaration) {
     if (!acceptDeclaration) {
-      throw new APIError('Honesty declaration must be accepted to finalize', 'DECLARATION_REQUIRED');
+      throw new APIError(
+        'Honesty declaration must be accepted to finalize',
+        'DECLARATION_REQUIRED',
+      );
     }
 
     const { data, error } = await supabase
@@ -328,7 +353,9 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       studentId: data.student_id ? String(data.student_id) : null,
       eventType: 'finalize',
       visibility: data.visibility as 'private' | 'student_visible' | 'handover_visible',
-      shareState: mapObservationShareState(data.visibility as TeacherStudentObservationZod['visibility']),
+      shareState: mapObservationShareState(
+        data.visibility as TeacherStudentObservationZod['visibility'],
+      ),
       snapshot: data as Record<string, unknown>,
       occurredAt: String(data.updated_at ?? new Date().toISOString()),
       effectiveFrom: String(data.created_at ?? data.updated_at ?? new Date().toISOString()),
@@ -340,7 +367,9 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       audit: {
         audit_required: true,
         owner_id: String(data.author_id),
-        share_state: mapObservationShareState(data.visibility as TeacherStudentObservationZod['visibility']),
+        share_state: mapObservationShareState(
+          data.visibility as TeacherStudentObservationZod['visibility'],
+        ),
       },
     }) as TeacherStudentObservationZod;
   },
@@ -352,12 +381,14 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       .eq('id', id)
       .maybeSingle();
 
-    if (existingError) throw new APIError('Failed to fetch student observation before delete', existingError.code, existingError);
+    if (existingError)
+      throw new APIError(
+        'Failed to fetch student observation before delete',
+        existingError.code,
+        existingError,
+      );
 
-    const { error } = await supabase
-      .from('student_observations')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('student_observations').delete().eq('id', id);
 
     if (error) throw new APIError('Failed to delete student observation', error.code, error);
 
@@ -371,7 +402,9 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
         studentId: existing.student_id ? String(existing.student_id) : null,
         eventType: 'delete',
         visibility: existing.visibility as 'private' | 'student_visible' | 'handover_visible',
-        shareState: mapObservationShareState(existing.visibility as TeacherStudentObservationZod['visibility']),
+        shareState: mapObservationShareState(
+          existing.visibility as TeacherStudentObservationZod['visibility'],
+        ),
         snapshot: existing as Record<string, unknown>,
         occurredAt: new Date().toISOString(),
         effectiveFrom: String(existing.created_at ?? new Date().toISOString()),
@@ -485,7 +518,8 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       .eq('id', id)
       .single();
 
-    if (error) throw new APIError('Failed to fetch student observation for promotion', error.code, error);
+    if (error)
+      throw new APIError('Failed to fetch student observation for promotion', error.code, error);
 
     const recordedAt = new Date().toISOString();
     await logInsightAudit({
@@ -548,7 +582,9 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
   },
 
   async upsertStudentPotential(input) {
-    const payload = TeacherStudentPotentialUpsertSchema.parse(input) as TeacherStudentPotentialUpsert;
+    const payload = TeacherStudentPotentialUpsertSchema.parse(
+      input,
+    ) as TeacherStudentPotentialUpsert;
     const { data, error } = await supabase.rpc('upsert_student_potential_analysis', {
       p_student_id: payload.student_id,
       p_classroom_id: payload.classroom_id,
@@ -595,7 +631,9 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch teacher insight audit trail', error.code, error);
 
-    return (data ?? []).map((row) => TeacherInsightAuditEventSchema.parse(row)) as TeacherInsightAuditEvent[];
+    return (data ?? []).map((row) =>
+      TeacherInsightAuditEventSchema.parse(row),
+    ) as TeacherInsightAuditEvent[];
   },
 
   async getInsightTimeline(insightType, insightId) {
@@ -609,6 +647,8 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (error) throw new APIError('Failed to fetch teacher insight timeline', error.code, error);
 
-    return (data ?? []).map((row) => TeacherInsightLifecycleEventSchema.parse(row)) as TeacherInsightLifecycleEvent[];
+    return (data ?? []).map((row) =>
+      TeacherInsightLifecycleEventSchema.parse(row),
+    ) as TeacherInsightLifecycleEvent[];
   },
 });

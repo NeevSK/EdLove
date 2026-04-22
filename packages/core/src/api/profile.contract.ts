@@ -4,7 +4,10 @@ import { POAMetadataSchema } from './contract';
 
 const c = initContract();
 
-const authority = (action: 'create' | 'read' | 'update' | 'delete', subject: 'User' | 'Group' | 'School') => POAMetadataSchema.parse({ authority: { action, subject } });
+const authority = (
+  action: 'create' | 'read' | 'update' | 'delete',
+  subject: 'User' | 'Group' | 'School',
+) => POAMetadataSchema.parse({ authority: { action, subject } });
 
 const SocialLinkSchema = z.object({
   id: z.string(),
@@ -98,11 +101,13 @@ export const profileContract = c.router({
   getJourneySnapshot: {
     method: 'GET',
     path: '/profile/users/:id/journey',
-    query: z.object({
-      at: z.string().optional(),
-      view_date: z.string().optional(),
-      view_scale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }).optional(),
+    query: z
+      .object({
+        at: z.string().optional(),
+        view_date: z.string().optional(),
+        view_scale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
+      })
+      .optional(),
     responses: { 200: JourneySnapshotSchema },
     metadata: authority('read', 'User'),
   },

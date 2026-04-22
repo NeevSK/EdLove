@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
+import type { Actions, Subjects } from '../abilities/base';
 import { usePermissions } from '../hooks/usePermissions';
-import { Actions, Subjects } from '../abilities/base';
 
 interface RouteGuardProps {
   action: Actions;
@@ -9,11 +9,11 @@ interface RouteGuardProps {
   fallback?: React.ReactNode;
 }
 
-export const RouteGuard: React.FC<RouteGuardProps> = ({ 
-  action, 
-  subject, 
-  children, 
-  fallback = null 
+export const RouteGuard: React.FC<RouteGuardProps> = ({
+  action,
+  subject,
+  children,
+  fallback = null,
 }) => {
   const { can } = usePermissions();
 

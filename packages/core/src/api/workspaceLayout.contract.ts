@@ -9,7 +9,8 @@ import {
 
 const c = initContract();
 
-const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) => POAMetadataSchema.parse({ authority: { action, subject } });
+const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) =>
+  POAMetadataSchema.parse({ authority: { action, subject } });
 
 export const workspaceLayoutContract = c.router({
   getWorkspaceLayout: {

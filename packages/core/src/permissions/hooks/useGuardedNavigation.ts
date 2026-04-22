@@ -1,17 +1,20 @@
+import type { NavigationContainerRef } from '@react-navigation/native';
 import { useEffect } from 'react';
-import { NavigationContainerRef } from '@react-navigation/native';
 import { useAuth } from '../../providers/AuthProvider';
 
 /**
  * useGuardedNavigation
- * 
- * Enforces "No Trust" barriers and ensures users are routed based 
+ *
+ * Enforces "No Trust" barriers and ensures users are routed based
  * on their authority and onboarding status.
- * 
+ *
  * @param onboardingCompleted - Current onboarding status
  * @param navigationRef - The React Navigation reference object (from the app)
  */
-export function useGuardedNavigation(onboardingCompleted: boolean, navigationRef: NavigationContainerRef<Record<string, unknown>> | null) {
+export function useGuardedNavigation(
+  onboardingCompleted: boolean,
+  navigationRef: NavigationContainerRef<Record<string, unknown>> | null,
+) {
   const { session, isProfileLoading } = useAuth();
 
   useEffect(() => {
@@ -22,11 +25,11 @@ export function useGuardedNavigation(onboardingCompleted: boolean, navigationRef
     const hasValidSession = !!session;
 
     if (__DEV__) {
-      console.log('=O Auth: Navigation Guard Check', { 
-        currentRoute, 
-        hasValidSession, 
+      console.log('=O Auth: Navigation Guard Check', {
+        currentRoute,
+        hasValidSession,
         onboardingCompleted,
-        isReady: navigationRef.isReady()
+        isReady: navigationRef.isReady(),
       });
     }
 

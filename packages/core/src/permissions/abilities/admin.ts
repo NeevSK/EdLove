@@ -1,6 +1,6 @@
-import { AbilityBuilder } from '@casl/ability';
-import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './base';
+import type { AbilityBuilder } from '@casl/ability';
+import type { UserContext } from '../schemas/user.schema';
+import type { AppAbility } from './base';
 
 export const defineAdminAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
   const { can } = builder;

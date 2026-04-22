@@ -1,31 +1,32 @@
-import { supabase } from '../../lib/supabase';
-import { getTemporalRange } from '../../utils/temporalUtils';
-import { APIError } from '../../api/types';
-import type { PrincipalWorkspaceRepository } from '../../domains/principalWorkspace/ports';
 import {
   InviteCodeSchema,
   type InviteCodeZod,
   PrincipalGovernanceEventSchema,
   type PrincipalGovernanceEventZod,
+  type PrincipalInviteEventCreate,
   PrincipalInviteEventCreateSchema,
   type PrincipalInviteRole,
-  PrincipalObservationFollowUpCreateSchema,
-  PrincipalObservationCreateSchema,
-  PrincipalObservationSchema,
-  type PrincipalInviteEventCreate,
-  type PrincipalObservationFollowUpCreate,
   type PrincipalObservationCreate,
+  PrincipalObservationCreateSchema,
+  type PrincipalObservationFollowUpCreate,
+  PrincipalObservationFollowUpCreateSchema,
+  PrincipalObservationSchema,
   type PrincipalObservationZod,
 } from '../../api/schemas/principal-workspace.schema';
-import { RoleSchema } from '../../permissions/schemas/role.schema';
+import { APIError } from '../../api/types';
+import type { PrincipalWorkspaceRepository } from '../../domains/principalWorkspace/ports';
+import { supabase } from '../../lib/supabase';
 import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
+import { RoleSchema } from '../../permissions/schemas/role.schema';
+import { getTemporalRange } from '../../utils/temporalUtils';
 
 const inviteRoleToAuthority = (role: PrincipalInviteRole) => {
   if (role === 'teacher') return 'teacher' as const;
   return 'principal' as const;
 };
 
-const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod => InviteCodeSchema.parse({
+const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
+  InviteCodeSchema.parse({
     code: row.code,
     school_id: row.school_id,
     authority: RoleSchema.parse((row.authority ?? row.role ?? 'teacher') as string),
@@ -81,7 +82,9 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
   async listInviteCodes(schoolId) {
     const { data, error } = await supabase
       .from('invite_codes')
-      .select('code, school_id, authority, role, created_by, used, is_active, uses_count, created_at, expires_at')
+      .select(
+        'code, school_id, authority, role, created_by, used, is_active, uses_count, created_at, expires_at',
+      )
       .eq('school_id', schoolId)
       .order('created_at', { ascending: false });
 
@@ -105,7 +108,9 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
     const { data, error } = await supabase
       .from('invite_codes')
       .insert(payload)
-      .select('code, school_id, authority, role, created_by, used, is_active, uses_count, created_at, expires_at')
+      .select(
+        'code, school_id, authority, role, created_by, used, is_active, uses_count, created_at, expires_at',
+      )
       .single();
 
     if (error) throw new APIError('Failed to generate invite code', error.code, error);
@@ -138,7 +143,9 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
       .limit(limit);
 
     if (error) throw new APIError('Failed to fetch principal observations', error.code, error);
-    return (data ?? []).map((row) => PrincipalObservationSchema.parse(row)) as PrincipalObservationZod[];
+    return (data ?? []).map((row) =>
+      PrincipalObservationSchema.parse(row),
+    ) as PrincipalObservationZod[];
   },
 
   async listRecentObservations(principalId, limit) {
@@ -149,8 +156,11 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
       .order('created_at', { ascending: false })
       .limit(limit);
 
-    if (error) throw new APIError('Failed to fetch recent principal observations', error.code, error);
-    return (data ?? []).map((row) => PrincipalObservationSchema.parse(row)) as PrincipalObservationZod[];
+    if (error)
+      throw new APIError('Failed to fetch recent principal observations', error.code, error);
+    return (data ?? []).map((row) =>
+      PrincipalObservationSchema.parse(row),
+    ) as PrincipalObservationZod[];
   },
 
   async createObservation(input) {
@@ -214,7 +224,9 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
   },
 
   async recordObservationFollowUp(input) {
-    const payload = PrincipalObservationFollowUpCreateSchema.parse(input) as PrincipalObservationFollowUpCreate;
+    const payload = PrincipalObservationFollowUpCreateSchema.parse(
+      input,
+    ) as PrincipalObservationFollowUpCreate;
     const occurredAt = payload.occurredAt ?? new Date().toISOString();
 
     const { data, error } = await supabase
@@ -237,7 +249,8 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
       .select('*')
       .single();
 
-    if (error) throw new APIError('Failed to record principal observation follow-up', error.code, error);
+    if (error)
+      throw new APIError('Failed to record principal observation follow-up', error.code, error);
     return PrincipalGovernanceEventSchema.parse(data) as PrincipalGovernanceEventZod;
   },
 
@@ -252,8 +265,11 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
       .order('recorded_at', { ascending: false })
       .limit(limit);
 
-    if (error) throw new APIError('Failed to fetch principal governance timeline', error.code, error);
-    return (data ?? []).map((row) => PrincipalGovernanceEventSchema.parse(row)) as PrincipalGovernanceEventZod[];
+    if (error)
+      throw new APIError('Failed to fetch principal governance timeline', error.code, error);
+    return (data ?? []).map((row) =>
+      PrincipalGovernanceEventSchema.parse(row),
+    ) as PrincipalGovernanceEventZod[];
   },
 
   async getGovernanceSnapshotAsOf(principalId, viewDate, limit) {
@@ -267,8 +283,11 @@ export const createSupabasePrincipalWorkspaceRepository = (): PrincipalWorkspace
       .order('recorded_at', { ascending: false })
       .limit(limit);
 
-    if (error) throw new APIError('Failed to fetch principal governance snapshot', error.code, error);
-    const events = (data ?? []).map((row) => PrincipalGovernanceEventSchema.parse(row)) as PrincipalGovernanceEventZod[];
+    if (error)
+      throw new APIError('Failed to fetch principal governance snapshot', error.code, error);
+    const events = (data ?? []).map((row) =>
+      PrincipalGovernanceEventSchema.parse(row),
+    ) as PrincipalGovernanceEventZod[];
     return selectLatestTemporalRecordsAsOf(events, viewDate, {
       getEntityKey: (event) => `${event.entity_type}:${event.entity_id}`,
       getEffectiveTo: (event) => event.effective_to,

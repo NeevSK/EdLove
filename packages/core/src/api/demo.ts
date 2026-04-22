@@ -4,8 +4,8 @@ import { useStore } from '../store/useStore';
  * Configuration for demo behavior
  */
 const DEMO_CONFIG = {
-    delay: 500, // Default simulated latency
-    simulateWrites: true, // If true, POST/PATCH/DELETE return success without hitting DB
+  delay: 500, // Default simulated latency
+  simulateWrites: true, // If true, POST/PATCH/DELETE return success without hitting DB
 };
 
 /**
@@ -17,18 +17,18 @@ export const isDemo = () => useStore.getState().isDemoMode;
  * Intercepts a READ API call and returns mock data if demo mode is active.
  */
 export async function withDemo<T>(
-    originalCall: () => Promise<T>,
-    mockData: T,
-    options: { delay?: number } = {}
+  originalCall: () => Promise<T>,
+  mockData: T,
+  options: { delay?: number } = {},
 ): Promise<T> {
-    if (isDemo()) {
-        const delay = options.delay !== undefined ? options.delay : DEMO_CONFIG.delay;
-        if (delay > 0) {
-            await new Promise(resolve => setTimeout(resolve, delay));
-        }
-        return mockData;
+  if (isDemo()) {
+    const delay = options.delay !== undefined ? options.delay : DEMO_CONFIG.delay;
+    if (delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
-    return originalCall();
+    return mockData;
+  }
+  return originalCall();
 }
 
 /**
@@ -36,25 +36,25 @@ export async function withDemo<T>(
  * In demo mode, it prevents the DB call and returns a simulated success.
  */
 export async function withDemoWrite<T>(
-    originalCall: () => Promise<T>,
-    simulatedResponse?: T
+  originalCall: () => Promise<T>,
+  simulatedResponse?: T,
 ): Promise<T> {
-    if (isDemo()) {
-        if (DEMO_CONFIG.delay > 0) {
-            await new Promise(resolve => setTimeout(resolve, DEMO_CONFIG.delay));
-        }
-        // If simulatedResponse is not provided, we cast a generic success object
-        // This is useful for deletions or simple status returns
-        return (simulatedResponse ?? { success: true } as unknown as T);
+  if (isDemo()) {
+    if (DEMO_CONFIG.delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, DEMO_CONFIG.delay));
     }
-    return originalCall();
+    // If simulatedResponse is not provided, we cast a generic success object
+    // This is useful for deletions or simple status returns
+    return simulatedResponse ?? ({ success: true } as unknown as T);
+  }
+  return originalCall();
 }
 
 /**
  * Unified Demo API
  */
 export const demoAPI = {
-    isDemo,
-    withDemo,
-    withDemoWrite,
+  isDemo,
+  withDemo,
+  withDemoWrite,
 };

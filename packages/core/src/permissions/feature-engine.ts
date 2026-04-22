@@ -1,8 +1,8 @@
-import { UserContext } from './schemas/user.schema';
+import type { UserContext } from './schemas/user.schema';
 
 /**
  * FeatureFlags - The central registry of all boolean switches in the Gurudevi Sanctuary.
- * 
+ *
  * FAANG Principle: "Strongly Typed Gates". Never use magic strings in the UI.
  */
 export interface FeatureFlags {
@@ -10,15 +10,15 @@ export interface FeatureFlags {
   isInventoryEnabled: boolean;
   isPaymentsEnabled: boolean;
   isAccountingEnabled: boolean;
-  
+
   // People & Administration Flags
   isStaffManagementEnabled: boolean;
   isStudentReportingEnabled: boolean;
   isTemplateManagementEnabled: boolean;
-  
+
   // Infrastructure Flags (Deployment Gating)
   isLibraryManagementEnabled: boolean;
-  
+
   // Business Flags (Entitlements / Tiers)
   isProMember: boolean;
   canUseOCR: boolean;
@@ -75,9 +75,8 @@ export const trackFeatureExposureInternal = (flag: string, value: boolean | stri
 };
 
 export const resolveFeatureFlags = (
-
   context: UserContext,
-  globalConfigs: Record<string, string | boolean> = {}
+  globalConfigs: Record<string, string | boolean> = {},
 ): FeatureFlags => {
   // 0. Default Safe Harbor State
   const flags: FeatureFlags = {
@@ -113,12 +112,15 @@ export const resolveFeatureFlags = (
     isDevelopingAI: false,
     isDevelopingAnalyticsDashboard: false,
     isDevelopingVoiceNavigation: false,
-    isUnderMaintenance: false};
+    isUnderMaintenance: false,
+  };
 
   // 1. Infrastructure Level (Process Env)
   // Note: Expo/Next.js bundle these at build time
   const envFlags = {
-    ERP: process.env.EXPO_PUBLIC_ENABLE_ERP === 'true' || process.env.NEXT_PUBLIC_ENABLE_ERP === 'true',
+    ERP:
+      process.env.EXPO_PUBLIC_ENABLE_ERP === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_ERP === 'true',
     NEW_ONBOARDING: process.env.EXPO_PUBLIC_ENABLE_NEW_ONBOARDING === 'true',
     GUARDIAN_WORKSPACE:
       process.env.EXPO_PUBLIC_ENABLE_GUARDIAN_WORKSPACE === 'true' ||
@@ -137,7 +139,8 @@ export const resolveFeatureFlags = (
       process.env.NEXT_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true',
     COMMUNITY: process.env.EXPO_PUBLIC_ENABLE_COMMUNITY !== 'false',
     MESSAGING: process.env.EXPO_PUBLIC_ENABLE_MESSAGING !== 'false',
-    SOCIAL_SHIELD: process.env.EXPO_PUBLIC_ENABLE_SOCIAL_SHIELD !== 'false'};
+    SOCIAL_SHIELD: process.env.EXPO_PUBLIC_ENABLE_SOCIAL_SHIELD !== 'false',
+  };
 
   if (envFlags.ERP) {
     flags.isInventoryEnabled = true;
@@ -152,17 +155,19 @@ export const resolveFeatureFlags = (
   if (envFlags.STUDENT_GOALS_WORKSPACE) flags.isStudentGoalsWorkspaceEnabled = true;
   if (envFlags.STUDENT_GRADES_WORKSPACE) flags.isStudentGradesWorkspaceEnabled = true;
   if (envFlags.STUDENT_PROGRESS_WORKSPACE) flags.isStudentProgressWorkspaceEnabled = true;
-  
+
   if (envFlags.COMMUNITY === false) flags.isCommunityEnabled = false;
   if (envFlags.MESSAGING === false) flags.isMessagingEnabled = false;
   if (envFlags.SOCIAL_SHIELD === false) flags.isSocialShieldEnabled = false;
 
   // 2. Entitlement Level (Tier & Features Array)
-  const isPaidTier = ['pro', 'premium', 'gold', 'silver'].includes(context.tier?.toLowerCase() || '');
+  const isPaidTier = ['pro', 'premium', 'gold', 'silver'].includes(
+    context.tier?.toLowerCase() || '',
+  );
   const isAdmin = ['admin', 'founder', 'developer'].includes(context.authority || '');
 
   flags.isProMember = isPaidTier || isAdmin;
-  
+
   if (context.features.includes('OCR') || isAdmin) flags.canUseOCR = true;
   if (context.features.includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;
   if (context.features.includes('STAFF_MANAGEMENT')) flags.isStaffManagementEnabled = true;
@@ -174,29 +179,44 @@ export const resolveFeatureFlags = (
   ) {
     flags.isGuardianWorkspaceEnabled = true;
   }
-  if (context.features.includes('STUDENT_REWARDS_WORKSPACE') || context.features.includes('BETA_STUDENT_WORKSPACE')) {
+  if (
+    context.features.includes('STUDENT_REWARDS_WORKSPACE') ||
+    context.features.includes('BETA_STUDENT_WORKSPACE')
+  ) {
     flags.isStudentRewardsWorkspaceEnabled = true;
   }
-  if (context.features.includes('STUDENT_GOALS_WORKSPACE') || context.features.includes('BETA_STUDENT_WORKSPACE')) {
+  if (
+    context.features.includes('STUDENT_GOALS_WORKSPACE') ||
+    context.features.includes('BETA_STUDENT_WORKSPACE')
+  ) {
     flags.isStudentGoalsWorkspaceEnabled = true;
   }
-  if (context.features.includes('STUDENT_GRADES_WORKSPACE') || context.features.includes('BETA_STUDENT_WORKSPACE')) {
+  if (
+    context.features.includes('STUDENT_GRADES_WORKSPACE') ||
+    context.features.includes('BETA_STUDENT_WORKSPACE')
+  ) {
     flags.isStudentGradesWorkspaceEnabled = true;
   }
-  if (context.features.includes('STUDENT_PROGRESS_WORKSPACE') || context.features.includes('BETA_STUDENT_WORKSPACE')) {
+  if (
+    context.features.includes('STUDENT_PROGRESS_WORKSPACE') ||
+    context.features.includes('BETA_STUDENT_WORKSPACE')
+  ) {
     flags.isStudentProgressWorkspaceEnabled = true;
   }
-  if (context.features.includes('STUDENT_ASSIGNMENT_QUEUE') || context.features.includes('BETA_STUDENT_WORKSPACE')) {
+  if (
+    context.features.includes('STUDENT_ASSIGNMENT_QUEUE') ||
+    context.features.includes('BETA_STUDENT_WORKSPACE')
+  ) {
     flags.isStudentAssignmentQueueEnabled = true;
   }
-  
+
   if (context.features.includes('COMMUNITY')) flags.isCommunityEnabled = true;
   if (context.features.includes('DIRECT_MESSAGING')) flags.isMessagingEnabled = true;
   if (context.features.includes('SOCIAL_SHIELD')) flags.isSocialShieldEnabled = true;
 
   // 3. Role/Persona Logic
   if (context.authority === 'student') {
-      flags.isInventoryEnabled = false; // Strictly enforced override
+    flags.isInventoryEnabled = false; // Strictly enforced override
   }
 
   if (context.authority === 'developer') {
@@ -216,12 +236,18 @@ export const resolveFeatureFlags = (
   if (globalConfigs['KILL_SWITCH_OCR'] === 'true' || globalConfigs['KILL_SWITCH_OCR'] === true) {
     flags.canUseOCR = false;
   }
-  
-  if (globalConfigs['KILL_SWITCH_COMMUNITY'] === 'true' || globalConfigs['KILL_SWITCH_COMMUNITY'] === true) {
+
+  if (
+    globalConfigs['KILL_SWITCH_COMMUNITY'] === 'true' ||
+    globalConfigs['KILL_SWITCH_COMMUNITY'] === true
+  ) {
     flags.isCommunityEnabled = false;
   }
-  
-  if (globalConfigs['KILL_SWITCH_MESSAGING'] === 'true' || globalConfigs['KILL_SWITCH_MESSAGING'] === true) {
+
+  if (
+    globalConfigs['KILL_SWITCH_MESSAGING'] === 'true' ||
+    globalConfigs['KILL_SWITCH_MESSAGING'] === true
+  ) {
     flags.isMessagingEnabled = false;
   }
 
@@ -233,10 +259,10 @@ export const resolveFeatureFlags = (
   // 5. User Specific Override (Flag Injection from Context)
   // This allows us to push a specific flag to a specific user via the flags map in UserContext
   if (context.flags) {
-    Object.keys(context.flags).forEach(key => {
-        if (key in flags) {
-            (flags as any)[key] = context.flags[key];
-        }
+    Object.keys(context.flags).forEach((key) => {
+      if (key in flags) {
+        (flags as any)[key] = context.flags[key];
+      }
     });
   }
 

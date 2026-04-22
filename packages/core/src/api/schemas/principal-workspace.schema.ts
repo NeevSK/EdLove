@@ -1,8 +1,23 @@
 import { z } from 'zod';
 import { RoleSchema } from '../../permissions/schemas/role.schema';
 
-export const PrincipalInviteRoleSchema = z.enum(['teacher', 'principal', 'student', 'gradeHead', 'sectionHead', 'assistantPrincipal']);
-export const PrincipalGovernanceEventTypeSchema = z.enum(['create', 'read', 'use', 'expire', 'revoke', 'follow_up', 'approve']);
+export const PrincipalInviteRoleSchema = z.enum([
+  'teacher',
+  'principal',
+  'student',
+  'gradeHead',
+  'sectionHead',
+  'assistantPrincipal',
+]);
+export const PrincipalGovernanceEventTypeSchema = z.enum([
+  'create',
+  'read',
+  'use',
+  'expire',
+  'revoke',
+  'follow_up',
+  'approve',
+]);
 
 export const InviteCodeSchema = z.object({
   code: z.string().min(1),
@@ -70,5 +85,7 @@ export type PrincipalInviteRole = z.infer<typeof PrincipalInviteRoleSchema>;
 export type PrincipalObservationZod = z.infer<typeof PrincipalObservationSchema>;
 export type PrincipalObservationCreate = z.infer<typeof PrincipalObservationCreateSchema>;
 export type PrincipalInviteEventCreate = z.infer<typeof PrincipalInviteEventCreateSchema>;
-export type PrincipalObservationFollowUpCreate = z.infer<typeof PrincipalObservationFollowUpCreateSchema>;
+export type PrincipalObservationFollowUpCreate = z.infer<
+  typeof PrincipalObservationFollowUpCreateSchema
+>;
 export type PrincipalGovernanceEventZod = z.infer<typeof PrincipalGovernanceEventSchema>;

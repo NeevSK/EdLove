@@ -1,6 +1,6 @@
-import { AbilityBuilder } from '@casl/ability';
-import { UserContext } from '../schemas/user.schema';
-import { AppAbility } from './base';
+import type { AbilityBuilder } from '@casl/ability';
+import type { UserContext } from '../schemas/user.schema';
+import type { AppAbility } from './base';
 
 export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
   if (!user.schoolId) return; // 2nd class citizen - handled in composer.ts
@@ -15,7 +15,7 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   can('read', 'Material', { school_id: user.schoolId } as any);
   can('read', 'Grade');
   can('create', 'AssignmentSubmission', { student_id: user.userId } as any);
-  
+
   // Community & Library access for 1st class citizens
   can('read', 'CommunityFeed');
   can('read', 'CommunityGroups');

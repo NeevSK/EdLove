@@ -31,7 +31,7 @@ export const StaffLeaveSchema = z.object({
   user_id: z.string().uuid(),
   leave_type: z.string(),
   start_date: z.string(), // ISO Date string YYYY-MM-DD
-  end_date: z.string(),   // ISO Date string YYYY-MM-DD
+  end_date: z.string(), // ISO Date string YYYY-MM-DD
   reason: z.string().nullable().optional(),
   status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
   reviewed_by: z.string().uuid().nullable().optional(),

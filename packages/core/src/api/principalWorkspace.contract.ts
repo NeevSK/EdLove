@@ -6,14 +6,17 @@ import {
   PrincipalGovernanceEventSchema,
   PrincipalInviteEventCreateSchema,
   PrincipalInviteRoleSchema,
-  PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationCreateSchema,
+  PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationSchema,
 } from './schemas/principal-workspace.schema';
 
 const c = initContract();
 
-const principalWorkspaceAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) => POAMetadataSchema.parse({ authority: { action, subject } });
+const principalWorkspaceAuthority = (
+  action: 'create' | 'read' | 'update' | 'delete',
+  subject: string,
+) => POAMetadataSchema.parse({ authority: { action, subject } });
 
 export const principalWorkspaceContract = c.router({
   listInviteCodes: {

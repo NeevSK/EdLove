@@ -8,22 +8,28 @@
  *  - Student attendance projections delegated to the dedicated attendance projection service
  */
 
-import { supabase } from '../lib/supabase';
-import { AttendanceReport } from '../types/Attendance';
 import { attendanceProjectionServices } from '../domains/attendanceProjection/runtime';
+import { supabase } from '../lib/supabase';
+import type { AttendanceReport } from '../types/Attendance';
 import {
-  StaffPresenceSummarySchema,
-  TeacherCarouselItemSchema,
+  type CalendarEventZod as CalendarEvent,
+  CalendarEventSchema,
+  type StaffLeaveZod as StaffLeaveDTO,
   StaffLeaveSchema,
   type StaffPresenceSummaryZod as StaffPresenceSummary,
-  type TeacherCarouselItemZod as TeacherCarouselItem,
-  type StaffLeaveZod as StaffLeaveDTO,
+  StaffPresenceSummarySchema,
   type StudentAttendancePulseZod as StudentAttendancePulse,
-  CalendarEventSchema,
-  type CalendarEventZod as CalendarEvent,
+  type TeacherCarouselItemZod as TeacherCarouselItem,
+  TeacherCarouselItemSchema,
 } from './schemas/staff.schema';
 
-export type { StaffPresenceSummary, TeacherCarouselItem, StaffLeaveDTO, StudentAttendancePulse, CalendarEvent };
+export type {
+  CalendarEvent,
+  StaffLeaveDTO,
+  StaffPresenceSummary,
+  StudentAttendancePulse,
+  TeacherCarouselItem,
+};
 
 function formatLocalDateISO(date: Date): string {
   const year = date.getFullYear();
@@ -37,7 +43,10 @@ function todayISO(): string {
 }
 
 export const staffManagementAPI = {
-  async getStaffPresenceSummary(schoolId: string, viewDate?: string): Promise<StaffPresenceSummary> {
+  async getStaffPresenceSummary(
+    schoolId: string,
+    viewDate?: string,
+  ): Promise<StaffPresenceSummary> {
     const targetDate = viewDate || todayISO();
     const empty: StaffPresenceSummary = { present: 0, absent: 0, onLeave: 0, total: 0 };
     try {
@@ -56,7 +65,8 @@ export const staffManagementAPI = {
       return StaffPresenceSummarySchema.parse({
         present: rows.filter((row) => row.status === 'present' || row.status === 'late').length,
         absent: rows.filter((row) => row.status === 'absent').length,
-        onLeave: rows.filter((row) => row.status === 'on_leave' || row.status === 'half_day').length,
+        onLeave: rows.filter((row) => row.status === 'on_leave' || row.status === 'half_day')
+          .length,
         total: rows.length,
       });
     } catch (error) {
@@ -210,24 +220,32 @@ export const staffManagementAPI = {
       }
 
       if (leave?.user_id) {
-        const dateRange = leave.start_date === leave.end_date
-          ? leave.start_date
-          : `${leave.start_date} - ${leave.end_date}`;
+        const dateRange =
+          leave.start_date === leave.end_date
+            ? leave.start_date
+            : `${leave.start_date} - ${leave.end_date}`;
 
-        void supabase.from('notifications').insert({
-          user_id: leave.user_id,
-          type: approve ? 'leave_approved' : 'leave_rejected',
-          title: approve ? 'Leave Approved' : 'Leave Request Update',
-          body: approve
-            ? `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} has been approved.`
-            : `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} was not approved. Please speak with the principal.`,
-          is_read: false,
-          reference_id: leaveId,
-          reference_type: 'staff_leave',
-        }).then(
-          () => {},
-          (notificationError: Error) => console.warn('[staffManagement] leave notification failed:', notificationError?.message)
-        );
+        void supabase
+          .from('notifications')
+          .insert({
+            user_id: leave.user_id,
+            type: approve ? 'leave_approved' : 'leave_rejected',
+            title: approve ? 'Leave Approved' : 'Leave Request Update',
+            body: approve
+              ? `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} has been approved.`
+              : `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} was not approved. Please speak with the principal.`,
+            is_read: false,
+            reference_id: leaveId,
+            reference_type: 'staff_leave',
+          })
+          .then(
+            () => {},
+            (notificationError: Error) =>
+              console.warn(
+                '[staffManagement] leave notification failed:',
+                notificationError?.message,
+              ),
+          );
       }
 
       return true;
@@ -241,12 +259,16 @@ export const staffManagementAPI = {
     schoolId: string,
     classroomId?: string,
     viewDate?: string,
-    options?: { actorId?: string; accessKind?: string; reason?: string }
+    options?: { actorId?: string; accessKind?: string; reason?: string },
   ): Promise<StudentAttendancePulse> {
     return attendanceProjectionServices.getSchoolAttendancePulse(schoolId, classroomId, viewDate);
   },
 
-  async getUpcomingCalendarEvents(schoolId: string, limit = 5, viewDate?: string): Promise<CalendarEvent[]> {
+  async getUpcomingCalendarEvents(
+    schoolId: string,
+    limit = 5,
+    viewDate?: string,
+  ): Promise<CalendarEvent[]> {
     try {
       const targetDate = viewDate || todayISO();
       const { data, error } = await supabase
@@ -314,6 +336,11 @@ export const staffManagementAPI = {
     endDate: string,
     classroomId?: string,
   ): Promise<AttendanceReport> {
-    return (await attendanceProjectionServices.getAttendanceReport(schoolId, startDate, endDate, classroomId)) as AttendanceReport;
+    return (await attendanceProjectionServices.getAttendanceReport(
+      schoolId,
+      startDate,
+      endDate,
+      classroomId,
+    )) as AttendanceReport;
   },
 };

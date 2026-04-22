@@ -35,7 +35,8 @@ export function resolveWorkspaceSwitcherTargets({
   canManageStudentDashboard,
   canManageGuardianDashboard = false,
   hasPrimaryInstitution = false,
-  hasMountedGuardianWorkspace = false}: {
+  hasMountedGuardianWorkspace = false,
+}: {
   currentWorkspace?: WorkspaceSwitcherTargetId;
   canManageFounderDashboard: boolean;
   canManageAdminDashboard: boolean;
@@ -57,23 +58,29 @@ export function resolveWorkspaceSwitcherTargets({
     {
       id: 'founder',
       title: 'Founder workspace',
-      description: 'Platform-scale stewardship, cross-tenant signal, and founder-owned launch surfaces.',
+      description:
+        'Platform-scale stewardship, cross-tenant signal, and founder-owned launch surfaces.',
       destination: {
         kind: 'route',
-        name: 'FounderDashboard'},
+        name: 'FounderDashboard',
+      },
       enabled: founderEnabled,
       status: currentWorkspace === 'founder' ? 'current' : 'available',
-      reason: founderEnabled ? undefined : 'Founder authority is not active for this actor.'},
+      reason: founderEnabled ? undefined : 'Founder authority is not active for this actor.',
+    },
     {
       id: 'admin',
       title: 'Admin workspace',
-      description: 'Platform-system operations, tenant health, authority repair, and audit-driven interventions.',
+      description:
+        'Platform-system operations, tenant health, authority repair, and audit-driven interventions.',
       destination: {
         kind: 'route',
-        name: 'AdminDashboard'},
+        name: 'AdminDashboard',
+      },
       enabled: adminEnabled,
       status: currentWorkspace === 'admin' ? 'current' : 'available',
-      reason: adminEnabled ? undefined : 'Admin authority is not active for this actor.'},
+      reason: adminEnabled ? undefined : 'Admin authority is not active for this actor.',
+    },
     {
       id: 'principal',
       title: 'Principal operations',
@@ -81,50 +88,70 @@ export function resolveWorkspaceSwitcherTargets({
       destination: hasPrimaryInstitution
         ? {
             kind: 'route',
-            name: 'PrincipalDashboard'}
+            name: 'PrincipalDashboard',
+          }
         : null,
       enabled: principalEnabled,
-      status: currentWorkspace === 'principal' ? 'current' : hasPrimaryInstitution ? 'bridge' : 'coming_soon',
+      status:
+        currentWorkspace === 'principal'
+          ? 'current'
+          : hasPrimaryInstitution
+            ? 'bridge'
+            : 'coming_soon',
       reason: principalEnabled
         ? undefined
         : hasPrimaryInstitution
-        ? undefined
-        : 'Needs at least one institution context before the operational workspace can open.'},
+          ? undefined
+          : 'Needs at least one institution context before the operational workspace can open.',
+    },
     {
       id: 'teacher',
       title: 'Teacher workspace',
       description: 'Academic daily-work surfaces currently composed through the classroom shell.',
       destination: {
         kind: 'tab',
-        name: 'Classroom'},
+        name: 'Classroom',
+      },
       enabled: teacherEnabled,
       status: currentWorkspace === 'teacher' ? 'current' : 'available',
-      reason: teacherEnabled ? undefined : 'Teacher capability is not active for this actor.'},
+      reason: teacherEnabled ? undefined : 'Teacher capability is not active for this actor.',
+    },
     {
       id: 'student',
       title: 'Student workspace',
-      description: 'Learning-flow and progress surfaces currently composed through the classroom shell.',
+      description:
+        'Learning-flow and progress surfaces currently composed through the classroom shell.',
       destination: {
         kind: 'tab',
-        name: 'Classroom'},
+        name: 'Classroom',
+      },
       enabled: studentEnabled,
       status: currentWorkspace === 'student' ? 'current' : 'available',
-      reason: studentEnabled ? undefined : 'Student capability is not active for this actor.'},
+      reason: studentEnabled ? undefined : 'Student capability is not active for this actor.',
+    },
     {
       id: 'guardian',
       title: 'Guardian workspace',
-      description: 'Family-facing oversight with child visibility, announcements, events, and school communication.',
+      description:
+        'Family-facing oversight with child visibility, announcements, events, and school communication.',
       destination: hasMountedGuardianWorkspace
         ? {
             kind: 'route',
-            name: 'GuardianDashboard'}
+            name: 'GuardianDashboard',
+          }
         : null,
       enabled: guardianEnabled,
-      status: currentWorkspace === 'guardian' ? 'current' : hasMountedGuardianWorkspace ? 'available' : 'coming_soon',
+      status:
+        currentWorkspace === 'guardian'
+          ? 'current'
+          : hasMountedGuardianWorkspace
+            ? 'available'
+            : 'coming_soon',
       reason: guardianEnabled
         ? undefined
         : canManageGuardianDashboard && !hasMountedGuardianWorkspace
-        ? 'Guardian authority exists, but the workspace route is not mounted yet.'
-        : 'Guardian authority is not active for this actor.'},
+          ? 'Guardian authority exists, but the workspace route is not mounted yet.'
+          : 'Guardian authority is not active for this actor.',
+    },
   ];
 }

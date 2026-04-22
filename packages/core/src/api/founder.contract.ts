@@ -1,14 +1,20 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import { POAMetadataSchema } from './contract';
-import { EcosystemPulseSchema, EcosystemStatsSchema, GlobalUserSchema, SentinelAuditLogSchema } from './schemas/founder.schema';
-import { SchoolSchema } from './schemas/school.schema';
 import { ClassroomSchema } from './schemas/classroom.schema';
 import { CommunityGroupSchema } from './schemas/community.schema';
+import {
+  EcosystemPulseSchema,
+  EcosystemStatsSchema,
+  GlobalUserSchema,
+  SentinelAuditLogSchema,
+} from './schemas/founder.schema';
+import { SchoolSchema } from './schemas/school.schema';
 
 const c = initContract();
 
-const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) => POAMetadataSchema.parse({ authority: { action, subject } });
+const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
+  POAMetadataSchema.parse({ authority: { action, subject } });
 
 export const founderContract = c.router({
   getEcosystemStats: {

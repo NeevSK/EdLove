@@ -3,14 +3,17 @@ import { z } from 'zod';
 import { POAMetadataSchema } from './contract';
 import {
   CommunityGroupSchema,
-  GroupMemberSchema,
   CommunityPostSchema,
+  GroupMemberSchema,
   GroupMessageSchema,
 } from './schemas/community.schema';
 
 const c = initContract();
 
-const authority = (action: 'create' | 'read' | 'update' | 'delete', subject: 'Group' | 'Post' | 'User') => POAMetadataSchema.parse({ authority: { action, subject } });
+const authority = (
+  action: 'create' | 'read' | 'update' | 'delete',
+  subject: 'Group' | 'Post' | 'User',
+) => POAMetadataSchema.parse({ authority: { action, subject } });
 
 export const communityContract = c.router({
   getAnnouncements: {

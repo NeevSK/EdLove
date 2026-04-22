@@ -1,9 +1,6 @@
-import { Role } from '../permissions/schemas/role.schema';
+import type { Role } from '../permissions/schemas/role.schema';
 
 export type AuthorityTier = Role;
-export type { Role as PlatformAuthority }; // Transitional aliases
-export type { Role as SchoolAuthority };
-export type { Role as WorkCapacity };
+export type { Role as PlatformAuthority, Role as SchoolAuthority, Role as WorkCapacity }; // Transitional aliases
 export type SchoolRole = Role;
 export type WorkRole = Role;
-

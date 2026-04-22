@@ -1,14 +1,19 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
+import { POAMetadataSchema } from './contract';
 import {
+  AttendanceReportSchema,
   AttendanceSchema,
   AttendanceSnapshotSchema,
-  AttendanceReportSchema,
   SchoolAttendancePulseSchema,
 } from './schemas/attendance.schema';
-import { SchoolSchema, SchoolStatsSchema, SectionSchema, GradeSchema } from './schemas/school.schema';
 import { InventoryItemSchema } from './schemas/inventory_item.schema';
-import { POAMetadataSchema } from './contract';
+import {
+  GradeSchema,
+  SchoolSchema,
+  SchoolStatsSchema,
+  SectionSchema,
+} from './schemas/school.schema';
 
 const c = initContract();
 
@@ -57,12 +62,14 @@ export const operationsContract = c.router({
   batchRecordAttendance: {
     method: 'POST',
     path: '/attendance/batch',
-    body: z.array(z.object({
-      classroom_id: z.string(),
-      student_id: z.string(),
-      status: z.string(),
-      date: z.string(),
-    })),
+    body: z.array(
+      z.object({
+        classroom_id: z.string(),
+        student_id: z.string(),
+        status: z.string(),
+        date: z.string(),
+      }),
+    ),
     responses: {
       200: z.array(AttendanceSchema),
     },

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import type React from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 interface ActivityPulseState {
   pulse: number; // 0 to 1, representing recent activity intensity
@@ -23,7 +24,7 @@ export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({
   const decayRef = useRef<number | null>(null);
 
   const registerPulse = (strength: number = 0.2) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       pulse: Math.min(1, prev.pulse + strength),
       lastEventTime: Date.now(),
@@ -34,7 +35,7 @@ export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // Decay function to make the pulse fade over time
     const decay = () => {
-      setState(prev => {
+      setState((prev) => {
         if (prev.pulse <= 0.01) return prev;
         return {
           ...prev,

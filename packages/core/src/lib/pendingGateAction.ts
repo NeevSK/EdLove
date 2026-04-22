@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 export type PendingGateAction =
   | { kind: 'community_open_create_group'; createdAt: number }
@@ -41,4 +41,3 @@ export async function clearPendingGateAction(): Promise<void> {
   }
   await AsyncStorage.removeItem(STORAGE_KEY);
 }
-

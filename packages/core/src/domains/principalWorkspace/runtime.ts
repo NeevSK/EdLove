@@ -3,4 +3,6 @@ import { createPrincipalWorkspaceServices } from './services';
 
 const principalWorkspaceRepository = createSupabasePrincipalWorkspaceRepository();
 
-export const principalWorkspaceServices = createPrincipalWorkspaceServices(principalWorkspaceRepository);
+export const principalWorkspaceServices = createPrincipalWorkspaceServices(
+  principalWorkspaceRepository,
+);

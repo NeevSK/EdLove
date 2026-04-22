@@ -2,5 +2,5 @@ import { supabaseGradingProjectionRepository } from '../../adapters/supabase/gra
 import { createGradingProjectionServices } from './services';
 
 export const gradingProjectionServices = createGradingProjectionServices(
-    supabaseGradingProjectionRepository
+  supabaseGradingProjectionRepository,
 );
