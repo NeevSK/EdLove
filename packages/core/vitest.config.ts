@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/logic/**/*.{test,spec}.ts', 'src/logic/**/*.ts'],
+    include: ['src/**/*.{test,spec}.ts', 'packages/core/src/**/*.{test,spec}.ts'],
     includeSource: ['src/logic/**/*.ts'],
     passWithNoTests: true,
   },

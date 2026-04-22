@@ -8,6 +8,7 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   can('read', 'School', { id: user.schoolId } as any);
   can('read', 'Classroom', { members: { $elemMatch: { user_id: user.userId } } } as any);
   can('read', 'StudentProfile', { user_id: user.userId } as any);
+  can('update', 'StudentProfile', { user_id: user.userId } as any);
   can('read', 'StudentPulse');
   can('manage', 'StudentDashboard');
   can('read', 'ClassroomList');

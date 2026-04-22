@@ -1,11 +1,12 @@
 import type { UserContext } from '../logic/schemas/user.schema';
+import { subject } from '@casl/ability';
 import { composeUserAbilities } from './composer';
 
 describe('POA Exhaustive Verification: Every Role, Every Power', () => {
   const baseContext: UserContext = {
-    userId: 'test-user-id',
+    userId: '00000000-0000-0000-0000-000000000000',
     email: 'test@example.com',
-    schoolId: 'test-school-id',
+    schoolId: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
     tenancy: { kind: 'customer', isPersonal: false },
     tenancyName: 'Test School',
     tenantKind: 'customer',
@@ -75,9 +76,9 @@ describe('POA Exhaustive Verification: Every Role, Every Power', () => {
   /** COMMON SECTIONS: SELF, COMMUNITY, LIBRARY **/
   test('Self/Profile: Should allow users to update their own profiles', () => {
     const ability = composeUserAbilities({ ...baseContext, roles: ['student'] } as any);
-    expect(ability.can('update', 'StudentProfile', { userId: baseContext.userId } as any)).toBe(
-      true,
-    );
+    expect(
+      ability.can('update', subject('StudentProfile', { user_id: baseContext.userId } as any)),
+    ).toBe(true);
   });
 
   test('Community: All roles (including guests) can see the feed', () => {
