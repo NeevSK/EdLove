@@ -1,3 +1,4 @@
+/// <reference types="vitest/importMeta" />
 import { z } from 'zod';
 import { RoleSchema } from './role.schema';
 
@@ -79,3 +80,4 @@ if (import.meta.vitest) {
     expect(() => UserSchema.parse(invalidUser)).toThrow();
   });
 }
+

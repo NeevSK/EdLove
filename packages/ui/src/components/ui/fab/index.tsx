@@ -11,7 +11,10 @@ export const Fab = ({ children, className, onPress, placement = 'bottom-right' }
   };
 
   return (
-    <Pressable onPress={onPress} className={`absolute z-30 p-4 rounded-full bg-phase-accent shadow-lg active:opacity-80 items-center justify-center ${placementMap[placement] || placementMap['bottom-right']} ${className || ''}`}>
+    <Pressable
+      onPress={onPress}
+      className={`absolute z-30 p-4 rounded-full bg-phase-accent shadow-lg active:opacity-80 items-center justify-center ${placementMap[placement] || placementMap['bottom-right']} ${className || ''}`}
+    >
       {children}
     </Pressable>
   );

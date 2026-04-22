@@ -13,7 +13,9 @@ export const Radio = ({ children, isChecked, onPress, className }: any) => (
 );
 
 export const RadioIndicator = ({ isChecked, className }: any) => (
-  <View className={`w-5 h-5 rounded-full border-2 border-phase-accent items-center justify-center ${className || ''}`}>
+  <View
+    className={`w-5 h-5 rounded-full border-2 border-phase-accent items-center justify-center ${className || ''}`}
+  >
     {isChecked && <View className="w-2.5 h-2.5 rounded-full bg-phase-accent" />}
   </View>
 );

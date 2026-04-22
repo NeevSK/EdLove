@@ -1,5 +1,12 @@
 import React from 'react';
-import { Pressable, Text, type PressableProps, type TextProps, View, ActivityIndicator } from 'react-native';
+import {
+  Pressable,
+  Text,
+  type PressableProps,
+  type TextProps,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import { cssInterop } from 'nativewind';
 
 cssInterop(Pressable, { className: 'style' });
@@ -14,7 +21,18 @@ export interface IButtonProps extends PressableProps {
 }
 
 const Button = React.forwardRef<View, IButtonProps>(
-  ({ className, variant = 'solid', action = 'primary', size = 'md', isDisabled, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = 'solid',
+      action = 'primary',
+      size = 'md',
+      isDisabled,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const variants = {
       solid: {
         primary: 'bg-phase-accent active:opacity-90',
@@ -44,7 +62,7 @@ const Button = React.forwardRef<View, IButtonProps>(
       md: 'px-4 py-2',
       lg: 'px-6 py-3',
     };
-    
+
     const baseStyle = 'flex-row items-center justify-center rounded-xl';
     const variantStyle = (variants[variant] as any)?.[action] || variants.solid.primary;
     const sizeStyle = sizes[size] || sizes.md;
@@ -59,28 +77,24 @@ const Button = React.forwardRef<View, IButtonProps>(
         {children}
       </Pressable>
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';
 
 export const ButtonText = React.forwardRef<Text, TextProps & { className?: string }>(
   ({ className, ...props }, ref) => (
-    <Text
-      {...props}
-      ref={ref}
-      className={`font-semibold text-center ${className || ''}`}
-    />
-  )
+    <Text {...props} ref={ref} className={`font-semibold text-center ${className || ''}`} />
+  ),
 );
 
 export const ButtonIcon = ({ as: Icon, className, size = 18, ...props }: any) => {
-    if (!Icon) return null;
-    return <Icon {...props} size={size} className={className} />;
+  if (!Icon) return null;
+  return <Icon {...props} size={size} className={className} />;
 };
 
 export const ButtonSpinner = ({ className, color }: any) => (
-    <ActivityIndicator color={color} className={className} />
+  <ActivityIndicator color={color} className={className} />
 );
 
 ButtonText.displayName = 'ButtonText';

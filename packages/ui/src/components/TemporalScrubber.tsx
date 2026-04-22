@@ -8,13 +8,13 @@ const SCRUBBER_WIDTH = SCREEN_WIDTH * 0.8;
 
 /**
  * TemporalScrubber
- * 
+ *
  * A premium, gesture-based component for "sliding" through the user's journey.
  * Adheres to the "Breath-like Motion" and "Sanctuary Glass" principles.
  */
 export const TemporalScrubber: React.FC = () => {
   const { viewDate, setViewDate, intensity, phase } = useTemporalStore();
-  
+
   // Animation value for the scrubber handle
   const pan = React.useRef(new Animated.Value(0)).current;
 
@@ -41,15 +41,15 @@ export const TemporalScrubber: React.FC = () => {
           useNativeDriver: false,
         }).start();
       },
-    })
+    }),
   ).current;
 
   const color = phase === 'past' ? '#968E80' : '#F6BF8C';
 
   return (
     <Box className="p-6 items-center justify-center">
-      <Box 
-        className="h-1 rounded-full justify-center mb-4" 
+      <Box
+        className="h-1 rounded-full justify-center mb-4"
         style={{ width: SCRUBBER_WIDTH, backgroundColor: `${color}22` }}
       >
         <Animated.View
@@ -68,10 +68,7 @@ export const TemporalScrubber: React.FC = () => {
           <Box className="w-2 h-2 rounded-full bg-white/80" />
         </Animated.View>
       </Box>
-      <Text 
-        className="text-[10px] font-bold tracking-[2px] opacity-80"
-        style={{ color }}
-      >
+      <Text className="text-[10px] font-bold tracking-[2px] opacity-80" style={{ color }}>
         {viewDate === new Date().toISOString().split('T')[0] ? 'LIVING PRESENT' : viewDate}
       </Text>
     </Box>

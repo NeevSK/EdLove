@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { type CrystalTier, naturePathsAPI, type RiverStage } from '../api/naturePaths';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
 /**
  * useNaturePaths
@@ -41,3 +41,4 @@ export const useNaturePaths = () => {
     refreshPaths,
   };
 };
+

@@ -1,8 +1,8 @@
-jest.mock('../native/runtimes/workspaceLayout.runtime', () => ({
+﻿vi.mock('../native/runtimes/workspaceLayout.runtime', () => ({
   workspaceLayoutServices: {
-    getLayout: jest.fn(),
-    upsertLayout: jest.fn(),
-    deleteLayout: jest.fn(),
+    getLayout: vi.fn(),
+    upsertLayout: vi.fn(),
+    deleteLayout: vi.fn(),
   },
 }));
 
@@ -38,3 +38,4 @@ describe('workspace layout POA coverage', () => {
     });
   });
 });
+

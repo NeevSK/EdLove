@@ -20,7 +20,7 @@ const HStack = React.forwardRef<View, IHStackProps>(
   ({ className, space, reversed, ...props }, ref) => {
     const spaceClass = space ? `gap-${space}` : '';
     const reversedClass = reversed ? 'flex-row-reverse' : 'flex-row';
-    
+
     const Component = StyledView as any;
 
     return (
@@ -30,7 +30,7 @@ const HStack = React.forwardRef<View, IHStackProps>(
         className={`${reversedClass} items-center ${spaceClass} ${className || ''}`}
       />
     );
-  }
+  },
 );
 
 HStack.displayName = 'HStack';

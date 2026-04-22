@@ -14,24 +14,18 @@
 /** Parse hex (#RGB / #RRGGBB / #RGBA / #RRGGBBAA) \u2192 [r, g, b] in 0-255 */
 export function hexToRgb(hex: string): [number, number, number] {
   if (!hex || typeof hex !== 'string') {
-    throw new Error(`colorUtils.hexToRgb: expected a hex string, got ${typeof hex} (${String(hex)})`);
+    throw new Error(
+      `colorUtils.hexToRgb: expected a hex string, got ${typeof hex} (${String(hex)})`,
+    );
   }
   const h = hex.replace(/^#/, '');
   if (!/^[0-9a-fA-F]{3,8}$/.test(h)) {
     throw new Error(`colorUtils.hexToRgb: invalid hex color "${hex}"`);
   }
   if (h.length === 3 || h.length === 4) {
-    return [
-      parseInt(h[0]! + h[0]!, 16),
-      parseInt(h[1]! + h[1]!, 16),
-      parseInt(h[2]! + h[2]!, 16),
-    ];
+    return [parseInt(h[0]! + h[0]!, 16), parseInt(h[1]! + h[1]!, 16), parseInt(h[2]! + h[2]!, 16)];
   }
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
 }
 
 /** Convert hex + alpha \u2192 `rgba(r,g,b,a)` string */
@@ -121,11 +115,11 @@ export function hexToRgbComponents(hex: string): string {
  * https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
  */
 export function getRelativeLuminance(hex: string): number {
-  const [r, g, b] = hexToRgb(colorToHex(hex)).map(c => {
+  const [r, g, b] = hexToRgb(colorToHex(hex)).map((c) => {
     const s = c / 255;
     return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
   });
-  return 0.2126 * (r!) + 0.7152 * (g!) + 0.0722 * (b!);
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
 }
 
 /**
@@ -249,11 +243,7 @@ export function isWcagAAA(fgHex: string, bgHex: string): boolean {
  * @param isDark     \u2014 whether we're in dark mode
  * @param alpha      \u2014 opacity / blend weight (default 0.08 for subtle tint)
  */
-export function accentSoftTint(
-  accentHex: string,
-  isDark: boolean,
-  alpha = 0.08,
-): string {
+export function accentSoftTint(accentHex: string, isDark: boolean, alpha = 0.08): string {
   if (!isDark) {
     // Light mode: transparent accent over white surface
     return hexToRgba(accentHex, alpha);

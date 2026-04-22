@@ -2,7 +2,7 @@ import { useWindowDimensions } from 'react-native';
 
 /**
  * useResponsive Hook
- * 
+ *
  * Provides responsive breakpoints based on window width.
  * Standard breakpoints:
  * - Mobile: < 768
@@ -10,16 +10,16 @@ import { useWindowDimensions } from 'react-native';
  * - Desktop: >= 1024
  */
 export function useResponsive() {
-    const { width, height } = useWindowDimensions();
-    const isTablet = width >= 768;
-    const isDesktop = width >= 1024;
+  const { width, height } = useWindowDimensions();
+  const isTablet = width >= 768;
+  const isDesktop = width >= 1024;
 
-    return {
-        width,
-        height,
-        isTablet,
-        isDesktop,
-        isMobile: !isTablet,
-        orientation: width > height ? 'landscape' : 'portrait',
-    };
+  return {
+    width,
+    height,
+    isTablet,
+    isDesktop,
+    isMobile: !isTablet,
+    orientation: width > height ? 'landscape' : 'portrait',
+  };
 }

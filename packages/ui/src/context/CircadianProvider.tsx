@@ -7,8 +7,8 @@ import { getTextOnBackground } from '../utils/colorUtils';
 
 /**
  * Circadian Context
- * 
- * Manages the dynamic injection of CSS variables based on 
+ *
+ * Manages the dynamic injection of CSS variables based on
  * the current temporal phase.
  */
 
@@ -23,7 +23,7 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
 
   const circadianVars = useMemo(() => {
     const tokens = phaseMatrix[temporalPhase][isDark ? 'dark' : 'light'];
-    
+
     // Semantic mappings
     return vars({
       '--phase-world': tokens.gradientNodes[0],
@@ -34,20 +34,26 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
       '--phase-accent': tokens.accent.action,
       '--phase-reward': tokens.accent.reward,
       '--phase-danger': tokens.accent.danger,
-      
+
       '--phase-text-primary': tokens.text.primary,
       '--phase-text-secondary': tokens.text.secondary,
       '--phase-text-inverse': tokens.text.inverse,
-      '--phase-text-on-accent': getTextOnBackground(tokens.accent.action, colors.inkTruth, colors.sacredWhite),
-      '--phase-text-on-surface': getTextOnBackground(tokens.glass.surface.bg, colors.inkTruth, colors.sacredWhite),
+      '--phase-text-on-accent': getTextOnBackground(
+        tokens.accent.action,
+        colors.inkTruth,
+        colors.sacredWhite,
+      ),
+      '--phase-text-on-surface': getTextOnBackground(
+        tokens.glass.surface.bg,
+        colors.inkTruth,
+        colors.sacredWhite,
+      ),
     });
   }, [temporalPhase, isDark]);
 
   return (
     <CircadianContext.Provider value={{ phase: temporalPhase }}>
-      <View style={[circadianVars, { flex: 1 }]}>
-        {children}
-      </View>
+      <View style={[circadianVars, { flex: 1 }]}>{children}</View>
     </CircadianContext.Provider>
   );
 };

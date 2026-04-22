@@ -1,6 +1,6 @@
 import type { NavigationContainerRef } from '@react-navigation/native';
 import { useEffect } from 'react';
-import { useAuth } from '../../providers/AuthProvider';
+import { useAuth } from '../../../providers/AuthProvider';
 
 /**
  * useGuardedNavigation
@@ -11,7 +11,7 @@ import { useAuth } from '../../providers/AuthProvider';
  * @param onboardingCompleted - Current onboarding status
  * @param navigationRef - The React Navigation reference object (from the app)
  */
-export function useGuardedNavigation(
+export function useNavigationAuthGuard(
   onboardingCompleted: boolean,
   navigationRef: NavigationContainerRef<Record<string, unknown>> | null,
 ) {
@@ -70,3 +70,5 @@ export function useGuardedNavigation(
     }
   }, [session, onboardingCompleted, isProfileLoading, navigationRef]);
 }
+
+

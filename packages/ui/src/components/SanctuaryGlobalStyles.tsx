@@ -1021,9 +1021,16 @@ export function SanctuaryGlobalStyles() {
   if (Platform.OS !== 'web') return null;
 
   const {
-    accent, text, isDark, gradientNodes, scene,
-    textOnAccent, textOnReward,
-    accentRgb, rewardRgb, surfaceRgb,
+    accent,
+    text,
+    isDark,
+    gradientNodes,
+    scene,
+    textOnAccent,
+    textOnReward,
+    accentRgb,
+    rewardRgb,
+    surfaceRgb,
     phase,
   } = useTheme();
 
@@ -1075,7 +1082,7 @@ export function SanctuaryGlobalStyles() {
       --action-soft:        ${hexToRgba(accent.action, 0.09)};
       --action-medium:      ${hexToRgba(accent.action, 0.18)};
       --action-glow:        ${hexToRgba(accent.action, 0.28)};
-      --action-border:      ${hexToRgba(accent.action, 0.40)};
+      --action-border:      ${hexToRgba(accent.action, 0.4)};
       /* Text that is WCAG-safe on top of --action backgrounds */
       --text-on-action:     ${textOnAccent};
       --sanctuary-saffron:  ${accent.action};

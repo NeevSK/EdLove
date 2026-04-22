@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+﻿import { useMemo } from 'react';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import type { TenantContext } from '../types';
 
 export function useTenantContext(): TenantContext {
@@ -22,3 +22,4 @@ export function useTenantContext(): TenantContext {
     [hasSchoolContext, schoolId, sectionId, gradeId, classroomId, tenantKind],
   );
 }
+

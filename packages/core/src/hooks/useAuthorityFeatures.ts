@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+﻿import { useMemo } from 'react';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import type { AuthorityTier } from '../types/Authority';
 import { useFeatureAccess } from './useFeatureAccess';
 
@@ -85,3 +85,4 @@ export function useAuthorityFeatures(): AuthorityFeatures {
 
   return features;
 }
+

@@ -1,5 +1,12 @@
 import React from 'react';
-import { Pressable as RNPressable, Text as RNText, type PressableProps, type TextProps, View as BaseView, ScrollView as BaseScrollView } from 'react-native';
+import {
+  Pressable as RNPressable,
+  Text as RNText,
+  type PressableProps,
+  type TextProps,
+  View as BaseView,
+  ScrollView as BaseScrollView,
+} from 'react-native';
 import { cssInterop } from 'nativewind';
 
 const StyledPressable = RNPressable;
@@ -29,24 +36,18 @@ const Button = React.forwardRef<any, IButtonProps>(
         className={`flex-row items-center justify-center rounded-comfortable ${className || ''}`}
       />
     );
-  }
+  },
 );
 
 export interface IButtonTextProps extends TextProps {
   className?: string;
 }
 
-const ButtonText = React.forwardRef<RNText, IButtonTextProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <StyledText
-        {...props}
-        ref={ref}
-        className={`font-medium text-inherit ${className || ''}`}
-      />
-    );
-  }
-);
+const ButtonText = React.forwardRef<RNText, IButtonTextProps>(({ className, ...props }, ref) => {
+  return (
+    <StyledText {...props} ref={ref} className={`font-medium text-inherit ${className || ''}`} />
+  );
+});
 
 Button.displayName = 'Button';
 ButtonText.displayName = 'ButtonText';

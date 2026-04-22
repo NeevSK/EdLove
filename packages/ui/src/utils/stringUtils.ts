@@ -20,13 +20,13 @@
  * getInitialsFromName(null)           // '?'
  */
 export function getInitialsFromName(name?: string | null, maxChars: number = 2): string {
-    if (!name?.trim()) return '?';
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '?';
-    if (parts.length === 1) {
-        return (parts[0] ?? '').substring(0, maxChars).toUpperCase();
-    }
-    const first = (parts[0] ?? '').charAt(0);
-    const last = (parts[parts.length - 1] ?? '').charAt(0);
-    return (first + last).toUpperCase().slice(0, maxChars);
+  if (!name?.trim()) return '?';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) {
+    return (parts[0] ?? '').substring(0, maxChars).toUpperCase();
+  }
+  const first = (parts[0] ?? '').charAt(0);
+  const last = (parts[parts.length - 1] ?? '').charAt(0);
+  return (first + last).toUpperCase().slice(0, maxChars);
 }

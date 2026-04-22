@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { type BanyanStage, naturePathsAPI } from '../api/naturePaths';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
 /**
  * useBanyanGrowth
@@ -40,3 +40,4 @@ export function useBanyanGrowth() {
     refreshBanyan,
   };
 }
+

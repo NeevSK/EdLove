@@ -37,12 +37,7 @@ export function CapabilityGuard({
   }
 
   if (gateProps) {
-    return (
-      <CitizenGate 
-        {...gateProps} 
-        onAction={gateProps.onAction || (() => {})} 
-      />
-    );
+    return <CitizenGate {...gateProps} onAction={gateProps.onAction || (() => {})} />;
   }
 
   return null;

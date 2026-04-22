@@ -1,5 +1,5 @@
 ﻿import type { StateCreator } from 'zustand';
-import { type FeatureFlags, resolveFeatureFlags } from '../../permissions/feature-engine';
+import { type FeatureFlags, resolveFeatureFlags } from '../../logic/permissions/feature-engine';
 import type { UserContext } from '../schemas/user.schema';
 
 /**
@@ -49,3 +49,4 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
     set({ flags: newFlags });
   },
 });
+

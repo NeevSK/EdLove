@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 /**
  * Portal Registry System
- * 
+ *
  * A hardened, non-legacy portal system for layering.
  * Handles multiple portals via a central registry.
  */
@@ -19,11 +19,11 @@ export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
   const [portals, setPortals] = useState<Record<string, React.ReactNode>>({});
 
   const register = (id: string, portal: React.ReactNode) => {
-    setPortals(prev => ({ ...prev, [id]: portal }));
+    setPortals((prev) => ({ ...prev, [id]: portal }));
   };
 
   const unregister = (id: string) => {
-    setPortals(prev => {
+    setPortals((prev) => {
       const next = { ...prev };
       delete next[id];
       return next;

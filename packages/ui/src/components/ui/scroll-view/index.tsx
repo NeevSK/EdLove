@@ -14,12 +14,8 @@ export interface IScrollViewProps extends ScrollViewProps {
 
 const ScrollView = React.forwardRef<any, IScrollViewProps>(
   ({ className, contentContainerClassName, ...props }, ref) => (
-    <RNScrollView
-      {...props}
-      ref={ref}
-      {...({ className, contentContainerClassName } as any)}
-    />
-  )
+    <RNScrollView {...props} ref={ref} {...({ className, contentContainerClassName } as any)} />
+  ),
 );
 
 ScrollView.displayName = 'ScrollView';

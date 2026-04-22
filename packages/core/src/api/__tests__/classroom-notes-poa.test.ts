@@ -1,10 +1,10 @@
-jest.mock('../../lib/supabase', () => ({
+﻿vi.mock('../../lib/supabase', () => ({
   supabase: {},
 }));
 
-jest.mock('../identity', () => ({
+vi.mock('../identity', () => ({
   identityAPI: {
-    getMyInternalId: jest.fn(),
+    getMyInternalId: vi.fn(),
   },
 }));
 
@@ -60,3 +60,4 @@ describe('classroom notes POA coverage', () => {
     });
   });
 });
+

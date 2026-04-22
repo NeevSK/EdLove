@@ -7,14 +7,11 @@ import { ThemeColors, toThemeColors } from '../utils/themeColors';
  * `ThemeColors` shape. New components should prefer `useTheme()`.
  */
 export function useThemedColors(): ThemeColors {
-    const theme = useTheme();
+  const theme = useTheme();
 
-    const colors = useMemo(
-        () => toThemeColors(theme),
-        [theme]
-    );
+  const colors = useMemo(() => toThemeColors(theme), [theme]);
 
-    return colors;
+  return colors;
 }
 
 export default useThemedColors;

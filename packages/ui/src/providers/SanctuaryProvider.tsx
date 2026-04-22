@@ -11,9 +11,9 @@ interface SanctuaryProviderProps {
 
 /**
  * SanctuaryProvider
- * 
+ *
  * The primary UI-layer provider for the Sanctuary Design System.
- * It orchestrates all necessary contexts for theme, environment, 
+ * It orchestrates all necessary contexts for theme, environment,
  * notifications, and interaction patterns.
  */
 export const SanctuaryProvider: React.FC<SanctuaryProviderProps> = ({ children }) => {
@@ -22,9 +22,7 @@ export const SanctuaryProvider: React.FC<SanctuaryProviderProps> = ({ children }
       <CircadianProvider>
         <ToastProvider>
           <ExternalLinkProvider>
-            <FABProvider>
-              {children}
-            </FABProvider>
+            <FABProvider>{children}</FABProvider>
           </ExternalLinkProvider>
         </ToastProvider>
       </CircadianProvider>

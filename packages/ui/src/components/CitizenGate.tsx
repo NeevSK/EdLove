@@ -22,8 +22,7 @@ export default function CitizenGate({
   secondaryLabel,
   onSecondary,
 }: CitizenGateProps) {
-  const mappedContext =
-    context === 'profile' || context === 'general' ? 'self' : (context as any);
+  const mappedContext = context === 'profile' || context === 'general' ? 'self' : (context as any);
 
   return (
     <VStack className="gap-4 w-full items-center">

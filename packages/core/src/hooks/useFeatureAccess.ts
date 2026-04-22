@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+﻿import { useCallback } from 'react';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
 export interface FeatureAccess {
   canCreateClassroom: boolean;
@@ -59,3 +59,4 @@ export function useFeatureAccess(): FeatureAccess {
     getFeatureMessage,
   };
 }
+

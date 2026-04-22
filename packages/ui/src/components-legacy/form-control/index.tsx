@@ -16,13 +16,18 @@ type FormControlContextType = Pick<IFormControlProps, 'isInvalid' | 'isDisabled'
 
 const FormControlContext = createContext<FormControlContextType>({});
 
-export const FormControl = ({ 
-  isInvalid, 
-  isDisabled, 
-  className, 
+export const FormControl = ({
+  isInvalid,
+  isDisabled,
+  className,
   children,
-  ...props 
-}: ViewProps & { isInvalid?: boolean; isDisabled?: boolean; className?: string; children?: React.ReactNode }) => {
+  ...props
+}: ViewProps & {
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   return (
     <FormControlContext.Provider value={{ isInvalid, isDisabled }}>
       <View {...props} className={`w-full ${className || ''}`}>
@@ -38,8 +43,11 @@ export const FormControlLabel = ({ className, ...props }: ViewProps & { classNam
   <View {...props} className={`mb-2 ${className || ''}`} />
 );
 
-export const FormControlLabelText = ({ className, ...props }: TextProps & { className?: string }) => (
-    <RNText {...props} className={`text-sm font-medium text-textSecondary ${className || ''}`} />
+export const FormControlLabelText = ({
+  className,
+  ...props
+}: TextProps & { className?: string }) => (
+  <RNText {...props} className={`text-sm font-medium text-textSecondary ${className || ''}`} />
 );
 
 export const FormControlError = ({ className, ...props }: ViewProps & { className?: string }) => {
@@ -54,7 +62,10 @@ export const FormControlErrorIcon = ({ as: Icon, className, color, size, ...prop
   return <Icon {...props} size={size || 16} color={color || '#EF4444'} className={className} />;
 };
 
-export const FormControlErrorText = ({ className, ...props }: TextProps & { className?: string }) => (
+export const FormControlErrorText = ({
+  className,
+  ...props
+}: TextProps & { className?: string }) => (
   <RNText {...props} className={`text-xs text-error ${className || ''}`} />
 );
 
@@ -62,6 +73,9 @@ export const FormControlHelper = ({ className, ...props }: ViewProps & { classNa
   <View {...props} className={`mt-1 ${className || ''}`} />
 );
 
-export const FormControlHelperText = ({ className, ...props }: TextProps & { className?: string }) => (
+export const FormControlHelperText = ({
+  className,
+  ...props
+}: TextProps & { className?: string }) => (
   <RNText {...props} className={`mt-1 text-xs text-textSecondary ${className || ''}`} />
 );

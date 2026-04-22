@@ -1,29 +1,29 @@
-jest.mock('../native/runtimes/educational.runtime', () => ({
+﻿vi.mock('../native/runtimes/educational.runtime', () => ({
   educationalServices: {
     grading: {
-      submitGrade: jest.fn(),
-      getById: jest.fn(),
-      reviseGrade: jest.fn(),
-      getReportCard: jest.fn(),
-      getClassroomGrades: jest.fn(),
-      getGradingSettings: jest.fn(),
-      updateGradingSettings: jest.fn(),
-      deleteGrade: jest.fn(),
+      submitGrade: vi.fn(),
+      getById: vi.fn(),
+      reviseGrade: vi.fn(),
+      getReportCard: vi.fn(),
+      getClassroomGrades: vi.fn(),
+      getGradingSettings: vi.fn(),
+      updateGradingSettings: vi.fn(),
+      deleteGrade: vi.fn(),
     },
   },
 }));
 
-jest.mock('../native/runtimes/gradingProjection.runtime', () => ({
+vi.mock('../native/runtimes/gradingProjection.runtime', () => ({
   gradingProjectionServices: {
-    getSchoolGradingCompletion: jest.fn(),
-    getSchoolPublishedGradingCompletion: jest.fn(),
+    getSchoolGradingCompletion: vi.fn(),
+    getSchoolPublishedGradingCompletion: vi.fn(),
   },
 }));
 
-jest.mock('../../lib/supabase', () => ({
+vi.mock('../../lib/supabase', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      insert: jest.fn().mockResolvedValue({ error: null }),
+    from: vi.fn(() => ({
+      insert: vi.fn().mockResolvedValue({ error: null }),
     })),
   },
 }));
@@ -92,3 +92,4 @@ describe('grading POA coverage', () => {
     });
   });
 });
+

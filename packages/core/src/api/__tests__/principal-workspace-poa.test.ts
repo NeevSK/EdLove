@@ -1,14 +1,14 @@
-jest.mock('../native/runtimes/principalWorkspace.runtime', () => ({
+﻿vi.mock('../native/runtimes/principalWorkspace.runtime', () => ({
   principalWorkspaceServices: {
-    listInviteCodes: jest.fn(),
-    generateInviteCode: jest.fn(),
-    listObservationsByDate: jest.fn(),
-    listRecentObservations: jest.fn(),
-    createObservation: jest.fn(),
-    recordInviteEvent: jest.fn(),
-    recordObservationFollowUp: jest.fn(),
-    getGovernanceTimeline: jest.fn(),
-    getGovernanceSnapshotAsOf: jest.fn(),
+    listInviteCodes: vi.fn(),
+    generateInviteCode: vi.fn(),
+    listObservationsByDate: vi.fn(),
+    listRecentObservations: vi.fn(),
+    createObservation: vi.fn(),
+    recordInviteEvent: vi.fn(),
+    recordObservationFollowUp: vi.fn(),
+    getGovernanceTimeline: vi.fn(),
+    getGovernanceSnapshotAsOf: vi.fn(),
   },
 }));
 
@@ -64,3 +64,4 @@ describe('principal workspace POA coverage', () => {
     });
   });
 });
+

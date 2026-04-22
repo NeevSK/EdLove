@@ -5,7 +5,7 @@ import OnboardingScreen from './OnboardingScreen';
 export function OnboardingWrapper() {
   const { session } = useAuth();
   const storeUser = useStore((state) => state.user);
-  
+
   return (
     <OnboardingScreen
       isAnonymous={

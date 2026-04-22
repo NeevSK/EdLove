@@ -1,10 +1,10 @@
-import { SafeZustandStorage } from '../lib/storageWrapper';
+﻿import { SafeZustandStorage } from '../lib/storageWrapper';
 import { useTemporalStore } from '../store/useTemporalStore';
 import { createTemporalProxy } from './temporalProxy';
 
 describe('createTemporalProxy', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     useTemporalStore.getState().resetToToday();
     useTemporalStore.setState({ isOffline: false, viewScale: 'day' });
   });
@@ -30,7 +30,7 @@ describe('createTemporalProxy', () => {
   });
 
   test('uses canonical temporal cache keys for offline reads', async () => {
-    const getItemSpy = jest.spyOn(SafeZustandStorage, 'getItem').mockResolvedValue('[]');
+    const getItemSpy = vi.spyOn(SafeZustandStorage, 'getItem').mockResolvedValue('[]');
 
     useTemporalStore.setState({
       phase: 'present',
@@ -48,3 +48,4 @@ describe('createTemporalProxy', () => {
     expect(getItemSpy).toHaveBeenCalledWith('offline-demo-getThing-2026-03-27-month');
   });
 });
+

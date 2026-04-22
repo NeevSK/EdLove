@@ -1,4 +1,4 @@
-import { type AbilityClass, createMongoAbility, type MongoAbility } from '@casl/ability';
+﻿import { type AbilityClass, createMongoAbility, type MongoAbility } from '@casl/ability';
 import type {
   Assignment,
   AttendanceRecord,
@@ -15,7 +15,7 @@ import type {
   StudentGrade,
   ThuthimalGift,
   User,
-} from '../../types';
+} from '../../../types';
 
 export type Actions =
   | 'manage'
@@ -115,3 +115,5 @@ export type AppAbilities = [Actions, SubjectType];
 export type AppAbility = MongoAbility<AppAbilities>;
 
 export const AppAbility = createMongoAbility as unknown as AbilityClass<AppAbility>;
+
+

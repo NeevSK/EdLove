@@ -5,7 +5,5 @@ import { cssInterop } from 'nativewind';
 cssInterop(RNImage, { className: 'style' });
 
 export const Image = React.forwardRef<RNImage, ImageProps & { className?: string }>(
-  ({ className, ...props }, ref) => (
-    <RNImage {...props} ref={ref} className={className} />
-  )
+  ({ className, ...props }, ref) => <RNImage {...props} ref={ref} className={className} />,
 );

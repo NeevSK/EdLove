@@ -8,11 +8,9 @@ export interface ITextInputProps extends TextInputProps {
   className?: string;
 }
 
-const TextInput = React.forwardRef<any, ITextInputProps>(
-  ({ className, ...props }, ref) => (
-    <RNTextInput {...props} ref={ref} {...({ className } as any)} />
-  )
-);
+const TextInput = React.forwardRef<any, ITextInputProps>(({ className, ...props }, ref) => (
+  <RNTextInput {...props} ref={ref} {...({ className } as any)} />
+));
 
 TextInput.displayName = 'TextInput';
 

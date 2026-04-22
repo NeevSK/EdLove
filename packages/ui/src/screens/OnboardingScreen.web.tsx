@@ -1,13 +1,13 @@
 /**
  * ONBOARDING SCREEN - Web Edition
- * 
+ *
  * ┌──────────────────────┬─────────────────────────────┐
  * │  LEFT PANEL (desktop)│  RIGHT PANEL (always)       │
  * │  Branding + pillars  │  Current step content       │
  * │  Step progress tracker│  Input / Role / Tour / Auth │
  * │  Language selector   │  Primary/Back actions       │
  * └──────────────────────┴─────────────────────────────┘
- * 
+ *
  * Flow:
  * 0. Name Entry
  * Narrow (< 900px): single-column scroll with compact header.
@@ -29,507 +29,554 @@ import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 // Constants
 // ──────────────────────────────────────────────────────────
 const LANGUAGES = [
-    { code: 'en', label: 'EN' },
-    { code: 'si', label: 'සිං' },
-    { code: 'ta', label: 'தமிழ்' },
+  { code: 'en', label: 'EN' },
+  { code: 'si', label: 'සිං' },
+  { code: 'ta', label: 'தமிழ்' },
 ];
 
 const PILLARS = [
-    { name: 'Self', emoji: '🧘' },
-    { name: 'Classroom', emoji: '🏫' },
-    { name: 'Community', emoji: '🤝' },
-    { name: 'Library', emoji: '📚' },
-    { name: 'Profile', emoji: '👤' },
+  { name: 'Self', emoji: '🧘' },
+  { name: 'Classroom', emoji: '🏫' },
+  { name: 'Community', emoji: '🤝' },
+  { name: 'Library', emoji: '📚' },
+  { name: 'Profile', emoji: '👤' },
 ];
 
 const ROLES = [
-    { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
-    { value: 'student', emoji: '🎓', descKey: 'onboarding.roleDesc.student' },
-    { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
+  { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
+  { value: 'student', emoji: '🎓', descKey: 'onboarding.roleDesc.student' },
+  { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
 ];
 
 const TOTAL_STEPS = 7; // 0: Name, 1: Role, 2-6: Tour
 
 // Visible steps for the left-panel progress tracker
 const TRACKED_STEPS = [
-    { idx: 0, label: 'Name' },
-    { idx: 1, label: 'Role' },
-    { idx: 2, label: 'Tour' },
+  { idx: 0, label: 'Name' },
+  { idx: 1, label: 'Role' },
+  { idx: 2, label: 'Tour' },
 ] as const;
 
 // ──────────────────────────────────────────────────────────
 // Props
 // ──────────────────────────────────────────────────────────
 interface OnboardingScreenProps {
-    onComplete: (name: string, authority: AuthorityTier, wantsAccount?: boolean) => void;
-    isAnonymous?: boolean;
+  onComplete: (name: string, authority: AuthorityTier, wantsAccount?: boolean) => void;
+  isAnonymous?: boolean;
 }
 
 // ──────────────────────────────────────────────────────────
 // Main Component
 // ──────────────────────────────────────────────────────────
-export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
-    const { t, i18n } = useTranslation();
-    const { width } = useWindowDimensions();
+export default function OnboardingScreenWeb({
+  onComplete,
+  isAnonymous = false,
+}: OnboardingScreenProps) {
+  const { t, i18n } = useTranslation();
+  const { width } = useWindowDimensions();
 
-    const [currentStep, setCurrentStep] = useState(0);
-    const [name, setName] = useState('');
-    const [authority, setAuthority] = useState<AuthorityTier>('teacher');
-    const [isCompleting, setIsCompleting] = useState(false);
-    const [completionError, setCompletionError] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [name, setName] = useState('');
+  const [authority, setAuthority] = useState<AuthorityTier>('teacher');
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [completionError, setCompletionError] = useState<string | null>(null);
 
-    const isNarrow = width < 900;
+  const isNarrow = width < 900;
 
-    // ── Restore saved progress or pre-fill from existing auth ────────────────────
-    useEffect(() => {
-        const initOnboarding = async () => {
-            try {
-                const internalId = await identityAPI.getMyInternalId();
-                try {
-                    const saved = await AsyncStorage.getItem('onboarding_progress');
-                    if (saved) {
-                        const progress = JSON.parse(saved);
-                        if (progress.userId === internalId || !progress.userId || isAnonymous) {
-                            if (progress.name) setName(progress.name);
-                            if (progress.role) setAuthority(progress.role as AuthorityTier);
-                            if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
-                                setCurrentStep(progress.step);
-                                return;
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.warn('[Onboarding] Failed to restore progress from storage:', e);
-                }
-
-                if (!internalId) {
-                    // This is likely a deep-link where the session wasn't initialized yet.
-                    // We trigger an anonymous sign-in here to ensure the wizard has an ID.
-                    console.log('🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...');
-                    await authAPI.signInAnonymously();
-                    // Re-run the initialization once signed in
-                    return initOnboarding();
-                }
-                const { data: profile } = await supabase
-                    .from('users')
-                    .select('full_name, is_anonymous, authority:role')
-                    .eq('id', internalId)
-                    .maybeSingle();
-                
-                if (!profile) return;
-
-                const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
-                if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
-                    setName(profile.full_name);
-                    if (profile.authority) setAuthority(profile.authority as AuthorityTier);
-                    setCurrentStep(1);
-                }
-            } catch (error) {
-                console.error('[Onboarding] Initialization error:', error);
-            }
-        };
-        initOnboarding();
-    }, [isAnonymous]);
-
-    // ── Tour content ────────────────────
-    const tourScreens = useMemo(() => [
-        {
-            emoji: '🪷',
-            title: t('onboarding.philosophyTitle'),
-            subtitle: t('onboarding.philosophySubtitle'),
-            content: t('onboarding.philosophyContent'),
-        },
-        {
-            emoji: '🏫',
-            title: t('onboarding.sectionsTitle'),
-            subtitle: t('onboarding.sectionsSubtitle'),
-            content: t('onboarding.sectionsContent'),
-        },
-        {
-            emoji: '🌱',
-            title: t('onboarding.ecologyTitle'),
-            subtitle: t('onboarding.ecologySubtitle'),
-            content: t('onboarding.ecologyContent'),
-        },
-        {
-            emoji: '🔒',
-            title: t('onboarding.privacyTitle'),
-            subtitle: t('onboarding.privacySubtitle'),
-            content: t('onboarding.privacyContent'),
-        },
-        {
-            emoji: '🧭',
-            title: t('onboarding.navigationTitle'),
-            subtitle: t('onboarding.navigationSubtitle'),
-            content: t('onboarding.navigationContent'),
-        },
-    ], [t]);
-
-    // ── Navigation helpers ────────────────────
-    const handleNext = () => {
-        if (currentStep === 6) { // Final step (Tour 4)
-            handleCompleteOnboarding();
-        } else {
-            setCurrentStep(prev => prev + 1);
-            hapticLight();
-        }
-    };
-    const handleBack = () => { hapticLight(); setCurrentStep(prev => Math.max(0, prev - 1)); };
-    const handleSkipTour = () => { hapticLight(); handleCompleteOnboarding(); };
-
-    // Save progress whenever step/name/role/seeds change
-    useEffect(() => {
-        if (currentStep === 0 && !name) return;
-        identityAPI.getMyInternalId().then((userId) => {
-            AsyncStorage.setItem('onboarding_progress', JSON.stringify({
-                userId, step: currentStep, name, authority,
-            })).catch(() => {/* silent */ });
-        });
-    }, [currentStep, name, authority]);
-
-    const changeLanguage = async (code: string) => {
-        hapticLight();
-        await i18n.changeLanguage(code);
-    };
-
-    // ── Complete onboarding ────────────────────
-    const handleCompleteOnboarding = async () => {
-        console.log('🪷 OnboardingScreen.web: handleCompleteOnboarding started...', { name, authority, isAnonymous });
-        setIsCompleting(true);
+  // ── Restore saved progress or pre-fill from existing auth ────────────────────
+  useEffect(() => {
+    const initOnboarding = async () => {
+      try {
+        const internalId = await identityAPI.getMyInternalId();
         try {
-            const internalId = await identityAPI.getMyInternalId();
-            console.log('⭕· [Onboarding] Resolved internalId:', internalId);
-            
-            if (!internalId) {
-                console.error('[OnboardingScreen.web] No internal user ID — anonymous session may not have been created yet.');
-                throw new Error('Failed to resolve internal user ID during onboarding completion');
+          const saved = await AsyncStorage.getItem('onboarding_progress');
+          if (saved) {
+            const progress = JSON.parse(saved);
+            if (progress.userId === internalId || !progress.userId || isAnonymous) {
+              if (progress.name) setName(progress.name);
+              if (progress.role) setAuthority(progress.role as AuthorityTier);
+              if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
+                setCurrentStep(progress.step);
+                return;
+              }
             }
-
-            // Verify if profile already exists
-            const { data: existingProfile, error: fetchError } = await supabase
-                .from('users')
-                .select('school_id, onboarding_completed')
-                .eq('id', internalId)
-                .maybeSingle();
-
-            if (fetchError) {
-                console.warn('⭕· [Onboarding] Error fetching existing profile:', fetchError);
-            }
-
-            console.log('⭕· [Onboarding] Existing profile state:', existingProfile);
-
-            let schoolId = existingProfile?.school_id;
-            if (!schoolId) {
-                console.log('🌀 [Onboarding] No existing workspace found, attempting creation...');
-                const schoolName = `${name || 'My'}'s Workspace`;
-                
-                // Note: The schools table currently has a broken trigger referencing 
-                // "create_personal_workspace_unified()". We wrap this in a try/catch-style 
-                // logic to ensure onboarding completes even if workspace creation fails.
-                const { data: schoolData, error: schoolError } = await supabase
-                    .from('schools')
-                    .insert({ 
-                        name: schoolName, 
-                        type: 'personal_workspace', 
-                        created_by: internalId 
-                    })
-                    .select()
-                    .single();
-                
-                if (schoolError) {
-                    console.warn('⚠️ [Onboarding] Workspace creation failed (likely broken DB trigger):', schoolError.message);
-                    // We continue with schoolId = null. The app will render the "Guest Gate" 
-                    // (Join/Create Workspace) as a fallback, which is a stable state.
-                } else {
-                    schoolId = schoolData?.id;
-                    console.log('✅ [Onboarding] Personal workspace created:', schoolId);
-                }
-            }
-
-            console.log('⭕· [Onboarding] Finalizing profile update...');
-            const { error: profileError } = await supabase
-                .from('users')
-                .upsert({
-                    id: internalId,
-                    full_name: name || 'Gurudevi User',
-                    role: authority,
-                    school_id: schoolId,
-                    onboarding_completed: true,
-                    onboarding_completed_at: new Date().toISOString(),
-                    is_anonymous: isAnonymous,
-                });
-
-            if (profileError) {
-                console.error('⭕· [Onboarding] Profile update failed:', profileError);
-                throw profileError;
-            }
-
-            console.log('⭕· [Onboarding] Profile updated successfully. Cleaning up storage...');
-            await AsyncStorage.removeItem('onboarding_progress');
-            
-            hapticSuccess();
-            console.log('⭕· [Onboarding] Calling onComplete callback...');
-            
-            // Artificial delay to ensure DB replication / state synchronization
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
-            onComplete(name, authority, false);
-            console.log('⭕· [Onboarding] onComplete called successfully.');
-        } catch (error: any) {
-            console.error('❌ Error completing onboarding:', error);
-            hapticError();
-            setIsCompleting(false);
-            setCompletionError(error?.message || 'Failed to save your profile. Please try again.');
+          }
+        } catch (e) {
+          console.warn('[Onboarding] Failed to restore progress from storage:', e);
         }
-    };
 
-    const renderError = () => {
-        if (!completionError) return null;
-        return (
-            <div className="ob-error-banner">
-                <span className="ob-error-icon">⚠️ </span>
-                <span className="ob-error-text">{completionError}</span>
-            </div>
+        if (!internalId) {
+          // This is likely a deep-link where the session wasn't initialized yet.
+          // We trigger an anonymous sign-in here to ensure the wizard has an ID.
+          console.log(
+            '🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...',
+          );
+          await authAPI.signInAnonymously();
+          // Re-run the initialization once signed in
+          return initOnboarding();
+        }
+        const { data: profile } = await supabase
+          .from('users')
+          .select('full_name, is_anonymous, authority:role')
+          .eq('id', internalId)
+          .maybeSingle();
+
+        if (!profile) return;
+
+        const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
+        if (
+          !profile.is_anonymous &&
+          profile.full_name &&
+          !PLACEHOLDER_NAMES.includes(profile.full_name)
+        ) {
+          setName(profile.full_name);
+          if (profile.authority) setAuthority(profile.authority as AuthorityTier);
+          setCurrentStep(1);
+        }
+      } catch (error) {
+        console.error('[Onboarding] Initialization error:', error);
+      }
+    };
+    initOnboarding();
+  }, [isAnonymous]);
+
+  // ── Tour content ────────────────────
+  const tourScreens = useMemo(
+    () => [
+      {
+        emoji: '🪷',
+        title: t('onboarding.philosophyTitle'),
+        subtitle: t('onboarding.philosophySubtitle'),
+        content: t('onboarding.philosophyContent'),
+      },
+      {
+        emoji: '🏫',
+        title: t('onboarding.sectionsTitle'),
+        subtitle: t('onboarding.sectionsSubtitle'),
+        content: t('onboarding.sectionsContent'),
+      },
+      {
+        emoji: '🌱',
+        title: t('onboarding.ecologyTitle'),
+        subtitle: t('onboarding.ecologySubtitle'),
+        content: t('onboarding.ecologyContent'),
+      },
+      {
+        emoji: '🔒',
+        title: t('onboarding.privacyTitle'),
+        subtitle: t('onboarding.privacySubtitle'),
+        content: t('onboarding.privacyContent'),
+      },
+      {
+        emoji: '🧭',
+        title: t('onboarding.navigationTitle'),
+        subtitle: t('onboarding.navigationSubtitle'),
+        content: t('onboarding.navigationContent'),
+      },
+    ],
+    [t],
+  );
+
+  // ── Navigation helpers ────────────────────
+  const handleNext = () => {
+    if (currentStep === 6) {
+      // Final step (Tour 4)
+      handleCompleteOnboarding();
+    } else {
+      setCurrentStep((prev) => prev + 1);
+      hapticLight();
+    }
+  };
+  const handleBack = () => {
+    hapticLight();
+    setCurrentStep((prev) => Math.max(0, prev - 1));
+  };
+  const handleSkipTour = () => {
+    hapticLight();
+    handleCompleteOnboarding();
+  };
+
+  // Save progress whenever step/name/role/seeds change
+  useEffect(() => {
+    if (currentStep === 0 && !name) return;
+    identityAPI.getMyInternalId().then((userId) => {
+      AsyncStorage.setItem(
+        'onboarding_progress',
+        JSON.stringify({
+          userId,
+          step: currentStep,
+          name,
+          authority,
+        }),
+      ).catch(() => {
+        /* silent */
+      });
+    });
+  }, [currentStep, name, authority]);
+
+  const changeLanguage = async (code: string) => {
+    hapticLight();
+    await i18n.changeLanguage(code);
+  };
+
+  // ── Complete onboarding ────────────────────
+  const handleCompleteOnboarding = async () => {
+    console.log('🪷 OnboardingScreen.web: handleCompleteOnboarding started...', {
+      name,
+      authority,
+      isAnonymous,
+    });
+    setIsCompleting(true);
+    try {
+      const internalId = await identityAPI.getMyInternalId();
+      console.log('⭕· [Onboarding] Resolved internalId:', internalId);
+
+      if (!internalId) {
+        console.error(
+          '[OnboardingScreen.web] No internal user ID — anonymous session may not have been created yet.',
         );
-    };
+        throw new Error('Failed to resolve internal user ID during onboarding completion');
+      }
 
+      // Verify if profile already exists
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('users')
+        .select('school_id, onboarding_completed')
+        .eq('id', internalId)
+        .maybeSingle();
 
-    // ── Step content renderer ────────────────────
-    const renderStep = () => {
-        // Step 0: Name
-        if (currentStep === 0) {
-            return (
-                <div className="ob-step">
-                    <div className="ob-step-shell">
-                        <div className="ob-step-meta">Step 1 · Arrival</div>
-                        <div className="ob-step-icon">👋🏻</div>
-                    </div>
-                    <h2 className="ob-step-title">
-                        {t('onboarding.nameTitle')}
-                    </h2>
-                    <p className="ob-step-subtitle">
-                        {t('onboarding.nameSubtitle')}
-                    </p>
-                    {renderError()}
-                    <input
-                        className="ob-input"
-                        type="text"
-                        placeholder={t('onboarding.namePlaceholder')}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' && name.trim()) handleNext(); }}
-                        autoFocus
-                        autoComplete="given-name"
-                    />
-                    <div className="ob-actions">
-                        <button
-                            className="ob-btn-primary"
-                            onClick={handleNext}
-                            disabled={!name.trim()}
-                        >
-                            {t('onboarding.continue')} →
-                        </button>
-                    </div>
-                </div>
-            );
+      if (fetchError) {
+        console.warn('⭕· [Onboarding] Error fetching existing profile:', fetchError);
+      }
+
+      console.log('⭕· [Onboarding] Existing profile state:', existingProfile);
+
+      let schoolId = existingProfile?.school_id;
+      if (!schoolId) {
+        console.log('🌀 [Onboarding] No existing workspace found, attempting creation...');
+        const schoolName = `${name || 'My'}'s Workspace`;
+
+        // Note: The schools table currently has a broken trigger referencing
+        // "create_personal_workspace_unified()". We wrap this in a try/catch-style
+        // logic to ensure onboarding completes even if workspace creation fails.
+        const { data: schoolData, error: schoolError } = await supabase
+          .from('schools')
+          .insert({
+            name: schoolName,
+            type: 'personal_workspace',
+            created_by: internalId,
+          })
+          .select()
+          .single();
+
+        if (schoolError) {
+          console.warn(
+            '⚠️ [Onboarding] Workspace creation failed (likely broken DB trigger):',
+            schoolError.message,
+          );
+          // We continue with schoolId = null. The app will render the "Guest Gate"
+          // (Join/Create Workspace) as a fallback, which is a stable state.
+        } else {
+          schoolId = schoolData?.id;
+          console.log('✅ [Onboarding] Personal workspace created:', schoolId);
         }
+      }
 
-        // Step 1: Role
-        if (currentStep === 1) {
-            return (
-                <div className="ob-step">
-                    <div className="ob-step-shell">
-                        <div className="ob-step-meta">Step 2 · Belonging</div>
-                        <div className="ob-step-icon">🎯</div>
-                    </div>
-                    <h2 className="ob-step-title">
-                        {t('onboarding.roleTitle')}
-                    </h2>
-                    <p className="ob-step-subtitle">
-                        {t('onboarding.roleSubtitle')}
-                    </p>
-                    {renderError()}
-                    <div className="ob-role-grid">
-                        {ROLES.map((r) => (
-                            <button
-                                key={r.value}
-                                className={`ob-role-card ${authority === r.value ? 'selected' : ''}`}
-                                onClick={() => { setAuthority(r.value as AuthorityTier); hapticLight(); }}
-                            >
-                                <span className="ob-role-emoji">{r.emoji}</span>
-                                <span className="ob-role-name">{t(`authority.${r.value}`)}</span>
-                                <span className="ob-role-desc">{t(r.descKey)}</span>
-                            </button>
-                        ))}
-                    </div>
-                    <div className="ob-actions">
-                        <button className="ob-btn-secondary" onClick={handleBack}>
-                            ← {t('onboarding.back')}
-                        </button>
-                        <button
-                            className="ob-btn-primary"
-                            onClick={async () => {
-                                if (!isAnonymous && authority) {
-                                    // If already signed in (Google), jump straight to finish after picking role
-                                    handleCompleteOnboarding();
-                                } else {
-                                    handleNext();
-                                }
-                            }}
-                            disabled={isCompleting}
-                        >
-                            {(isCompleting) ? t('onboarding.saving') : (!isAnonymous && authority) ? t('onboarding.complete') : t('onboarding.continue')} →
-                        </button>
-                    </div>
-                </div>
-            );
-        }
+      console.log('⭕· [Onboarding] Finalizing profile update...');
+      const { error: profileError } = await supabase.from('users').upsert({
+        id: internalId,
+        full_name: name || 'Gurudevi User',
+        role: authority,
+        school_id: schoolId,
+        onboarding_completed: true,
+        onboarding_completed_at: new Date().toISOString(),
+        is_anonymous: isAnonymous,
+      });
 
+      if (profileError) {
+        console.error('⭕· [Onboarding] Profile update failed:', profileError);
+        throw profileError;
+      }
 
-        // Steps 2–6: Tour slides
-        if (currentStep >= 2 && currentStep <= 6) {
-            const screen = tourScreens[currentStep - 2];
-            if (!screen) return null;
-            return (
-                <div className="ob-step">
-                    <div className="ob-step-shell">
-                        <div className="ob-step-meta">Sanctuary Tour</div>
-                        <div className="ob-step-icon">{screen.emoji}</div>
-                    </div>
-                    <h2 className="ob-step-title">{screen.title}</h2>
-                    <p className="ob-step-subtitle">{screen.subtitle}</p>
-                    {renderError()}
-                    <div className="ob-tour-content">{screen.content}</div>
-                    <div className="ob-actions">
-                        <button className="ob-btn-secondary" onClick={handleBack}>
-                            ← {t('onboarding.back')}
-                        </button>
-                        <button 
-                            className="ob-btn-primary" 
-                            onClick={handleNext}
-                            disabled={isCompleting}>
-                            {isCompleting ? t('onboarding.saving') : currentStep === 6 ? t('onboarding.complete') : t('onboarding.next')} →
-                        </button>
-                    </div>
-                    <button className="ob-btn-link" onClick={handleSkipTour}>
-                        {t('onboarding.skip')}
-                    </button>
-                </div>
-            );
-        }
+      console.log('⭕· [Onboarding] Profile updated successfully. Cleaning up storage...');
+      await AsyncStorage.removeItem('onboarding_progress');
 
-        return null;
-    };
+      hapticSuccess();
+      console.log('⭕· [Onboarding] Calling onComplete callback...');
 
-    // ── Layout ────────────────────
+      // Artificial delay to ensure DB replication / state synchronization
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      onComplete(name, authority, false);
+      console.log('⭕· [Onboarding] onComplete called successfully.');
+    } catch (error: any) {
+      console.error('❌ Error completing onboarding:', error);
+      hapticError();
+      setIsCompleting(false);
+      setCompletionError(error?.message || 'Failed to save your profile. Please try again.');
+    }
+  };
+
+  const renderError = () => {
+    if (!completionError) return null;
     return (
-        <div className="ob-root">
-            <div className="ob-atmosphere ob-atmosphere-one" />
-            <div className="ob-atmosphere ob-atmosphere-two" />
-            {isNarrow ? (
-                /* ── Narrow: single-column scroll ── */
-                <div className="ob-narrow">
-                    <div className="ob-narrow-header">
-                        <span className="ob-brand-name">🪷 Gurudevi</span>
-                        <div className="ob-lang-row">
-                            {LANGUAGES.map((lang) => (
-                                <button
-                                    key={lang.code}
-                                    className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
-                                    onClick={() => changeLanguage(lang.code)}
-                                >
-                                    {lang.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+      <div className="ob-error-banner">
+        <span className="ob-error-icon">⚠️ </span>
+        <span className="ob-error-text">{completionError}</span>
+      </div>
+    );
+  };
 
-                    {/* Progress bar */}
-                    <div className="ob-progress-track" role="progressbar" aria-valuenow={currentStep} aria-valuemax={TOTAL_STEPS - 1}>
-                        <div className="ob-progress-fill" style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }} />
-                    </div>
+  // ── Step content renderer ────────────────────
+  const renderStep = () => {
+    // Step 0: Name
+    if (currentStep === 0) {
+      return (
+        <div className="ob-step">
+          <div className="ob-step-shell">
+            <div className="ob-step-meta">Step 1 · Arrival</div>
+            <div className="ob-step-icon">👋🏻</div>
+          </div>
+          <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
+          <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
+          {renderError()}
+          <input
+            className="ob-input"
+            type="text"
+            placeholder={t('onboarding.namePlaceholder')}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && name.trim()) handleNext();
+            }}
+            autoFocus
+            autoComplete="given-name"
+          />
+          <div className="ob-actions">
+            <button className="ob-btn-primary" onClick={handleNext} disabled={!name.trim()}>
+              {t('onboarding.continue')} →
+            </button>
+          </div>
+        </div>
+      );
+    }
 
-                    <div className="ob-narrow-content">
-                        {renderStep()}
-                    </div>
-                </div>
-            ) : (
-                /* ── Wide: two-column split ── */
-                <div className="ob-split">
-                    {/* Left: Branding + progress tracker */}
-                    <div className="ob-left">
-                        <div className="ob-left-inner">
-                            <div className="ob-brand">
-                                <span className="ob-brand-icon">🪷</span>
-                                <span className="ob-brand-name">Gurudevi</span>
-                            </div>
+    // Step 1: Role
+    if (currentStep === 1) {
+      return (
+        <div className="ob-step">
+          <div className="ob-step-shell">
+            <div className="ob-step-meta">Step 2 · Belonging</div>
+            <div className="ob-step-icon">🎯</div>
+          </div>
+          <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
+          <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
+          {renderError()}
+          <div className="ob-role-grid">
+            {ROLES.map((r) => (
+              <button
+                key={r.value}
+                className={`ob-role-card ${authority === r.value ? 'selected' : ''}`}
+                onClick={() => {
+                  setAuthority(r.value as AuthorityTier);
+                  hapticLight();
+                }}
+              >
+                <span className="ob-role-emoji">{r.emoji}</span>
+                <span className="ob-role-name">{t(`authority.${r.value}`)}</span>
+                <span className="ob-role-desc">{t(r.descKey)}</span>
+              </button>
+            ))}
+          </div>
+          <div className="ob-actions">
+            <button className="ob-btn-secondary" onClick={handleBack}>
+              ← {t('onboarding.back')}
+            </button>
+            <button
+              className="ob-btn-primary"
+              onClick={async () => {
+                if (!isAnonymous && authority) {
+                  // If already signed in (Google), jump straight to finish after picking role
+                  handleCompleteOnboarding();
+                } else {
+                  handleNext();
+                }
+              }}
+              disabled={isCompleting}
+            >
+              {isCompleting
+                ? t('onboarding.saving')
+                : !isAnonymous && authority
+                  ? t('onboarding.complete')
+                  : t('onboarding.continue')}{' '}
+              →
+            </button>
+          </div>
+        </div>
+      );
+    }
 
-                            <div>
-                                <h1 className="ob-left-headline">Your Sacred<br />Sanctuary</h1>
-                                <p className="ob-left-tagline">
-                                    A healing ecosystem for educators — built in Sri Lanka, breathing worldwide.
-                                </p>
-                            </div>
+    // Steps 2–6: Tour slides
+    if (currentStep >= 2 && currentStep <= 6) {
+      const screen = tourScreens[currentStep - 2];
+      if (!screen) return null;
+      return (
+        <div className="ob-step">
+          <div className="ob-step-shell">
+            <div className="ob-step-meta">Sanctuary Tour</div>
+            <div className="ob-step-icon">{screen.emoji}</div>
+          </div>
+          <h2 className="ob-step-title">{screen.title}</h2>
+          <p className="ob-step-subtitle">{screen.subtitle}</p>
+          {renderError()}
+          <div className="ob-tour-content">{screen.content}</div>
+          <div className="ob-actions">
+            <button className="ob-btn-secondary" onClick={handleBack}>
+              ← {t('onboarding.back')}
+            </button>
+            <button className="ob-btn-primary" onClick={handleNext} disabled={isCompleting}>
+              {isCompleting
+                ? t('onboarding.saving')
+                : currentStep === 6
+                  ? t('onboarding.complete')
+                  : t('onboarding.next')}{' '}
+              →
+            </button>
+          </div>
+          <button className="ob-btn-link" onClick={handleSkipTour}>
+            {t('onboarding.skip')}
+          </button>
+        </div>
+      );
+    }
 
-                            {/* Five Pillars */}
-                            <div className="ob-pillars">
-                                {PILLARS.map((p) => (
-                                    <div key={p.name} className="ob-pillar">
-                                        <span>{p.emoji}</span>
-                                        <span>{p.name}</span>
-                                    </div>
-                                ))}
-                            </div>
+    return null;
+  };
 
-                            {/* Step progress tracker */}
-                            <div className="ob-tracker">
-                                {TRACKED_STEPS.map((s) => (
-                                    <div
-                                        key={s.idx}
-                                        className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
-                                    >
-                                        <div className="ob-tracker-dot" />
-                                        <span className="ob-tracker-label">{s.label}</span>
-                                    </div>
-                                ))}
-                            </div>
+  // ── Layout ────────────────────
+  return (
+    <div className="ob-root">
+      <div className="ob-atmosphere ob-atmosphere-one" />
+      <div className="ob-atmosphere ob-atmosphere-two" />
+      {isNarrow ? (
+        /* ── Narrow: single-column scroll ── */
+        <div className="ob-narrow">
+          <div className="ob-narrow-header">
+            <span className="ob-brand-name">🪷 Gurudevi</span>
+            <div className="ob-lang-row">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
+                  onClick={() => changeLanguage(lang.code)}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-                            {/* Language picker */}
-                            <div className="ob-lang-row ob-lang-bottom">
-                                {LANGUAGES.map((lang) => (
-                                    <button
-                                        key={lang.code}
-                                        className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
-                                        onClick={() => changeLanguage(lang.code)}
-                                    >
-                                        {lang.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+          {/* Progress bar */}
+          <div
+            className="ob-progress-track"
+            role="progressbar"
+            aria-valuenow={currentStep}
+            aria-valuemax={TOTAL_STEPS - 1}
+          >
+            <div
+              className="ob-progress-fill"
+              style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }}
+            />
+          </div>
 
-                    {/* Right: Step content */}
-                    <div className="ob-right">
-                        <div className="ob-right-inner">
-                            {/* Step progress dots */}
-                            <div className="ob-dots" role="progressbar" aria-valuenow={currentStep} aria-valuemax={TOTAL_STEPS - 1}>
-                                {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={`ob-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}`}
-                                    />
-                                ))}
-                            </div>
+          <div className="ob-narrow-content">{renderStep()}</div>
+        </div>
+      ) : (
+        /* ── Wide: two-column split ── */
+        <div className="ob-split">
+          {/* Left: Branding + progress tracker */}
+          <div className="ob-left">
+            <div className="ob-left-inner">
+              <div className="ob-brand">
+                <span className="ob-brand-icon">🪷</span>
+                <span className="ob-brand-name">Gurudevi</span>
+              </div>
 
-                            {renderStep()}
-                        </div>
-                    </div>
-                </div>
-            )}
+              <div>
+                <h1 className="ob-left-headline">
+                  Your Sacred
+                  <br />
+                  Sanctuary
+                </h1>
+                <p className="ob-left-tagline">
+                  A healing ecosystem for educators — built in Sri Lanka, breathing worldwide.
+                </p>
+              </div>
 
-            {/* ── Scoped CSS ── */}
-            <style>{`
+              {/* Five Pillars */}
+              <div className="ob-pillars">
+                {PILLARS.map((p) => (
+                  <div key={p.name} className="ob-pillar">
+                    <span>{p.emoji}</span>
+                    <span>{p.name}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Step progress tracker */}
+              <div className="ob-tracker">
+                {TRACKED_STEPS.map((s) => (
+                  <div
+                    key={s.idx}
+                    className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
+                  >
+                    <div className="ob-tracker-dot" />
+                    <span className="ob-tracker-label">{s.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Language picker */}
+              <div className="ob-lang-row ob-lang-bottom">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
+                    onClick={() => changeLanguage(lang.code)}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Step content */}
+          <div className="ob-right">
+            <div className="ob-right-inner">
+              {/* Step progress dots */}
+              <div
+                className="ob-dots"
+                role="progressbar"
+                aria-valuenow={currentStep}
+                aria-valuemax={TOTAL_STEPS - 1}
+              >
+                {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`ob-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}`}
+                  />
+                ))}
+              </div>
+
+              {renderStep()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Scoped CSS ── */}
+      <style>{`
                 .ob-root {
                     position: fixed;
                     inset: 0;
@@ -1000,7 +1047,6 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     }
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 }
-

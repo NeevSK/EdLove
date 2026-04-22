@@ -8,11 +8,9 @@ export interface IPressableProps extends PressableProps {
   className?: string;
 }
 
-const Pressable = React.forwardRef<any, IPressableProps>(
-  ({ className, ...props }, ref) => (
-    <RNPressable {...props} ref={ref} {...({ className } as any)} />
-  )
-);
+const Pressable = React.forwardRef<any, IPressableProps>(({ className, ...props }, ref) => (
+  <RNPressable {...props} ref={ref} {...({ className } as any)} />
+));
 
 Pressable.displayName = 'Pressable';
 

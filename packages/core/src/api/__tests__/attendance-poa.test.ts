@@ -1,25 +1,25 @@
-jest.mock('../native/runtimes/educational.runtime', () => ({
+﻿vi.mock('../native/runtimes/educational.runtime', () => ({
   educationalServices: {
     attendance: {
-      getByDate: jest.fn(),
-      record: jest.fn(),
-      batchRecord: jest.fn(),
-      getForStudent: jest.fn(),
+      getByDate: vi.fn(),
+      record: vi.fn(),
+      batchRecord: vi.fn(),
+      getForStudent: vi.fn(),
     },
   },
 }));
 
-jest.mock('../native/runtimes/attendanceProjection.runtime', () => ({
+vi.mock('../native/runtimes/attendanceProjection.runtime', () => ({
   attendanceProjectionServices: {
-    getSchoolAttendancePulse: jest.fn(),
-    getAttendanceReport: jest.fn(),
+    getSchoolAttendancePulse: vi.fn(),
+    getAttendanceReport: vi.fn(),
   },
 }));
 
-jest.mock('../../lib/supabase', () => ({
+vi.mock('../../lib/supabase', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      insert: jest.fn().mockResolvedValue({ error: null }),
+    from: vi.fn(() => ({
+      insert: vi.fn().mockResolvedValue({ error: null }),
     })),
   },
 }));
@@ -70,3 +70,4 @@ describe('attendance POA coverage', () => {
     });
   });
 });
+

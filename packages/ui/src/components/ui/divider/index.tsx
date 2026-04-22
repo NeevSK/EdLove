@@ -19,7 +19,7 @@ export const Divider = React.forwardRef<View, IDividerProps>(
         className={`${orientationClasses} bg-phase-surface ${className || ''}`}
       />
     );
-  }
+  },
 );
 
 Divider.displayName = 'Divider';

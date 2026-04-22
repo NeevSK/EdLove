@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 import { supabase } from '../native/supabase';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '../store/useTemporalStore';
 
 export interface JourneyEvent {
@@ -266,3 +266,4 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     timelineFocus,
   };
 }
+

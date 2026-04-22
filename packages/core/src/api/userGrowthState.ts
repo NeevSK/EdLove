@@ -21,7 +21,7 @@
 import { getTemporalRange } from '../logic/utils/temporalUtils';
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
-import { composeUserAbilities } from '../permissions/composer';
+import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types';
 import type { BanyanStage, CrystalTier, RiverStage } from './naturePaths';
 
@@ -336,3 +336,4 @@ export const userGrowthStateAPI = {
     }));
   },
 };
+

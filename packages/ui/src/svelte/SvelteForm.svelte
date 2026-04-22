@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { FormManager, type FormConfig, type FormState } from '@repo/core';
-  import { onMount, onDestroy } from 'svelte';
+import { FormManager, type FormConfig, type FormState } from '@repo/core';
+import { onMount, onDestroy } from 'svelte';
 
-  let { config }: { config: FormConfig<any> } = $props();
+let { config }: { config: FormConfig<any> } = $props();
 
-  const manager = new FormManager(config);
-  let state: FormState<any> = $state(manager.getState());
+const manager = new FormManager(config);
+let state: FormState<any> = $state(manager.getState());
 
-  const unsubscribe = manager.subscribe((s) => {
-    state = s;
-  });
+const unsubscribe = manager.subscribe((s) => {
+  state = s;
+});
 
-  onDestroy(unsubscribe);
+onDestroy(unsubscribe);
 
-  async function handleSubmit(e: SubmitEvent) {
-    e.preventDefault();
-    await manager.submit();
-  }
+async function handleSubmit(e: SubmitEvent) {
+  e.preventDefault();
+  await manager.submit();
+}
 </script>
 
 <form onsubmit={handleSubmit} class="space-y-6">

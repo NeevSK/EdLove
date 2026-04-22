@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * UI Abstraction Layer (Hardened v3)
- * 
+ *
  * This is the ONLY file that other packages/apps should import from.
  * It provides a stable, hardened foundation using NativeWind v4 primitives.
  */
@@ -12,7 +12,14 @@ export * from '../components/ui/box';
 export * from '../components/ui/center';
 export * from '../components/ui/hstack';
 export * from '../components/ui/vstack';
-export { View, ScrollView, FlatList, RefreshControl, AnimatedView, KeyboardAvoidingView } from '../components/ui/view';
+export {
+  View,
+  ScrollView,
+  FlatList,
+  RefreshControl,
+  AnimatedView,
+  KeyboardAvoidingView,
+} from '../components/ui/view';
 export * from '../components/ui/text';
 export * from '../components/ui/divider';
 export * from '../components/ui/icon';
@@ -32,7 +39,6 @@ export * from '../components/ui/slider';
 export * from '../components/ui/avatar';
 export * from '../components/ui/radio';
 
-
 // Navigation
 export * from '../components/ui/link';
 
@@ -49,17 +55,18 @@ export * from '../components/ui/image';
 export * from '../components/ui/image-background';
 export * from '../components/ui/linear-gradient';
 
-
 // Hooks
 export { useSanctuaryToast as useToast } from '../providers/ToastProvider';
 
 // Provider
-export const GluestackUIProvider = ({ children, config }: { children: React.ReactNode; config?: any }) => {
-    return (
-        <PortalProvider>
-            {children}
-        </PortalProvider>
-    );
+export const GluestackUIProvider = ({
+  children,
+  config,
+}: {
+  children: React.ReactNode;
+  config?: any;
+}) => {
+  return <PortalProvider>{children}</PortalProvider>;
 };
 
 // Configuration & Tokens
@@ -67,21 +74,21 @@ export const GluestackUIProvider = ({ children, config }: { children: React.Reac
 // We provide these to maintain compatibility with existing config files.
 export const createConfig = (config: any) => config;
 export const gluestackConfig = {
-    tokens: {
-        colors: {},
-        space: {},
-        fontSizes: {},
-        lineHeights: {},
-        letterSpacings: {},
-        fonts: {},
-        fontWeights: {},
-        radii: {},
-        borderWidths: {},
-        breakpoints: {},
-        mediaQueries: {},
-        opacity: {},
-        shadows: {},
-        zIndex: {},
-    },
-    aliases: {},
+  tokens: {
+    colors: {},
+    space: {},
+    fontSizes: {},
+    lineHeights: {},
+    letterSpacings: {},
+    fonts: {},
+    fontWeights: {},
+    radii: {},
+    borderWidths: {},
+    breakpoints: {},
+    mediaQueries: {},
+    opacity: {},
+    shadows: {},
+    zIndex: {},
+  },
+  aliases: {},
 };

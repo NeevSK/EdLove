@@ -1,5 +1,5 @@
 import type { AbilityBuilder } from '@casl/ability';
-import type { UserContext } from '../../logic/schemas/user.schema';
+import type { UserContext } from '../..//schemas/user.schema';
 import type { AppAbility } from './base';
 import { definePrincipalAbilities } from './principal';
 
@@ -15,3 +15,4 @@ export const defineAssistantPrincipalAbilities = (
   can('manage', 'AssistantPrincipalDashboard');
   // Add any specific assistant principal overrides here if needed
 };
+

@@ -18,11 +18,11 @@ export interface ITextProps extends TextProps {
 
 const Text = React.forwardRef<RNText, ITextProps>(
   ({ className, size = 'md', bold, ...props }, ref) => {
-    // Mapping size to tailwind classes if needed, 
+    // Mapping size to tailwind classes if needed,
     // or just relying on className from the consumer.
     const sizeClass = size ? `text-${size}` : '';
     const weightClass = bold ? 'font-bold' : '';
-    
+
     return (
       <StyledText
         {...props}
@@ -30,7 +30,7 @@ const Text = React.forwardRef<RNText, ITextProps>(
         className={`${sizeClass} ${weightClass} ${className || ''}`}
       />
     );
-  }
+  },
 );
 
 Text.displayName = 'Text';

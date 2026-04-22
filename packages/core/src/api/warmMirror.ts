@@ -20,7 +20,7 @@
 
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
-import { composeUserAbilities } from '../permissions/composer';
+import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -300,3 +300,4 @@ export const warmMirrorAPI = {
     return lines.join('\n');
   },
 };
+

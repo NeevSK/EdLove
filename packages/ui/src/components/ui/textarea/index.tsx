@@ -23,7 +23,7 @@ const Textarea = React.forwardRef<View, ITextareaProps>(
         {children}
       </View>
     );
-  }
+  },
 );
 
 export const TextareaInput = React.forwardRef<TextInput, TextInputProps & { className?: string }>(
@@ -36,7 +36,7 @@ export const TextareaInput = React.forwardRef<TextInput, TextInputProps & { clas
       className={`p-4 text-phaseText-primary text-base min-h-[100px] ${className || ''}`}
       placeholderTextColor="var(--phase-text-secondary)"
     />
-  )
+  ),
 );
 
 Textarea.displayName = 'Textarea';

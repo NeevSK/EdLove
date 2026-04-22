@@ -13,13 +13,7 @@ export interface IBadgeProps extends ViewProps {
 }
 
 const Badge = React.forwardRef<View, IBadgeProps>(({ className, ...props }, ref) => {
-  return (
-    <View
-      {...props}
-      ref={ref}
-      className={className}
-    />
-  );
+  return <View {...props} ref={ref} className={className} />;
 });
 
 export interface IBadgeTextProps extends TextProps {
@@ -27,13 +21,7 @@ export interface IBadgeTextProps extends TextProps {
 }
 
 const BadgeText = React.forwardRef<Text, IBadgeTextProps>(({ className, ...props }, ref) => {
-  return (
-    <Text
-      {...props}
-      ref={ref}
-      className={className}
-    />
-  );
+  return <Text {...props} ref={ref} className={className} />;
 });
 
 Badge.displayName = 'Badge';

@@ -1,7 +1,7 @@
-import { type NavigationProp, useNavigation } from '@react-navigation/native';
+﻿import { type NavigationProp, useNavigation } from '@react-navigation/native';
 import { useCallback } from 'react';
-import type { Actions, Subjects } from '../permissions/abilities/base';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+import type { Actions, Subjects } from '../logic/permissions/abilities/base';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { useStore } from '../store/useStore';
 
 /**
@@ -37,3 +37,4 @@ export const useGuardedNavigation = () => {
     guardedNavigate,
   };
 };
+

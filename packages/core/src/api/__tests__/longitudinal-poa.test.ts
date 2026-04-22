@@ -1,11 +1,11 @@
-jest.mock('../../lib/supabase', () => ({
+﻿vi.mock('../../lib/supabase', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      lte: jest.fn().mockReturnThis(),
-      order: jest.fn().mockReturnThis(),
-      in: jest.fn().mockResolvedValue({ data: [], error: null }),
+    from: vi.fn(() => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      lte: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      in: vi.fn().mockResolvedValue({ data: [], error: null }),
     })),
   },
 }));
@@ -38,3 +38,4 @@ describe('longitudinal POA coverage', () => {
     });
   });
 });
+

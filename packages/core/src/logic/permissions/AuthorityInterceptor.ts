@@ -1,4 +1,4 @@
-import type { POAMetadata } from '../api/contract';
+import type { POAMetadata } from '../../api/contract';
 import type { AppAbility } from './abilities/base';
 
 /**
@@ -54,3 +54,4 @@ export class AuthorityInterceptor {
     return true;
   }
 }
+

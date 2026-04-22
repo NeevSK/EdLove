@@ -1,6 +1,6 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { supabase } from '../native/supabase';
-import { usePermissions } from '../permissions/hooks/usePermissions';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '../store/useTemporalStore';
 import { useTracking } from './useTracking';
 
@@ -77,3 +77,4 @@ export function useManualSnapshot() {
     isSaving,
   };
 }
+

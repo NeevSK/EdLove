@@ -1,7 +1,7 @@
-import type { Role } from '../logic/schemas/role.schema';
+﻿import type { Role } from '../logic/schemas/role.schema';
 import { type TenantKind, UserContextSchema } from '../logic/schemas/user.schema';
-import { AuthorityInterceptor } from '../permissions/AuthorityInterceptor';
-import { composeUserAbilities } from '../permissions/composer';
+import { AuthorityInterceptor } from '../logic/permissions/AuthorityInterceptor';
+import { composeUserAbilities } from '../logic/permissions/composer';
 import { useStore } from '../store/useStore';
 
 /**
@@ -80,3 +80,4 @@ export function createPOAProxy<T extends object>(
     },
   });
 }
+

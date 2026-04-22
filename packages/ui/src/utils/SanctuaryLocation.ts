@@ -5,13 +5,13 @@ import * as Location from 'expo-location';
  * Wraps expo-location for cross-platform safety.
  */
 export const SanctuaryLocation = {
-    requestPermissionsAsync: async () => {
-        return await Location.requestForegroundPermissionsAsync();
-    },
-    watchPositionAsync: async (options: any, callback: any) => {
-        return await Location.watchPositionAsync(options, callback);
-    },
-    Accuracy: Location.Accuracy,
+  requestPermissionsAsync: async () => {
+    return await Location.requestForegroundPermissionsAsync();
+  },
+  watchPositionAsync: async (options: any, callback: any) => {
+    return await Location.watchPositionAsync(options, callback);
+  },
+  Accuracy: Location.Accuracy,
 };
 
 export type LocationSubscription = Location.LocationSubscription;

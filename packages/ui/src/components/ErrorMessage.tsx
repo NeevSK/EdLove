@@ -8,61 +8,55 @@ import { View, HStack, Text, Pressable } from '../gluestack';
 import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react-native';
 
 interface ErrorMessageProps {
-    message: string;
-    type?: 'gentle' | 'warning' | 'severe';
-    onDismiss?: () => void;
+  message: string;
+  type?: 'gentle' | 'warning' | 'severe';
+  onDismiss?: () => void;
 }
 
-const ErrorMessage: FC<ErrorMessageProps> = ({
-    message,
-    type = 'gentle',
-    onDismiss,
-}) => {
-    const getTypeConfig = () => {
-        switch (type) {
-            case 'gentle':
-                return {
-                    containerClass: 'bg-phase-surface',
-                    textClass: 'text-phase-text-primary',
-                    Icon: Info,
-                };
-            case 'warning':
-                return {
-                    containerClass: 'bg-phase-accent/20 border border-phase-accent/30',
-                    textClass: 'text-phase-accent',
-                    Icon: AlertTriangle,
-                };
-            case 'severe':
-                return {
-                    containerClass: 'bg-phase-danger/10 border border-phase-danger/20',
-                    textClass: 'text-phase-danger',
-                    Icon: AlertCircle,
-                };
-        }
-    };
+const ErrorMessage: FC<ErrorMessageProps> = ({ message, type = 'gentle', onDismiss }) => {
+  const getTypeConfig = () => {
+    switch (type) {
+      case 'gentle':
+        return {
+          containerClass: 'bg-phase-surface',
+          textClass: 'text-phase-text-primary',
+          Icon: Info,
+        };
+      case 'warning':
+        return {
+          containerClass: 'bg-phase-accent/20 border border-phase-accent/30',
+          textClass: 'text-phase-accent',
+          Icon: AlertTriangle,
+        };
+      case 'severe':
+        return {
+          containerClass: 'bg-phase-danger/10 border border-phase-danger/20',
+          textClass: 'text-phase-danger',
+          Icon: AlertCircle,
+        };
+    }
+  };
 
-    const { containerClass, textClass, Icon } = getTypeConfig();
+  const { containerClass, textClass, Icon } = getTypeConfig();
 
-    return (
-        <View className={`p-4 rounded-xl mb-4 ${containerClass}`}>
-            <HStack space="md" className="items-center">
-                {/* Icon */}
-                <Icon color="currentColor" className={textClass} size={20} />
+  return (
+    <View className={`p-4 rounded-xl mb-4 ${containerClass}`}>
+      <HStack space="md" className="items-center">
+        {/* Icon */}
+        <Icon color="currentColor" className={textClass} size={20} />
 
-                {/* Message Text */}
-                <Text className={`flex-1 text-base leading-6 ${textClass}`}>
-                    {message}
-                </Text>
+        {/* Message Text */}
+        <Text className={`flex-1 text-base leading-6 ${textClass}`}>{message}</Text>
 
-                {/* Dismiss Button (X) */}
-                {onDismiss && (
-                    <Pressable accessibilityRole="button" onPress={onDismiss} className="p-1">
-                        <X color="currentColor" className={textClass} size={20} />
-                    </Pressable>
-                )}
-            </HStack>
-        </View>
-    );
+        {/* Dismiss Button (X) */}
+        {onDismiss && (
+          <Pressable accessibilityRole="button" onPress={onDismiss} className="p-1">
+            <X color="currentColor" className={textClass} size={20} />
+          </Pressable>
+        )}
+      </HStack>
+    </View>
+  );
 };
 
 export default ErrorMessage;

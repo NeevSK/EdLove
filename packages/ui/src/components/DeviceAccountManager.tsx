@@ -7,18 +7,18 @@ import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { Shield } from 'lucide-react-native';
 
-type PendingPinAction =
-  | { mode: AccountPinModalMode; account: DeviceAccountRecord }
-  | null;
+type PendingPinAction = { mode: AccountPinModalMode; account: DeviceAccountRecord } | null;
 
 function getInitials(name: string | null | undefined, email: string | null | undefined) {
   const source = name || email || 'A';
-  return source
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('') || 'A';
+  return (
+    source
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? '')
+      .join('') || 'A'
+  );
 }
 
 export default function DeviceAccountManager({
@@ -30,7 +30,15 @@ export default function DeviceAccountManager({
   subtitle?: string;
   compact?: boolean;
 }) {
-  const { accounts, activeAccountId, busyAccountId, loading, switchAccount, removeAccount, refresh } = useDeviceAccounts();
+  const {
+    accounts,
+    activeAccountId,
+    busyAccountId,
+    loading,
+    switchAccount,
+    removeAccount,
+    refresh,
+  } = useDeviceAccounts();
   const { showToast } = useSanctuaryToast();
   const [pinProtectedIds, setPinProtectedIds] = useState<Record<string, boolean>>({});
   const [pinAction, setPinAction] = useState<PendingPinAction>(null);
@@ -41,7 +49,10 @@ export default function DeviceAccountManager({
 
     (async () => {
       const entries = await Promise.all(
-        accounts.map(async (account) => [account.accountId, await accountPin.hasPin(account.accountId)] as const)
+        accounts.map(
+          async (account) =>
+            [account.accountId, await accountPin.hasPin(account.accountId)] as const,
+        ),
       );
 
       if (cancelled) return;
@@ -53,7 +64,8 @@ export default function DeviceAccountManager({
     };
   }, [accounts]);
 
-  const accountLabel = (account: DeviceAccountRecord) => account.fullName || account.email || 'This account';
+  const accountLabel = (account: DeviceAccountRecord) =>
+    account.fullName || account.email || 'This account';
 
   const askForPin = (mode: AccountPinModalMode, account: DeviceAccountRecord) => {
     hapticLight();
@@ -87,14 +99,20 @@ export default function DeviceAccountManager({
       return;
     }
 
-    const proceed = () => removeAccount(account.accountId).then(() => {
-      hapticSuccess();
-      showToast?.({ message: `Removed ${accountLabel(account)} from this device`, type: 'success' });
-      refresh();
-    }).catch((error: any) => {
-      hapticError();
-      showToast?.({ message: error?.message ?? 'Could not remove account', type: 'error' });
-    });
+    const proceed = () =>
+      removeAccount(account.accountId)
+        .then(() => {
+          hapticSuccess();
+          showToast?.({
+            message: `Removed ${accountLabel(account)} from this device`,
+            type: 'success',
+          });
+          refresh();
+        })
+        .catch((error: any) => {
+          hapticError();
+          showToast?.({ message: error?.message ?? 'Could not remove account', type: 'error' });
+        });
 
     if (Platform.OS === 'web') {
       const confirmed = window.confirm(`Remove ${accountLabel(account)} from this device?`);
@@ -108,25 +126,21 @@ export default function DeviceAccountManager({
       return;
     }
 
-    Alert.alert(
-      'Remove account',
-      `Remove ${accountLabel(account)} from this device?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            setPinBusy(true);
-            try {
-              await proceed();
-            } finally {
-              setPinBusy(false);
-            }
-          },
+    Alert.alert('Remove account', `Remove ${accountLabel(account)} from this device?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          setPinBusy(true);
+          try {
+            await proceed();
+          } finally {
+            setPinBusy(false);
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handlePinSubmit = async (values: any) => {
@@ -170,7 +184,10 @@ export default function DeviceAccountManager({
         await accountPin.removePin(account.accountId);
         setPinProtectedIds((current) => ({ ...current, [account.accountId]: false }));
         await removeAccount(account.accountId);
-        showToast?.({ message: `Removed ${accountLabel(account)} from this device`, type: 'success' });
+        showToast?.({
+          message: `Removed ${accountLabel(account)} from this device`,
+          type: 'success',
+        });
         return;
       }
     } catch (error: any) {
@@ -184,7 +201,9 @@ export default function DeviceAccountManager({
   };
 
   return (
-    <Box className={`rounded-[28px] border border-phase-border bg-phase-surface ${compact ? 'p-4' : 'p-5'}`}>
+    <Box
+      className={`rounded-[28px] border border-phase-border bg-phase-surface ${compact ? 'p-4' : 'p-5'}`}
+    >
       <VStack className="gap-3">
         <HStack className="items-start justify-between gap-3">
           <VStack className="flex-1 gap-1">
@@ -216,7 +235,9 @@ export default function DeviceAccountManager({
                 >
                   <HStack className="items-start gap-3">
                     <Box className="h-12 w-12 items-center justify-center rounded-[16px] bg-phase-accent/10 border border-phase-border">
-                      <Text className="text-sm font-bold text-phase-primary">{getInitials(account.fullName, account.email)}</Text>
+                      <Text className="text-sm font-bold text-phase-primary">
+                        {getInitials(account.fullName, account.email)}
+                      </Text>
                     </Box>
                     <VStack className="flex-1 gap-1">
                       <HStack className="items-center gap-2">
@@ -225,13 +246,19 @@ export default function DeviceAccountManager({
                         </Text>
                         {isActive && (
                           <Box className="rounded-full bg-phase-primary px-2 py-1">
-                            <Text className="text-[10px] font-bold uppercase text-white">Active</Text>
+                            <Text className="text-[10px] font-bold uppercase text-white">
+                              Active
+                            </Text>
                           </Box>
                         )}
                       </HStack>
-                      <Text className="text-sm text-phase-secondary">{account.email || 'No email saved'}</Text>
+                      <Text className="text-sm text-phase-secondary">
+                        {account.email || 'No email saved'}
+                      </Text>
                       <Text className="text-xs text-phase-secondary">
-                        {pinProtectedIds[account.accountId] ? 'PIN protected on this device' : 'No local PIN yet'}
+                        {pinProtectedIds[account.accountId]
+                          ? 'PIN protected on this device'
+                          : 'No local PIN yet'}
                       </Text>
                     </VStack>
                   </HStack>
@@ -250,10 +277,17 @@ export default function DeviceAccountManager({
                       <Button
                         className="flex-1 rounded-2xl"
                         variant="outline"
-                        onPress={() => askForPin(pinProtectedIds[account.accountId] ? 'update' : 'create', account)}
+                        onPress={() =>
+                          askForPin(
+                            pinProtectedIds[account.accountId] ? 'update' : 'create',
+                            account,
+                          )
+                        }
                         isDisabled={busy}
                       >
-                        <ButtonText>{pinProtectedIds[account.accountId] ? 'Change PIN' : 'Set PIN'}</ButtonText>
+                        <ButtonText>
+                          {pinProtectedIds[account.accountId] ? 'Change PIN' : 'Set PIN'}
+                        </ButtonText>
                       </Button>
                     )}
                     <Button

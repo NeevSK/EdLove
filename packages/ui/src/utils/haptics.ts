@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
  * Use for: Button presses, taps, toggles
  */
 export function hapticLight() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 }
 
 /**
@@ -18,7 +18,7 @@ export function hapticLight() {
  * Use for: Important actions, confirmations, selection changes
  */
 export function hapticMedium() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 }
 
 /**
@@ -26,7 +26,7 @@ export function hapticMedium() {
  * Use for: Destructive actions, warnings, errors
  */
 export function hapticHeavy() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 }
 
 /**
@@ -34,7 +34,7 @@ export function hapticHeavy() {
  * Use for: Successful operations, achievements, completion
  */
 export function hapticSuccess() {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 }
 
 /**
@@ -42,7 +42,7 @@ export function hapticSuccess() {
  * Use for: Warnings, attention needed
  */
 export function hapticWarning() {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
 }
 
 /**
@@ -50,7 +50,7 @@ export function hapticWarning() {
  * Use for: Errors, validation failures
  */
 export function hapticError() {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 }
 
 /**
@@ -58,7 +58,7 @@ export function hapticError() {
  * Use for: Scrolling through lists, picker changes
  */
 export function hapticSelection() {
-    Haptics.selectionAsync();
+  Haptics.selectionAsync();
 }
 
 /**
@@ -66,7 +66,7 @@ export function hapticSelection() {
  * Creates a gentle pulse pattern
  */
 export async function hapticBreathing() {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await new Promise(resolve => setTimeout(resolve, 200));
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 }

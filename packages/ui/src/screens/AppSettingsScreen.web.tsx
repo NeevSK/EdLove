@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, Switch } from 'react-native';
-import {
-  Box,
-  VStack,
-  HStack,
-  Heading,
-  Text,
-  Button,
-  ButtonText,
-  Pressable,
-} from '../gluestack';
+import { Box, VStack, HStack, Heading, Text, Button, ButtonText, Pressable } from '../gluestack';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { useEnvironment } from '../context';
 import { useTheme } from '../hooks/useTheme';
@@ -79,19 +70,11 @@ function SettingsOption({
           {icon}
         </Box>
         <VStack className="flex-1 gap-1">
-          <Text className="text-base font-semibold text-phase-primary">
-            {title}
-          </Text>
-          <Text className="text-sm text-phase-secondary leading-relaxed">
-            {description}
-          </Text>
+          <Text className="text-base font-semibold text-phase-primary">{title}</Text>
+          <Text className="text-sm text-phase-secondary leading-relaxed">{description}</Text>
         </VStack>
         <HStack className="gap-2 items-center">
-          {value && (
-            <Text className="text-sm text-phase-secondary mr-1">
-              {value}
-            </Text>
-          )}
+          {value && <Text className="text-sm text-phase-secondary mr-1">{value}</Text>}
           <ChevronRight size={20} className="text-phase-muted" />
         </HStack>
       </HStack>
@@ -109,9 +92,7 @@ function SectionHeader({ title, description }: { title: string; description?: st
         {title}
       </Heading>
       {description && (
-        <Text className="text-sm text-phase-secondary leading-relaxed">
-          {description}
-        </Text>
+        <Text className="text-sm text-phase-secondary leading-relaxed">{description}</Text>
       )}
     </VStack>
   );
@@ -120,7 +101,7 @@ function SectionHeader({ title, description }: { title: string; description?: st
 export default function AppSettingsScreen({ navigation }: any) {
   const { t, i18n } = useTranslation();
   const { accent, scene, text: themeText } = useTheme();
-  
+
   const {
     themeMode,
     setThemeMode,
@@ -166,7 +147,10 @@ export default function AppSettingsScreen({ navigation }: any) {
 
   // Temporal phase description
   const getTemporalDescription = () => {
-    const time = new Date().toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
+    const time = new Date().toLocaleTimeString(i18n.language, {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
     const phases = {
       predawn: t('settings.temporal.predawn'),
       dawn: t('settings.temporal.dawn'),
@@ -209,7 +193,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           title={t('settings.appearance.title')}
           description={t('settings.appearance.description')}
         />
-        
+
         <SettingsOption
           icon={<Sparkles size={24} className="text-phase-secondary" />}
           title={t('settings.fidelity.title')}
@@ -227,14 +211,18 @@ export default function AppSettingsScreen({ navigation }: any) {
         />
 
         {/* Living Theme Toggle */}
-        <Box className={`bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px] ${enableLivingTheme ? 'border-phase-primary' : ''}`}>
+        <Box
+          className={`bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px] ${enableLivingTheme ? 'border-phase-primary' : ''}`}
+        >
           <HStack className="gap-4 items-center justify-between">
             <HStack className="gap-4 items-center flex-1">
-              <Box className={`w-10 h-10 rounded-[12px] items-center justify-center ${enableLivingTheme ? 'bg-phase-primary' : 'bg-phase-surface'}`}>
-                <Sparkles 
-                  size={24} 
+              <Box
+                className={`w-10 h-10 rounded-[12px] items-center justify-center ${enableLivingTheme ? 'bg-phase-primary' : 'bg-phase-surface'}`}
+              >
+                <Sparkles
+                  size={24}
                   className={enableLivingTheme ? 'text-phase-world' : 'text-phase-muted'}
-                  fill={enableLivingTheme ? 'currentColor' : 'transparent'} 
+                  fill={enableLivingTheme ? 'currentColor' : 'transparent'}
                 />
               </Box>
               <VStack className="flex-1 gap-1">
@@ -306,8 +294,8 @@ export default function AppSettingsScreen({ navigation }: any) {
               onValueChange={async (val) => {
                 hapticLight();
                 showToast({
-                    message: t('settings.profile_visibility_updated', 'Profile visibility updated'),
-                    type: 'success'
+                  message: t('settings.profile_visibility_updated', 'Profile visibility updated'),
+                  type: 'success',
                 });
               }}
               trackColor={{ false: '#4B5563', true: accent.action }}
@@ -325,15 +313,18 @@ export default function AppSettingsScreen({ navigation }: any) {
               screen: 'UserProfile',
               params: {
                 userId: user?.id,
-                userName: user?.full_name
-              }
+                userName: user?.full_name,
+              },
             });
           }}
         />
 
         <SectionHeader
           title={t('profile.account.actions', 'Shared device accounts')}
-          description={t('profile.account.shared_device_desc', 'Switch, protect, and remove accounts stored on this device.')}
+          description={t(
+            'profile.account.shared_device_desc',
+            'Switch, protect, and remove accounts stored on this device.',
+          )}
         />
         <DeviceAccountManager compact={true} />
 
@@ -492,15 +483,9 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
 
   return (
     <Box className="absolute inset-0 bg-black/50 justify-end z-50">
-      <Pressable
-        className="flex-1"
-        onPress={onClose}
-        accessible={false}
-      />
+      <Pressable className="flex-1" onPress={onClose} accessible={false} />
       <Box className="bg-phase-world rounded-t-[32px] p-6 pb-12 shadow-2xl">
-        <Text className="text-xl font-bold text-phase-primary mb-4">
-          {title}
-        </Text>
+        <Text className="text-xl font-bold text-phase-primary mb-4">{title}</Text>
         <VStack className="gap-2">
           {options.map((option) => (
             <Pressable
@@ -516,30 +501,19 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
               accessibilityHint={option.description}
               accessibilityState={{ selected: option.isSelected }}
             >
-              <Box className="w-10 h-10 items-center justify-center">
-                {option.icon}
-              </Box>
+              <Box className="w-10 h-10 items-center justify-center">{option.icon}</Box>
               <VStack className="flex-1 gap-1">
-                <Text className="text-base font-semibold text-phase-primary">
-                  {option.label}
-                </Text>
+                <Text className="text-base font-semibold text-phase-primary">{option.label}</Text>
                 <Text className="text-sm text-phase-secondary leading-relaxed">
                   {option.description}
                 </Text>
               </VStack>
-              {option.isSelected && (
-                <Check size={24} className="text-phase-primary" />
-              )}
+              {option.isSelected && <Check size={24} className="text-phase-primary" />}
             </Pressable>
           ))}
         </VStack>
-        <Button
-          onPress={onClose}
-          className="mt-4 bg-phase-surface h-14 rounded-2xl"
-        >
-          <ButtonText className="text-phase-primary font-bold">
-            Close
-          </ButtonText>
+        <Button onPress={onClose} className="mt-4 bg-phase-surface h-14 rounded-2xl">
+          <ButtonText className="text-phase-primary font-bold">Close</ButtonText>
         </Button>
       </Box>
     </Box>

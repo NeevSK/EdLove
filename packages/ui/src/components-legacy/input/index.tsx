@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, TextInput, Pressable, type ViewProps, type TextInputProps, type PressableProps } from 'react-native';
+import {
+  View,
+  TextInput,
+  Pressable,
+  type ViewProps,
+  type TextInputProps,
+  type PressableProps,
+} from 'react-native';
 import { cssInterop } from 'nativewind';
 import { useFormControl } from '../form-control';
 
@@ -20,35 +27,40 @@ export const Input = React.forwardRef<View, IInputProps>(
     const isDisabled = isDisabledProp ?? isDisabledContext;
 
     return (
-      <View 
-        {...props} 
-        ref={ref} 
+      <View
+        {...props}
+        ref={ref}
         className={`flex-row items-center border rounded-lg px-3 min-h-[48px] 
           ${isInvalid ? 'border-error' : 'border-border'} 
           ${isDisabled ? 'opacity-50' : ''} 
-          ${className || ''}`} 
+          ${className || ''}`}
       />
     );
-  }
+  },
 );
 
-export const InputField = React.forwardRef<TextInput, TextInputProps & { className?: string; type?: 'text' | 'password' }>(
-  ({ className, type, ...props }, ref) => {
-    const { isDisabled } = useFormControl();
-    return (
-      <TextInput
-        {...props}
-        ref={ref}
-        editable={!isDisabled}
-        secureTextEntry={type === 'password'}
-        className={`flex-1 text-textMain text-base py-2 ${className || ''}`}
-        placeholderTextColor="#9CA3AF" // tailwind gray-400
-      />
-    );
-  }
-);
+export const InputField = React.forwardRef<
+  TextInput,
+  TextInputProps & { className?: string; type?: 'text' | 'password' }
+>(({ className, type, ...props }, ref) => {
+  const { isDisabled } = useFormControl();
+  return (
+    <TextInput
+      {...props}
+      ref={ref}
+      editable={!isDisabled}
+      secureTextEntry={type === 'password'}
+      className={`flex-1 text-textMain text-base py-2 ${className || ''}`}
+      placeholderTextColor="#9CA3AF" // tailwind gray-400
+    />
+  );
+});
 
-export const InputSlot = ({ className, children, ...props }: PressableProps & { className?: string; children?: React.ReactNode }) => (
+export const InputSlot = ({
+  className,
+  children,
+  ...props
+}: PressableProps & { className?: string; children?: React.ReactNode }) => (
   <Pressable {...props} className={`px-2 py-1 justify-center items-center ${className || ''}`}>
     {children}
   </Pressable>

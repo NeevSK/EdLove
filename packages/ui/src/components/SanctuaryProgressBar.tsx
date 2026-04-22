@@ -10,11 +10,11 @@ import Reanimated, {
 import { Box, HStack, VStack } from '../gluestack';
 
 export interface SanctuaryProgressBarProps {
-  percentage: number;        // 0–100
-  isComplete?: boolean;      // true — gold/reward state
-  nextHint?: string;         // text shown below bar
-  showPercentage?: boolean;  // default true
-  compact?: boolean;         // 4px bar instead of 8px
+  percentage: number; // 0–100
+  isComplete?: boolean; // true — gold/reward state
+  nextHint?: string; // text shown below bar
+  showPercentage?: boolean; // default true
+  compact?: boolean; // 4px bar instead of 8px
   style?: ViewStyle;
 }
 
@@ -44,10 +44,7 @@ export function SanctuaryProgressBar({
       glowOpacity.value = withSequence(
         withTiming(1, { duration: 400 }),
         withRepeat(
-          withSequence(
-            withTiming(0.3, { duration: 800 }),
-            withTiming(1, { duration: 800 }),
-          ),
+          withSequence(withTiming(0.3, { duration: 800 }), withTiming(1, { duration: 800 })),
           3,
           false,
         ),
@@ -72,15 +69,17 @@ export function SanctuaryProgressBar({
           <Text className="text-[11px] font-semibold uppercase tracking-wider text-phase-text-secondary">
             Profile Completion
           </Text>
-          <Text className={`text-[13px] font-bold ${isComplete ? 'text-phase-reward' : 'text-phase-text-primary'}`}>
+          <Text
+            className={`text-[13px] font-bold ${isComplete ? 'text-phase-reward' : 'text-phase-text-primary'}`}
+          >
             {percentage}%
           </Text>
         </HStack>
       )}
 
       {/* Track */}
-      <Box 
-        className="bg-phase-surface/30 rounded-full overflow-hidden" 
+      <Box
+        className="bg-phase-surface/30 rounded-full overflow-hidden"
         style={{ height: barHeight }}
       >
         {/* Animated fill */}
@@ -115,9 +114,7 @@ export function SanctuaryProgressBar({
           {nextHint}
         </Text>
       ) : isComplete ? (
-        <Text className="text-[12px] text-phase-reward">
-          🏅 Profile complete!
-        </Text>
+        <Text className="text-[12px] text-phase-reward">🏅 Profile complete!</Text>
       ) : null}
     </VStack>
   );

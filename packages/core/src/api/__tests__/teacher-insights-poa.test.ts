@@ -1,21 +1,21 @@
-jest.mock('../native/runtimes/teacherInsights.runtime', () => ({
+﻿vi.mock('../native/runtimes/teacherInsights.runtime', () => ({
   teacherInsightsServices: {
-    listPrivateNotes: jest.fn(),
-    createPrivateNote: jest.fn(),
-    deletePrivateNote: jest.fn(),
-    listStudentObservations: jest.fn(),
-    listStudentObservationsForEnrollment: jest.fn(),
-    listStudentObservationsForStudent: jest.fn(),
-    createStudentObservation: jest.fn(),
-    finalizeStudentObservation: jest.fn(),
-    deleteStudentObservation: jest.fn(),
-    shareStudentObservation: jest.fn(),
-    revokeStudentObservationShare: jest.fn(),
-    promoteStudentObservation: jest.fn(),
-    getStudentPotential: jest.fn(),
-    upsertStudentPotential: jest.fn(),
-    getInsightAuditTrail: jest.fn(),
-    getInsightTimeline: jest.fn(),
+    listPrivateNotes: vi.fn(),
+    createPrivateNote: vi.fn(),
+    deletePrivateNote: vi.fn(),
+    listStudentObservations: vi.fn(),
+    listStudentObservationsForEnrollment: vi.fn(),
+    listStudentObservationsForStudent: vi.fn(),
+    createStudentObservation: vi.fn(),
+    finalizeStudentObservation: vi.fn(),
+    deleteStudentObservation: vi.fn(),
+    shareStudentObservation: vi.fn(),
+    revokeStudentObservationShare: vi.fn(),
+    promoteStudentObservation: vi.fn(),
+    getStudentPotential: vi.fn(),
+    upsertStudentPotential: vi.fn(),
+    getInsightAuditTrail: vi.fn(),
+    getInsightTimeline: vi.fn(),
   },
 }));
 
@@ -75,3 +75,4 @@ describe('teacher insights POA coverage', () => {
     });
   });
 });
+

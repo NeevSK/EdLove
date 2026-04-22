@@ -5,13 +5,15 @@ import { VStack } from '../vstack';
 
 /**
  * FormControl
- * 
+ *
  * Hardened primitive for form structures.
  * Provides label and error state management.
  */
 
 export const FormControl = ({ children, isInvalid, isDisabled, className }: any) => (
-  <VStack space="xs" className={className}>{children}</VStack>
+  <VStack space="xs" className={className}>
+    {children}
+  </VStack>
 );
 
 export const FormControlLabel = ({ children, className }: any) => (
@@ -19,7 +21,9 @@ export const FormControlLabel = ({ children, className }: any) => (
 );
 
 export const FormControlLabelText = ({ children, className }: any) => (
-  <Text className={`text-sm font-medium text-phase-text-primary ${className || ''}`}>{children}</Text>
+  <Text className={`text-sm font-medium text-phase-text-primary ${className || ''}`}>
+    {children}
+  </Text>
 );
 
 export const FormControlError = ({ children, className }: any) => (

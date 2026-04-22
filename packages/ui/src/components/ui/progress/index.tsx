@@ -29,19 +29,20 @@ const Progress = React.forwardRef<View, IProgressProps>(
         {children}
       </View>
     );
-  }
+  },
 );
 
-export const ProgressFilledTrack = React.forwardRef<View, ViewProps & { className?: string; value?: number }>(
-  ({ className, value, ...props }, ref) => (
-    <View
-      {...props}
-      ref={ref}
-      style={{ width: `${value || 0}%` }}
-      className={`h-full bg-phase-accent rounded-full ${className || ''}`}
-    />
-  )
-);
+export const ProgressFilledTrack = React.forwardRef<
+  View,
+  ViewProps & { className?: string; value?: number }
+>(({ className, value, ...props }, ref) => (
+  <View
+    {...props}
+    ref={ref}
+    style={{ width: `${value || 0}%` }}
+    className={`h-full bg-phase-accent rounded-full ${className || ''}`}
+  />
+));
 
 Progress.displayName = 'Progress';
 ProgressFilledTrack.displayName = 'ProgressFilledTrack';

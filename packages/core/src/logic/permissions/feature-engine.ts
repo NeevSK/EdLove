@@ -1,4 +1,4 @@
-import type { UserContext } from '../logic/schemas/user.schema';
+﻿import type { UserContext } from '../schemas/user.schema';
 
 /**
  * FeatureFlags - The central registry of all boolean switches in the Gurudevi Sanctuary.
@@ -268,3 +268,5 @@ export const resolveFeatureFlags = (
 
   return flags;
 };
+
+

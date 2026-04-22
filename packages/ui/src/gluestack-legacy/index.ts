@@ -1,19 +1,19 @@
 import React from 'react';
-import { 
-    View as RNView, 
-    Text as RNText, 
-    FlatList as RNFlatList, 
-    SectionList as RNSectionList, 
-    Switch as RNSwitch,
+import {
+  View as RNView,
+  Text as RNText,
+  FlatList as RNFlatList,
+  SectionList as RNSectionList,
+  Switch as RNSwitch,
 } from 'react-native';
 
 /**
  * UI Abstraction Layer
- * 
+ *
  * RULE: This is the ONLY file that imports from @gluestack-ui
  * All application code MUST import UI components from this file.
- * 
- * WHY: 
+ *
+ * WHY:
  * 1. Fixes TypeScript stack overflow (direct imports)
  * 2. Improves tree-shaking (only bundle what we use)
  * 3. Enables easy refactoring (change one file to swap libraries)
@@ -28,45 +28,55 @@ import { Center } from '../components-legacy/center';
 import { HStack } from '../components-legacy/hstack';
 import { VStack } from '../components-legacy/vstack';
 import { View, ScrollView, Pressable } from '../components-legacy/view';
-import { Spinner, Heading, Divider } from '../components-legacy/divider'; 
+import { Spinner, Heading, Divider } from '../components-legacy/divider';
 import { Image } from '../components-legacy/image';
 import { Text } from '../components-legacy/text';
 import { Button, ButtonText } from '../components-legacy/button';
 
-export { Box, Center, HStack, VStack, View, ScrollView, Pressable, Spinner, Heading, Divider, Image, Text, Button, ButtonText };
+export {
+  Box,
+  Center,
+  HStack,
+  VStack,
+  View,
+  ScrollView,
+  Pressable,
+  Spinner,
+  Heading,
+  Divider,
+  Image,
+  Text,
+  Button,
+  ButtonText,
+};
 
 // ============================================================================
 // Form Components - Local Primitives
 // ============================================================================
-import { 
-    FormControl as LocalFormControl,
-    FormControlError,
-    FormControlErrorIcon,
-    FormControlErrorText,
-    FormControlHelper,
-    FormControlHelperText,
-    FormControlLabel,
-    FormControlLabelText,
-    type IFormControlProps
+import {
+  FormControl as LocalFormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  FormControlHelper,
+  FormControlHelperText,
+  FormControlLabel,
+  FormControlLabelText,
+  type IFormControlProps,
 } from '../components-legacy/form-control';
 
 export const FormControl = LocalFormControl as React.ComponentType<IFormControlProps>;
 export {
-    FormControlError,
-    FormControlErrorIcon,
-    FormControlErrorText,
-    FormControlHelper,
-    FormControlHelperText,
-    FormControlLabel,
-    FormControlLabelText
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  FormControlHelper,
+  FormControlHelperText,
+  FormControlLabel,
+  FormControlLabelText,
 };
 
-import {
-    Input,
-    InputField,
-    InputSlot,
-    InputIcon
-} from '../components-legacy/input';
+import { Input, InputField, InputSlot, InputIcon } from '../components-legacy/input';
 
 export { Input, InputField, InputSlot, InputIcon };
 
@@ -172,23 +182,23 @@ export const GluestackUIProvider = ({ children }: any) => children;
 // while we transition to full Tailwind/NativeWind token management.
 export const createConfig = (config: any) => config;
 export const gluestackConfig = {
-    tokens: {
-        colors: {},
-        space: {},
-        fontSizes: {},
-        lineHeights: {},
-        letterSpacings: {},
-        fonts: {},
-        fontWeights: {},
-        radii: {},
-        borderWidths: {},
-        breakpoints: {},
-        mediaQueries: {},
-        opacity: {},
-        shadows: {},
-        zIndex: {},
-    },
-    aliases: {},
+  tokens: {
+    colors: {},
+    space: {},
+    fontSizes: {},
+    lineHeights: {},
+    letterSpacings: {},
+    fonts: {},
+    fontWeights: {},
+    radii: {},
+    borderWidths: {},
+    breakpoints: {},
+    mediaQueries: {},
+    opacity: {},
+    shadows: {},
+    zIndex: {},
+  },
+  aliases: {},
 };
 
 // ============================================================================

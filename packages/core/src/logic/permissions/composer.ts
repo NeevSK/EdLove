@@ -1,5 +1,5 @@
-import { AbilityBuilder } from '@casl/ability';
-import { type UserContext, UserContextSchema } from '../logic/schemas/user.schema';
+﻿import { AbilityBuilder } from '@casl/ability';
+import { type UserContext, UserContextSchema } from '../schemas/user.schema';
 import { defineAdminAbilities } from './abilities/admin';
 import { defineAssistantPrincipalAbilities } from './abilities/assistantPrincipal';
 import { AppAbility } from './abilities/base';
@@ -126,3 +126,5 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
 
   return builder.build();
 };
+
+

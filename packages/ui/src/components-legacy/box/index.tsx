@@ -16,13 +16,7 @@ export interface IBoxProps extends ViewProps {
 
 const Box = React.forwardRef<View, IBoxProps>(({ className, ...props }, ref) => {
   const Component = StyledView as any;
-  return (
-    <Component
-      {...props}
-      ref={ref}
-      className={className}
-    />
-  );
+  return <Component {...props} ref={ref} className={className} />;
 });
 
 Box.displayName = 'Box';

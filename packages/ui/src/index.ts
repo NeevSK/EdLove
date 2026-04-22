@@ -6,7 +6,14 @@ export * from './components/ui/box';
 export * from './components/ui/center';
 export * from './components/ui/hstack';
 export * from './components/ui/vstack';
-export { View, ScrollView, FlatList, RefreshControl, AnimatedView, KeyboardAvoidingView } from './components/ui/view';
+export {
+  View,
+  ScrollView,
+  FlatList,
+  RefreshControl,
+  AnimatedView,
+  KeyboardAvoidingView,
+} from './components/ui/view';
 export * from './components/ui/text';
 export * from './components/ui/divider';
 export * from './components/ui/icon';
@@ -38,28 +45,28 @@ export * from './components/ui/linear-gradient';
 import { PortalProvider } from './components/ui/portal';
 
 export const GluestackUIProvider = ({ children }: { children: React.ReactNode; config?: any }) => {
-    return React.createElement(PortalProvider, null, children);
+  return React.createElement(PortalProvider, null, children);
 };
 
-export const createConfig = <T,>(config: T) => config;
+export const createConfig = <T>(config: T) => config;
 export const gluestackConfig = {
-    tokens: {
-        colors: {},
-        space: {},
-        fontSizes: {},
-        lineHeights: {},
-        letterSpacings: {},
-        fonts: {},
-        fontWeights: {},
-        radii: {},
-        borderWidths: {},
-        breakpoints: {},
-        mediaQueries: {},
-        opacity: {},
-        shadows: {},
-        zIndex: {},
-    },
-    aliases: {},
+  tokens: {
+    colors: {},
+    space: {},
+    fontSizes: {},
+    lineHeights: {},
+    letterSpacings: {},
+    fonts: {},
+    fontWeights: {},
+    radii: {},
+    borderWidths: {},
+    breakpoints: {},
+    mediaQueries: {},
+    opacity: {},
+    shadows: {},
+    zIndex: {},
+  },
+  aliases: {},
 };
 
 // 2. Context & Providers (Logic State)
@@ -92,21 +99,21 @@ export * from './utils/dateTimeUtils';
 export * from './utils/a11yUtils';
 
 // Canvas & Workspace (Shared patterns)
-export type { 
-    WorkspaceSurfaceDefinition, 
-    ResolvedWorkspaceSurface, 
-    WorkspaceLayout, 
-    WorkspaceZoneId 
+export type {
+  WorkspaceSurfaceDefinition,
+  ResolvedWorkspaceSurface,
+  WorkspaceLayout,
+  WorkspaceZoneId,
 } from '@repo/core/types';
 
 // Re-exports for common animations (compatibility)
-export { 
-    FadeInDown, 
-    FadeInUp, 
-    FadeOutDown, 
-    FadeOutUp,
-    SlideInDown,
-    SlideInUp,
+export {
+  FadeInDown,
+  FadeInUp,
+  FadeOutDown,
+  FadeOutUp,
+  SlideInDown,
+  SlideInUp,
 } from 'react-native-reanimated';
 
 export { useSanctuaryToast, useSanctuaryToast as useLotusToast } from './providers/ToastProvider';

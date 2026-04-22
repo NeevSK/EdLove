@@ -4,12 +4,12 @@ import { Info } from 'lucide-react-native';
 import FeatureDiscoveryModal from './FeatureDiscoveryModal';
 
 export interface FeatureInfoIconProps {
-    title: string;
-    discoveryInfo?: {
-        whatIsIt: string;
-        whereToFind: string;
-    };
-    color?: string;
+  title: string;
+  discoveryInfo?: {
+    whatIsIt: string;
+    whereToFind: string;
+  };
+  color?: string;
 }
 
 /**
@@ -17,30 +17,33 @@ export interface FeatureInfoIconProps {
  * Uses a soft ripple effect and identity-aware coloring.
  */
 export default function FeatureInfoIcon({
-    title,
-    discoveryInfo,
-    color = 'text-phase-text-secondary opacity-60',
+  title,
+  discoveryInfo,
+  color = 'text-phase-text-secondary opacity-60',
 }: FeatureInfoIconProps) {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-    if (!discoveryInfo) return null;
+  if (!discoveryInfo) return null;
 
-    return (
-        <>
-            <Pressable 
-                accessibilityRole="button"
-                onPress={() => setIsOpen(true)}
-                className="p-1 rounded-full active:scale-90 hover:bg-phase-surface/10"
-            >
-                <Info size={16} className={color.startsWith('text-') ? color : 'text-phase-text-secondary'} />
-            </Pressable>
-            <FeatureDiscoveryModal
-                isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
-                title={title}
-                whatIsIt={discoveryInfo.whatIsIt}
-                whereToFind={discoveryInfo.whereToFind}
-            />
-        </>
-    );
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setIsOpen(true)}
+        className="p-1 rounded-full active:scale-90 hover:bg-phase-surface/10"
+      >
+        <Info
+          size={16}
+          className={color.startsWith('text-') ? color : 'text-phase-text-secondary'}
+        />
+      </Pressable>
+      <FeatureDiscoveryModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={title}
+        whatIsIt={discoveryInfo.whatIsIt}
+        whereToFind={discoveryInfo.whereToFind}
+      />
+    </>
+  );
 }

@@ -1,5 +1,5 @@
 import type { AbilityBuilder } from '@casl/ability';
-import type { UserContext } from '../../logic/schemas/user.schema';
+import type { UserContext } from '../..//schemas/user.schema';
 import type { AppAbility } from './base';
 
 export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
@@ -23,3 +23,4 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   can('read', 'LibrarySearch');
   can('manage', 'Library');
 };
+

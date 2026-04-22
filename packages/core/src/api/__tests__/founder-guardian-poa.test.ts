@@ -1,30 +1,30 @@
-jest.mock('../native/runtimes/founder.runtime', () => ({
+﻿vi.mock('../native/runtimes/founder.runtime', () => ({
   founderServices: {
-    getEcosystemStats: jest.fn(),
-    getAllSchools: jest.fn(),
-    createSchool: jest.fn(),
-    createClassroom: jest.fn(),
-    createGroup: jest.fn(),
-    listAllUsers: jest.fn(),
-    updateSchoolMetadata: jest.fn(),
-    getEcosystemPulse: jest.fn(),
-    getSentinelGovernance: jest.fn(),
+    getEcosystemStats: vi.fn(),
+    getAllSchools: vi.fn(),
+    createSchool: vi.fn(),
+    createClassroom: vi.fn(),
+    createGroup: vi.fn(),
+    listAllUsers: vi.fn(),
+    updateSchoolMetadata: vi.fn(),
+    getEcosystemPulse: vi.fn(),
+    getSentinelGovernance: vi.fn(),
   },
 }));
 
-jest.mock('../native/runtimes/guardian.runtime', () => ({
+vi.mock('../native/runtimes/guardian.runtime', () => ({
   guardianServices: {
-    createProfile: jest.fn(),
-    getProfile: jest.fn(),
-    updateProfile: jest.fn(),
-    getStudents: jest.fn(),
-    getStudentGuardians: jest.fn(),
-    getDashboard: jest.fn(),
-    verifyGuardian: jest.fn(),
-    linkGuardianToStudent: jest.fn(),
-    updatePermissions: jest.fn(),
-    terminateRelationship: jest.fn(),
-    updateNotificationSettings: jest.fn(),
+    createProfile: vi.fn(),
+    getProfile: vi.fn(),
+    updateProfile: vi.fn(),
+    getStudents: vi.fn(),
+    getStudentGuardians: vi.fn(),
+    getDashboard: vi.fn(),
+    verifyGuardian: vi.fn(),
+    linkGuardianToStudent: vi.fn(),
+    updatePermissions: vi.fn(),
+    terminateRelationship: vi.fn(),
+    updateNotificationSettings: vi.fn(),
   },
 }));
 
@@ -113,3 +113,4 @@ describe('founder and guardian POA coverage', () => {
     });
   });
 });
+
