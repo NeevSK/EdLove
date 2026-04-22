@@ -210,7 +210,7 @@ export function useAuthorityLifecycle() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUser?.id, fetchAndSetUserProfile]);
+  }, [currentUser?.id, refreshProfile]);
 
   return { session, loading, isProfileLoading, refreshProfile };
 }

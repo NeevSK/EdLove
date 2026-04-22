@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { type CrystalTier, naturePathsAPI, type RiverStage } from '../api/naturePaths';
 import { usePermissions } from '../permissions/hooks/usePermissions';
 
@@ -18,7 +18,7 @@ export const useNaturePaths = () => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshPaths = async () => {
+  const refreshPaths = useCallback(async () => {
     if (!userId) return;
     setIsLoading(true);
     try {
@@ -29,11 +29,11 @@ export const useNaturePaths = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     refreshPaths();
-  }, [userId]);
+  }, [refreshPaths]);
 
   return {
     paths,

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
 import { classifyError } from '../errorClassifier';
 import { useMutationAuditLog } from '../MutationAuditLog';
@@ -24,13 +24,7 @@ export default function SyncManager() {
 
   const MAX_RETRIES = 5; // Increased for better robustness
 
-  useEffect(() => {
-    if (isOnline && queue.length > 0 && !isSyncing) {
-      processQueue();
-    }
-  }, [isOnline, queue.length, isSyncing]);
-
-  const processQueue = async () => {
+  const processQueue = useCallback(async () => {
     setSyncing(true);
     if (__DEV__) {
       console.log(`[ResonantSync] Analyzing outbox: ${queue.length} items pending.`);
@@ -101,7 +95,21 @@ export default function SyncManager() {
     if (processedCount > 0) {
       showToast(`Synced ${processedCount} pending actions`, 'success');
     }
-  };
+  }, [
+    queue,
+    removeFromQueue,
+    updateMutation,
+    moveToDeadLetter,
+    setSyncing,
+    updateEntry,
+    showToast,
+  ]);
+
+  useEffect(() => {
+    if (isOnline && queue.length > 0 && !isSyncing) {
+      processQueue();
+    }
+  }, [isOnline, queue.length, isSyncing, processQueue]);
 
   return null;
 }

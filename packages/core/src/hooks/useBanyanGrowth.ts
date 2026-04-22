@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { type BanyanStage, naturePathsAPI } from '../api/naturePaths';
 import { usePermissions } from '../permissions/hooks/usePermissions';
 
@@ -17,7 +17,7 @@ export function useBanyanGrowth() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshBanyan = async () => {
+  const refreshBanyan = useCallback(async () => {
     if (!userId) return;
     setIsLoading(true);
     try {
@@ -28,11 +28,11 @@ export function useBanyanGrowth() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     refreshBanyan();
-  }, [userId]);
+  }, [refreshBanyan]);
 
   return {
     banyan,
