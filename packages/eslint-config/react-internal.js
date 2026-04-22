@@ -3,7 +3,6 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReact from "eslint-plugin-react";
-import reactCompiler from "eslint-plugin-react-compiler";
 import pluginReactNativeA11y from "eslint-plugin-react-native-a11y";
 import globals from "globals";
 import { config as baseConfig } from "./base.js";
@@ -28,7 +27,7 @@ export const config = [
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
-  ...compat.extends("plugin:react-hooks/recommended"),
+  pluginReactHooks.configs.flat.recommended,
   ...compat.extends("plugin:react-native-a11y/all"),
   {
     languageOptions: {
@@ -39,12 +38,8 @@ export const config = [
     },
   },
   {
-    plugins: {
-      "react-compiler": reactCompiler,
-    },
     settings: { react: { version: "detect" } },
     rules: {
-      "react-compiler/react-compiler": "error",
       // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
       "no-restricted-syntax": [

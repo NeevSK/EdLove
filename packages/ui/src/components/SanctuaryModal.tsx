@@ -71,7 +71,12 @@ export default function SanctuaryModal({
           </HStack>
 
           {showCloseButton && (
-            <Pressable onPress={onClose} className="p-2 active:opacity-60">
+            <Pressable
+              onPress={onClose}
+              className="p-2 active:opacity-60"
+              accessibilityRole="button"
+              accessibilityLabel="Close modal"
+            >
               <X size={20} className="text-phase-text-primary" />
             </Pressable>
           )}

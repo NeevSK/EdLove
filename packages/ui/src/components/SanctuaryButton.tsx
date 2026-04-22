@@ -31,6 +31,7 @@ export default function SanctuaryButton({
   action = 'primary',
   style,
   accessibilityLabel,
+  accessibilityHint,
   className = '',
 }: SanctuaryButtonProps) {
   // Semantic Mapping using Phase Tokens
@@ -120,6 +121,11 @@ export default function SanctuaryButton({
       accessibilityLabel={
         accessibilityLabel || (typeof children === 'string' ? children : undefined)
       }
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{
+        busy: isLoading,
+        disabled: isDisabled || isLoading,
+      }}
     >
       {isLoading ? (
         <ButtonSpinner className={`mr-2 ${getTextClass()}`} />

@@ -3,11 +3,18 @@ import { View, Pressable } from '../view';
 import { Text } from '../text';
 
 export const RadioGroup = ({ children, className }: any) => (
-  <View className={`gap-2 ${className || ''}`}>{children}</View>
+  <View accessibilityRole="radiogroup" className={`gap-2 ${className || ''}`}>
+    {children}
+  </View>
 );
 
 export const Radio = ({ children, isChecked, onPress, className }: any) => (
-  <Pressable onPress={onPress} className={`flex-row items-center gap-2 ${className || ''}`}>
+  <Pressable
+    onPress={onPress}
+    accessibilityRole="radio"
+    accessibilityState={{ checked: !!isChecked }}
+    className={`flex-row items-center gap-2 ${className || ''}`}
+  >
     {children}
   </Pressable>
 );

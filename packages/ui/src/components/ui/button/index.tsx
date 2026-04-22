@@ -72,6 +72,10 @@ const Button = React.forwardRef<View, IButtonProps>(
         {...props}
         ref={ref as any}
         disabled={isDisabled}
+        accessibilityRole="button"
+        accessibilityState={{
+          disabled: !!isDisabled,
+        }}
         className={`${baseStyle} ${variantStyle} ${sizeStyle} ${isDisabled ? 'opacity-40' : ''} ${className || ''}`}
       >
         {children}

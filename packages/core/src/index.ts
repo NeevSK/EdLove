@@ -13,7 +13,7 @@ export * from './lib/inventoryScope';
 export * from './lib/mediaUtils';
 export * from './lib/monitoring/sentry';
 export * from './lib/pendingGateAction';
-export * from './logic/permissions';
+export * from './logic/permissions/index';
 export { Runtime } from './lib/runtime';
 export { storage } from './lib/storage';
 export { SafeZustandStorage } from './lib/storageWrapper';

@@ -33,6 +33,7 @@ AI Agents operating on this codebase must shift from **Local Task Completion** t
   1. `pnpm check-types` (Ensure type safety across the monorepo).
   2. `pnpm lint` (Ensure aesthetic consistency).
   3. `pnpm check-all` (When stability is critical).
+- **Mandatory**: Always use `pnpm exec` or `pnpm dlx`. Never allow `npm` or `npx` to touch the workspace.
 
 ---
 

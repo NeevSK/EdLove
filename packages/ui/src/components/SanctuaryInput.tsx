@@ -13,6 +13,7 @@ import {
   InputIcon,
   HStack,
   Text,
+  useFormControlContext,
 } from './ui';
 import { Theme } from '../theme/Theme';
 
@@ -66,7 +67,10 @@ export default function SanctuaryInput({
   numberOfLines = 1,
   autoFocus = false,
   keyboardType = 'default',
+  accessibilityLabel,
+  accessibilityHint,
 }: SanctuaryInputProps) {
+  const { id } = useFormControlContext();
   const hasError = isInvalid || !!error;
 
   return (
@@ -108,6 +112,10 @@ export default function SanctuaryInput({
           className="text-phase-text-primary px-3 text-base"
           multiline={multiline}
           numberOfLines={numberOfLines}
+          accessibilityLabel={accessibilityLabel || label}
+          accessibilityHint={accessibilityHint}
+          accessibilityLabelledBy={id ? `${id}-label` : undefined}
+          accessibilityDescribedBy={hasError && id ? `${id}-error` : undefined}
         />
 
         {rightIcon && (

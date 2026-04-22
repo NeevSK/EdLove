@@ -20,7 +20,7 @@ module.exports = {
             }
 
             // Fix ZenStack peer dependency on zod (ZenStack 3.5.1 incorrectly flags zod ^4.0.0)
-            if (pkg.name.startsWith('@zenstackhq/')) {
+            if (pkg.name && pkg.name.startsWith('@zenstackhq/')) {
                 if (pkg.peerDependencies && pkg.peerDependencies['zod']) {
                     pkg.peerDependencies['zod'] = '^3.23.8 || ^4.0.0';
                 }
