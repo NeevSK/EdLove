@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { WorkspaceLayoutRepository } from '../../logic/domains/workspaceLayout/ports';
 import {
   type WorkspaceLayoutDelete,
@@ -8,7 +9,6 @@ import {
   type WorkspaceLayoutUpsert,
   WorkspaceLayoutUpsertSchema,
 } from '../../logic/schemas/workspace-layout.schema';
-import { supabase } from '../../native/supabase';
 import { APIError } from '../../types/API';
 
 const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLayoutRecord =>
@@ -26,7 +26,9 @@ const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLay
     updated_at: row.updated_at,
   });
 
-export const createSupabaseWorkspaceLayoutRepository = (): WorkspaceLayoutRepository => ({
+export const createSupabaseWorkspaceLayoutRepository = (
+  supabase: SupabaseClient,
+): WorkspaceLayoutRepository => ({
   async getLayout(userId, workspaceId, layoutTarget: WorkspaceLayoutTarget) {
     const { data, error } = await supabase
       .from('user_workspace_layouts')

@@ -1,4 +1,6 @@
 // 1. Foundation (No relative dependencies)
+import { v7 } from 'uuid';
+export { v7, v7 as uuidv7 };
 
 export * from './accounts/deviceAccounts';
 // 4. API & Business Logic
@@ -43,6 +45,8 @@ export * from './store/useTemporalStore';
 export { useTenantStore } from './store/useTenantStore';
 export { useUIStore } from './store/useUIStore';
 export * from './types';
+export * from './logic/events/bus';
+export * from './logic/domains/factory';
 
 import { z } from 'zod';
 
@@ -117,6 +121,7 @@ export { UserSchema } from './logic/schemas/user.schema';
 export * from './logic/schemas/staff.schema';
 export * from './logic/schemas/temporal.schema';
 export * from './logic/utils/validators';
+export { generateIdempotencyKey } from './lib/sync/idempotency';
 export * from './logic/workspace/canvas';
 export * from './logic/workspace/workspaceSwitcher';
 export * from './native/useWorkspaceLayoutSync';

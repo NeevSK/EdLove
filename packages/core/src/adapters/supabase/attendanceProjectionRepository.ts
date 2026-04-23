@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AttendanceProjectionRepository } from '../../logic/domains/attendanceProjection/ports';
 import {
   type AttendanceReport,
@@ -6,7 +7,6 @@ import {
   type SchoolAttendancePulse,
   SchoolAttendancePulseSchema,
 } from '../../logic/schemas/attendance.schema';
-import { supabase } from '../../native/supabase';
 
 function formatLocalDateISO(date: Date): string {
   const year = date.getFullYear();
@@ -18,8 +18,11 @@ function formatLocalDateISO(date: Date): string {
 function todayISO(): string {
   return formatLocalDateISO(new Date());
 }
-
-async function resolveClassroomIds(schoolId: string, classroomId?: string): Promise<string[]> {
+async function resolveClassroomIds(
+  supabase: SupabaseClient,
+  schoolId: string,
+  classroomId?: string,
+): Promise<string[]> {
   if (classroomId) return [classroomId];
 
   const { data, error } = await supabase.from('classrooms').select('id').eq('school_id', schoolId);
@@ -28,7 +31,9 @@ async function resolveClassroomIds(schoolId: string, classroomId?: string): Prom
   return data.map((row) => row.id);
 }
 
-export const supabaseAttendanceProjectionRepository: AttendanceProjectionRepository = {
+export const createSupabaseAttendanceProjectionRepository = (
+  supabase: SupabaseClient,
+): AttendanceProjectionRepository => ({
   async getSchoolAttendancePulse(
     schoolId: string,
     classroomId?: string,
@@ -42,7 +47,7 @@ export const supabaseAttendanceProjectionRepository: AttendanceProjectionReposit
       relativeYesterdayDate.setDate(relativeYesterdayDate.getDate() - 1);
       const relativeYesterday = formatLocalDateISO(relativeYesterdayDate);
 
-      const classroomIds = await resolveClassroomIds(schoolId, classroomId);
+      const classroomIds = await resolveClassroomIds(supabase, schoolId, classroomId);
       if (classroomIds.length === 0) return empty;
 
       const [todayRes, yesterdayRes] = await Promise.all([
@@ -95,7 +100,7 @@ export const supabaseAttendanceProjectionRepository: AttendanceProjectionReposit
     const empty: AttendanceReport = { trend: [], overallRate: 0, totalAbsences: 0 };
 
     try {
-      const classroomIds = await resolveClassroomIds(schoolId, classroomId);
+      const classroomIds = await resolveClassroomIds(supabase, schoolId, classroomId);
       if (classroomIds.length === 0) return empty;
 
       const { data: records, error } = await supabase
@@ -161,6 +166,4 @@ export const supabaseAttendanceProjectionRepository: AttendanceProjectionReposit
       return empty;
     }
   },
-};
-export const createSupabaseAttendanceProjectionRepository = () =>
-  supabaseAttendanceProjectionRepository;
+});

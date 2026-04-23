@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   TeacherInsightAuditEvent,
   TeacherInsightLifecycleEvent,
   TeacherInsightPromotion,
@@ -17,7 +17,7 @@ export interface TeacherInsightsRepository {
     teacherId: string,
     type?: TeacherPrivateNoteZod['type'],
   ): Promise<TeacherPrivateNoteZod[]>;
-  createPrivateNote(input: TeacherPrivateNoteCreate): Promise<TeacherPrivateNoteZod>;
+  createPrivateNote(input: TeacherPrivateNoteCreate, idempotencyKey?: string): Promise<TeacherPrivateNoteZod>;
   deletePrivateNote(id: string): Promise<void>;
   listStudentObservations(classroomId: string): Promise<TeacherStudentObservationZod[]>;
   listStudentObservationsForEnrollment(
@@ -26,28 +26,39 @@ export interface TeacherInsightsRepository {
   listStudentObservationsForStudent(studentId: string): Promise<TeacherStudentObservationZod[]>;
   createStudentObservation(
     input: TeacherStudentObservationCreate,
+    idempotencyKey?: string,
   ): Promise<TeacherStudentObservationZod>;
   finalizeStudentObservation(
     id: string,
     acceptDeclaration: boolean,
+    idempotencyKey?: string,
   ): Promise<TeacherStudentObservationZod>;
   deleteStudentObservation(id: string): Promise<void>;
   shareStudentObservation(
     id: string,
     update: TeacherInsightShareUpdate,
     actorId: string,
+    idempotencyKey?: string,
   ): Promise<TeacherStudentObservationZod>;
-  revokeStudentObservationShare(id: string, actorId: string): Promise<TeacherStudentObservationZod>;
+  revokeStudentObservationShare(
+    id: string,
+    actorId: string,
+    idempotencyKey?: string,
+  ): Promise<TeacherStudentObservationZod>;
   promoteStudentObservation(
     id: string,
     promotion: TeacherInsightPromotion,
     actorId: string,
+    idempotencyKey?: string,
   ): Promise<{ success: true; recordedAt: string }>;
   getStudentPotential(
     studentId: string,
     classroomId: string,
   ): Promise<TeacherStudentPotentialZod | null>;
-  upsertStudentPotential(input: TeacherStudentPotentialUpsert): Promise<TeacherStudentPotentialZod>;
+  upsertStudentPotential(
+    input: TeacherStudentPotentialUpsert,
+    idempotencyKey?: string,
+  ): Promise<TeacherStudentPotentialZod>;
   getInsightAuditTrail(
     insightType: TeacherInsightTargetType,
     insightId: string,

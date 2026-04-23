@@ -7,3 +7,4 @@ export * from './guardian';
 export * from './principalWorkspace';
 export * from './teacherInsights';
 export * from './workspaceLayout';
+export * from './factory';

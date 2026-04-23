@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   TeacherInsightAuditEvent,
   TeacherInsightLifecycleEvent,
   TeacherInsightPromotion,
@@ -18,7 +18,10 @@ export interface TeacherInsightsServices {
     teacherId: string,
     type?: TeacherPrivateNoteZod['type'],
   ): Promise<TeacherPrivateNoteZod[]>;
-  createPrivateNote(input: TeacherPrivateNoteCreate): Promise<TeacherPrivateNoteZod>;
+  createPrivateNote(
+    input: TeacherPrivateNoteCreate,
+    idempotencyKey?: string,
+  ): Promise<TeacherPrivateNoteZod>;
   deletePrivateNote(id: string): Promise<void>;
   listStudentObservations(classroomId: string): Promise<TeacherStudentObservationZod[]>;
   listStudentObservationsForEnrollment(
@@ -27,28 +30,39 @@ export interface TeacherInsightsServices {
   listStudentObservationsForStudent(studentId: string): Promise<TeacherStudentObservationZod[]>;
   createStudentObservation(
     input: TeacherStudentObservationCreate,
+    idempotencyKey?: string,
   ): Promise<TeacherStudentObservationZod>;
   finalizeStudentObservation(
     id: string,
     acceptDeclaration: boolean,
+    idempotencyKey?: string,
   ): Promise<TeacherStudentObservationZod>;
   deleteStudentObservation(id: string): Promise<void>;
   shareStudentObservation(
     id: string,
     update: TeacherInsightShareUpdate,
     actorId: string,
+    idempotencyKey?: string,
   ): Promise<TeacherStudentObservationZod>;
-  revokeStudentObservationShare(id: string, actorId: string): Promise<TeacherStudentObservationZod>;
+  revokeStudentObservationShare(
+    id: string,
+    actorId: string,
+    idempotencyKey?: string,
+  ): Promise<TeacherStudentObservationZod>;
   promoteStudentObservation(
     id: string,
     promotion: TeacherInsightPromotion,
     actorId: string,
+    idempotencyKey?: string,
   ): Promise<{ success: true; recordedAt: string }>;
   getStudentPotential(
     studentId: string,
     classroomId: string,
   ): Promise<TeacherStudentPotentialZod | null>;
-  upsertStudentPotential(input: TeacherStudentPotentialUpsert): Promise<TeacherStudentPotentialZod>;
+  upsertStudentPotential(
+    input: TeacherStudentPotentialUpsert,
+    idempotencyKey?: string,
+  ): Promise<TeacherStudentPotentialZod>;
   getInsightAuditTrail(
     insightType: TeacherInsightTargetType,
     insightId: string,
@@ -63,26 +77,28 @@ export const createTeacherInsightsServices = (
   repository: TeacherInsightsRepository,
 ): TeacherInsightsServices => ({
   listPrivateNotes: (teacherId, type) => repository.listPrivateNotes(teacherId, type),
-  createPrivateNote: (input) => repository.createPrivateNote(input),
+  createPrivateNote: (input, idempotencyKey) => repository.createPrivateNote(input, idempotencyKey),
   deletePrivateNote: (id) => repository.deletePrivateNote(id),
   listStudentObservations: (classroomId) => repository.listStudentObservations(classroomId),
   listStudentObservationsForEnrollment: (classroomStudentId) =>
     repository.listStudentObservationsForEnrollment(classroomStudentId),
   listStudentObservationsForStudent: (studentId) =>
     repository.listStudentObservationsForStudent(studentId),
-  createStudentObservation: (input) => repository.createStudentObservation(input),
-  finalizeStudentObservation: (id, acceptDeclaration) =>
-    repository.finalizeStudentObservation(id, acceptDeclaration),
+  createStudentObservation: (input, idempotencyKey) =>
+    repository.createStudentObservation(input, idempotencyKey),
+  finalizeStudentObservation: (id, acceptDeclaration, idempotencyKey) =>
+    repository.finalizeStudentObservation(id, acceptDeclaration, idempotencyKey),
   deleteStudentObservation: (id) => repository.deleteStudentObservation(id),
-  shareStudentObservation: (id, update, actorId) =>
-    repository.shareStudentObservation(id, update, actorId),
-  revokeStudentObservationShare: (id, actorId) =>
-    repository.revokeStudentObservationShare(id, actorId),
-  promoteStudentObservation: (id, promotion, actorId) =>
-    repository.promoteStudentObservation(id, promotion, actorId),
+  shareStudentObservation: (id, update, actorId, idempotencyKey) =>
+    repository.shareStudentObservation(id, update, actorId, idempotencyKey),
+  revokeStudentObservationShare: (id, actorId, idempotencyKey) =>
+    repository.revokeStudentObservationShare(id, actorId, idempotencyKey),
+  promoteStudentObservation: (id, promotion, actorId, idempotencyKey) =>
+    repository.promoteStudentObservation(id, promotion, actorId, idempotencyKey),
   getStudentPotential: (studentId, classroomId) =>
     repository.getStudentPotential(studentId, classroomId),
-  upsertStudentPotential: (input) => repository.upsertStudentPotential(input),
+  upsertStudentPotential: (input, idempotencyKey) =>
+    repository.upsertStudentPotential(input, idempotencyKey),
   getInsightAuditTrail: (insightType, insightId) =>
     repository.getInsightAuditTrail(insightType, insightId),
   getInsightTimeline: (insightType, insightId) =>

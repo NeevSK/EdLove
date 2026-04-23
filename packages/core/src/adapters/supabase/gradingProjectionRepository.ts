@@ -1,4 +1,5 @@
 import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { GradingProjectionRepository } from '../../logic/domains/gradingProjection/ports';
 import {
   type PublishedSchoolGradingCompletion,
@@ -6,9 +7,10 @@ import {
   type SchoolGradingCompletion,
   SchoolGradingCompletionSchema,
 } from '../../logic/schemas/grading.schema';
-import { supabase } from '../../native/supabase';
 
-export const supabaseGradingProjectionRepository: GradingProjectionRepository = {
+export const createSupabaseGradingProjectionRepository = (
+  supabase: SupabaseClient,
+): GradingProjectionRepository => ({
   async getSchoolGradingCompletion(
     schoolId: string,
     viewDate: string,
@@ -161,4 +163,4 @@ export const supabaseGradingProjectionRepository: GradingProjectionRepository = 
       });
     }
   },
-};
+});

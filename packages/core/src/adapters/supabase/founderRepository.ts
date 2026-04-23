@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import type { FounderRepository } from '../../logic/domains/founder/ports';
 import { type Classroom, ClassroomSchema } from '../../logic/schemas/classroom.schema';
@@ -13,10 +14,11 @@ import {
   SentinelAuditLogSchema,
 } from '../../logic/schemas/founder.schema';
 import { SchoolSchema, type SchoolZod } from '../../logic/schemas/school.schema';
-import { supabase } from '../../native/supabase';
 import { APIError } from '../../types/API';
 
-export const createSupabaseFounderRepository = (): FounderRepository => ({
+export const createSupabaseFounderRepository = (
+  supabase: SupabaseClient,
+): FounderRepository => ({
   async getEcosystemStats() {
     const { data, error } = await supabase.rpc('get_ecosystem_stats');
     if (error) throw new APIError('Failed to fetch ecosystem stats', error.code, error);

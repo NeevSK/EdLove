@@ -11,14 +11,16 @@
         "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec astro check\" -Log \"reports/check-types.txt\""
     },
     "dependencies": {
-        "@repo/ui": "workspace:*",
-        "@repo/core": "workspace:*",
-        "@repo/form-builder": "workspace:*",
         "@astrojs/sitemap": "^3.6.0",
         "@astrojs/svelte": "^8.0.5",
         "@astrojs/vercel": "^10.0.4",
+        "@repo/core": "workspace:*",
+        "@repo/form-builder": "workspace:*",
+        "@repo/ui": "workspace:*",
+        "@supabase/supabase-js": "2.102.1",
         "@tailwindcss/vite": "^4.1.18",
         "astro": "^6.1.7",
+        "inngest": "^4.2.4",
         "svelte": "^5.55.4",
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3"

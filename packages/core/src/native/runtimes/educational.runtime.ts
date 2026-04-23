@@ -1,8 +1,9 @@
 import { createSupabaseEducationalRepository } from '../../adapters/supabase/educationalRepository';
 import { createEducationalServices } from '../../logic/domains/educational/services';
 import { useStore } from '../../store/useStore';
+import { supabase } from '../supabase';
 
-const educationalRepository = createSupabaseEducationalRepository();
+const educationalRepository = createSupabaseEducationalRepository(supabase);
 
 const sideEffects = {
   getCurrentUserId: async () => useStore.getState().user?.id || null,

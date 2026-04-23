@@ -28,12 +28,12 @@ import {
   ClassroomGradingSettingsSchema,
   StudentGradeSchema,
 } from '../../logic/schemas/grading.schema';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Lesson } from '../../logic/schemas/lesson.schema';
 import { LessonSchema } from '../../logic/schemas/lesson.schema';
 import type { Material as LessonMaterial } from '../../logic/schemas/material.schema';
 import { MaterialSchema } from '../../logic/schemas/material.schema';
 import { StudentSchema } from '../../logic/schemas/student.schema';
-import { supabase } from '../../native/supabase';
 import { APIError } from '../../types/API';
 
 const withRange = <T>(query: T, params?: { limit?: number; offset?: number }) => {
@@ -41,7 +41,9 @@ const withRange = <T>(query: T, params?: { limit?: number; offset?: number }) =>
   return (query as any).range(params.offset ?? 0, (params.offset ?? 0) + params.limit - 1);
 };
 
-export const createSupabaseEducationalRepository = (): EducationalRepository => ({
+export const createSupabaseEducationalRepository = (
+  supabase: SupabaseClient,
+): EducationalRepository => ({
   async getClassroomsByTeacher(teacherId, params = {}) {
     let query = supabase
       .from('classrooms')

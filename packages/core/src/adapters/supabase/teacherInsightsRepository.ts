@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TeacherInsightsRepository } from '../../logic/domains/teacherInsights/ports';
 import {
   type TeacherInsightAuditEvent,
@@ -18,7 +19,6 @@ import {
   TeacherStudentPotentialUpsertSchema,
   type TeacherStudentPotentialZod,
 } from '../../logic/schemas/teacher-insights.schema';
-import { supabase } from '../../native/supabase';
 import { APIError } from '../../types/API';
 
 const privateAudit = (ownerId: string) => ({
@@ -34,17 +34,21 @@ const mapObservationShareState = (visibility: TeacherStudentObservationZod['visi
 };
 
 const logInsightAudit = async ({
+  supabase,
   action,
   entityId,
   entityType,
   executorId,
   metadata,
+  idempotencyKey,
 }: {
+  supabase: SupabaseClient;
   action: string;
   entityId: string;
   entityType: string;
   executorId: string;
   metadata?: Record<string, unknown>;
+  idempotencyKey?: string;
 }) => {
   const { error } = await supabase.from('audit_logs').insert({
     action,
@@ -53,6 +57,7 @@ const logInsightAudit = async ({
     entity_type: entityType,
     executor_id: executorId,
     metadata: metadata ?? {},
+    idempotency_key: idempotencyKey,
   });
 
   if (error) {
@@ -61,6 +66,7 @@ const logInsightAudit = async ({
 };
 
 const recordInsightLifecycleEvent = async ({
+  supabase,
   insightType,
   insightId,
   ownerId,
@@ -76,7 +82,9 @@ const recordInsightLifecycleEvent = async ({
   effectiveFrom,
   effectiveTo,
   recordedBy,
+  idempotencyKey,
 }: {
+  supabase: SupabaseClient;
   insightType: TeacherInsightTargetType;
   insightId: string;
   ownerId: string;
@@ -92,6 +100,7 @@ const recordInsightLifecycleEvent = async ({
   effectiveFrom?: string | null;
   effectiveTo?: string | null;
   recordedBy?: string | null;
+  idempotencyKey?: string;
 }) => {
   const { error } = await supabase.from('teacher_insight_events').insert({
     insight_type: insightType,
@@ -109,6 +118,7 @@ const recordInsightLifecycleEvent = async ({
     effective_from: effectiveFrom ?? occurredAt ?? new Date().toISOString(),
     effective_to: effectiveTo ?? null,
     recorded_by: recordedBy ?? null,
+    idempotency_key: idempotencyKey,
   });
 
   if (error) {
@@ -116,7 +126,9 @@ const recordInsightLifecycleEvent = async ({
   }
 };
 
-export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsRepository => ({
+export const createSupabaseTeacherInsightsRepository = (
+  supabase: SupabaseClient,
+): TeacherInsightsRepository => ({
   async listPrivateNotes(teacherId, type) {
     let query = supabase
       .from('teacher_notes')
@@ -140,7 +152,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     ) as TeacherPrivateNoteZod[];
   },
 
-  async createPrivateNote(input) {
+  async createPrivateNote(input, idempotencyKey) {
     const payload = TeacherPrivateNoteCreateSchema.parse(input) as TeacherPrivateNoteCreate;
     const { data, error } = await supabase
       .from('teacher_notes')
@@ -149,6 +161,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
           teacher_id: payload.teacherId,
           content: payload.content,
           type: payload.type,
+          idempotency_key: idempotencyKey,
         },
       ])
       .select()
@@ -157,6 +170,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     if (error) throw new APIError('Failed to create teacher private note', error.code, error);
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'teacher_note',
       insightId: String(data.id),
       ownerId: payload.teacherId,
@@ -195,6 +209,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (existing) {
       await recordInsightLifecycleEvent({
+        supabase,
         insightType: 'teacher_note',
         insightId: String(existing.id),
         ownerId: String(existing.teacher_id),
@@ -280,19 +295,20 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     ) as TeacherStudentObservationZod[];
   },
 
-  async createStudentObservation(input) {
+  async createStudentObservation(input, idempotencyKey) {
     const payload = TeacherStudentObservationCreateSchema.parse(
       input,
     ) as TeacherStudentObservationCreate;
     const { data, error } = await supabase
       .from('student_observations')
-      .insert([payload])
+      .insert([{ ...payload, idempotency_key: idempotencyKey }])
       .select()
       .single();
 
     if (error) throw new APIError('Failed to create student observation', error.code, error);
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'student_observation',
       insightId: String(data.id),
       ownerId: String(data.author_id),
@@ -322,7 +338,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     }) as TeacherStudentObservationZod;
   },
 
-  async finalizeStudentObservation(id, acceptDeclaration) {
+  async finalizeStudentObservation(id, acceptDeclaration, idempotencyKey) {
     if (!acceptDeclaration) {
       throw new APIError(
         'Honesty declaration must be accepted to finalize',
@@ -335,6 +351,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       .update({
         is_finalized: true,
         honesty_declaration_accepted: true,
+        idempotency_key: idempotencyKey,
       })
       .eq('id', id)
       .select()
@@ -343,6 +360,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     if (error) throw new APIError('Failed to finalize student observation', error.code, error);
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'student_observation',
       insightId: String(data.id),
       ownerId: String(data.author_id),
@@ -392,6 +410,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     if (existing) {
       await recordInsightLifecycleEvent({
+        supabase,
         insightType: 'student_observation',
         insightId: String(existing.id),
         ownerId: String(existing.author_id),
@@ -412,11 +431,12 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     }
   },
 
-  async shareStudentObservation(id, update, actorId) {
+  async shareStudentObservation(id, update, actorId, idempotencyKey) {
     const { data, error } = await supabase
       .from('student_observations')
       .update({
         visibility: update.visibility,
+        idempotency_key: idempotencyKey,
       })
       .eq('id', id)
       .select()
@@ -425,6 +445,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     if (error) throw new APIError('Failed to share student observation', error.code, error);
 
     await logInsightAudit({
+      supabase,
       action: 'teacher_insight_shared',
       entityId: id,
       entityType: 'student_observation',
@@ -436,6 +457,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     });
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'student_observation',
       insightId: String(data.id),
       ownerId: String(data.author_id),
@@ -464,11 +486,12 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     }) as TeacherStudentObservationZod;
   },
 
-  async revokeStudentObservationShare(id, actorId) {
+  async revokeStudentObservationShare(id, actorId, idempotencyKey) {
     const { data, error } = await supabase
       .from('student_observations')
       .update({
         visibility: 'private',
+        idempotency_key: idempotencyKey,
       })
       .eq('id', id)
       .select()
@@ -477,6 +500,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     if (error) throw new APIError('Failed to revoke student observation share', error.code, error);
 
     await logInsightAudit({
+      supabase,
       action: 'teacher_insight_share_revoked',
       entityId: id,
       entityType: 'student_observation',
@@ -484,6 +508,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     });
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'student_observation',
       insightId: String(data.id),
       ownerId: String(data.author_id),
@@ -509,7 +534,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     }) as TeacherStudentObservationZod;
   },
 
-  async promoteStudentObservation(id, promotion, actorId) {
+  async promoteStudentObservation(id, promotion, actorId, idempotencyKey) {
     const { data: observation, error } = await supabase
       .from('student_observations')
       .select('*')
@@ -521,6 +546,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
 
     const recordedAt = new Date().toISOString();
     await logInsightAudit({
+      supabase,
       action: 'teacher_insight_promoted',
       entityId: id,
       entityType: 'student_observation',
@@ -533,6 +559,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     });
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'student_observation',
       insightId: String(observation.id),
       ownerId: String(observation.author_id),
@@ -550,6 +577,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       occurredAt: recordedAt,
       effectiveFrom: recordedAt,
       recordedBy: actorId,
+      idempotencyKey,
     });
 
     return {
@@ -579,7 +607,7 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
     }) as TeacherStudentPotentialZod;
   },
 
-  async upsertStudentPotential(input) {
+  async upsertStudentPotential(input, idempotencyKey) {
     const payload = TeacherStudentPotentialUpsertSchema.parse(
       input,
     ) as TeacherStudentPotentialUpsert;
@@ -592,11 +620,13 @@ export const createSupabaseTeacherInsightsRepository = (): TeacherInsightsReposi
       p_creative_spark: payload.creative_spark,
       p_practical_mastery: payload.practical_mastery,
       p_silver_lining: payload.silver_lining ?? null,
+      p_idempotency_key: idempotencyKey,
     });
 
     if (error) throw new APIError('Failed to save student potential', error.code, error);
 
     await recordInsightLifecycleEvent({
+      supabase,
       insightType: 'student_potential',
       insightId: String(data.id),
       ownerId: String(data.teacher_id),

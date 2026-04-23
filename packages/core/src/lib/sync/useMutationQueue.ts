@@ -20,8 +20,8 @@ export const useMutationQueue = create<MutationQueueState>()(
       deadLetterQueue: [],
       isSyncing: false,
 
-      addToQueue: (mutation) => {
-        const idempotencyKey = generateIdempotencyKey(
+      addToQueue: async (mutation) => {
+        const idempotencyKey = await generateIdempotencyKey(
           mutation.scope,
           mutation.name,
           mutation.variables,

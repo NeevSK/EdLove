@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
 import { useCallback, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
 import { generateIdempotencyKey } from '../lib/sync/idempotency';
 import { useMutationAuditLog } from '../lib/sync/MutationAuditLog';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
@@ -11,7 +11,7 @@ interface SafeMutationOptions<TData, TVariables> {
   scope?: string; // Feature scope (e.g. 'community')
   onMutate?: (variables: TVariables) => void;
   onSuccess?: (data: TData | null, variables: TVariables) => void;
-  onError?: (error: any, variables: TVariables, rollback?: () => void) => void;
+  onError?: (error: unknown, variables: TVariables, rollback?: () => void) => void;
   retryCount?: number;
   mutationType?: 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM';
 }
@@ -29,7 +29,7 @@ export function useSafeMutation<TData, TVariables>(
   options?: SafeMutationOptions<TData, TVariables>,
 ) {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<Error | null>(null);
   const showToast = useStore((state) => state.showToast);
   const addToQueue = useMutationQueue((state) => state.addToQueue);
   const logAudit = useMutationAuditLog((state) => state.logEntry);
@@ -53,8 +53,8 @@ export function useSafeMutation<TData, TVariables>(
           }
 
           return await mutationFn(variables);
-        } catch (err: any) {
-          if (err.message === 'OFFLINE_QUEUE') throw err;
+        } catch (err: unknown) {
+          if (err instanceof Error && err.message === 'OFFLINE_QUEUE') throw err;
 
           if (attempt < (options?.retryCount || 3)) {
             const delay = 2 ** attempt * 1000;
@@ -73,15 +73,18 @@ export function useSafeMutation<TData, TVariables>(
         }
 
         return result;
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Queue for later if network issue or offline signal
-        if (err.message === 'OFFLINE_QUEUE' || err.message === 'Network request failed') {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        if (errorMessage === 'OFFLINE_QUEUE' || errorMessage === 'Network request failed') {
           if (options?.mutationKey) {
-            const mutationId = uuidv4();
+            const mutationId = uuidv7(); // Upgraded to v7 for better DB locality
             const scope = options.scope || 'general';
             const name = options.mutationKey;
 
-            const idempotencyKey = generateIdempotencyKey(scope, name, variables);
+            // Fetch studentId from store for better salting
+            const studentId = useStore.getState().user?.id;
+            const idempotencyKey = await generateIdempotencyKey(scope, name, variables, studentId);
 
             // 1. Audit Entry (Temporal Birth)
             logAudit({
@@ -95,7 +98,7 @@ export function useSafeMutation<TData, TVariables>(
             });
 
             // 2. Queue for Persistence
-            addToQueue({
+            await addToQueue({
               name,
               scope,
               variables,
@@ -114,9 +117,9 @@ export function useSafeMutation<TData, TVariables>(
           }
         }
 
-        setError(err);
+        setError(err instanceof Error ? err : new Error(errorMessage));
         if (options?.onError) options.onError(err, variables);
-        else showToast(err.message || 'Action failed', 'error');
+        else showToast(errorMessage || 'Action failed', 'error');
 
         throw err;
       } finally {
