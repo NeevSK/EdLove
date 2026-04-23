@@ -20,6 +20,8 @@ export * from './schemas';
 export * from './store-slices';
 export * from './utils';
 export * from './workspace/index';
+export * from './events/bus';
+export { handlers as inngestHandlers } from './events/handlers';
 
 // Types (Agnostic / logic-layer)
 export type { AuthorityTier } from '../types/Authority';

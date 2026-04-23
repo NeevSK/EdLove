@@ -516,9 +516,8 @@ export const missionsAPI = createPOAProxy('missions', sacredMissionsAPI, growthC
 export const ripplesAPI = createPOAProxy('ripples', impactRipplesAPI, growthContract);
 export const growthStateAPI = createPOAProxy('growthState', userGrowthStateAPI, growthContract);
 
-export * from '../logic/schemas/staff.schema';
-export * from '../logic/schemas/temporal.schema';
-export * from '../types';
+// All logic schemas are now centralized and imported directly by services.
+// Only specific high-level API orchestrators are exported from here.
 export * from './assignments'; // Export assignments/submissions API
 export * from './classroomGroups';
 export type { ClassroomNote } from './classroomNotes';

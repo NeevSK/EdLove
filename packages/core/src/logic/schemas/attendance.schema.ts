@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 import { StudentAttendancePulseSchema } from './staff.schema';
 
 export const AttendanceStatusSchema = z.enum(['present', 'absent', 'late']);
@@ -10,10 +10,12 @@ export const AttendanceSchema = z.object({
   id: z.string().uuid(),
   classroom_id: z.string().uuid(),
   student_id: z.string().uuid(),
+  academic_cycle_id: z.string().uuid().optional().nullable(), // Added as per foundation v4
   status: AttendanceStatusSchema,
   date: z.string(), // ISO Date string (YYYY-MM-DD)
-  created_at: z.string(),
-  updated_at: z.string(),
+  occurred_at: z.string().datetime(), // Event time - Added as per foundation v4
+  created_at: z.string().datetime(), // Upload time
+  updated_at: z.string().datetime(),
 });
 
 /**

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":separateMajorReleases",
+    ":combinePatchMinorReleases",
+    ":separatePatchReleases"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^expo", "^react-native"],
+      "enabled": false,
+      "description": "Disable automated updates for Expo and React Native core to avoid breaking SDK 55 compliance."
+    },
+    {
+      "groupName": "Dev Tooling",
+      "matchPackageNames": ["typescript", "eslint", "prettier", "@biomejs/biome"],
+      "automerge": true
+    },
+    {
+      "groupName": "Logic Helpers (Safe Patches)",
+      "matchUpdateTypes": ["patch"],
+      "matchPackagePatterns": ["^date-fns", "^lodash", "^zod", "^zustand"],
+      "automerge": true
+    }
+  ],
+  "pnpm": {
+    "enabled": true
+  },
+  "rangeStrategy": "bump"
+}

@@ -101,6 +101,24 @@ class PolymathPlatformServer {
             },
             required: ["message"]
           },
+        },
+        {
+          name: "normalize_imports",
+          description: "Normalizes relative imports to workspace aliases (@repo/*).",
+          inputSchema: {
+            type: "object",
+            properties: {
+              target: {
+                type: "string",
+                description: "Target directory or file to normalize. Defaults to root."
+              }
+            }
+          }
+        },
+        {
+          name: "audit_dependency_health",
+          description: "Runs a combined report of pnpm outdated vs. Expo SDK compatibility.",
+          inputSchema: { type: "object", properties: {} },
         }
       ],
     }));
@@ -121,6 +139,10 @@ class PolymathPlatformServer {
             return this.handleCheckTypes(args as { package?: string });
           case "create_checkpoint":
             return this.handleCreateCheckpoint(args as { message: string, stage_all?: boolean });
+          case "normalize_imports":
+            return this.handleNormalizeImports(args as { target?: string });
+          case "audit_dependency_health":
+            return this.handleAuditDependencyHealth();
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -150,7 +172,17 @@ class PolymathPlatformServer {
         return { content: [{ type: "text", text: "Nothing to commit. Checkpoint aborted." }] };
       }
 
-      // 3. Prepare message with Ledger
+      // 3. New: Generate Smart Changeset for internal package versioning
+      try {
+        console.error("Generating Smart Changeset...");
+        execSync(`node scripts/smart-changeset.mjs --staged "${args.message.replace(/"/g, '\\"')}"`, { cwd: ROOT_DIR });
+        // Re-stage the new changeset file
+        execSync("git add .changeset/*.md", { cwd: ROOT_DIR });
+      } catch (changesetError) {
+        console.error("Smart Changeset failed (likely no package changes), continuing...");
+      }
+
+      // 4. Prepare message with Ledger
       fs.writeFileSync(tempMsgPath, args.message, "utf-8");
       
       try {
@@ -196,6 +228,23 @@ class PolymathPlatformServer {
         type: "text",
         text: JSON.stringify({ circular, unused, architecture }, null, 2)
       }]
+    };
+  }
+
+  private handleNormalizeImports(args: { target?: string }) {
+    const target = args.target || ".";
+    console.error(`Normalizing imports in: ${target}`);
+    const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/normalize-imports.ps1 -Target "${target}"`, { cwd: ROOT_DIR }).toString();
+    return {
+      content: [{ type: "text", text: output }]
+    };
+  }
+
+  private handleAuditDependencyHealth() {
+    console.error("Running Dependency Health Audit...");
+    const output = execSync("powershell -ExecutionPolicy Bypass -File scripts/audit-dependency-health.ps1", { cwd: ROOT_DIR }).toString();
+    return {
+      content: [{ type: "text", text: output }]
     };
   }
 

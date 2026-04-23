@@ -11,7 +11,7 @@ console.log('\n--- 🛡️ Web Firewall Audit Report ---\n');
 
 if (!fs.existsSync(AUDIT_FILE)) {
     console.log('No audit log found. This is normal if you haven\'t run a web bundle yet.');
-    console.log('Try running: pnpm start -c (and open web) or npx expo export:web');
+    console.log('Try running: pnpm start -c (and open web) or pnpm dlx expo export:web');
     process.exit(0);
 }
 

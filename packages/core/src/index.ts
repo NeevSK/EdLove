@@ -114,6 +114,8 @@ export * from './logic/schemas/role.schema';
 export type { User } from './logic/schemas/user.schema';
 export * from './logic/schemas/user.schema';
 export { UserSchema } from './logic/schemas/user.schema';
+export * from './logic/schemas/staff.schema';
+export * from './logic/schemas/temporal.schema';
 export * from './logic/utils/validators';
 export * from './logic/workspace/canvas';
 export * from './logic/workspace/workspaceSwitcher';

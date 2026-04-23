@@ -41,7 +41,7 @@ if (!shouldSuppress) {
 console.log('\n☢️ Step 3: --suppress flag detected. Running automated TS suppressions as a last resort...');
 try {
     // Runs the suppression script on the entire workspace to get you unblocked
-    execSync('npx ts-migrate-scripts ts-ignore .', { stdio: 'inherit' });
+    execSync('pnpm dlx ts-migrate-scripts ts-ignore .', { stdio: 'inherit' });
     console.log('✅ All remaining errors have been suppressed with // @ts-expect-error');
     console.log('🚀 You are unblocked to commit!');
 } catch (e) {

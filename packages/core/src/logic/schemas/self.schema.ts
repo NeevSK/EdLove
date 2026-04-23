@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
 export const MoodLogSchema = z.object({
   id: z.string().uuid(),
@@ -6,7 +6,8 @@ export const MoodLogSchema = z.object({
   mood_score: z.number().min(1).max(5),
   mood: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
-  created_at: z.string().datetime(),
+  occurred_at: z.string().datetime(), // Event time - Added as per foundation v4
+  created_at: z.string().datetime(), // Upload time
 });
 
 export const FireJournalEntrySchema = z.object({
